@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { createCollection } from '@radix-ui/react-collection';
+import { useDirection } from '@radix-ui/react-direction';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
@@ -13,6 +14,8 @@ import { useControllableState } from '@radix-ui/react-use-controllable-state';
 
 import type { Scope } from '@radix-ui/react-context';
 import type * as Radix from '@radix-ui/react-primitive';
+
+type Direction = 'ltr' | 'rtl';
 
 /* -------------------------------------------------------------------------------------------------
  * Menubar
@@ -37,6 +40,7 @@ const useRovingFocusGroupScope = createRovingFocusGroupScope();
 
 type MenubarContextValue = {
   value: string;
+  dir: Direction;
   onMenuOpen(value: string): void;
   onMenuClose(): void;
   onMenuToggle(value: string): void;
@@ -52,6 +56,7 @@ interface MenubarProps extends RovingFocusGroupProps {
   defaultValue?: string;
   onValueChange?: (value: string) => void;
   loop?: boolean;
+  dir?: Direction;
 }
 
 const Menubar = React.forwardRef<MenubarElement, MenubarProps>(
@@ -62,8 +67,10 @@ const Menubar = React.forwardRef<MenubarElement, MenubarProps>(
       onValueChange,
       defaultValue,
       loop = true,
+      dir,
       ...menubarProps
     } = props;
+    const direction = useDirection(dir);
     const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeMenubar);
     const [value = '', setValue] = useControllableState({
       prop: valueProp,
@@ -81,6 +88,7 @@ const Menubar = React.forwardRef<MenubarElement, MenubarProps>(
           (value) => setValue((prevValue) => (Boolean(prevValue) ? '' : value)),
           [setValue]
         )}
+        dir={direction}
       >
         <Collection.Provider scope={__scopeMenubar}>
           <RovingFocusGroup.Root
@@ -88,6 +96,7 @@ const Menubar = React.forwardRef<MenubarElement, MenubarProps>(
             loop={loop}
             role="menubar"
             orientation="horizontal"
+            dir={direction}
             {...menubarProps}
             ref={forwardedRef}
           />
@@ -109,7 +118,6 @@ type MenubarMenuContextValue = {
   triggerId: string;
   triggerRef: React.RefObject<MenubarTriggerElement>;
   contentId: string;
-  contentRef: React.RefObject<MenubarContentElement>;
   value: string;
 };
 
@@ -130,7 +138,6 @@ const MenubarMenu = (props: ScopedProps<MenubarMenuProps>) => {
   const context = useMenubarContext(MENU_NAME, __scopeMenubar);
   const menuScope = useMenuScope(__scopeMenubar);
   const triggerRef = React.useRef<MenubarTriggerElement>(null);
-  const contentRef = React.useRef<MenubarContentElement>(null);
   const open = context.value === value;
 
   return (
@@ -139,7 +146,6 @@ const MenubarMenu = (props: ScopedProps<MenubarMenuProps>) => {
       triggerId={useId()}
       triggerRef={triggerRef}
       contentId={useId()}
-      contentRef={contentRef}
       value={value}
     >
       <MenuPrimitive.Root
@@ -149,6 +155,7 @@ const MenubarMenu = (props: ScopedProps<MenubarMenuProps>) => {
           if (!open) context.onMenuClose();
         }}
         modal={false}
+        dir={context.dir}
         {...menuProps}
       />
     </MenubarMenuProvider>
@@ -219,7 +226,6 @@ const MenubarTrigger = React.forwardRef<MenubarTriggerElement, MenubarTriggerPro
                   if (['Enter', ' '].includes(event.key)) context.onMenuToggle(menuContext.value);
                   if (event.key === 'ArrowDown') {
                     context.onMenuOpen(menuContext.value);
-                    if (isFocused) menuContext.contentRef.current?.focus();
                   }
                   // prevent keydown from scrolling window / first focused item to execute
                   // that keydown (inadvertently closing the menu)
@@ -271,7 +277,6 @@ const MenubarContent = React.forwardRef<MenubarContentElement, MenubarContentPro
     const menuScope = useMenuScope(__scopeMenubar);
     const context = useMenubarContext(CONTENT_NAME, __scopeMenubar);
     const menuContext = useMenubarMenuContext(CONTENT_NAME, __scopeMenubar);
-    const composedRefs = useComposedRefs(forwardedRef, menuContext.contentRef);
     const getItems = useCollection(__scopeMenubar);
     const hasInteractedOutsideRef = React.useRef(false);
 
@@ -281,7 +286,7 @@ const MenubarContent = React.forwardRef<MenubarContentElement, MenubarContentPro
         aria-labelledby={menuContext.triggerId}
         {...menuScope}
         {...contentProps}
-        ref={composedRefs}
+        ref={forwardedRef}
         onCloseAutoFocus={composeEventHandlers(props.onCloseAutoFocus, (event) => {
           const menubarOpen = Boolean(context.value);
           if (!menubarOpen && !hasInteractedOutsideRef.current) {

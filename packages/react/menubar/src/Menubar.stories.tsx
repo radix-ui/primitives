@@ -8,6 +8,8 @@ const { contentClass, itemClass, separatorClass, labelClass, subTriggerClass } =
 export default { title: 'Components/Menubar' };
 
 export const Styled = () => {
+  const [rtl, setRtl] = React.useState(false);
+  const dir = rtl ? 'rtl' : 'ltr';
   const checkOptions = [
     'Always Show Bookmarks Bar',
     'Always Show Toolbar in Fullscreen',
@@ -20,135 +22,151 @@ export const Styled = () => {
 
   return (
     <div
-      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', paddingTop: 50 }}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexDirection: 'column',
+        paddingTop: 50,
+      }}
     >
-      <Menubar.Root className={rootClass()}>
-        <Menubar.Menu>
-          <Menubar.Trigger className={triggerClass()}>File</Menubar.Trigger>
-          <Menubar.Portal>
-            <Menubar.Content className={contentClass()} align="start" sideOffset={2}>
-              <Menubar.Item className={itemClass()}>New Tab</Menubar.Item>
-              <Menubar.Item className={itemClass()}>New Window</Menubar.Item>
-              <Menubar.Item className={itemClass()}>New Incognito Window</Menubar.Item>
-              <Menubar.Separator className={separatorClass()} />
-              <Menubar.SubMenu>
-                <Menubar.SubTrigger className={subTriggerClass()}>
-                  Share <span>→</span>
-                </Menubar.SubTrigger>
-                <Menubar.Portal>
-                  <Menubar.SubContent className={contentClass()} sideOffset={10} alignOffset={-6}>
-                    <Menubar.Item className={itemClass()}>Email Link</Menubar.Item>
-                    <Menubar.Item className={itemClass()}>Messages</Menubar.Item>
-                    <Menubar.Item className={itemClass()}>Airdrop</Menubar.Item>
-                    <Menubar.Arrow />
-                  </Menubar.SubContent>
-                </Menubar.Portal>
-              </Menubar.SubMenu>
-              <Menubar.Separator className={separatorClass()} />
-              <Menubar.Item className={itemClass()}>Print…</Menubar.Item>
-            </Menubar.Content>
-          </Menubar.Portal>
-        </Menubar.Menu>
+      <label style={{ marginBottom: 20 }}>
+        <input
+          type="checkbox"
+          checked={rtl}
+          onChange={(event) => setRtl(event.currentTarget.checked)}
+        />
+        Right-to-left
+      </label>
+      <div dir={dir}>
+        <Menubar.Root className={rootClass()} dir={dir}>
+          <Menubar.Menu>
+            <Menubar.Trigger className={triggerClass()}>File</Menubar.Trigger>
+            <Menubar.Portal>
+              <Menubar.Content className={contentClass()} align="start" sideOffset={2}>
+                <Menubar.Item className={itemClass()}>New Tab</Menubar.Item>
+                <Menubar.Item className={itemClass()}>New Window</Menubar.Item>
+                <Menubar.Item className={itemClass()}>New Incognito Window</Menubar.Item>
+                <Menubar.Separator className={separatorClass()} />
+                <Menubar.SubMenu>
+                  <Menubar.SubTrigger className={subTriggerClass()}>
+                    Share <span>→</span>
+                  </Menubar.SubTrigger>
+                  <Menubar.Portal>
+                    <Menubar.SubContent className={contentClass()} sideOffset={10} alignOffset={-6}>
+                      <Menubar.Item className={itemClass()}>Email Link</Menubar.Item>
+                      <Menubar.Item className={itemClass()}>Messages</Menubar.Item>
+                      <Menubar.Item className={itemClass()}>Airdrop</Menubar.Item>
+                      <Menubar.Arrow />
+                    </Menubar.SubContent>
+                  </Menubar.Portal>
+                </Menubar.SubMenu>
+                <Menubar.Separator className={separatorClass()} />
+                <Menubar.Item className={itemClass()}>Print…</Menubar.Item>
+              </Menubar.Content>
+            </Menubar.Portal>
+          </Menubar.Menu>
 
-        <Menubar.Menu>
-          <Menubar.Trigger className={triggerClass()}>Edit</Menubar.Trigger>
-          <Menubar.Portal>
-            <Menubar.Content className={contentClass()} align="start" sideOffset={2}>
-              <Menubar.Item className={itemClass()}>Undo</Menubar.Item>
-              <Menubar.Item className={itemClass()}>Redo</Menubar.Item>
-              <Menubar.Separator className={separatorClass()} />
-              <Menubar.SubMenu>
-                <Menubar.SubTrigger className={subTriggerClass()}>
-                  Find <span>→</span>
-                </Menubar.SubTrigger>
+          <Menubar.Menu>
+            <Menubar.Trigger className={triggerClass()}>Edit</Menubar.Trigger>
+            <Menubar.Portal>
+              <Menubar.Content className={contentClass()} align="start" sideOffset={2}>
+                <Menubar.Item className={itemClass()}>Undo</Menubar.Item>
+                <Menubar.Item className={itemClass()}>Redo</Menubar.Item>
+                <Menubar.Separator className={separatorClass()} />
+                <Menubar.SubMenu>
+                  <Menubar.SubTrigger className={subTriggerClass()}>
+                    Find <span>→</span>
+                  </Menubar.SubTrigger>
 
-                <Menubar.Portal>
-                  <Menubar.SubContent className={contentClass()} sideOffset={10} alignOffset={-6}>
-                    <Menubar.Item className={itemClass()}>Search the web…</Menubar.Item>
-                    <Menubar.Separator className={separatorClass()} />
-                    <Menubar.Item className={itemClass()}>Find…</Menubar.Item>
-                    <Menubar.Item className={itemClass()}>Find Next</Menubar.Item>
-                    <Menubar.Item className={itemClass()}>Find Previous</Menubar.Item>
-                    <Menubar.Arrow />
-                  </Menubar.SubContent>
-                </Menubar.Portal>
-              </Menubar.SubMenu>
-              <Menubar.Separator className={separatorClass()} />
-              <Menubar.Item className={itemClass()}>Cut</Menubar.Item>
-              <Menubar.Item className={itemClass()}>Copy</Menubar.Item>
-              <Menubar.Item className={itemClass()}>Paste</Menubar.Item>
-            </Menubar.Content>
-          </Menubar.Portal>
-        </Menubar.Menu>
+                  <Menubar.Portal>
+                    <Menubar.SubContent className={contentClass()} sideOffset={10} alignOffset={-6}>
+                      <Menubar.Item className={itemClass()}>Search the web…</Menubar.Item>
+                      <Menubar.Separator className={separatorClass()} />
+                      <Menubar.Item className={itemClass()}>Find…</Menubar.Item>
+                      <Menubar.Item className={itemClass()}>Find Next</Menubar.Item>
+                      <Menubar.Item className={itemClass()}>Find Previous</Menubar.Item>
+                      <Menubar.Arrow />
+                    </Menubar.SubContent>
+                  </Menubar.Portal>
+                </Menubar.SubMenu>
+                <Menubar.Separator className={separatorClass()} />
+                <Menubar.Item className={itemClass()}>Cut</Menubar.Item>
+                <Menubar.Item className={itemClass()}>Copy</Menubar.Item>
+                <Menubar.Item className={itemClass()}>Paste</Menubar.Item>
+              </Menubar.Content>
+            </Menubar.Portal>
+          </Menubar.Menu>
 
-        <Menubar.Menu>
-          <Menubar.Trigger className={triggerClass()}>View</Menubar.Trigger>
-          <Menubar.Portal>
-            <Menubar.Content className={contentClass()} align="start" sideOffset={2}>
-              {checkOptions.map((option) => (
-                <Menubar.CheckboxItem
-                  key={option}
-                  className={itemClass()}
-                  checked={checkedSelection.includes(option)}
-                  onCheckedChange={() =>
-                    setCheckedSelection((current) =>
-                      current.includes(option)
-                        ? current.filter((el) => el !== option)
-                        : current.concat(option)
-                    )
-                  }
-                >
-                  {option}
-                  <Menubar.ItemIndicator style={{ marginLeft: 10 }}>
-                    <TickIcon />
-                  </Menubar.ItemIndicator>
-                </Menubar.CheckboxItem>
-              ))}
-              <Menubar.Separator className={separatorClass()} />
-              <Menubar.Item className={itemClass()}>Reload</Menubar.Item>
-              <Menubar.Item className={itemClass()}>Force Reload</Menubar.Item>
-              <Menubar.Separator className={separatorClass()} />
-              <Menubar.Item className={itemClass()}>Toggle Fullscreen</Menubar.Item>
-              <Menubar.Separator className={separatorClass()} />
-              <Menubar.Item className={itemClass()}>Hide Sidebar</Menubar.Item>
-            </Menubar.Content>
-          </Menubar.Portal>
-        </Menubar.Menu>
-
-        <Menubar.Menu>
-          <Menubar.Trigger className={triggerClass()}>Profiles</Menubar.Trigger>
-          <Menubar.Portal>
-            <Menubar.Content className={contentClass()} align="start" sideOffset={2}>
-              <Menubar.RadioGroup value={radioSelection} onValueChange={setRadioSelection}>
-                {radioOptions.map((option) => (
-                  <Menubar.RadioItem key={option} className={itemClass()} value={option}>
+          <Menubar.Menu>
+            <Menubar.Trigger className={triggerClass()}>View</Menubar.Trigger>
+            <Menubar.Portal>
+              <Menubar.Content className={contentClass()} align="start" sideOffset={2}>
+                {checkOptions.map((option) => (
+                  <Menubar.CheckboxItem
+                    key={option}
+                    className={itemClass()}
+                    checked={checkedSelection.includes(option)}
+                    onCheckedChange={() =>
+                      setCheckedSelection((current) =>
+                        current.includes(option)
+                          ? current.filter((el) => el !== option)
+                          : current.concat(option)
+                      )
+                    }
+                  >
                     {option}
                     <Menubar.ItemIndicator style={{ marginLeft: 10 }}>
                       <TickIcon />
                     </Menubar.ItemIndicator>
-                  </Menubar.RadioItem>
+                  </Menubar.CheckboxItem>
                 ))}
-              </Menubar.RadioGroup>
-            </Menubar.Content>
-          </Menubar.Portal>
-        </Menubar.Menu>
+                <Menubar.Separator className={separatorClass()} />
+                <Menubar.Item className={itemClass()}>Reload</Menubar.Item>
+                <Menubar.Item className={itemClass()}>Force Reload</Menubar.Item>
+                <Menubar.Separator className={separatorClass()} />
+                <Menubar.Item className={itemClass()}>Toggle Fullscreen</Menubar.Item>
+                <Menubar.Separator className={separatorClass()} />
+                <Menubar.Item className={itemClass()}>Hide Sidebar</Menubar.Item>
+              </Menubar.Content>
+            </Menubar.Portal>
+          </Menubar.Menu>
 
-        <Menubar.Menu>
-          <Menubar.Trigger className={triggerClass()}>History</Menubar.Trigger>
-          <Menubar.Portal>
-            <Menubar.Content className={contentClass()} align="start" sideOffset={2}>
-              <Menubar.Label className={labelClass()}>Work</Menubar.Label>
-              <Menubar.Item className={itemClass()}>Radix</Menubar.Item>
-              <Menubar.Item className={itemClass()}>Github</Menubar.Item>
-              <Menubar.Item className={itemClass()}>WorkOS</Menubar.Item>
-              <Menubar.Label className={labelClass()}>Community</Menubar.Label>
-              <Menubar.Item className={itemClass()}>Twitter</Menubar.Item>
-              <Menubar.Item className={itemClass()}>Discord</Menubar.Item>
-              <Menubar.Item className={itemClass()}>Slack</Menubar.Item>
-            </Menubar.Content>
-          </Menubar.Portal>
-        </Menubar.Menu>
-      </Menubar.Root>
+          <Menubar.Menu>
+            <Menubar.Trigger className={triggerClass()}>Profiles</Menubar.Trigger>
+            <Menubar.Portal>
+              <Menubar.Content className={contentClass()} align="start" sideOffset={2}>
+                <Menubar.RadioGroup value={radioSelection} onValueChange={setRadioSelection}>
+                  {radioOptions.map((option) => (
+                    <Menubar.RadioItem key={option} className={itemClass()} value={option}>
+                      {option}
+                      <Menubar.ItemIndicator style={{ marginLeft: 10 }}>
+                        <TickIcon />
+                      </Menubar.ItemIndicator>
+                    </Menubar.RadioItem>
+                  ))}
+                </Menubar.RadioGroup>
+              </Menubar.Content>
+            </Menubar.Portal>
+          </Menubar.Menu>
+
+          <Menubar.Menu>
+            <Menubar.Trigger className={triggerClass()}>History</Menubar.Trigger>
+            <Menubar.Portal>
+              <Menubar.Content className={contentClass()} align="start" sideOffset={2}>
+                <Menubar.Label className={labelClass()}>Work</Menubar.Label>
+                <Menubar.Item className={itemClass()}>Radix</Menubar.Item>
+                <Menubar.Item className={itemClass()}>Github</Menubar.Item>
+                <Menubar.Item className={itemClass()}>WorkOS</Menubar.Item>
+                <Menubar.Label className={labelClass()}>Community</Menubar.Label>
+                <Menubar.Item className={itemClass()}>Twitter</Menubar.Item>
+                <Menubar.Item className={itemClass()}>Discord</Menubar.Item>
+                <Menubar.Item className={itemClass()}>Slack</Menubar.Item>
+              </Menubar.Content>
+            </Menubar.Portal>
+          </Menubar.Menu>
+        </Menubar.Root>
+      </div>
     </div>
   );
 };
