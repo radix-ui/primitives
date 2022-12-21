@@ -500,11 +500,6 @@ const SelectContentAboveImpl = React.forwardRef<
   // the last element in the DOM (because of the `Portal`)
   useFocusGuards();
 
-  const [contentZIndex, setContentZIndex] = React.useState<string>();
-  useLayoutEffect(() => {
-    if (content) setContentZIndex(window.getComputedStyle(content).zIndex);
-  }, [content]);
-
   const focusFirst = React.useCallback(
     (candidates: Array<HTMLElement | null>) => {
       const [firstItem, ...restItems] = getItems().map((item) => item.ref.current);
@@ -784,30 +779,29 @@ const SelectContentAboveImpl = React.forwardRef<
       searchRef={searchRef}
     >
       <RemoveScroll as={Slot} allowPinchZoom>
-        <div
-          ref={setContentWrapper}
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            position: 'fixed',
-            zIndex: contentZIndex,
+        <FocusScope
+          asChild
+          // we make sure we're not trapping once it's been closed
+          // (closed !== unmounted when animating out)
+          trapped={context.open}
+          onMountAutoFocus={(event) => {
+            // we prevent open autofocus because we manually focus the selected item
+            event.preventDefault();
           }}
+          onUnmountAutoFocus={composeEventHandlers(onCloseAutoFocus, (event) => {
+            context.trigger?.focus({ preventScroll: true });
+            event.preventDefault();
+          })}
         >
-          <FocusScope
+          <DismissableLayer
             asChild
-            // we make sure we're not trapping once it's been closed
-            // (closed !== unmounted when animating out)
-            trapped={context.open}
-            onMountAutoFocus={(event) => {
-              // we prevent open autofocus because we manually focus the selected item
-              event.preventDefault();
-            }}
-            onUnmountAutoFocus={composeEventHandlers(onCloseAutoFocus, (event) => {
-              context.trigger?.focus({ preventScroll: true });
-              event.preventDefault();
-            })}
+            disableOutsidePointerEvents
+            // When focus is trapped, a focusout event may still happen.
+            // We make sure we don't trigger our `onDismiss` in such case.
+            onFocusOutside={(event) => event.preventDefault()}
+            onDismiss={() => context.onOpenChange(false)}
           >
-            <DismissableLayer
+            <SelectContentAbovePopper
               role="listbox"
               id={context.contentId}
               data-state={context.open ? 'open' : 'closed'}
@@ -815,6 +809,7 @@ const SelectContentAboveImpl = React.forwardRef<
               onContextMenu={(event) => event.preventDefault()}
               {...contentProps}
               ref={composedRefs}
+              wrapperRef={setContentWrapper}
               style={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -825,11 +820,6 @@ const SelectContentAboveImpl = React.forwardRef<
                 outline: 'none',
                 ...contentProps.style,
               }}
-              disableOutsidePointerEvents
-              // When focus is trapped, a focusout event may still happen.
-              // We make sure we don't trigger our `onDismiss` in such case.
-              onFocusOutside={(event) => event.preventDefault()}
-              onDismiss={() => context.onOpenChange(false)}
               onKeyDown={composeEventHandlers(contentProps.onKeyDown, (event) => {
                 const isModifierKey = event.ctrlKey || event.altKey || event.metaKey;
 
@@ -861,10 +851,43 @@ const SelectContentAboveImpl = React.forwardRef<
                 }
               })}
             />
-          </FocusScope>
-        </div>
+          </DismissableLayer>
+        </FocusScope>
       </RemoveScroll>
     </SelectContentProvider>
+  );
+});
+
+type SelectContentAbovePopperElement = React.ElementRef<typeof Primitive.div>;
+interface SelectContentAbovePopperProps extends PrimitiveDivProps {
+  wrapperRef?: React.Ref<HTMLDivElement>;
+}
+
+const SelectContentAbovePopper = React.forwardRef<
+  SelectContentAbovePopperElement,
+  SelectContentAbovePopperProps
+>((props: ScopedProps<SelectContentAbovePopperProps>, forwardedRef) => {
+  const { wrapperRef, ...abovePopperProps } = props;
+  const [content, setContent] = React.useState<SelectContentAboveImplElement | null>(null);
+  const composedRefs = useComposedRefs(forwardedRef, (node) => setContent(node));
+
+  const [contentZIndex, setContentZIndex] = React.useState<string>();
+  useLayoutEffect(() => {
+    if (content) setContentZIndex(window.getComputedStyle(content).zIndex);
+  }, [content]);
+
+  return (
+    <div
+      ref={wrapperRef}
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        position: 'fixed',
+        zIndex: contentZIndex,
+      }}
+    >
+      <Primitive.div {...abovePopperProps} ref={composedRefs} />
+    </div>
   );
 });
 
