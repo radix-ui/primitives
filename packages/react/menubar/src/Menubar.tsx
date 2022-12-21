@@ -72,6 +72,7 @@ const Menubar = React.forwardRef<MenubarElement, MenubarProps>(
       ...menubarProps
     } = props;
     const direction = useDirection(dir);
+    const [currentTabStopId, setCurrentTabStopId] = React.useState<string | null>(null);
     const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeMenubar);
     const [value = '', setValue] = useControllableState({
       prop: valueProp,
@@ -83,10 +84,19 @@ const Menubar = React.forwardRef<MenubarElement, MenubarProps>(
       <MenubarContextProvider
         scope={__scopeMenubar}
         value={value}
-        onMenuOpen={React.useCallback((value) => setValue(value), [setValue])}
+        onMenuOpen={React.useCallback(
+          (value) => {
+            setValue(value);
+            setCurrentTabStopId(value);
+          },
+          [setValue]
+        )}
         onMenuClose={React.useCallback(() => setValue(''), [setValue])}
         onMenuToggle={React.useCallback(
-          (value) => setValue((prevValue) => (Boolean(prevValue) ? '' : value)),
+          (value) => {
+            setValue((prevValue) => (Boolean(prevValue) ? '' : value));
+            setCurrentTabStopId(value);
+          },
           [setValue]
         )}
         dir={direction}
@@ -100,6 +110,8 @@ const Menubar = React.forwardRef<MenubarElement, MenubarProps>(
               role="menubar"
               orientation="horizontal"
               dir={direction}
+              currentTabStopId={currentTabStopId}
+              onCurrentTabStopIdChange={setCurrentTabStopId}
               {...menubarProps}
               ref={forwardedRef}
             />
@@ -200,7 +212,12 @@ const MenubarTrigger = React.forwardRef<MenubarTriggerElement, MenubarTriggerPro
 
     return (
       <Collection.ItemSlot scope={__scopeMenubar} value={menuContext.value} disabled={disabled}>
-        <RovingFocusGroup.Item asChild {...rovingFocusGroupScope} focusable={!disabled}>
+        <RovingFocusGroup.Item
+          asChild
+          {...rovingFocusGroupScope}
+          focusable={!disabled}
+          tabStopId={menuContext.value}
+        >
           <MenuPrimitive.Anchor asChild {...menuScope}>
             <Primitive.button
               type="button"
