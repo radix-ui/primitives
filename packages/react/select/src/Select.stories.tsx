@@ -1012,7 +1012,6 @@ const contentClass = css({
   borderRadius: 6,
   boxShadow: '0 5px 10px 0 rgba(0, 0, 0, 0.1)',
   position: 'relative',
-  // overflow: 'hidden',
   '&:focus-within': { borderColor: '$black' },
   minWidth: 'var(--radix-select-trigger-width)',
   maxHeight: 'var(--radix-select-content-available-height)',
