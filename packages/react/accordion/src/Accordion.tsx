@@ -237,20 +237,14 @@ interface AccordionImplProps extends PrimitiveDivProps {
    */
   orientation?: React.AriaAttributes['aria-orientation'];
   /**
-   * The language read direction. Defaults to RTL.
+   * The language read direction.
    */
   dir?: Direction;
 }
 
 const AccordionImpl = React.forwardRef<AccordionImplElement, AccordionImplProps>(
   (props: ScopedProps<AccordionImplProps>, forwardedRef) => {
-    const {
-      __scopeAccordion,
-      disabled,
-      dir = 'ltr',
-      orientation = 'vertical',
-      ...accordionProps
-    } = props;
+    const { __scopeAccordion, disabled, dir, orientation = 'vertical', ...accordionProps } = props;
     const accordionRef = React.useRef<AccordionImplElement>(null);
     const composedRefs = useComposedRefs(accordionRef, forwardedRef);
     const getItems = useCollection(__scopeAccordion);
