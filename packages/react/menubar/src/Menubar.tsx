@@ -123,6 +123,7 @@ type MenubarMenuContextValue = {
   triggerId: string;
   triggerRef: React.RefObject<MenubarTriggerElement>;
   contentId: string;
+  wasKeyboardTriggerOpenRef: React.MutableRefObject<boolean>;
 };
 
 const [MenubarMenuProvider, useMenubarMenuContext] =
@@ -142,7 +143,12 @@ const MenubarMenu = (props: ScopedProps<MenubarMenuProps>) => {
   const context = useMenubarContext(MENU_NAME, __scopeMenubar);
   const menuScope = useMenuScope(__scopeMenubar);
   const triggerRef = React.useRef<MenubarTriggerElement>(null);
+  const wasKeyboardTriggerOpenRef = React.useRef(false);
   const open = context.value === value;
+
+  React.useEffect(() => {
+    if (!open) wasKeyboardTriggerOpenRef.current = false;
+  }, [open]);
 
   return (
     <MenubarMenuProvider
@@ -151,11 +157,13 @@ const MenubarMenu = (props: ScopedProps<MenubarMenuProps>) => {
       triggerId={useId()}
       triggerRef={triggerRef}
       contentId={useId()}
+      wasKeyboardTriggerOpenRef={wasKeyboardTriggerOpenRef}
     >
       <MenuPrimitive.Root
         {...menuScope}
         open={open}
         onOpenChange={(open) => {
+          // Clear menu value on interaction outside of esc key
           if (!open) context.onMenuClose();
         }}
         modal={false}
@@ -230,7 +238,10 @@ const MenubarTrigger = React.forwardRef<MenubarTriggerElement, MenubarTriggerPro
                 if (event.key === 'ArrowDown') context.onMenuOpen(menuContext.value);
                 // prevent keydown from scrolling window / first focused item to execute
                 // that keydown (inadvertently closing the menu)
-                if (['Enter', ' ', 'ArrowDown'].includes(event.key)) event.preventDefault();
+                if (['Enter', ' ', 'ArrowDown'].includes(event.key)) {
+                  menuContext.wasKeyboardTriggerOpenRef.current = true;
+                  event.preventDefault();
+                }
               })}
               onFocus={composeEventHandlers(props.onFocus, () => setIsFocused(true))}
               onBlur={composeEventHandlers(props.onBlur, () => setIsFocused(false))}
@@ -269,7 +280,7 @@ const CONTENT_NAME = 'MenubarContent';
 
 type MenubarContentElement = React.ElementRef<typeof MenuPrimitive.Content>;
 type MenuContentProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.Content>;
-interface MenubarContentProps extends MenuContentProps {}
+interface MenubarContentProps extends Omit<MenuContentProps, 'onEntryFocus'> {}
 
 const MenubarContent = React.forwardRef<MenubarContentElement, MenubarContentProps>(
   (props: ScopedProps<MenubarContentProps>, forwardedRef) => {
@@ -305,6 +316,9 @@ const MenubarContent = React.forwardRef<MenubarContentElement, MenubarContentPro
         onInteractOutside={composeEventHandlers(props.onInteractOutside, () => {
           hasInteractedOutsideRef.current = true;
         })}
+        onEntryFocus={(event) => {
+          if (!menuContext.wasKeyboardTriggerOpenRef.current) event.preventDefault();
+        }}
         onKeyDown={composeEventHandlers(
           props.onKeyDown,
           (event) => {

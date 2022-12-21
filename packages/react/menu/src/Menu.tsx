@@ -344,6 +344,7 @@ interface MenuContentImplProps
    */
   loop?: RovingFocusGroupProps['loop'];
 
+  onEntryFocus?: RovingFocusGroupProps['onEntryFocus'];
   onEscapeKeyDown?: DismissableLayerProps['onEscapeKeyDown'];
   onPointerDownOutside?: DismissableLayerProps['onPointerDownOutside'];
   onFocusOutside?: DismissableLayerProps['onFocusOutside'];
@@ -359,6 +360,7 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
       onOpenAutoFocus,
       onCloseAutoFocus,
       disableOutsidePointerEvents,
+      onEntryFocus,
       onEscapeKeyDown,
       onPointerDownOutside,
       onFocusOutside,
@@ -483,10 +485,10 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
                 loop={loop}
                 currentTabStopId={currentItemId}
                 onCurrentTabStopIdChange={setCurrentItemId}
-                onEntryFocus={(event) => {
+                onEntryFocus={composeEventHandlers(onEntryFocus, (event) => {
                   // only focus first item when using keyboard
                   if (!rootContext.isUsingKeyboardRef.current) event.preventDefault();
-                }}
+                })}
               >
                 <PopperPrimitive.Content
                   role="menu"
@@ -1142,7 +1144,7 @@ type MenuSubContentElement = MenuContentImplElement;
 interface MenuSubContentProps
   extends Omit<
     MenuContentImplProps,
-    keyof MenuContentImplPrivateProps | 'onCloseAutoFocus' | 'side' | 'align'
+    keyof MenuContentImplPrivateProps | 'onCloseAutoFocus' | 'onEntryFocus' | 'side' | 'align'
   > {
   /**
    * Used to force mounting when more control is needed. Useful when
