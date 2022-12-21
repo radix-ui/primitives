@@ -8,6 +8,7 @@ const { contentClass, itemClass, separatorClass, labelClass, subTriggerClass } =
 export default { title: 'Components/Menubar' };
 
 export const Styled = () => {
+  const [loop, setLoop] = React.useState(false);
   const [rtl, setRtl] = React.useState(false);
   const dir = rtl ? 'rtl' : 'ltr';
   const checkOptions = [
@@ -30,16 +31,28 @@ export const Styled = () => {
         paddingTop: 50,
       }}
     >
-      <label style={{ marginBottom: 20 }}>
-        <input
-          type="checkbox"
-          checked={rtl}
-          onChange={(event) => setRtl(event.currentTarget.checked)}
-        />
-        Right-to-left
-      </label>
+      <div style={{ display: 'flex', gap: 25, marginBottom: 20 }}>
+        <label>
+          <input
+            type="checkbox"
+            checked={rtl}
+            onChange={(event) => setRtl(event.currentTarget.checked)}
+          />
+          Right-to-left
+        </label>
+
+        <label>
+          <input
+            type="checkbox"
+            checked={loop}
+            onChange={(event) => setLoop(event.currentTarget.checked)}
+          />
+          Loop
+        </label>
+      </div>
+
       <div dir={dir}>
-        <Menubar.Root className={rootClass()} dir={dir}>
+        <Menubar.Root className={rootClass()} loop={loop} dir={dir}>
           <Menubar.Menu>
             <Menubar.Trigger className={triggerClass()}>File</Menubar.Trigger>
             <Menubar.Portal>
@@ -53,11 +66,10 @@ export const Styled = () => {
                     Share <span>→</span>
                   </Menubar.SubTrigger>
                   <Menubar.Portal>
-                    <Menubar.SubContent className={contentClass()} sideOffset={10} alignOffset={-6}>
+                    <Menubar.SubContent className={contentClass()} alignOffset={-6}>
                       <Menubar.Item className={itemClass()}>Email Link</Menubar.Item>
                       <Menubar.Item className={itemClass()}>Messages</Menubar.Item>
                       <Menubar.Item className={itemClass()}>Airdrop</Menubar.Item>
-                      <Menubar.Arrow />
                     </Menubar.SubContent>
                   </Menubar.Portal>
                 </Menubar.SubMenu>
@@ -80,13 +92,12 @@ export const Styled = () => {
                   </Menubar.SubTrigger>
 
                   <Menubar.Portal>
-                    <Menubar.SubContent className={contentClass()} sideOffset={10} alignOffset={-6}>
+                    <Menubar.SubContent className={contentClass()} alignOffset={-6}>
                       <Menubar.Item className={itemClass()}>Search the web…</Menubar.Item>
                       <Menubar.Separator className={separatorClass()} />
                       <Menubar.Item className={itemClass()}>Find…</Menubar.Item>
                       <Menubar.Item className={itemClass()}>Find Next</Menubar.Item>
                       <Menubar.Item className={itemClass()}>Find Previous</Menubar.Item>
-                      <Menubar.Arrow />
                     </Menubar.SubContent>
                   </Menubar.Portal>
                 </Menubar.SubMenu>
