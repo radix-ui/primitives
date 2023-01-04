@@ -1,5 +1,4 @@
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { useStateMachine } from './useStateMachine';
@@ -101,10 +100,23 @@ function usePresence(present: boolean) {
         const currentAnimationName = getAnimationName(stylesRef.current);
         const isCurrentAnimation = currentAnimationName.includes(event.animationName);
         if (event.target === node && isCurrentAnimation) {
-          // With React 18 concurrency this update is applied
-          // a frame after the animation ends, creating a flash of visible content.
-          // By manually flushing we ensure they sync within a frame, removing the flash.
-          ReactDOM.flushSync(() => send('ANIMATION_END'));
+          // With React 18 concurrency this update is applied a frame after the animation
+          // ends, creating a flash of visible content. By setting the animation fill mode
+          // to "forwards", we force the node to keep the styles of the last keyframe,
+          // removing the flash.
+          send('ANIMATION_END');
+          if (!prevPresentRef.current) {
+            const currentFillMode = node.style.animationFillMode;
+            node.style.animationFillMode = 'forwards';
+            // Reset the style after the node had time to unmount (for cases where the
+            // component chooses not to unmount). Doing this any sooner than `setTimeout`
+            // (e.g. with `requestAnimationFrame`) still causes a flash.
+            setTimeout(() => {
+              if (node.style.animationFillMode === 'forwards') {
+                node.style.animationFillMode = currentFillMode;
+              }
+            });
+          }
         }
       };
       const handleAnimationStart = (event: AnimationEvent) => {
