@@ -8,6 +8,7 @@ import {
   hide,
   arrow as floatingUIarrow,
   flip,
+  size,
 } from '@floating-ui/react-dom';
 import * as ArrowPrimitive from '@radix-ui/react-arrow';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
@@ -188,6 +189,14 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
           : undefined,
         arrow ? floatingUIarrow({ element: arrow, padding: arrowPadding }) : undefined,
         avoidCollisions ? flip({ ...detectOverflowOptions }) : undefined,
+        size({
+          apply({ availableWidth, availableHeight, elements }) {
+            Object.assign(elements.floating.style, {
+              maxWidth: `${availableWidth}px`,
+              maxHeight: `${availableHeight}px`,
+            });
+          },
+        }),
         transformOrigin({ arrowWidth, arrowHeight }),
         hideWhenDetached ? hide({ strategy: 'referenceHidden' }) : undefined,
       ].filter(isDefined),
@@ -246,6 +255,8 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
         animation: !isPlaced ? 'none' : undefined,
         // hide the content if using the hide middleware and should be hidden
         opacity: middlewareData.hide?.referenceHidden ? 0 : undefined,
+        maxHeight: 'inherit',
+        overflow: 'auto',
       },
     };
 
