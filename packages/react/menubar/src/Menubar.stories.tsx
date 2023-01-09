@@ -98,6 +98,18 @@ export const Styled = () => {
                       <Menubar.Item className={itemClass()}>Find…</Menubar.Item>
                       <Menubar.Item className={itemClass()}>Find Next</Menubar.Item>
                       <Menubar.Item className={itemClass()}>Find Previous</Menubar.Item>
+                      <Menubar.SubMenu>
+                        <Menubar.SubTrigger className={subTriggerClass()}>
+                          Advanced <span>→</span>
+                        </Menubar.SubTrigger>
+
+                        <Menubar.Portal>
+                          <Menubar.SubContent className={contentClass()} alignOffset={-6}>
+                            <Menubar.Item className={itemClass()}>Regex</Menubar.Item>
+                            <Menubar.Item className={itemClass()}>Replace</Menubar.Item>
+                          </Menubar.SubContent>
+                        </Menubar.Portal>
+                      </Menubar.SubMenu>
                     </Menubar.SubContent>
                   </Menubar.Portal>
                 </Menubar.SubMenu>

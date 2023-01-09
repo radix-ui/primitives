@@ -50,14 +50,15 @@ type MenubarContextValue = {
 const [MenubarContextProvider, useMenubarContext] =
   createMenubarContext<MenubarContextValue>(MENUBAR_NAME);
 
-type MenubarElement = React.ElementRef<typeof RovingFocusGroup.Root>;
+type MenubarElement = React.ElementRef<typeof Primitive.div>;
 type RovingFocusGroupProps = Radix.ComponentPropsWithoutRef<typeof RovingFocusGroup.Root>;
-interface MenubarProps extends RovingFocusGroupProps {
+type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
+interface MenubarProps extends PrimitiveDivProps {
   value?: string;
   defaultValue?: string;
   onValueChange?: (value: string) => void;
-  loop?: boolean;
-  dir?: Direction;
+  loop?: RovingFocusGroupProps['loop'];
+  dir?: RovingFocusGroupProps['dir'];
 }
 
 const Menubar = React.forwardRef<MenubarElement, MenubarProps>(
@@ -72,13 +73,17 @@ const Menubar = React.forwardRef<MenubarElement, MenubarProps>(
       ...menubarProps
     } = props;
     const direction = useDirection(dir);
-    const [currentTabStopId, setCurrentTabStopId] = React.useState<string | null>(null);
     const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeMenubar);
     const [value = '', setValue] = useControllableState({
       prop: valueProp,
       onChange: onValueChange,
       defaultProp: defaultValue,
     });
+
+    // We need to manage tab stop id manually as `RovingFocusGroup` updates the stop
+    // based on focus, and in some situations our triggers won't ever be given focus
+    // (e.g. click to open and then outside to close)
+    const [currentTabStopId, setCurrentTabStopId] = React.useState<string | null>(null);
 
     return (
       <MenubarContextProvider
@@ -95,6 +100,8 @@ const Menubar = React.forwardRef<MenubarElement, MenubarProps>(
         onMenuToggle={React.useCallback(
           (value) => {
             setValue((prevValue) => (Boolean(prevValue) ? '' : value));
+            // `openMenuOpen` and `onMenuToggle` are called exclusively so we
+            // need to update the id in either case.
             setCurrentTabStopId(value);
           },
           [setValue]
@@ -105,16 +112,16 @@ const Menubar = React.forwardRef<MenubarElement, MenubarProps>(
         <Collection.Provider scope={__scopeMenubar}>
           <Collection.Slot scope={__scopeMenubar}>
             <RovingFocusGroup.Root
+              asChild
               {...rovingFocusGroupScope}
-              loop={loop}
-              role="menubar"
               orientation="horizontal"
+              loop={loop}
               dir={direction}
               currentTabStopId={currentTabStopId}
               onCurrentTabStopIdChange={setCurrentTabStopId}
-              {...menubarProps}
-              ref={forwardedRef}
-            />
+            >
+              <Primitive.div role="menubar" {...menubarProps} ref={forwardedRef} />
+            </RovingFocusGroup.Root>
           </Collection.Slot>
         </Collection.Provider>
       </MenubarContextProvider>
@@ -175,7 +182,8 @@ const MenubarMenu = (props: ScopedProps<MenubarMenuProps>) => {
         {...menuScope}
         open={open}
         onOpenChange={(open) => {
-          // Clear menu value on interaction outside of esc key
+          // Menu only calls `onOpenChange` when dismissing so we
+          // want to close our MenuBar based on the same events.
           if (!open) context.onMenuClose();
         }}
         modal={false}
@@ -205,7 +213,7 @@ const MenubarTrigger = React.forwardRef<MenubarTriggerElement, MenubarTriggerPro
     const menuScope = useMenuScope(__scopeMenubar);
     const context = useMenubarContext(TRIGGER_NAME, __scopeMenubar);
     const menuContext = useMenubarMenuContext(TRIGGER_NAME, __scopeMenubar);
-    const ref = React.useRef<HTMLButtonElement>(null);
+    const ref = React.useRef<MenubarTriggerElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, ref, menuContext.triggerRef);
     const [isFocused, setIsFocused] = React.useState(false);
     const open = context.value === menuContext.value;
@@ -312,6 +320,7 @@ const MenubarContent = React.forwardRef<MenubarContentElement, MenubarContentPro
       <MenuPrimitive.Content
         id={menuContext.contentId}
         aria-labelledby={menuContext.triggerId}
+        data-radix-menubar-content=""
         {...menuScope}
         {...contentProps}
         ref={forwardedRef}
@@ -341,21 +350,22 @@ const MenubarContent = React.forwardRef<MenubarContentElement, MenubarContentPro
           (event) => {
             if (['ArrowRight', 'ArrowLeft'].includes(event.key)) {
               const target = event.target as HTMLElement;
-              const targetIsSubTrigger = target.hasAttribute('aria-haspopup');
-              const isKeyDownInsideRoot =
-                target.closest('[data-radix-menu-content]') === event.currentTarget;
+              const targetIsSubTrigger = target.hasAttribute('data-radix-menubar-subtrigger');
+              const isKeyDownInsideSubMenu =
+                target.closest('[data-radix-menubar-content]') !== event.currentTarget;
 
               const prevMenuKey = context.dir === 'rtl' ? 'ArrowRight' : 'ArrowLeft';
               const isPrevKey = prevMenuKey === event.key;
               const isNextKey = !isPrevKey;
 
+              // Prevent navigation when we're opening a submenu
+              if (isNextKey && targetIsSubTrigger) return;
+              // or we're inside a submenu and are moving backwards to close it
+              if (isKeyDownInsideSubMenu && isPrevKey) return;
+
               const items = getItems().filter((item) => !item.disabled);
               let candidateValues = items.map((item) => item.value);
-
-              if (isKeyDownInsideRoot) {
-                if (targetIsSubTrigger && isNextKey) return;
-                if (isPrevKey) candidateValues.reverse();
-              } else if (targetIsSubTrigger || isPrevKey) return;
+              if (isPrevKey) candidateValues.reverse();
 
               const currentIndex = candidateValues.indexOf(menuContext.value);
 
@@ -604,7 +614,14 @@ const MenubarSubTrigger = React.forwardRef<MenubarSubTriggerElement, MenubarSubT
   (props: ScopedProps<MenubarSubTriggerProps>, forwardedRef) => {
     const { __scopeMenubar, ...subTriggerProps } = props;
     const menuScope = useMenuScope(__scopeMenubar);
-    return <MenuPrimitive.SubTrigger {...menuScope} {...subTriggerProps} ref={forwardedRef} />;
+    return (
+      <MenuPrimitive.SubTrigger
+        data-radix-menubar-subtrigger=""
+        {...menuScope}
+        {...subTriggerProps}
+        ref={forwardedRef}
+      />
+    );
   }
 );
 
@@ -628,6 +645,7 @@ const MenubarSubContent = React.forwardRef<MenubarSubContentElement, MenubarSubC
     return (
       <MenuPrimitive.SubContent
         {...menuScope}
+        data-radix-menubar-content=""
         {...subContentProps}
         ref={forwardedRef}
         style={{
