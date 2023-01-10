@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { composeEventHandlers } from '@radix-ui/primitive';
+import { composePreventableEventHandlers } from '@radix-ui/primitive';
 import { createContextScope } from '@radix-ui/react-context';
 import { Primitive } from '@radix-ui/react-primitive';
 import * as MenuPrimitive from '@radix-ui/react-menu';
@@ -125,7 +125,7 @@ const ContextMenuTrigger = React.forwardRef<ContextMenuTriggerElement, ContextMe
           onContextMenu={
             disabled
               ? props.onContextMenu
-              : composeEventHandlers(props.onContextMenu, (event) => {
+              : composePreventableEventHandlers(props.onContextMenu, (event) => {
                   // clearing the long press here because some platforms already support
                   // long press to trigger a `contextmenu` event
                   clearLongPress();
@@ -136,7 +136,7 @@ const ContextMenuTrigger = React.forwardRef<ContextMenuTriggerElement, ContextMe
           onPointerDown={
             disabled
               ? props.onPointerDown
-              : composeEventHandlers(
+              : composePreventableEventHandlers(
                   props.onPointerDown,
                   whenTouchOrPen((event) => {
                     // clear the long press here in case there's multiple touch points
@@ -148,17 +148,20 @@ const ContextMenuTrigger = React.forwardRef<ContextMenuTriggerElement, ContextMe
           onPointerMove={
             disabled
               ? props.onPointerMove
-              : composeEventHandlers(props.onPointerMove, whenTouchOrPen(clearLongPress))
+              : composePreventableEventHandlers(props.onPointerMove, whenTouchOrPen(clearLongPress))
           }
           onPointerCancel={
             disabled
               ? props.onPointerCancel
-              : composeEventHandlers(props.onPointerCancel, whenTouchOrPen(clearLongPress))
+              : composePreventableEventHandlers(
+                  props.onPointerCancel,
+                  whenTouchOrPen(clearLongPress)
+                )
           }
           onPointerUp={
             disabled
               ? props.onPointerUp
-              : composeEventHandlers(props.onPointerUp, whenTouchOrPen(clearLongPress))
+              : composePreventableEventHandlers(props.onPointerUp, whenTouchOrPen(clearLongPress))
           }
         />
       </>

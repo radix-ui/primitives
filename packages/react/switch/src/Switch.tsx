@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { composeEventHandlers } from '@radix-ui/primitive';
+import { composePreventableEventHandlers } from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
@@ -68,7 +68,7 @@ const Switch = React.forwardRef<SwitchElement, SwitchProps>(
           value={value}
           {...switchProps}
           ref={composedRefs}
-          onClick={composeEventHandlers(props.onClick, (event) => {
+          onClick={composePreventableEventHandlers(props.onClick, (event) => {
             setChecked((prevChecked) => !prevChecked);
             if (isFormControl) {
               hasConsumerStoppedPropagationRef.current = event.isPropagationStopped();
