@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { clamp } from '@radix-ui/number';
-import { composeEventHandlers } from '@radix-ui/primitive';
+import { composePreventableEventHandlers } from '@radix-ui/primitive';
 import { createCollection } from '@radix-ui/react-collection';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
@@ -246,7 +246,7 @@ const SelectTrigger = React.forwardRef<SelectTriggerElement, SelectTriggerProps>
         {...triggerProps}
         ref={composedRefs}
         // Enable compatibility with native label or custom `Label` "click" for Safari:
-        onClick={composeEventHandlers(triggerProps.onClick, (event) => {
+        onClick={composePreventableEventHandlers(triggerProps.onClick, (event) => {
           // Whilst browsers generally have no issue focusing the trigger when clicking
           // on a label, Safari seems to struggle with the fact that there's no `onClick`.
           // We force `focus` in this case. Note: this doesn't create any other side-effect
@@ -254,7 +254,7 @@ const SelectTrigger = React.forwardRef<SelectTriggerElement, SelectTriggerProps>
           // this only runs for a label "click"
           event.currentTarget.focus();
         })}
-        onPointerDown={composeEventHandlers(triggerProps.onPointerDown, (event) => {
+        onPointerDown={composePreventableEventHandlers(triggerProps.onPointerDown, (event) => {
           // prevent implicit pointer capture
           // https://www.w3.org/TR/pointerevents3/#implicit-pointer-capture
           const target = event.target as HTMLElement;
@@ -274,7 +274,7 @@ const SelectTrigger = React.forwardRef<SelectTriggerElement, SelectTriggerProps>
             event.preventDefault();
           }
         })}
-        onKeyDown={composeEventHandlers(triggerProps.onKeyDown, (event) => {
+        onKeyDown={composePreventableEventHandlers(triggerProps.onKeyDown, (event) => {
           const isTypingAhead = searchRef.current !== '';
           const isModifierKey = event.ctrlKey || event.altKey || event.metaKey;
           if (!isModifierKey && event.key.length === 1) handleTypeaheadSearch(event.key);
@@ -780,7 +780,7 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
                 // we prevent open autofocus because we manually focus the selected item
                 event.preventDefault();
               }}
-              onUnmountAutoFocus={composeEventHandlers(onCloseAutoFocus, (event) => {
+              onUnmountAutoFocus={composePreventableEventHandlers(onCloseAutoFocus, (event) => {
                 context.trigger?.focus({ preventScroll: true });
                 event.preventDefault();
               })}
@@ -808,7 +808,7 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
                 // We make sure we don't trigger our `onDismiss` in such case.
                 onFocusOutside={(event) => event.preventDefault()}
                 onDismiss={() => context.onOpenChange(false)}
-                onKeyDown={composeEventHandlers(contentProps.onKeyDown, (event) => {
+                onKeyDown={composePreventableEventHandlers(contentProps.onKeyDown, (event) => {
                   const isModifierKey = event.ctrlKey || event.altKey || event.metaKey;
 
                   // select should not be navigated using tab key so we prevent it
@@ -886,7 +886,7 @@ const SelectViewport = React.forwardRef<SelectViewportElement, SelectViewportPro
               overflow: 'auto',
               ...viewportProps.style,
             }}
-            onScroll={composeEventHandlers(viewportProps.onScroll, (event) => {
+            onScroll={composePreventableEventHandlers(viewportProps.onScroll, (event) => {
               const viewport = event.currentTarget;
               const { contentWrapper, shouldExpandOnScrollRef } = contentContext;
               if (shouldExpandOnScrollRef?.current && contentWrapper) {
@@ -1048,10 +1048,10 @@ const SelectItem = React.forwardRef<SelectItemElement, SelectItemProps>(
             tabIndex={disabled ? undefined : -1}
             {...itemProps}
             ref={composedRefs}
-            onFocus={composeEventHandlers(itemProps.onFocus, () => setIsFocused(true))}
-            onBlur={composeEventHandlers(itemProps.onBlur, () => setIsFocused(false))}
-            onPointerUp={composeEventHandlers(itemProps.onPointerUp, handleSelect)}
-            onPointerMove={composeEventHandlers(itemProps.onPointerMove, (event) => {
+            onFocus={composePreventableEventHandlers(itemProps.onFocus, () => setIsFocused(true))}
+            onBlur={composePreventableEventHandlers(itemProps.onBlur, () => setIsFocused(false))}
+            onPointerUp={composePreventableEventHandlers(itemProps.onPointerUp, handleSelect)}
+            onPointerMove={composePreventableEventHandlers(itemProps.onPointerMove, (event) => {
               if (disabled) {
                 contentContext.onItemLeave?.();
               } else {
@@ -1060,12 +1060,12 @@ const SelectItem = React.forwardRef<SelectItemElement, SelectItemProps>(
                 event.currentTarget.focus({ preventScroll: true });
               }
             })}
-            onPointerLeave={composeEventHandlers(itemProps.onPointerLeave, (event) => {
+            onPointerLeave={composePreventableEventHandlers(itemProps.onPointerLeave, (event) => {
               if (event.currentTarget === document.activeElement) {
                 contentContext.onItemLeave?.();
               }
             })}
-            onKeyDown={composeEventHandlers(itemProps.onKeyDown, (event) => {
+            onKeyDown={composePreventableEventHandlers(itemProps.onKeyDown, (event) => {
               const isTypingAhead = contentContext.searchRef?.current !== '';
               if (isTypingAhead && event.key === ' ') return;
               if (SELECTION_KEYS.includes(event.key)) handleSelect();
@@ -1293,13 +1293,13 @@ const SelectScrollButtonImpl = React.forwardRef<
       {...scrollIndicatorProps}
       ref={forwardedRef}
       style={{ flexShrink: 0, ...scrollIndicatorProps.style }}
-      onPointerMove={composeEventHandlers(scrollIndicatorProps.onPointerMove, () => {
+      onPointerMove={composePreventableEventHandlers(scrollIndicatorProps.onPointerMove, () => {
         contentContext.onItemLeave?.();
         if (autoScrollTimerRef.current === null) {
           autoScrollTimerRef.current = window.setInterval(onAutoScroll, 50);
         }
       })}
-      onPointerLeave={composeEventHandlers(scrollIndicatorProps.onPointerLeave, () => {
+      onPointerLeave={composePreventableEventHandlers(scrollIndicatorProps.onPointerLeave, () => {
         clearAutoScrollTimer();
       })}
     />

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { composeEventHandlers } from '@radix-ui/primitive';
+import { composeEventHandlers, composePreventableEventHandlers } from '@radix-ui/primitive';
 import { createCollection } from '@radix-ui/react-collection';
 import { useComposedRefs, composeRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
@@ -277,10 +277,8 @@ const MenuRootContentModal = React.forwardRef<MenuRootContentTypeElement, MenuRo
         disableOutsideScroll
         // When focus is trapped, a `focusout` event may still happen.
         // We make sure we don't trigger our `onDismiss` in such case.
-        onFocusOutside={composeEventHandlers(
-          props.onFocusOutside,
-          (event) => event.preventDefault(),
-          { checkForDefaultPrevented: false }
+        onFocusOutside={composeEventHandlers(props.onFocusOutside, (event) =>
+          event.preventDefault()
         )}
         onDismiss={() => context.onOpenChange(false)}
       />
@@ -458,7 +456,7 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
           <FocusScope
             asChild
             trapped={trapFocus}
-            onMountAutoFocus={composeEventHandlers(onOpenAutoFocus, (event) => {
+            onMountAutoFocus={composePreventableEventHandlers(onOpenAutoFocus, (event) => {
               // when opening, explicitly focus the content area only and leave
               // `onEntryFocus` in  control of focusing first item
               event.preventDefault();
@@ -498,7 +496,7 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
                   {...contentProps}
                   ref={composedRefs}
                   style={{ outline: 'none', ...contentProps.style }}
-                  onKeyDown={composeEventHandlers(contentProps.onKeyDown, (event) => {
+                  onKeyDown={composePreventableEventHandlers(contentProps.onKeyDown, (event) => {
                     // submenu key events bubble through portals. We only care about keys in this menu.
                     const target = event.target as HTMLElement;
                     const isKeyDownInside =
@@ -520,14 +518,14 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
                     if (LAST_KEYS.includes(event.key)) candidateNodes.reverse();
                     focusFirst(candidateNodes);
                   })}
-                  onBlur={composeEventHandlers(props.onBlur, (event) => {
+                  onBlur={composePreventableEventHandlers(props.onBlur, (event) => {
                     // clear search buffer when leaving the menu
                     if (!event.currentTarget.contains(event.target)) {
                       window.clearTimeout(timerRef.current);
                       searchRef.current = '';
                     }
                   })}
-                  onPointerMove={composeEventHandlers(
+                  onPointerMove={composePreventableEventHandlers(
                     props.onPointerMove,
                     whenMouse((event) => {
                       const target = event.target as HTMLElement;
@@ -631,18 +629,18 @@ const MenuItem = React.forwardRef<MenuItemElement, MenuItemProps>(
         {...itemProps}
         ref={composedRefs}
         disabled={disabled}
-        onClick={composeEventHandlers(props.onClick, handleSelect)}
+        onClick={composePreventableEventHandlers(props.onClick, handleSelect)}
         onPointerDown={(event) => {
           props.onPointerDown?.(event);
           isPointerDownRef.current = true;
         }}
-        onPointerUp={composeEventHandlers(props.onPointerUp, (event) => {
+        onPointerUp={composePreventableEventHandlers(props.onPointerUp, (event) => {
           // Pointer down can move to a different menu item which should activate it on pointer up.
           // We dispatch a click for selection to allow composition with click based triggers and to
           // prevent Firefox from getting stuck in text selection mode when the menu closes.
           if (!isPointerDownRef.current) event.currentTarget?.click();
         })}
-        onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
+        onKeyDown={composePreventableEventHandlers(props.onKeyDown, (event) => {
           const isTypingAhead = contentContext.searchRef.current !== '';
           if (disabled || (isTypingAhead && event.key === ' ')) return;
           if (SELECTION_KEYS.includes(event.key)) {
@@ -714,7 +712,7 @@ const MenuItemImpl = React.forwardRef<MenuItemImplElement, MenuItemImplProps>(
              * If we used `mouseOver`/`mouseEnter` it would not re-focus when the mouse
              * wiggles. This is to match native menu implementation.
              */
-            onPointerMove={composeEventHandlers(
+            onPointerMove={composePreventableEventHandlers(
               props.onPointerMove,
               whenMouse((event) => {
                 if (disabled) {
@@ -728,12 +726,12 @@ const MenuItemImpl = React.forwardRef<MenuItemImplElement, MenuItemImplProps>(
                 }
               })
             )}
-            onPointerLeave={composeEventHandlers(
+            onPointerLeave={composePreventableEventHandlers(
               props.onPointerLeave,
               whenMouse((event) => contentContext.onItemLeave(event))
             )}
-            onFocus={composeEventHandlers(props.onFocus, () => setIsFocused(true))}
-            onBlur={composeEventHandlers(props.onBlur, () => setIsFocused(false))}
+            onFocus={composePreventableEventHandlers(props.onFocus, () => setIsFocused(true))}
+            onBlur={composePreventableEventHandlers(props.onBlur, () => setIsFocused(false))}
           />
         </RovingFocusGroup.Item>
       </Collection.ItemSlot>
@@ -767,10 +765,8 @@ const MenuCheckboxItem = React.forwardRef<MenuCheckboxItemElement, MenuCheckboxI
           {...checkboxItemProps}
           ref={forwardedRef}
           data-state={getCheckedState(checked)}
-          onSelect={composeEventHandlers(
-            checkboxItemProps.onSelect,
-            () => onCheckedChange?.(isIndeterminate(checked) ? true : !checked),
-            { checkForDefaultPrevented: false }
+          onSelect={composeEventHandlers(checkboxItemProps.onSelect, () =>
+            onCheckedChange?.(isIndeterminate(checked) ? true : !checked)
           )}
         />
       </ItemIndicatorProvider>
@@ -835,10 +831,8 @@ const MenuRadioItem = React.forwardRef<MenuRadioItemElement, MenuRadioItemProps>
           {...radioItemProps}
           ref={forwardedRef}
           data-state={getCheckedState(checked)}
-          onSelect={composeEventHandlers(
-            radioItemProps.onSelect,
-            () => context.onValueChange?.(value),
-            { checkForDefaultPrevented: false }
+          onSelect={composeEventHandlers(radioItemProps.onSelect, () =>
+            context.onValueChange?.(value)
           )}
         />
       </ItemIndicatorProvider>
@@ -1057,7 +1051,7 @@ const MenuSubTrigger = React.forwardRef<MenuSubTriggerElement, MenuSubTriggerPro
             event.currentTarget.focus();
             if (!context.open) context.onOpenChange(true);
           }}
-          onPointerMove={composeEventHandlers(
+          onPointerMove={composePreventableEventHandlers(
             props.onPointerMove,
             whenMouse((event) => {
               contentContext.onItemEnter(event);
@@ -1071,7 +1065,7 @@ const MenuSubTrigger = React.forwardRef<MenuSubTriggerElement, MenuSubTriggerPro
               }
             })
           )}
-          onPointerLeave={composeEventHandlers(
+          onPointerLeave={composePreventableEventHandlers(
             props.onPointerLeave,
             whenMouse((event) => {
               clearOpenTimer();
@@ -1112,7 +1106,7 @@ const MenuSubTrigger = React.forwardRef<MenuSubTriggerElement, MenuSubTriggerPro
               }
             })
           )}
-          onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
+          onKeyDown={composePreventableEventHandlers(props.onKeyDown, (event) => {
             const isTypingAhead = contentContext.searchRef.current !== '';
             if (props.disabled || (isTypingAhead && event.key === ' ')) return;
             if (SUB_OPEN_KEYS[rootContext.dir].includes(event.key)) {
@@ -1182,13 +1176,16 @@ const MenuSubContent = React.forwardRef<MenuSubContentElement, MenuSubContentPro
               // The menu might close because of focusing another menu item in the parent menu. We
               // don't want it to refocus the trigger in that case so we handle trigger focus ourselves.
               onCloseAutoFocus={(event) => event.preventDefault()}
-              onFocusOutside={composeEventHandlers(props.onFocusOutside, (event) => {
+              onFocusOutside={composePreventableEventHandlers(props.onFocusOutside, (event) => {
                 // We prevent closing when the trigger is focused to avoid triggering a re-open animation
                 // on pointer interaction.
                 if (event.target !== subContext.trigger) context.onOpenChange(false);
               })}
-              onEscapeKeyDown={composeEventHandlers(props.onEscapeKeyDown, rootContext.onClose)}
-              onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
+              onEscapeKeyDown={composePreventableEventHandlers(
+                props.onEscapeKeyDown,
+                rootContext.onClose
+              )}
+              onKeyDown={composePreventableEventHandlers(props.onKeyDown, (event) => {
                 // Submenu key events bubble through portals. We only care about keys in this menu.
                 const isKeyDownInside = event.currentTarget.contains(event.target as HTMLElement);
                 const isCloseKey = SUB_CLOSE_KEYS[rootContext.dir].includes(event.key);

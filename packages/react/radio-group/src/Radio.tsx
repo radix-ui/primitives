@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { composeEventHandlers } from '@radix-ui/primitive';
+import { composePreventableEventHandlers } from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
 import { useSize } from '@radix-ui/react-use-size';
@@ -60,7 +60,7 @@ const Radio = React.forwardRef<RadioElement, RadioProps>(
           value={value}
           {...radioProps}
           ref={composedRefs}
-          onClick={composeEventHandlers(props.onClick, (event) => {
+          onClick={composePreventableEventHandlers(props.onClick, (event) => {
             // radios cannot be unchecked so we only communicate a checked state
             if (!checked) onCheck?.();
             if (isFormControl) {

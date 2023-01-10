@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { composeEventHandlers } from '@radix-ui/primitive';
+import { composeEventHandlers, composePreventableEventHandlers } from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
 import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
@@ -148,7 +148,7 @@ const PopoverTrigger = React.forwardRef<PopoverTriggerElement, PopoverTriggerPro
         data-state={getState(context.open)}
         {...triggerProps}
         ref={composedTriggerRef}
-        onClick={composeEventHandlers(props.onClick, context.onOpenToggle)}
+        onClick={composePreventableEventHandlers(props.onClick, context.onOpenToggle)}
       />
     );
 
@@ -262,27 +262,21 @@ const PopoverContentModal = React.forwardRef<PopoverContentTypeElement, PopoverC
           // (closed !== unmounted when animating out)
           trapFocus={context.open}
           disableOutsidePointerEvents
-          onCloseAutoFocus={composeEventHandlers(props.onCloseAutoFocus, (event) => {
+          onCloseAutoFocus={composePreventableEventHandlers(props.onCloseAutoFocus, (event) => {
             event.preventDefault();
             if (!isRightClickOutsideRef.current) context.triggerRef.current?.focus();
           })}
-          onPointerDownOutside={composeEventHandlers(
-            props.onPointerDownOutside,
-            (event) => {
-              const originalEvent = event.detail.originalEvent;
-              const ctrlLeftClick = originalEvent.button === 0 && originalEvent.ctrlKey === true;
-              const isRightClick = originalEvent.button === 2 || ctrlLeftClick;
+          onPointerDownOutside={composeEventHandlers(props.onPointerDownOutside, (event) => {
+            const originalEvent = event.detail.originalEvent;
+            const ctrlLeftClick = originalEvent.button === 0 && originalEvent.ctrlKey === true;
+            const isRightClick = originalEvent.button === 2 || ctrlLeftClick;
 
-              isRightClickOutsideRef.current = isRightClick;
-            },
-            { checkForDefaultPrevented: false }
-          )}
+            isRightClickOutsideRef.current = isRightClick;
+          })}
           // When focus is trapped, a `focusout` event may still happen.
           // We make sure we don't trigger our `onDismiss` in such case.
-          onFocusOutside={composeEventHandlers(
-            props.onFocusOutside,
-            (event) => event.preventDefault(),
-            { checkForDefaultPrevented: false }
+          onFocusOutside={composeEventHandlers(props.onFocusOutside, (event) =>
+            event.preventDefault()
           )}
         />
       </RemoveScroll>
@@ -436,7 +430,7 @@ const PopoverClose = React.forwardRef<PopoverCloseElement, PopoverCloseProps>(
         type="button"
         {...closeProps}
         ref={forwardedRef}
-        onClick={composeEventHandlers(props.onClick, () => context.onOpenChange(false))}
+        onClick={composePreventableEventHandlers(props.onClick, () => context.onOpenChange(false))}
       />
     );
   }
