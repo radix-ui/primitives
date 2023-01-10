@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { composeEventHandlers } from '@radix-ui/primitive';
+import { composePreventableEventHandlers } from '@radix-ui/primitive';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { Primitive } from '@radix-ui/react-primitive';
 
@@ -45,7 +45,7 @@ const Toggle = React.forwardRef<ToggleElement, ToggleProps>((props, forwardedRef
       data-disabled={props.disabled ? '' : undefined}
       {...buttonProps}
       ref={forwardedRef}
-      onClick={composeEventHandlers(props.onClick, () => {
+      onClick={composePreventableEventHandlers(props.onClick, () => {
         if (!props.disabled) {
           setPressed(!pressed);
         }

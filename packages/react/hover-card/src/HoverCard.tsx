@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { composeEventHandlers } from '@radix-ui/primitive';
+import { composePreventableEventHandlers } from '@radix-ui/primitive';
 import { createContextScope } from '@radix-ui/react-context';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
@@ -131,12 +131,20 @@ const HoverCardTrigger = React.forwardRef<HoverCardTriggerElement, HoverCardTrig
           data-state={context.open ? 'open' : 'closed'}
           {...triggerProps}
           ref={forwardedRef}
-          onPointerEnter={composeEventHandlers(props.onPointerEnter, excludeTouch(context.onOpen))}
-          onPointerLeave={composeEventHandlers(props.onPointerLeave, excludeTouch(context.onClose))}
-          onFocus={composeEventHandlers(props.onFocus, context.onOpen)}
-          onBlur={composeEventHandlers(props.onBlur, context.onClose)}
+          onPointerEnter={composePreventableEventHandlers(
+            props.onPointerEnter,
+            excludeTouch(context.onOpen)
+          )}
+          onPointerLeave={composePreventableEventHandlers(
+            props.onPointerLeave,
+            excludeTouch(context.onClose)
+          )}
+          onFocus={composePreventableEventHandlers(props.onFocus, context.onOpen)}
+          onBlur={composePreventableEventHandlers(props.onBlur, context.onClose)}
           // prevent focus event on touch devices
-          onTouchStart={composeEventHandlers(props.onTouchStart, (event) => event.preventDefault())}
+          onTouchStart={composePreventableEventHandlers(props.onTouchStart, (event) =>
+            event.preventDefault()
+          )}
         />
       </PopperPrimitive.Anchor>
     );
@@ -213,8 +221,14 @@ const HoverCardContent = React.forwardRef<HoverCardContentElement, HoverCardCont
         <HoverCardContentImpl
           data-state={context.open ? 'open' : 'closed'}
           {...contentProps}
-          onPointerEnter={composeEventHandlers(props.onPointerEnter, excludeTouch(context.onOpen))}
-          onPointerLeave={composeEventHandlers(props.onPointerLeave, excludeTouch(context.onClose))}
+          onPointerEnter={composePreventableEventHandlers(
+            props.onPointerEnter,
+            excludeTouch(context.onOpen)
+          )}
+          onPointerLeave={composePreventableEventHandlers(
+            props.onPointerLeave,
+            excludeTouch(context.onClose)
+          )}
           ref={forwardedRef}
         />
       </Presence>
@@ -323,7 +337,7 @@ const HoverCardContentImpl = React.forwardRef<
       onInteractOutside={onInteractOutside}
       onEscapeKeyDown={onEscapeKeyDown}
       onPointerDownOutside={onPointerDownOutside}
-      onFocusOutside={composeEventHandlers(onFocusOutside, (event) => {
+      onFocusOutside={composePreventableEventHandlers(onFocusOutside, (event) => {
         event.preventDefault();
       })}
       onDismiss={context.onDismiss}
@@ -331,7 +345,7 @@ const HoverCardContentImpl = React.forwardRef<
       <PopperPrimitive.Content
         {...popperScope}
         {...contentProps}
-        onPointerDown={composeEventHandlers(contentProps.onPointerDown, (event) => {
+        onPointerDown={composePreventableEventHandlers(contentProps.onPointerDown, (event) => {
           // Contain selection to current layer
           if (event.currentTarget.contains(event.target as HTMLElement)) {
             setContainSelection(true);

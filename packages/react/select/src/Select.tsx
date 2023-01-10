@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { clamp } from '@radix-ui/number';
-import { composeEventHandlers } from '@radix-ui/primitive';
+import { composePreventableEventHandlers } from '@radix-ui/primitive';
 import { createCollection } from '@radix-ui/react-collection';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
@@ -238,6 +238,8 @@ const SelectTrigger = React.forwardRef<SelectTriggerElement, SelectTriggerProps>
     };
 
     return (
+          onClick={composePreventableEventHandlers(triggerProps.onClick, (event) => {
+          onPointerDown={composePreventableEventHandlers(triggerProps.onPointerDown, (event) => {
       <PopperPrimitive.Anchor asChild {...popperScope}>
         <Primitive.button
           type="button"
@@ -270,6 +272,7 @@ const SelectTrigger = React.forwardRef<SelectTriggerElement, SelectTriggerProps>
               target.releasePointerCapture(event.pointerId);
             }
 
+          onKeyDown={composePreventableEventHandlers(triggerProps.onKeyDown, (event) => {
             // only call handler if it's the left button (mousedown gets triggered by all mouse buttons)
             // but not when the control key is pressed (avoiding MacOS right click)
             if (event.button === 0 && event.ctrlKey === false) {
@@ -1071,7 +1074,7 @@ const SelectViewport = React.forwardRef<SelectViewportElement, SelectViewportPro
               overflow: 'auto',
               ...viewportProps.style,
             }}
-            onScroll={composeEventHandlers(viewportProps.onScroll, (event) => {
+            onScroll={composePreventableEventHandlers(viewportProps.onScroll, (event) => {
               const viewport = event.currentTarget;
               const { contentWrapper, shouldExpandOnScrollRef } = viewportContext;
               if (shouldExpandOnScrollRef?.current && contentWrapper) {
@@ -1239,10 +1242,10 @@ const SelectItem = React.forwardRef<SelectItemElement, SelectItemProps>(
             tabIndex={disabled ? undefined : -1}
             {...itemProps}
             ref={composedRefs}
-            onFocus={composeEventHandlers(itemProps.onFocus, () => setIsFocused(true))}
-            onBlur={composeEventHandlers(itemProps.onBlur, () => setIsFocused(false))}
-            onPointerUp={composeEventHandlers(itemProps.onPointerUp, handleSelect)}
-            onPointerMove={composeEventHandlers(itemProps.onPointerMove, (event) => {
+            onFocus={composePreventableEventHandlers(itemProps.onFocus, () => setIsFocused(true))}
+            onBlur={composePreventableEventHandlers(itemProps.onBlur, () => setIsFocused(false))}
+            onPointerUp={composePreventableEventHandlers(itemProps.onPointerUp, handleSelect)}
+            onPointerMove={composePreventableEventHandlers(itemProps.onPointerMove, (event) => {
               if (disabled) {
                 contentContext.onItemLeave?.();
               } else {
@@ -1251,12 +1254,12 @@ const SelectItem = React.forwardRef<SelectItemElement, SelectItemProps>(
                 event.currentTarget.focus({ preventScroll: true });
               }
             })}
-            onPointerLeave={composeEventHandlers(itemProps.onPointerLeave, (event) => {
+            onPointerLeave={composePreventableEventHandlers(itemProps.onPointerLeave, (event) => {
               if (event.currentTarget === document.activeElement) {
                 contentContext.onItemLeave?.();
               }
             })}
-            onKeyDown={composeEventHandlers(itemProps.onKeyDown, (event) => {
+            onKeyDown={composePreventableEventHandlers(itemProps.onKeyDown, (event) => {
               const isTypingAhead = contentContext.searchRef?.current !== '';
               if (isTypingAhead && event.key === ' ') return;
               if (SELECTION_KEYS.includes(event.key)) handleSelect();
@@ -1497,7 +1500,7 @@ const SelectScrollButtonImpl = React.forwardRef<
           autoScrollTimerRef.current = window.setInterval(onAutoScroll, 50);
         }
       })}
-      onPointerLeave={composeEventHandlers(scrollIndicatorProps.onPointerLeave, () => {
+      onPointerLeave={composePreventableEventHandlers(scrollIndicatorProps.onPointerLeave, () => {
         clearAutoScrollTimer();
       })}
     />

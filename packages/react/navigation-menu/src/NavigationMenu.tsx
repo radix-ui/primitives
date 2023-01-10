@@ -3,7 +3,7 @@
 import * as React from 'react';
 import ReactDOM from 'react-dom';
 import { createContextScope } from '@radix-ui/react-context';
-import { composeEventHandlers } from '@radix-ui/primitive';
+import { composeEventHandlers, composePreventableEventHandlers } from '@radix-ui/primitive';
 import { Primitive, dispatchDiscreteCustomEvent } from '@radix-ui/react-primitive';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { composeRefs, useComposedRefs } from '@radix-ui/react-compose-refs';
@@ -501,11 +501,11 @@ const NavigationMenuTrigger = React.forwardRef<
             aria-controls={contentId}
             {...triggerProps}
             ref={composedRefs}
-            onPointerEnter={composeEventHandlers(props.onPointerEnter, () => {
+            onPointerEnter={composePreventableEventHandlers(props.onPointerEnter, () => {
               wasClickCloseRef.current = false;
               itemContext.wasEscapeCloseRef.current = false;
             })}
-            onPointerMove={composeEventHandlers(
+            onPointerMove={composePreventableEventHandlers(
               props.onPointerMove,
               whenMouse(() => {
                 if (
@@ -519,7 +519,7 @@ const NavigationMenuTrigger = React.forwardRef<
                 hasPointerMoveOpenedRef.current = true;
               })
             )}
-            onPointerLeave={composeEventHandlers(
+            onPointerLeave={composePreventableEventHandlers(
               props.onPointerLeave,
               whenMouse(() => {
                 if (disabled) return;
@@ -527,11 +527,11 @@ const NavigationMenuTrigger = React.forwardRef<
                 hasPointerMoveOpenedRef.current = false;
               })
             )}
-            onClick={composeEventHandlers(props.onClick, () => {
+            onClick={composePreventableEventHandlers(props.onClick, () => {
               context.onItemSelect(itemContext.value);
               wasClickCloseRef.current = open;
             })}
-            onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
+            onKeyDown={composePreventableEventHandlers(props.onKeyDown, (event) => {
               const verticalEntryKey = context.dir === 'rtl' ? 'ArrowLeft' : 'ArrowRight';
               const entryKey = { horizontal: 'ArrowDown', vertical: verticalEntryKey }[
                 context.orientation
@@ -600,27 +600,23 @@ const NavigationMenuLink = React.forwardRef<NavigationMenuLinkElement, Navigatio
           aria-current={active ? 'page' : undefined}
           {...linkProps}
           ref={forwardedRef}
-          onClick={composeEventHandlers(
-            props.onClick,
-            (event) => {
-              const target = event.target as HTMLElement;
-              const linkSelectEvent = new CustomEvent(LINK_SELECT, {
+          onClick={composeEventHandlers(props.onClick, (event) => {
+            const target = event.target as HTMLElement;
+            const linkSelectEvent = new CustomEvent(LINK_SELECT, {
+              bubbles: true,
+              cancelable: true,
+            });
+            target.addEventListener(LINK_SELECT, (event) => onSelect?.(event), { once: true });
+            dispatchDiscreteCustomEvent(target, linkSelectEvent);
+
+            if (!linkSelectEvent.defaultPrevented) {
+              const rootContentDismissEvent = new CustomEvent(ROOT_CONTENT_DISMISS, {
                 bubbles: true,
                 cancelable: true,
               });
-              target.addEventListener(LINK_SELECT, (event) => onSelect?.(event), { once: true });
-              dispatchDiscreteCustomEvent(target, linkSelectEvent);
-
-              if (!linkSelectEvent.defaultPrevented && !event.metaKey) {
-                const rootContentDismissEvent = new CustomEvent(ROOT_CONTENT_DISMISS, {
-                  bubbles: true,
-                  cancelable: true,
-                });
-                dispatchDiscreteCustomEvent(target, rootContentDismissEvent);
-              }
-            },
-            { checkForDefaultPrevented: false }
-          )}
+              dispatchDiscreteCustomEvent(target, rootContentDismissEvent);
+            }
+          })}
         />
       </FocusGroupItem>
     );
@@ -771,8 +767,11 @@ const NavigationMenuContent = React.forwardRef<
         data-state={getOpenState(open)}
         {...commonProps}
         ref={composedRefs}
-        onPointerEnter={composeEventHandlers(props.onPointerEnter, context.onContentEnter)}
-        onPointerLeave={composeEventHandlers(
+        onPointerEnter={composePreventableEventHandlers(
+          props.onPointerEnter,
+          context.onContentEnter
+        )}
+        onPointerLeave={composePreventableEventHandlers(
           props.onPointerLeave,
           whenMouse(context.onContentLeave)
         )}
@@ -929,19 +928,22 @@ const NavigationMenuContentImpl = React.forwardRef<
           });
           ref.current?.dispatchEvent(rootContentDismissEvent);
         }}
-        onFocusOutside={composeEventHandlers(props.onFocusOutside, (event) => {
+        onFocusOutside={composePreventableEventHandlers(props.onFocusOutside, (event) => {
           onContentFocusOutside();
           const target = event.target as HTMLElement;
           // Only dismiss content when focus moves outside of the menu
           if (context.rootNavigationMenu?.contains(target)) event.preventDefault();
         })}
-        onPointerDownOutside={composeEventHandlers(props.onPointerDownOutside, (event) => {
-          const target = event.target as HTMLElement;
-          const isTrigger = getItems().some((item) => item.ref.current?.contains(target));
-          const isRootViewport = context.isRootMenu && context.viewport?.contains(target);
-          if (isTrigger || isRootViewport || !context.isRootMenu) event.preventDefault();
-        })}
-        onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
+        onPointerDownOutside={composePreventableEventHandlers(
+          props.onPointerDownOutside,
+          (event) => {
+            const target = event.target as HTMLElement;
+            const isTrigger = getItems().some((item) => item.ref.current?.contains(target));
+            const isRootViewport = context.isRootMenu && context.viewport?.contains(target);
+            if (isTrigger || isRootViewport || !context.isRootMenu) event.preventDefault();
+          }
+        )}
+        onKeyDown={composePreventableEventHandlers(props.onKeyDown, (event) => {
           const isMetaKey = event.altKey || event.ctrlKey || event.metaKey;
           const isTabKey = event.key === 'Tab' && !isMetaKey;
           if (isTabKey) {
@@ -964,7 +966,7 @@ const NavigationMenuContentImpl = React.forwardRef<
             }
           }
         })}
-        onEscapeKeyDown={composeEventHandlers(props.onEscapeKeyDown, (event) => {
+        onEscapeKeyDown={composePreventableEventHandlers(props.onEscapeKeyDown, (event) => {
           // prevent the dropdown from reopening
           // after the escape key has been pressed
           wasEscapeCloseRef.current = true;
@@ -1056,8 +1058,11 @@ const NavigationMenuViewportImpl = React.forwardRef<
         ['--radix-navigation-menu-viewport-height' as any]: viewportHeight,
         ...viewportImplProps.style,
       }}
-      onPointerEnter={composeEventHandlers(props.onPointerEnter, context.onContentEnter)}
-      onPointerLeave={composeEventHandlers(props.onPointerLeave, whenMouse(context.onContentLeave))}
+      onPointerEnter={composePreventableEventHandlers(props.onPointerEnter, context.onContentEnter)}
+      onPointerLeave={composePreventableEventHandlers(
+        props.onPointerLeave,
+        whenMouse(context.onContentLeave)
+      )}
     >
       {Array.from(viewportContentContext.items).map(([value, { ref, forceMount, ...props }]) => {
         const isActive = activeContentValue === value;
@@ -1119,7 +1124,7 @@ const FocusGroupItem = React.forwardRef<FocusGroupItemElement, FocusGroupItemPro
         <Primitive.button
           {...groupProps}
           ref={forwardedRef}
-          onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
+          onKeyDown={composePreventableEventHandlers(props.onKeyDown, (event) => {
             const isFocusNavigationKey = ['Home', 'End', ...ARROW_KEYS].includes(event.key);
             if (isFocusNavigationKey) {
               let candidateNodes = getItems().map((item) => item.ref.current!);

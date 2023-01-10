@@ -3,7 +3,7 @@ import { createContextScope } from '@radix-ui/react-context';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { createDialogScope } from '@radix-ui/react-dialog';
-import { composeEventHandlers } from '@radix-ui/primitive';
+import { composePreventableEventHandlers } from '@radix-ui/primitive';
 import { Slottable } from '@radix-ui/react-slot';
 
 import type { Scope } from '@radix-ui/react-context';
@@ -127,10 +127,13 @@ const AlertDialogContent = React.forwardRef<AlertDialogContentElement, AlertDial
             {...dialogScope}
             {...contentProps}
             ref={composedRefs}
-            onOpenAutoFocus={composeEventHandlers(contentProps.onOpenAutoFocus, (event) => {
-              event.preventDefault();
-              cancelRef.current?.focus({ preventScroll: true });
-            })}
+            onOpenAutoFocus={composePreventableEventHandlers(
+              contentProps.onOpenAutoFocus,
+              (event) => {
+                event.preventDefault();
+                cancelRef.current?.focus({ preventScroll: true });
+              }
+            )}
             onPointerDownOutside={(event) => event.preventDefault()}
             onInteractOutside={(event) => event.preventDefault()}
           >

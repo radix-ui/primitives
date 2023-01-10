@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { composeEventHandlers } from '@radix-ui/primitive';
+import { composePreventableEventHandlers } from '@radix-ui/primitive';
 import { createContextScope } from '@radix-ui/react-context';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
@@ -100,7 +100,7 @@ const CollapsibleTrigger = React.forwardRef<CollapsibleTriggerElement, Collapsib
         disabled={context.disabled}
         {...triggerProps}
         ref={forwardedRef}
-        onClick={composeEventHandlers(props.onClick, context.onOpenToggle)}
+        onClick={composePreventableEventHandlers(props.onClick, context.onOpenToggle)}
       />
     );
   }
