@@ -706,7 +706,7 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
                 onContextMenu={(event) => event.preventDefault()}
                 {...contentProps}
                 {...popperContentProps}
-                onPlaced={React.useCallback(() => setIsPositioned(true), [])}
+                onPlaced={() => setIsPositioned(true)}
                 ref={composedRefs}
                 style={{
                   // flex layout so we can place the scroll buttons properly
