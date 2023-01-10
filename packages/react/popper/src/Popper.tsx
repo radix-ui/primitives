@@ -14,6 +14,7 @@ import * as ArrowPrimitive from '@radix-ui/react-arrow';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
 import { Primitive } from '@radix-ui/react-primitive';
+import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { useSize } from '@radix-ui/react-use-size';
 
@@ -212,11 +213,12 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
     const isPlaced = x !== null && y !== null;
     const [placedSide, placedAlign] = getSideAndAlignFromPlacement(placement);
 
+    const handlePlaced = useCallbackRef(onPlaced);
     useLayoutEffect(() => {
       if (isPlaced) {
-        onPlaced?.();
+        handlePlaced?.();
       }
-    }, [isPlaced, onPlaced]);
+    }, [isPlaced, handlePlaced]);
 
     const arrowX = middlewareData.arrow?.x;
     const arrowY = middlewareData.arrow?.y;

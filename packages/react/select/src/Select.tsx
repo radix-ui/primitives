@@ -642,11 +642,21 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
     const SelectPopper = position === 'outside' ? SelectPopperOutside : SelectPopperAbove;
 
     // Silently ignore props that are not supported by `SelectPopperAbove`
-    let popperContentProps: PopperContentProps = {};
-    if (SelectPopper === SelectPopperOutside) {
-      // prettier-ignore
-      popperContentProps = { side, sideOffset, align, alignOffset, arrowPadding, collisionBoundary, collisionPadding, sticky, hideWhenDetached, avoidCollisions };
-    }
+    const popperContentProps =
+      SelectPopper === SelectPopperOutside
+        ? {
+            side,
+            sideOffset,
+            align,
+            alignOffset,
+            arrowPadding,
+            collisionBoundary,
+            collisionPadding,
+            sticky,
+            hideWhenDetached,
+            avoidCollisions,
+          }
+        : {};
 
     return (
       <SelectContentProvider
@@ -982,7 +992,6 @@ const SelectPopperOutside = React.forwardRef<SelectPopperOutsideElement, SelectP
         ref={forwardedRef}
         align={align}
         collisionPadding={collisionPadding}
-        hideWhenDetached
         style={{
           // Ensure border-box for floating-ui calculations
           boxSizing: 'border-box',
@@ -1008,7 +1017,6 @@ SelectPopperOutside.displayName = POPPER_OUTSIDE_NAME;
  * -----------------------------------------------------------------------------------------------*/
 
 type SelectViewportContextValue = {
-  // isPositioned?: boolean;
   contentWrapper?: HTMLDivElement | null;
   shouldExpandOnScrollRef?: React.RefObject<boolean>;
   onScrollButtonChange?: (node: SelectScrollButtonImplElement | null) => void;
