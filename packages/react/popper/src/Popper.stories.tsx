@@ -331,6 +331,78 @@ export const Chromatic = () => {
           </div>
         </div>
       </div>
+      <div
+        style={{
+          marginTop: 50,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 150,
+          border: '1px solid black',
+        }}
+      >
+        <h1>Logical "start" alignment (LTR)</h1>
+        <Popper.Root>
+          <Popper.Anchor className={anchorClass({ size: 'small' })}>11</Popper.Anchor>
+          <Popper.Content align="start" className={contentClass({ size: 'small' })} sideOffset={5}>
+            <Popper.Arrow className={arrowClass()} width={10} height={5} />
+            11
+          </Popper.Content>
+        </Popper.Root>
+
+        <Popper.Root>
+          <Popper.Anchor className={anchorClass({ size: 'small' })}>12</Popper.Anchor>
+          <Portal asChild>
+            <Popper.Content
+              align="start"
+              className={contentClass({ size: 'small' })}
+              sideOffset={5}
+            >
+              <Popper.Arrow className={arrowClass()} width={10} height={5} />
+              12 (portalled)
+            </Popper.Content>
+          </Portal>
+        </Popper.Root>
+      </div>
+      <div
+        style={{
+          marginTop: 50,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 150,
+          border: '1px solid black',
+        }}
+      >
+        <h1>Logical "start" alignment (RTL)</h1>
+        <Popper.Root>
+          <Popper.Anchor className={anchorClass({ size: 'small' })}>13</Popper.Anchor>
+          <Popper.Content
+            align="start"
+            className={contentClass({ size: 'small' })}
+            sideOffset={5}
+            dir="rtl"
+          >
+            <Popper.Arrow className={arrowClass()} width={10} height={5} />
+            13
+          </Popper.Content>
+        </Popper.Root>
+
+        <Popper.Root>
+          <Popper.Anchor className={anchorClass({ size: 'small' })}>14</Popper.Anchor>
+          <Portal asChild>
+            <Popper.Content
+              align="start"
+              className={contentClass({ size: 'small' })}
+              sideOffset={5}
+              dir="rtl"
+            >
+              <Popper.Arrow className={arrowClass()} width={10} height={5} />
+              14 (portalled)
+            </Popper.Content>
+          </Portal>
+        </Popper.Root>
+      </div>
     </div>
   );
 };
