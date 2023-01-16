@@ -167,7 +167,7 @@ const CONTENT_NAME = 'DropdownMenuContent';
 
 type DropdownMenuContentElement = React.ElementRef<typeof MenuPrimitive.Content>;
 type MenuContentProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.Content>;
-interface DropdownMenuContentProps extends MenuContentProps {}
+interface DropdownMenuContentProps extends Omit<MenuContentProps, 'onEntryFocus'> {}
 
 const DropdownMenuContent = React.forwardRef<DropdownMenuContentElement, DropdownMenuContentProps>(
   (props: ScopedProps<DropdownMenuContentProps>, forwardedRef) => {
