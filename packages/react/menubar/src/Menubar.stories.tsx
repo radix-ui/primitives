@@ -57,7 +57,7 @@ export const Styled = () => {
           <Menubar.Menu>
             <Menubar.Trigger className={triggerClass()}>File</Menubar.Trigger>
             <Menubar.Portal>
-              <Menubar.Content className={contentClass()}>
+              <Menubar.Content className={contentClass()} sideOffset={2}>
                 <Menubar.Item className={itemClass()}>New Tab</Menubar.Item>
                 <Menubar.Item className={itemClass()}>New Window</Menubar.Item>
                 <Menubar.Item className={itemClass()}>New Incognito Window</Menubar.Item>
@@ -83,7 +83,7 @@ export const Styled = () => {
           <Menubar.Menu>
             <Menubar.Trigger className={triggerClass()}>Edit</Menubar.Trigger>
             <Menubar.Portal>
-              <Menubar.Content className={contentClass()}>
+              <Menubar.Content className={contentClass()} sideOffset={2}>
                 <Menubar.Item className={itemClass()}>Undo</Menubar.Item>
                 <Menubar.Item className={itemClass()}>Redo</Menubar.Item>
                 <Menubar.Separator className={separatorClass()} />
@@ -125,7 +125,7 @@ export const Styled = () => {
           <Menubar.Menu>
             <Menubar.Trigger className={triggerClass()}>View</Menubar.Trigger>
             <Menubar.Portal>
-              <Menubar.Content className={contentClass()}>
+              <Menubar.Content className={contentClass()} sideOffset={2}>
                 {checkOptions.map((option) => (
                   <Menubar.CheckboxItem
                     key={option}
@@ -159,7 +159,7 @@ export const Styled = () => {
           <Menubar.Menu>
             <Menubar.Trigger className={triggerClass()}>Profiles</Menubar.Trigger>
             <Menubar.Portal>
-              <Menubar.Content className={contentClass()}>
+              <Menubar.Content className={contentClass()} sideOffset={2}>
                 <Menubar.RadioGroup value={radioSelection} onValueChange={setRadioSelection}>
                   {radioOptions.map((option) => (
                     <Menubar.RadioItem key={option} className={itemClass()} value={option}>
@@ -177,7 +177,7 @@ export const Styled = () => {
           <Menubar.Menu>
             <Menubar.Trigger className={triggerClass()}>History</Menubar.Trigger>
             <Menubar.Portal>
-              <Menubar.Content className={contentClass()}>
+              <Menubar.Content className={contentClass()} sideOffset={2}>
                 <Menubar.Label className={labelClass()}>Work</Menubar.Label>
                 <Menubar.Item className={itemClass()}>Radix</Menubar.Item>
                 <Menubar.Item className={itemClass()}>Github</Menubar.Item>
@@ -246,7 +246,7 @@ export const Cypress = () => {
           <Menubar.Menu>
             <Menubar.Trigger className={triggerClass()}>File</Menubar.Trigger>
             <Portal>
-              <Menubar.Content className={contentClass()}>
+              <Menubar.Content className={contentClass()} sideOffset={2}>
                 <Menubar.Item className={itemClass()}>New Tab</Menubar.Item>
                 <Menubar.Item className={itemClass()}>New Window</Menubar.Item>
                 <Menubar.Item className={itemClass()}>New Incognito Window</Menubar.Item>
@@ -270,7 +270,7 @@ export const Cypress = () => {
           <Menubar.Menu>
             <Menubar.Trigger className={triggerClass()}>Edit</Menubar.Trigger>
             <Portal>
-              <Menubar.Content className={contentClass()}>
+              <Menubar.Content className={contentClass()} sideOffset={2}>
                 <Menubar.Item className={itemClass()} disabled>
                   Undo
                 </Menubar.Item>
@@ -337,7 +337,7 @@ export const Cypress = () => {
           <Menubar.Menu>
             <Menubar.Trigger className={triggerClass()}>History</Menubar.Trigger>
             <Portal>
-              <Menubar.Content className={contentClass()}>
+              <Menubar.Content className={contentClass()} sideOffset={2}>
                 <Menubar.Item className={itemClass()}>Radix</Menubar.Item>
                 <Menubar.Item className={itemClass()}>Github</Menubar.Item>
                 <Menubar.Item className={itemClass()}>WorkOS</Menubar.Item>
@@ -372,7 +372,7 @@ export const Chromatic = () => {
         <Menubar.Menu>
           <Menubar.Trigger className={triggerClass()}>File</Menubar.Trigger>
           <Menubar.Portal>
-            <Menubar.Content className={contentClass()} avoidCollisions={false}>
+            <Menubar.Content className={contentClass()} avoidCollisions={false} sideOffset={2}>
               <Menubar.Item className={itemClass()}>New Tab</Menubar.Item>
               <Menubar.Item className={itemClass()}>New Window</Menubar.Item>
               <Menubar.Item className={itemClass()}>New Incognito Window</Menubar.Item>
@@ -386,7 +386,7 @@ export const Chromatic = () => {
         <Menubar.Menu>
           <Menubar.Trigger className={triggerClass()}>Edit</Menubar.Trigger>
           <Menubar.Portal>
-            <Menubar.Content className={contentClass()} avoidCollisions={false}>
+            <Menubar.Content className={contentClass()} avoidCollisions={false} sideOffset={2}>
               <Menubar.Item className={itemClass()} disabled>
                 Undo
               </Menubar.Item>
@@ -409,6 +409,7 @@ export const Chromatic = () => {
               className={contentClass()}
               onFocusOutside={(event) => event.preventDefault()}
               avoidCollisions={false}
+              sideOffset={2}
             >
               <Menubar.Item className={itemClass()}>New Tab</Menubar.Item>
               <Menubar.Item className={itemClass()}>New Window</Menubar.Item>
@@ -423,7 +424,7 @@ export const Chromatic = () => {
         <Menubar.Menu value="edit">
           <Menubar.Trigger className={triggerClass()}>Edit</Menubar.Trigger>
           <Menubar.Portal>
-            <Menubar.Content className={contentClass()} avoidCollisions={false}>
+            <Menubar.Content className={contentClass()} avoidCollisions={false} sideOffset={2}>
               <Menubar.Item className={itemClass()} disabled>
                 Undo
               </Menubar.Item>
@@ -443,7 +444,7 @@ export const Chromatic = () => {
         <Menubar.Menu value="file">
           <Menubar.Trigger className={triggerClass()}>File</Menubar.Trigger>
           <Menubar.Portal>
-            <Menubar.Content className={contentClass()} avoidCollisions={false}>
+            <Menubar.Content className={contentClass()} avoidCollisions={false} sideOffset={2}>
               <Menubar.Item className={itemClass()}>New Tab</Menubar.Item>
               <Menubar.Item className={itemClass()}>New Window</Menubar.Item>
               <Menubar.Item className={itemClass()}>New Incognito Window</Menubar.Item>
@@ -457,7 +458,7 @@ export const Chromatic = () => {
         <Menubar.Menu value="edit">
           <Menubar.Trigger className={triggerClass()}>Edit</Menubar.Trigger>
           <Menubar.Portal>
-            <Menubar.Content className={contentClass()} avoidCollisions={false}>
+            <Menubar.Content className={contentClass()} avoidCollisions={false} sideOffset={2}>
               <Menubar.Item className={itemClass()} disabled>
                 Undo
               </Menubar.Item>
@@ -476,7 +477,7 @@ export const Chromatic = () => {
         <Menubar.Menu value="file">
           <Menubar.Trigger className={triggerClass()}>File</Menubar.Trigger>
           <Menubar.Portal>
-            <Menubar.Content className={contentClass()} avoidCollisions={false}>
+            <Menubar.Content className={contentClass()} avoidCollisions={false} sideOffset={2}>
               <Menubar.Item className={itemClass()}>New Tab</Menubar.Item>
               <Menubar.Item className={itemClass()}>New Window</Menubar.Item>
               <Menubar.Item className={itemClass()}>New Incognito Window</Menubar.Item>
@@ -490,7 +491,7 @@ export const Chromatic = () => {
         <Menubar.Menu value="edit">
           <Menubar.Trigger className={triggerClass()}>Edit</Menubar.Trigger>
           <Menubar.Portal>
-            <Menubar.Content className={contentClass()} avoidCollisions={false}>
+            <Menubar.Content className={contentClass()} avoidCollisions={false} sideOffset={2}>
               <Menubar.Item className={itemClass()} disabled>
                 Undo
               </Menubar.Item>
@@ -509,7 +510,7 @@ export const Chromatic = () => {
         <Menubar.Menu value="file">
           <Menubar.Trigger className={triggerClass()}>File</Menubar.Trigger>
           <Menubar.Portal>
-            <Menubar.Content className={contentClass()} avoidCollisions={false}>
+            <Menubar.Content className={contentClass()} avoidCollisions={false} sideOffset={2}>
               <Menubar.Item className={itemClass()}>New Tab</Menubar.Item>
               <Menubar.Item className={itemClass()}>New Window</Menubar.Item>
               <Menubar.Item className={itemClass()}>New Incognito Window</Menubar.Item>
@@ -523,7 +524,7 @@ export const Chromatic = () => {
         <Menubar.Menu value="edit">
           <Menubar.Trigger className={triggerClass()}>Edit</Menubar.Trigger>
           <Menubar.Portal>
-            <Menubar.Content className={contentClass()} avoidCollisions={false}>
+            <Menubar.Content className={contentClass()} avoidCollisions={false} sideOffset={2}>
               <Menubar.Item className={itemClass()} disabled>
                 Undo
               </Menubar.Item>
@@ -583,7 +584,7 @@ export const Chromatic = () => {
           <Menubar.Menu value="file">
             <Menubar.Trigger className={triggerClass()}>File</Menubar.Trigger>
             <Menubar.Portal>
-              <Menubar.Content className={contentClass()} avoidCollisions={false}>
+              <Menubar.Content className={contentClass()} avoidCollisions={false} sideOffset={2}>
                 <Menubar.Item className={itemClass()}>New Tab</Menubar.Item>
                 <Menubar.Item className={itemClass()}>New Window</Menubar.Item>
                 <Menubar.Item className={itemClass()}>New Incognito Window</Menubar.Item>
@@ -597,7 +598,7 @@ export const Chromatic = () => {
           <Menubar.Menu value="edit">
             <Menubar.Trigger className={triggerClass()}>Edit</Menubar.Trigger>
             <Menubar.Portal>
-              <Menubar.Content className={contentClass()} avoidCollisions={false}>
+              <Menubar.Content className={contentClass()} avoidCollisions={false} sideOffset={2}>
                 <Menubar.Item className={itemClass()} disabled>
                   Undo
                 </Menubar.Item>
@@ -657,7 +658,7 @@ export const Chromatic = () => {
         <Menubar.Menu value="food">
           <Menubar.Trigger className={triggerClass()}>Food</Menubar.Trigger>
           <Menubar.Portal>
-            <Menubar.Content className={contentClass()} avoidCollisions={false}>
+            <Menubar.Content className={contentClass()} avoidCollisions={false} sideOffset={2}>
               {foodGroups.map((foodGroup, index) => (
                 <Menubar.Group key={index}>
                   {foodGroup.label && (
@@ -687,7 +688,7 @@ export const Chromatic = () => {
         <Menubar.Menu value="edit">
           <Menubar.Trigger className={triggerClass()}>Edit</Menubar.Trigger>
           <Menubar.Portal>
-            <Menubar.Content className={contentClass()} avoidCollisions={false}>
+            <Menubar.Content className={contentClass()} avoidCollisions={false} sideOffset={2}>
               <Menubar.Item className={itemClass()} disabled>
                 Undo
               </Menubar.Item>
@@ -706,7 +707,7 @@ export const Chromatic = () => {
         <Menubar.Menu value="items">
           <Menubar.Trigger className={triggerClass()}>Items</Menubar.Trigger>
           <Menubar.Portal>
-            <Menubar.Content className={contentClass()} avoidCollisions={false}>
+            <Menubar.Content className={contentClass()} avoidCollisions={false} sideOffset={2}>
               <Menubar.Item className={itemClass()} onSelect={() => console.log('show')}>
                 Show fonts
               </Menubar.Item>
@@ -749,7 +750,7 @@ export const Chromatic = () => {
         <Menubar.Menu value="edit">
           <Menubar.Trigger className={triggerClass()}>Edit</Menubar.Trigger>
           <Menubar.Portal>
-            <Menubar.Content className={contentClass()} avoidCollisions={false}>
+            <Menubar.Content className={contentClass()} avoidCollisions={false} sideOffset={2}>
               <Menubar.Item className={itemClass()} disabled>
                 Undo
               </Menubar.Item>
