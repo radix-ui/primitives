@@ -981,14 +981,14 @@ interface SelectPopperPositionProps extends PopperContentProps, SelectPopperPriv
 const SelectPopperPosition = React.forwardRef<
   SelectPopperPositionElement,
   SelectPopperPositionProps
->(({ __scopeSelect, ...props }: ScopedProps<SelectPopperPositionProps>, forwardedRef) => {
-  const popperScope = usePopperScope(__scopeSelect);
-  const context = useSelectContext(CONTENT_NAME, __scopeSelect);
+>((props: ScopedProps<SelectPopperPositionProps>, forwardedRef) => {
   const {
-    align = context.dir === 'rtl' ? 'end' : 'start',
+    __scopeSelect,
+    align = 'start',
     collisionPadding = CONTENT_MARGIN,
     ...popperProps
   } = props;
+  const popperScope = usePopperScope(__scopeSelect);
 
   return (
     <PopperPrimitive.Content
