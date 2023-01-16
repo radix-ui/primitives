@@ -20,7 +20,7 @@ describe('Menubar', () => {
       cy.findByText('Radix').should('not.have.focus');
     });
 
-    it('should maintain the open state when pointer moves away a trigger', () => {
+    it('should maintain the open state when pointer moves away from a trigger', () => {
       cy.findByText('File').click();
       pointerOver('File').trigger('pointerout', 'bottomRight', {
         pointerType: 'mouse',
