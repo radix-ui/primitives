@@ -339,7 +339,7 @@ type FocusScopeProps = Radix.ComponentPropsWithoutRef<typeof FocusScope>;
 type DismissableLayerProps = Radix.ComponentPropsWithoutRef<typeof DismissableLayer>;
 type PopperContentProps = Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Content>;
 interface PopoverContentImplProps
-  extends PopperContentProps,
+  extends Omit<PopperContentProps, 'onPlaced'>,
     Omit<DismissableLayerProps, 'onDismiss'> {
   /**
    * Whether focus should be trapped within the `Popover`

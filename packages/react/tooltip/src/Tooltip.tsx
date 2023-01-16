@@ -474,7 +474,7 @@ const [VisuallyHiddenContentContextProvider, useVisuallyHiddenContentContext] =
 type TooltipContentImplElement = React.ElementRef<typeof PopperPrimitive.Content>;
 type DismissableLayerProps = Radix.ComponentPropsWithoutRef<typeof DismissableLayer>;
 type PopperContentProps = Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Content>;
-interface TooltipContentImplProps extends PopperContentProps {
+interface TooltipContentImplProps extends Omit<PopperContentProps, 'onPlaced'> {
   /**
    * A more descriptive label for accessibility purpose
    */
