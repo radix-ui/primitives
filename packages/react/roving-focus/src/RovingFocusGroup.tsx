@@ -201,14 +201,22 @@ const ITEM_NAME = 'RovingFocusGroupItem';
 type RovingFocusItemElement = React.ElementRef<typeof Primitive.span>;
 type PrimitiveSpanProps = Radix.ComponentPropsWithoutRef<typeof Primitive.span>;
 interface RovingFocusItemProps extends PrimitiveSpanProps {
+  tabStopId?: string;
   focusable?: boolean;
   active?: boolean;
 }
 
 const RovingFocusGroupItem = React.forwardRef<RovingFocusItemElement, RovingFocusItemProps>(
   (props: ScopedProps<RovingFocusItemProps>, forwardedRef) => {
-    const { __scopeRovingFocusGroup, focusable = true, active = false, ...itemProps } = props;
-    const id = useId();
+    const {
+      __scopeRovingFocusGroup,
+      focusable = true,
+      active = false,
+      tabStopId,
+      ...itemProps
+    } = props;
+    const autoId = useId();
+    const id = tabStopId || autoId;
     const context = useRovingFocusContext(ITEM_NAME, __scopeRovingFocusGroup);
     const isCurrentTabStop = context.currentTabStopId === id;
     const getItems = useCollection(__scopeRovingFocusGroup);
