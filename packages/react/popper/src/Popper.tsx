@@ -267,6 +267,10 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
             middlewareData.transformOrigin?.y,
           ].join(' '),
         }}
+        // Floating UI interally calculates logical alignment based the `dir` attribute on
+        // the reference/floating node, we must add this attribute here to ensure
+        // this is calculated when portalled as well as inline.
+        dir={props.dir}
       >
         <PopperContentProvider
           scope={__scopePopper}
