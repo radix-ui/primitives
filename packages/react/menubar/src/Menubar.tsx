@@ -309,7 +309,7 @@ interface MenubarContentProps extends Omit<MenuContentProps, 'onEntryFocus'> {}
 
 const MenubarContent = React.forwardRef<MenubarContentElement, MenubarContentProps>(
   (props: ScopedProps<MenubarContentProps>, forwardedRef) => {
-    const { __scopeMenubar, ...contentProps } = props;
+    const { __scopeMenubar, align = 'start', ...contentProps } = props;
     const menuScope = useMenuScope(__scopeMenubar);
     const context = useMenubarContext(CONTENT_NAME, __scopeMenubar);
     const menuContext = useMenubarMenuContext(CONTENT_NAME, __scopeMenubar);
@@ -324,6 +324,7 @@ const MenubarContent = React.forwardRef<MenubarContentElement, MenubarContentPro
         {...menuScope}
         {...contentProps}
         ref={forwardedRef}
+        align={align}
         onCloseAutoFocus={composeEventHandlers(props.onCloseAutoFocus, (event) => {
           const menubarOpen = Boolean(context.value);
           if (!menubarOpen && !hasInteractedOutsideRef.current) {
