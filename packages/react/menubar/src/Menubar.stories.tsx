@@ -56,7 +56,7 @@ export const Styled = () => {
           <Menubar.Menu>
             <Menubar.Trigger className={triggerClass()}>File</Menubar.Trigger>
             <Menubar.Portal>
-              <Menubar.Content className={contentClass()} align="start" sideOffset={2}>
+              <Menubar.Content className={contentClass()} sideOffset={2}>
                 <Menubar.Item className={itemClass()}>New Tab</Menubar.Item>
                 <Menubar.Item className={itemClass()}>New Window</Menubar.Item>
                 <Menubar.Item className={itemClass()}>New Incognito Window</Menubar.Item>
@@ -82,7 +82,7 @@ export const Styled = () => {
           <Menubar.Menu>
             <Menubar.Trigger className={triggerClass()}>Edit</Menubar.Trigger>
             <Menubar.Portal>
-              <Menubar.Content className={contentClass()} align="start" sideOffset={2}>
+              <Menubar.Content className={contentClass()} sideOffset={2}>
                 <Menubar.Item className={itemClass()}>Undo</Menubar.Item>
                 <Menubar.Item className={itemClass()}>Redo</Menubar.Item>
                 <Menubar.Separator className={separatorClass()} />
@@ -124,7 +124,7 @@ export const Styled = () => {
           <Menubar.Menu>
             <Menubar.Trigger className={triggerClass()}>View</Menubar.Trigger>
             <Menubar.Portal>
-              <Menubar.Content className={contentClass()} align="start" sideOffset={2}>
+              <Menubar.Content className={contentClass()} sideOffset={2}>
                 {checkOptions.map((option) => (
                   <Menubar.CheckboxItem
                     key={option}
@@ -158,7 +158,7 @@ export const Styled = () => {
           <Menubar.Menu>
             <Menubar.Trigger className={triggerClass()}>Profiles</Menubar.Trigger>
             <Menubar.Portal>
-              <Menubar.Content className={contentClass()} align="start" sideOffset={2}>
+              <Menubar.Content className={contentClass()} sideOffset={2}>
                 <Menubar.RadioGroup value={radioSelection} onValueChange={setRadioSelection}>
                   {radioOptions.map((option) => (
                     <Menubar.RadioItem key={option} className={itemClass()} value={option}>
@@ -176,7 +176,7 @@ export const Styled = () => {
           <Menubar.Menu>
             <Menubar.Trigger className={triggerClass()}>History</Menubar.Trigger>
             <Menubar.Portal>
-              <Menubar.Content className={contentClass()} align="start" sideOffset={2}>
+              <Menubar.Content className={contentClass()} sideOffset={2}>
                 <Menubar.Label className={labelClass()}>Work</Menubar.Label>
                 <Menubar.Item className={itemClass()}>Radix</Menubar.Item>
                 <Menubar.Item className={itemClass()}>Github</Menubar.Item>
@@ -203,7 +203,7 @@ export const Cypress = () => {
         <Menubar.Menu>
           <Menubar.Trigger className={triggerClass()}>File</Menubar.Trigger>
           <Menubar.Portal>
-            <Menubar.Content className={contentClass()} align="start" sideOffset={2}>
+            <Menubar.Content className={contentClass()} sideOffset={2}>
               <Menubar.Item className={itemClass()}>New Tab</Menubar.Item>
               <Menubar.Item className={itemClass()}>New Window</Menubar.Item>
               <Menubar.Item className={itemClass()}>New Incognito Window</Menubar.Item>
@@ -228,7 +228,7 @@ export const Cypress = () => {
         <Menubar.Menu>
           <Menubar.Trigger className={triggerClass()}>Edit</Menubar.Trigger>
           <Menubar.Portal>
-            <Menubar.Content className={contentClass()} align="start" sideOffset={2}>
+            <Menubar.Content className={contentClass()} sideOffset={2}>
               <Menubar.Item className={itemClass()}>Undo</Menubar.Item>
               <Menubar.Item className={itemClass()}>Redo</Menubar.Item>
               <Menubar.Separator className={separatorClass()} />
@@ -258,7 +258,7 @@ export const Cypress = () => {
         <Menubar.Menu>
           <Menubar.Trigger className={triggerClass()}>History</Menubar.Trigger>
           <Menubar.Portal>
-            <Menubar.Content className={contentClass()} align="start" sideOffset={2}>
+            <Menubar.Content className={contentClass()} sideOffset={2}>
               <Menubar.Item className={itemClass()}>Radix</Menubar.Item>
               <Menubar.Item className={itemClass()}>Github</Menubar.Item>
               <Menubar.Item className={itemClass()}>WorkOS</Menubar.Item>
