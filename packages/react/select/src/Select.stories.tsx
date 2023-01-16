@@ -7,7 +7,7 @@ import { foodGroups } from '../../../../test-data/foods';
 
 export default { title: 'Components/Select' };
 
-const POSITIONS = ['above', 'outside'] as const;
+const POSITIONS = ['item-aligned', 'popper'] as const;
 
 export const Styled = () => (
   <div style={{ display: 'flex', gap: 20, padding: 50 }}>
@@ -47,7 +47,7 @@ export const Styled = () => (
                   </Select.ItemIndicator>
                 </Select.Item>
               </Select.Viewport>
-              {position === 'outside' ? <Select.Arrow /> : null}
+              <Select.Arrow />
             </Select.Content>
           </Select.Portal>
         </Select.Root>
@@ -108,7 +108,7 @@ export const Controlled = () => {
                     </Select.ItemIndicator>
                   </Select.Item>
                 </Select.Viewport>
-                {position === 'outside' ? <Select.Arrow /> : null}
+                <Select.Arrow />
               </Select.Content>
             </Select.Portal>
           </Select.Root>
@@ -161,7 +161,7 @@ export const Position = () => (
               <Select.ScrollDownButton className={scrollDownButtonClass()}>
                 ▼
               </Select.ScrollDownButton>
-              {position === 'outside' ? <Select.Arrow /> : null}
+              <Select.Arrow />
             </Select.Content>
           </Select.Portal>
         </Select.Root>
@@ -210,7 +210,7 @@ export const NoDefaultValue = () => (
                   </Select.ItemIndicator>
                 </Select.Item>
               </Select.Viewport>
-              {position === 'outside' ? <Select.Arrow /> : null}
+              <Select.Arrow />
             </Select.Content>
           </Select.Portal>
         </Select.Root>
@@ -255,7 +255,7 @@ export const Typeahead = () => (
               <Select.ScrollDownButton className={scrollDownButtonClass()}>
                 ▼
               </Select.ScrollDownButton>
-              {position === 'outside' ? <Select.Arrow /> : null}
+              <Select.Arrow />
             </Select.Content>
           </Select.Portal>
         </Select.Root>
@@ -319,7 +319,7 @@ export const WithGroups = () => (
               <Select.ScrollDownButton className={scrollDownButtonClass()}>
                 ▼
               </Select.ScrollDownButton>
-              {position === 'outside' ? <Select.Arrow /> : null}
+              <Select.Arrow />
             </Select.Content>
           </Select.Portal>
         </Select.Root>
@@ -439,7 +439,7 @@ export const RightToLeft = () => (
                   </Select.ItemIndicator>
                 </Select.Item>
               </Select.Viewport>
-              {position === 'outside' ? <Select.Arrow /> : null}
+              <Select.Arrow />
             </Select.Content>
           </Select.Portal>
         </Select.Root>
