@@ -331,7 +331,7 @@ type MenuContentImplPrivateProps = {
 };
 interface MenuContentImplProps
   extends MenuContentImplPrivateProps,
-    Omit<PopperContentProps, 'dir'> {
+    Omit<PopperContentProps, 'dir' | 'onPlaced'> {
   /**
    * Event handler called when auto-focusing on close.
    * Can be prevented.
