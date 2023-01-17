@@ -15,7 +15,7 @@ export {
   MenubarItemIndicator,
   MenubarSeparator,
   MenubarArrow,
-  MenubarSubMenu,
+  MenubarSub,
   MenubarSubTrigger,
   MenubarSubContent,
   //
@@ -33,7 +33,7 @@ export {
   ItemIndicator,
   Separator,
   Arrow,
-  SubMenu,
+  Sub,
   SubTrigger,
   SubContent,
 } from './Menubar';
@@ -52,7 +52,7 @@ export type {
   MenubarItemIndicatorProps,
   MenubarSeparatorProps,
   MenubarArrowProps,
-  MenubarSubMenuProps,
+  MenubarSubProps,
   MenubarSubTriggerProps,
   MenubarSubContentProps,
 } from './Menubar';

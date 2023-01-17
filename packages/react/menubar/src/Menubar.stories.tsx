@@ -62,7 +62,7 @@ export const Styled = () => {
                 <Menubar.Item className={itemClass()}>New Window</Menubar.Item>
                 <Menubar.Item className={itemClass()}>New Incognito Window</Menubar.Item>
                 <Menubar.Separator className={separatorClass()} />
-                <Menubar.SubMenu>
+                <Menubar.Sub>
                   <Menubar.SubTrigger className={subTriggerClass()}>
                     Share <span>→</span>
                   </Menubar.SubTrigger>
@@ -73,7 +73,7 @@ export const Styled = () => {
                       <Menubar.Item className={itemClass()}>Airdrop</Menubar.Item>
                     </Menubar.SubContent>
                   </Menubar.Portal>
-                </Menubar.SubMenu>
+                </Menubar.Sub>
                 <Menubar.Separator className={separatorClass()} />
                 <Menubar.Item className={itemClass()}>Print…</Menubar.Item>
               </Menubar.Content>
@@ -87,7 +87,7 @@ export const Styled = () => {
                 <Menubar.Item className={itemClass()}>Undo</Menubar.Item>
                 <Menubar.Item className={itemClass()}>Redo</Menubar.Item>
                 <Menubar.Separator className={separatorClass()} />
-                <Menubar.SubMenu>
+                <Menubar.Sub>
                   <Menubar.SubTrigger className={subTriggerClass()}>
                     Find <span>→</span>
                   </Menubar.SubTrigger>
@@ -99,7 +99,7 @@ export const Styled = () => {
                       <Menubar.Item className={itemClass()}>Find…</Menubar.Item>
                       <Menubar.Item className={itemClass()}>Find Next</Menubar.Item>
                       <Menubar.Item className={itemClass()}>Find Previous</Menubar.Item>
-                      <Menubar.SubMenu>
+                      <Menubar.Sub>
                         <Menubar.SubTrigger className={subTriggerClass()}>
                           Advanced <span>→</span>
                         </Menubar.SubTrigger>
@@ -110,10 +110,10 @@ export const Styled = () => {
                             <Menubar.Item className={itemClass()}>Replace</Menubar.Item>
                           </Menubar.SubContent>
                         </Menubar.Portal>
-                      </Menubar.SubMenu>
+                      </Menubar.Sub>
                     </Menubar.SubContent>
                   </Menubar.Portal>
-                </Menubar.SubMenu>
+                </Menubar.Sub>
                 <Menubar.Separator className={separatorClass()} />
                 <Menubar.Item className={itemClass()}>Cut</Menubar.Item>
                 <Menubar.Item className={itemClass()}>Copy</Menubar.Item>
@@ -251,7 +251,7 @@ export const Cypress = () => {
                 <Menubar.Item className={itemClass()}>New Window</Menubar.Item>
                 <Menubar.Item className={itemClass()}>New Incognito Window</Menubar.Item>
                 <Menubar.Separator className={separatorClass()} />
-                <Menubar.SubMenu>
+                <Menubar.Sub>
                   <Menubar.SubTrigger className={subTriggerClass()}>
                     Share <span>→</span>
                   </Menubar.SubTrigger>
@@ -260,7 +260,7 @@ export const Cypress = () => {
                     <Menubar.Item className={itemClass()}>Messages</Menubar.Item>
                     <Menubar.Item className={itemClass()}>Airdrop</Menubar.Item>
                   </Menubar.SubContent>
-                </Menubar.SubMenu>
+                </Menubar.Sub>
                 <Menubar.Separator className={separatorClass()} />
                 <Menubar.Item className={itemClass()}>Print…</Menubar.Item>
               </Menubar.Content>
@@ -276,7 +276,7 @@ export const Cypress = () => {
                 </Menubar.Item>
                 <Menubar.Item className={itemClass()}>Redo</Menubar.Item>
                 <Menubar.Separator className={separatorClass()} />
-                <Menubar.SubMenu>
+                <Menubar.Sub>
                   <Menubar.SubTrigger className={subTriggerClass()}>
                     Find <span>→</span>
                   </Menubar.SubTrigger>
@@ -287,7 +287,7 @@ export const Cypress = () => {
                       <Menubar.Item className={itemClass()}>Find…</Menubar.Item>
                       <Menubar.Item className={itemClass()}>Find Next</Menubar.Item>
                       <Menubar.Item className={itemClass()}>Find Previous</Menubar.Item>
-                      <Menubar.SubMenu>
+                      <Menubar.Sub>
                         <Menubar.SubTrigger className={subTriggerClass()}>
                           Advanced <span>→</span>
                         </Menubar.SubTrigger>
@@ -298,12 +298,12 @@ export const Cypress = () => {
                             <Menubar.Item className={itemClass()}>Replace</Menubar.Item>
                           </Menubar.SubContent>
                         </Portal>
-                      </Menubar.SubMenu>
+                      </Menubar.Sub>
                     </Menubar.SubContent>
                   </Portal>
-                </Menubar.SubMenu>
+                </Menubar.Sub>
 
-                <Menubar.SubMenu>
+                <Menubar.Sub>
                   <Menubar.SubTrigger className={subTriggerClass()} disabled>
                     Speech <span>→</span>
                   </Menubar.SubTrigger>
@@ -313,9 +313,9 @@ export const Cypress = () => {
                       <Menubar.Item className={itemClass()}>Stop Speaking</Menubar.Item>
                     </Menubar.SubContent>
                   </Portal>
-                </Menubar.SubMenu>
+                </Menubar.Sub>
 
-                <Menubar.SubMenu>
+                <Menubar.Sub>
                   <Menubar.SubTrigger className={subTriggerClass()}>
                     Substitutions <span>→</span>
                   </Menubar.SubTrigger>
@@ -325,7 +325,7 @@ export const Cypress = () => {
                       <Menubar.Item className={itemClass()}>Smart Dashes</Menubar.Item>
                     </Menubar.SubContent>
                   </Portal>
-                </Menubar.SubMenu>
+                </Menubar.Sub>
                 <Menubar.Separator className={separatorClass()} />
                 <Menubar.Item className={itemClass()}>Cut</Menubar.Item>
                 <Menubar.Item className={itemClass()}>Copy</Menubar.Item>
@@ -530,7 +530,7 @@ export const Chromatic = () => {
               </Menubar.Item>
               <Menubar.Item className={itemClass()}>Redo</Menubar.Item>
               <Menubar.Separator className={separatorClass()} />
-              <Menubar.SubMenu open>
+              <Menubar.Sub open>
                 <Menubar.SubTrigger className={subTriggerClass()}>
                   Find <span>→</span>
                 </Menubar.SubTrigger>
@@ -546,7 +546,7 @@ export const Chromatic = () => {
                     <Menubar.Item className={itemClass()}>Find…</Menubar.Item>
                     <Menubar.Item className={itemClass()}>Find Next</Menubar.Item>
                     <Menubar.Item className={itemClass()}>Find Previous</Menubar.Item>
-                    <Menubar.SubMenu open>
+                    <Menubar.Sub open>
                       <Menubar.SubTrigger className={subTriggerClass()}>
                         Advanced <span>→</span>
                       </Menubar.SubTrigger>
@@ -563,11 +563,11 @@ export const Chromatic = () => {
                           <Menubar.Arrow />
                         </Menubar.SubContent>
                       </Menubar.Portal>
-                    </Menubar.SubMenu>
+                    </Menubar.Sub>
                     <Menubar.Arrow />
                   </Menubar.SubContent>
                 </Menubar.Portal>
-              </Menubar.SubMenu>
+              </Menubar.Sub>
 
               <Menubar.Separator className={separatorClass()} />
               <Menubar.Item className={itemClass()}>Cut</Menubar.Item>
@@ -604,7 +604,7 @@ export const Chromatic = () => {
                 </Menubar.Item>
                 <Menubar.Item className={itemClass()}>Redo</Menubar.Item>
                 <Menubar.Separator className={separatorClass()} />
-                <Menubar.SubMenu open>
+                <Menubar.Sub open>
                   <Menubar.SubTrigger className={subTriggerClass()}>
                     Find <span>→</span>
                   </Menubar.SubTrigger>
@@ -620,7 +620,7 @@ export const Chromatic = () => {
                       <Menubar.Item className={itemClass()}>Find…</Menubar.Item>
                       <Menubar.Item className={itemClass()}>Find Next</Menubar.Item>
                       <Menubar.Item className={itemClass()}>Find Previous</Menubar.Item>
-                      <Menubar.SubMenu open>
+                      <Menubar.Sub open>
                         <Menubar.SubTrigger className={subTriggerClass()}>
                           Advanced <span>→</span>
                         </Menubar.SubTrigger>
@@ -637,11 +637,11 @@ export const Chromatic = () => {
                             <Menubar.Arrow />
                           </Menubar.SubContent>
                         </Menubar.Portal>
-                      </Menubar.SubMenu>
+                      </Menubar.Sub>
                       <Menubar.Arrow />
                     </Menubar.SubContent>
                   </Menubar.Portal>
-                </Menubar.SubMenu>
+                </Menubar.Sub>
 
                 <Menubar.Separator className={separatorClass()} />
                 <Menubar.Item className={itemClass()}>Cut</Menubar.Item>
