@@ -1,3 +1,6 @@
 releases:
   "@radix-ui/react-accordion": minor
-  primitives: patch
+
+declined:
+  - primitives
+

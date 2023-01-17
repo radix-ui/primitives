@@ -332,7 +332,6 @@ const AccordionImpl = React.forwardRef<AccordionImplElement, AccordionImplProps>
         <Collection.Slot scope={__scopeAccordion}>
           <Primitive.div
             {...accordionProps}
-            // aria-orientation={orientation}
             data-orientation={orientation}
             ref={composedRefs}
             onKeyDown={disabled ? undefined : handleKeyDown}
