@@ -3085,6 +3085,7 @@ __metadata:
     "@radix-ui/react-collection": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
+    "@radix-ui/react-direction": "workspace:*"
     "@radix-ui/react-id": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
