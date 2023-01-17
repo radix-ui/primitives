@@ -1,0 +1,5 @@
+releases:
+  "@radix-ui/react-menubar": patch
+
+declined:
+  - primitives

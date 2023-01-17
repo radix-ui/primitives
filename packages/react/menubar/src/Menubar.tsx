@@ -575,17 +575,19 @@ const MenubarArrow = React.forwardRef<MenubarArrowElement, MenubarArrowProps>(
 MenubarArrow.displayName = ARROW_NAME;
 
 /* -------------------------------------------------------------------------------------------------
- * MenubarSubMenu
+ * MenubarSub
  * -----------------------------------------------------------------------------------------------*/
 
-interface MenubarSubMenuProps {
+const SUB_NAME = 'MenubarSub';
+
+interface MenubarSubProps {
   children?: React.ReactNode;
   open?: boolean;
   defaultOpen?: boolean;
   onOpenChange?(open: boolean): void;
 }
 
-const MenubarSubMenu: React.FC<MenubarSubMenuProps> = (props: ScopedProps<MenubarSubMenuProps>) => {
+const MenubarSub: React.FC<MenubarSubProps> = (props: ScopedProps<MenubarSubProps>) => {
   const { __scopeMenubar, children, open: openProp, onOpenChange, defaultOpen } = props;
   const menuScope = useMenuScope(__scopeMenubar);
   const [open = false, setOpen] = useControllableState({
@@ -600,6 +602,8 @@ const MenubarSubMenu: React.FC<MenubarSubMenuProps> = (props: ScopedProps<Menuba
     </MenuPrimitive.Sub>
   );
 };
+
+MenubarSub.displayName = SUB_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * MenubarSubTrigger
@@ -686,7 +690,7 @@ const RadioItem = MenubarRadioItem;
 const ItemIndicator = MenubarItemIndicator;
 const Separator = MenubarSeparator;
 const Arrow = MenubarArrow;
-const SubMenu = MenubarSubMenu;
+const Sub = MenubarSub;
 const SubTrigger = MenubarSubTrigger;
 const SubContent = MenubarSubContent;
 
@@ -707,7 +711,7 @@ export {
   MenubarItemIndicator,
   MenubarSeparator,
   MenubarArrow,
-  MenubarSubMenu,
+  MenubarSub,
   MenubarSubTrigger,
   MenubarSubContent,
   //
@@ -725,7 +729,7 @@ export {
   ItemIndicator,
   Separator,
   Arrow,
-  SubMenu,
+  Sub,
   SubTrigger,
   SubContent,
 };
@@ -744,7 +748,7 @@ export type {
   MenubarItemIndicatorProps,
   MenubarSeparatorProps,
   MenubarArrowProps,
-  MenubarSubMenuProps,
+  MenubarSubProps,
   MenubarSubTriggerProps,
   MenubarSubContentProps,
 };
