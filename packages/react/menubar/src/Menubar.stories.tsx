@@ -505,7 +505,7 @@ export const Chromatic = () => {
         </Menubar.Menu>
       </Menubar.Root>
 
-      <h1 style={{ marginTop: 200 }}>Subs</h1>
+      <h1 style={{ marginTop: 200 }}>Submenus</h1>
       <Menubar.Root value="edit" className={rootClass()}>
         <Menubar.Menu value="file">
           <Menubar.Trigger className={triggerClass()}>File</Menubar.Trigger>
