@@ -446,6 +446,52 @@ export const OutsideViewport = () => (
   </>
 );
 
+export const Horizontal = () => (
+  <>
+    <h1>Horizontal Orientation</h1>
+    <Accordion.Root type="single" className={rootClass()} orientation="horizontal">
+      <Accordion.Item className={itemClass()} value="one">
+        <Accordion.Header className={headerClass()}>
+          <Accordion.Trigger className={triggerClass()}>One</Accordion.Trigger>
+        </Accordion.Header>
+        <Accordion.Content className={contentClass()}>
+          Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate viverra
+          integer ullamcorper congue curabitur sociis, nisi malesuada scelerisque quam suscipit
+          habitant sed.
+        </Accordion.Content>
+      </Accordion.Item>
+      <Accordion.Item className={itemClass()} value="two">
+        <Accordion.Header className={headerClass()}>
+          <Accordion.Trigger className={triggerClass()}>Two</Accordion.Trigger>
+        </Accordion.Header>
+        <Accordion.Content className={contentClass()}>
+          Cursus sed mattis commodo fermentum conubia ipsum pulvinar sagittis, diam eget bibendum
+          porta nascetur ac dictum, leo tellus dis integer platea ultrices mi.
+        </Accordion.Content>
+      </Accordion.Item>
+      <Accordion.Item className={itemClass()} value="three" disabled>
+        <Accordion.Header className={headerClass()}>
+          <Accordion.Trigger className={triggerClass()}>Three (disabled)</Accordion.Trigger>
+        </Accordion.Header>
+        <Accordion.Content className={contentClass()}>
+          Sociis hac sapien turpis conubia sagittis justo dui, inceptos penatibus feugiat himenaeos
+          euismod magna, nec tempor pulvinar eu etiam mattis.
+        </Accordion.Content>
+      </Accordion.Item>
+      <Accordion.Item className={itemClass()} value="four">
+        <Accordion.Header className={headerClass()}>
+          <Accordion.Trigger className={triggerClass()}>Four</Accordion.Trigger>
+        </Accordion.Header>
+        <Accordion.Content className={contentClass()}>
+          Odio placerat <a href="#">quisque</a> sapien sagittis non sociis ligula penatibus
+          dignissim vitae, enim vulputate nullam semper potenti etiam volutpat libero.
+          <button>Cool</button>
+        </Accordion.Content>
+      </Accordion.Item>
+    </Accordion.Root>
+  </>
+);
+
 export const Chromatic = () => {
   const items = ['One', 'Two', 'Three', 'Four'];
   return (
@@ -677,21 +723,43 @@ export const Chromatic = () => {
 Chromatic.parameters = { chromatic: { disable: false } };
 
 const rootClass = css({
-  maxWidth: '20em',
+  '&[data-orientation="horizontal"]': {
+    display: 'flex',
+    maxWidth: '40em',
+    height: '50vh',
+  },
+  '&[data-orientation="vertical"]': {
+    maxWidth: '20em',
+  },
   fontFamily: 'sans-serif',
 });
 
 const itemClass = css({
-  borderBottom: '1px solid white',
+  '&[data-orientation="horizontal"]': {
+    display: 'flex',
+    borderRight: '1px solid white',
+  },
+
+  '&[data-orientation="vertical"]': {
+    borderBottom: '1px solid white',
+  },
 });
 
 const headerClass = css({
+  '&[data-orientation="horizontal"]': {
+    height: '100%',
+  },
   margin: 0,
 });
 
 const RECOMMENDED_CSS__ACCORDION__TRIGGER: any = {
   // because it's a button, we want to stretch it
-  width: '100%',
+  '&[data-orientation="horizontal"]': {
+    height: '100%',
+  },
+  '&[data-orientation="vertical"]': {
+    width: '100%',
+  },
   // and remove center text alignment in favour of inheriting
   textAlign: 'inherit',
 };

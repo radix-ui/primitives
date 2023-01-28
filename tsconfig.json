@@ -28,6 +28,7 @@
       "@radix-ui/react-id": ["./packages/react/id/src"],
       "@radix-ui/react-label": ["./packages/react/label/src"],
       "@radix-ui/react-menu": ["./packages/react/menu/src"],
+      "@radix-ui/react-menubar": ["packages/react/menubar/src"],
       "@radix-ui/react-navigation-menu": ["./packages/react/navigation-menu/src"],
       "@radix-ui/react-popover": ["./packages/react/popover/src"],
       "@radix-ui/react-popper": ["./packages/react/popper/src"],

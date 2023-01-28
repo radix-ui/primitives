@@ -226,7 +226,7 @@ HoverCardContent.displayName = CONTENT_NAME;
 type HoverCardContentImplElement = React.ElementRef<typeof PopperPrimitive.Content>;
 type DismissableLayerProps = Radix.ComponentPropsWithoutRef<typeof DismissableLayer>;
 type PopperContentProps = Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Content>;
-interface HoverCardContentImplProps extends PopperContentProps {
+interface HoverCardContentImplProps extends Omit<PopperContentProps, 'onPlaced'> {
   /**
    * Event handler called when the escape key is down.
    * Can be prevented.
