@@ -58,14 +58,13 @@ const Checkbox = React.forwardRef<CheckboxElement, CheckboxProps>(
     // We set this to true by default so that events bubble to forms without JS (SSR)
     const isFormControl = button ? Boolean(button.closest('form')) : true;
 
-    const initialCheckState = React.useRef(defaultChecked ? true : checkedProp);
-
     const [checked = false, setChecked] = useControllableState({
       prop: checkedProp,
       defaultProp: defaultChecked,
       onChange: onCheckedChange,
     });
 
+    const initialCheckState = React.useRef(checked);
     const resetCheck = React.useCallback(() => {
       setChecked(initialCheckState.current);
     }, [setChecked]);
