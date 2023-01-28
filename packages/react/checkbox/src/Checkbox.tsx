@@ -71,10 +71,11 @@ const Checkbox = React.forwardRef<CheckboxElement, CheckboxProps>(
     }, [setChecked]);
 
     React.useEffect(() => {
-      if (!button) return;
-      const form = button.closest('form');
-      form?.addEventListener('reset', resetCheck);
-      return () => form?.removeEventListener('reset', resetCheck);
+      const form = button?.form;
+      if (form) {
+        form.addEventListener('reset', resetCheck);
+        return () => form.removeEventListener('reset', resetCheck);
+      }
     }, [button, resetCheck]);
 
     return (
