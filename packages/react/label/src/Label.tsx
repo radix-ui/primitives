@@ -1,8 +1,6 @@
 import * as React from 'react';
 import { Primitive } from '@radix-ui/react-primitive';
 
-import type * as Radix from '@radix-ui/react-primitive';
-
 /* -------------------------------------------------------------------------------------------------
  * Label
  * -----------------------------------------------------------------------------------------------*/
@@ -10,7 +8,7 @@ import type * as Radix from '@radix-ui/react-primitive';
 const NAME = 'Label';
 
 type LabelElement = React.ElementRef<typeof Primitive.label>;
-type PrimitiveLabelProps = Radix.ComponentPropsWithoutRef<typeof Primitive.label>;
+type PrimitiveLabelProps = React.ComponentPropsWithoutRef<typeof Primitive.label>;
 interface LabelProps extends PrimitiveLabelProps {}
 
 const Label = React.forwardRef<LabelElement, LabelProps>((props, forwardedRef) => {

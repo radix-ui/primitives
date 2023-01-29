@@ -12,7 +12,6 @@ import { clamp } from '@radix-ui/number';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { useStateMachine } from './useStateMachine';
 
-import type * as Radix from '@radix-ui/react-primitive';
 import type { Scope } from '@radix-ui/react-context';
 
 type Direction = 'ltr' | 'rtl';
@@ -60,7 +59,7 @@ const [ScrollAreaProvider, useScrollAreaContext] =
   createScrollAreaContext<ScrollAreaContextValue>(SCROLL_AREA_NAME);
 
 type ScrollAreaElement = React.ElementRef<typeof Primitive.div>;
-type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
+type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface ScrollAreaProps extends PrimitiveDivProps {
   type?: ScrollAreaContextValue['type'];
   dir?: ScrollAreaContextValue['dir'];

@@ -17,7 +17,6 @@ import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import * as VisuallyHiddenPrimitive from '@radix-ui/react-visually-hidden';
 
-import type * as Radix from '@radix-ui/react-primitive';
 import type { Scope } from '@radix-ui/react-context';
 
 type Orientation = 'vertical' | 'horizontal';
@@ -77,7 +76,7 @@ const [ViewportContentProvider, useViewportContentContext] = createNavigationMen
 }>(NAVIGATION_MENU_NAME);
 
 type NavigationMenuElement = React.ElementRef<typeof Primitive.nav>;
-type PrimitiveNavProps = Radix.ComponentPropsWithoutRef<typeof Primitive.nav>;
+type PrimitiveNavProps = React.ComponentPropsWithoutRef<typeof Primitive.nav>;
 interface NavigationMenuProps
   extends Omit<NavigationMenuProviderProps, keyof NavigationMenuProviderPrivateProps>,
     PrimitiveNavProps {
@@ -223,7 +222,7 @@ NavigationMenu.displayName = NAVIGATION_MENU_NAME;
 const SUB_NAME = 'NavigationMenuSub';
 
 type NavigationMenuSubElement = React.ElementRef<typeof Primitive.div>;
-type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
+type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface NavigationMenuSubProps
   extends Omit<NavigationMenuProviderProps, keyof NavigationMenuProviderPrivateProps>,
     PrimitiveDivProps {
@@ -362,7 +361,7 @@ const NavigationMenuProvider: React.FC<NavigationMenuProviderProps> = (
 const LIST_NAME = 'NavigationMenuList';
 
 type NavigationMenuListElement = React.ElementRef<typeof Primitive.ul>;
-type PrimitiveUnorderedListProps = Radix.ComponentPropsWithoutRef<typeof Primitive.ul>;
+type PrimitiveUnorderedListProps = React.ComponentPropsWithoutRef<typeof Primitive.ul>;
 interface NavigationMenuListProps extends PrimitiveUnorderedListProps {}
 
 const NavigationMenuList = React.forwardRef<NavigationMenuListElement, NavigationMenuListProps>(
@@ -410,7 +409,7 @@ const [NavigationMenuItemContextProvider, useNavigationMenuItemContext] =
   createNavigationMenuContext<NavigationMenuItemContextValue>(ITEM_NAME);
 
 type NavigationMenuItemElement = React.ElementRef<typeof Primitive.li>;
-type PrimitiveListItemProps = Radix.ComponentPropsWithoutRef<typeof Primitive.li>;
+type PrimitiveListItemProps = React.ComponentPropsWithoutRef<typeof Primitive.li>;
 interface NavigationMenuItemProps extends PrimitiveListItemProps {
   value?: string;
 }
@@ -471,7 +470,7 @@ NavigationMenuItem.displayName = ITEM_NAME;
 const TRIGGER_NAME = 'NavigationMenuTrigger';
 
 type NavigationMenuTriggerElement = React.ElementRef<typeof Primitive.button>;
-type PrimitiveButtonProps = Radix.ComponentPropsWithoutRef<typeof Primitive.button>;
+type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
 interface NavigationMenuTriggerProps extends PrimitiveButtonProps {}
 
 const NavigationMenuTrigger = React.forwardRef<
@@ -584,7 +583,7 @@ const LINK_NAME = 'NavigationMenuLink';
 const LINK_SELECT = 'navigationMenu.linkSelect';
 
 type NavigationMenuLinkElement = React.ElementRef<typeof Primitive.a>;
-type PrimitiveLinkProps = Radix.ComponentPropsWithoutRef<typeof Primitive.a>;
+type PrimitiveLinkProps = React.ComponentPropsWithoutRef<typeof Primitive.a>;
 interface NavigationMenuLinkProps extends Omit<PrimitiveLinkProps, 'onSelect'> {
   active?: boolean;
   onSelect?: (event: Event) => void;
@@ -830,7 +829,7 @@ const ROOT_CONTENT_DISMISS = 'navigationMenu.rootContentDismiss';
 
 type MotionAttribute = 'to-start' | 'to-end' | 'from-start' | 'from-end';
 type NavigationMenuContentImplElement = React.ElementRef<typeof DismissableLayer>;
-type DismissableLayerProps = Radix.ComponentPropsWithoutRef<typeof DismissableLayer>;
+type DismissableLayerProps = React.ComponentPropsWithoutRef<typeof DismissableLayer>;
 
 interface NavigationMenuContentImplPrivateProps {
   value: string;

@@ -2,8 +2,6 @@ import * as React from 'react';
 import ReactDOM from 'react-dom';
 import { Primitive } from '@radix-ui/react-primitive';
 
-import type * as Radix from '@radix-ui/react-primitive';
-
 /* -------------------------------------------------------------------------------------------------
  * Portal
  * -----------------------------------------------------------------------------------------------*/
@@ -11,7 +9,7 @@ import type * as Radix from '@radix-ui/react-primitive';
 const PORTAL_NAME = 'Portal';
 
 type PortalElement = React.ElementRef<typeof Primitive.div>;
-type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
+type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface PortalProps extends PrimitiveDivProps {
   container?: HTMLElement | null;
 }

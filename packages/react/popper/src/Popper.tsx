@@ -19,7 +19,6 @@ import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { useSize } from '@radix-ui/react-use-size';
 
 import type { Placement, Middleware } from '@floating-ui/react-dom';
-import type * as Radix from '@radix-ui/react-primitive';
 import type { Scope } from '@radix-ui/react-context';
 import type { Measurable } from '@radix-ui/rect';
 
@@ -66,7 +65,7 @@ Popper.displayName = POPPER_NAME;
 const ANCHOR_NAME = 'PopperAnchor';
 
 type PopperAnchorElement = React.ElementRef<typeof Primitive.div>;
-type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
+type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface PopperAnchorProps extends PrimitiveDivProps {
   virtualRef?: React.RefObject<Measurable>;
 }
@@ -332,7 +331,7 @@ const OPPOSITE_SIDE: Record<Side, Side> = {
 };
 
 type PopperArrowElement = React.ElementRef<typeof ArrowPrimitive.Root>;
-type ArrowProps = Radix.ComponentPropsWithoutRef<typeof ArrowPrimitive.Root>;
+type ArrowProps = React.ComponentPropsWithoutRef<typeof ArrowPrimitive.Root>;
 interface PopperArrowProps extends ArrowProps {}
 
 const PopperArrow = React.forwardRef<PopperArrowElement, PopperArrowProps>(function PopperArrow(

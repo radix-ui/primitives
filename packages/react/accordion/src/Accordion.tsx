@@ -9,7 +9,6 @@ import * as CollapsiblePrimitive from '@radix-ui/react-collapsible';
 import { createCollapsibleScope } from '@radix-ui/react-collapsible';
 import { useId } from '@radix-ui/react-id';
 
-import type * as Radix from '@radix-ui/react-primitive';
 import type { Scope } from '@radix-ui/react-context';
 import { useDirection } from '@radix-ui/react-direction';
 
@@ -223,7 +222,7 @@ const [AccordionImplProvider, useAccordionContext] =
   createAccordionContext<AccordionImplContextValue>(ACCORDION_NAME);
 
 type AccordionImplElement = React.ElementRef<typeof Primitive.div>;
-type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
+type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface AccordionImplProps extends PrimitiveDivProps {
   /**
    * Whether or not an accordion is disabled from user interaction.
@@ -353,7 +352,7 @@ const [AccordionItemProvider, useAccordionItemContext] =
   createAccordionContext<AccordionItemContextValue>(ITEM_NAME);
 
 type AccordionItemElement = React.ElementRef<typeof CollapsiblePrimitive.Root>;
-type CollapsibleProps = Radix.ComponentPropsWithoutRef<typeof CollapsiblePrimitive.Root>;
+type CollapsibleProps = React.ComponentPropsWithoutRef<typeof CollapsiblePrimitive.Root>;
 interface AccordionItemProps
   extends Omit<CollapsibleProps, 'open' | 'defaultOpen' | 'onOpenChange'> {
   /**
@@ -418,7 +417,7 @@ AccordionItem.displayName = ITEM_NAME;
 const HEADER_NAME = 'AccordionHeader';
 
 type AccordionHeaderElement = React.ElementRef<typeof Primitive.h3>;
-type PrimitiveHeading3Props = Radix.ComponentPropsWithoutRef<typeof Primitive.h3>;
+type PrimitiveHeading3Props = React.ComponentPropsWithoutRef<typeof Primitive.h3>;
 interface AccordionHeaderProps extends PrimitiveHeading3Props {}
 
 /**
@@ -451,7 +450,7 @@ AccordionHeader.displayName = HEADER_NAME;
 const TRIGGER_NAME = 'AccordionTrigger';
 
 type AccordionTriggerElement = React.ElementRef<typeof CollapsiblePrimitive.Trigger>;
-type CollapsibleTriggerProps = Radix.ComponentPropsWithoutRef<typeof CollapsiblePrimitive.Trigger>;
+type CollapsibleTriggerProps = React.ComponentPropsWithoutRef<typeof CollapsiblePrimitive.Trigger>;
 interface AccordionTriggerProps extends CollapsibleTriggerProps {}
 
 /**
@@ -489,7 +488,7 @@ AccordionTrigger.displayName = TRIGGER_NAME;
 const CONTENT_NAME = 'AccordionContent';
 
 type AccordionContentElement = React.ElementRef<typeof CollapsiblePrimitive.Content>;
-type CollapsibleContentProps = Radix.ComponentPropsWithoutRef<typeof CollapsiblePrimitive.Content>;
+type CollapsibleContentProps = React.ComponentPropsWithoutRef<typeof CollapsiblePrimitive.Content>;
 interface AccordionContentProps extends CollapsibleContentProps {}
 
 /**

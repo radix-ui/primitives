@@ -9,7 +9,6 @@ import * as ToggleGroupPrimitive from '@radix-ui/react-toggle-group';
 import { createToggleGroupScope } from '@radix-ui/react-toggle-group';
 import { useDirection } from '@radix-ui/react-direction';
 
-import type * as Radix from '@radix-ui/react-primitive';
 import type { Scope } from '@radix-ui/react-context';
 
 /* -------------------------------------------------------------------------------------------------
@@ -26,7 +25,7 @@ const [createToolbarContext, createToolbarScope] = createContextScope(TOOLBAR_NA
 const useRovingFocusGroupScope = createRovingFocusGroupScope();
 const useToggleGroupScope = createToggleGroupScope();
 
-type RovingFocusGroupProps = Radix.ComponentPropsWithoutRef<typeof RovingFocusGroup.Root>;
+type RovingFocusGroupProps = React.ComponentPropsWithoutRef<typeof RovingFocusGroup.Root>;
 type ToolbarContextValue = {
   orientation: RovingFocusGroupProps['orientation'];
   dir: RovingFocusGroupProps['dir'];
@@ -35,7 +34,7 @@ const [ToolbarProvider, useToolbarContext] =
   createToolbarContext<ToolbarContextValue>(TOOLBAR_NAME);
 
 type ToolbarElement = React.ElementRef<typeof Primitive.div>;
-type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
+type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface ToolbarProps extends PrimitiveDivProps {
   orientation?: RovingFocusGroupProps['orientation'];
   loop?: RovingFocusGroupProps['loop'];
@@ -78,7 +77,7 @@ Toolbar.displayName = TOOLBAR_NAME;
 const SEPARATOR_NAME = 'ToolbarSeparator';
 
 type ToolbarSeparatorElement = React.ElementRef<typeof SeparatorPrimitive.Root>;
-type SeparatorProps = Radix.ComponentPropsWithoutRef<typeof SeparatorPrimitive.Root>;
+type SeparatorProps = React.ComponentPropsWithoutRef<typeof SeparatorPrimitive.Root>;
 interface ToolbarSeparatorProps extends SeparatorProps {}
 
 const ToolbarSeparator = React.forwardRef<ToolbarSeparatorElement, ToolbarSeparatorProps>(
@@ -104,7 +103,7 @@ ToolbarSeparator.displayName = SEPARATOR_NAME;
 const BUTTON_NAME = 'ToolbarButton';
 
 type ToolbarButtonElement = React.ElementRef<typeof Primitive.button>;
-type PrimitiveButtonProps = Radix.ComponentPropsWithoutRef<typeof Primitive.button>;
+type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
 interface ToolbarButtonProps extends PrimitiveButtonProps {}
 
 const ToolbarButton = React.forwardRef<ToolbarButtonElement, ToolbarButtonProps>(
@@ -128,7 +127,7 @@ ToolbarButton.displayName = BUTTON_NAME;
 const LINK_NAME = 'ToolbarLink';
 
 type ToolbarLinkElement = React.ElementRef<typeof Primitive.a>;
-type PrimitiveLinkProps = Radix.ComponentPropsWithoutRef<typeof Primitive.a>;
+type PrimitiveLinkProps = React.ComponentPropsWithoutRef<typeof Primitive.a>;
 interface ToolbarLinkProps extends PrimitiveLinkProps {}
 
 const ToolbarLink = React.forwardRef<ToolbarLinkElement, ToolbarLinkProps>(
@@ -158,7 +157,7 @@ ToolbarLink.displayName = LINK_NAME;
 const TOGGLE_GROUP_NAME = 'ToolbarToggleGroup';
 
 type ToolbarToggleGroupElement = React.ElementRef<typeof ToggleGroupPrimitive.Root>;
-type ToggleGroupProps = Radix.ComponentPropsWithoutRef<typeof ToggleGroupPrimitive.Root>;
+type ToggleGroupProps = React.ComponentPropsWithoutRef<typeof ToggleGroupPrimitive.Root>;
 interface ToolbarToggleGroupSingleProps extends Extract<ToggleGroupProps, { type: 'single' }> {}
 interface ToolbarToggleGroupMultipleProps extends Extract<ToggleGroupProps, { type: 'multiple' }> {}
 
@@ -195,7 +194,7 @@ ToolbarToggleGroup.displayName = TOGGLE_GROUP_NAME;
 const TOGGLE_ITEM_NAME = 'ToolbarToggleItem';
 
 type ToolbarToggleItemElement = React.ElementRef<typeof ToggleGroupPrimitive.Item>;
-type ToggleGroupItemProps = Radix.ComponentPropsWithoutRef<typeof ToggleGroupPrimitive.Item>;
+type ToggleGroupItemProps = React.ComponentPropsWithoutRef<typeof ToggleGroupPrimitive.Item>;
 interface ToolbarToggleItemProps extends ToggleGroupItemProps {}
 
 const ToolbarToggleItem = React.forwardRef<ToolbarToggleItemElement, ToolbarToggleItemProps>(

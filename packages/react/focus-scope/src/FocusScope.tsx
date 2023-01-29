@@ -3,8 +3,6 @@ import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { Primitive } from '@radix-ui/react-primitive';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 
-import type * as Radix from '@radix-ui/react-primitive';
-
 const AUTOFOCUS_ON_MOUNT = 'focusScope.autoFocusOnMount';
 const AUTOFOCUS_ON_UNMOUNT = 'focusScope.autoFocusOnUnmount';
 const EVENT_OPTIONS = { bubbles: false, cancelable: true };
@@ -18,7 +16,7 @@ type FocusableTarget = HTMLElement | { focus(): void };
 const FOCUS_SCOPE_NAME = 'FocusScope';
 
 type FocusScopeElement = React.ElementRef<typeof Primitive.div>;
-type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
+type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface FocusScopeProps extends PrimitiveDivProps {
   /**
    * When `true`, tabbing from last item will focus first tabbable
