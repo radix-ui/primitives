@@ -166,6 +166,7 @@ export const WithinForm = () => {
       <br />
       <br />
 
+      <button type="reset">Reset</button>
       <button>Submit</button>
     </form>
   );

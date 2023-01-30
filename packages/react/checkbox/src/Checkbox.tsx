@@ -62,6 +62,15 @@ const Checkbox = React.forwardRef<CheckboxElement, CheckboxProps>(
       defaultProp: defaultChecked,
       onChange: onCheckedChange,
     });
+    const initialCheckedStateRef = React.useRef(checked);
+    React.useEffect(() => {
+      const form = button?.form;
+      if (form) {
+        const reset = () => setChecked(initialCheckedStateRef.current);
+        form.addEventListener('reset', reset);
+        return () => form.removeEventListener('reset', reset);
+      }
+    }, [button, setChecked]);
 
     return (
       <CheckboxProvider scope={__scopeCheckbox} state={checked} disabled={disabled}>
