@@ -1,3 +1,5 @@
 releases:
-  "@radix-ui/react-checkbox": minor
-  primitives: minor
+  "@radix-ui/react-checkbox": patch
+
+declined:
+  - primitives
