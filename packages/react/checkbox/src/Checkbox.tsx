@@ -63,7 +63,6 @@ const Checkbox = React.forwardRef<CheckboxElement, CheckboxProps>(
       onChange: onCheckedChange,
     });
     const initialCheckedStateRef = React.useRef(checked);
-
     React.useEffect(() => {
       const form = button?.form;
       if (form) {
