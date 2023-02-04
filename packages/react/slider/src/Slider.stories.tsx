@@ -296,6 +296,8 @@ export const WithinForm = () => {
           <Slider.Thumb className={thumbClass()} />
         </Slider.Root>
       </fieldset>
+
+      <button type="reset">Reset</button>
     </form>
   );
 };

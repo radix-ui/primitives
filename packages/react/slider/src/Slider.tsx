@@ -109,6 +109,15 @@ const Slider = React.forwardRef<SliderElement, SliderProps>(
       },
     });
     const valuesBeforeSlideStartRef = React.useRef(values);
+    const initialValuesRef = React.useRef(values);
+    React.useEffect(() => {
+      const form = slider?.closest('form');
+      if (form) {
+        const reset = () => setValues(initialValuesRef.current);
+        form.addEventListener('reset', reset);
+        return () => form.removeEventListener('reset', reset);
+      }
+    }, [slider, setValues]);
 
     function handleSlideStart(value: number) {
       const closestIndex = getClosestValueIndex(values, value);
