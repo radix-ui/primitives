@@ -78,7 +78,12 @@ export const Unset = () => (
 );
 
 export const WithinForm = () => {
-  const [data, setData] = React.useState({ optional: '', required: '', stopprop: '' });
+  const [data, setData] = React.useState({
+    optional: '',
+    required: '',
+    withDefault: '',
+    stopprop: '',
+  });
 
   return (
     <form
@@ -125,6 +130,24 @@ export const WithinForm = () => {
       <br />
 
       <fieldset>
+        <legend>with default: {data.withDefault}</legend>
+        <RadioGroup.Root className={rootClass()} name="withDefault" defaultValue="2">
+          <RadioGroup.Item className={itemClass()} value="1">
+            <RadioGroup.Indicator className={indicatorClass()} />
+          </RadioGroup.Item>
+          <RadioGroup.Item className={itemClass()} value="2">
+            <RadioGroup.Indicator className={indicatorClass()} />
+          </RadioGroup.Item>
+          <RadioGroup.Item className={itemClass()} value="3">
+            <RadioGroup.Indicator className={indicatorClass()} />
+          </RadioGroup.Item>
+        </RadioGroup.Root>
+      </fieldset>
+
+      <br />
+      <br />
+
+      <fieldset>
         <legend>stop propagation value: {data.stopprop}</legend>
         <RadioGroup.Root className={rootClass()} name="stopprop">
           <RadioGroup.Item
@@ -154,6 +177,7 @@ export const WithinForm = () => {
       <br />
       <br />
 
+      <button type="reset">Reset</button>
       <button>Submit</button>
     </form>
   );

@@ -75,6 +75,17 @@ const RadioGroup = React.forwardRef<RadioGroupElement, RadioGroupProps>(
       defaultProp: defaultValue,
       onChange: onValueChange,
     });
+    const initialValueRef = React.useRef(value);
+    const [radioGroup, setRadioGroup] = React.useState<HTMLDivElement | null>(null);
+    const composedRefs = useComposedRefs(forwardedRef, (node) => setRadioGroup(node));
+    React.useEffect(() => {
+      const form = radioGroup?.closest('form');
+      if (form) {
+        const reset = () => setValue(initialValueRef.current);
+        form.addEventListener('reset', reset);
+        return () => form.removeEventListener('reset', reset);
+      }
+    }, [radioGroup, setValue]);
 
     return (
       <RadioGroupProvider
@@ -99,7 +110,7 @@ const RadioGroup = React.forwardRef<RadioGroupElement, RadioGroupProps>(
             data-disabled={disabled ? '' : undefined}
             dir={direction}
             {...groupProps}
-            ref={forwardedRef}
+            ref={composedRefs}
           />
         </RovingFocusGroup.Root>
       </RadioGroupProvider>
