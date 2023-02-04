@@ -54,6 +54,15 @@ const Switch = React.forwardRef<SwitchElement, SwitchProps>(
       defaultProp: defaultChecked,
       onChange: onCheckedChange,
     });
+    const initialCheckedStateRef = React.useRef(checked);
+    React.useEffect(() => {
+      const form = button?.form;
+      if (form) {
+        const reset = () => setChecked(initialCheckedStateRef.current);
+        form.addEventListener('reset', reset);
+        return () => form.removeEventListener('reset', reset);
+      }
+    }, [button, setChecked]);
 
     return (
       <SwitchProvider scope={__scopeSwitch} checked={checked} disabled={disabled}>

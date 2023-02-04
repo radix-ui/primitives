@@ -78,6 +78,16 @@ export const WithinForm = () => {
       <br />
 
       <fieldset>
+        <legend>required checked: {String(data.required)}</legend>
+        <Switch.Root className={rootClass()} name="default_checked" defaultChecked>
+          <Switch.Thumb className={thumbClass()} />
+        </Switch.Root>
+      </fieldset>
+
+      <br />
+      <br />
+
+      <fieldset>
         <legend>stop propagation checked: {String(data.stopprop)}</legend>
         <Switch.Root
           className={rootClass()}
@@ -91,6 +101,7 @@ export const WithinForm = () => {
       <br />
       <br />
 
+      <button type="reset">Reset</button>
       <button>Submit</button>
     </form>
   );
