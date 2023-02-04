@@ -139,6 +139,17 @@ const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
   const nativeSelectKey = Array.from(nativeOptionsSet)
     .map((option) => option.props.value)
     .join(';');
+  const initialSelectedOptionRef = React.useRef(value);
+  React.useEffect(() => {
+    const form = trigger?.form;
+    if (form) {
+      const reset = () => {
+        setValue(initialSelectedOptionRef.current);
+      };
+      form.addEventListener('reset', reset);
+      return () => form.removeEventListener('reset', reset);
+    }
+  }, [trigger, setValue]);
 
   return (
     <PopperPrimitive.Root {...popperScope}>
@@ -191,7 +202,7 @@ const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
             onChange={(event) => setValue(event.target.value)}
             disabled={disabled}
           >
-            {value === undefined ? <option value="" /> : null}
+            {!value ? <option value="" /> : null}
             {Array.from(nativeOptionsSet)}
           </BubbleSelect>
         ) : null}
@@ -330,11 +341,12 @@ const SelectValue = React.forwardRef<SelectValueElement, SelectValueProps>(
       <Primitive.span
         {...valueProps}
         ref={composedRefs}
+        key={context.value}
         // we don't want events from the portalled `SelectValue` children to bubble
         // through the item they came from
         style={{ pointerEvents: 'none' }}
       >
-        {context.value === undefined && placeholder !== undefined ? placeholder : children}
+        {!context.value && placeholder !== undefined ? placeholder : children}
       </Primitive.span>
     );
   }

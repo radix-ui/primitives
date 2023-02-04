@@ -504,6 +504,7 @@ export const WithinForm = () => {
         </Select.Root>
       </Label>
       <br />
+      <button type="reset">Reset</button>
       <button type="submit">Submit</button>
       <br />
       <pre>{JSON.stringify(data, null, 2)}</pre>
@@ -567,6 +568,7 @@ export const DisabledWithinForm = () => {
         </Select.Root>
       </Label>
       <br />
+      <button type="reset">Reset</button>
       <button type="submit">Submit</button>
       <br />
       <pre>{JSON.stringify(data, null, 2)}</pre>
@@ -630,6 +632,7 @@ export const RequiredWithinForm = () => {
         </Select.Root>
       </Label>
       <br />
+      <button type="reset">Reset</button>
       <button type="submit">Submit</button>
       <br />
       <pre>{JSON.stringify(data, null, 2)}</pre>
