@@ -12,7 +12,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Read Node version
-        run: echo "##[set-output name=NVMRC;]$(cat .nvmrc)"
+        run: echo "NVMRC=$(cat .nvmrc)" >> $GITHUB_OUTPUT
         id: nvm
       - name: Set Node version
         uses: actions/setup-node@v1
@@ -20,7 +20,7 @@ jobs:
           node-version: '${{ steps.nvm.outputs.NVMRC }}'
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn config get cacheFolder)"
+        run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
       - uses: actions/cache@v1
         with:
           path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
