@@ -15,10 +15,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Set node version
+      - name: Read Node version
         id: node_version
-        run: echo ::set-output name=NVMRC::$(cat .nvmrc)
-      - uses: actions/setup-node@v2
+        run: echo "NVMRC=$(cat .nvmrc)" >> $GITHUB_OUTPUT
+      - name: Set Node version
+        uses: actions/setup-node@v2
         with:
           node-version: '${{ steps.node_version.outputs.NVMRC }}'
           registry-url: 'https://registry.npmjs.org'
