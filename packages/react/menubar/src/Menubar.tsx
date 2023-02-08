@@ -382,9 +382,14 @@ const MenubarContent = React.forwardRef<MenubarContentElement, MenubarContentPro
         )}
         style={{
           ...props.style,
-          // re-namespace exposed content custom property
-          ['--radix-menubar-content-transform-origin' as any]:
-            'var(--radix-popper-transform-origin)',
+          // re-namespace exposed content custom properties
+          ...{
+            '--radix-menubar-content-transform-origin': 'var(--radix-popper-transform-origin)',
+            '--radix-menubar-content-available-width': 'var(--radix-popper-available-width)',
+            '--radix-menubar-content-available-height': 'var(--radix-popper-available-height)',
+            '--radix-menubar-trigger-width': 'var(--radix-popper-anchor-width)',
+            '--radix-menubar-trigger-height': 'var(--radix-popper-anchor-height)',
+          },
         }}
       />
     );
@@ -655,9 +660,14 @@ const MenubarSubContent = React.forwardRef<MenubarSubContentElement, MenubarSubC
         ref={forwardedRef}
         style={{
           ...props.style,
-          // re-namespace exposed content custom property
-          ['--radix-menubar-content-transform-origin' as any]:
-            'var(--radix-popper-transform-origin)',
+          // re-namespace exposed content custom properties
+          ...{
+            '--radix-menubar-content-transform-origin': 'var(--radix-popper-transform-origin)',
+            '--radix-menubar-content-available-width': 'var(--radix-popper-available-width)',
+            '--radix-menubar-content-available-height': 'var(--radix-popper-available-height)',
+            '--radix-menubar-trigger-width': 'var(--radix-popper-anchor-width)',
+            '--radix-menubar-trigger-height': 'var(--radix-popper-anchor-height)',
+          },
         }}
       />
     );
