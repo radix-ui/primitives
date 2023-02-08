@@ -339,12 +339,17 @@ const HoverCardContentImpl = React.forwardRef<
         ref={composedRefs}
         style={{
           ...contentProps.style,
-          // re-namespace exposed content custom property
-          ['--radix-hover-card-content-transform-origin' as any]:
-            'var(--radix-popper-transform-origin)',
           userSelect: containSelection ? 'text' : undefined,
           // Safari requires prefix
           WebkitUserSelect: containSelection ? 'text' : undefined,
+          // re-namespace exposed content custom properties
+          ...{
+            '--radix-hover-card-content-transform-origin': 'var(--radix-popper-transform-origin)',
+            '--radix-hover-card-content-available-width': 'var(--radix-popper-available-width)',
+            '--radix-hover-card-content-available-height': 'var(--radix-popper-available-height)',
+            '--radix-hover-card-trigger-width': 'var(--radix-popper-anchor-width)',
+            '--radix-hover-card-trigger-height': 'var(--radix-popper-anchor-height)',
+          },
         }}
       />
     </DismissableLayer>

@@ -407,9 +407,14 @@ const PopoverContentImpl = React.forwardRef<PopoverContentImplElement, PopoverCo
             ref={forwardedRef}
             style={{
               ...contentProps.style,
-              // re-namespace exposed content custom property
-              ['--radix-popover-content-transform-origin' as any]:
-                'var(--radix-popper-transform-origin)',
+              // re-namespace exposed content custom properties
+              ...{
+                '--radix-popover-content-transform-origin': 'var(--radix-popper-transform-origin)',
+                '--radix-popover-content-available-width': 'var(--radix-popper-available-width)',
+                '--radix-popover-content-available-height': 'var(--radix-popper-available-height)',
+                '--radix-popover-trigger-width': 'var(--radix-popper-anchor-width)',
+                '--radix-popover-trigger-height': 'var(--radix-popper-anchor-height)',
+              },
             }}
           />
         </DismissableLayer>

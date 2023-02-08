@@ -540,9 +540,14 @@ const TooltipContentImpl = React.forwardRef<TooltipContentImplElement, TooltipCo
           ref={forwardedRef}
           style={{
             ...contentProps.style,
-            // re-namespace exposed content custom property
-            ['--radix-tooltip-content-transform-origin' as any]:
-              'var(--radix-popper-transform-origin)',
+            // re-namespace exposed content custom properties
+            ...{
+              '--radix-tooltip-content-transform-origin': 'var(--radix-popper-transform-origin)',
+              '--radix-tooltip-content-available-width': 'var(--radix-popper-available-width)',
+              '--radix-tooltip-content-available-height': 'var(--radix-popper-available-height)',
+              '--radix-tooltip-trigger-width': 'var(--radix-popper-anchor-width)',
+              '--radix-tooltip-trigger-height': 'var(--radix-popper-anchor-height)',
+            },
           }}
         >
           <Slottable>{children}</Slottable>

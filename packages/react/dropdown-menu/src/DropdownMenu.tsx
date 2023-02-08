@@ -197,9 +197,16 @@ const DropdownMenuContent = React.forwardRef<DropdownMenuContentElement, Dropdow
         })}
         style={{
           ...props.style,
-          // re-namespace exposed content custom property
-          ['--radix-dropdown-menu-content-transform-origin' as any]:
-            'var(--radix-popper-transform-origin)',
+          // re-namespace exposed content custom properties
+          ...{
+            '--radix-dropdown-menu-content-transform-origin':
+              'var(--radix-popper-transform-origin)',
+            '--radix-dropdown-menu-content-available-width': 'var(--radix-popper-available-width)',
+            '--radix-dropdown-menu-content-available-height':
+              'var(--radix-popper-available-height)',
+            '--radix-dropdown-menu-trigger-width': 'var(--radix-popper-anchor-width)',
+            '--radix-dropdown-menu-trigger-height': 'var(--radix-popper-anchor-height)',
+          },
         }}
       />
     );
@@ -467,9 +474,14 @@ const DropdownMenuSubContent = React.forwardRef<
       ref={forwardedRef}
       style={{
         ...props.style,
-        // re-namespace exposed content custom property
-        ['--radix-dropdown-menu-content-transform-origin' as any]:
-          'var(--radix-popper-transform-origin)',
+        // re-namespace exposed content custom properties
+        ...{
+          '--radix-dropdown-menu-content-transform-origin': 'var(--radix-popper-transform-origin)',
+          '--radix-dropdown-menu-content-available-width': 'var(--radix-popper-available-width)',
+          '--radix-dropdown-menu-content-available-height': 'var(--radix-popper-available-height)',
+          '--radix-dropdown-menu-trigger-width': 'var(--radix-popper-anchor-width)',
+          '--radix-dropdown-menu-trigger-height': 'var(--radix-popper-anchor-height)',
+        },
       }}
     />
   );
