@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-checkbox",
-  "version": "1.0.2-rc.6",
+  "version": "1.0.2-rc.7",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
