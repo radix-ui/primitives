@@ -1188,8 +1188,9 @@ const MenuSubContent = React.forwardRef<MenuSubContentElement, MenuSubContentPro
                 if (event.target !== subContext.trigger) context.onOpenChange(false);
               })}
               onEscapeKeyDown={composeEventHandlers(props.onEscapeKeyDown, (event) => {
-                event.preventDefault();
                 rootContext.onClose();
+                // ensure pressing escape in submenu doesn't escape full screen mode
+                event.preventDefault();
               })}
               onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
                 // Submenu key events bubble through portals. We only care about keys in this menu.
