@@ -753,6 +753,7 @@ type CheckedState = boolean | 'indeterminate';
 
 interface MenuCheckboxItemProps extends MenuItemProps {
   checked?: CheckedState;
+  // `onCheckedChange` can never be called with `"indeterminate"` from the inside
   onCheckedChange?: (checked: boolean) => void;
 }
 
