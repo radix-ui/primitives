@@ -352,14 +352,10 @@ export const Cypress = () => {
 
 export const Chromatic = () => {
   const checkboxItems = [
-    { label: 'Bold', state: React.useState<boolean | 'indeterminate'>(false) },
-    { label: 'Italic', state: React.useState<boolean | 'indeterminate'>(true) },
-    { label: 'Underline', state: React.useState<boolean | 'indeterminate'>(false) },
-    {
-      label: 'Strikethrough',
-      state: React.useState<boolean | 'indeterminate'>(false),
-      disabled: true,
-    },
+    { label: 'Bold', state: React.useState(false) },
+    { label: 'Italic', state: React.useState(true) },
+    { label: 'Underline', state: React.useState(false) },
+    { label: 'Strikethrough', state: React.useState(false), disabled: true },
   ];
   const files = ['README.md', 'index.js', 'page.css'];
   const [file, setFile] = React.useState(files[1]);
