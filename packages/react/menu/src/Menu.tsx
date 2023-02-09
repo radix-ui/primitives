@@ -755,7 +755,8 @@ type CheckedState = boolean | 'indeterminate';
 
 interface MenuCheckboxItemProps extends MenuItemProps {
   checked?: CheckedState;
-  onCheckedChange?: (checked: CheckedState) => void;
+  // `onCheckedChange` can never be called with `"indeterminate"` from the inside
+  onCheckedChange?: (checked: boolean) => void;
 }
 
 const MenuCheckboxItem = React.forwardRef<MenuCheckboxItemElement, MenuCheckboxItemProps>(
