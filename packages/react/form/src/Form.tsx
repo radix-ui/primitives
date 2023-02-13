@@ -1,24 +1,34 @@
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
+import { createContextScope } from '@radix-ui/react-context';
 import { useId } from '@radix-ui/react-id';
 import { Label } from '@radix-ui/react-label';
 import { Primitive } from '@radix-ui/react-primitive';
 
+import type * as Radix from '@radix-ui/react-primitive';
+import type { Scope } from '@radix-ui/react-context';
+
+type ScopedProps<P> = P & { __scopeForm?: Scope };
+const [createFormContext, createFormScope] = createContextScope('Form');
+
 /* -------------------------------------------------------------------------------------------------
  * Form
  * -----------------------------------------------------------------------------------------------*/
+
+const FORM_NAME = 'Form';
 
 type AriaDescriptionContextValue = {
   onDescriptionIdAdd: (id: string) => void;
   onDescriptionIdRemove: (id: string) => void;
   getAriaDescription(): string | undefined;
 };
-const AriaDescriptionContext = React.createContext<AriaDescriptionContextValue>({
-  onDescriptionIdAdd: () => {},
-  onDescriptionIdRemove: () => {},
-  getAriaDescription: () => undefined,
-});
+const [AriaDescriptionProvider, useAriaDescriptionContext] =
+  createFormContext<AriaDescriptionContextValue>(FORM_NAME, {
+    onDescriptionIdAdd: () => {},
+    onDescriptionIdRemove: () => {},
+    getAriaDescription: () => undefined,
+  });
 
 interface ServerError {
   code: string;
@@ -29,111 +39,121 @@ type ServerErrors = {
 } & {
   global?: ServerError[];
 };
-const ServerErrorsContext = React.createContext<ServerErrors>({});
+type ServerErrorsContextValue = {
+  serverErrors: ServerErrors;
+};
+const [ServerErrorsProvider, useServerErrorsContext] = createFormContext<ServerErrorsContextValue>(
+  FORM_NAME,
+  { serverErrors: {} }
+);
 
 type FormElement = React.ElementRef<typeof Primitive.form>;
-type PrimitiveFormProps = React.ComponentPropsWithoutRef<typeof Primitive.form>;
+type PrimitiveFormProps = Radix.ComponentPropsWithoutRef<typeof Primitive.form>;
 interface FormProps extends PrimitiveFormProps {
   serverErrors?: ServerErrors;
   onServerErrorsChange?: (serverErrors: undefined) => void;
 }
 
-const Form = React.forwardRef<FormElement, FormProps>((props, forwardedRef) => {
-  const { serverErrors = {}, onServerErrorsChange, ...rootProps } = props;
-  const formRef = React.useRef<HTMLFormElement>(null);
-  const composedFormRef = useComposedRefs(forwardedRef, formRef);
+const Form = React.forwardRef<FormElement, FormProps>(
+  (props: ScopedProps<FormProps>, forwardedRef) => {
+    const { __scopeForm, serverErrors = {}, onServerErrorsChange, ...rootProps } = props;
+    const formRef = React.useRef<HTMLFormElement>(null);
+    const composedFormRef = useComposedRefs(forwardedRef, formRef);
 
-  // focus first invalid control after server errors are set
-  React.useEffect(() => {
-    const form = formRef.current;
-    const errorKeys = Object.keys(serverErrors);
-    if (form && errorKeys.length > 0) {
-      // if we only have a global error, focus the submit button which is described by the global error
-      if (errorKeys.length === 1 && errorKeys[0] === 'global') {
-        const submit: HTMLButtonElement | null = form.querySelector('button[type="submit"]');
-        submit?.focus();
-      }
-      // otherwise, focus the first invalid control
-      else {
-        const elements = form.elements;
-        const [firstInvalidControl] = Array.from(elements).filter(isHTMLElement).filter(isInvalid);
-        firstInvalidControl?.focus();
-      }
-    }
-  }, [serverErrors]);
-
-  // allow re-submitting the form over server errors
-  React.useEffect(() => {
-    const hasErrors = serverErrors && Object.keys(serverErrors).length > 0;
-    if (hasErrors) {
+    // focus first invalid control after server errors are set
+    React.useEffect(() => {
       const form = formRef.current;
-      const isValidForm = form?.checkValidity();
-      const submit: HTMLButtonElement | undefined | null =
-        form?.querySelector('button[type="submit"]');
-      if (!isValidForm && submit) {
-        const handleSubmitClick = (event: Event) => {
-          // clear server errors
-          onServerErrorsChange?.(undefined);
-          // re-submit form
-          setTimeout(() => submit.click(), 0);
-        };
-        submit.addEventListener('click', handleSubmitClick, { once: true });
-        return () => {
-          submit.removeEventListener('click', handleSubmitClick);
-        };
+      const errorKeys = Object.keys(serverErrors);
+      if (form && errorKeys.length > 0) {
+        // if we only have a global error, focus the submit button which is described by the global error
+        if (errorKeys.length === 1 && errorKeys[0] === 'global') {
+          const submit: HTMLButtonElement | null = form.querySelector('button[type="submit"]');
+          submit?.focus();
+        }
+        // otherwise, focus the first invalid control
+        else {
+          const elements = form.elements;
+          const [firstInvalidControl] = Array.from(elements)
+            .filter(isHTMLElement)
+            .filter(isInvalid);
+          firstInvalidControl?.focus();
+        }
       }
-    }
-  }, [serverErrors, onServerErrorsChange]);
+    }, [serverErrors]);
 
-  const [globalMessageId, setGlobalMessageId] = React.useState<string | undefined>(undefined);
-  const handleGlobalMessageIdAdd = React.useCallback((id: string) => setGlobalMessageId(id), []);
-  const handleGlobalMessageIdRemove = React.useCallback(
-    (id: string) => setGlobalMessageId(undefined),
-    []
-  );
-  const getAriaDescription = React.useCallback(() => globalMessageId, [globalMessageId]);
-  const ariaDescriptionContextValue = React.useMemo(
-    () => ({
-      onDescriptionIdAdd: handleGlobalMessageIdAdd,
-      onDescriptionIdRemove: handleGlobalMessageIdRemove,
-      getAriaDescription,
-    }),
-    [getAriaDescription, handleGlobalMessageIdAdd, handleGlobalMessageIdRemove]
-  );
-
-  return (
-    <AriaDescriptionContext.Provider value={ariaDescriptionContextValue}>
-      <ServerErrorsContext.Provider value={serverErrors}>
-        <Primitive.form
-          {...rootProps}
-          ref={composedFormRef}
-          onInvalid={(event) => {
-            // focus first invalid control
-            const elements = event.currentTarget.elements;
-            const [firstInvalidControl] = Array.from(elements)
-              .filter(isHTMLElement)
-              .filter(isInvalid);
-
-            if (firstInvalidControl === event.target) {
-              firstInvalidControl.focus();
-            }
-
-            // prevent default browser UI for form validation
-            event.preventDefault();
-          }}
-          onReset={composeEventHandlers(props.onReset, (event) => {
+    // allow re-submitting the form over server errors
+    React.useEffect(() => {
+      const hasErrors = serverErrors && Object.keys(serverErrors).length > 0;
+      if (hasErrors) {
+        const form = formRef.current;
+        const isValidForm = form?.checkValidity();
+        const submit: HTMLButtonElement | undefined | null =
+          form?.querySelector('button[type="submit"]');
+        if (!isValidForm && submit) {
+          const handleSubmitClick = (event: Event) => {
+            // clear server errors
             onServerErrorsChange?.(undefined);
-          })}
-        />
-      </ServerErrorsContext.Provider>
-    </AriaDescriptionContext.Provider>
-  );
-});
-Form.displayName = 'Form';
+            // re-submit form
+            setTimeout(() => submit.click(), 0);
+          };
+          submit.addEventListener('click', handleSubmitClick, { once: true });
+          return () => {
+            submit.removeEventListener('click', handleSubmitClick);
+          };
+        }
+      }
+    }, [serverErrors, onServerErrorsChange]);
+
+    const [globalMessageId, setGlobalMessageId] = React.useState<string | undefined>(undefined);
+    const handleGlobalMessageIdAdd = React.useCallback((id: string) => setGlobalMessageId(id), []);
+    const handleGlobalMessageIdRemove = React.useCallback(
+      (id: string) => setGlobalMessageId(undefined),
+      []
+    );
+    const getAriaDescription = React.useCallback(() => globalMessageId, [globalMessageId]);
+
+    return (
+      <AriaDescriptionProvider
+        scope={__scopeForm}
+        onDescriptionIdAdd={handleGlobalMessageIdAdd}
+        onDescriptionIdRemove={handleGlobalMessageIdRemove}
+        getAriaDescription={getAriaDescription}
+      >
+        <ServerErrorsProvider scope={__scopeForm} serverErrors={serverErrors}>
+          <Primitive.form
+            {...rootProps}
+            ref={composedFormRef}
+            onInvalid={(event) => {
+              // focus first invalid control
+              const elements = event.currentTarget.elements;
+              const [firstInvalidControl] = Array.from(elements)
+                .filter(isHTMLElement)
+                .filter(isInvalid);
+
+              if (firstInvalidControl === event.target) {
+                firstInvalidControl.focus();
+              }
+
+              // prevent default browser UI for form validation
+              event.preventDefault();
+            }}
+            onReset={composeEventHandlers(props.onReset, (event) => {
+              onServerErrorsChange?.(undefined);
+            })}
+          />
+        </ServerErrorsProvider>
+      </AriaDescriptionProvider>
+    );
+  }
+);
+
+Form.displayName = FORM_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * FormField
  * -----------------------------------------------------------------------------------------------*/
+
+const FIELD_NAME = 'FormField';
 
 type FormFieldContextValue = {
   id: string;
@@ -145,111 +165,120 @@ type FormFieldContextValue = {
   customErrors: Record<string, boolean>;
   setCustomErrors: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
 };
-const FormFieldContext = React.createContext<FormFieldContextValue>({} as any);
+const [FormFieldProvider, useFormFieldContext] = createFormContext<FormFieldContextValue>(
+  FIELD_NAME,
+  {} as any
+);
 
 type FormFieldElement = React.ElementRef<typeof Primitive.div>;
-type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
+type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface FormFieldProps extends PrimitiveDivProps {
   name: string;
 }
 
-const FormField = React.forwardRef<FormFieldElement, FormFieldProps>((props, forwardedRef) => {
-  const { name, ...fieldProps } = props;
+const FormField = React.forwardRef<FormFieldElement, FormFieldProps>(
+  (props: ScopedProps<FormFieldProps>, forwardedRef) => {
+    const { __scopeForm, name, ...fieldProps } = props;
 
-  const id = useId();
-  const [validity, setValidity] = React.useState<ValidityState | undefined>(undefined);
-  const [customValidators, setCustomValidators] = React.useState<ValidatorEntry[]>([]);
-  const [customErrors, setCustomErrors] = React.useState<Record<string, boolean>>({});
+    const id = useId();
+    const [validity, setValidity] = React.useState<ValidityState | undefined>(undefined);
+    const [customValidators, setCustomValidators] = React.useState<ValidatorEntry[]>([]);
+    const [customErrors, setCustomErrors] = React.useState<Record<string, boolean>>({});
 
-  const fieldContext = React.useMemo(
-    () => ({
-      id,
-      name,
-      validity,
-      setValidity,
-      customValidators,
-      setCustomValidators,
-      customErrors,
-      setCustomErrors,
-    }),
-    [id, name, validity, customValidators, customErrors]
-  );
+    const [fieldMessageIds, setFieldMessageIds] = React.useState<Set<string>>(new Set());
+    const handleFieldMessageIdAdd = React.useCallback((id: string) => {
+      setFieldMessageIds((prev) => new Set(prev).add(id));
+    }, []);
+    const handleFieldMessageIdRemove = React.useCallback((id: string) => {
+      setFieldMessageIds((prev) => {
+        const ids = new Set(prev);
+        ids.delete(id);
+        return ids;
+      });
+    }, []);
+    const getAriaDescription = React.useCallback(() => {
+      return Array.from(fieldMessageIds).join(' ') || undefined;
+    }, [fieldMessageIds]);
 
-  const [fieldMessageIds, setFieldMessageIds] = React.useState<Set<string>>(new Set());
-  const handleFieldMessageIdAdd = React.useCallback((id: string) => {
-    setFieldMessageIds((prev) => new Set(prev).add(id));
-  }, []);
-  const handleFieldMessageIdRemove = React.useCallback((id: string) => {
-    setFieldMessageIds((prev) => {
-      const ids = new Set(prev);
-      ids.delete(id);
-      return ids;
-    });
-  }, []);
-  const getAriaDescription = React.useCallback(() => {
-    return Array.from(fieldMessageIds).join(' ') || undefined;
-  }, [fieldMessageIds]);
-  const ariaDescriptionContextValue = React.useMemo(
-    () => ({
-      onDescriptionIdAdd: handleFieldMessageIdAdd,
-      onDescriptionIdRemove: handleFieldMessageIdRemove,
-      getAriaDescription,
-    }),
-    [getAriaDescription, handleFieldMessageIdAdd, handleFieldMessageIdRemove]
-  );
+    return (
+      <FormFieldProvider
+        scope={__scopeForm}
+        id={id}
+        name={name}
+        validity={validity}
+        setValidity={setValidity}
+        customValidators={customValidators}
+        setCustomValidators={setCustomValidators}
+        customErrors={customErrors}
+        setCustomErrors={setCustomErrors}
+      >
+        <AriaDescriptionProvider
+          scope={__scopeForm}
+          onDescriptionIdAdd={handleFieldMessageIdAdd}
+          onDescriptionIdRemove={handleFieldMessageIdRemove}
+          getAriaDescription={getAriaDescription}
+        >
+          <Primitive.div {...fieldProps} ref={forwardedRef} />
+        </AriaDescriptionProvider>
+      </FormFieldProvider>
+    );
+  }
+);
 
-  return (
-    <FormFieldContext.Provider value={fieldContext}>
-      <AriaDescriptionContext.Provider value={ariaDescriptionContextValue}>
-        <Primitive.div {...fieldProps} ref={forwardedRef} />
-      </AriaDescriptionContext.Provider>
-    </FormFieldContext.Provider>
-  );
-});
-FormField.displayName = 'FormField';
+FormField.displayName = FIELD_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * FormLabel
  * -----------------------------------------------------------------------------------------------*/
 
+const LABEL_NAME = 'FormLabel';
+
 type FormLabelElement = React.ElementRef<typeof Label>;
-type LabelProps = React.ComponentPropsWithoutRef<typeof Label>;
+type LabelProps = Radix.ComponentPropsWithoutRef<typeof Label>;
 interface FormLabelProps extends LabelProps {}
 
-const FormLabel = React.forwardRef<FormLabelElement, FormLabelProps>((props, forwardedRef) => {
-  const fieldContext = React.useContext(FormFieldContext);
-  const htmlFor = props.htmlFor || fieldContext.id;
+const FormLabel = React.forwardRef<FormLabelElement, FormLabelProps>(
+  (props: ScopedProps<FormLabelProps>, forwardedRef) => {
+    const { __scopeForm, ...labelProps } = props;
+    const fieldContext = useFormFieldContext(LABEL_NAME, __scopeForm);
+    const htmlFor = labelProps.htmlFor || fieldContext.id;
 
-  return (
-    <Label
-      data-valid={fieldContext.validity?.valid === true ? true : undefined}
-      data-invalid={fieldContext.validity?.valid === false ? true : undefined}
-      {...props}
-      ref={forwardedRef}
-      htmlFor={htmlFor}
-    />
-  );
-});
-FormLabel.displayName = 'FormLabel';
+    return (
+      <Label
+        data-valid={fieldContext.validity?.valid === true ? true : undefined}
+        data-invalid={fieldContext.validity?.valid === false ? true : undefined}
+        {...labelProps}
+        ref={forwardedRef}
+        htmlFor={htmlFor}
+      />
+    );
+  }
+);
+
+FormLabel.displayName = LABEL_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * FormControl
  * -----------------------------------------------------------------------------------------------*/
 
+const CONTROL_NAME = 'FormControl';
+
 type FormControlElement = React.ElementRef<typeof Primitive.input>;
-type PrimitiveInputProps = React.ComponentPropsWithoutRef<typeof Primitive.input>;
+type PrimitiveInputProps = Radix.ComponentPropsWithoutRef<typeof Primitive.input>;
 interface FormControlProps extends PrimitiveInputProps {}
 
 const FormControl = React.forwardRef<FormControlElement, FormControlProps>(
-  (props, forwardedRef) => {
-    const fieldContext = React.useContext(FormFieldContext);
-    const ariaDescriptionContext = React.useContext(AriaDescriptionContext);
-    const serverErrors = React.useContext(ServerErrorsContext);
+  (props: ScopedProps<FormControlProps>, forwardedRef) => {
+    const { __scopeForm, ...controlProps } = props;
+
+    const fieldContext = useFormFieldContext(CONTROL_NAME, __scopeForm);
+    const ariaDescriptionContext = useAriaDescriptionContext(CONTROL_NAME, __scopeForm);
+    const serverErrorsContext = useServerErrorsContext(CONTROL_NAME, __scopeForm);
     const controlRef = React.useRef<FormControlElement>(null);
     const composedRef = useComposedRefs(forwardedRef, controlRef);
-    const name = props.name || fieldContext.name;
-    const id = props.id || fieldContext.id;
-    const hasServerError = Boolean(fieldContext.name in serverErrors);
+    const name = controlProps.name || fieldContext.name;
+    const id = controlProps.id || fieldContext.id;
+    const hasServerError = Boolean(fieldContext.name in serverErrorsContext.serverErrors);
 
     const { setValidity } = fieldContext;
     React.useEffect(() => {
@@ -360,7 +389,7 @@ const FormControl = React.forwardRef<FormControlElement, FormControlProps>(
         aria-describedby={ariaDescriptionContext.getAriaDescription()}
         // disable default browser behaviour of showing built-in error message on hover
         title=""
-        {...props}
+        {...controlProps}
         ref={composedRef}
         id={id}
         name={name}
@@ -376,11 +405,14 @@ const FormControl = React.forwardRef<FormControlElement, FormControlProps>(
     );
   }
 );
-FormControl.displayName = 'FormControl';
+
+FormControl.displayName = CONTROL_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * FormClientMessage
  * -----------------------------------------------------------------------------------------------*/
+
+const CLIENT_MESSAGE_NAME = 'FormClientMessage';
 
 type FormClientMessageElement = React.ElementRef<typeof FormMessageImpl>;
 interface FormBuiltInMessageProps extends FormClientMessageImplBuiltInProps {}
@@ -390,17 +422,19 @@ interface FormCustomMessageProps extends FormClientMessageImplCustomProps {
 type FormClientMessageProps = FormBuiltInMessageProps | FormCustomMessageProps;
 
 const FormClientMessage = React.forwardRef<FormClientMessageElement, FormClientMessageProps>(
-  ({ type, ...props }, forwardedRef) => {
+  (props: ScopedProps<FormClientMessageProps>, forwardedRef) => {
+    const { type, ...messageProps } = props;
     if (type === 'customError') {
-      const messageProps = props as FormCustomMessageProps;
-      return <FormClientMessageImplCustom ref={forwardedRef} {...messageProps} />;
+      const typedMessageProps = messageProps as FormCustomMessageProps;
+      return <FormClientMessageImplCustom ref={forwardedRef} {...typedMessageProps} />;
     } else {
-      const messageProps = { type, ...props } as FormBuiltInMessageProps;
-      return <FormClientMessageImplBuiltIn ref={forwardedRef} {...messageProps} />;
+      const typedMessageProps = { type, ...messageProps } as FormBuiltInMessageProps;
+      return <FormClientMessageImplBuiltIn ref={forwardedRef} {...typedMessageProps} />;
     }
   }
 );
-FormClientMessage.displayName = 'FormClientMessage';
+
+FormClientMessage.displayName = CLIENT_MESSAGE_NAME;
 
 const DEFAULT_INVALID_MESSAGE = 'This value is not valid.';
 const DEFAULT_BUILT_IN_MESSAGES: Record<
@@ -421,7 +455,7 @@ const DEFAULT_BUILT_IN_MESSAGES: Record<
 
 type FormClientMessageImplBuiltInElement = React.ElementRef<typeof FormMessageImpl>;
 interface FormClientMessageImplBuiltInProps
-  extends React.ComponentPropsWithoutRef<typeof FormMessageImpl> {
+  extends Radix.ComponentPropsWithoutRef<typeof FormMessageImpl> {
   // We have to spell out the type rather than use `Omit<ValidityStateKey, 'customError'>`
   // in order for autocomplete to work correctly in IDEs.
   type:
@@ -440,9 +474,9 @@ interface FormClientMessageImplBuiltInProps
 const FormClientMessageImplBuiltIn = React.forwardRef<
   FormClientMessageImplBuiltInElement,
   FormClientMessageImplBuiltInProps
->((props, forwardedRef) => {
+>((props: ScopedProps<FormClientMessageImplBuiltInProps>, forwardedRef) => {
   const { type, children, ...messageProps } = props;
-  const fieldContext = React.useContext(FormFieldContext);
+  const fieldContext = useFormFieldContext(CLIENT_MESSAGE_NAME, messageProps.__scopeForm);
   const matches = fieldContext.validity?.[type as ValidityStateKey];
 
   if (matches) {
@@ -455,24 +489,23 @@ const FormClientMessageImplBuiltIn = React.forwardRef<
 
   return null;
 });
-FormClientMessageImplBuiltIn.displayName = 'FormClientMessageImplBuiltIn';
 
 type FormClientMessageImplCustomElement = React.ElementRef<typeof FormMessageImpl>;
 interface FormClientMessageImplCustomProps
-  extends React.ComponentPropsWithoutRef<typeof FormMessageImpl> {
+  extends Radix.ComponentPropsWithoutRef<typeof FormMessageImpl> {
   isValid: CustomValidatorFn;
 }
 
 const FormClientMessageImplCustom = React.forwardRef<
   FormClientMessageImplCustomElement,
   FormClientMessageImplCustomProps
->((props, forwardedRef) => {
+>((props: ScopedProps<FormClientMessageImplCustomProps>, forwardedRef) => {
   const { isValid, id: idProp, children, ...messageProps } = props;
   const _id = useId();
   const id = idProp ?? _id;
-  const fieldContext = React.useContext(FormFieldContext);
-  const serverErrors = React.useContext(ServerErrorsContext);
-  const hasServerError = fieldContext.name in serverErrors;
+  const fieldContext = useFormFieldContext(CLIENT_MESSAGE_NAME, messageProps.__scopeForm);
+  const serverErrorsContext = useServerErrorsContext(CLIENT_MESSAGE_NAME, messageProps.__scopeForm);
+  const hasServerError = fieldContext.name in serverErrorsContext.serverErrors;
 
   const validatorEntry = React.useMemo(() => ({ id, validator: isValid }), [id, isValid]);
   const { setCustomValidators } = fieldContext;
@@ -496,16 +529,15 @@ const FormClientMessageImplCustom = React.forwardRef<
 
   return null;
 });
-FormClientMessageImplCustom.displayName = 'FormClientMessageImplCustom';
 
 type FormMessageImplElement = React.ElementRef<typeof Primitive.span>;
-type PrimitiveSpanProps = React.ComponentPropsWithoutRef<typeof Primitive.span>;
+type PrimitiveSpanProps = Radix.ComponentPropsWithoutRef<typeof Primitive.span>;
 interface FormMessageImplProps extends PrimitiveSpanProps {}
 
 const FormMessageImpl = React.forwardRef<FormMessageImplElement, FormMessageImplProps>(
-  (props, forwardedRef) => {
-    const { id: idProp, ...messageProps } = props;
-    const ariaDescriptionContext = React.useContext(AriaDescriptionContext);
+  (props: ScopedProps<FormMessageImplProps>, forwardedRef) => {
+    const { __scopeForm, id: idProp, ...messageProps } = props;
+    const ariaDescriptionContext = useAriaDescriptionContext('FormMessage', __scopeForm);
     const _id = useId();
     const id = idProp ?? _id;
 
@@ -518,11 +550,12 @@ const FormMessageImpl = React.forwardRef<FormMessageImplElement, FormMessageImpl
     return <Primitive.span id={id} {...messageProps} ref={forwardedRef} />;
   }
 );
-FormMessageImpl.displayName = 'FormMessageImpl';
 
 /* -------------------------------------------------------------------------------------------------
  * FormServerMessage
  * -----------------------------------------------------------------------------------------------*/
+
+const SERVER_MESSAGE_NAME = 'FormServerMessage';
 
 type FormServerMessageElement = React.ElementRef<typeof FormMessageImpl>;
 interface FormServerMessageProps extends Omit<FormMessageImplProps, 'children'> {
@@ -530,12 +563,15 @@ interface FormServerMessageProps extends Omit<FormMessageImplProps, 'children'> 
 }
 
 const FormServerMessage = React.forwardRef<FormServerMessageElement, FormServerMessageProps>(
-  (props, forwardedRef) => {
+  (props: ScopedProps<FormServerMessageProps>, forwardedRef) => {
     const { children, ...messageProps } = props;
-    const fieldContext = React.useContext(FormFieldContext);
-    const serverErrors = React.useContext(ServerErrorsContext);
+    const fieldContext = useFormFieldContext(SERVER_MESSAGE_NAME, messageProps.__scopeForm);
+    const serverErrorsContext = useServerErrorsContext(
+      SERVER_MESSAGE_NAME,
+      messageProps.__scopeForm
+    );
     const name = fieldContext.name || 'global';
-    const errors = serverErrors[name];
+    const errors = serverErrorsContext.serverErrors[name];
 
     if (errors?.length) {
       const child = typeof children === 'function' ? children(errors) : children;
@@ -549,42 +585,53 @@ const FormServerMessage = React.forwardRef<FormServerMessageElement, FormServerM
     return null;
   }
 );
-FormServerMessage.displayName = 'FormServerMessage';
+
+FormServerMessage.displayName = SERVER_MESSAGE_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * FormValidityState
  * -----------------------------------------------------------------------------------------------*/
 
+const VALIDITY_STATE_NAME = 'FormValidityState';
+
 interface FormValidityStateProps {
   children: (validity: ValidityState | undefined) => React.ReactNode;
 }
 
-const FormValidityState = ({ children }: FormValidityStateProps) => {
-  const fieldContext = React.useContext(FormFieldContext);
+const FormValidityState = (props: ScopedProps<FormValidityStateProps>) => {
+  const { __scopeForm, children } = props;
+  const fieldContext = useFormFieldContext(VALIDITY_STATE_NAME, __scopeForm);
   return <>{children(fieldContext.validity)}</>;
 };
-FormValidityState.displayName = 'FormValidityState';
+
+FormValidityState.displayName = VALIDITY_STATE_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * FormSubmit
  * -----------------------------------------------------------------------------------------------*/
 
+const SUBMIT_NAME = 'FormSubmit';
+
 type FormSubmitElement = React.ElementRef<typeof Primitive.button>;
-type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
+type PrimitiveButtonProps = Radix.ComponentPropsWithoutRef<typeof Primitive.button>;
 interface FormSubmitProps extends PrimitiveButtonProps {}
 
-const FormSubmit = React.forwardRef<FormSubmitElement, FormSubmitProps>((props, forwardedRef) => {
-  const ariaDescriptionContext = React.useContext(AriaDescriptionContext);
-  return (
-    <Primitive.button
-      type="submit"
-      aria-describedby={ariaDescriptionContext.getAriaDescription()}
-      {...props}
-      ref={forwardedRef}
-    />
-  );
-});
-FormSubmit.displayName = 'FormSubmit';
+const FormSubmit = React.forwardRef<FormSubmitElement, FormSubmitProps>(
+  (props: ScopedProps<FormSubmitProps>, forwardedRef) => {
+    const { __scopeForm, ...submitProps } = props;
+    const ariaDescriptionContext = useAriaDescriptionContext(SUBMIT_NAME, __scopeForm);
+    return (
+      <Primitive.button
+        type="submit"
+        aria-describedby={ariaDescriptionContext.getAriaDescription()}
+        {...submitProps}
+        ref={forwardedRef}
+      />
+    );
+  }
+);
+
+FormSubmit.displayName = SUBMIT_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
@@ -640,6 +687,8 @@ function hasBuiltInError(validity: ValidityState) {
 /* -----------------------------------------------------------------------------------------------*/
 
 export {
+  createFormScope,
+  //
   Form,
   FormField,
   FormLabel,
