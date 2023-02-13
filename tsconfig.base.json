@@ -11,7 +11,7 @@
     "experimentalDecorators": false,
     "importHelpers": true,
     "jsx": "react",
-    "lib": ["dom", "esnext"],
+    "lib": ["DOM", "ESNext", "DOM.Iterable"],
     "moduleResolution": "node",
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
