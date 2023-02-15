@@ -409,18 +409,14 @@ const TooltipContentHoverable = React.forwardRef<
 
   const handleCreateGraceArea = React.useCallback(
     (event: PointerEvent, hoverTarget: HTMLElement) => {
-      const currentTarget = event.currentTarget as HTMLElement;
-      const exitPoint = { x: event.clientX, y: event.clientY };
-      const exitSide = getExitSideFromRect(exitPoint, currentTarget.getBoundingClientRect());
-
-      const bleed = exitSide === 'right' || exitSide === 'bottom' ? -5 : 5;
-      const isXAxis = exitSide === 'right' || exitSide === 'left';
-      const startPoint = isXAxis
-        ? { x: event.clientX + bleed, y: event.clientY }
-        : { x: event.clientX, y: event.clientY + bleed };
-
       const hoverTargetPoints = getPointsFromRect(hoverTarget.getBoundingClientRect());
-      const graceArea = getHull([startPoint, ...hoverTargetPoints]);
+      const graceArea = getHull([
+        { x: event.clientX + 5, y: event.clientY + 5 },
+        { x: event.clientX + 5, y: event.clientY - 5 },
+        { x: event.clientX - 5, y: event.clientY + 5 },
+        { x: event.clientX - 5, y: event.clientY - 5 },
+        ...hoverTargetPoints,
+      ]);
       setPointerGraceArea(graceArea);
       onPointerInTransitChange(true);
     },
@@ -593,26 +589,6 @@ const TooltipArrow = React.forwardRef<TooltipArrowElement, TooltipArrowProps>(
 TooltipArrow.displayName = ARROW_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
-
-function getExitSideFromRect(point: Point, rect: DOMRect) {
-  const top = Math.abs(rect.top - point.y);
-  const bottom = Math.abs(rect.bottom - point.y);
-  const right = Math.abs(rect.right - point.x);
-  const left = Math.abs(rect.left - point.x);
-
-  switch (Math.min(top, bottom, right, left)) {
-    case left:
-      return 'left';
-    case right:
-      return 'right';
-    case top:
-      return 'top';
-    case bottom:
-      return 'bottom';
-    default:
-      return null;
-  }
-}
 
 function getPointsFromRect(rect: DOMRect) {
   const { top, right, bottom, left } = rect;
