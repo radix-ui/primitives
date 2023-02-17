@@ -1191,7 +1191,9 @@ const MenuSubContent = React.forwardRef<MenuSubContentElement, MenuSubContentPro
                 if (event.target !== subContext.trigger) context.onOpenChange(false);
               })}
               onEscapeKeyDown={composeEventHandlers(props.onEscapeKeyDown, (event) => {
-                rootContext.onClose();
+                context.onOpenChange(false);
+                // We focus manually because we prevented it in `onCloseAutoFocus`
+                subContext.trigger?.focus();
                 // ensure pressing escape in submenu doesn't escape full screen mode
                 event.preventDefault();
               })}
