@@ -42,7 +42,7 @@ function Page() {
     >
       <Form.Field name="name">
         <Form.Label>Full name</Form.Label>
-        <Form.Control />
+        <Form.Control /> {/* renders a `input[type="text"]` by default */}
         <Form.ClientMessage type="missingValue">Please enter your name.</Form.ClientMessage>
       </Form.Field>
 
@@ -86,6 +86,19 @@ Using our standard `asChild` approach, you can compose the `Form` primitive part
 </Form.Field>
 ```
 
+It can also be used to compose other types of controls, such as a `select`:
+
+```jsx
+<Form.Field name="country">
+  <Form.Label>Country</Form.Label>
+  <Form.Control asChild>
+    <select>
+      <option value="uk">United Kingdom</option>…
+    </select>
+  </Form.Control>
+</Form.Field>
+```
+
 ### More on validation
 
 #### Providing your own validation messages
@@ -104,7 +117,25 @@ You can provide a more meaningful message by providing your own `children`. This
 
 #### Client-side validation types
 
-`Form.ClientMessage` accepts a required `type` prop (of type `keyof ValidityState`) which is used to determine when the message should show. It matches the native HTML validity state (`ValidityState` on [MDN](https://developer.mozilla.org/en-US/docs/Web/API/ValidityState)) which result from using attributes such as `required`, `min`, `max`. The message will show if the given `type` is `true` on the control’s validity state.
+`Form.ClientMessage` accepts a required `type` prop which is used to determine when the message should show. It matches the native HTML validity state (`ValidityState` on [MDN](https://developer.mozilla.org/en-US/docs/Web/API/ValidityState)) which result from using attributes such as `required`, `min`, `max`. The message will show if the given `type` is `true` on the control’s validity state.
+
+```ts
+// `type` is one of the following keys from the DOM ValidityState interface:
+
+interface ValidityState {
+  readonly badInput: boolean;
+  readonly customError: boolean;
+  readonly patternMismatch: boolean;
+  readonly rangeOverflow: boolean;
+  readonly rangeUnderflow: boolean;
+  readonly stepMismatch: boolean;
+  readonly tooLong: boolean;
+  readonly tooShort: boolean;
+  readonly typeMismatch: boolean;
+  readonly valid: boolean;
+  readonly valueMissing: boolean;
+}
+```
 
 This means you can even show something whe the field is valid:
 
@@ -143,7 +174,7 @@ type FormFields = { [index in string]?: FormDataEntryValue };
 
 #### Accessing the validity state for even more control
 
-Sometimes, you may need to access the raw validity state in order to display your own icons, or interface with your own component library by passing certain props to it. You can do this by using the `Form.ValidityState` part:
+Sometimes, you may need to access the raw validity state of a field in order to display your own icons, or interface with your own component library by passing certain props to it. You can do this by using the `Form.ValidityState` part:
 
 ```jsx
 <Form.Field name="name">
@@ -158,11 +189,13 @@ Sometimes, you may need to access the raw validity state in order to display you
 </Form.Field>
 ```
 
+> Note: `Form.ValidityState` should be nested inside a `Form.Field` part and gives you access to the validity of that field.
+
 #### Server-side validation
 
-The component also supports server-side validation via `Form.ServerMessage`. It will display accordingly to errors returned by the server. When outside a `Field` part, it will display global errors that aren't tied to a specific field.
+The component also supports server-side validation via `Form.ServerMessage`.
 
-Given that the server logic is completely outside of the scope of this component, the errors are provided to it using a controlled API: `serverErrors` and `onServerErrorsChange`.
+Given that the server logic is completely outside of the scope of this component, the errors are provided to it using a controlled API: `serverErrors` and `onServerErrorsChange`: It will display accordingly to errors passed into `serverErrors` on `Form.Root` (typically mapped from the actual errors returned by your server call). When inside a `Field` part, it will display the errors matching that field (`serverErrors[fieldName]`) When outside a `Field` part, it will display global errors that aren't tied to a specific field (`serverErrors.global`).
 
 Similary to `Form.ClientMessage`, all accessibility relating to server errors is handled by the primitive:
 
@@ -188,7 +221,15 @@ function Page() {
         // maybe do an async server call and gather some errors from the server to display
         submitForm(data)
         .then(() => …)
-        .catch((errors) => setServerErrors(errors));
+        /**
+         * Map errors from your server response into the expected format of `serverErrors` (see type below)
+         * For example:
+         * {
+         *   email: [ { code: 'email_invalid', 'This is not a valid email.' } ],
+         *   global: [ { code: 'server_error', 'Something went wrong.' }]
+         * }
+         */
+        .catch((errors) => setServerErrors(mapServerErrors(errors)));
       }}
       serverErrors={serverErrors}
       onServerErrorsChange={setServerErrors}
@@ -205,7 +246,7 @@ function Page() {
         <Form.Control type="email" />
         <Form.ClientMessage type="missingValue">Please enter your email.</Form.ClientMessage>
         <Form.ClientMessage type="typeMismatch">Please provide a valid email.</Form.ClientMessage>
-        <Form.ServerMessage />
+        <Form.ServerMessage /> {/* will yield "This is not a valid email." */}
       </Form.Field>
 
       <Form.Field name="age">
@@ -220,7 +261,7 @@ function Page() {
 
       <Form.Submit>Submit</Form.Submit>
 
-      <Form.ServerMessage />
+      <Form.ServerMessage /> {/* will yield "Something went wrong." */}
     </Form.Root>
   );
 }
@@ -233,7 +274,7 @@ The server messages will be routed to the correct fields, based on the `name` at
 ```ts
 interface ServerError {
   code: string;
-  message: string;
+  message: React.ReactNode;
 }
 
 type ServerErrors = {
@@ -245,6 +286,12 @@ type ServerErrors = {
 
 ## Open questions
 
-- Does this API make sense? Is it easy to use?
-- Does this API cover most form use-cases?
+- Does this API make sense?
+  - Is it easy to use?
+  - Is everything named as you'd expect?
+  - What about the distinction between `ClientMessage` and `ServerMessage`?
+    - Would you call this something else?
+  - Does the server side stuff make sense?
+    - Would you call `serverErrors` something else as it's not directly server errors, but a structure wanted by the UI
+- Does this API cover most form use-cases? Have we missed some use-cases?
 - Is the API flexible enough to allow composition with other components?
