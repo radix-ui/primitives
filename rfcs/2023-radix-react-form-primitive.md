@@ -195,7 +195,7 @@ Sometimes, you may need to access the raw validity state of a field in order to 
 
 The component also supports server-side validation via `Form.ServerMessage`.
 
-Given that the server logic is completely outside of the scope of this component, the errors are provided to it using a controlled API: `serverErrors` and `onServerErrorsChange`: It will display accordingly to errors passed into `serverErrors` on `Form.Root` (typically mapped from the actual errors returned by your server call). When inside a `Field` part, it will display the errors matching that field (`serverErrors[fieldName]`) When outside a `Field` part, it will display global errors that aren't tied to a specific field (`serverErrors.global`).
+Given that the server logic is completely outside of the scope of this component, the errors are provided to it using a controlled API: `serverErrors` and `onServerErrorsChange`: It will display accordingly to the errors passed into `serverErrors` on `Form.Root` (typically mapped from the actual errors returned by your server call). When inside a `Field` part, it will display the errors matching that field (`serverErrors[fieldName]`) When outside a `Field` part, it will display global errors that aren't tied to a specific field (`serverErrors.global`).
 
 Similary to `Form.ClientMessage`, all accessibility relating to server errors is handled by the primitive:
 
