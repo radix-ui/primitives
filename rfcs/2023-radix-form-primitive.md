@@ -14,7 +14,7 @@ Forms are a huge part of building for the web, and whilst we do offer building b
 
 Additionally, similarly to how Radix introduced a great out of the box experience for specific components (not having to wire state or refs for example) we see a big opportunity to do the same for forms as this is a space where we see a lot of people struggle or overcomplicate things.
 
-At [WorkOS](https://workos.com), we have also been working on components specifically geared towards building great authentication experiences (see [Radix Auth RFC](2023-radix-form-primitive.md)). As these rely heavily on forms, we thought it would make sense to provide some fundations in Radix to help with this.
+At [WorkOS](https://workos.com), we have also been working on components specifically geared towards building great authentication experiences (see [Radix Auth RFC](https://github.com/radix-ui/primitives/pull/1978)). As these rely heavily on forms, we thought it would make sense to provide some fundations in Radix to help with this.
 
 ## Detailed design
 
