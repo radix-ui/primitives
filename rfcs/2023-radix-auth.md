@@ -94,7 +94,7 @@ Similar to Radix primitives, these higher-level components are unstyled by defau
 
 ### Composition
 
-Using Radix's standard `asChild` approach, you can compose the `Form` primitive parts with your own components.
+Using Radix's `asChild` approach, you can compose the `Form` primitive parts with your own components.
 
 ```jsx
 <SignUp.EmailField>
