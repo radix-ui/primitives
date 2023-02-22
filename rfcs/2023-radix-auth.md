@@ -8,7 +8,7 @@
 
 This RFC proposes adding a new project under the Radix UI umbrella (at the same level as "Radix Primitives", "Radix Colors", "Radix Icons"). This new product would be called "Radix Auth" and would provide a set of components specifically tailored to building great authentication experiences.
 
-It would build on top of the new `Form` primitive discussed in the [Radix Form primitive RFC](2023-radix-form-primitive.md) but provide higher level components geared towards specific scenarios such as sign-up, sign-in, password reset flows, etc.
+It would build on top of the new `Form` primitive discussed in the [Radix Form primitive RFC](https://github.com/radix-ui/primitives/pull/1977) but provide higher level components geared towards specific scenarios such as sign-up, sign-in, password reset flows, etc.
 
 ## Motivation
 
@@ -18,7 +18,7 @@ We also build and maintain [Radix UI](https://radix-ui.com). We believe we could
 
 ## Design
 
-At the most basic level, this would include new primitives such as `SignUp`, `SignIn` which would use the new [`Form` primitive](2023-radix-form-primitive.md) and provide an out of the box experience catered specifically for authentication flows. On top of that we would also provide other composable primitives such as `OTPInput`, `Password`, other primitives to visually represent password strength and more.
+At the most basic level, this would include new primitives such as `SignUp`, `SignIn` which would use the new [`Form` primitive](https://github.com/radix-ui/primitives/pull/1977) and provide an out of the box experience catered specifically for authentication flows. On top of that we would also provide other composable primitives such as `OTPInput`, `Password`, other primitives to visually represent password strength and more.
 
 ### Examples
 
@@ -86,7 +86,7 @@ function Page() {
 }
 ```
 
-For more information about the accessibility you get out of the box and how validation works, see the [Radix Form primitive RFC](2023-radix-form-primitive.md).
+For more information about the accessibility you get out of the box and how validation works, see the [Radix Form primitive RFC](https://github.com/radix-ui/primitives/pull/1977).
 
 ### Styling
 
