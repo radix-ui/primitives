@@ -6,7 +6,7 @@
 
 ## Summary
 
-This RFC proposes adding a new product under the Radix UI umbrella (at the same level as "Radix Primitives", "Radix Colors", "Radix Icons"). This new product would be called "Radix Auth" and would provide a set of components specifically tailored to building great authentication experiences.
+This RFC proposes adding a new project under the Radix UI umbrella (at the same level as "Radix Primitives", "Radix Colors", "Radix Icons"). This new product would be called "Radix Auth" and would provide a set of components specifically tailored to building great authentication experiences.
 
 It would build on top of the new `Form` primitive discussed in the [Radix Form primitive RFC](2023-radix-form-primitive.md) but provide higher level components geared towards specific scenarios such as sign-up, sign-in, password reset flows, etc.
 
@@ -22,25 +22,25 @@ At the most basic level, this would include new primitives such as `SignUp`, `Si
 
 ### Examples
 
-#### A full sign-up UI composing a set of primitives.
+#### A full sign-up UI composing a set of primitives
 
 https://user-images.githubusercontent.com/1539897/220597308-1fdc68a3-aaf5-46b2-a59d-4b5a1bc9ecaa.mp4
 
 ---
 
-#### A password input with built-in show/hide functionality.
+#### A password input with built-in show/hide functionality
 
 https://user-images.githubusercontent.com/1539897/220597112-cb3b74cc-e38b-4fdb-a0dc-83ca5de9c27a.mp4
 
 ---
 
-#### An input for multi-factor authentication (one time password).
+#### An input for multi-factor authentication (one time password)
 
 https://user-images.githubusercontent.com/1539897/220597235-316c0251-0173-4c37-a522-f0b19cec447d.mp4
 
 ---
 
-#### Other primitives to visually represent password strength.
+#### Other primitives to visually represent password strength
 
 https://user-images.githubusercontent.com/1539897/220597276-8896cf0f-7e8b-4d91-8c23-2a6a2ea866af.mp4
 
@@ -48,7 +48,7 @@ Over time, we would keep providing value by incorporating learnings from our own
 
 ### API example
 
-Here is an example of what the API could look like (not definitive):
+Here is a work in progress example of what the `SignUp` API might look like:
 
 ```jsx
 import * as React from 'react';
@@ -86,15 +86,15 @@ function Page() {
 }
 ```
 
-For more information about what accessibility you get out of the box and how validation works, see the [Radix Form primitive RFC](2023-radix-form-primitive.md).
+For more information about the accessibility you get out of the box and how validation works, see the [Radix Form primitive RFC](2023-radix-form-primitive.md).
 
 ### Styling
 
-Similar to Radix primitives, these higher-level components are unstyled by default. This means that you can style it using any CSS solution of your choice. Each part is a node you can style.
+Similar to Radix primitives, these higher-level components are unstyled by default. This means that you can style them using any CSS solution of your choice. Each part is a node you can style.
 
 ### Composition
 
-Using our standard `asChild` approach, you can compose the `Form` primitive parts with your own components.
+Using Radix's standard `asChild` approach, you can compose the `Form` primitive parts with your own components.
 
 ```jsx
 <SignUp.EmailField>
@@ -105,40 +105,31 @@ Using our standard `asChild` approach, you can compose the `Form` primitive part
 </SignUp.EmailField>
 ```
 
-It can also be used to compose neatly with other primitives we would provide, such as a `Password` primitive which would handle showing/hiding the password temporarily (accessibbly and securely):
+It can neatly compose with other primitives we would provide, for example a `Password` primitive.
 
-From:
-
-```jsx
+```diff
 <SignUp.PasswordField>
   <SignUp.Label>Password</SignUp.Label>
-  <SignUp.PasswordInput />
-</SignUp.PasswordField>
-```
-
-To:
-
-```jsx
-<SignUp.PasswordField>
-  <SignUp.Label>Password</SignUp.Label>
-  <Password.Root>
-    <SignUp.PasswordInput asChild>
-      <Password.Input />
-    </SignUp.PasswordInput>
-    <Password.ShowHide>
-      <Password.VisibleIcon>
-        <EyeOpenIcon />
-      </Password.VisibleIcon>
-      <Password.HiddenIcon>
-        <EyeNoneIcon />
-      </Password.HiddenIcon>
-    </Password.ShowHide>
-  </Password.Root>
+-  <SignUp.PasswordInput />
++  <Password.Root>
++    <SignUp.PasswordInput asChild>
++      <Password.Input />
++    </SignUp.PasswordInput>
++    <Password.ShowHide>
++      <Password.VisibleIcon>
++        <EyeOpenIcon />
++      </Password.VisibleIcon>
++      <Password.HiddenIcon>
++        <EyeNoneIcon />
++      </Password.HiddenIcon>
++    </Password.ShowHide>
++  </Password.Root>
 </SignUp.PasswordField>
 ```
 
 ## Open questions
 
-- Would you use something like this?
-- What would you like to see in this product?
+- What problems would this solve for you?
+- What would you like to see in this project?
+  - What use cases should it cover?
 - Any other feedback?
