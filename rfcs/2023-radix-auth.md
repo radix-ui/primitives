@@ -10,21 +10,6 @@ This RFC proposes adding a new product under the Radix UI umbrella (at the same 
 
 It would build on top of the new `Form` primitive discussed in the [Radix Form primitive RFC](2023-radix-form-primitive.md) but provide higher level components geared towards specific scenarios such as sign-up, sign-in, password reset flows, etc.
 
-Here are some video examples of what this might enable:
-
-
-https://user-images.githubusercontent.com/1539897/220597112-cb3b74cc-e38b-4fdb-a0dc-83ca5de9c27a.mp4
-
-
-https://user-images.githubusercontent.com/1539897/220597235-316c0251-0173-4c37-a522-f0b19cec447d.mp4
-
-
-https://user-images.githubusercontent.com/1539897/220597276-8896cf0f-7e8b-4d91-8c23-2a6a2ea866af.mp4
-
-
-https://user-images.githubusercontent.com/1539897/220597308-1fdc68a3-aaf5-46b2-a59d-4b5a1bc9ecaa.mp4
-
-
 ## Motivation
 
 At [WorkOS](https://workos.com), we build enterprise-ready features such as Single Sign-On, Directory-Sync and Audit Logs. A lot of these features revolve around great authentication experiences.
@@ -34,6 +19,24 @@ We also build and maintain [Radix UI](https://radix-ui.com). We believe we could
 ## Design
 
 At the most basic level, we would have different baked-in delineation of new primitives such as `SignUp`, `SignIn`, which would build on top of the [`Form` primitive](2023-radix-form-primitive.md) but provide more specific good defaults out of the box. On top of that we would also provide other composable primitives such as `OTPInput`, `Password`, as well as other graphical primitives to represent password complexity for example, etc.
+
+Here are some video examples of what this might enable:
+
+A full sign-up UI composing a bunch of primitives.
+
+https://user-images.githubusercontent.com/1539897/220597308-1fdc68a3-aaf5-46b2-a59d-4b5a1bc9ecaa.mp4
+
+A password input with built-in show/hide functionality.
+
+https://user-images.githubusercontent.com/1539897/220597112-cb3b74cc-e38b-4fdb-a0dc-83ca5de9c27a.mp4
+
+An input for multi-factor authentication (one time password).
+
+https://user-images.githubusercontent.com/1539897/220597235-316c0251-0173-4c37-a522-f0b19cec447d.mp4
+
+Graphical primitives to represent password complexity requirements.
+
+https://user-images.githubusercontent.com/1539897/220597276-8896cf0f-7e8b-4d91-8c23-2a6a2ea866af.mp4
 
 Over time, we would keep providing value by incorporating learnings from our own products around single sign-on, multi-factor authentication, etc.
 
