@@ -2,7 +2,7 @@
 - RFC PR: (leave this empty, to be filled in later)
 - Authors: Benoît Grélard
 
-# React Form primitive
+# Radix Form primitive
 
 ## Summary
 
@@ -14,7 +14,7 @@ Forms are a huge part of building for the web, and whilst we do offer building b
 
 Additionally, similarly to how Radix introduced a great out of the box experience for specific components (not having to wire state or refs for example) we see a big opportunity to do the same for forms as this is a space where we see a lot of people struggle or overcomplicate things.
 
-At [WorkOS](https://workos.com), we have also been working on components specifically geared towards building great authentication experiences. As these rely heavily on forms, we thought it would make sense to provide some fundations in Radix to help with this.
+At [WorkOS](https://workos.com), we have also been working on components specifically geared towards building great authentication experiences (see [Radix Auth RFC](2023-radix-form-primitive.md)). As these rely heavily on forms, we thought it would make sense to provide some fundations in Radix to help with this.
 
 ## Detailed design
 
@@ -72,6 +72,10 @@ Note that there is not state present about the client, everything is uncontrolle
 
 - label and controls are associated using the `name` provided on `Form.Field`.
 - when one or more client-side error message display, they are automatically associated to their matching control and focus is moved to the first invalid control.
+
+### Styling
+
+Similar to other Radix primtives, the `Form` primitive is unstyled by default. This means that you can style it using any CSS solution of your choice. Each part is a node you can style.
 
 ### Composition
 
