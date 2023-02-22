@@ -79,7 +79,7 @@ Similar to other Radix primtives, the `Form` primitive is unstyled by default. T
 
 ### Composition
 
-Using our standard `asChild` approach, you can compose the `Form` primitive parts with your own components.
+Using Radix's `asChild` approach, you can compose the `Form` primitive parts with your own components.
 
 ```jsx
 <Form.Field name="name">
