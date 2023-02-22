@@ -26,13 +26,19 @@ A full sign-up UI composing a bunch of primitives.
 
 https://user-images.githubusercontent.com/1539897/220597308-1fdc68a3-aaf5-46b2-a59d-4b5a1bc9ecaa.mp4
 
+---
+
 A password input with built-in show/hide functionality.
 
 https://user-images.githubusercontent.com/1539897/220597112-cb3b74cc-e38b-4fdb-a0dc-83ca5de9c27a.mp4
 
+---
+
 An input for multi-factor authentication (one time password).
 
 https://user-images.githubusercontent.com/1539897/220597235-316c0251-0173-4c37-a522-f0b19cec447d.mp4
+
+---
 
 Graphical primitives to represent password complexity requirements.
 
