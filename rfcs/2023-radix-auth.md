@@ -18,29 +18,29 @@ We also build and maintain [Radix UI](https://radix-ui.com). We believe we could
 
 ## Design
 
-At the most basic level, we would have different baked-in delineation of new primitives such as `SignUp`, `SignIn`, which would build on top of the [`Form` primitive](2023-radix-form-primitive.md) but provide more specific good defaults out of the box. On top of that we would also provide other composable primitives such as `OTPInput`, `Password`, as well as other graphical primitives to represent password complexity for example, etc.
+At the most basic level, this would include new primitives such as `SignUp`, `SignIn` which would use the new [`Form` primitive](2023-radix-form-primitive.md) and provide an out of the box experience catered specifically for authentication flows. On top of that we would also provide other composable primitives such as `OTPInput`, `Password`, other primitives to visually represent password strength and more.
 
-Here are some video examples of what this might enable:
+### Examples
 
-A full sign-up UI composing a bunch of primitives.
+#### A full sign-up UI composing a set of primitives.
 
 https://user-images.githubusercontent.com/1539897/220597308-1fdc68a3-aaf5-46b2-a59d-4b5a1bc9ecaa.mp4
 
 ---
 
-A password input with built-in show/hide functionality.
+#### A password input with built-in show/hide functionality.
 
 https://user-images.githubusercontent.com/1539897/220597112-cb3b74cc-e38b-4fdb-a0dc-83ca5de9c27a.mp4
 
 ---
 
-An input for multi-factor authentication (one time password).
+#### An input for multi-factor authentication (one time password).
 
 https://user-images.githubusercontent.com/1539897/220597235-316c0251-0173-4c37-a522-f0b19cec447d.mp4
 
 ---
 
-Graphical primitives to represent password complexity requirements.
+#### Other primitives to visually represent password strength.
 
 https://user-images.githubusercontent.com/1539897/220597276-8896cf0f-7e8b-4d91-8c23-2a6a2ea866af.mp4
 
