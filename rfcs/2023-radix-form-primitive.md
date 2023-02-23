@@ -229,8 +229,8 @@ function Page() {
          * Map errors from your server response into the expected format of `serverErrors` (see type below)
          * For example:
          * {
-         *   email: [ { code: 'email_invalid', 'This is not a valid email.' } ],
-         *   global: [ { code: 'server_error', 'Something went wrong.' }]
+         *   email: [ { code: 'email_invalid', message: 'This is not a valid email.' } ],
+         *   global: [ { code: 'server_error', message: 'Something went wrong.' }]
          * }
          */
         .catch((errors) => setServerErrors(mapServerErrors(errors)));
