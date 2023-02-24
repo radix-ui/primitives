@@ -29,7 +29,7 @@
     "@radix-ui/react-primitive": "workspace:*",
     "@radix-ui/react-slot": "workspace:*",
     "@radix-ui/react-use-controllable-state": "workspace:*",
-    "aria-hidden": "^1.1.1",
+    "aria-hidden": "^1.2.2",
     "react-remove-scroll": "2.5.5"
   },
   "peerDependencies": {
