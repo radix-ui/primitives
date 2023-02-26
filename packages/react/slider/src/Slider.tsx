@@ -508,7 +508,7 @@ const SliderRange = React.forwardRef<SliderRangeElement, SliderRangeProps>(
     const composedRefs = useComposedRefs(forwardedRef, ref);
     const valuesCount = context.values.length;
     const percentages = context.values.map((value) =>
-      convertValueToPercentage(value, context.min, context.max)
+      getPositionPercentage(value, context.min, context.max)
     );
     const offsetStart = valuesCount > 1 ? Math.min(...percentages) : 0;
     const offsetEnd = 100 - Math.max(...percentages);
@@ -569,7 +569,7 @@ const SliderThumbImpl = React.forwardRef<SliderThumbImplElement, SliderThumbImpl
     // We cast because index could be `-1` which would return undefined
     const value = context.values[index] as number | undefined;
     const percent =
-      value === undefined ? 0 : convertValueToPercentage(value, context.min, context.max);
+      value === undefined ? 0 : getPositionPercentage(value, context.min, context.max);
     const label = getLabel(index, context.values.length);
     const orientationSize = size?.[orientation.size];
     const thumbInBoundsOffset = orientationSize
@@ -663,10 +663,20 @@ function getNextSortedValues(prevValues: number[] = [], nextValue: number, atInd
   return nextValues.sort((a, b) => a - b);
 }
 
-function convertValueToPercentage(value: number, min: number, max: number) {
-  const maxSteps = max - min;
-  const percentPerStep = 100 / maxSteps;
-  return percentPerStep * (value - min);
+/**
+ * Return the `value` position between `min` and `max` as a percentage.
+ * Percentage is clamped between `0` and `100`
+ *
+ * @example
+ * // returns 50
+ * getPositionPercentage(2, 0, 4)
+ *
+ * @example
+ * // returns 100
+ * getPositionPercentage(2000, 0, 4)
+ */
+function getPositionPercentage(value: number, min: number, max: number) {
+  return clamp(100 * ((value - min) / (max - min)), [0, 100]);
 }
 
 /**
