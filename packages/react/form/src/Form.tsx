@@ -30,79 +30,15 @@ const [AriaDescriptionProvider, useAriaDescriptionContext] =
     getAriaDescription: () => undefined,
   });
 
-interface ServerError {
-  code: string;
-  message: string;
-}
-type ServerErrors = {
-  [fieldName in string]?: ServerError[];
-} & {
-  global?: ServerError[];
-};
-type ServerErrorsContextValue = {
-  serverErrors: ServerErrors;
-};
-const [ServerErrorsProvider, useServerErrorsContext] = createFormContext<ServerErrorsContextValue>(
-  FORM_NAME,
-  { serverErrors: {} }
-);
-
 type FormElement = React.ElementRef<typeof Primitive.form>;
 type PrimitiveFormProps = Radix.ComponentPropsWithoutRef<typeof Primitive.form>;
-interface FormProps extends PrimitiveFormProps {
-  serverErrors?: ServerErrors;
-  onServerErrorsChange?: (serverErrors: undefined) => void;
-}
+interface FormProps extends PrimitiveFormProps {}
 
 const Form = React.forwardRef<FormElement, FormProps>(
   (props: ScopedProps<FormProps>, forwardedRef) => {
-    const { __scopeForm, serverErrors = {}, onServerErrorsChange, ...rootProps } = props;
+    const { __scopeForm, ...rootProps } = props;
     const formRef = React.useRef<HTMLFormElement>(null);
     const composedFormRef = useComposedRefs(forwardedRef, formRef);
-
-    // focus first invalid control after server errors are set
-    React.useEffect(() => {
-      const form = formRef.current;
-      const errorKeys = Object.keys(serverErrors);
-      if (form && errorKeys.length > 0) {
-        // if we only have a global error, focus the submit button which is described by the global error
-        if (errorKeys.length === 1 && errorKeys[0] === 'global') {
-          const submit: HTMLButtonElement | null = form.querySelector('button[type="submit"]');
-          submit?.focus();
-        }
-        // otherwise, focus the first invalid control
-        else {
-          const elements = form.elements;
-          const [firstInvalidControl] = Array.from(elements)
-            .filter(isHTMLElement)
-            .filter(isInvalid);
-          firstInvalidControl?.focus();
-        }
-      }
-    }, [serverErrors]);
-
-    // allow re-submitting the form over server errors
-    React.useEffect(() => {
-      const hasErrors = serverErrors && Object.keys(serverErrors).length > 0;
-      if (hasErrors) {
-        const form = formRef.current;
-        const isValidForm = form?.checkValidity();
-        const submit: HTMLButtonElement | undefined | null =
-          form?.querySelector('button[type="submit"]');
-        if (!isValidForm && submit) {
-          const handleSubmitClick = (event: Event) => {
-            // clear server errors
-            onServerErrorsChange?.(undefined);
-            // re-submit form
-            setTimeout(() => submit.click(), 0);
-          };
-          submit.addEventListener('click', handleSubmitClick, { once: true });
-          return () => {
-            submit.removeEventListener('click', handleSubmitClick);
-          };
-        }
-      }
-    }, [serverErrors, onServerErrorsChange]);
 
     const [globalMessageId, setGlobalMessageId] = React.useState<string | undefined>(undefined);
     const handleGlobalMessageIdAdd = React.useCallback((id: string) => setGlobalMessageId(id), []);
@@ -119,29 +55,24 @@ const Form = React.forwardRef<FormElement, FormProps>(
         onDescriptionIdRemove={handleGlobalMessageIdRemove}
         getAriaDescription={getAriaDescription}
       >
-        <ServerErrorsProvider scope={__scopeForm} serverErrors={serverErrors}>
-          <Primitive.form
-            {...rootProps}
-            ref={composedFormRef}
-            onInvalid={(event) => {
-              // focus first invalid control
-              const elements = event.currentTarget.elements;
-              const [firstInvalidControl] = Array.from(elements)
-                .filter(isHTMLElement)
-                .filter(isInvalid);
+        <Primitive.form
+          {...rootProps}
+          ref={composedFormRef}
+          onInvalid={(event) => {
+            // focus first invalid control
+            const elements = event.currentTarget.elements;
+            const [firstInvalidControl] = Array.from(elements)
+              .filter(isHTMLElement)
+              .filter(isInvalid);
 
-              if (firstInvalidControl === event.target) {
-                firstInvalidControl.focus();
-              }
+            if (firstInvalidControl === event.target) {
+              firstInvalidControl.focus();
+            }
 
-              // prevent default browser UI for form validation
-              event.preventDefault();
-            }}
-            onReset={composeEventHandlers(props.onReset, (event) => {
-              onServerErrorsChange?.(undefined);
-            })}
-          />
-        </ServerErrorsProvider>
+            // prevent default browser UI for form validation
+            event.preventDefault();
+          }}
+        />
       </AriaDescriptionProvider>
     );
   }
@@ -273,24 +204,12 @@ const FormControl = React.forwardRef<FormControlElement, FormControlProps>(
 
     const fieldContext = useFormFieldContext(CONTROL_NAME, __scopeForm);
     const ariaDescriptionContext = useAriaDescriptionContext(CONTROL_NAME, __scopeForm);
-    const serverErrorsContext = useServerErrorsContext(CONTROL_NAME, __scopeForm);
     const controlRef = React.useRef<FormControlElement>(null);
     const composedRef = useComposedRefs(forwardedRef, controlRef);
     const name = controlProps.name || fieldContext.name;
     const id = controlProps.id || fieldContext.id;
-    const hasServerError = Boolean(fieldContext.name in serverErrorsContext.serverErrors);
 
-    const { setValidity } = fieldContext;
-    React.useEffect(() => {
-      const control = controlRef.current;
-      if (hasServerError && control) {
-        control.setCustomValidity('server error');
-        const controlValidity = validityStateToObject(control.validity);
-        setValidity((prevValidity) => ({ ...prevValidity, ...controlValidity }));
-      }
-    }, [hasServerError, setValidity]);
-
-    const { customValidators, setCustomErrors } = fieldContext;
+    const { setValidity, customValidators, setCustomErrors } = fieldContext;
     const updateControlValidity = React.useCallback(
       async (control: FormControlElement) => {
         //------------------------------------------------------------------------------------------
@@ -308,7 +227,7 @@ const FormControl = React.forwardRef<FormControlElement, FormControlProps>(
         const syncCustomValidators: Array<SyncValidatorEntry> = [];
         const ayncCustomValidators: Array<AsyncValidatorEntry> = [];
         customValidators.forEach((validatorEntry) => {
-          if (isAsyncValidator(validatorEntry.validator)) {
+          if (isAsyncValidator(validatorEntry.validate)) {
             ayncCustomValidators.push(validatorEntry as AsyncValidatorEntry);
           } else {
             syncCustomValidators.push(validatorEntry as SyncValidatorEntry);
@@ -323,12 +242,12 @@ const FormControl = React.forwardRef<FormControlElement, FormControlProps>(
         //------------------------------------------------------------------------------------------
         // 4. run sync custom validators and update control validity / internal validity + errors
 
-        const syncCustomErrors = syncCustomValidators.map(({ id, validator }) => {
-          return [id, !validator(control.value, fields)] as const;
+        const syncCustomErrors = syncCustomValidators.map(({ id, validate }) => {
+          return [id, !validate(control.value, fields)] as const;
         });
         const syncCustomErrorsById = Object.fromEntries(syncCustomErrors);
         const hasSyncCustomErrors = Object.values(syncCustomErrorsById).some(Boolean);
-        const hasCustomError = hasServerError || hasSyncCustomErrors;
+        const hasCustomError = hasSyncCustomErrors;
         control.setCustomValidity(hasCustomError ? DEFAULT_INVALID_MESSAGE : '');
         const controlValidity = validityStateToObject(control.validity);
         setValidity((prevValidity) => ({ ...prevValidity, ...controlValidity }));
@@ -338,20 +257,20 @@ const FormControl = React.forwardRef<FormControlElement, FormControlProps>(
         // 5. run async custom validators and update control validity / internal validity + errors
 
         if (!hasSyncCustomErrors && ayncCustomValidators.length > 0) {
-          const promisedCustomErrors = ayncCustomValidators.map(({ id, validator }) =>
-            validator(control.value, fields).then((isValid) => [id, !isValid] as const)
+          const promisedCustomErrors = ayncCustomValidators.map(({ id, validate }) =>
+            validate(control.value, fields).then((isValid) => [id, !isValid] as const)
           );
           const asyncCustomErrors = await Promise.all(promisedCustomErrors);
           const asyncCustomErrorsById = Object.fromEntries(asyncCustomErrors);
           const hasAsyncCustomErrors = Object.values(asyncCustomErrorsById).some(Boolean);
-          const hasCustomError = hasServerError || hasAsyncCustomErrors;
+          const hasCustomError = hasAsyncCustomErrors;
           control.setCustomValidity(hasCustomError ? DEFAULT_INVALID_MESSAGE : '');
           const controlValidity = validityStateToObject(control.validity);
           setValidity((prevValidity) => ({ ...prevValidity, ...controlValidity }));
           setCustomErrors((prevErrors) => ({ ...prevErrors, ...asyncCustomErrorsById }));
         }
       },
-      [setValidity, customValidators, setCustomErrors, hasServerError]
+      [setValidity, customValidators, setCustomErrors]
     );
 
     React.useEffect(() => {
@@ -409,36 +328,37 @@ const FormControl = React.forwardRef<FormControlElement, FormControlProps>(
 FormControl.displayName = CONTROL_NAME;
 
 /* -------------------------------------------------------------------------------------------------
- * FormClientMessage
+ * FormValidationMessage
  * -----------------------------------------------------------------------------------------------*/
 
-const CLIENT_MESSAGE_NAME = 'FormClientMessage';
+const VALIDATION_MESSAGE_NAME = 'FormValidationMessage';
 
-type FormClientMessageElement = React.ElementRef<typeof FormMessageImpl>;
-interface FormBuiltInMessageProps extends FormClientMessageImplBuiltInProps {}
-interface FormCustomMessageProps extends FormClientMessageImplCustomProps {
+type FormValidationMessageElement = React.ElementRef<typeof FormMessageImpl>;
+interface FormBuiltInMessageProps extends FormValidationMessageImplBuiltInProps {}
+interface FormCustomMessageProps extends FormValidationMessageImplCustomProps {
   type: 'customError';
 }
-type FormClientMessageProps = FormBuiltInMessageProps | FormCustomMessageProps;
+type FormValidationMessageProps = FormBuiltInMessageProps | FormCustomMessageProps;
 
-const FormClientMessage = React.forwardRef<FormClientMessageElement, FormClientMessageProps>(
-  (props: ScopedProps<FormClientMessageProps>, forwardedRef) => {
-    const { type, ...messageProps } = props;
-    if (type === 'customError') {
-      const typedMessageProps = messageProps as FormCustomMessageProps;
-      return <FormClientMessageImplCustom ref={forwardedRef} {...typedMessageProps} />;
-    } else {
-      const typedMessageProps = { type, ...messageProps } as FormBuiltInMessageProps;
-      return <FormClientMessageImplBuiltIn ref={forwardedRef} {...typedMessageProps} />;
-    }
+const FormValidationMessage = React.forwardRef<
+  FormValidationMessageElement,
+  FormValidationMessageProps
+>((props: ScopedProps<FormValidationMessageProps>, forwardedRef) => {
+  const { type, ...messageProps } = props;
+  if (type === 'customError') {
+    const typedMessageProps = messageProps as FormCustomMessageProps;
+    return <FormValidationMessageImplCustom ref={forwardedRef} {...typedMessageProps} />;
+  } else {
+    const typedMessageProps = { type, ...messageProps } as FormBuiltInMessageProps;
+    return <FormValidationMessageImplBuiltIn ref={forwardedRef} {...typedMessageProps} />;
   }
-);
+});
 
-FormClientMessage.displayName = CLIENT_MESSAGE_NAME;
+FormValidationMessage.displayName = VALIDATION_MESSAGE_NAME;
 
 const DEFAULT_INVALID_MESSAGE = 'This value is not valid.';
 const DEFAULT_BUILT_IN_MESSAGES: Record<
-  FormClientMessageImplBuiltInProps['type'],
+  FormValidationMessageImplBuiltInProps['type'],
   string | undefined
 > = {
   badInput: DEFAULT_INVALID_MESSAGE,
@@ -453,8 +373,8 @@ const DEFAULT_BUILT_IN_MESSAGES: Record<
   valueMissing: 'This value is missing.',
 };
 
-type FormClientMessageImplBuiltInElement = React.ElementRef<typeof FormMessageImpl>;
-interface FormClientMessageImplBuiltInProps
+type FormValidationMessageImplBuiltInElement = React.ElementRef<typeof FormMessageImpl>;
+interface FormValidationMessageImplBuiltInProps
   extends Radix.ComponentPropsWithoutRef<typeof FormMessageImpl> {
   // We have to spell out the type rather than use `Omit<ValidityStateKey, 'customError'>`
   // in order for autocomplete to work correctly in IDEs.
@@ -469,15 +389,16 @@ interface FormClientMessageImplBuiltInProps
     | 'typeMismatch'
     | 'valid'
     | 'valueMissing';
+  defaultVisible?: boolean;
 }
 
-const FormClientMessageImplBuiltIn = React.forwardRef<
-  FormClientMessageImplBuiltInElement,
-  FormClientMessageImplBuiltInProps
->((props: ScopedProps<FormClientMessageImplBuiltInProps>, forwardedRef) => {
-  const { type, children, ...messageProps } = props;
-  const fieldContext = useFormFieldContext(CLIENT_MESSAGE_NAME, messageProps.__scopeForm);
-  const matches = fieldContext.validity?.[type as ValidityStateKey];
+const FormValidationMessageImplBuiltIn = React.forwardRef<
+  FormValidationMessageImplBuiltInElement,
+  FormValidationMessageImplBuiltInProps
+>((props: ScopedProps<FormValidationMessageImplBuiltInProps>, forwardedRef) => {
+  const { defaultVisible = false, type, children, ...messageProps } = props;
+  const fieldContext = useFormFieldContext(VALIDATION_MESSAGE_NAME, messageProps.__scopeForm);
+  const matches = defaultVisible || fieldContext.validity?.[type as ValidityStateKey];
 
   if (matches) {
     return (
@@ -490,24 +411,23 @@ const FormClientMessageImplBuiltIn = React.forwardRef<
   return null;
 });
 
-type FormClientMessageImplCustomElement = React.ElementRef<typeof FormMessageImpl>;
-interface FormClientMessageImplCustomProps
+type FormValidationMessageImplCustomElement = React.ElementRef<typeof FormMessageImpl>;
+interface FormValidationMessageImplCustomProps
   extends Radix.ComponentPropsWithoutRef<typeof FormMessageImpl> {
-  isValid: CustomValidatorFn;
+  validate: CustomValidatorFn;
+  defaultVisible?: boolean;
 }
 
-const FormClientMessageImplCustom = React.forwardRef<
-  FormClientMessageImplCustomElement,
-  FormClientMessageImplCustomProps
->((props: ScopedProps<FormClientMessageImplCustomProps>, forwardedRef) => {
-  const { isValid, id: idProp, children, ...messageProps } = props;
+const FormValidationMessageImplCustom = React.forwardRef<
+  FormValidationMessageImplCustomElement,
+  FormValidationMessageImplCustomProps
+>((props: ScopedProps<FormValidationMessageImplCustomProps>, forwardedRef) => {
+  const { defaultVisible, validate, id: idProp, children, ...messageProps } = props;
   const _id = useId();
   const id = idProp ?? _id;
-  const fieldContext = useFormFieldContext(CLIENT_MESSAGE_NAME, messageProps.__scopeForm);
-  const serverErrorsContext = useServerErrorsContext(CLIENT_MESSAGE_NAME, messageProps.__scopeForm);
-  const hasServerError = fieldContext.name in serverErrorsContext.serverErrors;
+  const fieldContext = useFormFieldContext(VALIDATION_MESSAGE_NAME, messageProps.__scopeForm);
 
-  const validatorEntry = React.useMemo(() => ({ id, validator: isValid }), [id, isValid]);
+  const validatorEntry = React.useMemo(() => ({ id, validate }), [id, validate]);
   const { setCustomValidators } = fieldContext;
   React.useEffect(() => {
     setCustomValidators((prev) => [...prev, validatorEntry]);
@@ -517,7 +437,7 @@ const FormClientMessageImplCustom = React.forwardRef<
   const { validity, customErrors } = fieldContext;
   const hasMatchingCustomError = customErrors[id];
   const matches =
-    validity && !hasBuiltInError(validity) && !hasServerError && hasMatchingCustomError;
+    defaultVisible || (validity && !hasBuiltInError(validity) && hasMatchingCustomError);
 
   if (matches) {
     return (
@@ -550,43 +470,6 @@ const FormMessageImpl = React.forwardRef<FormMessageImplElement, FormMessageImpl
     return <Primitive.span id={id} {...messageProps} ref={forwardedRef} />;
   }
 );
-
-/* -------------------------------------------------------------------------------------------------
- * FormServerMessage
- * -----------------------------------------------------------------------------------------------*/
-
-const SERVER_MESSAGE_NAME = 'FormServerMessage';
-
-type FormServerMessageElement = React.ElementRef<typeof FormMessageImpl>;
-interface FormServerMessageProps extends Omit<FormMessageImplProps, 'children'> {
-  children?: React.ReactNode | ((errors: ServerError[]) => React.ReactNode);
-}
-
-const FormServerMessage = React.forwardRef<FormServerMessageElement, FormServerMessageProps>(
-  (props: ScopedProps<FormServerMessageProps>, forwardedRef) => {
-    const { children, ...messageProps } = props;
-    const fieldContext = useFormFieldContext(SERVER_MESSAGE_NAME, messageProps.__scopeForm);
-    const serverErrorsContext = useServerErrorsContext(
-      SERVER_MESSAGE_NAME,
-      messageProps.__scopeForm
-    );
-    const name = fieldContext.name || 'global';
-    const errors = serverErrorsContext.serverErrors[name];
-
-    if (errors?.length) {
-      const child = typeof children === 'function' ? children(errors) : children;
-      return (
-        <FormMessageImpl {...messageProps} ref={forwardedRef}>
-          {child || errors.map((error) => error.message).join(' ')}
-        </FormMessageImpl>
-      );
-    }
-
-    return null;
-  }
-);
-
-FormServerMessage.displayName = SERVER_MESSAGE_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * FormValidityState
@@ -640,9 +523,9 @@ type FormFields = { [index in string]?: FormDataEntryValue };
 type ValidatorSyncFn = (value: string, fields: FormFields) => boolean;
 type ValidatorAsyncFn = (value: string, fields: FormFields) => Promise<boolean>;
 type CustomValidatorFn = ValidatorSyncFn | ValidatorAsyncFn;
-type ValidatorEntry = { id: string; validator: CustomValidatorFn };
-type SyncValidatorEntry = { id: string; validator: ValidatorSyncFn };
-type AsyncValidatorEntry = { id: string; validator: ValidatorAsyncFn };
+type ValidatorEntry = { id: string; validate: CustomValidatorFn };
+type SyncValidatorEntry = { id: string; validate: ValidatorSyncFn };
+type AsyncValidatorEntry = { id: string; validate: ValidatorAsyncFn };
 
 function validityStateToObject(validity: ValidityState) {
   const object: any = {};
@@ -693,8 +576,7 @@ export {
   FormField,
   FormLabel,
   FormControl,
-  FormClientMessage,
-  FormServerMessage,
+  FormValidationMessage,
   FormValidityState,
   FormSubmit,
   //
@@ -702,8 +584,7 @@ export {
   FormField as Field,
   FormLabel as Label,
   FormControl as Control,
-  FormClientMessage as ClientMessage,
-  FormServerMessage as ServerMessage,
+  FormValidationMessage as ValidationMessage,
   FormValidityState as ValidityState,
   FormSubmit as Submit,
 };
@@ -713,11 +594,7 @@ export type {
   FormFieldProps,
   FormLabelProps,
   FormControlProps,
-  FormClientMessageProps,
-  FormServerMessageProps,
+  FormValidationMessageProps,
   FormValidityStateProps,
   FormSubmitProps,
-  //
-  ServerError,
-  ServerErrors,
 };
