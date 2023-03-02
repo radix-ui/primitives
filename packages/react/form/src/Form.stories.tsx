@@ -29,7 +29,7 @@ export const Basic = () => {
 
           if (errors.size > 0) {
             setErrors(Object.fromEntries([...errors].map((name) => [name, true])));
-            focusFirstInvalidControl(form);
+            // focusFirstInvalidControl(form);
             return;
           }
 
@@ -38,7 +38,11 @@ export const Basic = () => {
       >
         <Form.Field name="email" serverInvalid={errors.email}>
           <Form.Label>Email</Form.Label>
-          <Form.Control type="email" required />
+          <Form.Control
+            type="email"
+            required
+            onChange={() => setErrors((prev) => ({ ...prev, email: false }))}
+          />
           <Form.Message match="valueMissing" />
           <Form.Message match="typeMismatch" forceMatch={errors.email}>
             Email is invalid
@@ -47,7 +51,11 @@ export const Basic = () => {
 
         <Form.Field name="password" serverInvalid={errors.password}>
           <Form.Label>Password</Form.Label>
-          <Form.Control type="password" required />
+          <Form.Control
+            type="password"
+            required
+            onChange={() => setErrors((prev) => ({ ...prev, password: false }))}
+          />
           <Form.Message match="valueMissing">Password is required</Form.Message>
           <Form.Message
             match={(value) => value?.match(/.*[0-9]+.*/) === null}
@@ -64,130 +72,111 @@ export const Basic = () => {
   );
 };
 
-// export const Cypress = () => {
-//   const [data, setData] = React.useState({});
-//   const [simulateServerErrors, setSimulateServerErrors] = React.useState(false);
-//   const [serverErrors, setServerErrors] = React.useState<Form.ServerErrors | undefined>(undefined);
+export const Cypress = () => {
+  const [data, setData] = React.useState({});
+  const [simulateServerErrors, setSimulateServerErrors] = React.useState(false);
+  const [serverErrors, setServerErrors] = React.useState<{
+    email?: boolean;
+    pin?: boolean;
+    global?: boolean;
+  }>({});
 
-//   return (
-//     <>
-//       <Form.Root
-//         onSubmit={async (event) => {
-//           event.preventDefault();
+  return (
+    <>
+      <Form.Root
+        className={formClass()}
+        onSubmit={async (event) => {
+          event.preventDefault();
+          setServerErrors({});
+          setData({});
 
-//           const data = Object.fromEntries(new FormData(event.currentTarget));
-//           setData(data);
+          const data = Object.fromEntries(new FormData(event.currentTarget));
 
-//           if (simulateServerErrors) {
-//             await wait(100);
-//             const errors: Form.ServerErrors = {};
+          if (simulateServerErrors) {
+            await wait(100);
+            setServerErrors({ email: !data.email, pin: String(data.pin)[3] !== '9', global: true });
+          }
 
-//             if (!data.age) {
-//               errors.age = [{ code: 'required', message: 'Age is required server side!' }];
-//             }
-//             if (!data.email) {
-//               errors.email = [{ code: 'required', message: 'Email is required server side!' }];
-//             }
-//             if (!data.pin) {
-//               errors.pin = [
-//                 { code: 'required', message: 'Pin is required server side!' },
-//                 { code: '4-digits', message: 'Pin should be 4 digits!' },
-//               ];
-//             }
-//             if (!data.country) {
-//               errors.country = [{ code: 'required', message: 'Country is required server side!' }];
-//             }
-//             errors.global = [{ code: 'bad', message: 'Something bad happened!' }];
+          setData(data);
+        }}
+        onReset={() => setData({})}
+      >
+        <Form.Field name="name">
+          <Form.Label>Name (required)</Form.Label>
+          <Form.Control type="text" required />
+          <Form.Message match="valueMissing" />
+          <Form.Message match="valid">valid!</Form.Message>
+        </Form.Field>
 
-//             setServerErrors(errors);
-//           }
-//         }}
-//         onReset={() => setData({})}
-//         serverErrors={serverErrors}
-//         onServerErrorsChange={setServerErrors}
-//       >
-//         <Form.Field name="name">
-//           <Form.Label>Name (required)</Form.Label>
-//           <Form.Control type="text" required />
-//           <Form.ClientMessage type="valueMissing" />
-//           <Form.ClientMessage type="valid">valid!</Form.ClientMessage>
-//         </Form.Field>
+        <Form.Field name="age">
+          <Form.Label>Age (0-99)</Form.Label>
+          <Form.Control type="number" min="0" max="99" step="1" />
+          <Form.Message match="rangeOverflow" />
+          <Form.Message match="rangeUnderflow" />
+          <Form.Message match="stepMismatch" />
+        </Form.Field>
 
-//         <Form.Field name="age">
-//           <Form.Label>Age (0-99)</Form.Label>
-//           <Form.Control type="number" min="0" max="99" step="1" />
-//           <Form.ClientMessage type="rangeOverflow" />
-//           <Form.ClientMessage type="rangeUnderflow" />
-//           <Form.ClientMessage type="stepMismatch" />
-//           <Form.ServerMessage />
-//         </Form.Field>
+        <Form.Field name="email" serverInvalid={serverErrors.email}>
+          <Form.Label>Email</Form.Label>
+          <Form.Control type="email" />
+          <Form.Message match="typeMismatch" />
+          {serverErrors.email ? (
+            <Form.Message>Email is actually required server side!</Form.Message>
+          ) : null}
+        </Form.Field>
 
-//         <Form.Field name="email">
-//           <Form.Label>Email</Form.Label>
-//           <Form.Control type="email" />
-//           <Form.ClientMessage type="typeMismatch" />
-//           <Form.ServerMessage>Yo, give us an email will ya!</Form.ServerMessage>
-//         </Form.Field>
+        <Form.Field name="password">
+          <Form.Label>Password</Form.Label>
+          <Form.Control type="password" minLength={8} maxLength={16} />
+          <Form.Message match="tooShort" />
+          <Form.Message match="tooLong" />
+        </Form.Field>
 
-//         <Form.Field name="password">
-//           <Form.Label>Password</Form.Label>
-//           <Form.Control type="password" minLength={8} maxLength={16} />
-//           <Form.ClientMessage type="tooShort" />
-//           <Form.ClientMessage type="tooLong" />
-//         </Form.Field>
+        <Form.Field name="pin" serverInvalid={serverErrors.pin}>
+          <Form.Label>Pin (4 digits)</Form.Label>
+          <Form.Control type="text" pattern="\d{4,4}" />
+          <Form.Message match="patternMismatch" forceMatch={serverErrors.pin} />
+        </Form.Field>
 
-//         <Form.Field name="pin">
-//           <Form.Label>Pin (4 digits)</Form.Label>
-//           <Form.Control type="text" pattern="\d{4,4}" />
-//           <Form.ClientMessage type="patternMismatch" />
-//           <Form.ServerMessage />
-//         </Form.Field>
+        <Form.Field name="secret">
+          <Form.Label>Secret 1</Form.Label>
+          <Form.Control type="text" />
+          <Form.Message match={(value) => value !== 'shush'} />
+        </Form.Field>
 
-//         <Form.Field name="secret">
-//           <Form.Label>Secret 1</Form.Label>
-//           <Form.Control type="text" />
-//           <Form.ClientMessage type="customError" isValid={(value) => value === 'shush'} />
-//         </Form.Field>
+        <Form.Field name="asyncSecret">
+          <Form.Label>Secret 2</Form.Label>
+          <Form.Control type="text" />
+          <Form.Message
+            match={async (value) => {
+              await wait(100);
+              return value !== 'shush';
+            }}
+          />
+        </Form.Field>
 
-//         <Form.Field name="asyncSecret">
-//           <Form.Label>Secret 2</Form.Label>
-//           <Form.Control type="text" />
-//           <Form.ClientMessage
-//             type="customError"
-//             isValid={async (value) => {
-//               await wait(100);
-//               return value === 'shush';
-//             }}
-//           />
-//         </Form.Field>
+        <Form.Field name="country">
+          <Form.Label htmlFor="my-country">Country</Form.Label>
+          <Form.Control id="my-country" type="text" pattern="France|Spain" />
+          <Form.Message match="patternMismatch">Country should be "France" or "Spain"</Form.Message>
+        </Form.Field>
 
-//         <Form.Field name="country">
-//           <Form.Label htmlFor="my-country">Country</Form.Label>
-//           <Form.Control id="my-country" type="text" pattern="France|Spain" />
-//           <Form.ClientMessage type="patternMismatch">
-//             Country should be "France" or "Spain"
-//           </Form.ClientMessage>
-//           <Form.ServerMessage>{(errors) => JSON.stringify(errors)}</Form.ServerMessage>
-//         </Form.Field>
+        <Form.Submit>submit</Form.Submit>
+        <button type="reset">reset</button>
+      </Form.Root>
+      <pre>Data: {JSON.stringify(data, null, 2)}</pre>
 
-//         <Form.Submit>submit</Form.Submit>
-//         <button type="reset">reset</button>
-
-//         <Form.ServerMessage />
-//       </Form.Root>
-//       <pre>Data: {JSON.stringify(data, null, 2)}</pre>
-
-//       <label>
-//         <input
-//           type="checkbox"
-//           checked={simulateServerErrors}
-//           onChange={(event) => setSimulateServerErrors(event.target.checked)}
-//         />{' '}
-//         Simulate server errors?
-//       </label>
-//     </>
-//   );
-// };
+      <label>
+        <input
+          type="checkbox"
+          checked={simulateServerErrors}
+          onChange={(event) => setSimulateServerErrors(event.target.checked)}
+        />{' '}
+        Simulate server errors?
+      </label>
+    </>
+  );
+};
 
 async function wait(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -197,14 +186,3 @@ const formClass = css({
   '& *[data-invalid]': { color: 'red', outlineColor: 'CurrentColor' },
   '& *[data-valid]': { color: 'green', outlineColor: 'CurrentColor' },
 });
-
-function focusFirstInvalidControl(form: HTMLFormElement) {
-  setTimeout(() => {
-    // focus first invalid control
-    const elements = form.elements;
-    const [firstInvalidControl] = Array.from(elements).filter(
-      (el) => el.dataset.invalid === 'true'
-    );
-    firstInvalidControl?.focus();
-  }, 0);
-}

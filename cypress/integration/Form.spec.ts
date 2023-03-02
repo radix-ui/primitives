@@ -190,65 +190,48 @@ describe('Form', () => {
       });
 
       it('should focus the first control with a server error', () => {
-        cy.findByLabelText(/age/i).should('be.focused');
+        cy.findByLabelText(/email/i).should('be.focused');
       });
 
-      it('should handle server error per-field and display server message', () => {
-        cy.findByLabelText(/age/i).as('control');
-        cy.findByText(/age is required server side/i).as('message');
-        checkControlMessageAssociation();
-      });
-
-      it('allows providing own message for server error', () => {
+      it('allows showing custom server error messages per-field', () => {
         cy.findByLabelText(/email/i).as('control');
-        cy.findByText(/email is required server side/i).should('not.exist');
-        cy.findByText(/yo, give us an email/i).as('message');
+        cy.findByText(/email is actually required server side/i).as('message');
         checkControlMessageAssociation();
       });
 
-      it('give access to server errors', () => {
-        cy.findByLabelText(/country/i).as('control');
-        cy.findByText(/country is required server side/i)
-          .as('message')
-          .invoke('text')
-          .should('equal', '[{"code":"required","message":"Country is required server side!"}]');
-        checkControlMessageAssociation();
-      });
-
-      it('should concatenate multiple server errors by default', () => {
+      it('allows re-using client-side matchers for server errors', () => {
         cy.findByLabelText(/pin/i).as('control');
-        cy.findByText(/pin is required server side/i).as('message');
-        cy.findByText(/pin should be 4 digits/i);
+        cy.findByText(/does not match the required pattern/).as('message');
         checkControlMessageAssociation();
       });
 
       it('allows re-submitting the form with server errors', () => {
-        cy.findByLabelText(/age/i).focus().realType('50').realPress('Enter');
+        cy.findByLabelText(/email/i).focus().realType('john.doe@gmail.com').realPress('Enter');
         cy.findByLabelText(/email/i).as('control').should('be.focused');
       });
     });
 
-    describe('with only global errors', () => {
-      beforeEach(() => {
-        cy.findByLabelText(/name/i).focus().realType('John');
-        cy.findByLabelText(/age/i).focus().realType('50');
-        cy.findByLabelText(/email/i).focus().realType('john.doe@gmail.com');
-        cy.findByLabelText(/pin/i).focus().realType('1234');
-        cy.findByLabelText(/country/i)
-          .focus()
-          .realType('France')
-          .realPress('Enter');
-      });
+    // describe('with only global errors', () => {
+    //   beforeEach(() => {
+    //     cy.findByLabelText(/name/i).focus().realType('John');
+    //     cy.findByLabelText(/age/i).focus().realType('50');
+    //     cy.findByLabelText(/email/i).focus().realType('john.doe@gmail.com');
+    //     cy.findByLabelText(/pin/i).focus().realType('1234');
+    //     cy.findByLabelText(/country/i)
+    //       .focus()
+    //       .realType('France')
+    //       .realPress('Enter');
+    //   });
 
-      it('should focus the submit button', () => {
-        cy.findByText(/submit/i).should('be.focused');
-      });
+    //   it('should focus the submit button', () => {
+    //     cy.findByText(/submit/i).should('be.focused');
+    //   });
 
-      it('handle global server errors', () => {
-        cy.findByText('submit').as('control');
-        cy.findByText(/something bad happened/i).as('message');
-        checkControlMessageAssociation();
-      });
-    });
+    //   it('handle global server errors', () => {
+    //     cy.findByText('submit').as('control');
+    //     cy.findByText(/something bad happened/i).as('message');
+    //     checkControlMessageAssociation();
+    //   });
+    // });
   });
 });

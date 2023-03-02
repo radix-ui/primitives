@@ -60,14 +60,8 @@ const Form = React.forwardRef<FormElement, FormProps>(
           ref={composedFormRef}
           onInvalid={(event) => {
             // focus first invalid control
-            const elements = event.currentTarget.elements;
-            const [firstInvalidControl] = Array.from(elements)
-              .filter(isHTMLElement)
-              .filter(isInvalid);
-
-            if (firstInvalidControl === event.target) {
-              firstInvalidControl.focus();
-            }
+            const firstInvalidControl = getFirstInvalidControl(event.currentTarget);
+            if (firstInvalidControl === event.target) firstInvalidControl.focus();
 
             // prevent default browser UI for form validation
             event.preventDefault();
@@ -306,6 +300,15 @@ const FormControl = React.forwardRef<FormControlElement, FormControlProps>(
       }
     }, [resetControlValidity]);
 
+    React.useEffect(() => {
+      const form = controlRef.current?.closest('form');
+      if (form && fieldContext.serverInvalid) {
+        // focus first invalid control
+        const firstInvalidControl = getFirstInvalidControl(form);
+        if (firstInvalidControl === controlRef.current) firstInvalidControl.focus();
+      }
+    }, [fieldContext.serverInvalid]);
+
     return (
       <Primitive.input
         data-valid={getValidAttribute(fieldContext)}
@@ -432,13 +435,13 @@ const FormCustomMessage = React.forwardRef<FormCustomMessageElement, FormCustomM
     const id = idProp ?? _id;
     const fieldContext = useFormFieldContext(MESSAGE_NAME, messageProps.__scopeForm);
 
-    const customMatchEntry = React.useMemo(() => ({ id, match }), [id, match]);
-    const { setCustomMatcherEntries: setCustomMatchEntries } = fieldContext;
+    const customMatcherEntry = React.useMemo(() => ({ id, match }), [id, match]);
+    const { setCustomMatcherEntries } = fieldContext;
     React.useEffect(() => {
-      setCustomMatchEntries((prev) => [...prev, customMatchEntry]);
+      setCustomMatcherEntries((prev) => [...prev, customMatcherEntry]);
       return () =>
-        setCustomMatchEntries((prev) => prev.filter((v) => v.id !== customMatchEntry.id));
-    }, [setCustomMatchEntries, customMatchEntry]);
+        setCustomMatcherEntries((prev) => prev.filter((v) => v.id !== customMatcherEntry.id));
+    }, [setCustomMatcherEntries, customMatcherEntry]);
 
     const { validity, customErrors } = fieldContext;
     const hasMatchingCustomError = customErrors[id];
@@ -551,7 +554,16 @@ function isFormControl(element: any): element is { validity: ValidityState } {
 }
 
 function isInvalid(control: HTMLElement) {
-  return isFormControl(control) && control.validity.valid === false;
+  return (
+    isFormControl(control) &&
+    (control.validity.valid === false || control.getAttribute('aria-invalid') === 'true')
+  );
+}
+
+function getFirstInvalidControl(form: HTMLFormElement): HTMLElement | undefined {
+  const elements = form.elements;
+  const [firstInvalidControl] = Array.from(elements).filter(isHTMLElement).filter(isInvalid);
+  return firstInvalidControl;
 }
 
 function isAsyncCustomMatcher(match: CustomMatcher): match is AsyncCustomMatcher {
