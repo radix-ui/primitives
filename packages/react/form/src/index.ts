@@ -5,7 +5,7 @@ export {
   FormField,
   FormLabel,
   FormControl,
-  FormValidationMessage,
+  FormMessage,
   FormValidityState,
   FormSubmit,
   //
@@ -13,7 +13,7 @@ export {
   Field,
   Label,
   Control,
-  ValidationMessage,
+  Message,
   ValidityState,
   Submit,
 } from './Form';
@@ -23,7 +23,7 @@ export type {
   FormFieldProps,
   FormLabelProps,
   FormControlProps,
-  FormValidationMessageProps,
+  FormMessageProps,
   FormValidityStateProps,
   FormSubmitProps,
 } from './Form';

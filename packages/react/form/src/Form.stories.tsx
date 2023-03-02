@@ -5,45 +5,60 @@ import * as Form from '@radix-ui/react-form';
 export default { title: 'Components/Form' };
 
 export const Basic = () => {
-  const [error, setError] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
+  const [errors, setErrors] = React.useState<{ email?: boolean; password?: boolean }>({});
+
   return (
     <>
       <Form.Root
         className={formClass()}
         onSubmit={async (event) => {
+          const form = event.currentTarget;
           event.preventDefault();
-          const formData = new FormData(event.currentTarget);
-          console.log(Object.fromEntries(formData));
+          setErrors({});
 
+          const formData = new FormData(form);
+
+          setLoading(true);
           await wait(500);
+          setLoading(false);
 
-          if (!(formData.get('password') as string).includes('#')) {
-            setError(true);
+          const errors = new Set();
+          if (!(formData.get('email') as string).includes('@gmail.com')) errors.add('email');
+          if (!(formData.get('password') as string).includes('#')) errors.add('password');
+
+          if (errors.size > 0) {
+            setErrors(Object.fromEntries([...errors].map((name) => [name, true])));
+            focusFirstInvalidControl(form);
+            return;
           }
+
+          window.alert(JSON.stringify(Object.fromEntries(formData), null, 2));
         }}
       >
-        <Form.Field name="email">
+        <Form.Field name="email" serverInvalid={errors.email}>
           <Form.Label>Email</Form.Label>
           <Form.Control type="email" required />
-          <Form.ValidationMessage type="valueMissing">Email is required</Form.ValidationMessage>
-          <Form.ValidationMessage type="typeMismatch">Email is invalid</Form.ValidationMessage>
+          <Form.Message match="valueMissing" />
+          <Form.Message match="typeMismatch" forceMatch={errors.email}>
+            Email is invalid
+          </Form.Message>
         </Form.Field>
 
-        <Form.Field name="password">
+        <Form.Field name="password" serverInvalid={errors.password}>
           <Form.Label>Password</Form.Label>
           <Form.Control type="password" required />
-          <Form.ValidationMessage type="valueMissing">Password is required</Form.ValidationMessage>
-          <Form.ValidationMessage
-            type="customError"
-            validate={(value) => value?.match(/.*[0-9]+.*/) !== null}
-            defaultVisible={error}
-            key={String(error)}
+          <Form.Message match="valueMissing">Password is required</Form.Message>
+          <Form.Message
+            match={(value) => value?.match(/.*[0-9]+.*/) === null}
+            forceMatch={errors.password}
           >
             Password is not complex enough
-          </Form.ValidationMessage>
+          </Form.Message>
+          {errors.password && <Form.Message>Woops</Form.Message>}
         </Form.Field>
 
-        <Form.Submit>Submit</Form.Submit>
+        <Form.Submit disabled={loading}>Submit</Form.Submit>
       </Form.Root>
     </>
   );
@@ -182,3 +197,14 @@ const formClass = css({
   '& *[data-invalid]': { color: 'red', outlineColor: 'CurrentColor' },
   '& *[data-valid]': { color: 'green', outlineColor: 'CurrentColor' },
 });
+
+function focusFirstInvalidControl(form: HTMLFormElement) {
+  setTimeout(() => {
+    // focus first invalid control
+    const elements = form.elements;
+    const [firstInvalidControl] = Array.from(elements).filter(
+      (el) => el.dataset.invalid === 'true'
+    );
+    firstInvalidControl?.focus();
+  }, 0);
+}
