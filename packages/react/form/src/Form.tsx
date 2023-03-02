@@ -12,6 +12,8 @@ import type { Scope } from '@radix-ui/react-context';
 type ScopedProps<P> = P & { __scopeForm?: Scope };
 const [createFormContext, createFormScope] = createContextScope('Form');
 
+const noop = () => {};
+
 /* -------------------------------------------------------------------------------------------------
  * Form
  * -----------------------------------------------------------------------------------------------*/
@@ -32,11 +34,13 @@ const [AriaDescriptionProvider, useAriaDescriptionContext] =
 
 type FormElement = React.ElementRef<typeof Primitive.form>;
 type PrimitiveFormProps = Radix.ComponentPropsWithoutRef<typeof Primitive.form>;
-interface FormProps extends PrimitiveFormProps {}
+interface FormProps extends PrimitiveFormProps {
+  onClearServerErrors?: () => void;
+}
 
 const Form = React.forwardRef<FormElement, FormProps>(
   (props: ScopedProps<FormProps>, forwardedRef) => {
-    const { __scopeForm, ...rootProps } = props;
+    const { __scopeForm, onClearServerErrors = noop, ...rootProps } = props;
     const formRef = React.useRef<HTMLFormElement>(null);
     const composedFormRef = useComposedRefs(forwardedRef, formRef);
 
@@ -48,6 +52,15 @@ const Form = React.forwardRef<FormElement, FormProps>(
     );
     const getAriaDescription = React.useCallback(() => globalMessageId, [globalMessageId]);
 
+    // reset validity and errors when the form is reset
+    React.useEffect(() => {
+      const form = formRef.current;
+      if (form) {
+        form.addEventListener('reset', onClearServerErrors);
+        return () => form.removeEventListener('reset', onClearServerErrors);
+      }
+    }, [onClearServerErrors]);
+
     return (
       <AriaDescriptionProvider
         scope={__scopeForm}
@@ -58,14 +71,17 @@ const Form = React.forwardRef<FormElement, FormProps>(
         <Primitive.form
           {...rootProps}
           ref={composedFormRef}
-          onInvalid={(event) => {
+          onInvalid={composeEventHandlers(props.onInvalid, (event) => {
             // focus first invalid control
             const firstInvalidControl = getFirstInvalidControl(event.currentTarget);
             if (firstInvalidControl === event.target) firstInvalidControl.focus();
 
             // prevent default browser UI for form validation
             event.preventDefault();
-          }}
+          })}
+          onSubmit={composeEventHandlers(props.onSubmit, onClearServerErrors, {
+            checkForDefaultPrevented: false,
+          })}
         />
       </AriaDescriptionProvider>
     );

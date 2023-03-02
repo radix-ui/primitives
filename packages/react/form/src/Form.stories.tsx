@@ -6,16 +6,18 @@ export default { title: 'Components/Form' };
 
 export const Basic = () => {
   const [loading, setLoading] = React.useState(false);
-  const [errors, setErrors] = React.useState<{ email?: boolean; password?: boolean }>({});
+  const [serverErrors, setServerErrors] = React.useState<{ email?: boolean; password?: boolean }>(
+    {}
+  );
 
   return (
     <>
       <Form.Root
         className={formClass()}
+        onClearServerErrors={() => setServerErrors({})}
         onSubmit={async (event) => {
           const form = event.currentTarget;
           event.preventDefault();
-          setErrors({});
 
           const formData = new FormData(form);
 
@@ -28,7 +30,7 @@ export const Basic = () => {
           if (!(formData.get('password') as string).includes('#')) errors.add('password');
 
           if (errors.size > 0) {
-            setErrors(Object.fromEntries([...errors].map((name) => [name, true])));
+            setServerErrors(Object.fromEntries([...errors].map((name) => [name, true])));
             // focusFirstInvalidControl(form);
             return;
           }
@@ -36,37 +38,38 @@ export const Basic = () => {
           window.alert(JSON.stringify(Object.fromEntries(formData), null, 2));
         }}
       >
-        <Form.Field name="email" serverInvalid={errors.email}>
+        <Form.Field name="email" serverInvalid={serverErrors.email}>
           <Form.Label>Email</Form.Label>
           <Form.Control
             type="email"
             required
-            onChange={() => setErrors((prev) => ({ ...prev, email: false }))}
+            onChange={() => setServerErrors((prev) => ({ ...prev, email: false }))}
           />
           <Form.Message match="valueMissing" />
-          <Form.Message match="typeMismatch" forceMatch={errors.email}>
+          <Form.Message match="typeMismatch" forceMatch={serverErrors.email}>
             Email is invalid
           </Form.Message>
         </Form.Field>
 
-        <Form.Field name="password" serverInvalid={errors.password}>
+        <Form.Field name="password" serverInvalid={serverErrors.password}>
           <Form.Label>Password</Form.Label>
           <Form.Control
             type="password"
             required
-            onChange={() => setErrors((prev) => ({ ...prev, password: false }))}
+            onChange={() => setServerErrors((prev) => ({ ...prev, password: false }))}
           />
           <Form.Message match="valueMissing">Password is required</Form.Message>
           <Form.Message
             match={(value) => value?.match(/.*[0-9]+.*/) === null}
-            forceMatch={errors.password}
+            forceMatch={serverErrors.password}
           >
             Password is not complex enough
           </Form.Message>
-          {errors.password && <Form.Message>Woops</Form.Message>}
+          {serverErrors.password && <Form.Message>Woops</Form.Message>}
         </Form.Field>
 
         <Form.Submit disabled={loading}>Submit</Form.Submit>
+        <button type="reset">Reset</button>
       </Form.Root>
     </>
   );
@@ -85,9 +88,10 @@ export const Cypress = () => {
     <>
       <Form.Root
         className={formClass()}
+        onClearServerErrors={() => setServerErrors({})}
         onSubmit={async (event) => {
           event.preventDefault();
-          setServerErrors({});
+
           setData({});
 
           const data = Object.fromEntries(new FormData(event.currentTarget));
