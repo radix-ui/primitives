@@ -52,15 +52,6 @@ const Form = React.forwardRef<FormElement, FormProps>(
     );
     const getAriaDescription = React.useCallback(() => globalMessageId, [globalMessageId]);
 
-    // reset validity and errors when the form is reset
-    React.useEffect(() => {
-      const form = formRef.current;
-      if (form) {
-        form.addEventListener('reset', onClearServerErrors);
-        return () => form.removeEventListener('reset', onClearServerErrors);
-      }
-    }, [onClearServerErrors]);
-
     return (
       <AriaDescriptionProvider
         scope={__scopeForm}
@@ -79,9 +70,12 @@ const Form = React.forwardRef<FormElement, FormProps>(
             // prevent default browser UI for form validation
             event.preventDefault();
           })}
+          // clear server errors when the form is re-submitted
           onSubmit={composeEventHandlers(props.onSubmit, onClearServerErrors, {
             checkForDefaultPrevented: false,
           })}
+          // clear server errors when the form is reset
+          onReset={composeEventHandlers(props.onReset, onClearServerErrors)}
         />
       </AriaDescriptionProvider>
     );
