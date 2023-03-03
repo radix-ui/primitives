@@ -1,6 +1,13 @@
 - Start Date: 2023-02-17
 - RFC PR: (leave this empty, to be filled in later)
 - Authors: Benoît Grélard
+- Updates:
+  - 2023-03-03:
+    - Reworked message API to remove distinction between client/server validation
+      - Now a single `Form.Message` component
+      - A single `match` prop now supports all use-cases
+    - Reworked server error handling to be less prescriptive (now relying more on messages, rather than the prescriptive `serverErrors` prop)
+    - Validation messages / state available outside of `Field` by passing explicit `name` prop
 
 # Radix Form primitive
 
@@ -43,23 +50,23 @@ function Page() {
       <Form.Field name="name">
         <Form.Label>Full name</Form.Label>
         <Form.Control /> {/* renders a `input[type="text"]` by default */}
-        <Form.ClientMessage type="missingValue">Please enter your name.</Form.ClientMessage>
+        <Form.Message match="missingValue">Please enter your name.</Form.Message>
       </Form.Field>
 
       <Form.Field name="email">
         <Form.Label>Email address</Form.Label>
         <Form.Control type="email" />
-        <Form.ClientMessage type="missingValue">Please enter your email.</Form.ClientMessage>
-        <Form.ClientMessage type="typeMismatch">Please provide a valid email.</Form.ClientMessage>
+        <Form.Message match="missingValue">Please enter your email.</Form.Message>
+        <Form.Message match="typeMismatch">Please provide a valid email.</Form.Message>
       </Form.Field>
 
       <Form.Field name="age">
         <Form.Label>Age</Form.Label>
         <Form.Control type="number" min="18" max="57" step="1" />
-        <Form.ClientMessage type="missingValue">Please enter your age.</Form.ClientMessage>
-        <Form.ClientMessage type="rangeOverflow">You must be 18 or older.</Form.ClientMessage>
-        <Form.ClientMessage type="rangeUnderflow">You must be 57 or younger.</Form.ClientMessage>
-        <Form.ClientMessage type="stepMismatch">Please enter a whole number.</Form.ClientMessage>
+        <Form.Message match="missingValue">Please enter your age.</Form.Message>
+        <Form.Message match="rangeOverflow">You must be 18 or older.</Form.Message>
+        <Form.Message match="rangeUnderflow">You must be 57 or younger.</Form.Message>
+        <Form.Message match="stepMismatch">Please enter a whole number.</Form.Message>
       </Form.Field>
 
       <Form.Submit>Submit</Form.Submit>
@@ -70,8 +77,9 @@ function Page() {
 
 Note that there is not state present about the client, everything is uncontrolled by default (yet can be controlled). Also note that there are no attributes necessary to handle accessibility, this is all handled by the primitive:
 
-- label and controls are associated using the `name` provided on `Form.Field`.
-- when one or more client-side error message display, they are automatically associated to their matching control and focus is moved to the first invalid control.
+- label and controls are associated using the `name` provided on `Form.Field`
+- when one or more client-side error message display, they are automatically associated to their matching control
+- focus is moved to the first invalid control
 
 ### Styling
 
@@ -107,53 +115,58 @@ It can also be used to compose other types of controls, such as a `select`:
 
 #### Providing your own validation messages
 
-When no `children` are provided, `Form.ClientMessage` will render a default error message for the given `type`.
+When no `children` are provided, `Form.Message` will render a default error message for the given `match`.
 
 ```jsx
-<ClientMessage type="missingValue" /> // will yield "This value is missing."
+<Form.Message match="missingValue" /> // will yield "This value is missing"
 ```
 
 You can provide a more meaningful message by providing your own `children`. This also allows for internationalization.
 
 ```jsx
-<ClientMessage type="missingValue">Please provide a name.</ClientMessage> // will yield "Please provide a name."
+<Form.Message match="missingValue">Please provide a name</Form.Message> // will yield "Please provide a name"
 ```
 
-#### Client-side validation types
+#### Client-side validation matching
 
-`Form.ClientMessage` accepts a required `type` prop which is used to determine when the message should show. It matches the native HTML validity state (`ValidityState` on [MDN](https://developer.mozilla.org/en-US/docs/Web/API/ValidityState)) which result from using attributes such as `required`, `min`, `max`. The message will show if the given `type` is `true` on the control’s validity state.
+`Form.Message` accepts a `match` prop which is used to determine when the message should show. It matches the native HTML validity state (`ValidityState` on [MDN](https://developer.mozilla.org/en-US/docs/Web/API/ValidityState)) which result from using attributes such as `required`, `min`, `max`. The message will show if the given `match` is `true` on the control’s validity state.
 
 ```ts
-// `type` is one of the following keys from the DOM ValidityState interface:
+// `match`'s prop accepts a `ValidityMatcher` (see below):
 
-interface ValidityState {
-  readonly badInput: boolean;
-  readonly customError: boolean;
-  readonly patternMismatch: boolean;
-  readonly rangeOverflow: boolean;
-  readonly rangeUnderflow: boolean;
-  readonly stepMismatch: boolean;
-  readonly tooLong: boolean;
-  readonly tooShort: boolean;
-  readonly typeMismatch: boolean;
-  readonly valid: boolean;
-  readonly valueMissing: boolean;
-}
+type ValidityMatcher =
+  | 'badInput'
+  | 'patternMismatch'
+  | 'rangeOverflow'
+  | 'rangeUnderflow'
+  | 'stepMismatch'
+  | 'tooLong'
+  | 'tooShort'
+  | 'typeMismatch'
+  | 'valid'
+  | 'valueMissing';
 ```
 
 This means you can even show something whe the field is valid:
 
 ```jsx
-<Form.ClientMessage type="valid">✅ Valid!</Form.ClientMessage>
+<Form.Message match="valid">✅ Valid!</Form.Message>
 ```
 
 #### Custom validation
 
-On top of all the built-in client-side validation types described above you can also provide your own custom validation whislt still making use of the platform's validation abilities. It uses the `customError` type present in the constraint validity API.
+On top of all the built-in client-side validation matches described above you can also provide your own custom validation whilst still making use of the platform's validation abilities. It uses the `customError` type present in the constraint validity API.
 
-You can pass `type="customError"` on `Form.ClientMessage` and provide an `isValid` prop with your custom validation logic.
+You can pass your own validation function into the `match` prop on `Form.Message`.
 
-> `isValid` is called with the current value of the control and the current values of all other controls in the form.
+```ts
+// The `match` prop also accepts a `CustomMatcher` (see below):
+type MatchProp = ValidityMatcher | CustomMatcher;
+type SyncCustomMatcher = (value: string, formData: FormData) => boolean;
+type AsyncCustomMatcher = (value: string, formData: FormData) => Promise<boolean>;
+```
+
+> `match` will be called with the current value of the control as first argument and the entire `FormData` as second argument.
 
 Here's a contrived example:
 
@@ -161,20 +174,16 @@ Here's a contrived example:
 <Form.Field name="name">
   <Form.Label>Full name</Form.Label>
   <Form.Control />
-  <Form.ClientMessage type="customError" isValid={(value, fields) => value === 'John'}>
-    Only John is allowed.
-  </Form.ClientMessage>
+  <Form.Message match={(value, formData) => value !== 'John'}>Only John is allowed.</Form.Message>
 </Form.Field>
 ```
 
-> `isValid` can also be an `async` function (or return a promise) to perform async validation (see type below):
+> `match` can also be an `async` function (or return a promise) to perform async validation (see type below):
 
-```ts
-type CustomValidatorFn = ValidatorSyncFn | ValidatorAsyncFn;
-type ValidatorSyncFn = (value: string, fields: FormFields) => boolean;
-type ValidatorAsyncFn = (value: string, fields: FormFields) => Promise<boolean>;
-type FormFields = { [index in string]?: FormDataEntryValue };
-```
+#### Messages outside of a `Form.Field`
+
+When nested inside a `Form.Field` part, `Form.Message` will automatically be wired to the control's validity which exists in the field.
+Alternatively you can render a message outside of a `Form.Field` part and pass it a `name` prop explicitly.
 
 #### Accessing the validity state for even more control
 
@@ -193,18 +202,19 @@ Sometimes, you may need to access the raw validity state of a field in order to 
 </Form.Field>
 ```
 
-> Note: `Form.ValidityState` should be nested inside a `Form.Field` part and gives you access to the validity of that field.
+When nested inside a `Form.Field` part, `Form.ValidityState` will automatically be wired to the control's validity which exists in the field.
+Alternatively you can render it outside of a `Form.Field` part and pass it a `name` prop explicitly.
 
 #### Server-side validation
 
-The component also supports server-side validation via `Form.ServerMessage`.
+The component also supports server-side validation using the same `Form.Message` component.
+You can re-use the same messages you defined for client-side errors by passing a `forceMatch` prop which will for the message to show regardless of the client-side matching logic. If the message doesn't exist on the client-side, you can render a `Form.Message` without a `match` too.
+The field is marked as invalid by passing a `serverInvalid` boolean prop to the `Form.Field` part.
 
-Given that the server logic is completely outside of the scope of this component, the errors are provided to it using a controlled API: `serverErrors` and `onServerErrorsChange`: It will display accordingly to the errors passed into `serverErrors` on `Form.Root` (typically mapped from the actual errors returned by your server call). When inside a `Field` part, it will display the errors matching that field (`serverErrors[fieldName]`) When outside a `Field` part, it will display global errors that aren't tied to a specific field (`serverErrors.global`).
+The accessibility relating to server errors is handled by the primitive in a similar fashion:
 
-Similary to `Form.ClientMessage`, all accessibility relating to server errors is handled by the primitive:
-
-- when one or more server-side error message display, they are automatically associated to their matching control and focus is moved to the first invalid control.
-- when there are only global server errors, focus is moved to the submit button and the message is associated with it so screen readers announce it.
+- when one or more server-side error message display, they are automatically associated to their matching control
+- focus is moved to the first invalid control
 
 Let's see the same example as above but with added server-side error handling:
 
@@ -213,7 +223,7 @@ import * as React from 'react';
 import * as Form from '@radix-ui/react-form';
 
 function Page() {
-  const [serverErrors, setServerErrors] = React.useState({});
+  const [serverErrors, setServerErrors] = React.useState({ name: false, email: false, age: false });
 
   return (
     <Form.Root
@@ -224,68 +234,69 @@ function Page() {
 
         // maybe do an async server call and gather some errors from the server to display
         submitForm(data)
-        .then(() => …)
-        /**
-         * Map errors from your server response into the expected format of `serverErrors` (see type below)
-         * For example:
-         * {
-         *   email: [ { code: 'email_invalid', message: 'This is not a valid email.' } ],
-         *   global: [ { code: 'server_error', message: 'Something went wrong.' }]
-         * }
-         */
-        .catch((errors) => setServerErrors(mapServerErrors(errors)));
+          .then(() => {})
+          /**
+           * Map errors from your server response into a structure you'd like to work with.
+           * In this case resulting in this object: `{ name: false, email: true, age: true }`
+           */
+          .catch((errors) => setServerErrors(mapServerErrors(errors)));
       }}
-      serverErrors={serverErrors}
-      onServerErrorsChange={setServerErrors}
+      onClearServerErrors={() => setServerErrors({ name: false, email: false, age: false })}
     >
-      <Form.Field name="name">
+      <Form.Field name="name" serverInvalid={serverErrors.name}>
         <Form.Label>Full name</Form.Label>
         <Form.Control />
-        <Form.ClientMessage type="missingValue">Please enter your name.</Form.ClientMessage>
-        <Form.ServerMessage />
+        <Form.Message match="missingValue" forceMatch={serverErrors.name}>
+          Please enter your name.
+        </Form.Message>
       </Form.Field>
 
-      <Form.Field name="email">
+      <Form.Field name="email" serverInvalid={serverErrors.email}>
         <Form.Label>Email address</Form.Label>
         <Form.Control type="email" />
-        <Form.ClientMessage type="missingValue">Please enter your email.</Form.ClientMessage>
-        <Form.ClientMessage type="typeMismatch">Please provide a valid email.</Form.ClientMessage>
-        <Form.ServerMessage /> {/* will yield "This is not a valid email." */}
+        <Form.Message match="missingValue">Please enter your email.</Form.Message>
+        <Form.Message match="typeMismatch" forceMatch={serverErrors.email}>
+          Please provide a valid email.
+        </Form.Message>
       </Form.Field>
 
-      <Form.Field name="age">
+      <Form.Field name="age" serverInvalid={serverErrors.age}>
         <Form.Label>Age</Form.Label>
         <Form.Control type="number" min="18" max="57" step="1" />
-        <Form.ClientMessage type="missingValue">Please enter your age.</Form.ClientMessage>
-        <Form.ClientMessage type="rangeOverflow">You must be 18 or older.</Form.ClientMessage>
-        <Form.ClientMessage type="rangeUnderflow">You must be 57 or younger.</Form.ClientMessage>
-        <Form.ClientMessage type="stepMismatch">Please enter a whole number.</Form.ClientMessage>
-        <Form.ServerMessage />
+        <Form.Message match="missingValue">Please enter your age.</Form.Message>
+        <Form.Message match="rangeOverflow">You must be 18 or older.</Form.Message>
+        <Form.Message match="rangeUnderflow">You must be 57 or younger.</Form.Message>
+        <Form.Message match="stepMismatch">Please enter a whole number.</Form.Message>
+        {serverErrors.age ? (
+          <Form.Message>Registration not open to people aged 40 exactly.</Form.Message>
+        ) : null}
       </Form.Field>
 
       <Form.Submit>Submit</Form.Submit>
-
-      <Form.ServerMessage /> {/* will yield "Something went wrong." */}
     </Form.Root>
   );
 }
 ```
 
-If no `children` are provided to `Form.ServerError`, it will display a concatenation of error messages from the server. If passing a React node, it will render this node instead. For finer control, you can pass a render function instead which will be called with the server errors.
+You should also clear the server errors using the `onClearServerErrors` callback prop on the `Form.Root` part.
 
-The server messages will be routed to the correct fields, based on the `name` attribute on `Form.Field` matching in the `serverErrors` object (see type below). There is also a `global` key which will be used for global errors (displayed in the `Form.ServerMessage` sitting outside a `Form.Field`).
+> This will clear the server errors before the form is re-submitted, and when the form is reset.
 
-```ts
-interface ServerError {
-  code: string;
-  message: React.ReactNode;
-}
+On top of this, it means you have control over when to reset single server errors.
+For example you could reset the email server error as soon as the user edits it:
 
-type ServerErrors = {
-  [fieldName in string]?: ServerError[];
-} & {
-  global?: ServerError[];
-};
+```jsx
+<Form.Field name="email" serverInvalid={serverErrors.email}>
+  <Form.Label>Email address</Form.Label>
+  <Form.Control
+    type="email"
+    onChange={() => setServerErrors((prev) => ({ ...prev, email: false }))}
+  />
+  <Form.Message match="missingValue">Please enter your email.</Form.Message>
+  <Form.Message match="typeMismatch" forceMatch={serverErrors.email}>
+    Please provide a valid email.
+  </Form.Message>
+</Form.Field>
 ```
 
 ## Open questions
@@ -293,9 +304,5 @@ type ServerErrors = {
 - Does this API make sense?
   - Is it easy to use?
   - Is everything named as you'd expect?
-  - What about the distinction between `ClientMessage` and `ServerMessage`?
-    - Would you call this something else?
-  - Does the server side stuff make sense?
-    - Would you call `serverErrors` something else as it's not directly server errors, but a structure wanted by the UI
 - Does this API cover most form use-cases? Have we missed some use-cases?
 - Is the API flexible enough to allow composition with other components?
