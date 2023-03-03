@@ -231,12 +231,18 @@ const FormControl = React.forwardRef<FormControlElement, FormControlProps>(
         }
 
         //------------------------------------------------------------------------------------------
-        // 2. split sync and async custom matcher entries
+        // 2. then get all field values to give to custom matchers for cross-comparisons
+
+        const formData = control.form ? new FormData(control.form) : new FormData();
+        const matcherArgs: CustomMatcherArgs = [control.value, formData];
+
+        //------------------------------------------------------------------------------------------
+        // 3. split sync and async custom matcher entries
 
         const syncCustomMatcherEntries: Array<SyncCustomMatcherEntry> = [];
         const ayncCustomMatcherEntries: Array<AsyncCustomMatcherEntry> = [];
         customMatcherEntries.forEach((customMatcherEntry) => {
-          if (isAsyncCustomMatcher(customMatcherEntry.match)) {
+          if (isAsyncCustomMatcher(customMatcherEntry.match, matcherArgs)) {
             ayncCustomMatcherEntries.push(customMatcherEntry as AsyncCustomMatcherEntry);
           } else {
             syncCustomMatcherEntries.push(customMatcherEntry as SyncCustomMatcherEntry);
@@ -244,15 +250,10 @@ const FormControl = React.forwardRef<FormControlElement, FormControlProps>(
         });
 
         //------------------------------------------------------------------------------------------
-        // 3. then get all field values to give to custom matchers for cross-comparisons
-
-        const fields = control.form ? Object.fromEntries(new FormData(control.form)) : {};
-
-        //------------------------------------------------------------------------------------------
         // 4. run sync custom matchers and update control validity / internal validity + errors
 
         const syncCustomErrors = syncCustomMatcherEntries.map(({ id, match }) => {
-          return [id, match(control.value, fields)] as const;
+          return [id, match(...matcherArgs)] as const;
         });
         const syncCustomErrorsById = Object.fromEntries(syncCustomErrors);
         const hasSyncCustomErrors = Object.values(syncCustomErrorsById).some(Boolean);
@@ -267,7 +268,7 @@ const FormControl = React.forwardRef<FormControlElement, FormControlProps>(
 
         if (!hasSyncCustomErrors && ayncCustomMatcherEntries.length > 0) {
           const promisedCustomErrors = ayncCustomMatcherEntries.map(({ id, match }) =>
-            match(control.value, fields).then((matches) => [id, matches] as const)
+            match(...matcherArgs).then((matches) => [id, matches] as const)
           );
           const asyncCustomErrors = await Promise.all(promisedCustomErrors);
           const asyncCustomErrorsById = Object.fromEntries(asyncCustomErrors);
@@ -539,13 +540,13 @@ FormSubmit.displayName = SUBMIT_NAME;
 /* -----------------------------------------------------------------------------------------------*/
 
 type ValidityStateKey = keyof ValidityState;
-type FormFields = { [index in string]?: FormDataEntryValue };
-type SyncCustomMatcher = (value: string, fields: FormFields) => boolean;
-type AsyncCustomMatcher = (value: string, fields: FormFields) => Promise<boolean>;
+type SyncCustomMatcher = (value: string, formData: FormData) => boolean;
+type AsyncCustomMatcher = (value: string, formData: FormData) => Promise<boolean>;
 type CustomMatcher = SyncCustomMatcher | AsyncCustomMatcher;
 type CustomMatcherEntry = { id: string; match: CustomMatcher };
 type SyncCustomMatcherEntry = { id: string; match: SyncCustomMatcher };
 type AsyncCustomMatcherEntry = { id: string; match: AsyncCustomMatcher };
+type CustomMatcherArgs = [string, FormData];
 
 function validityStateToObject(validity: ValidityState) {
   const object: any = {};
@@ -576,12 +577,15 @@ function getFirstInvalidControl(form: HTMLFormElement): HTMLElement | undefined 
   return firstInvalidControl;
 }
 
-function isAsyncCustomMatcher(match: CustomMatcher): match is AsyncCustomMatcher {
-  return match.constructor.name === 'AsyncFunction' || returnsPromise(match);
+function isAsyncCustomMatcher(
+  match: CustomMatcher,
+  args: CustomMatcherArgs
+): match is AsyncCustomMatcher {
+  return match.constructor.name === 'AsyncFunction' || returnsPromise(match, args);
 }
 
-function returnsPromise(func: Function) {
-  return func() instanceof Promise;
+function returnsPromise(func: Function, args: CustomMatcherArgs) {
+  return func(...args) instanceof Promise;
 }
 
 function hasBuiltInError(validity: ValidityState) {

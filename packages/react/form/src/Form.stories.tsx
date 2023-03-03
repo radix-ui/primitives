@@ -60,7 +60,7 @@ export const Basic = () => {
           />
           <Form.Message match="valueMissing">Password is required</Form.Message>
           <Form.Message
-            match={(value) => value?.match(/.*[0-9]+.*/) === null}
+            match={(value) => value.match(/.*[0-9]+.*/) === null}
             forceMatch={serverErrors.password}
           >
             Password is not complex enough
