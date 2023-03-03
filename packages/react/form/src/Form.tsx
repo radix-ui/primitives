@@ -158,7 +158,12 @@ const FormField = React.forwardRef<FormFieldElement, FormFieldProps>(
           onDescriptionIdRemove={handleFieldMessageIdRemove}
           getAriaDescription={getAriaDescription}
         >
-          <Primitive.div {...fieldProps} ref={forwardedRef} />
+          <Primitive.div
+            data-valid={getValidAttribute({ validity, serverInvalid })}
+            data-invalid={getInvalidAttribute({ validity, serverInvalid })}
+            {...fieldProps}
+            ref={forwardedRef}
+          />
         </AriaDescriptionProvider>
       </FormFieldProvider>
     );
@@ -600,12 +605,17 @@ function hasBuiltInError(validity: ValidityState) {
   return error;
 }
 
-function getValidAttribute(fieldContext: FormFieldContextValue) {
-  if (fieldContext.validity?.valid === true && !fieldContext.serverInvalid) return true;
+interface ValidityArgs {
+  validity: FormFieldContextValue['validity'];
+  serverInvalid: FormFieldContextValue['serverInvalid'];
+}
+
+function getValidAttribute({ validity, serverInvalid }: ValidityArgs) {
+  if (validity?.valid === true && !serverInvalid) return true;
   return undefined;
 }
-function getInvalidAttribute(fieldContext: FormFieldContextValue) {
-  if (fieldContext.validity?.valid === false || fieldContext.serverInvalid) return true;
+function getInvalidAttribute({ validity, serverInvalid }: ValidityArgs) {
+  if (validity?.valid === false || serverInvalid) return true;
   return undefined;
 }
 
