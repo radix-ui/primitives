@@ -587,13 +587,15 @@ const VALIDITY_STATE_NAME = 'FormValidityState';
 
 interface FormValidityStateProps {
   children: (validity: ValidityState | undefined) => React.ReactNode;
+  name?: string;
 }
 
 const FormValidityState = (props: ScopedProps<FormValidityStateProps>) => {
-  const { __scopeForm, children } = props;
+  const { __scopeForm, name: nameProp, children } = props;
   const validationContext = useValidationContext(VALIDITY_STATE_NAME, __scopeForm);
   const fieldContext = useFormFieldContext(VALIDITY_STATE_NAME, __scopeForm);
-  const validity = validationContext.getFieldValidity(fieldContext.name);
+  const name = nameProp ?? fieldContext.name;
+  const validity = validationContext.getFieldValidity(name);
   return <>{children(validity)}</>;
 };
 
