@@ -31,7 +31,6 @@ export const Basic = () => {
 
           if (errors.size > 0) {
             setServerErrors(Object.fromEntries([...errors].map((name) => [name, true])));
-            // focusFirstInvalidControl(form);
             return;
           }
 

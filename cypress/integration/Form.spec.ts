@@ -183,55 +183,30 @@ describe('Form', () => {
       cy.findByLabelText(/simulate server errors/i).click();
     });
 
-    describe('with per-field errors', () => {
-      beforeEach(() => {
-        cy.findByLabelText(/name/i).focus().realType('John');
-        cy.findByText(/submit/i).click();
-      });
-
-      it('should focus the first control with a server error', () => {
-        cy.findByLabelText(/email/i).should('be.focused');
-      });
-
-      it('allows showing custom server error messages per-field', () => {
-        cy.findByLabelText(/email/i).as('control');
-        cy.findByText(/email is actually required server side/i).as('message');
-        checkControlMessageAssociation();
-      });
-
-      it('allows re-using client-side matchers for server errors', () => {
-        cy.findByLabelText(/pin/i).as('control');
-        cy.findByText(/does not match the required pattern/).as('message');
-        checkControlMessageAssociation();
-      });
-
-      it('allows re-submitting the form with server errors', () => {
-        cy.findByLabelText(/email/i).focus().realType('john.doe@gmail.com').realPress('Enter');
-        cy.findByLabelText(/email/i).as('control').should('be.focused');
-      });
+    beforeEach(() => {
+      cy.findByLabelText(/name/i).focus().realType('John');
+      cy.findByText(/submit/i).click();
     });
 
-    // describe('with only global errors', () => {
-    //   beforeEach(() => {
-    //     cy.findByLabelText(/name/i).focus().realType('John');
-    //     cy.findByLabelText(/age/i).focus().realType('50');
-    //     cy.findByLabelText(/email/i).focus().realType('john.doe@gmail.com');
-    //     cy.findByLabelText(/pin/i).focus().realType('1234');
-    //     cy.findByLabelText(/country/i)
-    //       .focus()
-    //       .realType('France')
-    //       .realPress('Enter');
-    //   });
+    it('should focus the first control with a server error', () => {
+      cy.findByLabelText(/email/i).should('be.focused');
+    });
 
-    //   it('should focus the submit button', () => {
-    //     cy.findByText(/submit/i).should('be.focused');
-    //   });
+    it('allows showing custom server error messages per-field', () => {
+      cy.findByLabelText(/email/i).as('control');
+      cy.findByText(/email is actually required server side/i).as('message');
+      checkControlMessageAssociation();
+    });
 
-    //   it('handle global server errors', () => {
-    //     cy.findByText('submit').as('control');
-    //     cy.findByText(/something bad happened/i).as('message');
-    //     checkControlMessageAssociation();
-    //   });
-    // });
+    it('allows re-using client-side matchers for server errors', () => {
+      cy.findByLabelText(/pin/i).as('control');
+      cy.findByText(/does not match the required pattern/).as('message');
+      checkControlMessageAssociation();
+    });
+
+    it('allows re-submitting the form with server errors', () => {
+      cy.findByLabelText(/email/i).focus().realType('john.doe@gmail.com').realPress('Enter');
+      cy.findByLabelText(/email/i).as('control').should('be.focused');
+    });
   });
 });

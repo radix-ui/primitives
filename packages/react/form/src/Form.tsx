@@ -20,16 +20,39 @@ const noop = () => {};
 
 const FORM_NAME = 'Form';
 
+type ValidityMap = { [fieldName: string]: ValidityState | undefined };
+type CustomMatcherEntriesMap = { [fieldName: string]: CustomMatcherEntry[] };
+type CustomErrorsMap = { [fieldName: string]: Record<string, boolean> };
+
+type ValidationContextValue = {
+  getFieldValidity(fieldName: string): ValidityState | undefined;
+  onFieldValidityChange(fieldName: string, validity: ValidityState): void;
+  onFieldValidityClear(fieldName: string): void;
+
+  getFieldCustomMatcherEntries(fieldName: string): CustomMatcherEntry[];
+  onFieldCustomMatcherEntryAdd(fieldName: string, matcherEntry: CustomMatcherEntry): void;
+  onFieldCustomMatcherEntryRemove(fieldName: string, matcherEntryId: string): void;
+
+  getFieldCustomErrors(fieldName: string): Record<string, boolean>;
+  onFieldCustomErrorsChange(fieldName: string, errors: Record<string, boolean>): void;
+};
+const [ValidationProvider, useValidationContext] = createFormContext<ValidationContextValue>(
+  FORM_NAME,
+  {} as any
+);
+
+type MessageIdsMap = { [fieldName: string]: Set<string> };
+
 type AriaDescriptionContextValue = {
-  onDescriptionIdAdd: (id: string) => void;
-  onDescriptionIdRemove: (id: string) => void;
-  getAriaDescription(): string | undefined;
+  onFieldDescriptionIdAdd: (fieldName: string, id: string) => void;
+  onFieldDescriptionIdRemove: (fieldName: string, id: string) => void;
+  getFieldDescription(fieldName: string): string | undefined;
 };
 const [AriaDescriptionProvider, useAriaDescriptionContext] =
   createFormContext<AriaDescriptionContextValue>(FORM_NAME, {
-    onDescriptionIdAdd: () => {},
-    onDescriptionIdRemove: () => {},
-    getAriaDescription: () => undefined,
+    onFieldDescriptionIdAdd: () => {},
+    onFieldDescriptionIdRemove: () => {},
+    getFieldDescription: () => undefined,
   });
 
 type FormElement = React.ElementRef<typeof Primitive.form>;
@@ -44,40 +67,126 @@ const Form = React.forwardRef<FormElement, FormProps>(
     const formRef = React.useRef<HTMLFormElement>(null);
     const composedFormRef = useComposedRefs(forwardedRef, formRef);
 
-    const [globalMessageId, setGlobalMessageId] = React.useState<string | undefined>(undefined);
-    const handleGlobalMessageIdAdd = React.useCallback((id: string) => setGlobalMessageId(id), []);
-    const handleGlobalMessageIdRemove = React.useCallback(
-      (id: string) => setGlobalMessageId(undefined),
-      []
+    // native validity per field
+    const [validityMap, setValidityMap] = React.useState<ValidityMap>({});
+    const getFieldValidity: ValidationContextValue['getFieldValidity'] = React.useCallback(
+      (fieldName) => validityMap[fieldName],
+      [validityMap]
     );
-    const getAriaDescription = React.useCallback(() => globalMessageId, [globalMessageId]);
+    const handleFieldValidityChange: ValidationContextValue['onFieldValidityChange'] =
+      React.useCallback(
+        (fieldName, validity) =>
+          setValidityMap((prevValidityMap) => ({
+            ...prevValidityMap,
+            [fieldName]: { ...(prevValidityMap[fieldName] ?? {}), ...validity },
+          })),
+        []
+      );
+    const handleFieldValidityClear: ValidationContextValue['onFieldValidityClear'] =
+      React.useCallback((fieldName) => {
+        setValidityMap((prevValidityMap) => ({ ...prevValidityMap, [fieldName]: undefined }));
+      }, []);
+
+    // custom matcher entries per field
+    const [customMatcherEntriesMap, setCustomMatcherEntriesMap] =
+      React.useState<CustomMatcherEntriesMap>({});
+    const getFieldCustomMatcherEntries: ValidationContextValue['getFieldCustomMatcherEntries'] =
+      React.useCallback(
+        (fieldName) => customMatcherEntriesMap[fieldName] ?? [],
+        [customMatcherEntriesMap]
+      );
+    const handleFieldCustomMatcherAdd: ValidationContextValue['onFieldCustomMatcherEntryAdd'] =
+      React.useCallback((fieldName, matcherEntry) => {
+        setCustomMatcherEntriesMap((prevCustomMatcherEntriesMap) => ({
+          ...prevCustomMatcherEntriesMap,
+          [fieldName]: [...(prevCustomMatcherEntriesMap[fieldName] ?? []), matcherEntry],
+        }));
+      }, []);
+    const handleFieldCustomMatcherRemove: ValidationContextValue['onFieldCustomMatcherEntryRemove'] =
+      React.useCallback((fieldName, matcherEntryId) => {
+        setCustomMatcherEntriesMap((prevCustomMatcherEntriesMap) => ({
+          ...prevCustomMatcherEntriesMap,
+          [fieldName]: (prevCustomMatcherEntriesMap[fieldName] ?? []).filter(
+            (v) => v.id !== matcherEntryId
+          ),
+        }));
+      }, []);
+
+    // custom errors per field
+    const [customErrorsMap, setCustomErrorsMap] = React.useState<CustomErrorsMap>({});
+    const getFieldCustomErrors: ValidationContextValue['getFieldCustomErrors'] = React.useCallback(
+      (fieldName) => customErrorsMap[fieldName] ?? {},
+      [customErrorsMap]
+    );
+    const handleFieldCustomErrorsChange: ValidationContextValue['onFieldCustomErrorsChange'] =
+      React.useCallback((fieldName, customErrors) => {
+        setCustomErrorsMap((prevCustomErrorsMap) => ({
+          ...prevCustomErrorsMap,
+          [fieldName]: { ...(prevCustomErrorsMap[fieldName] ?? {}), ...customErrors },
+        }));
+      }, []);
+
+    // messageIds per field
+    const [messageIdsMap, setMessageIdsMap] = React.useState<MessageIdsMap>({});
+    const handleFieldDescriptionIdAdd: AriaDescriptionContextValue['onFieldDescriptionIdAdd'] =
+      React.useCallback((fieldName, id) => {
+        setMessageIdsMap((prevMessageIdsMap) => {
+          const fieldDescriptionIds = new Set(prevMessageIdsMap[fieldName]).add(id);
+          return { ...prevMessageIdsMap, [fieldName]: fieldDescriptionIds };
+        });
+      }, []);
+    const handleFieldDescriptionIdRemove: AriaDescriptionContextValue['onFieldDescriptionIdRemove'] =
+      React.useCallback((fieldName, id) => {
+        setMessageIdsMap((prevMessageIdsMap) => {
+          const fieldDescriptionIds = new Set(prevMessageIdsMap[fieldName]);
+          fieldDescriptionIds.delete(id);
+          return { ...prevMessageIdsMap, [fieldName]: fieldDescriptionIds };
+        });
+      }, []);
+    const getFieldDescription: AriaDescriptionContextValue['getFieldDescription'] =
+      React.useCallback(
+        (fieldName) => Array.from(messageIdsMap[fieldName] ?? []).join(' ') || undefined,
+        [messageIdsMap]
+      );
 
     return (
-      <AriaDescriptionProvider
+      <ValidationProvider
         scope={__scopeForm}
-        onDescriptionIdAdd={handleGlobalMessageIdAdd}
-        onDescriptionIdRemove={handleGlobalMessageIdRemove}
-        getAriaDescription={getAriaDescription}
+        getFieldValidity={getFieldValidity}
+        onFieldValidityChange={handleFieldValidityChange}
+        onFieldValidityClear={handleFieldValidityClear}
+        getFieldCustomMatcherEntries={getFieldCustomMatcherEntries}
+        onFieldCustomMatcherEntryAdd={handleFieldCustomMatcherAdd}
+        onFieldCustomMatcherEntryRemove={handleFieldCustomMatcherRemove}
+        getFieldCustomErrors={getFieldCustomErrors}
+        onFieldCustomErrorsChange={handleFieldCustomErrorsChange}
       >
-        <Primitive.form
-          {...rootProps}
-          ref={composedFormRef}
-          onInvalid={composeEventHandlers(props.onInvalid, (event) => {
-            // focus first invalid control
-            const firstInvalidControl = getFirstInvalidControl(event.currentTarget);
-            if (firstInvalidControl === event.target) firstInvalidControl.focus();
+        <AriaDescriptionProvider
+          scope={__scopeForm}
+          onFieldDescriptionIdAdd={handleFieldDescriptionIdAdd}
+          onFieldDescriptionIdRemove={handleFieldDescriptionIdRemove}
+          getFieldDescription={getFieldDescription}
+        >
+          <Primitive.form
+            {...rootProps}
+            ref={composedFormRef}
+            onInvalid={composeEventHandlers(props.onInvalid, (event) => {
+              // focus first invalid control
+              const firstInvalidControl = getFirstInvalidControl(event.currentTarget);
+              if (firstInvalidControl === event.target) firstInvalidControl.focus();
 
-            // prevent default browser UI for form validation
-            event.preventDefault();
-          })}
-          // clear server errors when the form is re-submitted
-          onSubmit={composeEventHandlers(props.onSubmit, onClearServerErrors, {
-            checkForDefaultPrevented: false,
-          })}
-          // clear server errors when the form is reset
-          onReset={composeEventHandlers(props.onReset, onClearServerErrors)}
-        />
-      </AriaDescriptionProvider>
+              // prevent default browser UI for form validation
+              event.preventDefault();
+            })}
+            // clear server errors when the form is re-submitted
+            onSubmit={composeEventHandlers(props.onSubmit, onClearServerErrors, {
+              checkForDefaultPrevented: false,
+            })}
+            // clear server errors when the form is reset
+            onReset={composeEventHandlers(props.onReset, onClearServerErrors)}
+          />
+        </AriaDescriptionProvider>
+      </ValidationProvider>
     );
   }
 );
@@ -93,12 +202,6 @@ const FIELD_NAME = 'FormField';
 type FormFieldContextValue = {
   id: string;
   name: string;
-  validity: ValidityState | undefined;
-  setValidity: React.Dispatch<React.SetStateAction<ValidityState | undefined>>;
-  customMatcherEntries: CustomMatcherEntry[];
-  setCustomMatcherEntries: React.Dispatch<React.SetStateAction<CustomMatcherEntry[]>>;
-  customErrors: Record<string, boolean>;
-  setCustomErrors: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
   serverInvalid: boolean;
 };
 const [FormFieldProvider, useFormFieldContext] = createFormContext<FormFieldContextValue>(
@@ -116,55 +219,18 @@ interface FormFieldProps extends PrimitiveDivProps {
 const FormField = React.forwardRef<FormFieldElement, FormFieldProps>(
   (props: ScopedProps<FormFieldProps>, forwardedRef) => {
     const { __scopeForm, name, serverInvalid = false, ...fieldProps } = props;
-
+    const validationContext = useValidationContext(FIELD_NAME, __scopeForm);
+    const validity = validationContext.getFieldValidity(name);
     const id = useId();
-    const [validity, setValidity] = React.useState<ValidityState | undefined>(undefined);
-    const [customMatcherEntries, setCustomMatcherEntries] = React.useState<CustomMatcherEntry[]>(
-      []
-    );
-    const [customErrors, setCustomErrors] = React.useState<Record<string, boolean>>({});
-
-    const [fieldMessageIds, setFieldMessageIds] = React.useState<Set<string>>(new Set());
-    const handleFieldMessageIdAdd = React.useCallback((id: string) => {
-      setFieldMessageIds((prev) => new Set(prev).add(id));
-    }, []);
-    const handleFieldMessageIdRemove = React.useCallback((id: string) => {
-      setFieldMessageIds((prev) => {
-        const ids = new Set(prev);
-        ids.delete(id);
-        return ids;
-      });
-    }, []);
-    const getAriaDescription = React.useCallback(() => {
-      return Array.from(fieldMessageIds).join(' ') || undefined;
-    }, [fieldMessageIds]);
 
     return (
-      <FormFieldProvider
-        scope={__scopeForm}
-        id={id}
-        name={name}
-        validity={validity}
-        setValidity={setValidity}
-        customMatcherEntries={customMatcherEntries}
-        setCustomMatcherEntries={setCustomMatcherEntries}
-        customErrors={customErrors}
-        setCustomErrors={setCustomErrors}
-        serverInvalid={serverInvalid}
-      >
-        <AriaDescriptionProvider
-          scope={__scopeForm}
-          onDescriptionIdAdd={handleFieldMessageIdAdd}
-          onDescriptionIdRemove={handleFieldMessageIdRemove}
-          getAriaDescription={getAriaDescription}
-        >
-          <Primitive.div
-            data-valid={getValidAttribute({ validity, serverInvalid })}
-            data-invalid={getInvalidAttribute({ validity, serverInvalid })}
-            {...fieldProps}
-            ref={forwardedRef}
-          />
-        </AriaDescriptionProvider>
+      <FormFieldProvider scope={__scopeForm} id={id} name={name} serverInvalid={serverInvalid}>
+        <Primitive.div
+          data-valid={getValidAttribute(validity, serverInvalid)}
+          data-invalid={getInvalidAttribute(validity, serverInvalid)}
+          {...fieldProps}
+          ref={forwardedRef}
+        />
       </FormFieldProvider>
     );
   }
@@ -185,13 +251,15 @@ interface FormLabelProps extends LabelProps {}
 const FormLabel = React.forwardRef<FormLabelElement, FormLabelProps>(
   (props: ScopedProps<FormLabelProps>, forwardedRef) => {
     const { __scopeForm, ...labelProps } = props;
+    const validationContext = useValidationContext(LABEL_NAME, __scopeForm);
     const fieldContext = useFormFieldContext(LABEL_NAME, __scopeForm);
     const htmlFor = labelProps.htmlFor || fieldContext.id;
+    const validity = validationContext.getFieldValidity(fieldContext.name);
 
     return (
       <Label
-        data-valid={getValidAttribute(fieldContext)}
-        data-invalid={getInvalidAttribute(fieldContext)}
+        data-valid={getValidAttribute(validity, fieldContext.serverInvalid)}
+        data-invalid={getInvalidAttribute(validity, fieldContext.serverInvalid)}
         {...labelProps}
         ref={forwardedRef}
         htmlFor={htmlFor}
@@ -216,14 +284,18 @@ const FormControl = React.forwardRef<FormControlElement, FormControlProps>(
   (props: ScopedProps<FormControlProps>, forwardedRef) => {
     const { __scopeForm, ...controlProps } = props;
 
+    const validationContext = useValidationContext(CONTROL_NAME, __scopeForm);
     const fieldContext = useFormFieldContext(CONTROL_NAME, __scopeForm);
     const ariaDescriptionContext = useAriaDescriptionContext(CONTROL_NAME, __scopeForm);
+
     const controlRef = React.useRef<FormControlElement>(null);
     const composedRef = useComposedRefs(forwardedRef, controlRef);
     const name = controlProps.name || fieldContext.name;
     const id = controlProps.id || fieldContext.id;
+    const customMatcherEntries = validationContext.getFieldCustomMatcherEntries(name);
 
-    const { setValidity, customMatcherEntries, setCustomErrors } = fieldContext;
+    const { onFieldValidityChange, onFieldValidityClear, onFieldCustomErrorsChange } =
+      validationContext;
     const updateControlValidity = React.useCallback(
       async (control: FormControlElement) => {
         //------------------------------------------------------------------------------------------
@@ -231,7 +303,7 @@ const FormControl = React.forwardRef<FormControlElement, FormControlProps>(
 
         if (hasBuiltInError(control.validity)) {
           const controlValidity = validityStateToObject(control.validity);
-          setValidity((prevValidity) => ({ ...prevValidity, ...controlValidity }));
+          onFieldValidityChange(name, controlValidity);
           return;
         }
 
@@ -265,8 +337,8 @@ const FormControl = React.forwardRef<FormControlElement, FormControlProps>(
         const hasCustomError = hasSyncCustomErrors;
         control.setCustomValidity(hasCustomError ? DEFAULT_INVALID_MESSAGE : '');
         const controlValidity = validityStateToObject(control.validity);
-        setValidity((prevValidity) => ({ ...prevValidity, ...controlValidity }));
-        setCustomErrors((prevErrors) => ({ ...prevErrors, ...syncCustomErrorsById }));
+        onFieldValidityChange(name, controlValidity);
+        onFieldCustomErrorsChange(name, syncCustomErrorsById);
 
         //------------------------------------------------------------------------------------------
         // 5. run async custom matchers and update control validity / internal validity + errors
@@ -281,11 +353,11 @@ const FormControl = React.forwardRef<FormControlElement, FormControlProps>(
           const hasCustomError = hasAsyncCustomErrors;
           control.setCustomValidity(hasCustomError ? DEFAULT_INVALID_MESSAGE : '');
           const controlValidity = validityStateToObject(control.validity);
-          setValidity((prevValidity) => ({ ...prevValidity, ...controlValidity }));
-          setCustomErrors((prevErrors) => ({ ...prevErrors, ...asyncCustomErrorsById }));
+          onFieldValidityChange(name, controlValidity);
+          onFieldCustomErrorsChange(name, asyncCustomErrorsById);
         }
       },
-      [setValidity, customMatcherEntries, setCustomErrors]
+      [customMatcherEntries, name, onFieldCustomErrorsChange, onFieldValidityChange]
     );
 
     React.useEffect(() => {
@@ -302,10 +374,10 @@ const FormControl = React.forwardRef<FormControlElement, FormControlProps>(
       const control = controlRef.current;
       if (control) {
         control.setCustomValidity('');
-        setValidity(undefined);
-        setCustomErrors({});
+        onFieldValidityClear(name);
+        onFieldCustomErrorsChange(name, {});
       }
-    }, [setCustomErrors, setValidity]);
+    }, [name, onFieldCustomErrorsChange, onFieldValidityClear]);
 
     // reset validity and errors when the form is reset
     React.useEffect(() => {
@@ -325,12 +397,14 @@ const FormControl = React.forwardRef<FormControlElement, FormControlProps>(
       }
     }, [fieldContext.serverInvalid]);
 
+    const validity = validationContext.getFieldValidity(name);
+
     return (
       <Primitive.input
-        data-valid={getValidAttribute(fieldContext)}
-        data-invalid={getInvalidAttribute(fieldContext)}
+        data-valid={getValidAttribute(validity, fieldContext.serverInvalid)}
+        data-invalid={getInvalidAttribute(validity, fieldContext.serverInvalid)}
         aria-invalid={fieldContext.serverInvalid ? true : undefined}
-        aria-describedby={ariaDescriptionContext.getAriaDescription()}
+        aria-describedby={ariaDescriptionContext.getFieldDescription(name)}
         // disable default browser behaviour of showing built-in error message on hover
         title=""
         {...controlProps}
@@ -387,25 +461,28 @@ const DEFAULT_BUILT_IN_MESSAGES: Record<ValidityMatcher, string | undefined> = {
 const MESSAGE_NAME = 'FormMessage';
 
 type FormMessageElement = FormMessageImplElement;
-interface FormMessageProps extends FormMessageImplProps {
+interface FormMessageProps extends Omit<FormMessageImplProps, 'name'> {
   match?: ValidityMatcher | CustomMatcher;
   forceMatch?: boolean;
+  name?: string;
 }
 
 const FormMessage = React.forwardRef<FormMessageElement, FormMessageProps>(
   (props: ScopedProps<FormMessageProps>, forwardedRef) => {
-    const { match, ...messageProps } = props;
+    const { match, name: nameProp, ...messageProps } = props;
+    const fieldContext = useFormFieldContext(MESSAGE_NAME, props.__scopeForm);
+    const name = nameProp ?? fieldContext.name;
 
     if (match === undefined) {
       return (
-        <FormMessageImpl {...messageProps} ref={forwardedRef}>
+        <FormMessageImpl {...messageProps} ref={forwardedRef} name={name}>
           {props.children || DEFAULT_INVALID_MESSAGE}
         </FormMessageImpl>
       );
     } else if (typeof match === 'function') {
-      return <FormCustomMessage match={match} {...messageProps} ref={forwardedRef} />;
+      return <FormCustomMessage match={match} {...messageProps} ref={forwardedRef} name={name} />;
     } else {
-      return <FormBuiltInMessage match={match} {...messageProps} ref={forwardedRef} />;
+      return <FormBuiltInMessage match={match} {...messageProps} ref={forwardedRef} name={name} />;
     }
   }
 );
@@ -416,17 +493,19 @@ type FormBuiltInMessageElement = FormMessageImplElement;
 interface FormBuiltInMessageProps extends FormMessageImplProps {
   match: ValidityMatcher;
   forceMatch?: boolean;
+  name: string;
 }
 
 const FormBuiltInMessage = React.forwardRef<FormBuiltInMessageElement, FormBuiltInMessageProps>(
   (props: ScopedProps<FormBuiltInMessageProps>, forwardedRef) => {
-    const { match, forceMatch = false, children, ...messageProps } = props;
-    const fieldContext = useFormFieldContext(MESSAGE_NAME, messageProps.__scopeForm);
-    const matches = forceMatch || fieldContext.validity?.[match];
+    const { match, forceMatch = false, name, children, ...messageProps } = props;
+    const validationContext = useValidationContext(MESSAGE_NAME, messageProps.__scopeForm);
+    const validity = validationContext.getFieldValidity(name);
+    const matches = forceMatch || validity?.[match];
 
     if (matches) {
       return (
-        <FormMessageImpl ref={forwardedRef} {...messageProps}>
+        <FormMessageImpl ref={forwardedRef} {...messageProps} name={name}>
           {children ?? DEFAULT_BUILT_IN_MESSAGES[match]}
         </FormMessageImpl>
       );
@@ -440,33 +519,34 @@ type FormCustomMessageElement = React.ElementRef<typeof FormMessageImpl>;
 interface FormCustomMessageProps extends Radix.ComponentPropsWithoutRef<typeof FormMessageImpl> {
   match: CustomMatcher;
   forceMatch?: boolean;
+  name: string;
 }
 
 const FormCustomMessage = React.forwardRef<FormCustomMessageElement, FormCustomMessageProps>(
   (props: ScopedProps<FormCustomMessageProps>, forwardedRef) => {
-    const { match, forceMatch = false, id: idProp, children, ...messageProps } = props;
+    const { match, forceMatch = false, name, id: idProp, children, ...messageProps } = props;
+    const validationContext = useValidationContext(MESSAGE_NAME, messageProps.__scopeForm);
     const ref = React.useRef<FormCustomMessageElement>(null);
     const composedRef = useComposedRefs(forwardedRef, ref);
     const _id = useId();
     const id = idProp ?? _id;
-    const fieldContext = useFormFieldContext(MESSAGE_NAME, messageProps.__scopeForm);
 
     const customMatcherEntry = React.useMemo(() => ({ id, match }), [id, match]);
-    const { setCustomMatcherEntries } = fieldContext;
+    const { onFieldCustomMatcherEntryAdd, onFieldCustomMatcherEntryRemove } = validationContext;
     React.useEffect(() => {
-      setCustomMatcherEntries((prev) => [...prev, customMatcherEntry]);
-      return () =>
-        setCustomMatcherEntries((prev) => prev.filter((v) => v.id !== customMatcherEntry.id));
-    }, [setCustomMatcherEntries, customMatcherEntry]);
+      onFieldCustomMatcherEntryAdd(name, customMatcherEntry);
+      return () => onFieldCustomMatcherEntryRemove(name, customMatcherEntry.id);
+    }, [customMatcherEntry, name, onFieldCustomMatcherEntryAdd, onFieldCustomMatcherEntryRemove]);
 
-    const { validity, customErrors } = fieldContext;
+    const validity = validationContext.getFieldValidity(name);
+    const customErrors = validationContext.getFieldCustomErrors(name);
     const hasMatchingCustomError = customErrors[id];
     const matches =
       forceMatch || (validity && !hasBuiltInError(validity) && hasMatchingCustomError);
 
     if (matches) {
       return (
-        <FormMessageImpl id={id} ref={composedRef} {...messageProps}>
+        <FormMessageImpl id={id} ref={composedRef} {...messageProps} name={name}>
           {children ?? DEFAULT_INVALID_MESSAGE}
         </FormMessageImpl>
       );
@@ -478,20 +558,22 @@ const FormCustomMessage = React.forwardRef<FormCustomMessageElement, FormCustomM
 
 type FormMessageImplElement = React.ElementRef<typeof Primitive.span>;
 type PrimitiveSpanProps = Radix.ComponentPropsWithoutRef<typeof Primitive.span>;
-interface FormMessageImplProps extends PrimitiveSpanProps {}
+interface FormMessageImplProps extends PrimitiveSpanProps {
+  name: string;
+}
 
 const FormMessageImpl = React.forwardRef<FormMessageImplElement, FormMessageImplProps>(
-  (props: ScopedProps<FormMessageProps>, forwardedRef) => {
-    const { __scopeForm, id: idProp, ...messageProps } = props;
+  (props: ScopedProps<FormMessageImplProps>, forwardedRef) => {
+    const { __scopeForm, id: idProp, name, ...messageProps } = props;
     const ariaDescriptionContext = useAriaDescriptionContext('FormMessage', __scopeForm);
     const _id = useId();
     const id = idProp ?? _id;
 
-    const { onDescriptionIdAdd, onDescriptionIdRemove } = ariaDescriptionContext;
+    const { onFieldDescriptionIdAdd, onFieldDescriptionIdRemove } = ariaDescriptionContext;
     React.useEffect(() => {
-      onDescriptionIdAdd(id);
-      return () => onDescriptionIdRemove(id);
-    }, [id, onDescriptionIdAdd, onDescriptionIdRemove]);
+      onFieldDescriptionIdAdd(name, id);
+      return () => onFieldDescriptionIdRemove(name, id);
+    }, [name, id, onFieldDescriptionIdAdd, onFieldDescriptionIdRemove]);
 
     return <Primitive.span id={id} {...messageProps} ref={forwardedRef} />;
   }
@@ -509,8 +591,10 @@ interface FormValidityStateProps {
 
 const FormValidityState = (props: ScopedProps<FormValidityStateProps>) => {
   const { __scopeForm, children } = props;
+  const validationContext = useValidationContext(VALIDITY_STATE_NAME, __scopeForm);
   const fieldContext = useFormFieldContext(VALIDITY_STATE_NAME, __scopeForm);
-  return <>{children(fieldContext.validity)}</>;
+  const validity = validationContext.getFieldValidity(fieldContext.name);
+  return <>{children(validity)}</>;
 };
 
 FormValidityState.displayName = VALIDITY_STATE_NAME;
@@ -528,15 +612,7 @@ interface FormSubmitProps extends PrimitiveButtonProps {}
 const FormSubmit = React.forwardRef<FormSubmitElement, FormSubmitProps>(
   (props: ScopedProps<FormSubmitProps>, forwardedRef) => {
     const { __scopeForm, ...submitProps } = props;
-    const ariaDescriptionContext = useAriaDescriptionContext(SUBMIT_NAME, __scopeForm);
-    return (
-      <Primitive.button
-        type="submit"
-        aria-describedby={ariaDescriptionContext.getAriaDescription()}
-        {...submitProps}
-        ref={forwardedRef}
-      />
-    );
+    return <Primitive.button type="submit" {...submitProps} ref={forwardedRef} />;
   }
 );
 
@@ -605,16 +681,11 @@ function hasBuiltInError(validity: ValidityState) {
   return error;
 }
 
-interface ValidityArgs {
-  validity: FormFieldContextValue['validity'];
-  serverInvalid: FormFieldContextValue['serverInvalid'];
-}
-
-function getValidAttribute({ validity, serverInvalid }: ValidityArgs) {
+function getValidAttribute(validity: ValidityState | undefined, serverInvalid: boolean) {
   if (validity?.valid === true && !serverInvalid) return true;
   return undefined;
 }
-function getInvalidAttribute({ validity, serverInvalid }: ValidityArgs) {
+function getInvalidAttribute(validity: ValidityState | undefined, serverInvalid: boolean) {
   if (validity?.valid === false || serverInvalid) return true;
   return undefined;
 }
