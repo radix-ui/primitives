@@ -589,7 +589,7 @@ function isAsyncCustomMatcher(
   return match.constructor.name === 'AsyncFunction' || returnsPromise(match, args);
 }
 
-function returnsPromise(func: Function, args: CustomMatcherArgs) {
+function returnsPromise(func: Function, args: Array<unknown>) {
   return func(...args) instanceof Promise;
 }
 
