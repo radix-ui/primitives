@@ -396,11 +396,24 @@ function isNotNull<T>(value: T | null): value is T {
 
 const anchorCssProperties = (): Middleware => ({
   name: 'anchorCssProperties',
-  fn(data) {
-    const { rects, elements } = data;
+  async fn(data) {
+    const { rects, elements, platform } = data;
     const { width, height } = rects.reference;
+    const { width: popperWidth, height: popperHeight } = rects.floating;
+
     elements.floating.style.setProperty('--radix-popper-anchor-width', `${width}px`);
     elements.floating.style.setProperty('--radix-popper-anchor-height', `${height}px`);
+
+    const nextDimensions = await platform.getDimensions(elements.floating);
+
+    if (popperWidth !== nextDimensions.width || popperHeight !== nextDimensions.height) {
+      return {
+        reset: {
+          rects: true,
+        },
+      };
+    }
+
     return {};
   },
 });
