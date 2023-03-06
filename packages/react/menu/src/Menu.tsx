@@ -17,7 +17,7 @@ import * as RovingFocusGroup from '@radix-ui/react-roving-focus';
 import { createRovingFocusGroupScope } from '@radix-ui/react-roving-focus';
 import { Slot } from '@radix-ui/react-slot';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
-import { hideOthers } from 'aria-hidden';
+import { inertOthers } from 'aria-hidden';
 import { RemoveScroll } from 'react-remove-scroll';
 
 import type * as Radix from '@radix-ui/react-primitive';
@@ -261,7 +261,7 @@ const MenuRootContentModal = React.forwardRef<MenuRootContentTypeElement, MenuRo
     // Hide everything from ARIA except the `MenuContent`
     React.useEffect(() => {
       const content = ref.current;
-      if (content) return hideOthers(content);
+      if (content) return inertOthers(content);
     }, []);
 
     return (

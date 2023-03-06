@@ -20,7 +20,7 @@ import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { usePrevious } from '@radix-ui/react-use-previous';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
-import { hideOthers } from 'aria-hidden';
+import { inertOthers } from 'aria-hidden';
 import { RemoveScroll } from 'react-remove-scroll';
 
 import type * as Radix from '@radix-ui/react-primitive';
@@ -515,7 +515,7 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
 
     // aria-hide everything except the content (better supported equivalent to setting aria-modal)
     React.useEffect(() => {
-      if (content) return hideOthers(content);
+      if (content) return inertOthers(content);
     }, [content]);
 
     // Make sure the whole tree has focus guards as our `Select` may be
