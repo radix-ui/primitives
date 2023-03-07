@@ -38,7 +38,7 @@ describe('Form', () => {
       cy.findByLabelText(/name/i).should('be.focused');
     });
 
-    it('should handle required input', () => {
+    it('should handle `valueMissing` validity', () => {
       cy.findByLabelText(/name/i).as('control');
       cy.findByText('submit').click();
       cy.findByText(/missing/).as('message');
@@ -49,7 +49,7 @@ describe('Form', () => {
       cy.findByText(/missing/).should('not.exist');
     });
 
-    it('should handle valid input', () => {
+    it('should handle `valid` validity', () => {
       cy.findByLabelText(/name/i).as('control').focus().realType('John');
       cy.realPress('Tab');
       cy.findByText('valid!').as('message');
@@ -59,7 +59,7 @@ describe('Form', () => {
       cy.findByText(/data/i).should('include.text', '"name": "John"');
     });
 
-    it('should handle range overflow', () => {
+    it('should handle `rangeOverflow` validity', () => {
       cy.findByLabelText(/age/i).as('control').focus().realType('200');
       cy.realPress('Tab');
       cy.findByText(/too large/).as('message');
@@ -70,7 +70,7 @@ describe('Form', () => {
       cy.findByText(/does not match the required step/).should('not.exist');
     });
 
-    it('should handle range underflow', () => {
+    it('should handle `rangeUnderflow` validity', () => {
       cy.findByLabelText(/age/i).as('control').focus().realType('-50');
       cy.realPress('Tab');
       cy.findByText(/too small/).as('message');
@@ -81,7 +81,7 @@ describe('Form', () => {
       cy.findByText(/does not match the required step/).should('not.exist');
     });
 
-    it('should handle step mismatch', () => {
+    it('should handle `stepMismatch` validity', () => {
       cy.findByLabelText(/age/i).as('control').focus().realType('10.5');
       cy.realPress('Tab');
       cy.findByText(/does not match the required step/).as('message');
@@ -92,7 +92,7 @@ describe('Form', () => {
       cy.findByText(/does not match the required step/).should('not.exist');
     });
 
-    it('should handle type mismatch', () => {
+    it('should handle `typeMismatch` validity', () => {
       cy.findByLabelText(/email/i).as('control').focus().realType('john.doe');
       cy.realPress('Tab');
       cy.findByText(/does not match the required type/).as('message');
@@ -103,7 +103,7 @@ describe('Form', () => {
       cy.findByText(/does not match the required type/).should('not.exist');
     });
 
-    it('should handle too short input', () => {
+    it('should handle `tooShort` validity', () => {
       cy.findByLabelText(/password/i)
         .as('control')
         .focus()
@@ -118,7 +118,7 @@ describe('Form', () => {
     });
 
     // the browser makes it impossible to type too long
-    it.skip('should handle too long input', () => {
+    it.skip('should handle `tooLong` validity', () => {
       cy.findByLabelText(/password/i)
         .as('control')
         .focus()
@@ -128,7 +128,7 @@ describe('Form', () => {
       checkControlMessageAssociation();
     });
 
-    it('should handle pattern mismatch', () => {
+    it('should handle `patternMismatch` validity', () => {
       cy.findByLabelText(/pin/i).as('control').focus().realType('pin');
       cy.realPress('Tab');
       cy.findByText(/does not match the required pattern/).as('message');
@@ -139,7 +139,7 @@ describe('Form', () => {
       cy.findByText(/does not match the required pattern/).should('not.exist');
     });
 
-    it('should handle custom error (sync custom validator)', () => {
+    it('should handle custom validity (sync custom validator)', () => {
       cy.findByLabelText(/secret 1/i)
         .as('control')
         .focus()
@@ -153,7 +153,7 @@ describe('Form', () => {
       cy.findByText(/not valid/).should('not.exist');
     });
 
-    it('should handle custom error (async custom validator)', () => {
+    it('should handle custom validity (async custom validator)', () => {
       cy.findByLabelText(/secret 2/i)
         .as('control')
         .focus()
