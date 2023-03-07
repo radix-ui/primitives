@@ -56,6 +56,113 @@ export const Styled = () => (
   </div>
 );
 
+export const Modality = () => (
+  <div
+    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '110vh' }}
+  >
+    <div style={{ display: 'grid', gap: 50 }}>
+      <div style={{ display: 'inline-flex', alignItems: 'center', flexDirection: 'column' }}>
+        <h1>Modal (default)</h1>
+        {POSITIONS.map((position) => (
+          <Label key={'modal' + position}>
+            Choose a number:
+            <Select.Root defaultValue="two">
+              <Select.Trigger className={triggerClass()}>
+                <Select.Value />
+                <Select.Icon />
+              </Select.Trigger>
+              <Select.Portal>
+                <Select.Content className={contentClass()} position={position} sideOffset={5}>
+                  <Select.Viewport className={viewportClass()}>
+                    <Select.Item className={itemClass()} value="one">
+                      <Select.ItemText>
+                        One<span aria-hidden> 👍</span>
+                      </Select.ItemText>
+                      <Select.ItemIndicator className={indicatorClass()}>
+                        <TickIcon />
+                      </Select.ItemIndicator>
+                    </Select.Item>
+                    <Select.Item className={itemClass()} value="two">
+                      <Select.ItemText>
+                        Two<span aria-hidden> 👌</span>
+                      </Select.ItemText>
+                      <Select.ItemIndicator className={indicatorClass()}>
+                        <TickIcon />
+                      </Select.ItemIndicator>
+                    </Select.Item>
+                    <Select.Item className={itemClass()} value="three">
+                      <Select.ItemText>
+                        Three<span aria-hidden> 🤘</span>
+                      </Select.ItemText>
+                      <Select.ItemIndicator className={indicatorClass()}>
+                        <TickIcon />
+                      </Select.ItemIndicator>
+                    </Select.Item>
+                  </Select.Viewport>
+                  <Select.Arrow />
+                </Select.Content>
+              </Select.Portal>
+            </Select.Root>
+          </Label>
+        ))}
+        <textarea
+          style={{ width: 500, height: 100, marginTop: 10 }}
+          defaultValue="Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat nobis at ipsa, nihil tempora debitis maxime dignissimos non amet."
+        />
+      </div>
+      <div style={{ display: 'inline-flex', alignItems: 'center', flexDirection: 'column' }}>
+        <h1>Non modal</h1>
+        {POSITIONS.map((position) => (
+          <Label key={'non-modal' + position}>
+            Choose a number:
+            <Select.Root defaultValue="two" modal={false}>
+              <Select.Trigger className={triggerClass()}>
+                <Select.Value />
+                <Select.Icon />
+              </Select.Trigger>
+              <Select.Portal>
+                <Select.Content className={contentClass()} position={position} sideOffset={5}>
+                  <Select.Viewport className={viewportClass()}>
+                    <Select.Item className={itemClass()} value="one">
+                      <Select.ItemText>
+                        One<span aria-hidden> 👍</span>
+                      </Select.ItemText>
+                      <Select.ItemIndicator className={indicatorClass()}>
+                        <TickIcon />
+                      </Select.ItemIndicator>
+                    </Select.Item>
+                    <Select.Item className={itemClass()} value="two">
+                      <Select.ItemText>
+                        Two<span aria-hidden> 👌</span>
+                      </Select.ItemText>
+                      <Select.ItemIndicator className={indicatorClass()}>
+                        <TickIcon />
+                      </Select.ItemIndicator>
+                    </Select.Item>
+                    <Select.Item className={itemClass()} value="three">
+                      <Select.ItemText>
+                        Three<span aria-hidden> 🤘</span>
+                      </Select.ItemText>
+                      <Select.ItemIndicator className={indicatorClass()}>
+                        <TickIcon />
+                      </Select.ItemIndicator>
+                    </Select.Item>
+                  </Select.Viewport>
+                  <Select.Arrow />
+                </Select.Content>
+              </Select.Portal>
+            </Select.Root>
+          </Label>
+        ))}
+        <textarea
+          style={{ width: 500, height: 100, marginTop: 10 }}
+          defaultValue="Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat nobis at ipsa, nihil tempora debitis maxime dignissimos non amet."
+        />
+      </div>
+    </div>
+  </div>
+);
+
 export const Controlled = () => {
   const [value, setValue] = React.useState('uk');
   return (
