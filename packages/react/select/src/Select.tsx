@@ -59,6 +59,7 @@ type SelectContextValue = {
   onValueNodeHasChildrenChange(hasChildren: boolean): void;
   contentId: string;
   value?: string;
+  modal: boolean;
   onValueChange(value: string): void;
   open: boolean;
   required?: boolean;
@@ -83,6 +84,7 @@ interface SelectProps {
   children?: React.ReactNode;
   value?: string;
   defaultValue?: string;
+  modal?: boolean;
   onValueChange?(value: string): void;
   open?: boolean;
   defaultOpen?: boolean;
@@ -105,6 +107,7 @@ const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
     defaultValue,
     onValueChange,
     dir,
+    modal = true,
     name,
     autoComplete,
     disabled,
@@ -153,6 +156,7 @@ const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
         onValueNodeHasChildrenChange={setValueNodeHasChildren}
         contentId={useId()}
         value={value}
+        modal={modal}
         onValueChange={setValue}
         open={open}
         onOpenChange={setOpen}
