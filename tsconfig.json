@@ -24,6 +24,7 @@
       "@radix-ui/react-dropdown-menu": ["packages/react/dropdown-menu/src"],
       "@radix-ui/react-focus-guards": ["packages/react/focus-guards/src"],
       "@radix-ui/react-focus-scope": ["./packages/react/focus-scope/src"],
+      "@radix-ui/react-form": ["./packages/react/form/src"],
       "@radix-ui/react-hover-card": ["./packages/react/hover-card/src"],
       "@radix-ui/react-id": ["./packages/react/id/src"],
       "@radix-ui/react-label": ["./packages/react/label/src"],
