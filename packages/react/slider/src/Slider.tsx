@@ -586,13 +586,6 @@ const SliderThumbImpl = React.forwardRef<SliderThumbImplElement, SliderThumbImpl
     }, [thumb, context.thumbs]);
 
     return (
-      <span
-        style={{
-          transform: 'var(--radix-slider-thumb-transform)',
-          position: 'absolute',
-          [orientation.startEdge]: `calc(${percent}% + ${thumbInBoundsOffset}px)`,
-        }}
-      >
         <Collection.ItemSlot scope={props.__scopeSlider}>
           <Primitive.span
             role="slider"
@@ -612,13 +605,21 @@ const SliderThumbImpl = React.forwardRef<SliderThumbImplElement, SliderThumbImpl
              * snap into the correct position during hydration which would be visually jarring for
              * slower connections.
              */
-            style={value === undefined ? { display: 'none' } : props.style}
+            style={
+              value === undefined
+                ? { display: 'none' }
+                : {
+                    ...props.style,
+                    transform: 'var(--radix-slider-thumb-transform)',
+                    position: 'absolute',
+                    [orientation.startEdge]: `calc(${percent}% + ${thumbInBoundsOffset}px)`,
+                  }
+            }
             onFocus={composeEventHandlers(props.onFocus, () => {
               context.valueIndexToChangeRef.current = index;
             })}
           />
         </Collection.ItemSlot>
-      </span>
     );
   }
 );
