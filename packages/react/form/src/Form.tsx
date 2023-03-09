@@ -249,7 +249,7 @@ const FormLabel = React.forwardRef<FormLabelElement, FormLabelProps>(
     const validity = validationContext.getFieldValidity(fieldContext.name);
 
     return (
-      <Label
+      <LabelPrimitive
         data-valid={getValidAttribute(validity, fieldContext.serverInvalid)}
         data-invalid={getInvalidAttribute(validity, fieldContext.serverInvalid)}
         {...labelProps}
