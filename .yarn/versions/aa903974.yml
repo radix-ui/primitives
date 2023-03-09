@@ -1,0 +1,5 @@
+releases:
+  "@radix-ui/react-form": patch
+
+declined:
+  - primitives
