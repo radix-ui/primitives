@@ -3,7 +3,7 @@ import { composeEventHandlers } from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
 import { useId } from '@radix-ui/react-id';
-import { Label } from '@radix-ui/react-label';
+import { Label as LabelPrimitive } from '@radix-ui/react-label';
 import { Primitive } from '@radix-ui/react-primitive';
 
 import type * as Radix from '@radix-ui/react-primitive';
@@ -236,8 +236,8 @@ FormField.displayName = FIELD_NAME;
 
 const LABEL_NAME = 'FormLabel';
 
-type FormLabelElement = React.ElementRef<typeof Label>;
-type LabelProps = Radix.ComponentPropsWithoutRef<typeof Label>;
+type FormLabelElement = React.ElementRef<typeof LabelPrimitive>;
+type LabelProps = Radix.ComponentPropsWithoutRef<typeof LabelPrimitive>;
 interface FormLabelProps extends LabelProps {}
 
 const FormLabel = React.forwardRef<FormLabelElement, FormLabelProps>(
@@ -249,7 +249,7 @@ const FormLabel = React.forwardRef<FormLabelElement, FormLabelProps>(
     const validity = validationContext.getFieldValidity(fieldContext.name);
 
     return (
-      <Label
+      <LabelPrimitive
         data-valid={getValidAttribute(validity, fieldContext.serverInvalid)}
         data-invalid={getInvalidAttribute(validity, fieldContext.serverInvalid)}
         {...labelProps}
