@@ -194,14 +194,14 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
         size({
           ...detectOverflowOptions,
           apply: ({ elements, rects, availableWidth: width, availableHeight: height }) => {
-            const { width: popperWidth, height: popperHeight } = rects.reference;
+            const { width: anchorWidth, height: anchorHeight } = rects.reference;
 
             elements.floating.style.setProperty('--radix-popper-available-width', `${width}px`);
             elements.floating.style.setProperty('--radix-popper-available-height', `${height}px`);
-            elements.floating.style.setProperty('--radix-popper-anchor-width', `${popperWidth}px`);
+            elements.floating.style.setProperty('--radix-popper-anchor-width', `${anchorWidth}px`);
             elements.floating.style.setProperty(
               '--radix-popper-anchor-height',
-              `${popperHeight}px`
+              `${anchorHeight}px`
             );
           },
         }),
