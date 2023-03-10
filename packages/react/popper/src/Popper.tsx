@@ -195,14 +195,11 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
           ...detectOverflowOptions,
           apply: ({ elements, rects, availableWidth: width, availableHeight: height }) => {
             const { width: anchorWidth, height: anchorHeight } = rects.reference;
-
-            elements.floating.style.setProperty('--radix-popper-available-width', `${width}px`);
-            elements.floating.style.setProperty('--radix-popper-available-height', `${height}px`);
-            elements.floating.style.setProperty('--radix-popper-anchor-width', `${anchorWidth}px`);
-            elements.floating.style.setProperty(
-              '--radix-popper-anchor-height',
-              `${anchorHeight}px`
-            );
+            const contentStyle = elements.floating.style;
+            contentStyle.setProperty('--radix-popper-available-width', `${width}px`);
+            contentStyle.setProperty('--radix-popper-available-height', `${height}px`);
+            contentStyle.setProperty('--radix-popper-anchor-width', `${anchorWidth}px`);
+            contentStyle.setProperty('--radix-popper-anchor-height', `${anchorHeight}px`);
           },
         }),
         arrow ? floatingUIarrow({ element: arrow, padding: arrowPadding }) : undefined,
