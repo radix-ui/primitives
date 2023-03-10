@@ -193,11 +193,11 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
         avoidCollisions ? flip({ ...detectOverflowOptions }) : undefined,
         size({
           ...detectOverflowOptions,
-          apply: ({ elements, rects, availableWidth: width, availableHeight: height }) => {
+          apply: ({ elements, rects, availableWidth, availableHeight }) => {
             const { width: anchorWidth, height: anchorHeight } = rects.reference;
             const contentStyle = elements.floating.style;
-            contentStyle.setProperty('--radix-popper-available-width', `${width}px`);
-            contentStyle.setProperty('--radix-popper-available-height', `${height}px`);
+            contentStyle.setProperty('--radix-popper-available-width', `${availableWidth}px`);
+            contentStyle.setProperty('--radix-popper-available-height', `${availableHeight}px`);
             contentStyle.setProperty('--radix-popper-anchor-width', `${anchorWidth}px`);
             contentStyle.setProperty('--radix-popper-anchor-height', `${anchorHeight}px`);
           },
