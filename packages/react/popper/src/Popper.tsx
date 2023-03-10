@@ -181,7 +181,6 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
       placement: desiredPlacement,
       whileElementsMounted: autoUpdate,
       middleware: [
-        anchorCssProperties(),
         offset({ mainAxis: sideOffset + arrowHeight, alignmentAxis: alignOffset }),
         avoidCollisions
           ? shift({
@@ -191,15 +190,19 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
               ...detectOverflowOptions,
             })
           : undefined,
-        arrow ? floatingUIarrow({ element: arrow, padding: arrowPadding }) : undefined,
         avoidCollisions ? flip({ ...detectOverflowOptions }) : undefined,
         size({
           ...detectOverflowOptions,
-          apply: ({ elements, availableWidth: width, availableHeight: height }) => {
-            elements.floating.style.setProperty('--radix-popper-available-width', `${width}px`);
-            elements.floating.style.setProperty('--radix-popper-available-height', `${height}px`);
+          apply: ({ elements, rects, availableWidth, availableHeight }) => {
+            const { width: anchorWidth, height: anchorHeight } = rects.reference;
+            const contentStyle = elements.floating.style;
+            contentStyle.setProperty('--radix-popper-available-width', `${availableWidth}px`);
+            contentStyle.setProperty('--radix-popper-available-height', `${availableHeight}px`);
+            contentStyle.setProperty('--radix-popper-anchor-width', `${anchorWidth}px`);
+            contentStyle.setProperty('--radix-popper-anchor-height', `${anchorHeight}px`);
           },
         }),
+        arrow ? floatingUIarrow({ element: arrow, padding: arrowPadding }) : undefined,
         transformOrigin({ arrowWidth, arrowHeight }),
         hideWhenDetached ? hide({ strategy: 'referenceHidden' }) : undefined,
       ].filter(isDefined),
@@ -393,17 +396,6 @@ function isDefined<T>(value: T | undefined): value is T {
 function isNotNull<T>(value: T | null): value is T {
   return value !== null;
 }
-
-const anchorCssProperties = (): Middleware => ({
-  name: 'anchorCssProperties',
-  fn(data) {
-    const { rects, elements } = data;
-    const { width, height } = rects.reference;
-    elements.floating.style.setProperty('--radix-popper-anchor-width', `${width}px`);
-    elements.floating.style.setProperty('--radix-popper-anchor-height', `${height}px`);
-    return {};
-  },
-});
 
 const transformOrigin = (options: { arrowWidth: number; arrowHeight: number }): Middleware => ({
   name: 'transformOrigin',
