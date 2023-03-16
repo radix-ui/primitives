@@ -121,7 +121,11 @@ const RovingFocusGroupImpl = React.forwardRef<
   const handleEntryFocus = useCallbackRef(onEntryFocus);
   const getItems = useCollection(__scopeRovingFocusGroup);
   const isClickFocusRef = React.useRef(false);
-  const [focusableItemsCount, setFocusableItemsCount] = React.useState(0);
+  // As `focusableItemsCount === 0` is used as a condition for making the group tabbable,
+  // and then redirect focus accordingly, we start with `undefined` here  so that by default
+  // the group is considered tabbable.
+  const [focusableItemsCount, setFocusableItemsCount] = React.useState<number | undefined>();
+  const isGroupTabbable = !(isTabbingBackOut || focusableItemsCount === 0);
 
   React.useEffect(() => {
     const node = ref.current;
@@ -144,16 +148,16 @@ const RovingFocusGroupImpl = React.forwardRef<
       )}
       onItemShiftTab={React.useCallback(() => setIsTabbingBackOut(true), [])}
       onFocusableItemAdd={React.useCallback(
-        () => setFocusableItemsCount((prevCount) => prevCount + 1),
+        () => setFocusableItemsCount((prevCount) => (prevCount ?? 0) + 1),
         []
       )}
       onFocusableItemRemove={React.useCallback(
-        () => setFocusableItemsCount((prevCount) => prevCount - 1),
+        () => setFocusableItemsCount((prevCount) => (prevCount ?? 0) - 1),
         []
       )}
     >
       <Primitive.div
-        tabIndex={isTabbingBackOut || focusableItemsCount === 0 ? -1 : 0}
+        tabIndex={isGroupTabbable ? 0 : -1}
         data-orientation={orientation}
         {...groupProps}
         ref={composedRefs}
