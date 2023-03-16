@@ -459,6 +459,22 @@ export const Chromatic = () => (
       </Slider.Root>
     </div>
 
+    <h2>Out of bound value (negative)</h2>
+    <Slider.Root className={rootClass()} defaultValue={[-9000]} min={0} max={100}>
+      <Slider.Track className={trackClass()}>
+        <Slider.Range className={rangeClass()} />
+      </Slider.Track>
+      <Slider.Thumb className={thumbClass()} />
+    </Slider.Root>
+
+    <h2>Out of bound value (positive)</h2>
+    <Slider.Root className={rootClass()} defaultValue={[9000]} min={0} max={100}>
+      <Slider.Track className={trackClass()}>
+        <Slider.Range className={rangeClass()} />
+      </Slider.Track>
+      <Slider.Thumb className={thumbClass()} />
+    </Slider.Root>
+
     <h1>Disabled</h1>
     <Slider.Root className={rootClass()} defaultValue={[20]} disabled>
       <Slider.Track className={trackClass()}>
