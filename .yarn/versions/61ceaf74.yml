@@ -1,5 +1,5 @@
 releases:
   "@radix-ui/react-slider": patch
 
-undecided:
+declined:
   - primitives
