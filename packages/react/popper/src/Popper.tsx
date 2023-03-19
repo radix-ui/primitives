@@ -183,15 +183,14 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
         whileElementsMounted: autoUpdate,
         middleware: [
           offset({ mainAxis: sideOffset + arrowHeight, alignmentAxis: alignOffset }),
-          avoidCollisions
-            ? shift({
-                mainAxis: true,
-                crossAxis: false,
-                limiter: sticky === 'partial' ? limitShift() : undefined,
-                ...detectOverflowOptions,
-              })
-            : undefined,
-          avoidCollisions ? flip({ ...detectOverflowOptions }) : undefined,
+          avoidCollisions &&
+            shift({
+              mainAxis: true,
+              crossAxis: false,
+              limiter: sticky === 'partial' ? limitShift() : undefined,
+              ...detectOverflowOptions,
+            }),
+          avoidCollisions && flip({ ...detectOverflowOptions }),
           size({
             ...detectOverflowOptions,
             apply: ({ elements, rects, availableWidth, availableHeight }) => {
@@ -203,10 +202,10 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
               contentStyle.setProperty('--radix-popper-anchor-height', `${anchorHeight}px`);
             },
           }),
-          arrow ? floatingUIarrow({ element: arrow, padding: arrowPadding }) : undefined,
+          arrow && floatingUIarrow({ element: arrow, padding: arrowPadding }),
           transformOrigin({ arrowWidth, arrowHeight }),
-          hideWhenDetached ? hide({ strategy: 'referenceHidden' }) : undefined,
-        ].filter(isDefined),
+          hideWhenDetached && hide({ strategy: 'referenceHidden' }),
+        ],
       });
 
     // assign the reference dynamically once `Content` has mounted so we can collocate the logic
@@ -388,10 +387,6 @@ const PopperArrow = React.forwardRef<PopperArrowElement, PopperArrowProps>(funct
 PopperArrow.displayName = ARROW_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
-
-function isDefined<T>(value: T | undefined): value is T {
-  return value !== undefined;
-}
 
 function isNotNull<T>(value: T | null): value is T {
   return value !== null;
