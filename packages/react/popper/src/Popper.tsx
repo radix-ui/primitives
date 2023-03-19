@@ -175,53 +175,53 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
       altBoundary: hasExplicitBoundaries,
     };
 
-    const { reference, floating, strategy, x, y, placement, middlewareData, update } = useFloating({
-      // default to `fixed` strategy so users don't have to pick and we also avoid focus scroll issues
-      strategy: 'fixed',
-      placement: desiredPlacement,
-      whileElementsMounted: autoUpdate,
-      middleware: [
-        offset({ mainAxis: sideOffset + arrowHeight, alignmentAxis: alignOffset }),
-        avoidCollisions
-          ? shift({
-              mainAxis: true,
-              crossAxis: false,
-              limiter: sticky === 'partial' ? limitShift() : undefined,
-              ...detectOverflowOptions,
-            })
-          : undefined,
-        avoidCollisions ? flip({ ...detectOverflowOptions }) : undefined,
-        size({
-          ...detectOverflowOptions,
-          apply: ({ elements, rects, availableWidth, availableHeight }) => {
-            const { width: anchorWidth, height: anchorHeight } = rects.reference;
-            const contentStyle = elements.floating.style;
-            contentStyle.setProperty('--radix-popper-available-width', `${availableWidth}px`);
-            contentStyle.setProperty('--radix-popper-available-height', `${availableHeight}px`);
-            contentStyle.setProperty('--radix-popper-anchor-width', `${anchorWidth}px`);
-            contentStyle.setProperty('--radix-popper-anchor-height', `${anchorHeight}px`);
-          },
-        }),
-        arrow ? floatingUIarrow({ element: arrow, padding: arrowPadding }) : undefined,
-        transformOrigin({ arrowWidth, arrowHeight }),
-        hideWhenDetached ? hide({ strategy: 'referenceHidden' }) : undefined,
-      ].filter(isDefined),
-    });
+    const { reference, floating, strategy, x, y, placement, isPositioned, middlewareData, update } =
+      useFloating({
+        // default to `fixed` strategy so users don't have to pick and we also avoid focus scroll issues
+        strategy: 'fixed',
+        placement: desiredPlacement,
+        whileElementsMounted: autoUpdate,
+        middleware: [
+          offset({ mainAxis: sideOffset + arrowHeight, alignmentAxis: alignOffset }),
+          avoidCollisions
+            ? shift({
+                mainAxis: true,
+                crossAxis: false,
+                limiter: sticky === 'partial' ? limitShift() : undefined,
+                ...detectOverflowOptions,
+              })
+            : undefined,
+          avoidCollisions ? flip({ ...detectOverflowOptions }) : undefined,
+          size({
+            ...detectOverflowOptions,
+            apply: ({ elements, rects, availableWidth, availableHeight }) => {
+              const { width: anchorWidth, height: anchorHeight } = rects.reference;
+              const contentStyle = elements.floating.style;
+              contentStyle.setProperty('--radix-popper-available-width', `${availableWidth}px`);
+              contentStyle.setProperty('--radix-popper-available-height', `${availableHeight}px`);
+              contentStyle.setProperty('--radix-popper-anchor-width', `${anchorWidth}px`);
+              contentStyle.setProperty('--radix-popper-anchor-height', `${anchorHeight}px`);
+            },
+          }),
+          arrow ? floatingUIarrow({ element: arrow, padding: arrowPadding }) : undefined,
+          transformOrigin({ arrowWidth, arrowHeight }),
+          hideWhenDetached ? hide({ strategy: 'referenceHidden' }) : undefined,
+        ].filter(isDefined),
+      });
 
     // assign the reference dynamically once `Content` has mounted so we can collocate the logic
     useLayoutEffect(() => {
       reference(context.anchor);
     }, [reference, context.anchor]);
 
-    const isPlaced = x !== null && y !== null;
     const [placedSide, placedAlign] = getSideAndAlignFromPlacement(placement);
 
     const handlePlaced = useCallbackRef(onPlaced);
     useLayoutEffect(() => {
-      if (isPlaced) {
+      if (isPositioned) {
         handlePlaced?.();
       }
-    }, [isPlaced, handlePlaced]);
+    }, [isPositioned, handlePlaced]);
 
     const arrowX = middlewareData.arrow?.x;
     const arrowY = middlewareData.arrow?.y;
@@ -249,12 +249,12 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
     // we need to re-compute the positioning once the parent has finally been placed.
     // https://github.com/floating-ui/floating-ui/issues/1531
     useLayoutEffect(() => {
-      if (isRoot && isPlaced) {
+      if (isRoot && isPositioned) {
         Array.from(positionUpdateFns)
           .reverse()
           .forEach((fn) => requestAnimationFrame(fn));
       }
-    }, [isRoot, isPlaced, positionUpdateFns]);
+    }, [isRoot, isPositioned, positionUpdateFns]);
 
     const commonProps = {
       'data-side': placedSide,
@@ -265,7 +265,7 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
         ...contentProps.style,
         // if the PopperContent hasn't been placed yet (not all measurements done)
         // we prevent animations so that users's animation don't kick in too early referring wrong sides
-        animation: !isPlaced ? 'none' : undefined,
+        animation: !isPositioned ? 'none' : undefined,
         // hide the content if using the hide middleware and should be hidden
         opacity: middlewareData.hide?.referenceHidden ? 0 : undefined,
       },
@@ -279,8 +279,8 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
           position: strategy,
           left: 0,
           top: 0,
-          transform: isPlaced
-            ? `translate3d(${Math.round(x)}px, ${Math.round(y)}px, 0)`
+          transform: isPositioned
+            ? `translate3d(${Math.round(x as number)}px, ${Math.round(y as number)}px, 0)`
             : 'translate3d(0, -200%, 0)', // keep off the page when measuring
           minWidth: 'max-content',
           zIndex: contentZIndex,
