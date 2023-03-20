@@ -62,7 +62,7 @@ describe('given a Tab List', () => {
 
   describe('with default behaviour in a controlled scenario', () => {
     let controlledRendered: RenderResult;
-    let controlledOnChange = jest.fn();
+    const controlledOnChange = jest.fn();
     const getOptions = {
       hidden: true,
     };
