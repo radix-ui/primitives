@@ -5,6 +5,7 @@ import * as Tabs from '@radix-ui/react-tabs';
 
 const ITEMS = ['First', 'Second', 'Third', 'Fourth'];
 const SELECTION = 'Second';
+const SELECTION_CLICKED = 'Third';
 
 describe('given a Tab List', () => {
   describe('with default behaviour in an uncontrolled scenario', () => {
@@ -46,7 +47,7 @@ describe('given a Tab List', () => {
       act(() => {
         fireEvent(
           tab3,
-          new MouseEvent('click', {
+          new MouseEvent('mousedown', {
             bubbles: true,
           })
         );
@@ -87,7 +88,6 @@ describe('given a Tab List', () => {
     });
 
     it('should show the proper tabpanel accordingly to click navigation', () => {
-      const [, , tab3] = controlledRendered.getAllByRole('tab');
       const [panel1, panel2, panel3, panel4] = controlledRendered.getAllByRole(
         'tabpanel',
         getOptions
@@ -98,14 +98,9 @@ describe('given a Tab List', () => {
       expect(panel3).toHaveAttribute('data-state', 'inactive');
       expect(panel4).toHaveAttribute('data-state', 'inactive');
 
-      act(() => {
-        fireEvent(
-          tab3,
-          new MouseEvent('click', {
-            bubbles: true,
-          })
-        );
-      });
+      controlledRendered.rerender(
+        <TabsTest value={SELECTION_CLICKED} onValueChange={controlledOnChange} />
+      );
 
       expect(panel1).toHaveAttribute('data-state', 'inactive');
       expect(panel2).toHaveAttribute('data-state', 'inactive');
