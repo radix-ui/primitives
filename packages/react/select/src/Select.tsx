@@ -802,17 +802,25 @@ const SelectItemAlignedPosition = React.forwardRef<
       const valueNodeRect = context.valueNode.getBoundingClientRect();
       const itemTextRect = selectedItemText.getBoundingClientRect();
 
+      console.log('selectedItemText', selectedItemText);
+
       if (context.dir !== 'rtl') {
         const itemTextOffset = itemTextRect.left - contentRect.left;
         const left = valueNodeRect.left - itemTextOffset;
         const leftDelta = triggerRect.left - left;
         const minContentWidth = triggerRect.width + leftDelta;
         const contentWidth = Math.max(minContentWidth, contentRect.width);
-        const rightEdge = window.innerWidth - CONTENT_MARGIN;
-        const clampedLeft = clamp(left, [CONTENT_MARGIN, rightEdge - contentWidth]);
 
-        contentWrapper.style.minWidth = minContentWidth + 'px';
-        contentWrapper.style.left = clampedLeft + 'px';
+        if (contentWidth >= window.innerWidth) {
+          contentWrapper.style.left = CONTENT_MARGIN + 'px';
+          contentWrapper.style.maxWidth = window.innerWidth - CONTENT_MARGIN * 2 + 'px';
+        } else {
+          const rightEdge =
+            contentWidth <= window.innerWidth ? window.innerWidth - CONTENT_MARGIN : contentWidth;
+          const clampedLeft = clamp(left, [CONTENT_MARGIN, rightEdge - contentWidth]);
+          contentWrapper.style.left = clampedLeft + 'px';
+          contentWrapper.style.minWidth = minContentWidth + 'px';
+        }
       } else {
         const itemTextOffset = contentRect.right - itemTextRect.right;
         const right = window.innerWidth - valueNodeRect.right - itemTextOffset;
@@ -822,8 +830,13 @@ const SelectItemAlignedPosition = React.forwardRef<
         const leftEdge = window.innerWidth - CONTENT_MARGIN;
         const clampedRight = clamp(right, [CONTENT_MARGIN, leftEdge - contentWidth]);
 
-        contentWrapper.style.minWidth = minContentWidth + 'px';
-        contentWrapper.style.right = clampedRight + 'px';
+        if (contentWidth >= window.innerWidth) {
+          contentWrapper.style.right = window.innerWidth - CONTENT_MARGIN + 'px';
+          contentWrapper.style.maxWidth = window.innerWidth - CONTENT_MARGIN * 2 + 'px';
+        } else {
+          contentWrapper.style.minWidth = minContentWidth + 'px';
+          contentWrapper.style.right = clampedRight + 'px';
+        }
       }
 
       // -----------------------------------------------------------------------------------------
