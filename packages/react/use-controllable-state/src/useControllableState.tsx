@@ -24,7 +24,7 @@ function useControllableState<T>({
   const value = isControlled ? prop : uncontrolledProp;
   const handleChange = useCallbackRef(onChange);
 
-  const setValue = useCallback<React.Dispatch<React.SetStateAction<T>>>(
+  const setValue = React.useCallback<React.Dispatch<React.SetStateAction<T>>>(
     nextValue => {
       if (isControlled) {
         const value =
@@ -47,12 +47,12 @@ function useUncontrolledState<T>({
   defaultProp: T;
   onChange: React.Dispatch<React.SetStateAction<T>>;
 }) {
-  const uncontrolledState = useState(defaultProp);
+  const uncontrolledState = React.useState(defaultProp);
   const [value] = uncontrolledState;
-  const prevValueRef = useRef(value);
+  const prevValueRef = React.useRef(value);
   const handleChange = useCallbackRef(onChange);
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (prevValueRef.current !== value) {
       handleChange(value);
       prevValueRef.current = value;
