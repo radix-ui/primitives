@@ -612,7 +612,7 @@ const NavigationMenuLink = React.forwardRef<NavigationMenuLinkElement, Navigatio
               target.addEventListener(LINK_SELECT, (event) => onSelect?.(event), { once: true });
               dispatchDiscreteCustomEvent(target, linkSelectEvent);
 
-              if (!linkSelectEvent.defaultPrevented) {
+              if (!linkSelectEvent.defaultPrevented && !event.metaKey) {
                 const rootContentDismissEvent = new CustomEvent(ROOT_CONTENT_DISMISS, {
                   bubbles: true,
                   cancelable: true,
