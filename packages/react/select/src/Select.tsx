@@ -1190,6 +1190,8 @@ const SelectItem = React.forwardRef<SelectItemElement, SelectItemProps>(
       contentContext.itemRefCallback?.(node, value, disabled)
     );
     const textId = useId();
+    const isPointerDownRef = React.useRef(false);
+    const isPointerUpRef = React.useRef(false);
 
     const handleSelect = () => {
       if (!disabled) {
@@ -1229,7 +1231,17 @@ const SelectItem = React.forwardRef<SelectItemElement, SelectItemProps>(
             ref={composedRefs}
             onFocus={composeEventHandlers(itemProps.onFocus, () => setIsFocused(true))}
             onBlur={composeEventHandlers(itemProps.onBlur, () => setIsFocused(false))}
-            onPointerUp={composeEventHandlers(itemProps.onPointerUp, handleSelect)}
+            onClick={composeEventHandlers(itemProps.onClick, () => {
+              if (isPointerUpRef.current) handleSelect();
+            })}
+            onPointerUp={composeEventHandlers(itemProps.onPointerUp, (event) => {
+              isPointerUpRef.current = true;
+              if (!isPointerDownRef.current) event.currentTarget.click();
+            })}
+            onPointerDown={composeEventHandlers(
+              itemProps.onPointerDown,
+              () => (isPointerDownRef.current = true)
+            )}
             onPointerMove={composeEventHandlers(itemProps.onPointerMove, (event) => {
               if (disabled) {
                 contentContext.onItemLeave?.();
