@@ -123,6 +123,12 @@ interface PopperContentProps extends PrimitiveDivProps {
   hideWhenDetached?: boolean;
   avoidCollisions?: boolean;
   onPlaced?: () => void;
+  autoUpdateOptions?: {
+    ancestorScroll?: boolean;
+    ancestorResize?: boolean;
+    elementResize?: boolean;
+    animationFrame?: boolean;
+  };
 }
 
 const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>(
@@ -139,6 +145,12 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
       sticky = 'partial',
       hideWhenDetached = false,
       avoidCollisions = true,
+      autoUpdateOptions = {
+        ancestorScroll: true,
+        ancestorResize: true,
+        elementResize: true,
+        animationFrame: false,
+      },
       onPlaced,
       ...contentProps
     } = props;
@@ -174,7 +186,8 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
       // default to `fixed` strategy so users don't have to pick and we also avoid focus scroll issues
       strategy: 'fixed',
       placement: desiredPlacement,
-      whileElementsMounted: autoUpdate,
+      whileElementsMounted: (referenceEl, floatingEl, update) =>
+        autoUpdate(referenceEl, floatingEl, update, autoUpdateOptions),
       elements: {
         reference: context.anchor,
       },
