@@ -92,6 +92,48 @@ export const WithPortal = () => {
   );
 };
 
+export const WithRAF = () => {
+  const [open, setOpen] = React.useState(false);
+  const [left, setLeft] = React.useState(0);
+  React.useEffect(() => {
+    const intervalId = setInterval(() => {
+      setLeft((prev) => (prev + 50) % 300);
+    }, 500);
+    return () => clearInterval(intervalId);
+  }, []);
+  return (
+    <Scrollable>
+      <Popper.Root>
+        <Popper.Anchor
+          className={anchorClass()}
+          onClick={() => setOpen(true)}
+          style={{ marginLeft: left }}
+        >
+          open
+        </Popper.Anchor>
+
+        {open && (
+          <Portal asChild>
+            <Popper.Content
+              className={contentClass()}
+              sideOffset={5}
+              autoUpdateOptions={{
+                ancestorResize: true,
+                ancestorScroll: true,
+                animationFrame: true,
+                elementResize: true,
+              }}
+            >
+              <button onClick={() => setOpen(false)}>close</button>
+              <Popper.Arrow className={arrowClass()} width={20} height={10} />
+            </Popper.Content>
+          </Portal>
+        )}
+      </Popper.Root>
+    </Scrollable>
+  );
+};
+
 export const Chromatic = () => {
   const [scrollContainer1, setScrollContainer1] = React.useState<HTMLDivElement | null>(null);
   const [scrollContainer2, setScrollContainer2] = React.useState<HTMLDivElement | null>(null);
