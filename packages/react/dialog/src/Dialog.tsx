@@ -107,6 +107,7 @@ const DialogTrigger = React.forwardRef<DialogTriggerElement, DialogTriggerProps>
         aria-expanded={context.open}
         aria-controls={context.contentId}
         data-state={getState(context.open)}
+        tabIndex={context.open ? -1 : 0}
         {...triggerProps}
         ref={composedTriggerRef}
         onClick={composeEventHandlers(props.onClick, context.onOpenToggle)}
