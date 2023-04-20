@@ -390,7 +390,7 @@ const AccordionItem = React.forwardRef<AccordionItemElement, AccordionItemProps>
       >
         <CollapsiblePrimitive.Root
           data-orientation={accordionContext.orientation}
-          data-state={open ? 'open' : 'closed'}
+          data-state={getState(open)}
           {...collapsibleScope}
           {...accordionItemProps}
           ref={forwardedRef}
