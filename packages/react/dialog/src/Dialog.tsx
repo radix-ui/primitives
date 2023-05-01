@@ -247,8 +247,7 @@ DialogContent.displayName = CONTENT_NAME;
 /* -----------------------------------------------------------------------------------------------*/
 
 type DialogContentTypeElement = DialogContentImplElement;
-interface DialogContentTypeProps
-  extends Omit<DialogContentImplProps, 'trapFocus' | 'disableOutsidePointerEvents'> {}
+interface DialogContentTypeProps extends Omit<DialogContentImplProps, 'trapFocus'> {}
 
 const DialogContentModal = React.forwardRef<DialogContentTypeElement, DialogContentTypeProps>(
   (props: ScopedProps<DialogContentTypeProps>, forwardedRef) => {
@@ -264,12 +263,12 @@ const DialogContentModal = React.forwardRef<DialogContentTypeElement, DialogCont
 
     return (
       <DialogContentImpl
+        disableOutsidePointerEvents
         {...props}
         ref={composedRefs}
         // we make sure focus isn't trapped once `DialogContent` has been closed
         // (closed !== unmounted when animating out)
         trapFocus={context.open}
-        disableOutsidePointerEvents
         onCloseAutoFocus={composeEventHandlers(props.onCloseAutoFocus, (event) => {
           event.preventDefault();
           context.triggerRef.current?.focus();
@@ -303,10 +302,10 @@ const DialogContentNonModal = React.forwardRef<DialogContentTypeElement, DialogC
 
     return (
       <DialogContentImpl
+        disableOutsidePointerEvents={false}
         {...props}
         ref={forwardedRef}
         trapFocus={false}
-        disableOutsidePointerEvents={false}
         onCloseAutoFocus={(event) => {
           props.onCloseAutoFocus?.(event);
 
