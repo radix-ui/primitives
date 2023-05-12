@@ -120,6 +120,23 @@ describe('given a controlled `checked` Checkbox', () => {
   });
 });
 
+describe('given an uncontrolled `defaultChecked` Checkbox in form', () => {
+  it('should not change defaultChecked', () => {
+    expect.hasAssertions();
+    const rendered = render(
+      <form
+        onChange={(event) => {
+          const target = event.target as HTMLInputElement;
+          expect(target.defaultChecked).toBe(true);
+        }}
+      >
+        <CheckboxTest defaultChecked />
+      </form>
+    );
+    fireEvent.click(rendered.getByRole(CHECKBOX_ROLE));
+  });
+});
+
 function CheckboxTest(props: React.ComponentProps<typeof Checkbox>) {
   const containerRef = React.useRef<HTMLDivElement>(null);
   React.useEffect(() => {

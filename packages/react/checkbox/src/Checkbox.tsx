@@ -188,11 +188,12 @@ const BubbleInput = (props: BubbleInputProps) => {
     }
   }, [prevChecked, checked, bubbles]);
 
+  const defaultCheckedRef = React.useRef(isIndeterminate(checked) ? false : checked);
   return (
     <input
       type="checkbox"
       aria-hidden
-      defaultChecked={isIndeterminate(checked) ? false : checked}
+      defaultChecked={defaultCheckedRef.current}
       {...inputProps}
       tabIndex={-1}
       ref={ref}
