@@ -20,7 +20,7 @@ const CHECKBOX_NAME = 'Checkbox';
 type ScopedProps<P> = P & { __scopeCheckbox?: Scope };
 const [createCheckboxContext, createCheckboxScope] = createContextScope(CHECKBOX_NAME);
 
-type CheckedState = boolean | 'indeterminate';
+export type CheckedState = boolean | 'indeterminate';
 
 type CheckboxContextValue = {
   state: CheckedState;
@@ -113,6 +113,7 @@ const Checkbox = React.forwardRef<CheckboxElement, CheckboxProps>(
             // rendered it **after** the button. This pulls it back to sit on top
             // of the button.
             style={{ transform: 'translateX(-100%)' }}
+            defaultChecked={isIndeterminate(defaultChecked) ? false : defaultChecked}
           />
         )}
       </CheckboxProvider>
@@ -168,7 +169,7 @@ interface BubbleInputProps extends Omit<InputProps, 'checked'> {
 }
 
 const BubbleInput = (props: BubbleInputProps) => {
-  const { control, checked, bubbles = true, ...inputProps } = props;
+  const { control, checked, bubbles = true, defaultChecked, ...inputProps } = props;
   const ref = React.useRef<HTMLInputElement>(null);
   const prevChecked = usePrevious(checked);
   const controlSize = useSize(control);
@@ -193,7 +194,7 @@ const BubbleInput = (props: BubbleInputProps) => {
     <input
       type="checkbox"
       aria-hidden
-      defaultChecked={defaultCheckedRef.current}
+      defaultChecked={defaultChecked ?? defaultCheckedRef.current}
       {...inputProps}
       tabIndex={-1}
       ref={ref}
