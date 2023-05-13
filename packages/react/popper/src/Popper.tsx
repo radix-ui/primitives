@@ -251,7 +251,7 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
         data-radix-popper-content-wrapper=""
         style={{
           ...floatingStyles,
-          transform: isPositioned ? floatingStyles.transform : 'translate3d(0, -200%, 0)', // keep off the page when measuring
+          transform: isPositioned ? floatingStyles.transform : 'translate(0, -200%)', // keep off the page when measuring
           minWidth: 'max-content',
           zIndex: contentZIndex,
           ['--radix-popper-transform-origin' as any]: [
