@@ -110,7 +110,6 @@ const [PopperContentProvider, useContentContext] =
 
 const [PositionContextProvider, usePositionContext] = createPopperContext(CONTENT_NAME, {
   hasParent: false,
-  positionUpdateFns: new Set<() => void>(),
 });
 
 type Boundary = Element | null;
@@ -175,43 +174,40 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
       altBoundary: hasExplicitBoundaries,
     };
 
-    const { reference, floating, strategy, x, y, placement, isPositioned, middlewareData, update } =
-      useFloating({
-        // default to `fixed` strategy so users don't have to pick and we also avoid focus scroll issues
-        strategy: 'fixed',
-        placement: desiredPlacement,
-        whileElementsMounted: autoUpdate,
-        middleware: [
-          offset({ mainAxis: sideOffset + arrowHeight, alignmentAxis: alignOffset }),
-          avoidCollisions &&
-            shift({
-              mainAxis: true,
-              crossAxis: false,
-              limiter: sticky === 'partial' ? limitShift() : undefined,
-              ...detectOverflowOptions,
-            }),
-          avoidCollisions && flip({ ...detectOverflowOptions }),
-          size({
+    const { refs, floatingStyles, placement, isPositioned, middlewareData } = useFloating({
+      // default to `fixed` strategy so users don't have to pick and we also avoid focus scroll issues
+      strategy: 'fixed',
+      placement: desiredPlacement,
+      whileElementsMounted: autoUpdate,
+      elements: {
+        reference: context.anchor,
+      },
+      middleware: [
+        offset({ mainAxis: sideOffset + arrowHeight, alignmentAxis: alignOffset }),
+        avoidCollisions &&
+          shift({
+            mainAxis: true,
+            crossAxis: false,
+            limiter: sticky === 'partial' ? limitShift() : undefined,
             ...detectOverflowOptions,
-            apply: ({ elements, rects, availableWidth, availableHeight }) => {
-              const { width: anchorWidth, height: anchorHeight } = rects.reference;
-              const contentStyle = elements.floating.style;
-              contentStyle.setProperty('--radix-popper-available-width', `${availableWidth}px`);
-              contentStyle.setProperty('--radix-popper-available-height', `${availableHeight}px`);
-              contentStyle.setProperty('--radix-popper-anchor-width', `${anchorWidth}px`);
-              contentStyle.setProperty('--radix-popper-anchor-height', `${anchorHeight}px`);
-            },
           }),
-          arrow && floatingUIarrow({ element: arrow, padding: arrowPadding }),
-          transformOrigin({ arrowWidth, arrowHeight }),
-          hideWhenDetached && hide({ strategy: 'referenceHidden' }),
-        ],
-      });
-
-    // assign the reference dynamically once `Content` has mounted so we can collocate the logic
-    useLayoutEffect(() => {
-      reference(context.anchor);
-    }, [reference, context.anchor]);
+        avoidCollisions && flip({ ...detectOverflowOptions }),
+        size({
+          ...detectOverflowOptions,
+          apply: ({ elements, rects, availableWidth, availableHeight }) => {
+            const { width: anchorWidth, height: anchorHeight } = rects.reference;
+            const contentStyle = elements.floating.style;
+            contentStyle.setProperty('--radix-popper-available-width', `${availableWidth}px`);
+            contentStyle.setProperty('--radix-popper-available-height', `${availableHeight}px`);
+            contentStyle.setProperty('--radix-popper-anchor-width', `${anchorWidth}px`);
+            contentStyle.setProperty('--radix-popper-anchor-height', `${anchorHeight}px`);
+          },
+        }),
+        arrow && floatingUIarrow({ element: arrow, padding: arrowPadding }),
+        transformOrigin({ arrowWidth, arrowHeight }),
+        hideWhenDetached && hide({ strategy: 'referenceHidden' }),
+      ],
+    });
 
     const [placedSide, placedAlign] = getSideAndAlignFromPlacement(placement);
 
@@ -231,29 +227,8 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
       if (content) setContentZIndex(window.getComputedStyle(content).zIndex);
     }, [content]);
 
-    const { hasParent, positionUpdateFns } = usePositionContext(CONTENT_NAME, __scopePopper);
+    const { hasParent } = usePositionContext(CONTENT_NAME, __scopePopper);
     const isRoot = !hasParent;
-
-    React.useLayoutEffect(() => {
-      if (!isRoot) {
-        positionUpdateFns.add(update);
-        return () => {
-          positionUpdateFns.delete(update);
-        };
-      }
-    }, [isRoot, positionUpdateFns, update]);
-
-    // when nested contents are rendered in portals, they are appended out of order causing
-    // children to be positioned incorrectly if initially open.
-    // we need to re-compute the positioning once the parent has finally been placed.
-    // https://github.com/floating-ui/floating-ui/issues/1531
-    useLayoutEffect(() => {
-      if (isRoot && isPositioned) {
-        Array.from(positionUpdateFns)
-          .reverse()
-          .forEach((fn) => requestAnimationFrame(fn));
-      }
-    }, [isRoot, isPositioned, positionUpdateFns]);
 
     const commonProps = {
       'data-side': placedSide,
@@ -272,15 +247,11 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
 
     return (
       <div
-        ref={floating}
+        ref={refs.setFloating}
         data-radix-popper-content-wrapper=""
         style={{
-          position: strategy,
-          left: 0,
-          top: 0,
-          transform: isPositioned
-            ? `translate3d(${Math.round(x as number)}px, ${Math.round(y as number)}px, 0)`
-            : 'translate3d(0, -200%, 0)', // keep off the page when measuring
+          ...floatingStyles,
+          transform: isPositioned ? floatingStyles.transform : 'translate3d(0, -200%, 0)', // keep off the page when measuring
           minWidth: 'max-content',
           zIndex: contentZIndex,
           ['--radix-popper-transform-origin' as any]: [
@@ -302,11 +273,7 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
           shouldHideArrow={cannotCenterArrow}
         >
           {isRoot ? (
-            <PositionContextProvider
-              scope={__scopePopper}
-              hasParent
-              positionUpdateFns={positionUpdateFns}
-            >
+            <PositionContextProvider scope={__scopePopper} hasParent>
               <Primitive.div {...commonProps} />
             </PositionContextProvider>
           ) : (

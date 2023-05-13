@@ -1655,31 +1655,31 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@floating-ui/core@npm:^1.2.3":
-  version: 1.2.4
-  resolution: "@floating-ui/core@npm:1.2.4"
-  checksum: 1c163ea1804e2b0a28fda6e32efed0e242d0db8081fd24aab9d1cbb100f94a558709231c483bf74bf09a9204ea6e7845813d43b5322ceb6ee63285308f68f65b
+"@floating-ui/core@npm:^1.2.6":
+  version: 1.2.6
+  resolution: "@floating-ui/core@npm:1.2.6"
+  checksum: e4aa96c435277f1720d4bc939e17a79b1e1eebd589c20b622d3c646a5273590ff889b8c6e126f7be61873cf8c4d7db7d418895986ea19b8b0d0530de32504c3a
   languageName: node
   linkType: hard
 
-"@floating-ui/dom@npm:^1.2.1":
-  version: 1.2.4
-  resolution: "@floating-ui/dom@npm:1.2.4"
+"@floating-ui/dom@npm:^1.2.7":
+  version: 1.2.7
+  resolution: "@floating-ui/dom@npm:1.2.7"
   dependencies:
-    "@floating-ui/core": ^1.2.3
-  checksum: 5c24a2e8f04e436390646c8a4431c6cb79e03711fbb0f818b87d613a6be8971bc560a830b702aaa51a0ebc4d0c45deb06f3140c14125dc1ac770365bf66ee903
+    "@floating-ui/core": ^1.2.6
+  checksum: f330228b909ecf241fea1db780a97c842acaea74d2a5ce99456040f9932a80d12c6a77e1c7d56a2700fe6bc85f961f76a7f3bd2640c3a5b2bc497ccc65074519
   languageName: node
   linkType: hard
 
-"@floating-ui/react-dom@npm:^1.3.0":
-  version: 1.3.0
-  resolution: "@floating-ui/react-dom@npm:1.3.0"
+"@floating-ui/react-dom@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@floating-ui/react-dom@npm:2.0.0"
   dependencies:
-    "@floating-ui/dom": ^1.2.1
+    "@floating-ui/dom": ^1.2.7
   peerDependencies:
     react: ">=16.8.0"
     react-dom: ">=16.8.0"
-  checksum: ce0ad3e3bbe43cfd15a6a0d5cccede02175c845862bfab52027995ab99c6b29630180dc7d146f76ebb34730f90a6ab9bf193c8984fe8d7f56062308e4ca98f77
+  checksum: c5dd02b7babf9c26d5e11b8ebe58411131b37844f7d6362a767cd1eedfb506ca6db3228fb192e0a5822c9289a5b500e2ef31e069dce28a0fbec4722f22bcdd95
   languageName: node
   linkType: hard
 
@@ -3514,7 +3514,7 @@ __metadata:
   resolution: "@radix-ui/react-popper@workspace:packages/react/popper"
   dependencies:
     "@babel/runtime": ^7.13.10
-    "@floating-ui/react-dom": ^1.3.0
+    "@floating-ui/react-dom": ^2.0.0
     "@radix-ui/react-arrow": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
