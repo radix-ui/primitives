@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-focus-scope",
-  "version": "1.0.3-rc.1",
+  "version": "1.0.3-rc.2",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
