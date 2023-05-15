@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Slot, Slottable } from '@radix-ui/react-slot';
 
-export default { title: 'Components/Slot' };
+export default { title: 'Utilities/Slot' };
 
 export const WithoutSlottable = () => (
   <SlotWithoutSlottable>

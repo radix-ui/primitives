@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Arrow } from '@radix-ui/react-arrow';
 
-export default { title: 'Components/Arrow' };
+export default { title: 'Utilities/Arrow' };
 
 const RECOMMENDED_CSS__ARROW__ROOT = {
   // better default alignment

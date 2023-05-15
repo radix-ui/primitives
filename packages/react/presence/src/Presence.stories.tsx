@@ -2,7 +2,7 @@ import * as React from 'react';
 import { css, keyframes } from '../../../../stitches.config';
 import { Presence } from '@radix-ui/react-presence';
 
-export default { title: 'Components/Presence' };
+export default { title: 'Utilities/Presence' };
 
 export const Basic = () => {
   const [open, setOpen] = React.useState(true);

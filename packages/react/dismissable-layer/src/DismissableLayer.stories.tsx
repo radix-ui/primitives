@@ -13,7 +13,7 @@ import { Slot } from '@radix-ui/react-slot';
 type DismissableLayerProps = React.ComponentProps<typeof DismissableLayer>;
 type FocusScopeProps = React.ComponentProps<typeof FocusScope>;
 
-export default { title: 'Components/DismissableLayer' };
+export default { title: 'Utilities/DismissableLayer' };
 
 const SYSTEM_FONT =
   '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"';

@@ -4,7 +4,7 @@ import * as RovingFocusGroup from '@radix-ui/react-roving-focus';
 
 type RovingFocusGroupProps = React.ComponentProps<typeof RovingFocusGroup.Root>;
 
-export default { title: 'Components/RovingFocusGroup' };
+export default { title: 'Utilities/RovingFocusGroup' };
 
 export const Basic = () => {
   const [dir, setDir] = React.useState<RovingFocusGroupProps['dir']>('ltr');

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 
-export default { title: 'Components/VisuallyHidden' };
+export default { title: 'Utilities/VisuallyHidden' };
 
 export const Basic = () => (
   <button>

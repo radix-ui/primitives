@@ -5,7 +5,7 @@ import { foodGroups } from '../../../../test-data/foods';
 import { DirectionProvider } from '@radix-ui/react-direction';
 
 export default {
-  title: 'Components/Menu',
+  title: 'Utilities/Menu',
   excludeStories: ['TickIcon', 'classes'],
 };
 

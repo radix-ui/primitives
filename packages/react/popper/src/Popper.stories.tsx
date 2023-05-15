@@ -3,7 +3,7 @@ import { css, keyframes } from '../../../../stitches.config';
 import { Portal } from '@radix-ui/react-portal';
 import * as Popper from '@radix-ui/react-popper';
 
-export default { title: 'Components/Popper' };
+export default { title: 'Utilities/Popper' };
 
 export const Styled = () => {
   const [open, setOpen] = React.useState(false);
