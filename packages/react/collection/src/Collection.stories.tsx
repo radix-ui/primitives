@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { createCollection } from '@radix-ui/react-collection';
 
-export default { title: 'Components/Collection' };
+export default { title: 'Utilities/Collection' };
 
 export const Basic = () => (
   <List>
