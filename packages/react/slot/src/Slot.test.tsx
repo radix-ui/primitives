@@ -133,6 +133,17 @@ describe('given a Button with Slottable', () => {
 
       expect(tree.container).toMatchSnapshot();
     });
+
+    it('should throw error occurs when `asChild` set to true and multiple ReactNode are passed as children.', async () => {
+      expect(() =>
+        render(
+          <Button iconLeft={<span>left</span>} iconRight={<span>right</span>} asChild>
+            <a href="https://radix-ui.com">Button</a>
+            <em>text</em>
+          </Button>
+        )
+      ).toThrowErrorMatchingSnapshot();
+    });
   });
 });
 

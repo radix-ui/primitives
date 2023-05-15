@@ -22,7 +22,12 @@ const Slot = React.forwardRef<HTMLElement, SlotProps>((props, forwardedRef) => {
       if (child === slottable) {
         // because the new element will be the one rendered, we are only interested
         // in grabbing its children (`newElement.props.children`)
-        if (React.Children.count(newElement) > 1) return React.Children.only(null);
+        if (1 < React.Children.count(newElement)) {
+          throw new Error(
+            `\`asChild\` cannot be set to true when passing multiple ReactNodes as children.`
+          );
+        }
+
         return React.isValidElement(newElement)
           ? (newElement.props.children as React.ReactNode)
           : null;
@@ -67,7 +72,13 @@ const SlotClone = React.forwardRef<any, SlotCloneProps>((props, forwardedRef) =>
     });
   }
 
-  return React.Children.count(children) > 1 ? React.Children.only(null) : null;
+  if (1 < React.Children.count(children)) {
+    throw new Error(
+      `\`asChild\` cannot be set to true when passing multiple ReactNodes as children.`
+    );
+  }
+
+  return null;
 });
 
 SlotClone.displayName = 'SlotClone';

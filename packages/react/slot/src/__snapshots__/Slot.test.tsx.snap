@@ -19,6 +19,8 @@ exports[`given a Button with Slottable with asChild should render a link with ic
 </div>
 `;
 
+exports[`given a Button with Slottable with asChild should throw error occurs when \`asChild\` set to true and multiple ReactNode are passed as children. 1`] = `"\`asChild\` cannot be set to true when passing multiple ReactNodes as children."`;
+
 exports[`given a Button with Slottable without asChild should render a button with icon on the left/right 1`] = `
 <div>
   <button>
