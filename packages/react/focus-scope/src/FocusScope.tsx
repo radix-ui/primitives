@@ -86,16 +86,48 @@ const FocusScope = React.forwardRef<FocusScopeElement, FocusScopeProps>((props, 
 
       function handleFocusOut(event: FocusEvent) {
         if (focusScope.paused || !container) return;
-        if (!container.contains(event.relatedTarget as HTMLElement | null)) {
+        const relatedTarget = event.relatedTarget as HTMLElement | null;
+
+        // A `focusout` event with a `null` `relatedTarget` will happen in at least two cases:
+        //
+        // 1. When the user switches app/tabs/windows/the browser itself loses focus.
+        // 2. In Google Chrome, when the focused element is removed from the DOM.
+        //
+        // We let the browser do its thing here because:
+        //
+        // 1. The browser already keeps a memory of what's focused for when the page gets refocused.
+        // 2. In Google Chrome, if we try to focus the deleted focused element (as per below), it
+        //    throws the CPU to 100%, so we avoid doing anything for this reason here too.
+        if (relatedTarget === null) return;
+
+        // If the focus has moved to an actual legitimate element (`relatedTarget !== null`)
+        // that is outside the container, we move focus to the last valid focused element inside.
+        if (!container.contains(relatedTarget)) {
           focus(lastFocusedElementRef.current, { select: true });
+        }
+      }
+
+      // When the focused element gets removed from the DOM, browsers move focus
+      // back to the document.body. In this case, we move focus to the container
+      // to keep focus trapped correctly.
+      function handleMutations(mutations: MutationRecord[]) {
+        const focusedElement = document.activeElement as HTMLElement | null;
+        for (const mutation of mutations) {
+          if (mutation.removedNodes.length > 0) {
+            if (!container?.contains(focusedElement)) focus(container);
+          }
         }
       }
 
       document.addEventListener('focusin', handleFocusIn);
       document.addEventListener('focusout', handleFocusOut);
+      const mutationObserver = new MutationObserver(handleMutations);
+      if (container) mutationObserver.observe(container, { childList: true, subtree: true });
+
       return () => {
         document.removeEventListener('focusin', handleFocusIn);
         document.removeEventListener('focusout', handleFocusOut);
+        mutationObserver.disconnect();
       };
     }
   }, [trapped, container, focusScope.paused]);

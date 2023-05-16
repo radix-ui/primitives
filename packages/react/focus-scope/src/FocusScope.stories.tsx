@@ -5,6 +5,7 @@ export default { title: 'Utilities/FocusScope' };
 
 export const Basic = () => {
   const [trapped, setTrapped] = React.useState(false);
+  const [hasDestroyButton, setHasDestroyButton] = React.useState(true);
 
   return (
     <>
@@ -30,6 +31,13 @@ export const Basic = () => {
             <input type="text" placeholder="First name" />
             <input type="text" placeholder="Last name" />
             <input type="number" placeholder="Age" />
+            {hasDestroyButton && (
+              <div>
+                <button type="button" onClick={() => setHasDestroyButton(false)}>
+                  Destroy me
+                </button>
+              </div>
+            )}
             <button type="button" onClick={() => setTrapped(false)}>
               Close
             </button>

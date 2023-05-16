@@ -111,6 +111,16 @@ describe('Dialog', () => {
       // finally, ensure that pointer-events have been reset and interactions restored
       shouldAllowOutsideInteraction('realTouch');
     });
+
+    it('keeps focus trapped even if focused element is removed', () => {
+      cy.findByText('open').click();
+      cy.findByText('close').should('be.focused');
+      cy.realPress('Tab');
+      cy.findByText('destroy me').should('be.focused');
+      cy.realPress('Space');
+      cy.realPress('Tab');
+      cy.findByText('close').should('be.focused');
+    });
   });
 
   describe('given a non-modal dialog', () => {
