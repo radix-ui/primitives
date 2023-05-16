@@ -98,11 +98,11 @@ const FocusScope = React.forwardRef<FocusScopeElement, FocusScopeProps>((props, 
         // 1. The browser already keeps a memory of what's focused for when the page gets refocused.
         // 2. In Google Chrome, if we try to focus the deleted focused element (as per below), it
         //    throws the CPU to 100%, so we avoid doing anything for this reason here too.
-        if (relatedTarget === null) {
-        }
+        if (relatedTarget === null) return;
+
         // If the focus has moved to an actual legitimate element (`relatedTarget !== null`)
         // that is outside the container, we move focus to the last valid focused element inside.
-        else if (!container.contains(relatedTarget)) {
+        if (!container.contains(relatedTarget)) {
           focus(lastFocusedElementRef.current, { select: true });
         }
       }
