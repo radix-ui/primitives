@@ -458,6 +458,7 @@ export const Cypress = () => {
   const [modal, setModal] = React.useState(true);
   const [animated, setAnimated] = React.useState(false);
   const [count, setCount] = React.useState(0);
+  const [hasDestroyButton, setHasDestroyButton] = React.useState(true);
 
   return (
     <>
@@ -474,6 +475,13 @@ export const Cypress = () => {
             <Dialog.Title>title</Dialog.Title>
             <Dialog.Description>description</Dialog.Description>
             <Dialog.Close className={closeClass()}>close</Dialog.Close>
+            {hasDestroyButton && (
+              <div>
+                <button type="button" onClick={() => setHasDestroyButton(false)}>
+                  destroy me
+                </button>
+              </div>
+            )}
           </Dialog.Content>
         </Dialog.Portal>
       </Dialog.Root>
