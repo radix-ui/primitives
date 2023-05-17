@@ -1,0 +1,3 @@
+declined:
+  - primitives
+  - "@radix-ui/react-toast"
