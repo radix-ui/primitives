@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-progress",
-  "version": "1.0.3-rc.3",
+  "version": "1.0.3-rc.4",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
