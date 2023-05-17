@@ -108,10 +108,6 @@ type PopperContentContextValue = {
 const [PopperContentProvider, useContentContext] =
   createPopperContext<PopperContentContextValue>(CONTENT_NAME);
 
-const [PositionContextProvider, usePositionContext] = createPopperContext(CONTENT_NAME, {
-  hasParent: false,
-});
-
 type Boundary = Element | null;
 
 type PopperContentElement = React.ElementRef<typeof Primitive.div>;
@@ -227,24 +223,6 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
       if (content) setContentZIndex(window.getComputedStyle(content).zIndex);
     }, [content]);
 
-    const { hasParent } = usePositionContext(CONTENT_NAME, __scopePopper);
-    const isRoot = !hasParent;
-
-    const commonProps = {
-      'data-side': placedSide,
-      'data-align': placedAlign,
-      ...contentProps,
-      ref: composedRefs,
-      style: {
-        ...contentProps.style,
-        // if the PopperContent hasn't been placed yet (not all measurements done)
-        // we prevent animations so that users's animation don't kick in too early referring wrong sides
-        animation: !isPositioned ? 'none' : undefined,
-        // hide the content if using the hide middleware and should be hidden
-        opacity: middlewareData.hide?.referenceHidden ? 0 : undefined,
-      },
-    };
-
     return (
       <div
         ref={refs.setFloating}
@@ -272,13 +250,20 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
           arrowY={arrowY}
           shouldHideArrow={cannotCenterArrow}
         >
-          {isRoot ? (
-            <PositionContextProvider scope={__scopePopper} hasParent>
-              <Primitive.div {...commonProps} />
-            </PositionContextProvider>
-          ) : (
-            <Primitive.div {...commonProps} />
-          )}
+          <Primitive.div
+            data-side={placedSide}
+            data-align={placedAlign}
+            {...contentProps}
+            ref={composedRefs}
+            style={{
+              ...contentProps.style,
+              // if the PopperContent hasn't been placed yet (not all measurements done)
+              // we prevent animations so that users's animation don't kick in too early referring wrong sides
+              animation: !isPositioned ? 'none' : undefined,
+              // hide the content if using the hide middleware and should be hidden
+              opacity: middlewareData.hide?.referenceHidden ? 0 : undefined,
+            }}
+          />
         </PopperContentProvider>
       </div>
     );
