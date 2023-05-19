@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-use-previous",
-  "version": "1.0.0",
+  "version": "1.0.1-rc.1",
   "license": "MIT",
   "exports": {
     ".": {
@@ -40,5 +40,6 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.13.10"
-  }
+  },
+  "stableVersion": "1.0.0"
 }

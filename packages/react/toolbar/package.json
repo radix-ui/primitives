@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-toolbar",
-  "version": "1.0.4-rc.5",
+  "version": "1.0.4-rc.6",
   "license": "MIT",
   "exports": {
     ".": {
