@@ -1,5 +1,5 @@
 releases:
-  "@radix-ui/react-select": minor
+  "@radix-ui/react-select": patch
 
 declined:
   - primitives

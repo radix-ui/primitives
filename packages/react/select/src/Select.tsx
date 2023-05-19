@@ -1165,8 +1165,7 @@ SelectItemIndicator.displayName = ITEM_INDICATOR_NAME;
 const SCROLL_UP_BUTTON_NAME = 'SelectScrollUpButton';
 
 type SelectScrollUpButtonElement = SelectScrollButtonImplElement;
-interface SelectScrollUpButtonProps
-  extends Omit<SelectScrollButtonImplProps, 'onAutoScroll' | 'onScroll'> {}
+interface SelectScrollUpButtonProps extends Omit<SelectScrollButtonImplProps, 'onAutoScroll'> {}
 
 const SelectScrollUpButton = React.forwardRef<
   SelectScrollUpButtonElement,
@@ -1199,12 +1198,6 @@ const SelectScrollUpButton = React.forwardRef<
           viewport.scrollTop = viewport.scrollTop - selectedItem.offsetHeight;
         }
       }}
-      onScroll={() => {
-        const { viewport } = contentContext;
-        if (viewport) {
-          viewport.scrollTop = viewport.scrollTop - viewport.offsetHeight;
-        }
-      }}
     />
   ) : null;
 });
@@ -1218,8 +1211,7 @@ SelectScrollUpButton.displayName = SCROLL_UP_BUTTON_NAME;
 const SCROLL_DOWN_BUTTON_NAME = 'SelectScrollDownButton';
 
 type SelectScrollDownButtonElement = SelectScrollButtonImplElement;
-interface SelectScrollDownButtonProps
-  extends Omit<SelectScrollButtonImplProps, 'onAutoScroll' | 'onScroll'> {}
+interface SelectScrollDownButtonProps extends Omit<SelectScrollButtonImplProps, 'onAutoScroll'> {}
 
 const SelectScrollDownButton = React.forwardRef<
   SelectScrollDownButtonElement,
@@ -1255,12 +1247,6 @@ const SelectScrollDownButton = React.forwardRef<
           viewport.scrollTop = viewport.scrollTop + selectedItem.offsetHeight;
         }
       }}
-      onScroll={() => {
-        const { viewport } = contentContext;
-        if (viewport) {
-          viewport.scrollTop = viewport.scrollTop + viewport.offsetHeight;
-        }
-      }}
     />
   ) : null;
 });
@@ -1270,14 +1256,13 @@ SelectScrollDownButton.displayName = SCROLL_DOWN_BUTTON_NAME;
 type SelectScrollButtonImplElement = React.ElementRef<typeof Primitive.div>;
 interface SelectScrollButtonImplProps extends PrimitiveDivProps {
   onAutoScroll(): void;
-  onScroll(): void;
 }
 
 const SelectScrollButtonImpl = React.forwardRef<
   SelectScrollButtonImplElement,
   SelectScrollButtonImplProps
 >((props: ScopedProps<SelectScrollButtonImplProps>, forwardedRef) => {
-  const { __scopeSelect, onAutoScroll, onScroll, ...scrollIndicatorProps } = props;
+  const { __scopeSelect, onAutoScroll, ...scrollIndicatorProps } = props;
   const contentContext = useSelectContentContext('SelectScrollButton', __scopeSelect);
   const autoScrollTimerRef = React.useRef<number | null>(null);
   const getItems = useCollection(__scopeSelect);
@@ -1308,9 +1293,10 @@ const SelectScrollButtonImpl = React.forwardRef<
       {...scrollIndicatorProps}
       ref={forwardedRef}
       style={{ flexShrink: 0, ...scrollIndicatorProps.style }}
-      onClick={composeEventHandlers(scrollIndicatorProps.onPointerMove, () => {
-        contentContext.onItemLeave?.();
-        onScroll();
+      onPointerDown={composeEventHandlers(scrollIndicatorProps.onPointerDown, () => {
+        if (autoScrollTimerRef.current === null) {
+          autoScrollTimerRef.current = window.setInterval(onAutoScroll, 50);
+        }
       })}
       onPointerMove={composeEventHandlers(scrollIndicatorProps.onPointerMove, () => {
         contentContext.onItemLeave?.();
