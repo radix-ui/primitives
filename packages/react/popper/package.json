@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.13.10",
-    "@floating-ui/react-dom": "0.7.2",
+    "@floating-ui/react-dom": "^2.0.0",
     "@radix-ui/react-arrow": "workspace:*",
     "@radix-ui/react-compose-refs": "workspace:*",
     "@radix-ui/react-context": "workspace:*",

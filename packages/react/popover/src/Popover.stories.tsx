@@ -24,6 +24,46 @@ export const Styled = () => {
   );
 };
 
+// Original issue: https://github.com/radix-ui/primitives/issues/2128
+export const Boundary = () => {
+  const [boundary, setBoundary] = React.useState<HTMLDivElement | null>(null);
+
+  return (
+    <div
+      style={{
+        border: '3px dashed red',
+        width: '200px',
+        height: '200px',
+      }}
+      ref={setBoundary}
+    >
+      <Popover.Root>
+        <Popover.Trigger asChild>
+          <button>open</button>
+        </Popover.Trigger>
+        <Popover.Portal>
+          <Popover.Content
+            style={{
+              boxSizing: 'border-box',
+              borderRadius: '8px',
+              padding: '8px',
+              color: 'white',
+              backgroundColor: 'black',
+              width: 'var(--radix-popper-available-width)',
+              height: 'var(--radix-popper-available-height)',
+            }}
+            sideOffset={5}
+            collisionBoundary={boundary}
+          >
+            out of bound out of bound out of bound out of bound out of bound out of bound out of
+            bound out of bound out of bound
+          </Popover.Content>
+        </Popover.Portal>
+      </Popover.Root>
+    </div>
+  );
+};
+
 export const Modality = () => {
   return (
     <div
