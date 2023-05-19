@@ -38,7 +38,17 @@
   },
   "peerDependencies": {
     "react": "^16.8 || ^17.0 || ^18.0",
-    "react-dom": "^16.8 || ^17.0 || ^18.0"
+    "react-dom": "^16.8 || ^17.0 || ^18.0",
+    "@types/react": "*",
+    "@types/react-dom": "*"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    },
+    "@types/react-dom": {
+      "optional": true
+    }
   },
   "homepage": "https://radix-ui.com/primitives",
   "repository": {

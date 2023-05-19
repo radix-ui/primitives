@@ -32,7 +32,13 @@
     "@radix-ui/react-use-layout-effect": "workspace:*"
   },
   "peerDependencies": {
-    "react": "^16.8 || ^17.0 || ^18.0"
+    "react": "^16.8 || ^17.0 || ^18.0",
+    "@types/react": "*"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@types/resize-observer-browser": "^0.1.4"
