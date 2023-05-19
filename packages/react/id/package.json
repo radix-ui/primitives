@@ -28,8 +28,8 @@
     "version": "yarn version"
   },
   "peerDependencies": {
-    "react": "^16.8 || ^17.0 || ^18.0",
-    "@types/react": "*"
+    "@types/react": "*",
+    "react": "^16.8 || ^17.0 || ^18.0"
   },
   "peerDependenciesMeta": {
     "@types/react": {

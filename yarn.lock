@@ -3090,8 +3090,15 @@ __metadata:
     "@babel/runtime": ^7.13.10
     "@radix-ui/react-visually-hidden": "workspace:*"
   peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
     react: ^16.8 || ^17.0 || ^18.0
     react-dom: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -3110,8 +3117,15 @@ __metadata:
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
   peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
     react: ^16.8 || ^17.0 || ^18.0
     react-dom: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -3127,8 +3141,15 @@ __metadata:
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-slot": "workspace:*"
   peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
     react: ^16.8 || ^17.0 || ^18.0
     react-dom: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -3141,8 +3162,15 @@ __metadata:
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-use-layout-effect": "workspace:*"
   peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
     react: ^16.8 || ^17.0 || ^18.0
     react-dom: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -3153,8 +3181,15 @@ __metadata:
     "@babel/runtime": ^7.13.10
     "@radix-ui/react-primitive": "workspace:*"
   peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
     react: ^16.8 || ^17.0 || ^18.0
     react-dom: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -3165,8 +3200,15 @@ __metadata:
     "@babel/runtime": ^7.13.10
     "@radix-ui/react-primitive": "workspace:*"
   peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
     react: ^16.8 || ^17.0 || ^18.0
     react-dom: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -3180,8 +3222,15 @@ __metadata:
     "@radix-ui/react-use-callback-ref": "workspace:*"
     "@radix-ui/react-use-layout-effect": "workspace:*"
   peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
     react: ^16.8 || ^17.0 || ^18.0
     react-dom: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -3199,8 +3248,15 @@ __metadata:
     "@radix-ui/react-use-previous": "workspace:*"
     "@radix-ui/react-use-size": "workspace:*"
   peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
     react: ^16.8 || ^17.0 || ^18.0
     react-dom: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -3218,8 +3274,15 @@ __metadata:
     "@radix-ui/react-use-controllable-state": "workspace:*"
     "@radix-ui/react-use-layout-effect": "workspace:*"
   peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
     react: ^16.8 || ^17.0 || ^18.0
     react-dom: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -3233,8 +3296,15 @@ __metadata:
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-slot": "workspace:*"
   peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
     react: ^16.8 || ^17.0 || ^18.0
     react-dom: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -3244,7 +3314,11 @@ __metadata:
   dependencies:
     "@babel/runtime": ^7.13.10
   peerDependencies:
+    "@types/react": "*"
     react: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -3260,8 +3334,15 @@ __metadata:
     "@radix-ui/react-use-callback-ref": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
   peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
     react: ^16.8 || ^17.0 || ^18.0
     react-dom: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -3271,7 +3352,11 @@ __metadata:
   dependencies:
     "@babel/runtime": ^7.13.10
   peerDependencies:
+    "@types/react": "*"
     react: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -3295,8 +3380,15 @@ __metadata:
     aria-hidden: ^1.1.1
     react-remove-scroll: 2.5.5
   peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
     react: ^16.8 || ^17.0 || ^18.0
     react-dom: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -3306,7 +3398,11 @@ __metadata:
   dependencies:
     "@babel/runtime": ^7.13.10
   peerDependencies:
+    "@types/react": "*"
     react: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -3322,8 +3418,15 @@ __metadata:
     "@radix-ui/react-use-escape-keydown": "workspace:*"
     react-remove-scroll: 2.5.5
   peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
     react: ^16.8 || ^17.0 || ^18.0
     react-dom: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -3340,8 +3443,15 @@ __metadata:
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
   peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
     react: ^16.8 || ^17.0 || ^18.0
     react-dom: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -3351,7 +3461,11 @@ __metadata:
   dependencies:
     "@babel/runtime": ^7.13.10
   peerDependencies:
+    "@types/react": "*"
     react: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -3364,8 +3478,15 @@ __metadata:
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-use-callback-ref": "workspace:*"
   peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
     react: ^16.8 || ^17.0 || ^18.0
     react-dom: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -3381,8 +3502,15 @@ __metadata:
     "@radix-ui/react-label": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
   peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
     react: ^16.8 || ^17.0 || ^18.0
     react-dom: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -3401,8 +3529,15 @@ __metadata:
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
   peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
     react: ^16.8 || ^17.0 || ^18.0
     react-dom: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -3413,7 +3548,11 @@ __metadata:
     "@babel/runtime": ^7.13.10
     "@radix-ui/react-use-layout-effect": "workspace:*"
   peerDependencies:
+    "@types/react": "*"
     react: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -3424,8 +3563,15 @@ __metadata:
     "@babel/runtime": ^7.13.10
     "@radix-ui/react-primitive": "workspace:*"
   peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
     react: ^16.8 || ^17.0 || ^18.0
     react-dom: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -3453,8 +3599,15 @@ __metadata:
     aria-hidden: ^1.1.1
     react-remove-scroll: 2.5.5
   peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
     react: ^16.8 || ^17.0 || ^18.0
     react-dom: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -3474,8 +3627,15 @@ __metadata:
     "@radix-ui/react-roving-focus": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
   peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
     react: ^16.8 || ^17.0 || ^18.0
     react-dom: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -3499,8 +3659,15 @@ __metadata:
     "@radix-ui/react-use-previous": "workspace:*"
     "@radix-ui/react-visually-hidden": "workspace:*"
   peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
     react: ^16.8 || ^17.0 || ^18.0
     react-dom: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -3525,8 +3692,15 @@ __metadata:
     aria-hidden: ^1.1.1
     react-remove-scroll: 2.5.5
   peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
     react: ^16.8 || ^17.0 || ^18.0
     react-dom: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -3546,8 +3720,15 @@ __metadata:
     "@radix-ui/react-use-size": "workspace:*"
     "@radix-ui/rect": "workspace:*"
   peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
     react: ^16.8 || ^17.0 || ^18.0
     react-dom: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -3558,8 +3739,15 @@ __metadata:
     "@babel/runtime": ^7.13.10
     "@radix-ui/react-primitive": "workspace:*"
   peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
     react: ^16.8 || ^17.0 || ^18.0
     react-dom: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -3571,8 +3759,15 @@ __metadata:
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-use-layout-effect": "workspace:*"
   peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
     react: ^16.8 || ^17.0 || ^18.0
     react-dom: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -3584,8 +3779,15 @@ __metadata:
     "@radix-ui/react-slot": "workspace:*"
     "@testing-library/react": ^10.4.8
   peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
     react: ^16.8 || ^17.0 || ^18.0
     react-dom: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -3597,8 +3799,15 @@ __metadata:
     "@radix-ui/react-context": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
   peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
     react: ^16.8 || ^17.0 || ^18.0
     react-dom: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -3618,8 +3827,15 @@ __metadata:
     "@radix-ui/react-use-previous": "workspace:*"
     "@radix-ui/react-use-size": "workspace:*"
   peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
     react: ^16.8 || ^17.0 || ^18.0
     react-dom: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -3638,8 +3854,15 @@ __metadata:
     "@radix-ui/react-use-callback-ref": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
   peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
     react: ^16.8 || ^17.0 || ^18.0
     react-dom: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -3659,8 +3882,15 @@ __metadata:
     "@radix-ui/react-use-layout-effect": "workspace:*"
     "@types/resize-observer-browser": ^0.1.4
   peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
     react: ^16.8 || ^17.0 || ^18.0
     react-dom: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -3691,8 +3921,15 @@ __metadata:
     aria-hidden: ^1.1.1
     react-remove-scroll: 2.5.5
   peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
     react: ^16.8 || ^17.0 || ^18.0
     react-dom: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -3703,8 +3940,15 @@ __metadata:
     "@babel/runtime": ^7.13.10
     "@radix-ui/react-primitive": "workspace:*"
   peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
     react: ^16.8 || ^17.0 || ^18.0
     react-dom: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -3727,8 +3971,15 @@ __metadata:
     "@types/form-serialize": ^0
     form-serialize: ^0.7.2
   peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
     react: ^16.8 || ^17.0 || ^18.0
     react-dom: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -3739,7 +3990,11 @@ __metadata:
     "@babel/runtime": ^7.13.10
     "@radix-ui/react-compose-refs": "workspace:*"
   peerDependencies:
+    "@types/react": "*"
     react: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -3756,8 +4011,15 @@ __metadata:
     "@radix-ui/react-use-previous": "workspace:*"
     "@radix-ui/react-use-size": "workspace:*"
   peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
     react: ^16.8 || ^17.0 || ^18.0
     react-dom: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -3775,8 +4037,15 @@ __metadata:
     "@radix-ui/react-roving-focus": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
   peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
     react: ^16.8 || ^17.0 || ^18.0
     react-dom: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -3798,8 +4067,15 @@ __metadata:
     "@radix-ui/react-use-layout-effect": "workspace:*"
     "@radix-ui/react-visually-hidden": "workspace:*"
   peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
     react: ^16.8 || ^17.0 || ^18.0
     react-dom: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -3816,8 +4092,15 @@ __metadata:
     "@radix-ui/react-toggle": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
   peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
     react: ^16.8 || ^17.0 || ^18.0
     react-dom: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -3830,8 +4113,15 @@ __metadata:
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
   peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
     react: ^16.8 || ^17.0 || ^18.0
     react-dom: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -3848,8 +4138,15 @@ __metadata:
     "@radix-ui/react-separator": "workspace:*"
     "@radix-ui/react-toggle-group": "workspace:*"
   peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
     react: ^16.8 || ^17.0 || ^18.0
     react-dom: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -3871,8 +4168,15 @@ __metadata:
     "@radix-ui/react-use-controllable-state": "workspace:*"
     "@radix-ui/react-visually-hidden": "workspace:*"
   peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
     react: ^16.8 || ^17.0 || ^18.0
     react-dom: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -3882,7 +4186,11 @@ __metadata:
   dependencies:
     "@babel/runtime": ^7.13.10
   peerDependencies:
+    "@types/react": "*"
     react: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -3893,7 +4201,11 @@ __metadata:
     "@babel/runtime": ^7.13.10
     "@radix-ui/react-use-callback-ref": "workspace:*"
   peerDependencies:
+    "@types/react": "*"
     react: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -3904,7 +4216,11 @@ __metadata:
     "@babel/runtime": ^7.13.10
     "@radix-ui/react-use-callback-ref": "workspace:*"
   peerDependencies:
+    "@types/react": "*"
     react: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -3914,7 +4230,11 @@ __metadata:
   dependencies:
     "@babel/runtime": ^7.13.10
   peerDependencies:
+    "@types/react": "*"
     react: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -3924,7 +4244,11 @@ __metadata:
   dependencies:
     "@babel/runtime": ^7.13.10
   peerDependencies:
+    "@types/react": "*"
     react: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -3935,7 +4259,11 @@ __metadata:
     "@babel/runtime": ^7.13.10
     "@radix-ui/rect": "workspace:*"
   peerDependencies:
+    "@types/react": "*"
     react: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -3947,7 +4275,11 @@ __metadata:
     "@radix-ui/react-use-layout-effect": "workspace:*"
     "@types/resize-observer-browser": ^0.1.4
   peerDependencies:
+    "@types/react": "*"
     react: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -3958,8 +4290,15 @@ __metadata:
     "@babel/runtime": ^7.13.10
     "@radix-ui/react-primitive": "workspace:*"
   peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
     react: ^16.8 || ^17.0 || ^18.0
     react-dom: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
   languageName: unknown
   linkType: soft
 
