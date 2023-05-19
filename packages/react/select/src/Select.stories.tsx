@@ -1082,6 +1082,7 @@ const scrollButtonClass = css({
   backgroundColor: '$white',
   color: '$black',
   cursor: 'default',
+  userSelect: 'none',
 });
 
 const scrollUpButtonClass = css(scrollButtonClass, {

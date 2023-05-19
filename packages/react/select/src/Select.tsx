@@ -1474,6 +1474,11 @@ const SelectScrollButtonImpl = React.forwardRef<
       {...scrollIndicatorProps}
       ref={forwardedRef}
       style={{ flexShrink: 0, ...scrollIndicatorProps.style }}
+      onPointerDown={composeEventHandlers(scrollIndicatorProps.onPointerDown, () => {
+        if (autoScrollTimerRef.current === null) {
+          autoScrollTimerRef.current = window.setInterval(onAutoScroll, 50);
+        }
+      })}
       onPointerMove={composeEventHandlers(scrollIndicatorProps.onPointerMove, () => {
         contentContext.onItemLeave?.();
         if (autoScrollTimerRef.current === null) {
