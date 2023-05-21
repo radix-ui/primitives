@@ -28,11 +28,13 @@ const usePopperScope = createPopperScope();
 
 const PROVIDER_NAME = 'TooltipProvider';
 const DEFAULT_DELAY_DURATION = 700;
+const DEFAULT_CLOSE_DELAY_DURATION = 0;
 const TOOLTIP_OPEN = 'tooltip.open';
 
 type TooltipProviderContextValue = {
   isOpenDelayed: boolean;
   delayDuration: number;
+  closeDelayDuration: number;
   onOpen(): void;
   onClose(): void;
   onPointerInTransitChange(inTransit: boolean): void;
@@ -51,6 +53,11 @@ interface TooltipProviderProps {
    */
   delayDuration?: number;
   /**
+   * The duration from when the pointer leaves the tooltip's content or trigger area until the tooltip closes.
+   * @defaultValue 0
+   */
+  closeDelayDuration?: number;
+  /**
    * How much time a user has to enter another trigger without incurring a delay again.
    * @defaultValue 300
    */
@@ -68,6 +75,7 @@ const TooltipProvider: React.FC<TooltipProviderProps> = (
   const {
     __scopeTooltip,
     delayDuration = DEFAULT_DELAY_DURATION,
+    closeDelayDuration = DEFAULT_CLOSE_DELAY_DURATION,
     skipDelayDuration = 300,
     disableHoverableContent = false,
     children,
@@ -86,6 +94,7 @@ const TooltipProvider: React.FC<TooltipProviderProps> = (
       scope={__scopeTooltip}
       isOpenDelayed={isOpenDelayed}
       delayDuration={delayDuration}
+      closeDelayDuration={closeDelayDuration}
       onOpen={React.useCallback(() => {
         window.clearTimeout(skipDelayTimerRef.current);
         setIsOpenDelayed(false);
@@ -119,6 +128,8 @@ const TOOLTIP_NAME = 'Tooltip';
 type TooltipContextValue = {
   contentId: string;
   open: boolean;
+  closeDelayDuration: number;
+  closeTimerRef: React.MutableRefObject<number>;
   stateAttribute: 'closed' | 'delayed-open' | 'instant-open';
   trigger: TooltipTriggerElement | null;
   onTriggerChange(trigger: TooltipTriggerElement | null): void;
@@ -144,6 +155,11 @@ interface TooltipProps {
    */
   delayDuration?: number;
   /**
+   * The duration from when the pointer leaves the tooltip's content or trigger area until the tooltip closes.
+   * @defaultValue 0
+   */
+  closeDelayDuration?: number;
+  /**
    * When `true`, trying to hover the content will result in the tooltip closing as the pointer leaves the trigger.
    * @defaultValue false
    */
@@ -159,15 +175,18 @@ const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
     onOpenChange,
     disableHoverableContent: disableHoverableContentProp,
     delayDuration: delayDurationProp,
+    closeDelayDuration: closeDelayDurationProp,
   } = props;
   const providerContext = useTooltipProviderContext(TOOLTIP_NAME, props.__scopeTooltip);
   const popperScope = usePopperScope(__scopeTooltip);
   const [trigger, setTrigger] = React.useState<HTMLButtonElement | null>(null);
   const contentId = useId();
   const openTimerRef = React.useRef(0);
+  const closeTimerRef = React.useRef(0);
   const disableHoverableContent =
     disableHoverableContentProp ?? providerContext.disableHoverableContent;
   const delayDuration = delayDurationProp ?? providerContext.delayDuration;
+  const closeDelayDuration = closeDelayDurationProp ?? providerContext.closeDelayDuration;
   const wasOpenDelayedRef = React.useRef(false);
   const [open = false, setOpen] = useControllableState({
     prop: openProp,
@@ -222,20 +241,27 @@ const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
         trigger={trigger}
         onTriggerChange={setTrigger}
         onTriggerEnter={React.useCallback(() => {
+          if (closeTimerRef.current) window.clearTimeout(closeTimerRef.current);
           if (providerContext.isOpenDelayed) handleDelayedOpen();
           else handleOpen();
         }, [providerContext.isOpenDelayed, handleDelayedOpen, handleOpen])}
         onTriggerLeave={React.useCallback(() => {
           if (disableHoverableContent) {
-            handleClose();
+            if (closeDelayDuration) {
+              closeTimerRef.current = window.setTimeout(handleClose, closeDelayDuration);
+            } else {
+              handleClose();
+            }
           } else {
             // Clear the timer in case the pointer leaves the trigger before the tooltip is opened.
             window.clearTimeout(openTimerRef.current);
           }
-        }, [handleClose, disableHoverableContent])}
+        }, [handleClose, disableHoverableContent, closeTimerRef, closeDelayDuration])}
         onOpen={handleOpen}
         onClose={handleClose}
         disableHoverableContent={disableHoverableContent}
+        closeDelayDuration={closeDelayDuration}
+        closeTimerRef={closeTimerRef}
       >
         {children}
       </TooltipContextProvider>
@@ -397,7 +423,7 @@ const TooltipContentHoverable = React.forwardRef<
   const composedRefs = useComposedRefs(forwardedRef, ref);
   const [pointerGraceArea, setPointerGraceArea] = React.useState<Polygon | null>(null);
 
-  const { trigger, onClose } = context;
+  const { trigger, onClose, closeDelayDuration, closeTimerRef } = context;
   const content = ref.current;
 
   const { onPointerInTransitChange } = providerContext;
@@ -435,15 +461,21 @@ const TooltipContentHoverable = React.forwardRef<
     if (trigger && content) {
       const handleTriggerLeave = (event: PointerEvent) => handleCreateGraceArea(event, content);
       const handleContentLeave = (event: PointerEvent) => handleCreateGraceArea(event, trigger);
-
+      const handleContentEnter = (event: PointerEvent) => {
+        if (closeTimerRef.current) {
+          window.clearTimeout(closeTimerRef.current);
+        }
+      };
       trigger.addEventListener('pointerleave', handleTriggerLeave);
       content.addEventListener('pointerleave', handleContentLeave);
+      content.addEventListener('pointerenter', handleContentEnter);
       return () => {
         trigger.removeEventListener('pointerleave', handleTriggerLeave);
         content.removeEventListener('pointerleave', handleContentLeave);
+        content.addEventListener('pointerenter', handleContentEnter);
       };
     }
-  }, [trigger, content, handleCreateGraceArea, handleRemoveGraceArea]);
+  }, [trigger, content, handleCreateGraceArea, handleRemoveGraceArea, closeTimerRef]);
 
   React.useEffect(() => {
     if (pointerGraceArea) {
@@ -457,13 +489,25 @@ const TooltipContentHoverable = React.forwardRef<
           handleRemoveGraceArea();
         } else if (isPointerOutsideGraceArea) {
           handleRemoveGraceArea();
-          onClose();
+          if (closeDelayDuration) {
+            closeTimerRef.current = window.setTimeout(onClose, closeDelayDuration);
+          } else {
+            onClose();
+          }
         }
       };
       document.addEventListener('pointermove', handleTrackPointerGrace);
       return () => document.removeEventListener('pointermove', handleTrackPointerGrace);
     }
-  }, [trigger, content, pointerGraceArea, onClose, handleRemoveGraceArea]);
+  }, [
+    trigger,
+    content,
+    pointerGraceArea,
+    onClose,
+    handleRemoveGraceArea,
+    closeDelayDuration,
+    closeTimerRef,
+  ]);
 
   return <TooltipContentImpl {...props} ref={composedRefs} />;
 });

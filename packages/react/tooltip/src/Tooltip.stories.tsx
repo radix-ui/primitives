@@ -237,6 +237,67 @@ export const CustomDurations = () => (
         </Tooltip.Root>
       </Tooltip.Provider>
     </div>
+    <h1>Close delay duration</h1>
+    <h2>Default (0ms after pointer leaves trigger or content area)</h2>
+    <div style={{ display: 'flex', gap: 50 }}>
+      <Tooltip.Root>
+        <Tooltip.Trigger className={triggerClass()}>Hover me</Tooltip.Trigger>
+        <Tooltip.Portal>
+          <Tooltip.Content className={contentClass()} sideOffset={5}>
+            Nicely done!
+            <Tooltip.Arrow className={arrowClass()} offset={10} />
+          </Tooltip.Content>
+        </Tooltip.Portal>
+      </Tooltip.Root>
+      <Tooltip.Root>
+        <Tooltip.Trigger className={triggerClass()}>Hover me</Tooltip.Trigger>
+        <Tooltip.Portal>
+          <Tooltip.Content className={contentClass()} sideOffset={5}>
+            Nicely done!
+            <Tooltip.Arrow className={arrowClass()} offset={10} />
+          </Tooltip.Content>
+        </Tooltip.Portal>
+      </Tooltip.Root>
+      <Tooltip.Root>
+        <Tooltip.Trigger className={triggerClass()}>Hover me</Tooltip.Trigger>
+        <Tooltip.Portal>
+          <Tooltip.Content className={contentClass()} sideOffset={5}>
+            Nicely done!
+            <Tooltip.Arrow className={arrowClass()} offset={10} />
+          </Tooltip.Content>
+        </Tooltip.Portal>
+      </Tooltip.Root>
+    </div>
+    <h2>Custom (800ms after pointer leaves trigger or content area)</h2>
+    <div style={{ display: 'flex', gap: 50 }}>
+      <Tooltip.Root closeDelayDuration={800}>
+        <Tooltip.Trigger className={triggerClass()}>Hover me</Tooltip.Trigger>
+        <Tooltip.Portal>
+          <Tooltip.Content className={contentClass()} sideOffset={5}>
+            Nicely done!
+            <Tooltip.Arrow className={arrowClass()} offset={10} />
+          </Tooltip.Content>
+        </Tooltip.Portal>
+      </Tooltip.Root>
+      <Tooltip.Root closeDelayDuration={800}>
+        <Tooltip.Trigger className={triggerClass()}>Hover me</Tooltip.Trigger>
+        <Tooltip.Portal>
+          <Tooltip.Content className={contentClass()} sideOffset={5}>
+            Nicely done!
+            <Tooltip.Arrow className={arrowClass()} offset={10} />
+          </Tooltip.Content>
+        </Tooltip.Portal>
+      </Tooltip.Root>
+      <Tooltip.Root closeDelayDuration={800}>
+        <Tooltip.Trigger className={triggerClass()}>Hover me</Tooltip.Trigger>
+        <Tooltip.Portal>
+          <Tooltip.Content className={contentClass()} sideOffset={5}>
+            Nicely done!
+            <Tooltip.Arrow className={arrowClass()} offset={10} />
+          </Tooltip.Content>
+        </Tooltip.Portal>
+      </Tooltip.Root>
+    </div>
   </Tooltip.Provider>
 );
 
