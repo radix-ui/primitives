@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-id",
-  "version": "1.0.1-rc.2",
+  "version": "1.0.1-rc.3",
   "license": "MIT",
   "exports": {
     ".": {
