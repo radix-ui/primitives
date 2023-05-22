@@ -32,7 +32,13 @@
     "@radix-ui/react-compose-refs": "workspace:*"
   },
   "peerDependencies": {
+    "@types/react": "*",
     "react": "^16.8 || ^17.0 || ^18.0"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    }
   },
   "homepage": "https://radix-ui.com/primitives",
   "repository": {

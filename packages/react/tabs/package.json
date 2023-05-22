@@ -39,8 +39,18 @@
     "@radix-ui/react-use-controllable-state": "workspace:*"
   },
   "peerDependencies": {
+    "@types/react": "*",
+    "@types/react-dom": "*",
     "react": "^16.8 || ^17.0 || ^18.0",
     "react-dom": "^16.8 || ^17.0 || ^18.0"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    },
+    "@types/react-dom": {
+      "optional": true
+    }
   },
   "homepage": "https://radix-ui.com/primitives",
   "repository": {
