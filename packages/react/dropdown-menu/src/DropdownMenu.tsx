@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
-import { composeRefs } from '@radix-ui/react-compose-refs';
+import { composeRefs, useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { Primitive } from '@radix-ui/react-primitive';
@@ -34,6 +34,7 @@ type DropdownMenuContextValue = {
   onOpenChange(open: boolean): void;
   onOpenToggle(): void;
   modal: boolean;
+  triggerPointerDownPosRef: React.MutableRefObject<{ x: number; y: number } | null>;
 };
 
 const [DropdownMenuProvider, useDropdownMenuContext] =
@@ -65,6 +66,7 @@ const DropdownMenu: React.FC<DropdownMenuProps> = (props: ScopedProps<DropdownMe
     defaultProp: defaultOpen,
     onChange: onOpenChange,
   });
+  const triggerPointerDownPosRef = React.useRef<{ x: number; y: number } | null>(null);
 
   return (
     <DropdownMenuProvider
@@ -76,6 +78,7 @@ const DropdownMenu: React.FC<DropdownMenuProps> = (props: ScopedProps<DropdownMe
       onOpenChange={setOpen}
       onOpenToggle={React.useCallback(() => setOpen((prevOpen) => !prevOpen), [setOpen])}
       modal={modal}
+      triggerPointerDownPosRef={triggerPointerDownPosRef}
     >
       <MenuPrimitive.Root {...menuScope} open={open} onOpenChange={setOpen} dir={dir} modal={modal}>
         {children}
@@ -119,6 +122,10 @@ const DropdownMenuTrigger = React.forwardRef<DropdownMenuTriggerElement, Dropdow
             // but not when the control key is pressed (avoiding MacOS right click)
             if (!disabled && event.button === 0 && event.ctrlKey === false) {
               context.onOpenToggle();
+              context.triggerPointerDownPosRef.current = {
+                x: Math.round(event.pageX),
+                y: Math.round(event.pageY),
+              };
               // prevent trigger focusing when opening
               // this allows the content to be given focus without competition
               if (!context.open) event.preventDefault();
@@ -175,6 +182,54 @@ const DropdownMenuContent = React.forwardRef<DropdownMenuContentElement, Dropdow
     const context = useDropdownMenuContext(CONTENT_NAME, __scopeDropdownMenu);
     const menuScope = useMenuScope(__scopeDropdownMenu);
     const hasInteractedOutsideRef = React.useRef(false);
+    const contentRef = React.useRef<DropdownMenuContentElement>(null);
+    const composedRefs = useComposedRefs(forwardedRef, contentRef);
+
+    const { onOpenChange, triggerPointerDownPosRef } = context;
+    React.useEffect(() => {
+      const content = contentRef.current;
+      if (content) {
+        let pointerMoveDelta = { x: 0, y: 0 };
+
+        const handlePointerMove = (event: PointerEvent) => {
+          pointerMoveDelta = {
+            x: Math.abs(Math.round(event.pageX) - (triggerPointerDownPosRef.current?.x ?? 0)),
+            y: Math.abs(Math.round(event.pageY) - (triggerPointerDownPosRef.current?.y ?? 0)),
+          };
+        };
+        const handleClick = (event: MouseEvent) => {
+          event.preventDefault();
+        };
+        const handlePointerUp = (event: PointerEvent) => {
+          // If the pointer hasn't moved by a certain threshold then we prevent selecting item on `click`.
+          if (pointerMoveDelta.x <= 10 && pointerMoveDelta.y <= 10) {
+            // We need to prevent the click event because where the item select happens
+            document.addEventListener('click', handleClick, {
+              once: true,
+              capture: true,
+            });
+          } else {
+            // otherwise, if the event was outside the content, close.
+            if (!content.contains(event.target as HTMLElement)) {
+              onOpenChange(false);
+            }
+          }
+          document.removeEventListener('pointermove', handlePointerMove);
+          triggerPointerDownPosRef.current = null;
+        };
+
+        if (triggerPointerDownPosRef.current !== null) {
+          document.addEventListener('pointermove', handlePointerMove);
+          document.addEventListener('pointerup', handlePointerUp, { capture: true, once: true });
+        }
+
+        return () => {
+          document.removeEventListener('pointermove', handlePointerMove);
+          document.removeEventListener('pointerup', handlePointerUp, { capture: true });
+          document.removeEventListener('click', handleClick, { capture: true });
+        };
+      }
+    }, [onOpenChange, triggerPointerDownPosRef]);
 
     return (
       <MenuPrimitive.Content
@@ -182,7 +237,7 @@ const DropdownMenuContent = React.forwardRef<DropdownMenuContentElement, Dropdow
         aria-labelledby={context.triggerId}
         {...menuScope}
         {...contentProps}
-        ref={forwardedRef}
+        ref={composedRefs}
         onCloseAutoFocus={composeEventHandlers(props.onCloseAutoFocus, (event) => {
           if (!hasInteractedOutsideRef.current) context.triggerRef.current?.focus();
           hasInteractedOutsideRef.current = false;
