@@ -353,6 +353,7 @@ TooltipPortal.displayName = PORTAL_NAME;
  * -----------------------------------------------------------------------------------------------*/
 
 const CONTENT_NAME = 'TooltipContent';
+const GRACE_AREA_BLEED_PX = 5;
 
 type TooltipContentElement = TooltipContentImplElement;
 interface TooltipContentProps extends TooltipContentImplProps {
@@ -412,15 +413,35 @@ const TooltipContentHoverable = React.forwardRef<
       const currentTarget = event.currentTarget as HTMLElement;
       const exitPoint = { x: event.clientX, y: event.clientY };
       const exitSide = getExitSideFromRect(exitPoint, currentTarget.getBoundingClientRect());
-
-      const bleed = exitSide === 'right' || exitSide === 'bottom' ? -5 : 5;
-      const isXAxis = exitSide === 'right' || exitSide === 'left';
-      const startPoint = isXAxis
-        ? { x: event.clientX + bleed, y: event.clientY }
-        : { x: event.clientX, y: event.clientY + bleed };
-
+      const startPoints = [];
+      switch (exitSide) {
+        case 'top':
+          startPoints.push(
+            { x: exitPoint.x - GRACE_AREA_BLEED_PX, y: exitPoint.y + GRACE_AREA_BLEED_PX },
+            { x: exitPoint.x + GRACE_AREA_BLEED_PX, y: exitPoint.y + GRACE_AREA_BLEED_PX }
+          );
+          break;
+        case 'bottom':
+          startPoints.push(
+            { x: exitPoint.x - GRACE_AREA_BLEED_PX, y: exitPoint.y - GRACE_AREA_BLEED_PX },
+            { x: exitPoint.x + GRACE_AREA_BLEED_PX, y: exitPoint.y - GRACE_AREA_BLEED_PX }
+          );
+          break;
+        case 'left':
+          startPoints.push(
+            { x: exitPoint.x + GRACE_AREA_BLEED_PX, y: exitPoint.y - GRACE_AREA_BLEED_PX },
+            { x: exitPoint.x + GRACE_AREA_BLEED_PX, y: exitPoint.y + GRACE_AREA_BLEED_PX }
+          );
+          break;
+        case 'right':
+          startPoints.push(
+            { x: exitPoint.x - GRACE_AREA_BLEED_PX, y: exitPoint.y - GRACE_AREA_BLEED_PX },
+            { x: exitPoint.x - GRACE_AREA_BLEED_PX, y: exitPoint.y + GRACE_AREA_BLEED_PX }
+          );
+          break;
+      }
       const hoverTargetPoints = getPointsFromRect(hoverTarget.getBoundingClientRect());
-      const graceArea = getHull([startPoint, ...hoverTargetPoints]);
+      const graceArea = getHull([...startPoints, ...hoverTargetPoints]);
       setPointerGraceArea(graceArea);
       onPointerInTransitChange(true);
     },
