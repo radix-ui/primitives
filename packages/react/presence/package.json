@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-presence",
-  "version": "1.0.1-rc.3",
+  "version": "1.0.1-rc.4",
   "license": "MIT",
   "exports": {
     ".": {
