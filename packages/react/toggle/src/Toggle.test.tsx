@@ -2,6 +2,7 @@ import React from 'react';
 import type { RenderResult } from '@testing-library/react';
 import { fireEvent, render } from '@testing-library/react';
 import * as Toggle from '@radix-ui/react-toggle';
+import { axe } from 'jest-axe';
 
 const TEXT_CHILD = 'Like';
 
@@ -10,6 +11,10 @@ describe('given a Toggle with text', () => {
 
   beforeEach(() => {
     rendered = render(<Toggle.Root>{TEXT_CHILD}</Toggle.Root>);
+  });
+
+  it('should have no accessibility violations', async () => {
+    expect(await axe(rendered.container)).toHaveNoViolations();
   });
 
   it('should render with attributes as false', () => {
