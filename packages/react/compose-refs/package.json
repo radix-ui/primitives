@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-compose-refs",
-  "version": "1.0.1-rc.5",
+  "version": "1.0.1-rc.6",
   "license": "MIT",
   "exports": {
     ".": {

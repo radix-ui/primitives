@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-select",
-  "version": "1.2.2-rc.15",
+  "version": "1.2.2-rc.16",
   "license": "MIT",
   "exports": {
     ".": {
