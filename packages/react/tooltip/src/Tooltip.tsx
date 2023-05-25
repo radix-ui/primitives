@@ -353,7 +353,6 @@ TooltipPortal.displayName = PORTAL_NAME;
  * -----------------------------------------------------------------------------------------------*/
 
 const CONTENT_NAME = 'TooltipContent';
-const GRACE_AREA_BLEED_PX = 5;
 
 type TooltipContentElement = TooltipContentImplElement;
 interface TooltipContentProps extends TooltipContentImplProps {
@@ -413,35 +412,9 @@ const TooltipContentHoverable = React.forwardRef<
       const currentTarget = event.currentTarget as HTMLElement;
       const exitPoint = { x: event.clientX, y: event.clientY };
       const exitSide = getExitSideFromRect(exitPoint, currentTarget.getBoundingClientRect());
-      const startPoints = [];
-      switch (exitSide) {
-        case 'top':
-          startPoints.push(
-            { x: exitPoint.x - GRACE_AREA_BLEED_PX, y: exitPoint.y + GRACE_AREA_BLEED_PX },
-            { x: exitPoint.x + GRACE_AREA_BLEED_PX, y: exitPoint.y + GRACE_AREA_BLEED_PX }
-          );
-          break;
-        case 'bottom':
-          startPoints.push(
-            { x: exitPoint.x - GRACE_AREA_BLEED_PX, y: exitPoint.y - GRACE_AREA_BLEED_PX },
-            { x: exitPoint.x + GRACE_AREA_BLEED_PX, y: exitPoint.y - GRACE_AREA_BLEED_PX }
-          );
-          break;
-        case 'left':
-          startPoints.push(
-            { x: exitPoint.x + GRACE_AREA_BLEED_PX, y: exitPoint.y - GRACE_AREA_BLEED_PX },
-            { x: exitPoint.x + GRACE_AREA_BLEED_PX, y: exitPoint.y + GRACE_AREA_BLEED_PX }
-          );
-          break;
-        case 'right':
-          startPoints.push(
-            { x: exitPoint.x - GRACE_AREA_BLEED_PX, y: exitPoint.y - GRACE_AREA_BLEED_PX },
-            { x: exitPoint.x - GRACE_AREA_BLEED_PX, y: exitPoint.y + GRACE_AREA_BLEED_PX }
-          );
-          break;
-      }
+      const paddedExitPoints = getPaddedExitPoints(exitPoint, exitSide);
       const hoverTargetPoints = getPointsFromRect(hoverTarget.getBoundingClientRect());
-      const graceArea = getHull([...startPoints, ...hoverTargetPoints]);
+      const graceArea = getHull([...paddedExitPoints, ...hoverTargetPoints]);
       setPointerGraceArea(graceArea);
       onPointerInTransitChange(true);
     },
@@ -615,7 +588,9 @@ TooltipArrow.displayName = ARROW_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
-function getExitSideFromRect(point: Point, rect: DOMRect) {
+type Side = NonNullable<TooltipContentProps['side']>;
+
+function getExitSideFromRect(point: Point, rect: DOMRect): Side {
   const top = Math.abs(rect.top - point.y);
   const bottom = Math.abs(rect.bottom - point.y);
   const right = Math.abs(rect.right - point.x);
@@ -631,8 +606,39 @@ function getExitSideFromRect(point: Point, rect: DOMRect) {
     case bottom:
       return 'bottom';
     default:
-      return null;
+      throw new Error('unreachable');
   }
+}
+
+function getPaddedExitPoints(exitPoint: Point, exitSide: Side, padding = 5) {
+  const paddedExitPoints: Point[] = [];
+  switch (exitSide) {
+    case 'top':
+      paddedExitPoints.push(
+        { x: exitPoint.x - padding, y: exitPoint.y + padding },
+        { x: exitPoint.x + padding, y: exitPoint.y + padding }
+      );
+      break;
+    case 'bottom':
+      paddedExitPoints.push(
+        { x: exitPoint.x - padding, y: exitPoint.y - padding },
+        { x: exitPoint.x + padding, y: exitPoint.y - padding }
+      );
+      break;
+    case 'left':
+      paddedExitPoints.push(
+        { x: exitPoint.x + padding, y: exitPoint.y - padding },
+        { x: exitPoint.x + padding, y: exitPoint.y + padding }
+      );
+      break;
+    case 'right':
+      paddedExitPoints.push(
+        { x: exitPoint.x - padding, y: exitPoint.y - padding },
+        { x: exitPoint.x - padding, y: exitPoint.y + padding }
+      );
+      break;
+  }
+  return paddedExitPoints;
 }
 
 function getPointsFromRect(rect: DOMRect) {
