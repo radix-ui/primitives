@@ -62,6 +62,12 @@ git checkout main
 git pull upstream main
 ```
 
+1. Make sure your Node version matches the [.nvmrc](../.nvmrc).
+
+```
+node -v
+```
+
 1. Install dependencies with [yarn](https://yarnpkg.com):
 
 ```sh
