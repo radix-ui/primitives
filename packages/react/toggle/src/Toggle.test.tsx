@@ -17,7 +17,7 @@ describe('given a Toggle with text', () => {
     expect(await axe(rendered.container)).toHaveNoViolations();
   });
 
-  it('should render with attributes as false', () => {
+  it('should render with attributes as false/off by default', () => {
     const button = rendered.getByRole('button', { name: TEXT_CHILD });
 
     expect(button).toHaveAttribute('aria-pressed', 'false');
@@ -47,7 +47,7 @@ describe('given a Toggle with text and defaultPressed="true"', () => {
     rendered = render(<Toggle.Root defaultPressed>{TEXT_CHILD}</Toggle.Root>);
   });
 
-  it('should render with attributes enabled', () => {
+  it('should render with attributes true/on by default', () => {
     const button = rendered.getByRole('button', { name: TEXT_CHILD });
 
     expect(button).toHaveAttribute('aria-pressed', 'true');
