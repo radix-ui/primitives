@@ -82,6 +82,7 @@ describe('given a Toggle with text and disabled="true"', () => {
 
     expect(button).toHaveAttribute('aria-pressed', 'false');
     expect(button).toHaveAttribute('data-state', 'off');
+    expect(button).toHaveAttribute('disabled', '');
 
     fireEvent(
       button,
