@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-toggle-group",
-  "version": "1.0.4-rc.9",
+  "version": "1.0.4-rc.10",
   "license": "MIT",
   "exports": {
     ".": {

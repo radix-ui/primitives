@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-menubar",
-  "version": "1.0.3-rc.14",
+  "version": "1.0.3-rc.15",
   "license": "MIT",
   "exports": {
     ".": {

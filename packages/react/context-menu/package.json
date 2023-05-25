@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-context-menu",
-  "version": "2.1.4-rc.14",
+  "version": "2.1.4-rc.15",
   "license": "MIT",
   "exports": {
     ".": {

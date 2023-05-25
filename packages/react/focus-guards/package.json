@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-focus-guards",
-  "version": "1.0.1-rc.4",
+  "version": "1.0.1-rc.5",
   "license": "MIT",
   "exports": {
     ".": {
