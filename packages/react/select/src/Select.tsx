@@ -1306,9 +1306,11 @@ const SelectItemText = React.forwardRef<SelectItemTextElement, SelectItemTextPro
     useLayoutEffect(() => {
       if (itemContext.isSelected) {
         setValueRender({ value: itemContext.value, node: itemTextProps.children });
-      } else if (rendererValue === itemContext.value) {
-        setValueRender(null);
       }
+
+      return () => {
+        setValueRender(null);
+      };
     }, [
       rendererValue,
       setValueRender,

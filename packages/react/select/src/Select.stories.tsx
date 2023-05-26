@@ -171,6 +171,7 @@ export const Position = () => (
 );
 
 export const OptionalValue = () => {
+  const [hide, setHide] = React.useState<boolean>(false);
   const [value, setValue] = React.useState<string | null>(null);
 
   return (
@@ -183,6 +184,8 @@ export const OptionalValue = () => {
         height: '100vh',
       }}
     >
+      <button onClick={() => setHide((v) => !v)}>Hide</button>
+
       <button onClick={() => setValue(null)}>Reset</button>
       <Select.Root value={value == null ? '' : value} onValueChange={(v) => setValue(v)}>
         <Select.Trigger className={triggerClass()}>
@@ -192,18 +195,20 @@ export const OptionalValue = () => {
         <Select.Portal>
           <Select.Content className={contentClass()} sideOffset={5}>
             <Select.Viewport className={viewportClass()}>
-              <Select.Item className={itemClass()} value="one" disabled>
+              <Select.Item className={itemClass()} value="one">
                 <Select.ItemText>One</Select.ItemText>
                 <Select.ItemIndicator className={indicatorClass()}>
                   <TickIcon />
                 </Select.ItemIndicator>
               </Select.Item>
-              <Select.Item className={itemClass()} value="two">
-                <Select.ItemText>Two</Select.ItemText>
-                <Select.ItemIndicator className={indicatorClass()}>
-                  <TickIcon />
-                </Select.ItemIndicator>
-              </Select.Item>
+              {!hide && (
+                <Select.Item className={itemClass()} value="two">
+                  <Select.ItemText>Two</Select.ItemText>
+                  <Select.ItemIndicator className={indicatorClass()}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+              )}
               <Select.Item className={itemClass()} value="three">
                 <Select.ItemText>Three</Select.ItemText>
                 <Select.ItemIndicator className={indicatorClass()}>
