@@ -1,7 +1,0 @@
-releases:
-  "@radix-ui/react-alert-dialog": patch
-  "@radix-ui/react-dialog": patch
-  "@radix-ui/react-popover": patch
-
-declined:
-  - primitives
