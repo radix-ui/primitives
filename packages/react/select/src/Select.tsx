@@ -25,6 +25,7 @@ import { RemoveScroll } from 'react-remove-scroll';
 
 import type * as Radix from '@radix-ui/react-primitive';
 import type { Scope } from '@radix-ui/react-context';
+import { ReactNode } from 'react';
 
 type Direction = 'ltr' | 'rtl';
 
@@ -50,13 +51,15 @@ const [createSelectContext, createSelectScope] = createContextScope(SELECT_NAME,
 ]);
 const usePopperScope = createPopperScope();
 
+type ValueRenderer = { value: string; node: ReactNode };
+
 type SelectContextValue = {
   trigger: SelectTriggerElement | null;
   onTriggerChange(node: SelectTriggerElement | null): void;
   valueNode: SelectValueElement | null;
   onValueNodeChange(node: SelectValueElement): void;
-  valueNodeHasChildren: boolean;
-  onValueNodeHasChildrenChange(hasChildren: boolean): void;
+  valueRender: ValueRenderer | null;
+  setValueRender(v: ValueRenderer | null): void;
   contentId: string;
   value?: string;
   onValueChange(value: string): void;
@@ -113,7 +116,7 @@ const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
   const popperScope = usePopperScope(__scopeSelect);
   const [trigger, setTrigger] = React.useState<SelectTriggerElement | null>(null);
   const [valueNode, setValueNode] = React.useState<SelectValueElement | null>(null);
-  const [valueNodeHasChildren, setValueNodeHasChildren] = React.useState(false);
+  const [valueRender, setValueRender] = React.useState<ValueRenderer | null>(null);
   const direction = useDirection(dir);
   const [open = false, setOpen] = useControllableState({
     prop: openProp,
@@ -149,8 +152,8 @@ const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
         onTriggerChange={setTrigger}
         valueNode={valueNode}
         onValueNodeChange={setValueNode}
-        valueNodeHasChildren={valueNodeHasChildren}
-        onValueNodeHasChildrenChange={setValueNodeHasChildren}
+        valueRender={valueRender}
+        setValueRender={setValueRender}
         contentId={useId()}
         value={value}
         onValueChange={setValue}
@@ -318,13 +321,7 @@ const SelectValue = React.forwardRef<SelectValueElement, SelectValueProps>(
     // We ignore `className` and `style` as this part shouldn't be styled.
     const { __scopeSelect, className, style, children, placeholder, ...valueProps } = props;
     const context = useSelectContext(VALUE_NAME, __scopeSelect);
-    const { onValueNodeHasChildrenChange } = context;
-    const hasChildren = children !== undefined;
     const composedRefs = useComposedRefs(forwardedRef, context.onValueNodeChange);
-
-    useLayoutEffect(() => {
-      onValueNodeHasChildrenChange(hasChildren);
-    }, [onValueNodeHasChildrenChange, hasChildren]);
 
     return (
       <Primitive.span
@@ -334,7 +331,9 @@ const SelectValue = React.forwardRef<SelectValueElement, SelectValueProps>(
         // through the item they came from
         style={{ pointerEvents: 'none' }}
       >
-        {context.value === undefined && placeholder !== undefined ? placeholder : children}
+        {context.valueRender == null && placeholder !== undefined
+          ? placeholder
+          : children ?? context.valueRender?.value}
       </Primitive.span>
     );
   }
@@ -1301,16 +1300,24 @@ const SelectItemText = React.forwardRef<SelectItemTextElement, SelectItemTextPro
       return () => onNativeOptionRemove(nativeOption);
     }, [onNativeOptionAdd, onNativeOptionRemove, nativeOption]);
 
-    return (
-      <>
-        <Primitive.span id={itemContext.textId} {...itemTextProps} ref={composedRefs} />
+    const { valueRender, setValueRender } = context;
+    const rendererValue = valueRender?.value;
 
-        {/* Portal the select item text into the trigger value node */}
-        {itemContext.isSelected && context.valueNode && !context.valueNodeHasChildren
-          ? ReactDOM.createPortal(itemTextProps.children, context.valueNode)
-          : null}
-      </>
-    );
+    useLayoutEffect(() => {
+      if (itemContext.isSelected) {
+        setValueRender({ value: itemContext.value, node: itemTextProps.children });
+      } else if (rendererValue === itemContext.value) {
+        setValueRender(null);
+      }
+    }, [
+      rendererValue,
+      setValueRender,
+      itemContext.isSelected,
+      itemTextProps.children,
+      itemContext.value,
+    ]);
+
+    return <Primitive.span id={itemContext.textId} {...itemTextProps} ref={composedRefs} />;
   }
 );
 

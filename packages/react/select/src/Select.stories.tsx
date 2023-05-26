@@ -170,6 +170,55 @@ export const Position = () => (
   </div>
 );
 
+export const OptionalValue = () => {
+  const [value, setValue] = React.useState<string | null>(null);
+
+  return (
+    <div
+      style={{
+        display: 'flex',
+        gap: 20,
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100vh',
+      }}
+    >
+      <button onClick={() => setValue(null)}>Reset</button>
+      <Select.Root value={value == null ? '' : value} onValueChange={(v) => setValue(v)}>
+        <Select.Trigger className={triggerClass()}>
+          <Select.Value placeholder="Pick an option" />
+          <Select.Icon />
+        </Select.Trigger>
+        <Select.Portal>
+          <Select.Content className={contentClass()} sideOffset={5}>
+            <Select.Viewport className={viewportClass()}>
+              <Select.Item className={itemClass()} value="one" disabled>
+                <Select.ItemText>One</Select.ItemText>
+                <Select.ItemIndicator className={indicatorClass()}>
+                  <TickIcon />
+                </Select.ItemIndicator>
+              </Select.Item>
+              <Select.Item className={itemClass()} value="two">
+                <Select.ItemText>Two</Select.ItemText>
+                <Select.ItemIndicator className={indicatorClass()}>
+                  <TickIcon />
+                </Select.ItemIndicator>
+              </Select.Item>
+              <Select.Item className={itemClass()} value="three">
+                <Select.ItemText>Three</Select.ItemText>
+                <Select.ItemIndicator className={indicatorClass()}>
+                  <TickIcon />
+                </Select.ItemIndicator>
+              </Select.Item>
+            </Select.Viewport>
+            <Select.Arrow />
+          </Select.Content>
+        </Select.Portal>
+      </Select.Root>
+    </div>
+  );
+};
+
 export const NoDefaultValue = () => (
   <div
     style={{
