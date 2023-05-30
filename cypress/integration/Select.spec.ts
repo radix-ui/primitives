@@ -15,4 +15,19 @@ describe('Select', () => {
       cy.findByText(/t-shirt size/).should('include.text', 'size S');
     });
   });
+
+  describe('given a select with no value', () => {
+    it('should display the placeholder', () => {
+      cy.findByText('…').should('exist');
+    });
+
+    it('can be reset to the placeholder', () => {
+      cy.findByLabelText(/choose a model/).click();
+      cy.findByRole('option', { name: /model x/i }).click();
+      cy.findByText(/model y/i).should('not.exist');
+      cy.findByText(/model x/i).should('exist');
+      cy.findByText('unset').click();
+      cy.findByText('…').should('exist');
+    });
+  });
 });

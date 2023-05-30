@@ -774,6 +774,7 @@ ChromaticNoDefaultValue.parameters = { chromatic: { disable: false } };
 
 export const Cypress = () => {
   const [data, setData] = React.useState<{ size?: 'S' | 'M' | 'L' }>({});
+  const [model, setModel] = React.useState<string | undefined>('');
 
   function handleChange(event: React.FormEvent<HTMLFormElement>) {
     const formData = new FormData(event.currentTarget);
@@ -826,6 +827,54 @@ export const Cypress = () => {
         <button type="submit">buy</button>
         {data.size ? <p>You picked t-shirt size {data.size}</p> : null}
       </form>
+
+      <hr />
+
+      <div style={{ padding: 50 }}>
+        <Label>
+          choose a model
+          <Select.Root name="model" value={model} onValueChange={setModel}>
+            <Select.Trigger className={triggerClass()}>
+              <Select.Value placeholder="…" />
+              <Select.Icon />
+            </Select.Trigger>
+            <Select.Portal>
+              <Select.Content className={contentClass()}>
+                <Select.Viewport className={viewportClass()}>
+                  <Select.Item className={itemClass()} value="S">
+                    <Select.ItemText>Model S</Select.ItemText>
+                    <Select.ItemIndicator className={indicatorClass()}>
+                      <TickIcon />
+                    </Select.ItemIndicator>
+                  </Select.Item>
+                  <Select.Item className={itemClass()} value="3">
+                    <Select.ItemText>Modal 3</Select.ItemText>
+                    <Select.ItemIndicator className={indicatorClass()}>
+                      <TickIcon />
+                    </Select.ItemIndicator>
+                  </Select.Item>
+                  <Select.Item className={itemClass()} value="X">
+                    <Select.ItemText>Model X</Select.ItemText>
+                    <Select.ItemIndicator className={indicatorClass()}>
+                      <TickIcon />
+                    </Select.ItemIndicator>
+                  </Select.Item>
+                  <Select.Item className={itemClass()} value="Y">
+                    <Select.ItemText>Model Y</Select.ItemText>
+                    <Select.ItemIndicator className={indicatorClass()}>
+                      <TickIcon />
+                    </Select.ItemIndicator>
+                  </Select.Item>
+                </Select.Viewport>
+              </Select.Content>
+            </Select.Portal>
+          </Select.Root>
+        </Label>
+
+        <button type="button" onClick={() => setModel('')}>
+          unset
+        </button>
+      </div>
     </>
   );
 };
