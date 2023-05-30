@@ -323,8 +323,12 @@ const [PortalProvider, usePortalContext] = createTooltipContext<PortalContextVal
 });
 
 type PortalProps = React.ComponentPropsWithoutRef<typeof PortalPrimitive>;
-interface TooltipPortalProps extends Omit<PortalProps, 'asChild'> {
+interface TooltipPortalProps {
   children?: React.ReactNode;
+  /**
+   * Specify a container element to portal the content into.
+   */
+  container?: PortalProps['container'];
   /**
    * Used to force mounting when more control is needed. Useful when
    * controlling animation with React animation libraries.
