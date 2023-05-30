@@ -251,7 +251,7 @@ const SelectTrigger = React.forwardRef<SelectTriggerElement, SelectTriggerProps>
           data-state={context.open ? 'open' : 'closed'}
           disabled={isDisabled}
           data-disabled={isDisabled ? '' : undefined}
-          data-placeholder={context.value === undefined ? '' : undefined}
+          data-placeholder={shouldShowPlaceholder(context.value) ? '' : undefined}
           {...triggerProps}
           ref={composedRefs}
           // Enable compatibility with native label or custom `Label` "click" for Safari:
@@ -316,7 +316,7 @@ interface SelectValueProps extends Omit<PrimitiveSpanProps, 'placeholder'> {
 const SelectValue = React.forwardRef<SelectValueElement, SelectValueProps>(
   (props: ScopedProps<SelectValueProps>, forwardedRef) => {
     // We ignore `className` and `style` as this part shouldn't be styled.
-    const { __scopeSelect, className, style, children, placeholder, ...valueProps } = props;
+    const { __scopeSelect, className, style, children, placeholder = '', ...valueProps } = props;
     const context = useSelectContext(VALUE_NAME, __scopeSelect);
     const { onValueNodeHasChildrenChange } = context;
     const hasChildren = children !== undefined;
@@ -334,7 +334,7 @@ const SelectValue = React.forwardRef<SelectValueElement, SelectValueProps>(
         // through the item they came from
         style={{ pointerEvents: 'none' }}
       >
-        {context.value === undefined && placeholder !== undefined ? placeholder : children}
+        {shouldShowPlaceholder(context.value) ? <>{placeholder}</> : children}
       </Primitive.span>
     );
   }
@@ -1198,6 +1198,12 @@ const SelectItem = React.forwardRef<SelectItemElement, SelectItemProps>(
       }
     };
 
+    if (value === '') {
+      throw new Error(
+        'A <Select.Item /> must have a value prop that is not an empty string. This is because the Select value can be set to an empty string to clear the selection and show the placeholder.'
+      );
+    }
+
     return (
       <SelectItemContextProvider
         scope={__scopeSelect}
@@ -1535,6 +1541,10 @@ const SelectArrow = React.forwardRef<SelectArrowElement, SelectArrowProps>(
 SelectArrow.displayName = ARROW_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
+
+function shouldShowPlaceholder(value?: string) {
+  return value === '' || value === undefined;
+}
 
 const BubbleSelect = React.forwardRef<HTMLSelectElement, React.ComponentPropsWithoutRef<'select'>>(
   (props, forwardedRef) => {
