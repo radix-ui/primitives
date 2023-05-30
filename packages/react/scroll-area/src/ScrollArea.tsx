@@ -715,6 +715,7 @@ const ScrollAreaScrollbarImpl = React.forwardRef<
             // so we remove text selection manually when scrolling
             prevWebkitUserSelectRef.current = document.body.style.webkitUserSelect;
             document.body.style.webkitUserSelect = 'none';
+            if (context.viewport) context.viewport.style.scrollBehavior = 'auto';
             handleDragScroll(event);
           }
         })}
@@ -725,6 +726,7 @@ const ScrollAreaScrollbarImpl = React.forwardRef<
             element.releasePointerCapture(event.pointerId);
           }
           document.body.style.webkitUserSelect = prevWebkitUserSelectRef.current;
+          if (context.viewport) context.viewport.style.scrollBehavior = '';
           rectRef.current = null;
         })}
       />
