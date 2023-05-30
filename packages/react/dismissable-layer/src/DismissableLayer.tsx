@@ -262,8 +262,7 @@ function usePointerDownOutside(
           handleAndDispatchPointerDownOutsideEvent();
         }
       } else {
-        // We need to remove the event listener in case the outside click has
-        // been canceled
+        // We need to remove the event listener in case the outside click has been canceled
         ownerDocument.removeEventListener('click', handleClickRef.current);
       }
       isPointerInsideReactTreeRef.current = false;
