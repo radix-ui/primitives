@@ -16,7 +16,7 @@ describe('Select', () => {
     });
   });
 
-  describe.only('given a select with no value', () => {
+  describe('given a select with no value', () => {
     it('should display the placeholder', () => {
       cy.findByText('…').should('exist');
     });
