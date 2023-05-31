@@ -262,7 +262,7 @@ function usePointerDownOutside(
           handleAndDispatchPointerDownOutsideEvent();
         }
       } else {
-        // We need to remove the event listener in case the outside click has been canceled
+        // We need to remove the event listener in case the outside click has been canceled.
         // See: https://github.com/radix-ui/primitives/issues/2171
         ownerDocument.removeEventListener('click', handleClickRef.current);
       }
