@@ -371,8 +371,12 @@ SelectIcon.displayName = ICON_NAME;
 const PORTAL_NAME = 'SelectPortal';
 
 type PortalProps = React.ComponentPropsWithoutRef<typeof PortalPrimitive>;
-interface SelectPortalProps extends Omit<PortalProps, 'asChild'> {
+interface SelectPortalProps {
   children?: React.ReactNode;
+  /**
+   * Specify a container element to portal the content into.
+   */
+  container?: PortalProps['container'];
 }
 
 const SelectPortal: React.FC<SelectPortalProps> = (props: ScopedProps<SelectPortalProps>) => {

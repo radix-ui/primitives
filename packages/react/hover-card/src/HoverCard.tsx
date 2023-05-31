@@ -158,8 +158,12 @@ const [PortalProvider, usePortalContext] = createHoverCardContext<PortalContextV
 });
 
 type PortalProps = React.ComponentPropsWithoutRef<typeof PortalPrimitive>;
-interface HoverCardPortalProps extends Omit<PortalProps, 'asChild'> {
+interface HoverCardPortalProps {
   children?: React.ReactNode;
+  /**
+   * Specify a container element to portal the content into.
+   */
+  container?: PortalProps['container'];
   /**
    * Used to force mounting when more control is needed. Useful when
    * controlling animation with React animation libraries.
