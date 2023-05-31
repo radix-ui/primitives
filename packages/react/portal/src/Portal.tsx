@@ -14,7 +14,7 @@ type PortalElement = React.ElementRef<typeof Primitive.div>;
 type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface PortalProps extends PrimitiveDivProps {
   /**
-   * An optional different container where the portaled content should be appended.
+   * An optional container where the portaled content should be appended.
    */
   container?: HTMLElement | null;
 }
