@@ -201,7 +201,7 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
         }),
         arrow && floatingUIarrow({ element: arrow, padding: arrowPadding }),
         transformOrigin({ arrowWidth, arrowHeight }),
-        hideWhenDetached && hide({ strategy: 'referenceHidden' }),
+        hideWhenDetached && hide({ strategy: 'referenceHidden', ...detectOverflowOptions }),
       ],
     });
 
