@@ -112,10 +112,9 @@ const FocusScope = React.forwardRef<FocusScopeElement, FocusScopeProps>((props, 
       // to keep focus trapped correctly.
       function handleMutations(mutations: MutationRecord[]) {
         const focusedElement = document.activeElement as HTMLElement | null;
+        if (focusedElement !== document.body) return;
         for (const mutation of mutations) {
-          if (mutation.removedNodes.length > 0) {
-            if (!container?.contains(focusedElement)) focus(container);
-          }
+          if (mutation.removedNodes.length > 0) focus(container);
         }
       }
 
