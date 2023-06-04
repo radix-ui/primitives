@@ -1,3 +1,5 @@
+'use client';
+
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { createCollection } from '@radix-ui/react-collection';

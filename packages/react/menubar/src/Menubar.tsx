@@ -1,3 +1,5 @@
+'use client';
+
 import * as React from 'react';
 import { createCollection } from '@radix-ui/react-collection';
 import { useDirection } from '@radix-ui/react-direction';
