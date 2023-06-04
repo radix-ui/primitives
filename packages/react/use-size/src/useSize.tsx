@@ -1,3 +1,5 @@
+'use client';
+
 /// <reference types="resize-observer-browser" />
 
 import * as React from 'react';
