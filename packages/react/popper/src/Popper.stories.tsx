@@ -92,7 +92,7 @@ export const WithPortal = () => {
   );
 };
 
-export const WithRAF = () => {
+export const WithUpdatePositionStrategyAlways = () => {
   const [open, setOpen] = React.useState(false);
   const [left, setLeft] = React.useState(0);
   React.useEffect(() => {
@@ -117,12 +117,7 @@ export const WithRAF = () => {
             <Popper.Content
               className={contentClass()}
               sideOffset={5}
-              autoUpdateOptions={{
-                ancestorResize: true,
-                ancestorScroll: true,
-                animationFrame: true,
-                elementResize: true,
-              }}
+              updatePositionStrategy="always"
             >
               <button onClick={() => setOpen(false)}>close</button>
               <Popper.Arrow className={arrowClass()} width={20} height={10} />
