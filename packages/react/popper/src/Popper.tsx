@@ -117,11 +117,12 @@ interface PopperContentProps extends PrimitiveDivProps {
   align?: Align;
   alignOffset?: number;
   arrowPadding?: number;
+  avoidCollisions?: boolean;
   collisionBoundary?: Boundary | Boundary[];
   collisionPadding?: number | Partial<Record<Side, number>>;
   sticky?: 'partial' | 'always';
   hideWhenDetached?: boolean;
-  avoidCollisions?: boolean;
+  updatePositionStrategy?: 'optimized' | 'always';
   onPlaced?: () => void;
 }
 
@@ -134,11 +135,12 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
       align = 'center',
       alignOffset = 0,
       arrowPadding = 0,
+      avoidCollisions = true,
       collisionBoundary = [],
       collisionPadding: collisionPaddingProp = 0,
       sticky = 'partial',
       hideWhenDetached = false,
-      avoidCollisions = true,
+      updatePositionStrategy = 'optimized',
       onPlaced,
       ...contentProps
     } = props;
@@ -174,7 +176,12 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
       // default to `fixed` strategy so users don't have to pick and we also avoid focus scroll issues
       strategy: 'fixed',
       placement: desiredPlacement,
-      whileElementsMounted: autoUpdate,
+      whileElementsMounted: (...args) => {
+        const cleanup = autoUpdate(...args, {
+          animationFrame: updatePositionStrategy === 'always',
+        });
+        return cleanup;
+      },
       elements: {
         reference: context.anchor,
       },
