@@ -1,13 +1,13 @@
-import * as React from 'react';
-import { createContextScope } from '@radix-ui/react-context';
+import { composeEventHandlers } from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
+import { createContextScope } from '@radix-ui/react-context';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { createDialogScope } from '@radix-ui/react-dialog';
-import { composeEventHandlers } from '@radix-ui/primitive';
 import { Slottable } from '@radix-ui/react-slot';
+import * as React from 'react';
 
-import type * as Radix from '@radix-ui/react-primitive';
 import type { Scope } from '@radix-ui/react-context';
+import type * as Radix from '@radix-ui/react-primitive';
 
 /* -------------------------------------------------------------------------------------------------
  * AlertDialog
@@ -141,10 +141,16 @@ const AlertDialogContent = React.forwardRef<AlertDialogContentElement, AlertDial
              * This is because we want the accessibility checks to run only once the content is actually
              * open and that behaviour is already encapsulated in `DialogContent`.
              */}
-            <Slottable>{children}</Slottable>
-            {process.env.NODE_ENV === 'development' && (
-              <DescriptionWarning contentRef={contentRef} />
-            )}
+            <Slottable child={children}>
+              {(child) => (
+                <>
+                  {child}
+                  {process.env.NODE_ENV === 'development' && (
+                    <DescriptionWarning contentRef={contentRef} />
+                  )}
+                </>
+              )}
+            </Slottable>
           </DialogPrimitive.Content>
         </AlertDialogContentProvider>
       </DialogPrimitive.WarningProvider>
@@ -272,36 +278,36 @@ const Title = AlertDialogTitle;
 const Description = AlertDialogDescription;
 
 export {
-  createAlertDialogScope,
+  Action,
   //
   AlertDialog,
-  AlertDialogTrigger,
-  AlertDialogPortal,
-  AlertDialogOverlay,
-  AlertDialogContent,
   AlertDialogAction,
   AlertDialogCancel,
-  AlertDialogTitle,
+  AlertDialogContent,
   AlertDialogDescription,
+  AlertDialogOverlay,
+  AlertDialogPortal,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+  Cancel,
+  Content,
+  Description,
+  Overlay,
+  Portal,
   //
   Root,
-  Trigger,
-  Portal,
-  Overlay,
-  Content,
-  Action,
-  Cancel,
   Title,
-  Description,
+  Trigger,
+  createAlertDialogScope,
 };
 export type {
-  AlertDialogProps,
-  AlertDialogTriggerProps,
-  AlertDialogPortalProps,
-  AlertDialogOverlayProps,
-  AlertDialogContentProps,
   AlertDialogActionProps,
   AlertDialogCancelProps,
-  AlertDialogTitleProps,
+  AlertDialogContentProps,
   AlertDialogDescriptionProps,
+  AlertDialogOverlayProps,
+  AlertDialogPortalProps,
+  AlertDialogProps,
+  AlertDialogTitleProps,
+  AlertDialogTriggerProps,
 };
