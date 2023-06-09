@@ -149,7 +149,7 @@ const ScrollAreaViewport = React.forwardRef<ScrollAreaViewportElement, ScrollAre
         {/* Hide scrollbars cross-browser and enable momentum scroll for touch devices */}
         <style
           dangerouslySetInnerHTML={{
-            __html: `[data-radix-scroll-area-viewport]{scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;}[data-radix-scroll-area-viewport]::-webkit-scrollbar{display:none}`,
+            __html: `[data-radix-scroll-area-viewport],[data-radix-scroll-area-scrollbar]{scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;}[data-radix-scroll-area-viewport]::-webkit-scrollbar,[data-radix-scroll-area-scrollbar]::-webkit-scrollbar{display:none}`,
           }}
         />
         <Primitive.div
@@ -702,9 +702,26 @@ const ScrollAreaScrollbarImpl = React.forwardRef<
       onThumbPointerDown={useCallbackRef(onThumbPointerDown)}
     >
       <Primitive.div
+        data-radix-scroll-area-scrollbar=""
         {...scrollbarProps}
         ref={composeRefs}
-        style={{ position: 'absolute', ...scrollbarProps.style }}
+        style={{
+          position: 'absolute',
+          overflow: 'scroll',
+          ['overscrollBehaviorX' as string]: context.viewport
+            ? getComputedStyle(context.viewport).overscrollBehaviorX
+            : undefined,
+          ['overscrollBehaviorY' as string]: context.viewport
+            ? getComputedStyle(context.viewport).overscrollBehaviorY
+            : undefined,
+          ['overscrollBehaviorBlock' as string]: context.viewport
+            ? getComputedStyle(context.viewport).overscrollBehaviorBlock
+            : undefined,
+          ['overscrollBehaviorInline' as string]: context.viewport
+            ? getComputedStyle(context.viewport).overscrollBehaviorInline
+            : undefined,
+          ...scrollbarProps.style,
+        }}
         onPointerDown={composeEventHandlers(props.onPointerDown, (event) => {
           const mainPointer = 0;
           if (event.button === mainPointer) {
