@@ -93,6 +93,29 @@ export const ContentChange = () => {
   );
 };
 
+export const ReversedLayout = () => {
+  return (
+    <>
+      <h1 style={{ textAlign: 'center' }}>Reversed Vertical Layout</h1>
+      <ScrollAreaStory reverse="vertical" style={{ width: 800, height: 800, margin: '30px auto' }}>
+        {Array.from({ length: 30 }).map((_, index) => (
+          <Copy key={index} />
+        ))}
+      </ScrollAreaStory>
+
+      <h1 style={{ textAlign: 'center' }}>Reversed Horizontal Layout</h1>
+      <ScrollAreaStory
+        reverse="horizontal"
+        style={{ width: 800, height: 800, margin: '30px auto' }}
+      >
+        {Array.from({ length: 30 }).map((_, index) => (
+          <Copy key={index} />
+        ))}
+      </ScrollAreaStory>
+    </>
+  );
+};
+
 export const Animated = () => {
   return (
     <ScrollAreaStory animated style={{ width: 800, height: 800 }}>
@@ -370,6 +393,7 @@ const ScrollAreaStory = ({
   animated = false,
   vertical = true,
   horizontal = true,
+  reverse,
   ...props
 }: any) => (
   <ScrollArea.Root
@@ -377,7 +401,9 @@ const ScrollAreaStory = ({
     className={scrollAreaClass()}
     style={{ width: 200, height: 200, ...props.style }}
   >
-    <ScrollArea.Viewport className={scrollAreaViewportClass()}>{children}</ScrollArea.Viewport>
+    <ScrollArea.Viewport className={scrollAreaViewportClass({ reverse })}>
+      {children}
+    </ScrollArea.Viewport>
     {vertical && (
       <ScrollArea.Scrollbar className={scrollbarClass()} orientation="vertical">
         <ScrollArea.Thumb className={animated ? animatedThumbClass() : thumbClass()} />
@@ -431,6 +457,18 @@ const RECOMMENDED_CSS__SCROLLAREA__VIEWPORT: any = {
 
 const scrollAreaViewportClass = css({
   ...RECOMMENDED_CSS__SCROLLAREA__VIEWPORT,
+  variants: {
+    reverse: {
+      vertical: {
+        display: 'flex',
+        flexDirection: 'column-reverse',
+      },
+      horizontal: {
+        display: 'flex',
+        flexDirection: 'row-reverse',
+      },
+    },
+  },
 });
 
 const RECOMMENDED_CSS__SCROLLBAR__ROOT: any = {
