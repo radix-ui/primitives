@@ -30,6 +30,14 @@ export const Basic = () => {
             </select>
           </label>{' '}
           <label>
+            reverse:{' '}
+            <select name="reverse">
+              <option></option>
+              <option>vertical</option>
+              <option>horizontal</option>
+            </select>
+          </label>{' '}
+          <label>
             dir:{' '}
             <select name="dir">
               <option></option>
@@ -87,29 +95,6 @@ export const ContentChange = () => {
       <ScrollAreaStory type="always" style={{ width: 800, height: 800 }}>
         {Array.from({ length: verticalCount }).map((_, index) => (
           <Copy key={index} style={{ width: 300 * horizontalCount + 'px' }} />
-        ))}
-      </ScrollAreaStory>
-    </>
-  );
-};
-
-export const ReversedLayout = () => {
-  return (
-    <>
-      <h1 style={{ textAlign: 'center' }}>Reversed Vertical Layout</h1>
-      <ScrollAreaStory reverse="vertical" style={{ width: 800, height: 800, margin: '30px auto' }}>
-        {Array.from({ length: 30 }).map((_, index) => (
-          <Copy key={index} />
-        ))}
-      </ScrollAreaStory>
-
-      <h1 style={{ textAlign: 'center' }}>Reversed Horizontal Layout</h1>
-      <ScrollAreaStory
-        reverse="horizontal"
-        style={{ width: 800, height: 800, margin: '30px auto' }}
-      >
-        {Array.from({ length: 30 }).map((_, index) => (
-          <Copy key={index} />
         ))}
       </ScrollAreaStory>
     </>

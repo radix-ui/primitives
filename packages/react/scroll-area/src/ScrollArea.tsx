@@ -933,9 +933,12 @@ function getScrollPositionFromPointer(
   const minPointerPos = sizes.scrollbar.paddingStart + offset;
   const maxPointerPos = sizes.scrollbar.size - sizes.scrollbar.paddingEnd - thumbOffsetFromEnd;
   const maxScrollPos = sizes.content - sizes.viewport;
-  const scrollRange = dir === 'ltr' ? [0, maxScrollPos] : [maxScrollPos * -1, 0];
+  const scrollRange =
+    (dir === 'ltr' && reversed) || (dir === 'rtl' && !reversed)
+      ? [maxScrollPos * -1, 0]
+      : [0, maxScrollPos];
   const interpolate = linearScale([minPointerPos, maxPointerPos], scrollRange as [number, number]);
-  return interpolate(pointerPos) - (reversed ? maxScrollPos : 0);
+  return interpolate(pointerPos);
 }
 
 function getThumbOffsetFromScroll(
@@ -950,9 +953,16 @@ function getThumbOffsetFromScroll(
   const maxScrollPos = sizes.content - sizes.viewport;
   const maxThumbPos = scrollbar - thumbSizePx;
   const scrollClampRange = dir === 'ltr' ? [0, maxScrollPos] : [maxScrollPos * -1, 0];
-  const scrollWithoutMomentum = clamp(Math.abs(scrollPos), scrollClampRange as [number, number]);
-  const thumbRange = reversed ? [maxThumbPos, 0] : [0, maxThumbPos];
-  const interpolate = linearScale([0, maxScrollPos], thumbRange as [number, number]);
+  const inputFactor = reversed && dir === 'ltr' ? -1 : 1;
+  const outputFactor = reversed && dir === 'rtl' ? -1 : 1;
+  const scrollPosRange = reversed ? [0, maxScrollPos * inputFactor] : [maxScrollPos, 0];
+  const interpolateScrollPos = linearScale(scrollPosRange as [number, number], [
+    maxScrollPos * outputFactor,
+    0,
+  ]);
+  const interpolatedScrollPos = interpolateScrollPos(scrollPos);
+  const scrollWithoutMomentum = clamp(interpolatedScrollPos, scrollClampRange as [number, number]);
+  const interpolate = linearScale([0, maxScrollPos], [0, maxThumbPos] as [number, number]);
   return interpolate(scrollWithoutMomentum);
 }
 
