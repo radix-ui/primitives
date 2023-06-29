@@ -1,0 +1,12 @@
+releases:
+  "@radix-ui/react-slot": patch
+
+declined:
+  - "@radix-ui/react-alert-dialog"
+  - "@radix-ui/react-collection"
+  - "@radix-ui/react-dialog"
+  - "@radix-ui/react-menu"
+  - "@radix-ui/react-popover"
+  - "@radix-ui/react-primitive"
+  - "@radix-ui/react-select"
+  - "@radix-ui/react-tooltip"
