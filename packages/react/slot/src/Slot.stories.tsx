@@ -322,7 +322,7 @@ const SlotWithPreventableEvent = (props: any) => (
 const SlotWithOverwrittenChildEvent = (props: any) => (
   <Slot
     {...props}
-    dangerouslyOverrideHandlersInsteadOfComposing={['onClick']}
+    dangerouslyoverridehandlersinsteadofcomposing={['onClick']}
     onClick={(event) => {
       console.log('Slot click');
     }}

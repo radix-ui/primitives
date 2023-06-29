@@ -7,7 +7,7 @@ import { composeRefs } from '@radix-ui/react-compose-refs';
 
 interface SlotProps extends React.HTMLAttributes<HTMLElement> {
   children?: React.ReactNode;
-  dangerouslyOverrideHandlersInsteadOfComposing?: string[];
+  dangerouslyoverridehandlersinsteadofcomposing?: string[];
 }
 
 const Slot = React.forwardRef<HTMLElement, SlotProps>((props, forwardedRef) => {
@@ -56,7 +56,7 @@ Slot.displayName = 'Slot';
 
 interface SlotCloneProps {
   children: React.ReactNode;
-  dangerouslyOverrideHandlersInsteadOfComposing?: string[];
+  dangerouslyoverridehandlersinsteadofcomposing?: string[];
 }
 
 const SlotClone = React.forwardRef<any, SlotCloneProps>((props, forwardedRef) => {
@@ -105,7 +105,7 @@ function mergeProps(slotProps: AnyProps, childProps: AnyProps) {
       if (
         slotPropValue &&
         childPropValue &&
-        !slotProps.dangerouslyOverrideHandlersInsteadOfComposing?.includes(propName)
+        !slotProps.dangerouslyoverridehandlersinsteadofcomposing?.includes(propName)
       ) {
         overrideProps[propName] = (...args: unknown[]) => {
           childPropValue(...args);
