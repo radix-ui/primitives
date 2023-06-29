@@ -1,7 +1,8 @@
 releases:
-  "@radix-ui/react-slot": patch
+  "@radix-ui/react-slot": minor
 
 declined:
+  - primitives
   - "@radix-ui/react-alert-dialog"
   - "@radix-ui/react-collection"
   - "@radix-ui/react-dialog"
