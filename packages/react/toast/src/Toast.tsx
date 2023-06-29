@@ -488,7 +488,7 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
     const swipeDeltaRef = React.useRef<{ x: number; y: number } | null>(null);
     const duration = durationProp || context.duration;
     const closeTimerStartTimeRef = React.useRef(0);
-    const closeTimerRemainingTimeRef = React.useRef(duration);
+    let closeTimerRemainingTime = duration;
     const closeTimerRef = React.useRef(0);
     const { onToastAdd, onToastRemove } = context;
     const handleClose = useCallbackRef(() => {
@@ -513,12 +513,12 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
       const viewport = context.viewport;
       if (viewport) {
         const handleResume = () => {
-          startTimer(closeTimerRemainingTimeRef.current);
+          startTimer(closeTimerRemainingTime);
           onResume?.();
         };
         const handlePause = () => {
           const elapsedTime = new Date().getTime() - closeTimerStartTimeRef.current;
-          closeTimerRemainingTimeRef.current = closeTimerRemainingTimeRef.current - elapsedTime;
+          closeTimerRemainingTime = closeTimerRemainingTime - elapsedTime;
           window.clearTimeout(closeTimerRef.current);
           onPause?.();
         };
