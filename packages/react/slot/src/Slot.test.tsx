@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { Slot, Slottable } from '@radix-ui/react-slot';
+import { Slot, SlotProps, Slottable } from '@radix-ui/react-slot';
 
 describe('given a slotted Trigger', () => {
   describe('with onClick on itself', () => {
@@ -106,6 +106,36 @@ describe('given a slotted Trigger', () => {
       expect(handleChildClick).toHaveBeenCalledTimes(1);
     });
   });
+
+  describe('with onClick on itself AND the child, and overriding the child click handler', () => {
+    const handleTriggerClick = jest.fn();
+    const handleChildClick = jest.fn();
+
+    beforeEach(() => {
+      handleTriggerClick.mockReset();
+      handleChildClick.mockReset();
+      render(
+        <Trigger
+          as={Slot}
+          onClick={handleTriggerClick}
+          dangerouslyoverridehandlersinsteadofcomposing={['onClick']}
+        >
+          <button type="button" onClick={handleChildClick}>
+            Click me
+          </button>
+        </Trigger>
+      );
+      fireEvent.click(screen.getByRole('button'));
+    });
+
+    it("should call the Trigger's onClick", async () => {
+      expect(handleTriggerClick).toHaveBeenCalledTimes(1);
+    });
+
+    it("should NOT call the child's onClick", async () => {
+      expect(handleChildClick).toHaveBeenCalledTimes(0);
+    });
+  });
 });
 
 describe('given a Button with Slottable', () => {
@@ -136,7 +166,7 @@ describe('given a Button with Slottable', () => {
   });
 });
 
-type TriggerProps = React.ComponentProps<'button'> & { as: React.ElementType };
+type TriggerProps = React.ComponentProps<'button'> & { as: React.ElementType } & SlotProps;
 
 const Trigger = ({ as: Comp = 'button', ...props }: TriggerProps) => <Comp {...props} />;
 
