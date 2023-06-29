@@ -53,6 +53,26 @@ export const WithComposedEvents = () => (
   </>
 );
 
+export const WithOverwrittenEvents = () => (
+  <>
+    <h1>Should log both</h1>
+    <SlotWithPreventableEvent>
+      <button onClick={() => console.log('button click')}>Child event not prevented</button>
+    </SlotWithPreventableEvent>
+
+    <h1>Should log "Slot click"</h1>
+    <SlotWithOverwrittenChildEvent>
+      <button
+        onClick={(event) => {
+          console.log('button click');
+        }}
+      >
+        Child event prevented
+      </button>
+    </SlotWithOverwrittenChildEvent>
+  </>
+);
+
 export const ButtonAsLink = () => (
   <>
     <h1>Button with left/right icons</h1>
@@ -295,6 +315,16 @@ const SlotWithPreventableEvent = (props: any) => (
       if (!event.defaultPrevented) {
         console.log(event.target);
       }
+    }}
+  />
+);
+
+const SlotWithOverwrittenChildEvent = (props: any) => (
+  <Slot
+    {...props}
+    dangerouslyOverrideHandlersInsteadOfComposing={['onClick']}
+    onClick={(event) => {
+      console.log('Slot click');
     }}
   />
 );
