@@ -542,7 +542,8 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
     // so it could reopen before being completely unmounted
     React.useEffect(() => {
       // Needs to reset the timer when the toast is rerendered with the new duration
-      // in case the toast is initially rendered with `duration={Infinity}`.
+      // in case the toast is initially rendered with a different duration.
+      // i.e. Change the duration from a loading toast with `Infinity` duration to a success Toast with `2000` duration.
       closeTimerRemainingTimeRef.current = duration;
 
       if (open && !context.isClosePausedRef.current) startTimer(duration);
