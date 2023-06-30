@@ -93,7 +93,13 @@ const ToastProvider: React.FC<ToastProviderProps> = (props: ScopedProps<ToastPro
         toastCount={toastCount}
         viewport={viewport}
         onViewportChange={setViewport}
-        onToastAdd={React.useCallback(() => setToastCount((prevCount) => prevCount + 1), [])}
+        onToastAdd={React.useCallback(() => {
+          // Reset the isClosePausedRef when a new toast is added
+          isClosePausedRef.current = false;
+          // I assume this one has the same issue as the one above
+          // isFocusedToastEscapeKeyDownRef.current = false;
+          setToastCount((prevCount) => prevCount + 1);
+        }, [])}
         onToastRemove={React.useCallback(() => setToastCount((prevCount) => prevCount - 1), [])}
         isFocusedToastEscapeKeyDownRef={isFocusedToastEscapeKeyDownRef}
         isClosePausedRef={isClosePausedRef}
