@@ -535,6 +535,10 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
     // we include `open` in deps because closed !== unmounted when animating
     // so it could reopen before being completely unmounted
     React.useEffect(() => {
+      // Needs to reset the timer when the toast is rerendered with the new duration
+      // in case the toast is initially rendered with `duration={Infinity}`.
+      closeTimerRemainingTimeRef.current = duration;
+
       if (open && !context.isClosePausedRef.current) startTimer(duration);
     }, [open, duration, context.isClosePausedRef, startTimer]);
 
