@@ -201,7 +201,8 @@ const DropdownMenuContent = React.forwardRef<DropdownMenuContentElement, Dropdow
           event.preventDefault();
         };
         const handlePointerUp = (event: PointerEvent) => {
-          // If the pointer hasn't moved by a certain threshold then we prevent selecting item on `click`.
+          // If the pointer hasn't moved by a certain threshold then we prevent selecting item.
+          // See https://github.com/radix-ui/primitives/issues/1620
           if (pointerMoveDelta.x <= 10 && pointerMoveDelta.y <= 10) {
             // We need to prevent the click event because where the item select happens
             document.addEventListener('click', handleClick, {
