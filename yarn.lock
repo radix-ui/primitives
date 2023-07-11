@@ -3911,6 +3911,7 @@ __metadata:
     "@radix-ui/react-id": "workspace:*"
     "@radix-ui/react-popper": "workspace:*"
     "@radix-ui/react-portal": "workspace:*"
+    "@radix-ui/react-presence": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-slot": "workspace:*"
     "@radix-ui/react-use-callback-ref": "workspace:*"
