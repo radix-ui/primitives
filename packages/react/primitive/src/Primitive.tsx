@@ -29,20 +29,31 @@ type ComponentPropsWithoutRef<T extends React.ElementType> = PropsWithoutRef<
   React.ComponentProps<T>
 >;
 
-type Primitives = { [E in typeof NODES[number]]: PrimitiveForwardRefComponent<E> };
-type PrimitivePropsWithRef<E extends React.ElementType> = React.ComponentPropsWithRef<E> & {
+type PrimitivePropsWithRef<E extends React.ElementType> = React.ComponentPropsWithoutRef<E>
+& PrimitiveRef<E> & {
+  // for as child
   asChild?: boolean;
-};
+}
 
-interface PrimitiveForwardRefComponent<E extends React.ElementType>
-  extends React.ForwardRefExoticComponent<PrimitivePropsWithRef<E>> {}
+// for forwardRef
+type PrimitiveRef<E extends React.ElementType> = {
+  ref?: React.ForwardedRef<
+  HTMLElementTagNameMap[E extends keyof HTMLElementTagNameMap ? E : never]
+  >
+}
+
+type PrimitiveForwardRefComponent<E extends React.ElementType> =
+  React.ForwardRefExoticComponent<PrimitivePropsWithRef<E>>
+
+type Primitives = { [E in typeof NODES[number]]: PrimitiveForwardRefComponent<E> };
 
 /* -------------------------------------------------------------------------------------------------
  * Primitive
  * -----------------------------------------------------------------------------------------------*/
 
 const Primitive = NODES.reduce((primitive, node) => {
-  const Node = React.forwardRef((props: PrimitivePropsWithRef<typeof node>, forwardedRef: any) => {
+  const Node = React.forwardRef(<E extends React.ElementType>
+    (props: PrimitivePropsWithRef<E>, forwardedRef: PrimitiveRef<E>) => {
     const { asChild, ...primitiveProps } = props;
     const Comp: any = asChild ? Slot : node;
 
