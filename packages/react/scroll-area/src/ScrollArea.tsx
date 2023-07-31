@@ -6,8 +6,9 @@ import { Presence } from '@radix-ui/react-presence';
 import { createContextScope } from '@radix-ui/react-context';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
+import { useDebounceCallback } from '@radix-ui/react-use-debounce-callback';
 import { useDirection } from '@radix-ui/react-direction';
-import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
+import { useResizeObserver } from '@radix-ui/react-use-resize-observer';
 import { clamp } from '@radix-ui/number';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { useStateMachine } from './useStateMachine';
@@ -971,41 +972,6 @@ const addUnlinkedScrollListener = (node: HTMLElement, handler = () => {}) => {
   })();
   return () => window.cancelAnimationFrame(rAF);
 };
-
-function useDebounceCallback(callback: () => void, delay: number) {
-  const handleCallback = useCallbackRef(callback);
-  const debounceTimerRef = React.useRef(0);
-  React.useEffect(() => () => window.clearTimeout(debounceTimerRef.current), []);
-  return React.useCallback(() => {
-    window.clearTimeout(debounceTimerRef.current);
-    debounceTimerRef.current = window.setTimeout(handleCallback, delay);
-  }, [handleCallback, delay]);
-}
-
-function useResizeObserver(element: HTMLElement | null, onResize: () => void) {
-  const handleResize = useCallbackRef(onResize);
-  useLayoutEffect(() => {
-    let rAF = 0;
-    if (element) {
-      /**
-       * Resize Observer will throw an often benign error that says `ResizeObserver loop
-       * completed with undelivered notifications`. This means that ResizeObserver was not
-       * able to deliver all observations within a single animation frame, so we use
-       * `requestAnimationFrame` to ensure we don't deliver unnecessary observations.
-       * Further reading: https://github.com/WICG/resize-observer/issues/38
-       */
-      const resizeObserver = new ResizeObserver(() => {
-        cancelAnimationFrame(rAF);
-        rAF = window.requestAnimationFrame(handleResize);
-      });
-      resizeObserver.observe(element);
-      return () => {
-        window.cancelAnimationFrame(rAF);
-        resizeObserver.unobserve(element);
-      };
-    }
-  }, [element, handleResize]);
-}
 
 /* -----------------------------------------------------------------------------------------------*/
 

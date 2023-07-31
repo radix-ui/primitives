@@ -37,7 +37,8 @@
     "@radix-ui/react-presence": "workspace:*",
     "@radix-ui/react-primitive": "workspace:*",
     "@radix-ui/react-use-callback-ref": "workspace:*",
-    "@radix-ui/react-use-layout-effect": "workspace:*"
+    "@radix-ui/react-use-debounce-callback": "workspace:*",
+    "@radix-ui/react-use-resize-observer": "workspace:*"
   },
   "devDependencies": {
     "@types/resize-observer-browser": "^0.1.4"

@@ -1,6 +1,6 @@
 {
-  "name": "@radix-ui/react-use-size",
-  "version": "1.0.1",
+  "name": "@radix-ui/react-use-debounce-callback",
+  "version": "1.0.0",
   "license": "MIT",
   "exports": {
     ".": {
@@ -29,9 +29,8 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.13.10",
-    "@radix-ui/react-use-debounce-callback": "workspace:*",
-    "@radix-ui/react-use-layout-effect": "workspace:*",
-    "@radix-ui/react-use-resize-observer": "workspace:*"
+    "@radix-ui/react-use-callback-ref": "workspace:*",
+    "@radix-ui/react-use-layout-effect": "workspace:*"
   },
   "peerDependencies": {
     "@types/react": "*",
@@ -41,9 +40,6 @@
     "@types/react": {
       "optional": true
     }
-  },
-  "devDependencies": {
-    "@types/resize-observer-browser": "^0.1.4"
   },
   "homepage": "https://radix-ui.com/primitives",
   "repository": {

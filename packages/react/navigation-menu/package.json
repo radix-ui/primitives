@@ -42,7 +42,11 @@
     "@radix-ui/react-use-controllable-state": "workspace:*",
     "@radix-ui/react-use-layout-effect": "workspace:*",
     "@radix-ui/react-use-previous": "workspace:*",
+    "@radix-ui/react-use-resize-observer": "workspace:*",
     "@radix-ui/react-visually-hidden": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/resize-observer-browser": "^0.1.4"
   },
   "peerDependencies": {
     "@types/react": "*",
