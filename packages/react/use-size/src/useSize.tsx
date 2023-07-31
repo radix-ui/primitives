@@ -19,40 +19,44 @@ function useSize(element: HTMLElement | null) {
     }
   }, [element]);
 
-  const handleResize = useDebounceCallback((entries: ResizeObserverEntry[]) => {
-    if (element) {
-      if (!Array.isArray(entries)) {
-        return;
+  const handleResize = React.useCallback(
+    (entries: ResizeObserverEntry[]) => {
+      if (element) {
+        if (!Array.isArray(entries)) {
+          return;
+        }
+
+        // Since we only observe the one element, we don't need to loop over the
+        // array
+        if (!entries.length) {
+          return;
+        }
+
+        const entry = entries[0];
+        let width: number;
+        let height: number;
+
+        if ('borderBoxSize' in entry) {
+          const borderSizeEntry = entry['borderBoxSize'];
+          // iron out differences between browsers
+          const borderSize = Array.isArray(borderSizeEntry) ? borderSizeEntry[0] : borderSizeEntry;
+          width = borderSize['inlineSize'];
+          height = borderSize['blockSize'];
+        } else {
+          // for browsers that don't support `borderBoxSize`
+          // we calculate it ourselves to get the correct border box.
+          width = element.offsetWidth;
+          height = element.offsetHeight;
+        }
+
+        setSize({ width, height });
       }
+    },
+    [element]
+  );
 
-      // Since we only observe the one element, we don't need to loop over the
-      // array
-      if (!entries.length) {
-        return;
-      }
-
-      const entry = entries[0];
-      let width: number;
-      let height: number;
-
-      if ('borderBoxSize' in entry) {
-        const borderSizeEntry = entry['borderBoxSize'];
-        // iron out differences between browsers
-        const borderSize = Array.isArray(borderSizeEntry) ? borderSizeEntry[0] : borderSizeEntry;
-        width = borderSize['inlineSize'];
-        height = borderSize['blockSize'];
-      } else {
-        // for browsers that don't support `borderBoxSize`
-        // we calculate it ourselves to get the correct border box.
-        width = element.offsetWidth;
-        height = element.offsetHeight;
-      }
-
-      setSize({ width, height });
-    }
-  }, 10);
-
-  useResizeObserver(element, handleResize);
+  const handleResizeDebounced = useDebounceCallback(handleResize, 10);
+  useResizeObserver(element, handleResizeDebounced);
 
   return size;
 }
