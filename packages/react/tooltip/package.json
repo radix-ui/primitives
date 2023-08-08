@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-tooltip",
-  "version": "1.0.7-rc.5",
+  "version": "1.0.7-rc.6",
   "license": "MIT",
   "exports": {
     ".": {
