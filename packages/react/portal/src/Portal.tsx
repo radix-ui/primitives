@@ -16,7 +16,7 @@ interface PortalProps extends PrimitiveDivProps {
   /**
    * An optional container where the portaled content should be appended.
    */
-  container?: HTMLElement | null;
+  container?: Parameters<typeof ReactDOM.createPortal>[1] | null;
 }
 
 const Portal = React.forwardRef<PortalElement, PortalProps>((props, forwardedRef) => {
