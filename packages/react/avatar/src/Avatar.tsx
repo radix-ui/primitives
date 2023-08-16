@@ -120,7 +120,7 @@ AvatarFallback.displayName = FALLBACK_NAME;
 function useImageLoadingStatus(src?: string) {
   const [loadingStatus, setLoadingStatus] = React.useState<ImageLoadingStatus>('idle');
 
-  React.useEffect(() => {
+  useLayoutEffect(() => {
     if (!src) {
       setLoadingStatus('error');
       return;
