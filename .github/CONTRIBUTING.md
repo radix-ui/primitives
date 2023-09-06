@@ -29,7 +29,7 @@ If you have questions about Radix Primitives, be sure to check out the docs wher
 There are many ways to contribute to the project. Code is just one possible means of contribution.
 
 - **Feedback.** Tell us what we're doing well or where we can improve.
-- **Support.** You can answer questions on StackOverflow or [GitHub Discussions](https://github.com/radix-ui/primitives/discussions), or provide solutions for others in [open issues](https://github.com/radix-ui/primitives/issueshttps://github.com/radix-ui/primitives/issues).
+- **Support.** You can answer questions on StackOverflow or [GitHub Discussions](https://github.com/radix-ui/primitives/discussions), or provide solutions for others in [open issues](https://github.com/radix-ui/primitives/issues).
 - **Write.** If you come up with an interesting example, write about it. Post it to your blog and share it with us. We'd love to see what folks in the community build with Primitives!
 - **Report.** Create issues with bug reports so we can make Primitives even better.
 
