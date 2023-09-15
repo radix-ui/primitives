@@ -26,9 +26,12 @@ import type { Scope } from '@radix-ui/react-context';
 type Direction = 'ltr' | 'rtl';
 
 const SELECTION_KEYS = ['Enter', ' '];
-const FIRST_KEYS = ['ArrowDown', 'PageUp', 'Home'];
-const LAST_KEYS = ['ArrowUp', 'PageDown', 'End'];
-const FIRST_LAST_KEYS = [...FIRST_KEYS, ...LAST_KEYS];
+const FIRST_KEYS_VERTICAL = ['ArrowDown', 'PageUp', 'Home'];
+const LAST_KEYS_VERTICAL = ['ArrowUp', 'PageDown', 'End'];
+const FIRST_LAST_KEYS_VERTICAL = [...FIRST_KEYS_VERTICAL, ...LAST_KEYS_VERTICAL];
+const FIRST_KEYS_HORIZONTAL = ['ArrowRight'];
+const LAST_KEYS_HORIZONTAL = ['ArrowLeft'];
+const FIRST_LAST_KEYS_HORIZONTAL = [...FIRST_KEYS_HORIZONTAL, ...LAST_KEYS_HORIZONTAL];
 const SUB_OPEN_KEYS: Record<Direction, string[]> = {
   ltr: [...SELECTION_KEYS, 'ArrowRight'],
   rtl: [...SELECTION_KEYS, 'ArrowLeft'],
@@ -64,6 +67,7 @@ type MenuContextValue = {
   onOpenChange(open: boolean): void;
   content: MenuContentElement | null;
   onContentChange(content: MenuContentElement | null): void;
+  orientation: React.AriaAttributes['aria-orientation'];
 };
 
 const [MenuProvider, useMenuContext] = createMenuContext<MenuContextValue>(MENU_NAME);
@@ -82,11 +86,20 @@ interface MenuProps {
   open?: boolean;
   onOpenChange?(open: boolean): void;
   dir?: Direction;
+  orientation?: React.AriaAttributes['aria-orientation'];
   modal?: boolean;
 }
 
 const Menu: React.FC<MenuProps> = (props: ScopedProps<MenuProps>) => {
-  const { __scopeMenu, open = false, children, dir, onOpenChange, modal = true } = props;
+  const {
+    __scopeMenu,
+    open = false,
+    children,
+    dir,
+    onOpenChange,
+    modal = true,
+    orientation = 'vertical',
+  } = props;
   const popperScope = usePopperScope(__scopeMenu);
   const [content, setContent] = React.useState<MenuContentElement | null>(null);
   const isUsingKeyboardRef = React.useRef(false);
@@ -118,6 +131,7 @@ const Menu: React.FC<MenuProps> = (props: ScopedProps<MenuProps>) => {
         onOpenChange={handleOpenChange}
         content={content}
         onContentChange={setContent}
+        orientation={orientation}
       >
         <MenuRootProvider
           scope={__scopeMenu}
@@ -485,7 +499,7 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
                 asChild
                 {...rovingFocusGroupScope}
                 dir={rootContext.dir}
-                orientation="vertical"
+                orientation={context.orientation}
                 loop={loop}
                 currentTabStopId={currentItemId}
                 onCurrentTabStopIdChange={setCurrentItemId}
@@ -496,7 +510,7 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
               >
                 <PopperPrimitive.Content
                   role="menu"
-                  aria-orientation="vertical"
+                  aria-orientation={context.orientation}
                   data-state={getOpenState(context.open)}
                   data-radix-menu-content=""
                   dir={rootContext.dir}
@@ -519,11 +533,21 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
                     // focus first/last item based on key pressed
                     const content = contentRef.current;
                     if (event.target !== content) return;
-                    if (!FIRST_LAST_KEYS.includes(event.key)) return;
+
+                    const firstLastKeys =
+                      context.orientation === 'vertical'
+                        ? FIRST_LAST_KEYS_VERTICAL
+                        : FIRST_LAST_KEYS_HORIZONTAL;
+                    const lastKeys =
+                      context.orientation === 'vertical'
+                        ? LAST_KEYS_VERTICAL
+                        : LAST_KEYS_HORIZONTAL;
+
+                    if (!firstLastKeys.includes(event.key)) return;
                     event.preventDefault();
                     const items = getItems().filter((item) => !item.disabled);
                     const candidateNodes = items.map((item) => item.ref.current!);
-                    if (LAST_KEYS.includes(event.key)) candidateNodes.reverse();
+                    if (lastKeys.includes(event.key)) candidateNodes.reverse();
                     focusFirst(candidateNodes);
                   })}
                   onBlur={composeEventHandlers(props.onBlur, (event) => {
@@ -914,10 +938,12 @@ interface MenuSeparatorProps extends PrimitiveDivProps {}
 const MenuSeparator = React.forwardRef<MenuSeparatorElement, MenuSeparatorProps>(
   (props: ScopedProps<MenuSeparatorProps>, forwardedRef) => {
     const { __scopeMenu, ...separatorProps } = props;
+    const context = useMenuContext(SUB_TRIGGER_NAME, props.__scopeMenu);
+
     return (
       <Primitive.div
         role="separator"
-        aria-orientation="horizontal"
+        aria-orientation={context.orientation}
         {...separatorProps}
         ref={forwardedRef}
       />
@@ -990,6 +1016,7 @@ const MenuSub: React.FC<MenuSubProps> = (props: ScopedProps<MenuSubProps>) => {
         onOpenChange={handleOpenChange}
         content={content}
         onContentChange={setContent}
+        orientation={parentMenuContext.orientation}
       >
         <MenuSubProvider
           scope={__scopeMenu}
