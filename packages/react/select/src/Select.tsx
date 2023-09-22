@@ -1190,15 +1190,23 @@ const SelectItem = React.forwardRef<SelectItemElement, SelectItemProps>(
     const isSelected = context.value === value;
     const [textValue, setTextValue] = React.useState(textValueProp ?? '');
     const [isFocused, setIsFocused] = React.useState(false);
+    const [isClicked, setIsClicked] = React.useState(false);
+    const [isDoneSelection, setIsDoneSelection] = React.useState(false);
     const composedRefs = useComposedRefs(forwardedRef, (node) =>
       contentContext.itemRefCallback?.(node, value, disabled)
     );
     const textId = useId();
 
-    const handleSelect = () => {
-      if (!disabled) {
+    React.useEffect(() => {
+      if (isDoneSelection && isClicked) {
         context.onValueChange(value);
         context.onOpenChange(false);
+      }
+    }, [isDoneSelection, isClicked, value, context]);
+
+    const handleSelect = () => {
+      if (!disabled) {
+        setIsDoneSelection(true);
       }
     };
 
@@ -1237,6 +1245,7 @@ const SelectItem = React.forwardRef<SelectItemElement, SelectItemProps>(
             tabIndex={disabled ? undefined : -1}
             {...itemProps}
             ref={composedRefs}
+            onClick={composeEventHandlers(itemProps.onClick, () => setIsClicked(true))}
             onFocus={composeEventHandlers(itemProps.onFocus, () => setIsFocused(true))}
             onBlur={composeEventHandlers(itemProps.onBlur, () => setIsFocused(false))}
             onPointerUp={composeEventHandlers(itemProps.onPointerUp, handleSelect)}
