@@ -630,7 +630,7 @@ type ScrollAreaScrollbarImplPrivateProps = {
   onResize(): void;
 };
 interface ScrollAreaScrollbarImplProps
-  extends PrimitiveDivProps,
+  extends Omit<PrimitiveDivProps, keyof ScrollAreaScrollbarImplPrivateProps>,
     ScrollAreaScrollbarImplPrivateProps {}
 
 const ScrollAreaScrollbarImpl = React.forwardRef<
