@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-hover-card",
-  "version": "1.0.7-rc.8",
+  "version": "1.0.7-rc.9",
   "license": "MIT",
   "exports": {
     ".": {
