@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-avatar",
-  "version": "1.0.4-rc.3",
+  "version": "1.0.4",
   "license": "MIT",
   "exports": {
     ".": {
@@ -55,6 +55,5 @@
   },
   "bugs": {
     "url": "https://github.com/radix-ui/primitives/issues"
-  },
-  "stableVersion": "1.0.3"
+  }
 }

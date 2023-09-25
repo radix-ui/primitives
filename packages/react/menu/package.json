@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-menu",
-  "version": "2.0.6-rc.9",
+  "version": "2.0.6",
   "license": "MIT",
   "exports": {
     ".": {
@@ -69,6 +69,5 @@
   },
   "bugs": {
     "url": "https://github.com/radix-ui/primitives/issues"
-  },
-  "stableVersion": "2.0.5"
+  }
 }
