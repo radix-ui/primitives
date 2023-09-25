@@ -12,9 +12,10 @@ import { Presence } from '@radix-ui/react-presence';
 import { useId } from '@radix-ui/react-id';
 import { createCollection } from '@radix-ui/react-collection';
 import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
-import { usePrevious } from '@radix-ui/react-use-previous';
-import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
+import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
+import { usePrevious } from '@radix-ui/react-use-previous';
+import { useResizeObserver } from '@radix-ui/react-use-resize-observer';
 import * as VisuallyHiddenPrimitive from '@radix-ui/react-visually-hidden';
 
 import type * as Radix from '@radix-ui/react-primitive';
@@ -1195,31 +1196,6 @@ function removeFromTabOrder(candidates: HTMLElement[]) {
       candidate.setAttribute('tabindex', prevTabIndex);
     });
   };
-}
-
-function useResizeObserver(element: HTMLElement | null, onResize: () => void) {
-  const handleResize = useCallbackRef(onResize);
-  useLayoutEffect(() => {
-    let rAF = 0;
-    if (element) {
-      /**
-       * Resize Observer will throw an often benign error that says `ResizeObserver loop
-       * completed with undelivered notifications`. This means that ResizeObserver was not
-       * able to deliver all observations within a single animation frame, so we use
-       * `requestAnimationFrame` to ensure we don't deliver unnecessary observations.
-       * Further reading: https://github.com/WICG/resize-observer/issues/38
-       */
-      const resizeObserver = new ResizeObserver(() => {
-        cancelAnimationFrame(rAF);
-        rAF = window.requestAnimationFrame(handleResize);
-      });
-      resizeObserver.observe(element);
-      return () => {
-        window.cancelAnimationFrame(rAF);
-        resizeObserver.unobserve(element);
-      };
-    }
-  }, [element, handleResize]);
 }
 
 function getOpenState(open: boolean) {

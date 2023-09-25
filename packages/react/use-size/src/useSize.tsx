@@ -1,7 +1,9 @@
 /// <reference types="resize-observer-browser" />
 
 import * as React from 'react';
+import { useDebounceCallback } from '@radix-ui/react-use-debounce-callback';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
+import { useResizeObserver } from '@radix-ui/react-use-resize-observer';
 
 function useSize(element: HTMLElement | null) {
   const [size, setSize] = React.useState<{ width: number; height: number } | undefined>(undefined);
@@ -10,8 +12,16 @@ function useSize(element: HTMLElement | null) {
     if (element) {
       // provide size as early as possible
       setSize({ width: element.offsetWidth, height: element.offsetHeight });
+    } else {
+      // We only want to reset to `undefined` when the element becomes `null`,
+      // not if it changes to another element.
+      setSize(undefined);
+    }
+  }, [element]);
 
-      const resizeObserver = new ResizeObserver((entries) => {
+  const handleResize = React.useCallback(
+    (entries: ResizeObserverEntry[]) => {
+      if (element) {
         if (!Array.isArray(entries)) {
           return;
         }
@@ -40,17 +50,13 @@ function useSize(element: HTMLElement | null) {
         }
 
         setSize({ width, height });
-      });
+      }
+    },
+    [element]
+  );
 
-      resizeObserver.observe(element, { box: 'border-box' });
-
-      return () => resizeObserver.unobserve(element);
-    } else {
-      // We only want to reset to `undefined` when the element becomes `null`,
-      // not if it changes to another element.
-      setSize(undefined);
-    }
-  }, [element]);
+  const handleResizeDebounced = useDebounceCallback(handleResize, 10);
+  useResizeObserver(element, handleResizeDebounced);
 
   return size;
 }

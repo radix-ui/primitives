@@ -53,10 +53,12 @@
       "@radix-ui/react-tooltip": ["./packages/react/tooltip/src"],
       "@radix-ui/react-use-callback-ref": ["./packages/react/use-callback-ref/src"],
       "@radix-ui/react-use-controllable-state": ["./packages/react/use-controllable-state/src"],
+      "@radix-ui/react-use-debounce-callback": ["./packages/react/use-debounce-callback/src"],
       "@radix-ui/react-use-escape-keydown": ["./packages/react/use-escape-keydown/src"],
       "@radix-ui/react-use-layout-effect": ["./packages/react/use-layout-effect/src"],
       "@radix-ui/react-use-previous": ["./packages/react/use-previous/src"],
       "@radix-ui/react-use-rect": ["./packages/react/use-rect/src"],
+      "@radix-ui/react-use-resize-observer": ["./packages/react/use-resize-observer/src"],
       "@radix-ui/react-use-size": ["./packages/react/use-size/src"],
       "@radix-ui/react-visually-hidden": ["./packages/react/visually-hidden/src"]
     }
