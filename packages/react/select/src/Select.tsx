@@ -769,6 +769,9 @@ SelectContentImpl.displayName = CONTENT_IMPL_NAME;
 
 const ITEM_ALIGNED_POSITION_NAME = 'SelectItemAlignedPosition';
 
+type ContentWrapperType =
+  | (HTMLDivElement & { recalculateScroll?: (currentTarget: HTMLDivElement) => void })
+  | null;
 type SelectItemAlignedPositionElement = React.ElementRef<typeof Primitive.div>;
 interface SelectItemAlignedPositionProps extends PrimitiveDivProps, SelectPopperPrivateProps {}
 
@@ -779,7 +782,7 @@ const SelectItemAlignedPosition = React.forwardRef<
   const { __scopeSelect, onPlaced, ...popperProps } = props;
   const context = useSelectContext(CONTENT_NAME, __scopeSelect);
   const contentContext = useSelectContentContext(CONTENT_NAME, __scopeSelect);
-  const [contentWrapper, setContentWrapper] = React.useState<HTMLDivElement | null>(null);
+  const [contentWrapper, setContentWrapper] = React.useState<ContentWrapperType>(null);
   const [content, setContent] = React.useState<SelectItemAlignedPositionElement | null>(null);
   const composedRefs = useComposedRefs(forwardedRef, (node) => setContent(node));
   const getItems = useCollection(__scopeSelect);
@@ -872,8 +875,14 @@ const SelectItemAlignedPosition = React.forwardRef<
             viewportOffsetBottom +
             contentBorderBottomWidth
         );
-        const height = contentTopToItemMiddle + clampedTriggerMiddleToBottomEdge;
-        contentWrapper.style.height = height + 'px';
+
+        // recalculateScroll() will only exist when the user has scrolled once in the viewport + when shouldExpandOnScroll is true. We run this because if you add more items, it should NOT change the height of the contentWrapper.
+        if (contentWrapper.recalculateScroll) {
+          contentWrapper.recalculateScroll(contentWrapper);
+        } else {
+          const height = contentTopToItemMiddle + clampedTriggerMiddleToBottomEdge;
+          contentWrapper.style.height = height + 'px';
+        }
       } else {
         const isFirstItem = selectedItem === items[0].ref.current;
         contentWrapper.style.top = 0 + 'px';
@@ -885,8 +894,15 @@ const SelectItemAlignedPosition = React.forwardRef<
             (isFirstItem ? viewportPaddingTop : 0) +
             selectedItemHalfHeight
         );
-        const height = clampedTopEdgeToTriggerMiddle + itemMiddleToContentBottom;
-        contentWrapper.style.height = height + 'px';
+
+        // recalculateScroll() will only exist when the user has scrolled once in the viewport + when shouldExpandOnScroll is true. We run this because if you add more items, it should NOT change the height of the contentWrapper.
+        if (contentWrapper.recalculateScroll) {
+          contentWrapper.recalculateScroll(contentWrapper);
+        } else {
+          const height = clampedTopEdgeToTriggerMiddle + itemMiddleToContentBottom;
+          contentWrapper.style.height = height + 'px';
+        }
+
         viewport.scrollTop = contentTopToItemMiddle - topEdgeToTriggerMiddle + viewport.offsetTop;
       }
 
@@ -1025,7 +1041,7 @@ SelectPopperPosition.displayName = POPPER_POSITION_NAME;
  * -----------------------------------------------------------------------------------------------*/
 
 type SelectViewportContextValue = {
-  contentWrapper?: HTMLDivElement | null;
+  contentWrapper?: ContentWrapperType;
   shouldExpandOnScrollRef?: React.RefObject<boolean>;
   onScrollButtonChange?: (node: SelectScrollButtonImplElement | null) => void;
 };
@@ -1046,6 +1062,35 @@ const SelectViewport = React.forwardRef<SelectViewportElement, SelectViewportPro
     const viewportContext = useSelectViewportContext(VIEWPORT_NAME, __scopeSelect);
     const composedRefs = useComposedRefs(forwardedRef, contentContext.onViewportChange);
     const prevScrollTopRef = React.useRef(0);
+
+    const onScrollHandler = (viewport: HTMLDivElement) => {
+      const { contentWrapper, shouldExpandOnScrollRef } = viewportContext;
+      if (shouldExpandOnScrollRef?.current && contentWrapper) {
+        contentWrapper.recalculateScroll = onScrollHandler;
+        const scrolledBy = Math.abs(prevScrollTopRef.current - viewport.scrollTop);
+        if (scrolledBy > 0) {
+          const availableHeight = window.innerHeight - CONTENT_MARGIN * 2;
+          const cssMinHeight = parseFloat(contentWrapper.style.minHeight);
+          const cssHeight = parseFloat(contentWrapper.style.height);
+          const prevHeight = Math.max(cssMinHeight, cssHeight);
+
+          if (prevHeight < availableHeight) {
+            const nextHeight = prevHeight + scrolledBy;
+            const clampedNextHeight = Math.min(availableHeight, nextHeight);
+            const heightDiff = nextHeight - clampedNextHeight;
+
+            contentWrapper.style.height = clampedNextHeight + 'px';
+            if (contentWrapper.style.bottom === '0px') {
+              viewport.scrollTop = heightDiff > 0 ? heightDiff : 0;
+              // ensure the content stays pinned to the bottom
+              contentWrapper.style.justifyContent = 'flex-end';
+            }
+          }
+        }
+      }
+      prevScrollTopRef.current = viewport.scrollTop;
+    };
+
     return (
       <>
         {/* Hide scrollbars cross-browser and enable momentum scroll for touch devices */}
@@ -1069,33 +1114,9 @@ const SelectViewport = React.forwardRef<SelectViewportElement, SelectViewportPro
               overflow: 'auto',
               ...viewportProps.style,
             }}
-            onScroll={composeEventHandlers(viewportProps.onScroll, (event) => {
-              const viewport = event.currentTarget;
-              const { contentWrapper, shouldExpandOnScrollRef } = viewportContext;
-              if (shouldExpandOnScrollRef?.current && contentWrapper) {
-                const scrolledBy = Math.abs(prevScrollTopRef.current - viewport.scrollTop);
-                if (scrolledBy > 0) {
-                  const availableHeight = window.innerHeight - CONTENT_MARGIN * 2;
-                  const cssMinHeight = parseFloat(contentWrapper.style.minHeight);
-                  const cssHeight = parseFloat(contentWrapper.style.height);
-                  const prevHeight = Math.max(cssMinHeight, cssHeight);
-
-                  if (prevHeight < availableHeight) {
-                    const nextHeight = prevHeight + scrolledBy;
-                    const clampedNextHeight = Math.min(availableHeight, nextHeight);
-                    const heightDiff = nextHeight - clampedNextHeight;
-
-                    contentWrapper.style.height = clampedNextHeight + 'px';
-                    if (contentWrapper.style.bottom === '0px') {
-                      viewport.scrollTop = heightDiff > 0 ? heightDiff : 0;
-                      // ensure the content stays pinned to the bottom
-                      contentWrapper.style.justifyContent = 'flex-end';
-                    }
-                  }
-                }
-              }
-              prevScrollTopRef.current = viewport.scrollTop;
-            })}
+            onScroll={composeEventHandlers(viewportProps.onScroll, (event) =>
+              onScrollHandler(event.currentTarget)
+            )}
           />
         </Collection.Slot>
       </>
