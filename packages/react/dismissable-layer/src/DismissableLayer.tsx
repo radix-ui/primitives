@@ -106,6 +106,9 @@ const DismissableLayer = React.forwardRef<DismissableLayerElement, DismissableLa
       if (!isHighestLayer) return;
       onEscapeKeyDown?.(event);
       if (!event.defaultPrevented && onDismiss) {
+        const isTargetDialog = (event.target as HTMLElement).tagName === 'DIALOG';
+        if (isTargetDialog) return;
+
         event.preventDefault();
         onDismiss();
       }
