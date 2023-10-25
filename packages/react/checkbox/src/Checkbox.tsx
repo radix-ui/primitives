@@ -48,6 +48,7 @@ const Checkbox = React.forwardRef<CheckboxElement, CheckboxProps>(
       defaultChecked,
       required,
       disabled,
+      form,
       value = 'on',
       onCheckedChange,
       ...checkboxProps
@@ -56,7 +57,7 @@ const Checkbox = React.forwardRef<CheckboxElement, CheckboxProps>(
     const composedRefs = useComposedRefs(forwardedRef, (node) => setButton(node));
     const hasConsumerStoppedPropagationRef = React.useRef(false);
     // We set this to true by default so that events bubble to forms without JS (SSR)
-    const isFormControl = button ? Boolean(button.closest('form')) : true;
+    const isFormControl = button ? Boolean(button.form) : true;
     const [checked = false, setChecked] = useControllableState({
       prop: checkedProp,
       defaultProp: defaultChecked,
@@ -109,6 +110,7 @@ const Checkbox = React.forwardRef<CheckboxElement, CheckboxProps>(
             checked={checked}
             required={required}
             disabled={disabled}
+            form={form}
             // We transform because the input is absolutely positioned but we have
             // rendered it **after** the button. This pulls it back to sit on top
             // of the button.
