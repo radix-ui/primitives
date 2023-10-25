@@ -83,6 +83,7 @@ const Checkbox = React.forwardRef<CheckboxElement, CheckboxProps>(
           data-state={getState(checked)}
           data-disabled={disabled ? '' : undefined}
           disabled={disabled}
+          form={form}
           value={value}
           {...checkboxProps}
           ref={composedRefs}
