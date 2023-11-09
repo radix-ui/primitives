@@ -1202,12 +1202,6 @@ const SelectItem = React.forwardRef<SelectItemElement, SelectItemProps>(
       }
     };
 
-    if (value === '') {
-      throw new Error(
-        'A <Select.Item /> must have a value prop that is not an empty string. This is because the Select value can be set to an empty string to clear the selection and show the placeholder.'
-      );
-    }
-
     return (
       <SelectItemContextProvider
         scope={__scopeSelect}
