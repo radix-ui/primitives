@@ -8,10 +8,10 @@ const pureDisplayNames = () => ({
       if (
         path.node.left.type === 'MemberExpression' &&
         path.node.left.property.name === 'displayName' &&
-        path.node.right.name
+        (path.node.right.name || path.node.right.extra?.raw)
       ) {
         const COMPONENT = path.node.left.object.name;
-        const DISPLAY_NAME = path.node.right.name;
+        const DISPLAY_NAME = path.node.right.name || path.node.right.extra?.raw;
         const ast = buildAssign({ COMPONENT, DISPLAY_NAME });
         path.replaceWith(ast);
         path.addComment('leading', '#__PURE__');

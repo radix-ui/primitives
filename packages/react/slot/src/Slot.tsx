@@ -1,3 +1,5 @@
+'use client';
+
 import * as React from 'react';
 import { composeRefs } from '@radix-ui/react-compose-refs';
 
@@ -59,15 +61,16 @@ interface SlotCloneProps {
 
 const SlotClone = React.forwardRef<any, SlotCloneProps>((props, forwardedRef) => {
   const { children, ...slotProps } = props;
-
-  if (React.isValidElement(children)) {
-    return React.cloneElement(children, {
-      ...mergeProps(slotProps, children.props),
-      ref: forwardedRef ? composeRefs(forwardedRef, (children as any).ref) : (children as any).ref,
-    });
-  }
-
-  return React.Children.count(children) > 1 ? React.Children.only(null) : null;
+  // we check if children exist to avoid throwing when `{isBool && <Comp />}` is used
+  const child = children ? React.Children.only(children) : null;
+  const { handlerProps, otherProps } = mergeProps(slotProps, (child as any)?.props);
+  const callbacks = useCallbackRefs({
+    ...handlerProps,
+    ref: composeRefs(forwardedRef, (child as any)?.ref),
+  });
+  return React.isValidElement(child)
+    ? React.cloneElement(child, { ...otherProps, ...callbacks })
+    : null;
 });
 
 SlotClone.displayName = 'SlotClone';
@@ -82,43 +85,65 @@ const Slottable = ({ children }: { children: React.ReactNode }) => {
 
 /* ---------------------------------------------------------------------------------------------- */
 
+type AnyEvent = (...args: unknown[]) => void;
 type AnyProps = Record<string, any>;
+type HandlerProps = Record<string, AnyEvent | undefined>;
 
 function isSlottable(child: React.ReactNode): child is React.ReactElement {
   return React.isValidElement(child) && child.type === Slottable;
 }
 
+const useCallbackRefs = (callbacks: Record<string, AnyEvent>) => {
+  const callbacksRef = React.useRef(callbacks);
+
+  React.useLayoutEffect(() => {
+    callbacksRef.current = callbacks;
+  });
+
+  return React.useMemo(() => {
+    const entries = Object.keys(callbacksRef.current).map((name) => {
+      // we wrap the callback in a function to ensure that it uses the latest ref when called
+      const callback = (...args: unknown[]) => callbacksRef.current[name](...args);
+      return [name, callback];
+    });
+    return Object.fromEntries(entries);
+  }, []);
+};
+
+const HANDLER_REGEX = /^on[A-Z]/;
+
 function mergeProps(slotProps: AnyProps, childProps: AnyProps) {
-  // all child props should override
-  const overrideProps = { ...childProps };
+  // child props should override
+  const merged = { ...slotProps, ...childProps };
+  const handlerProps: HandlerProps = {};
+  const otherProps: AnyProps = {};
 
-  for (const propName in childProps) {
-    const slotPropValue = slotProps[propName];
-    const childPropValue = childProps[propName];
+  Object.entries(childProps).forEach(([childPropName, childPropValue]) => {
+    const slotPropValue = slotProps[childPropName];
 
-    const isHandler = /^on[A-Z]/.test(propName);
-    if (isHandler) {
-      // if the handler exists on both, we compose them
-      if (slotPropValue && childPropValue) {
-        overrideProps[propName] = (...args: unknown[]) => {
-          childPropValue(...args);
-          slotPropValue(...args);
-        };
-      }
-      // but if it exists only on the slot, we use only this one
-      else if (slotPropValue) {
-        overrideProps[propName] = slotPropValue;
-      }
+    if (HANDLER_REGEX.test(childPropName) && slotPropValue) {
+      handlerProps[childPropName] = composeEvents(slotPropValue, childPropValue);
+    } else {
+      otherProps[childPropName] = merged[childPropName];
     }
-    // if it's `style`, we merge them
-    else if (propName === 'style') {
-      overrideProps[propName] = { ...slotPropValue, ...childPropValue };
-    } else if (propName === 'className') {
-      overrideProps[propName] = [slotPropValue, childPropValue].filter(Boolean).join(' ');
-    }
+  });
+
+  if (slotProps.style && childProps.style) {
+    otherProps.style = { ...slotProps.style, ...childProps.style };
   }
 
-  return { ...slotProps, ...overrideProps };
+  if (slotProps.className && childProps.className) {
+    otherProps.className = `${slotProps.className} ${childProps.className}`;
+  }
+
+  return { handlerProps, otherProps };
+}
+
+function composeEvents(slotEvent: AnyEvent, childEvent: (...args: unknown[]) => void) {
+  return (...args: unknown[]) => {
+    childEvent(...args);
+    slotEvent(...args);
+  };
 }
 
 const Root = Slot;
