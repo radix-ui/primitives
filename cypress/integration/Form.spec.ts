@@ -153,6 +153,28 @@ describe('Form', () => {
       cy.findByText(/not valid/).should('not.exist');
     });
 
+    it('should handle custom validity (sync custom validator) with untouched same previous value', () => {
+      cy.findByLabelText(/secret 1/i)
+        .as('control')
+        .focus()
+        .realType('secret');
+      cy.realPress('Tab');
+      cy.findByText(/not valid/).as('message');
+      checkControlMessageAssociation();
+
+      cy.findByLabelText(/secret 1/i)
+        .as('control')
+        .focus()
+        .realType('secret');
+      cy.realPress('Tab');
+      cy.findByText(/not valid/).as('message');
+      checkControlMessageAssociation();
+
+      cy.get('@control').focus().clear().realType('shush');
+      cy.realPress('Tab');
+      cy.findByText(/not valid/).should('not.exist');
+    });
+
     it('should handle custom validity (async custom validator)', () => {
       cy.findByLabelText(/secret 2/i)
         .as('control')

@@ -371,6 +371,24 @@ const FormControl = React.forwardRef<FormControlElement, FormControlProps>(
       }
     }, [name, onFieldValiditionClear]);
 
+    React.useEffect(() => {
+      const control = ref.current;
+      if (control) {
+        // It emits a 'change' event on blur since this is an uncontrolled input.
+        // For cases when programatically `control.value` or same previous value is set on input,
+        // `change` event is not emitted, so the following manually emits on `blur`.
+        // It skips when value is "" so focus then blur on input doesn't trigger validation.
+        const handleBlur = () => {
+          if (control.value === '') {
+            return;
+          }
+          control.dispatchEvent(new Event('change'));
+        };
+        control.addEventListener('blur', handleBlur);
+        return () => control.removeEventListener('change', handleBlur);
+      }
+    }, []);
+
     // reset validity and errors when the form is reset
     React.useEffect(() => {
       const form = ref.current?.form;
