@@ -29,6 +29,11 @@ describe('Toast', () => {
       cy.findByText('Add toast').click();
     });
 
+    it('should have no acessibility issues', () => {
+      cy.injectAxe();
+      cy.checkA11y('[aria-label="Notifications (F8)"]');
+    });
+
     it('should reverse tab order from most recent to least', () => {
       cy.findByText('Focusable before viewport').focus();
 

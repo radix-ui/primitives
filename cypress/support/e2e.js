@@ -16,6 +16,7 @@
 // Import commands.js using ES2015 syntax:
 import '@testing-library/cypress/add-commands';
 import 'cypress-real-events/support';
+import 'cypress-axe';
 import './commands';
 
 // Alternatively you can use CommonJS syntax:
