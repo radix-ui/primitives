@@ -523,10 +523,6 @@ const ScrollAreaScrollbarX = React.forwardRef<
         if (context.viewport) {
           const scrollPos = context.viewport.scrollLeft + event.deltaX;
           props.onWheelScroll(scrollPos);
-          // prevent window scroll when wheeling on scrollbar
-          if (isScrollingWithinScrollbarBounds(scrollPos, maxScrollPos)) {
-            event.preventDefault();
-          }
         }
       }}
       onResize={() => {
@@ -580,10 +576,6 @@ const ScrollAreaScrollbarY = React.forwardRef<
         if (context.viewport) {
           const scrollPos = context.viewport.scrollTop + event.deltaY;
           props.onWheelScroll(scrollPos);
-          // prevent window scroll when wheeling on scrollbar
-          if (isScrollingWithinScrollbarBounds(scrollPos, maxScrollPos)) {
-            event.preventDefault();
-          }
         }
       }}
       onResize={() => {
@@ -671,16 +663,16 @@ const ScrollAreaScrollbarImpl = React.forwardRef<
 
   /**
    * We bind wheel event imperatively so we can switch off passive
-   * mode for document wheel event to allow it to be prevented
+   * mode for scrollbar wheel event to allow it to be prevented.
    */
   React.useEffect(() => {
     const handleWheel = (event: WheelEvent) => {
-      const element = event.target as HTMLElement;
-      const isScrollbarWheel = scrollbar?.contains(element);
-      if (isScrollbarWheel) handleWheelScroll(event, maxScrollPos);
+      event.preventDefault();
+      handleWheelScroll(event, maxScrollPos);
     };
-    document.addEventListener('wheel', handleWheel, { passive: false });
-    return () => document.removeEventListener('wheel', handleWheel, { passive: false } as any);
+
+    scrollbar?.addEventListener('wheel', handleWheel, { passive: false });
+    return () => scrollbar?.removeEventListener('wheel', handleWheel, { passive: false } as any);
   }, [viewport, scrollbar, maxScrollPos, handleWheelScroll]);
 
   /**
@@ -950,10 +942,6 @@ function linearScale(input: readonly [number, number], output: readonly [number,
     const ratio = (output[1] - output[0]) / (input[1] - input[0]);
     return output[0] + ratio * (value - input[0]);
   };
-}
-
-function isScrollingWithinScrollbarBounds(scrollPos: number, maxScrollPos: number) {
-  return scrollPos > 0 && scrollPos < maxScrollPos;
 }
 
 // Custom scroll handler to avoid scroll-linked effects
