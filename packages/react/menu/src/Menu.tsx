@@ -394,7 +394,8 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
       : undefined;
 
     const handleTypeaheadSearch = (key: string) => {
-      const search = searchRef.current + key;
+      const isBackspaceKey = key === 'Backspace';
+      const search = isBackspaceKey ? searchRef.current.slice(0, -1) : searchRef.current + key;
       const items = getItems().filter((item) => !item.disabled);
       const currentItem = document.activeElement;
       const currentMatch = items.find((item) => item.ref.current === currentItem)?.textValue;
@@ -511,10 +512,12 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
                       target.closest('[data-radix-menu-content]') === event.currentTarget;
                     const isModifierKey = event.ctrlKey || event.altKey || event.metaKey;
                     const isCharacterKey = event.key.length === 1;
+                    const isBackspaceKey = event.key === 'Backspace';
                     if (isKeyDownInside) {
                       // menus should not be navigated using tab key so we prevent it
                       if (event.key === 'Tab') event.preventDefault();
-                      if (!isModifierKey && isCharacterKey) handleTypeaheadSearch(event.key);
+                      if (!isModifierKey && (isCharacterKey || isBackspaceKey))
+                        handleTypeaheadSearch(event.key);
                     }
                     // focus first/last item based on key pressed
                     const content = contentRef.current;
