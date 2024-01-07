@@ -286,7 +286,10 @@ const SelectTrigger = React.forwardRef<SelectTriggerElement, SelectTriggerProps>
           onKeyDown={composeEventHandlers(triggerProps.onKeyDown, (event) => {
             const isTypingAhead = searchRef.current !== '';
             const isModifierKey = event.ctrlKey || event.altKey || event.metaKey;
-            if (!isModifierKey && (event.key.length === 1 || event.key === 'Backspace')) {
+            const isCharacterKey = event.key.length === 1;
+            const isBackspaceKey = event.key === 'Backspace';
+
+            if (!isModifierKey && (isCharacterKey || isBackspaceKey)) {
               handleTypeaheadSearch(event.key);
             }
             if (isTypingAhead && event.key === ' ') return;
@@ -730,7 +733,10 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
                   // select should not be navigated using tab key so we prevent it
                   if (event.key === 'Tab') event.preventDefault();
 
-                  if (!isModifierKey && (event.key.length === 1 || event.key === 'Backspace')) {
+                  const isCharacterKey = event.key.length === 1;
+                  const isBackspaceKey = event.key === 'Backspace';
+
+                  if (!isModifierKey && (isCharacterKey || isBackspaceKey)) {
                     handleTypeaheadSearch(event.key);
                   }
 
@@ -1606,7 +1612,8 @@ function useTypeaheadSearch(onSearchChange: (search: string) => void) {
 
   const handleTypeaheadSearch = React.useCallback(
     (key: string) => {
-      const search = key === 'Backspace' ? searchRef.current.slice(0, -1) : searchRef.current + key;
+      const isBackspaceKey = key === 'Backspace';
+      const search = isBackspaceKey ? searchRef.current.slice(0, -1) : searchRef.current + key;
       handleSearchChange(search);
 
       (function updateSearch(value: string) {
