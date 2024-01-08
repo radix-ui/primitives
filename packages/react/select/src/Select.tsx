@@ -286,7 +286,12 @@ const SelectTrigger = React.forwardRef<SelectTriggerElement, SelectTriggerProps>
           onKeyDown={composeEventHandlers(triggerProps.onKeyDown, (event) => {
             const isTypingAhead = searchRef.current !== '';
             const isModifierKey = event.ctrlKey || event.altKey || event.metaKey;
-            if (!isModifierKey && event.key.length === 1) handleTypeaheadSearch(event.key);
+            const isCharacterKey = event.key.length === 1;
+            const isBackspaceKey = event.key === 'Backspace';
+
+            if (!isModifierKey && (isCharacterKey || isBackspaceKey)) {
+              handleTypeaheadSearch(event.key);
+            }
             if (isTypingAhead && event.key === ' ') return;
             if (OPEN_KEYS.includes(event.key)) {
               handleOpen();
@@ -728,7 +733,12 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
                   // select should not be navigated using tab key so we prevent it
                   if (event.key === 'Tab') event.preventDefault();
 
-                  if (!isModifierKey && event.key.length === 1) handleTypeaheadSearch(event.key);
+                  const isCharacterKey = event.key.length === 1;
+                  const isBackspaceKey = event.key === 'Backspace';
+
+                  if (!isModifierKey && (isCharacterKey || isBackspaceKey)) {
+                    handleTypeaheadSearch(event.key);
+                  }
 
                   if (['ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) {
                     const items = getItems().filter((item) => !item.disabled);
@@ -1602,7 +1612,8 @@ function useTypeaheadSearch(onSearchChange: (search: string) => void) {
 
   const handleTypeaheadSearch = React.useCallback(
     (key: string) => {
-      const search = searchRef.current + key;
+      const isBackspaceKey = key === 'Backspace';
+      const search = isBackspaceKey ? '' : searchRef.current + key;
       handleSearchChange(search);
 
       (function updateSearch(value: string) {
