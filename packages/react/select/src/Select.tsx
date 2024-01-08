@@ -1613,7 +1613,7 @@ function useTypeaheadSearch(onSearchChange: (search: string) => void) {
   const handleTypeaheadSearch = React.useCallback(
     (key: string) => {
       const isBackspaceKey = key === 'Backspace';
-      const search = isBackspaceKey ? searchRef.current.slice(0, -1) : searchRef.current + key;
+      const search = isBackspaceKey ? '' : searchRef.current + key;
       handleSearchChange(search);
 
       (function updateSearch(value: string) {
