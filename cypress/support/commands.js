@@ -28,3 +28,8 @@ Cypress.Commands.add('visitStory', (storyName, options) => {
   // eslint-disable-next-line cypress/no-unnecessary-waiting
   return cy.visit(`iframe.html?id=components-${storyName}`, options).wait(0);
 });
+
+Cypress.Commands.add('visitUtilityStory', (storyName, options) => {
+  // eslint-disable-next-line cypress/no-unnecessary-waiting
+  return cy.visit(`iframe.html?id=utilities-${storyName}`, options).wait(0);
+});
