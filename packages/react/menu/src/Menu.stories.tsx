@@ -360,6 +360,21 @@ export const Animated = () => {
   );
 };
 
+export const Cypress = () => (
+  <MenuWithAnchor>
+    <Menu.Item className={itemClass()} onSelect={() => window.alert('undo')}>
+      Undo
+    </Menu.Item>
+    <Menu.Item className={itemClass()} onSelect={() => window.alert('redo')}>
+      Redo
+    </Menu.Item>
+    <Menu.Separator className={separatorClass()} />
+    <Menu.Item className={itemClass()} onSelect={() => window.alert('cut')}>
+      Cut
+    </Menu.Item>
+  </MenuWithAnchor>
+);
+
 type MenuProps = Omit<
   React.ComponentProps<typeof Menu.Root> & React.ComponentProps<typeof Menu.Content>,
   'trapFocus' | 'onCloseAutoFocus' | 'disableOutsidePointerEvents' | 'disableOutsideScroll'
