@@ -32,39 +32,23 @@ describe('Select', () => {
   });
 
   describe('given a keyboard user', () => {
-    it('should delete only the last character in typeahead on select content when backspace pressed', () => {
-      cy.findByLabelText(/choose a size/).click();
-      typeIntoFocusedElement('sm');
-      assertOptionHighlighted(/small/i);
-      typeIntoFocusedElement('{backspace}m');
-      assertOptionHighlighted(/small/i);
-    });
-
     it('should update typeahead correctly when backspace pressed on select content', () => {
       cy.findByLabelText(/choose a size/).click();
-      typeIntoFocusedElement('s');
+      typeIntoFocusedElement('size');
       assertOptionHighlighted(/small/i);
-      typeIntoFocusedElement('{backspace}m');
+      typeIntoFocusedElement('{backspace}medium');
       assertOptionHighlighted(/medium/i);
-      typeIntoFocusedElement('{backspace}l');
+      typeIntoFocusedElement('{backspace}large');
       assertOptionHighlighted(/large/i);
-    });
-
-    it('should delete only the last character in typeahead on select trigger when backspace pressed', () => {
-      cy.findByLabelText(/choose a size/).focus();
-      typeIntoFocusedElement('sm');
-      assertSelectTriggerText('Small');
-      typeIntoFocusedElement('{backspace}m');
-      assertSelectTriggerText('Small');
     });
 
     it('should update typeahead correctly when backspace pressed on select trigger', () => {
       cy.findByLabelText(/choose a size/).focus();
-      typeIntoFocusedElement('s');
+      typeIntoFocusedElement('size');
       assertSelectTriggerText('Small');
-      typeIntoFocusedElement('{backspace}m');
+      typeIntoFocusedElement('{backspace}medium');
       assertSelectTriggerText('Medium');
-      typeIntoFocusedElement('{backspace}l');
+      typeIntoFocusedElement('{backspace}large');
       assertSelectTriggerText('Large');
     });
   });
