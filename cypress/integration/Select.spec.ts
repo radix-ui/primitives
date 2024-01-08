@@ -34,38 +34,52 @@ describe('Select', () => {
   describe('given a keyboard user', () => {
     it('should delete only the last character in typeahead on select content when backspace pressed', () => {
       cy.findByLabelText(/choose a size/).click();
-      cy.focused().type('sm');
-      cy.findByRole('option', { name: /small/i }).should('have.attr', 'data-highlighted');
-      cy.focused().type('{backspace}m');
-      cy.findByRole('option', { name: /small/i }).should('have.attr', 'data-highlighted');
+      typeIntoFocusedElement('sm');
+      assertOptionHighlighted(/small/i);
+      typeIntoFocusedElement('{backspace}m');
+      assertOptionHighlighted(/small/i);
     });
 
     it('should update typeahead correctly when backspace pressed on select content', () => {
       cy.findByLabelText(/choose a size/).click();
-      cy.focused().type('s');
-      cy.findByRole('option', { name: /small/i }).should('have.attr', 'data-highlighted');
-      cy.focused().type('{backspace}m');
-      cy.findByRole('option', { name: /medium/i }).should('have.attr', 'data-highlighted');
-      cy.focused().type('{backspace}l');
-      cy.findByRole('option', { name: /large/i }).should('have.attr', 'data-highlighted');
+      typeIntoFocusedElement('s');
+      assertOptionHighlighted(/small/i);
+      typeIntoFocusedElement('{backspace}m');
+      assertOptionHighlighted(/medium/i);
+      typeIntoFocusedElement('{backspace}l');
+      assertOptionHighlighted(/large/i);
     });
 
     it('should delete only the last character in typeahead on select trigger when backspace pressed', () => {
       cy.findByLabelText(/choose a size/).focus();
-      cy.focused().type('sm');
-      cy.findByLabelText(/choose a size/).should('contain.text', 'Small');
-      cy.focused().type('{backspace}m');
-      cy.findByLabelText(/choose a size/).should('contain.text', 'Small');
+      typeIntoFocusedElement('sm');
+      assertSelectTriggerText('Small');
+      typeIntoFocusedElement('{backspace}m');
+      assertSelectTriggerText('Small');
     });
 
     it('should update typeahead correctly when backspace pressed on select trigger', () => {
       cy.findByLabelText(/choose a size/).focus();
-      cy.focused().type('s');
-      cy.findByLabelText(/choose a size/).should('contain.text', 'Small');
-      cy.focused().type('{backspace}m');
-      cy.findByLabelText(/choose a size/).should('contain.text', 'Medium');
-      cy.focused().type('{backspace}l');
-      cy.findByLabelText(/choose a size/).should('contain.text', 'Large');
+      typeIntoFocusedElement('s');
+      assertSelectTriggerText('Small');
+      typeIntoFocusedElement('{backspace}m');
+      assertSelectTriggerText('Medium');
+      typeIntoFocusedElement('{backspace}l');
+      assertSelectTriggerText('Large');
     });
   });
+
+  /* ---------------------------------------------------------------------------------------------- */
+
+  function typeIntoFocusedElement(text: string) {
+    cy.focused().type(text);
+  }
+
+  function assertOptionHighlighted(textRegex: RegExp) {
+    cy.findByRole('option', { name: textRegex }).should('have.attr', 'data-highlighted');
+  }
+
+  function assertSelectTriggerText(text: string) {
+    cy.findByLabelText(/choose a size/).should('contain.text', text);
+  }
 });
