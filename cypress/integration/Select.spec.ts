@@ -30,4 +30,40 @@ describe('Select', () => {
       cy.findByText('…').should('exist');
     });
   });
+
+  describe('given a keyboard user', () => {
+    it('should update typeahead correctly when backspace pressed on select content', () => {
+      cy.findByLabelText(/choose a size/).click();
+      typeIntoFocusedElement('size');
+      assertOptionHighlighted(/small/i);
+      typeIntoFocusedElement('{backspace}medium');
+      assertOptionHighlighted(/medium/i);
+      typeIntoFocusedElement('{backspace}large');
+      assertOptionHighlighted(/large/i);
+    });
+
+    it('should update typeahead correctly when backspace pressed on select trigger', () => {
+      cy.findByLabelText(/choose a size/).focus();
+      typeIntoFocusedElement('size');
+      assertSelectTriggerText('Small');
+      typeIntoFocusedElement('{backspace}medium');
+      assertSelectTriggerText('Medium');
+      typeIntoFocusedElement('{backspace}large');
+      assertSelectTriggerText('Large');
+    });
+  });
+
+  /* ---------------------------------------------------------------------------------------------- */
+
+  function typeIntoFocusedElement(text: string) {
+    cy.focused().type(text);
+  }
+
+  function assertOptionHighlighted(textRegex: RegExp) {
+    cy.findByRole('option', { name: textRegex }).should('have.attr', 'data-highlighted');
+  }
+
+  function assertSelectTriggerText(text: string) {
+    cy.findByLabelText(/choose a size/).should('contain.text', text);
+  }
 });
