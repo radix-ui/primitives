@@ -77,13 +77,15 @@ type SelectNativeOptionsContextValue = {
   onNativeOptionRemove(option: NativeOption): void;
 };
 const [SelectNativeOptionsProvider, useSelectNativeOptionsContext] =
-  createSelectContext<SelectNativeOptionsContextValue>(SELECT_NAME);
+createSelectContext<SelectNativeOptionsContextValue>(SELECT_NAME);
+
+type Item = string | number | object;
 
 interface SelectProps {
   children?: React.ReactNode;
-  value?: string;
-  defaultValue?: string;
-  onValueChange?(value: string): void;
+  value?: Item;
+  defaultValue?: Item;
+  onValueChange?(value: Item): void;
   open?: boolean;
   defaultOpen?: boolean;
   onOpenChange?(open: boolean): void;
@@ -1171,7 +1173,7 @@ const [SelectItemContextProvider, useSelectItemContext] =
 
 type SelectItemElement = React.ElementRef<typeof Primitive.div>;
 interface SelectItemProps extends PrimitiveDivProps {
-  value: string;
+  value: Item;
   disabled?: boolean;
   textValue?: string;
 }
