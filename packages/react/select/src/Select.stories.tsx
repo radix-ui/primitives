@@ -57,7 +57,7 @@ export const Styled = () => (
 );
 
 export const Controlled = () => {
-  const [value, setValue] = React.useState('uk');
+  const [value, setValue] = React.useState<string | number>('uk');
   return (
     <div style={{ display: 'flex', gap: 20, padding: 50 }}>
       {POSITIONS.map((position) => (
@@ -774,7 +774,7 @@ ChromaticNoDefaultValue.parameters = { chromatic: { disable: false } };
 
 export const Cypress = () => {
   const [data, setData] = React.useState<{ size?: 'S' | 'M' | 'L' }>({});
-  const [model, setModel] = React.useState<string | undefined>('');
+  const [model, setModel] = React.useState<string | number | undefined>('');
 
   function handleChange(event: React.FormEvent<HTMLFormElement>) {
     const formData = new FormData(event.currentTarget);
