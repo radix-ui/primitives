@@ -370,6 +370,11 @@ SelectIcon.displayName = ICON_NAME;
 
 const PORTAL_NAME = 'SelectPortal';
 
+type PortalContextValue = { forceMount?: true };
+const [PortalProvider, usePortalContext] = createSelectContext<PortalContextValue>(PORTAL_NAME, {
+  forceMount: undefined,
+});
+
 type PortalProps = React.ComponentPropsWithoutRef<typeof PortalPrimitive>;
 interface SelectPortalProps {
   children?: React.ReactNode;
@@ -377,10 +382,25 @@ interface SelectPortalProps {
    * Specify a container element to portal the content into.
    */
   container?: PortalProps['container'];
+  /**
+   * Used to force mounting when more control is needed. Useful when
+   * controlling animation with React animation libraries.
+   */
+  forceMount?: true;
 }
 
 const SelectPortal: React.FC<SelectPortalProps> = (props: ScopedProps<SelectPortalProps>) => {
-  return <PortalPrimitive asChild {...props} />;
+  const { __scopeSelect, forceMount, children, container } = props;
+  const context = useSelectContext(PORTAL_NAME, __scopeSelect);
+  return (
+    <PortalProvider scope={__scopeSelect} forceMount={forceMount}>
+      <Presence present={forceMount || context.open}>
+        <PortalPrimitive asChild container={container}>
+          {children}
+        </PortalPrimitive>
+      </Presence>
+    </PortalProvider>
+  );
 };
 
 SelectPortal.displayName = PORTAL_NAME;
