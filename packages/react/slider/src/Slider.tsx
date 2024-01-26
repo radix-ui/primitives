@@ -71,6 +71,7 @@ interface SliderProps
   onValueChange?(value: number[]): void;
   onValueCommit?(value: number[]): void;
   inverted?: boolean;
+  form?: string;
 }
 
 const Slider = React.forwardRef<SliderElement, SliderProps>(
@@ -88,6 +89,7 @@ const Slider = React.forwardRef<SliderElement, SliderProps>(
       onValueChange = () => {},
       onValueCommit = () => {},
       inverted = false,
+      form,
       ...sliderProps
     } = props;
     const [slider, setSlider] = React.useState<HTMLSpanElement | null>(null);
@@ -96,7 +98,7 @@ const Slider = React.forwardRef<SliderElement, SliderProps>(
     const valueIndexToChangeRef = React.useRef<number>(0);
     const isHorizontal = orientation === 'horizontal';
     // We set this to true by default so that events bubble to forms without JS (SSR)
-    const isFormControl = slider ? Boolean(slider.closest('form')) : true;
+    const isFormControl = slider ? Boolean(slider.closest('form')) || form !== undefined : true;
     const SliderOrientation = isHorizontal ? SliderHorizontal : SliderVertical;
 
     const [values = [], setValues] = useControllableState({
@@ -195,6 +197,7 @@ const Slider = React.forwardRef<SliderElement, SliderProps>(
               key={index}
               name={name ? name + (values.length > 1 ? '[]' : '') : undefined}
               value={value}
+              form={form}
             />
           ))}
       </SliderProvider>
