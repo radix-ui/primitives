@@ -46,7 +46,7 @@ const Radio = React.forwardRef<RadioElement, RadioProps>(
     const composedRefs = useComposedRefs(forwardedRef, (node) => setButton(node));
     const hasConsumerStoppedPropagationRef = React.useRef(false);
     // We set this to true by default so that events bubble to forms without JS (SSR)
-    const isFormControl = button ? Boolean(button.closest('form')) : true;
+    const isFormControl = button ? Boolean(button.closest('form')) || Boolean(button.form) : true;
 
     return (
       <RadioProvider scope={__scopeRadio} checked={checked} disabled={disabled}>
