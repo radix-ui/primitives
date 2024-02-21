@@ -278,6 +278,7 @@ const TooltipTrigger = React.forwardRef<TooltipTriggerElement, TooltipTriggerPro
           // commonly anchors and the anchor `type` attribute signifies MIME type.
           aria-describedby={context.open ? context.contentId : undefined}
           data-state={context.stateAttribute}
+          data-tooltip-state={context.stateAttribute}
           {...triggerProps}
           ref={composedRefs}
           onPointerMove={composeEventHandlers(props.onPointerMove, (event) => {
@@ -533,6 +534,7 @@ const TooltipContentImpl = React.forwardRef<TooltipContentImplElement, TooltipCo
       >
         <PopperPrimitive.Content
           data-state={context.stateAttribute}
+          data-tooltip-state={context.stateAttribute}
           {...popperScope}
           {...contentProps}
           ref={forwardedRef}

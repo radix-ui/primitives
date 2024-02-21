@@ -236,6 +236,7 @@ const MenubarTrigger = React.forwardRef<MenubarTriggerElement, MenubarTriggerPro
               aria-controls={open ? menuContext.contentId : undefined}
               data-highlighted={isFocused ? '' : undefined}
               data-state={open ? 'open' : 'closed'}
+              data-menubar-state={open ? 'open' : 'closed'}
               data-disabled={disabled ? '' : undefined}
               disabled={disabled}
               {...triggerProps}

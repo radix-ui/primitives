@@ -146,6 +146,7 @@ const PopoverTrigger = React.forwardRef<PopoverTriggerElement, PopoverTriggerPro
         aria-expanded={context.open}
         aria-controls={context.contentId}
         data-state={getState(context.open)}
+        data-popover-state={getState(context.open)}
         {...triggerProps}
         ref={composedTriggerRef}
         onClick={composeEventHandlers(props.onClick, context.onOpenToggle)}
@@ -416,6 +417,7 @@ const PopoverContentImpl = React.forwardRef<PopoverContentImplElement, PopoverCo
         >
           <PopperPrimitive.Content
             data-state={getState(context.open)}
+            data-popover-state={getState(context.open)}
             role="dialog"
             id={context.contentId}
             {...popperScope}

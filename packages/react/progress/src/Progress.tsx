@@ -51,6 +51,7 @@ const Progress = React.forwardRef<ProgressElement, ProgressProps>(
           aria-valuetext={valueLabel}
           role="progressbar"
           data-state={getProgressState(value, max)}
+          data-progress-state={getProgressState(value, max)}
           data-value={value ?? undefined}
           data-max={max}
           {...progressProps}
@@ -99,6 +100,7 @@ const ProgressIndicator = React.forwardRef<ProgressIndicatorElement, ProgressInd
     return (
       <Primitive.div
         data-state={getProgressState(context.value, context.max)}
+        data-progress-state={getProgressState(context.value, context.max)}
         data-value={context.value ?? undefined}
         data-max={context.max}
         {...indicatorProps}

@@ -498,6 +498,7 @@ const NavigationMenuTrigger = React.forwardRef<
             disabled={disabled}
             data-disabled={disabled ? '' : undefined}
             data-state={getOpenState(open)}
+            data-navigation-menu-state={getOpenState(open)}
             aria-expanded={open}
             aria-controls={contentId}
             {...triggerProps}
@@ -708,6 +709,7 @@ const NavigationMenuIndicatorImpl = React.forwardRef<
     <Primitive.div
       aria-hidden
       data-state={isVisible ? 'visible' : 'hidden'}
+      data-navigation-state={isVisible ? 'visible' : 'hidden'}
       data-orientation={context.orientation}
       {...indicatorProps}
       ref={forwardedRef}
@@ -770,6 +772,7 @@ const NavigationMenuContent = React.forwardRef<
     <Presence present={forceMount || open}>
       <NavigationMenuContentImpl
         data-state={getOpenState(open)}
+        data-navigation-state={getOpenState(open)}
         {...commonProps}
         ref={composedRefs}
         onPointerEnter={composeEventHandlers(props.onPointerEnter, context.onContentEnter)}
@@ -1046,6 +1049,7 @@ const NavigationMenuViewportImpl = React.forwardRef<
   return (
     <Primitive.div
       data-state={getOpenState(open)}
+      data-navigation-state={getOpenState(open)}
       data-orientation={context.orientation}
       {...viewportImplProps}
       ref={composedRefs}

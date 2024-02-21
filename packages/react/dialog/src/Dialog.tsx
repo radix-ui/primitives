@@ -107,6 +107,7 @@ const DialogTrigger = React.forwardRef<DialogTriggerElement, DialogTriggerProps>
         aria-expanded={context.open}
         aria-controls={context.contentId}
         data-state={getState(context.open)}
+        data-dialog-state={getState(context.open)}
         {...triggerProps}
         ref={composedTriggerRef}
         onClick={composeEventHandlers(props.onClick, context.onOpenToggle)}
@@ -204,6 +205,7 @@ const DialogOverlayImpl = React.forwardRef<DialogOverlayImplElement, DialogOverl
       <RemoveScroll as={Slot} allowPinchZoom shards={[context.contentRef]}>
         <Primitive.div
           data-state={getState(context.open)}
+          data-dialog-state={getState(context.open)}
           {...overlayProps}
           ref={forwardedRef}
           // We re-enable pointer-events prevented by `Dialog.Content` to allow scrolling the overlay.
@@ -405,6 +407,7 @@ const DialogContentImpl = React.forwardRef<DialogContentImplElement, DialogConte
             aria-describedby={context.descriptionId}
             aria-labelledby={context.titleId}
             data-state={getState(context.open)}
+            data-dialog-state={getState(context.open)}
             {...contentProps}
             ref={composedRefs}
             onDismiss={() => context.onOpenChange(false)}

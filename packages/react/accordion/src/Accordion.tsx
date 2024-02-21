@@ -391,6 +391,7 @@ const AccordionItem = React.forwardRef<AccordionItemElement, AccordionItemProps>
         <CollapsiblePrimitive.Root
           data-orientation={accordionContext.orientation}
           data-state={getState(open)}
+          data-accordion-state={getState(open)}
           {...collapsibleScope}
           {...accordionItemProps}
           ref={forwardedRef}
@@ -434,6 +435,7 @@ const AccordionHeader = React.forwardRef<AccordionHeaderElement, AccordionHeader
       <Primitive.h3
         data-orientation={accordionContext.orientation}
         data-state={getState(itemContext.open)}
+        data-accordion-state={getState(itemContext.open)}
         data-disabled={itemContext.disabled ? '' : undefined}
         {...headerProps}
         ref={forwardedRef}
