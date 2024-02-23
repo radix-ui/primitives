@@ -30,7 +30,7 @@ const DEFAULT_DELAY_DURATION = 700;
 const TOOLTIP_OPEN = 'tooltip.open';
 
 type TooltipProviderContextValue = {
-  isOpenDelayed: boolean;
+  isOpenDelayedRef: React.MutableRefObject<boolean>;
   delayDuration: number;
   onOpen(): void;
   onClose(): void;
@@ -42,7 +42,7 @@ type TooltipProviderContextValue = {
 const [TooltipProviderContextProvider, useTooltipProviderContext] =
   createTooltipContext<TooltipProviderContextValue>(PROVIDER_NAME);
 
-interface TooltipProviderProps {
+export interface TooltipProviderProps {
   children: React.ReactNode;
   /**
    * The duration from when the pointer enters the trigger until the tooltip gets opened.
@@ -71,7 +71,7 @@ const TooltipProvider: React.FC<TooltipProviderProps> = (
     disableHoverableContent = false,
     children,
   } = props;
-  const [isOpenDelayed, setIsOpenDelayed] = React.useState(true);
+  const isOpenDelayedRef = React.useRef(true);
   const isPointerInTransitRef = React.useRef(false);
   const skipDelayTimerRef = React.useRef(0);
 
@@ -83,16 +83,16 @@ const TooltipProvider: React.FC<TooltipProviderProps> = (
   return (
     <TooltipProviderContextProvider
       scope={__scopeTooltip}
-      isOpenDelayed={isOpenDelayed}
+      isOpenDelayedRef={isOpenDelayedRef}
       delayDuration={delayDuration}
       onOpen={React.useCallback(() => {
         window.clearTimeout(skipDelayTimerRef.current);
-        setIsOpenDelayed(false);
+        isOpenDelayedRef.current = false;
       }, [])}
       onClose={React.useCallback(() => {
         window.clearTimeout(skipDelayTimerRef.current);
         skipDelayTimerRef.current = window.setTimeout(
-          () => setIsOpenDelayed(true),
+          () => (isOpenDelayedRef.current = true),
           skipDelayDuration
         );
       }, [skipDelayDuration])}
@@ -229,9 +229,9 @@ const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
         trigger={trigger}
         onTriggerChange={setTrigger}
         onTriggerEnter={React.useCallback(() => {
-          if (providerContext.isOpenDelayed) handleDelayedOpen();
+          if (providerContext.isOpenDelayedRef.current) handleDelayedOpen();
           else handleOpen();
-        }, [providerContext.isOpenDelayed, handleDelayedOpen, handleOpen])}
+        }, [providerContext.isOpenDelayedRef, handleDelayedOpen, handleOpen])}
         onTriggerLeave={React.useCallback(() => {
           if (disableHoverableContent) {
             handleClose();
