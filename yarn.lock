@@ -5402,6 +5402,34 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@radix-ui/react-roving-focus@npm:1.0.4":
+  version: 1.0.4
+  resolution: "@radix-ui/react-roving-focus@npm:1.0.4"
+  dependencies:
+    "@babel/runtime": "npm:^7.13.10"
+    "@radix-ui/primitive": "npm:1.0.1"
+    "@radix-ui/react-collection": "npm:1.0.3"
+    "@radix-ui/react-compose-refs": "npm:1.0.1"
+    "@radix-ui/react-context": "npm:1.0.1"
+    "@radix-ui/react-direction": "npm:1.0.1"
+    "@radix-ui/react-id": "npm:1.0.1"
+    "@radix-ui/react-primitive": "npm:1.0.3"
+    "@radix-ui/react-use-callback-ref": "npm:1.0.1"
+    "@radix-ui/react-use-controllable-state": "npm:1.0.1"
+  peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
+    react: ^16.8 || ^17.0 || ^18.0
+    react-dom: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
+  checksum: 10/a23ffb1e3e29a8209b94ce3857bf559dcf2175c4f316169dc47d018e8e94cd018dc914331a1d1762f32448e2594b7c8945efaa7059056f9940ce92cc35cc7026
+  languageName: node
+  linkType: hard
+
 "@radix-ui/react-roving-focus@workspace:*, @radix-ui/react-roving-focus@workspace:packages/react/roving-focus":
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-roving-focus@workspace:packages/react/roving-focus"
@@ -5536,7 +5564,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@radix-ui/react-separator@workspace:*, @radix-ui/react-separator@workspace:packages/react/separator":
+"@radix-ui/react-separator@npm:1.0.3, @radix-ui/react-separator@workspace:*, @radix-ui/react-separator@workspace:packages/react/separator":
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-separator@workspace:packages/react/separator"
   dependencies:
@@ -5682,6 +5710,32 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@radix-ui/react-toggle-group@npm:1.0.4":
+  version: 1.0.4
+  resolution: "@radix-ui/react-toggle-group@npm:1.0.4"
+  dependencies:
+    "@babel/runtime": "npm:^7.13.10"
+    "@radix-ui/primitive": "npm:1.0.1"
+    "@radix-ui/react-context": "npm:1.0.1"
+    "@radix-ui/react-direction": "npm:1.0.1"
+    "@radix-ui/react-primitive": "npm:1.0.3"
+    "@radix-ui/react-roving-focus": "npm:1.0.4"
+    "@radix-ui/react-toggle": "npm:1.0.3"
+    "@radix-ui/react-use-controllable-state": "npm:1.0.1"
+  peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
+    react: ^16.8 || ^17.0 || ^18.0
+    react-dom: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
+  checksum: 10/96ea35f0e959399f239ff3b75dcad72d5880c66966114c80293ab1450801c87353c0cb2a7a4a5e9825f43c9bd3d881f312a9c14bdacfa70f4050d406bec98c2b
+  languageName: node
+  linkType: hard
+
 "@radix-ui/react-toggle-group@workspace:*, @radix-ui/react-toggle-group@workspace:packages/react/toggle-group":
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-toggle-group@workspace:packages/react/toggle-group"
@@ -5707,7 +5761,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@radix-ui/react-toggle@workspace:*, @radix-ui/react-toggle@workspace:packages/react/toggle":
+"@radix-ui/react-toggle@npm:1.0.3, @radix-ui/react-toggle@workspace:*, @radix-ui/react-toggle@workspace:packages/react/toggle":
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-toggle@workspace:packages/react/toggle"
   dependencies:
@@ -5728,7 +5782,33 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@radix-ui/react-toolbar@npm:^1.0.4, @radix-ui/react-toolbar@workspace:packages/react/toolbar":
+"@radix-ui/react-toolbar@npm:^1.0.4":
+  version: 1.0.4
+  resolution: "@radix-ui/react-toolbar@npm:1.0.4"
+  dependencies:
+    "@babel/runtime": "npm:^7.13.10"
+    "@radix-ui/primitive": "npm:1.0.1"
+    "@radix-ui/react-context": "npm:1.0.1"
+    "@radix-ui/react-direction": "npm:1.0.1"
+    "@radix-ui/react-primitive": "npm:1.0.3"
+    "@radix-ui/react-roving-focus": "npm:1.0.4"
+    "@radix-ui/react-separator": "npm:1.0.3"
+    "@radix-ui/react-toggle-group": "npm:1.0.4"
+  peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
+    react: ^16.8 || ^17.0 || ^18.0
+    react-dom: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
+  checksum: 10/57f75b6617d4e2bb8f7782d6065e70fd0db44038588b3e8e5f8cd1101dc2c94744bd52b9c011c7b722cb5f9ca96d21fc78ee7caac07722894453019fd5ade3b0
+  languageName: node
+  linkType: hard
+
+"@radix-ui/react-toolbar@workspace:packages/react/toolbar":
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-toolbar@workspace:packages/react/toolbar"
   dependencies:
