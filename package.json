@@ -12,12 +12,12 @@
     "types:check": "tsc --skipLibCheck --noEmit",
     "test": "jest",
     "test:ci": "yarn types:check && jest --ci && yarn cypress:ci",
-    "storybook": "start-storybook -p 9009 --ci",
+    "storybook": "BROWSER=none storybook dev -p 9009",
     "cypress:ci": "start-server-and-test storybook http://localhost:9009 cypress:run",
     "cypress:run": "cypress run",
     "cypress:dev": "cypress open",
     "dev": "yarn storybook",
-    "build-storybook": "build-storybook",
+    "build-storybook": "storybook build",
     "// build": "For context on tsconfig replacements in build scripts, see https://github.com/radix-ui/primitives/pull/361#discussion_r555004944",
     "build": "yarn build:config && yarn build:packages && yarn build:cleanup",
     "build:config": "mv tsconfig.json tsconfig.tmp.json && mv tsconfig.production.json tsconfig.json",
@@ -46,8 +46,11 @@
     "@parcel/packager-ts": "2.4.1",
     "@parcel/transformer-typescript-types": "2.4.1",
     "@stitches/core": "^1.2.8",
-    "@storybook/addon-storysource": "^6.5.0-alpha.63",
-    "@storybook/react": "^6.5.0-alpha.63",
+    "@storybook/addon-essentials": "^7.6.17",
+    "@storybook/addon-storysource": "^7.6.17",
+    "@storybook/react": "^7.6.17",
+    "@storybook/react-webpack5": "^7.6.17",
+    "@storybook/test": "^7.6.17",
     "@testing-library/cypress": "^7.0.6",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.0.1",
@@ -74,6 +77,7 @@
     "eslint-plugin-jsx-a11y": "^6.3.1",
     "eslint-plugin-react": "^7.24.0",
     "eslint-plugin-react-hooks": "^4.2.0",
+    "eslint-plugin-storybook": "^0.8.0",
     "fs-extra": "^11.1.1",
     "glob": "^10.2.2",
     "husky": "^4.3.6",
@@ -87,6 +91,7 @@
     "react-test-renderer": "^18.0.0",
     "replace-in-files": "^3.0.0",
     "start-server-and-test": "^1.12.5",
+    "storybook": "^7.6.17",
     "ts-jest": "^27.1.4",
     "typescript": "^4.6.3"
   },
@@ -128,7 +133,8 @@
   "eslintConfig": {
     "extends": [
       "react-app",
-      "plugin:jsx-a11y/recommended"
+      "plugin:jsx-a11y/recommended",
+      "plugin:storybook/recommended"
     ],
     "plugins": [
       "jsx-a11y"
@@ -182,5 +188,6 @@
   },
   "lint-staged": {
     "*.{js,ts,tsx}": "eslint --quiet --fix --cache"
-  }
+  },
+  "packageManager": "yarn@4.1.0"
 }
