@@ -136,11 +136,13 @@ ScrollArea.displayName = SCROLL_AREA_NAME;
 const VIEWPORT_NAME = 'ScrollAreaViewport';
 
 type ScrollAreaViewportElement = React.ElementRef<typeof Primitive.div>;
-interface ScrollAreaViewportProps extends PrimitiveDivProps {}
+interface ScrollAreaViewportProps extends PrimitiveDivProps {
+  nonce?: string;
+}
 
 const ScrollAreaViewport = React.forwardRef<ScrollAreaViewportElement, ScrollAreaViewportProps>(
   (props: ScopedProps<ScrollAreaViewportProps>, forwardedRef) => {
-    const { __scopeScrollArea, children, ...viewportProps } = props;
+    const { __scopeScrollArea, children, nonce, ...viewportProps } = props;
     const context = useScrollAreaContext(VIEWPORT_NAME, __scopeScrollArea);
     const ref = React.useRef<ScrollAreaViewportElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, ref, context.onViewportChange);
@@ -151,6 +153,7 @@ const ScrollAreaViewport = React.forwardRef<ScrollAreaViewportElement, ScrollAre
           dangerouslySetInnerHTML={{
             __html: `[data-radix-scroll-area-viewport]{scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;}[data-radix-scroll-area-viewport]::-webkit-scrollbar{display:none}`,
           }}
+          nonce={nonce}
         />
         <Primitive.div
           data-radix-scroll-area-viewport=""
