@@ -268,7 +268,10 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
               // we prevent animations so that users's animation don't kick in too early referring wrong sides
               animation: !isPositioned ? 'none' : undefined,
               // hide the content if using the hide middleware and should be hidden
+              // set visibility to hidden and disable pointer events so the UI behaves
+              // as if the PopperContent isn't there at all
               visibility: middlewareData.hide?.referenceHidden ? 'hidden' : undefined,
+              pointerEvents: middlewareData.hide?.referenceHidden ? 'none' : undefined,
             }}
           />
         </PopperContentProvider>
