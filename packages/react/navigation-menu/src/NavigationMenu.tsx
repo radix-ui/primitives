@@ -841,7 +841,7 @@ interface NavigationMenuContentImplPrivateProps {
   onRootContentClose(): void;
 }
 interface NavigationMenuContentImplProps
-  extends Omit<DismissableLayerProps, 'onDismiss'>,
+  extends Omit<DismissableLayerProps, 'onDismiss' | 'disableOutsidePointerEvents'>,
     NavigationMenuContentImplPrivateProps {}
 
 const NavigationMenuContentImpl = React.forwardRef<
@@ -922,6 +922,7 @@ const NavigationMenuContentImpl = React.forwardRef<
         data-orientation={context.orientation}
         {...contentProps}
         ref={composedRefs}
+        disableOutsidePointerEvents={false}
         onDismiss={() => {
           const rootContentDismissEvent = new Event(ROOT_CONTENT_DISMISS, {
             bubbles: true,
