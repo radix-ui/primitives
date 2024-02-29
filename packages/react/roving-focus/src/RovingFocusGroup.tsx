@@ -261,6 +261,7 @@ const RovingFocusGroupItem = React.forwardRef<RovingFocusItemElement, RovingFocu
             const focusIntent = getFocusIntent(event, context.orientation, context.dir);
 
             if (focusIntent !== undefined) {
+              if (event.metaKey || event.ctrlKey || event.altKey || event.shiftKey) return;
               event.preventDefault();
               const items = getItems().filter((item) => item.focusable);
               let candidateNodes = items.map((item) => item.ref.current!);

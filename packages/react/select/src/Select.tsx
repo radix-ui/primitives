@@ -1037,11 +1037,13 @@ const VIEWPORT_NAME = 'SelectViewport';
 
 type SelectViewportElement = React.ElementRef<typeof Primitive.div>;
 type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
-interface SelectViewportProps extends PrimitiveDivProps {}
+interface SelectViewportProps extends PrimitiveDivProps {
+  nonce?: string;
+}
 
 const SelectViewport = React.forwardRef<SelectViewportElement, SelectViewportProps>(
   (props: ScopedProps<SelectViewportProps>, forwardedRef) => {
-    const { __scopeSelect, ...viewportProps } = props;
+    const { __scopeSelect, nonce, ...viewportProps } = props;
     const contentContext = useSelectContentContext(VIEWPORT_NAME, __scopeSelect);
     const viewportContext = useSelectViewportContext(VIEWPORT_NAME, __scopeSelect);
     const composedRefs = useComposedRefs(forwardedRef, contentContext.onViewportChange);
@@ -1053,6 +1055,7 @@ const SelectViewport = React.forwardRef<SelectViewportElement, SelectViewportPro
           dangerouslySetInnerHTML={{
             __html: `[data-radix-select-viewport]{scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;}[data-radix-select-viewport]::-webkit-scrollbar{display:none}`,
           }}
+          nonce={nonce}
         />
         <Collection.Slot scope={__scopeSelect}>
           <Primitive.div
