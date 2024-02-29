@@ -196,9 +196,11 @@ const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
   }, [setOpen]);
 
   const handleClose = React.useCallback(() => {
-    window.clearTimeout(openTimerRef.current);
-    setOpen(false);
-  }, [setOpen]);
+    if(open) {
+      window.clearTimeout(openTimerRef.current);
+      setOpen(false);
+    }
+  }, [open, setOpen]);
 
   const handleDelayedOpen = React.useCallback(() => {
     window.clearTimeout(openTimerRef.current);
