@@ -243,6 +243,14 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
             middlewareData.transformOrigin?.x,
             middlewareData.transformOrigin?.y,
           ].join(' '),
+
+          // hide the content if using the hide middleware and should be hidden
+          // set visibility to hidden and disable pointer events so the UI behaves
+          // as if the PopperContent isn't there at all
+          ...(middlewareData.hide?.referenceHidden && {
+            visibility: 'hidden',
+            pointerEvents: 'none',
+          }),
         }}
         // Floating UI interally calculates logical alignment based the `dir` attribute on
         // the reference/floating node, we must add this attribute here to ensure
@@ -267,8 +275,6 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
               // if the PopperContent hasn't been placed yet (not all measurements done)
               // we prevent animations so that users's animation don't kick in too early referring wrong sides
               animation: !isPositioned ? 'none' : undefined,
-              // hide the content if using the hide middleware and should be hidden
-              visibility: middlewareData.hide?.referenceHidden ? 'hidden' : undefined,
             }}
           />
         </PopperContentProvider>
