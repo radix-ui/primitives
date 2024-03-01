@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-tabs",
-  "version": "1.0.5-rc.3",
+  "version": "1.0.5-rc.4",
   "license": "MIT",
   "exports": {
     ".": {
