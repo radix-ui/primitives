@@ -14,17 +14,19 @@ export const WithControl = () => {
         <Control className={controlClass()} /> Label
       </Label>
 
-      <br />
-
-      <Label>
-        <span>Name:</span>
-        <input type="number" />
-      </Label>
-
       <h1>Referencing control</h1>
       <Control id="control" className={controlClass()} />
       <Label htmlFor="control">Label</Label>
     </>
+  );
+};
+
+export const WithInputNumber = (props: any) => {
+  return (
+    <Label>
+      <span>Name:</span>
+      <input type="number" />
+    </Label>
   );
 };
 
