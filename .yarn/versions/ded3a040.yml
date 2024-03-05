@@ -1,0 +1,6 @@
+releases:
+  "@radix-ui/react-form": patch
+  "@radix-ui/react-label": patch
+
+declined:
+  - primitives
