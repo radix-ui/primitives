@@ -21,7 +21,7 @@ const Label = React.forwardRef<LabelElement, LabelProps>((props, forwardedRef) =
       onMouseDown={(event) => {
         // only prevent text selection if clicking inside the label itself
         const target = event.target as HTMLElement;
-        if (target.closest('input, button')) return;
+        if (target.closest('input, button, select')) return;
 
         props.onMouseDown?.(event);
         // prevent text selection when double clicking label
