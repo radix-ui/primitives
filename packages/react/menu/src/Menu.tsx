@@ -468,7 +468,7 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
               // when opening, explicitly focus the content area only and leave
               // `onEntryFocus` in  control of focusing first item
               event.preventDefault();
-              contentRef.current?.focus();
+              contentRef.current?.focus({ preventScroll: true });
             })}
             onUnmountAutoFocus={onCloseAutoFocus}
           >
@@ -493,6 +493,7 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
                   // only focus first item when using keyboard
                   if (!rootContext.isUsingKeyboardRef.current) event.preventDefault();
                 })}
+                preventScrollOnEntryFocus
               >
                 <PopperPrimitive.Content
                   role="menu"

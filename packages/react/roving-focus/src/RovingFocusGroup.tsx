@@ -92,6 +92,7 @@ interface RovingFocusGroupImplProps
   defaultCurrentTabStopId?: string;
   onCurrentTabStopIdChange?: (tabStopId: string | null) => void;
   onEntryFocus?: (event: Event) => void;
+  preventScrollOnEntryFocus?: boolean;
 }
 
 const RovingFocusGroupImpl = React.forwardRef<
@@ -107,6 +108,7 @@ const RovingFocusGroupImpl = React.forwardRef<
     defaultCurrentTabStopId,
     onCurrentTabStopIdChange,
     onEntryFocus,
+    preventScrollOnEntryFocus = false,
     ...groupProps
   } = props;
   const ref = React.useRef<RovingFocusGroupImplElement>(null);
@@ -180,7 +182,7 @@ const RovingFocusGroupImpl = React.forwardRef<
                 Boolean
               ) as typeof items;
               const candidateNodes = candidateItems.map((item) => item.ref.current!);
-              focusFirst(candidateNodes);
+              focusFirst(candidateNodes, preventScrollOnEntryFocus);
             }
           }
 
@@ -314,12 +316,12 @@ function getFocusIntent(event: React.KeyboardEvent, orientation?: Orientation, d
   return MAP_KEY_TO_FOCUS_INTENT[key];
 }
 
-function focusFirst(candidates: HTMLElement[]) {
+function focusFirst(candidates: HTMLElement[], preventScroll = false) {
   const PREVIOUSLY_FOCUSED_ELEMENT = document.activeElement;
   for (const candidate of candidates) {
     // if focus is already where we want to go, we don't want to keep going through the candidates
     if (candidate === PREVIOUSLY_FOCUSED_ELEMENT) return;
-    candidate.focus();
+    candidate.focus({ preventScroll });
     if (document.activeElement !== PREVIOUSLY_FOCUSED_ELEMENT) return;
   }
 }
