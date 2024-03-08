@@ -262,10 +262,20 @@ export const SmallSteps = () => {
 };
 
 export const WithinForm = () => {
-  const [data, setData] = React.useState({ single: [0], multiple: [10, 15, 20, 80] });
+  const [data, setData] = React.useState({
+    single: [0],
+    multiple: [10, 15, 20, 80],
+    price: {
+      min: 30,
+      max: 70,
+    },
+  });
   return (
     <form
-      onSubmit={(event) => event.preventDefault()}
+      onSubmit={(event) => {
+        event.preventDefault();
+        console.log(serialize(event.currentTarget, { hash: true }));
+      }}
       onChange={(event) => {
         const formData = serialize(event.currentTarget, { hash: true });
         setData(formData as any);
@@ -296,6 +306,22 @@ export const WithinForm = () => {
           <Slider.Thumb className={thumbClass()} />
         </Slider.Root>
       </fieldset>
+
+      <br />
+      <br />
+
+      <fieldset>
+        <legend>Multiple values (with named thumbs): {JSON.stringify(data.price)}</legend>
+        <Slider.Root defaultValue={[data.price.min, data.price.max]} className={rootClass()}>
+          <Slider.Track className={trackClass()}>
+            <Slider.Range className={rangeClass()} />
+          </Slider.Track>
+          <Slider.Thumb className={thumbClass()} name="price[min]" />
+          <Slider.Thumb className={thumbClass()} name="price[max]" />
+        </Slider.Root>
+      </fieldset>
+
+      <button type="submit">Submit</button>
     </form>
   );
 };

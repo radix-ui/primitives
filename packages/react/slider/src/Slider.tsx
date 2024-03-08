@@ -41,6 +41,7 @@ const [createSliderContext, createSliderScope] = createContextScope(SLIDER_NAME,
 ]);
 
 type SliderContextValue = {
+  name?: string;
   disabled?: boolean;
   min: number;
   max: number;
@@ -90,13 +91,9 @@ const Slider = React.forwardRef<SliderElement, SliderProps>(
       inverted = false,
       ...sliderProps
     } = props;
-    const [slider, setSlider] = React.useState<HTMLSpanElement | null>(null);
-    const composedRefs = useComposedRefs(forwardedRef, (node) => setSlider(node));
     const thumbRefs = React.useRef<SliderContextValue['thumbs']>(new Set());
     const valueIndexToChangeRef = React.useRef<number>(0);
     const isHorizontal = orientation === 'horizontal';
-    // We set this to true by default so that events bubble to forms without JS (SSR)
-    const isFormControl = slider ? Boolean(slider.closest('form')) : true;
     const SliderOrientation = isHorizontal ? SliderHorizontal : SliderVertical;
 
     const [values = [], setValues] = useControllableState({
@@ -147,6 +144,7 @@ const Slider = React.forwardRef<SliderElement, SliderProps>(
     return (
       <SliderProvider
         scope={props.__scopeSlider}
+        name={name}
         disabled={disabled}
         min={min}
         max={max}
@@ -161,7 +159,7 @@ const Slider = React.forwardRef<SliderElement, SliderProps>(
               aria-disabled={disabled}
               data-disabled={disabled ? '' : undefined}
               {...sliderProps}
-              ref={composedRefs}
+              ref={forwardedRef}
               onPointerDown={composeEventHandlers(sliderProps.onPointerDown, () => {
                 if (!disabled) valuesBeforeSlideStartRef.current = values;
               })}
@@ -189,14 +187,6 @@ const Slider = React.forwardRef<SliderElement, SliderProps>(
             />
           </Collection.Slot>
         </Collection.Provider>
-        {isFormControl &&
-          values.map((value, index) => (
-            <BubbleInput
-              key={index}
-              name={name ? name + (values.length > 1 ? '[]' : '') : undefined}
-              value={value}
-            />
-          ))}
       </SliderProvider>
     );
   }
@@ -556,15 +546,18 @@ const SliderThumb = React.forwardRef<SliderThumbElement, SliderThumbProps>(
 type SliderThumbImplElement = React.ElementRef<typeof Primitive.span>;
 interface SliderThumbImplProps extends PrimitiveSpanProps {
   index: number;
+  name?: string;
 }
 
 const SliderThumbImpl = React.forwardRef<SliderThumbImplElement, SliderThumbImplProps>(
   (props: ScopedProps<SliderThumbImplProps>, forwardedRef) => {
-    const { __scopeSlider, index, ...thumbProps } = props;
+    const { __scopeSlider, index, name, ...thumbProps } = props;
     const context = useSliderContext(THUMB_NAME, __scopeSlider);
     const orientation = useSliderOrientationContext(THUMB_NAME, __scopeSlider);
     const [thumb, setThumb] = React.useState<HTMLSpanElement | null>(null);
     const composedRefs = useComposedRefs(forwardedRef, (node) => setThumb(node));
+    // We set this to true by default so that events bubble to forms without JS (SSR)
+    const isFormControl = thumb ? Boolean(thumb.closest('form')) : true;
     const size = useSize(thumb);
     // We cast because index could be `-1` which would return undefined
     const value = context.values[index] as number | undefined;
@@ -618,6 +611,17 @@ const SliderThumbImpl = React.forwardRef<SliderThumbImplElement, SliderThumbImpl
             })}
           />
         </Collection.ItemSlot>
+
+        {isFormControl && (
+          <BubbleInput
+            key={index}
+            name={
+              name ??
+              (context.name ? context.name + (context.values.length > 1 ? '[]' : '') : undefined)
+            }
+            value={value}
+          />
+        )}
       </span>
     );
   }
