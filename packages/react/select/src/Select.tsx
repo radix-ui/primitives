@@ -66,6 +66,7 @@ type SelectContextValue = {
   dir: SelectProps['dir'];
   triggerPointerDownPosRef: React.MutableRefObject<{ x: number; y: number } | null>;
   disabled?: boolean;
+  modal: boolean;
 };
 
 const [SelectProvider, useSelectContext] = createSelectContext<SelectContextValue>(SELECT_NAME);
@@ -92,6 +93,7 @@ interface SelectProps {
   autoComplete?: string;
   disabled?: boolean;
   required?: boolean;
+  modal?: boolean;
 }
 
 const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
@@ -109,6 +111,7 @@ const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
     autoComplete,
     disabled,
     required,
+    modal = true,
   } = props;
   const popperScope = usePopperScope(__scopeSelect);
   const [trigger, setTrigger] = React.useState<SelectTriggerElement | null>(null);
@@ -159,6 +162,7 @@ const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
         dir={direction}
         triggerPointerDownPosRef={triggerPointerDownPosRef}
         disabled={disabled}
+        modal={modal}
       >
         <Collection.Provider scope={__scopeSelect}>
           <SelectNativeOptionsProvider
@@ -462,23 +466,8 @@ type SelectPopperPrivateProps = { onPlaced?: PopperContentProps['onPlaced'] };
 
 interface SelectContentImplProps
   extends Omit<SelectPopperPositionProps, keyof SelectPopperPrivateProps>,
-    Omit<SelectItemAlignedPositionProps, keyof SelectPopperPrivateProps> {
-  /**
-   * Event handler called when auto-focusing on close.
-   * Can be prevented.
-   */
-  onCloseAutoFocus?: FocusScopeProps['onUnmountAutoFocus'];
-  /**
-   * Event handler called when the escape key is down.
-   * Can be prevented.
-   */
-  onEscapeKeyDown?: DismissableLayerProps['onEscapeKeyDown'];
-  /**
-   * Event handler called when the a `pointerdown` event happens outside of the `DismissableLayer`.
-   * Can be prevented.
-   */
-  onPointerDownOutside?: DismissableLayerProps['onPointerDownOutside'];
-
+    Omit<SelectItemAlignedPositionProps, keyof SelectPopperPrivateProps>,
+    SelectContentModalityImplPublicProps {
   position?: 'item-aligned' | 'popper';
 }
 
@@ -487,9 +476,6 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
     const {
       __scopeSelect,
       position = 'item-aligned',
-      onCloseAutoFocus,
-      onEscapeKeyDown,
-      onPointerDownOutside,
       //
       // PopperContent props
       side,
@@ -516,11 +502,6 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
     const getItems = useCollection(__scopeSelect);
     const [isPositioned, setIsPositioned] = React.useState(false);
     const firstValidItemFoundRef = React.useRef(false);
-
-    // aria-hide everything except the content (better supported equivalent to setting aria-modal)
-    React.useEffect(() => {
-      if (content) return hideOthers(content);
-    }, [content]);
 
     // Make sure the whole tree has focus guards as our `Select` may be
     // the last element in the DOM (because of the `Portal`)
@@ -572,10 +553,18 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
             y: Math.abs(Math.round(event.pageY) - (triggerPointerDownPosRef.current?.y ?? 0)),
           };
         };
+        const handleClick = (event: MouseEvent) => {
+          event.preventDefault();
+        };
         const handlePointerUp = (event: PointerEvent) => {
           // If the pointer hasn't moved by a certain threshold then we prevent selecting item on `pointerup`.
           if (pointerMoveDelta.x <= 10 && pointerMoveDelta.y <= 10) {
             event.preventDefault();
+            // Prevent focus trigger after open in non modal mode
+            document.addEventListener('click', handleClick, {
+              once: true,
+              capture: true,
+            });
           } else {
             // otherwise, if the event was outside the content, close.
             if (!content.contains(event.target as HTMLElement)) {
@@ -594,6 +583,7 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
         return () => {
           document.removeEventListener('pointermove', handlePointerMove);
           document.removeEventListener('pointerup', handlePointerUp, { capture: true });
+          document.removeEventListener('click', handleClick, { capture: true });
         };
       }
     }, [content, onOpenChange, triggerPointerDownPosRef]);
@@ -679,83 +669,55 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
         isPositioned={isPositioned}
         searchRef={searchRef}
       >
-        <RemoveScroll as={Slot} allowPinchZoom>
-          <FocusScope
-            asChild
-            // we make sure we're not trapping once it's been closed
-            // (closed !== unmounted when animating out)
-            trapped={context.open}
-            onMountAutoFocus={(event) => {
-              // we prevent open autofocus because we manually focus the selected item
+        <SelectPosition
+          role="listbox"
+          id={context.contentId}
+          data-state={context.open ? 'open' : 'closed'}
+          dir={context.dir}
+          onContextMenu={(event) => event.preventDefault()}
+          {...contentProps}
+          {...popperContentProps}
+          onPlaced={() => setIsPositioned(true)}
+          ref={composedRefs}
+          style={{
+            // flex layout so we can place the scroll buttons properly
+            display: 'flex',
+            flexDirection: 'column',
+            // reset the outline by default as the content MAY get focused
+            outline: 'none',
+            ...contentProps.style,
+          }}
+          onKeyDown={composeEventHandlers(contentProps.onKeyDown, (event) => {
+            const isModifierKey = event.ctrlKey || event.altKey || event.metaKey;
+
+            // select should not be navigated using tab key so we prevent it
+            if (event.key === 'Tab') event.preventDefault();
+
+            if (!isModifierKey && event.key.length === 1) handleTypeaheadSearch(event.key);
+
+            if (['ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) {
+              const items = getItems().filter((item) => !item.disabled);
+              let candidateNodes = items.map((item) => item.ref.current!);
+
+              if (['ArrowUp', 'End'].includes(event.key)) {
+                candidateNodes = candidateNodes.slice().reverse();
+              }
+              if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
+                const currentElement = event.target as SelectItemElement;
+                const currentIndex = candidateNodes.indexOf(currentElement);
+                candidateNodes = candidateNodes.slice(currentIndex + 1);
+              }
+
+              /**
+               * Imperative focus during keydown is risky so we prevent React's batching updates
+               * to avoid potential bugs. See: https://github.com/facebook/react/issues/20332
+               */
+              setTimeout(() => focusFirst(candidateNodes));
+
               event.preventDefault();
-            }}
-            onUnmountAutoFocus={composeEventHandlers(onCloseAutoFocus, (event) => {
-              context.trigger?.focus({ preventScroll: true });
-              event.preventDefault();
-            })}
-          >
-            <DismissableLayer
-              asChild
-              disableOutsidePointerEvents
-              onEscapeKeyDown={onEscapeKeyDown}
-              onPointerDownOutside={onPointerDownOutside}
-              // When focus is trapped, a focusout event may still happen.
-              // We make sure we don't trigger our `onDismiss` in such case.
-              onFocusOutside={(event) => event.preventDefault()}
-              onDismiss={() => context.onOpenChange(false)}
-            >
-              <SelectPosition
-                role="listbox"
-                id={context.contentId}
-                data-state={context.open ? 'open' : 'closed'}
-                dir={context.dir}
-                onContextMenu={(event) => event.preventDefault()}
-                {...contentProps}
-                {...popperContentProps}
-                onPlaced={() => setIsPositioned(true)}
-                ref={composedRefs}
-                style={{
-                  // flex layout so we can place the scroll buttons properly
-                  display: 'flex',
-                  flexDirection: 'column',
-                  // reset the outline by default as the content MAY get focused
-                  outline: 'none',
-                  ...contentProps.style,
-                }}
-                onKeyDown={composeEventHandlers(contentProps.onKeyDown, (event) => {
-                  const isModifierKey = event.ctrlKey || event.altKey || event.metaKey;
-
-                  // select should not be navigated using tab key so we prevent it
-                  if (event.key === 'Tab') event.preventDefault();
-
-                  if (!isModifierKey && event.key.length === 1) handleTypeaheadSearch(event.key);
-
-                  if (['ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) {
-                    const items = getItems().filter((item) => !item.disabled);
-                    let candidateNodes = items.map((item) => item.ref.current!);
-
-                    if (['ArrowUp', 'End'].includes(event.key)) {
-                      candidateNodes = candidateNodes.slice().reverse();
-                    }
-                    if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
-                      const currentElement = event.target as SelectItemElement;
-                      const currentIndex = candidateNodes.indexOf(currentElement);
-                      candidateNodes = candidateNodes.slice(currentIndex + 1);
-                    }
-
-                    /**
-                     * Imperative focus during keydown is risky so we prevent React's batching updates
-                     * to avoid potential bugs. See: https://github.com/facebook/react/issues/20332
-                     */
-                    setTimeout(() => focusFirst(candidateNodes));
-
-                    event.preventDefault();
-                  }
-                })}
-              />
-            </DismissableLayer>
-          </FocusScope>
-        </RemoveScroll>
+            }
+          })}
+        />
       </SelectContentProvider>
     );
   }
@@ -770,13 +732,23 @@ SelectContentImpl.displayName = CONTENT_IMPL_NAME;
 const ITEM_ALIGNED_POSITION_NAME = 'SelectItemAlignedPosition';
 
 type SelectItemAlignedPositionElement = React.ElementRef<typeof Primitive.div>;
-interface SelectItemAlignedPositionProps extends PrimitiveDivProps, SelectPopperPrivateProps {}
+interface SelectItemAlignedPositionProps
+  extends PrimitiveDivProps,
+    SelectPopperPrivateProps,
+    SelectContentModalityImplPublicProps {}
 
 const SelectItemAlignedPosition = React.forwardRef<
   SelectItemAlignedPositionElement,
   SelectItemAlignedPositionProps
 >((props: ScopedProps<SelectItemAlignedPositionProps>, forwardedRef) => {
-  const { __scopeSelect, onPlaced, ...popperProps } = props;
+  const {
+    __scopeSelect,
+    onPlaced,
+    onCloseAutoFocus,
+    onEscapeKeyDown,
+    onPointerDownOutside,
+    ...popperProps
+  } = props;
   const context = useSelectContext(CONTENT_NAME, __scopeSelect);
   const contentContext = useSelectContentContext(CONTENT_NAME, __scopeSelect);
   const [contentWrapper, setContentWrapper] = React.useState<HTMLDivElement | null>(null);
@@ -953,18 +925,24 @@ const SelectItemAlignedPosition = React.forwardRef<
           zIndex: contentZIndex,
         }}
       >
-        <Primitive.div
-          {...popperProps}
-          ref={composedRefs}
-          style={{
-            // When we get the height of the content, it includes borders. If we were to set
-            // the height without having `boxSizing: 'border-box'` it would be too big.
-            boxSizing: 'border-box',
-            // We need to ensure the content doesn't get taller than the wrapper
-            maxHeight: '100%',
-            ...popperProps.style,
-          }}
-        />
+        <SelectContentModal
+          onCloseAutoFocus={onCloseAutoFocus}
+          onEscapeKeyDown={onEscapeKeyDown}
+          onPointerDownOutside={onPointerDownOutside}
+        >
+          <Primitive.div
+            {...popperProps}
+            ref={composedRefs}
+            style={{
+              // When we get the height of the content, it includes borders. If we were to set
+              // the height without having `boxSizing: 'border-box'` it would be too big.
+              boxSizing: 'border-box',
+              // We need to ensure the content doesn't get taller than the wrapper
+              maxHeight: '100%',
+              ...popperProps.style,
+            }}
+          />
+        </SelectContentModal>
       </div>
     </SelectViewportProvider>
   );
@@ -980,7 +958,10 @@ const POPPER_POSITION_NAME = 'SelectPopperPosition';
 
 type SelectPopperPositionElement = React.ElementRef<typeof PopperPrimitive.Content>;
 type PopperContentProps = React.ComponentPropsWithoutRef<typeof PopperPrimitive.Content>;
-interface SelectPopperPositionProps extends PopperContentProps, SelectPopperPrivateProps {}
+interface SelectPopperPositionProps
+  extends PopperContentProps,
+    SelectPopperPrivateProps,
+    SelectContentModalityImplPublicProps {}
 
 const SelectPopperPosition = React.forwardRef<
   SelectPopperPositionElement,
@@ -990,35 +971,195 @@ const SelectPopperPosition = React.forwardRef<
     __scopeSelect,
     align = 'start',
     collisionPadding = CONTENT_MARGIN,
+    onCloseAutoFocus,
+    onEscapeKeyDown,
+    onPointerDownOutside,
     ...popperProps
   } = props;
   const popperScope = usePopperScope(__scopeSelect);
+  const context = useSelectContext(CONTENT_NAME, __scopeSelect);
+
+  const SelectModality = context.modal ? SelectContentModal : SelectContentNonModal;
 
   return (
-    <PopperPrimitive.Content
-      {...popperScope}
-      {...popperProps}
-      ref={forwardedRef}
-      align={align}
-      collisionPadding={collisionPadding}
-      style={{
-        // Ensure border-box for floating-ui calculations
-        boxSizing: 'border-box',
-        ...popperProps.style,
-        // re-namespace exposed content custom properties
-        ...{
-          '--radix-select-content-transform-origin': 'var(--radix-popper-transform-origin)',
-          '--radix-select-content-available-width': 'var(--radix-popper-available-width)',
-          '--radix-select-content-available-height': 'var(--radix-popper-available-height)',
-          '--radix-select-trigger-width': 'var(--radix-popper-anchor-width)',
-          '--radix-select-trigger-height': 'var(--radix-popper-anchor-height)',
-        },
-      }}
-    />
+    <SelectModality
+      onCloseAutoFocus={onCloseAutoFocus}
+      onEscapeKeyDown={onEscapeKeyDown}
+      onPointerDownOutside={onPointerDownOutside}
+    >
+      <PopperPrimitive.Content
+        {...popperScope}
+        {...popperProps}
+        ref={forwardedRef}
+        align={align}
+        collisionPadding={collisionPadding}
+        style={{
+          // Ensure border-box for floating-ui calculations
+          boxSizing: 'border-box',
+          ...popperProps.style,
+          // re-namespace exposed content custom properties
+          ...{
+            '--radix-select-content-transform-origin': 'var(--radix-popper-transform-origin)',
+            '--radix-select-content-available-width': 'var(--radix-popper-available-width)',
+            '--radix-select-content-available-height': 'var(--radix-popper-available-height)',
+            '--radix-select-trigger-width': 'var(--radix-popper-anchor-width)',
+            '--radix-select-trigger-height': 'var(--radix-popper-anchor-height)',
+          },
+        }}
+      />
+    </SelectModality>
   );
 });
 
 SelectPopperPosition.displayName = POPPER_POSITION_NAME;
+
+/* -------------------------------------------------------------------------------------------------
+ * SelectContentModalityImpl
+ * -----------------------------------------------------------------------------------------------*/
+
+const CONTENT_MODALITY_IMPL_NAME = 'SelectContentModalityImpl';
+
+type SelectContentModalityImplElement =
+  | SelectItemAlignedPositionElement
+  | SelectPopperPositionElement;
+type SelectContentModalityImplPrivateProps = {
+  disableOutsidePointerEvents?: DismissableLayerProps['disableOutsidePointerEvents'];
+  onDismiss?: DismissableLayerProps['onDismiss'];
+  /**
+   * Whether scrolling outside the `MenuContent` should be prevented
+   * (default: `false`)
+   */
+  disableOutsideScroll?: boolean;
+  /**
+   * Whether focus should be trapped within the `MenuContent`
+   * (default: false)
+   */
+  trapFocus?: FocusScopeProps['trapped'];
+  onFocusOutside?: DismissableLayerProps['onFocusOutside'];
+  onInteractOutside?: DismissableLayerProps['onInteractOutside'];
+};
+interface SelectContentModalityImplProps extends SelectContentModalityImplPrivateProps {
+  children?: React.ReactNode;
+  /**
+   * Event handler called when auto-focusing on close.
+   * Can be prevented.
+   */
+  onCloseAutoFocus?: FocusScopeProps['onUnmountAutoFocus'];
+  /**
+   * Event handler called when the escape key is down.
+   * Can be prevented.
+   */
+  onEscapeKeyDown?: DismissableLayerProps['onEscapeKeyDown'];
+  /**
+   * Event handler called when the a `pointerdown` event happens outside of the `DismissableLayer`.
+   * Can be prevented.
+   */
+  onPointerDownOutside?: DismissableLayerProps['onPointerDownOutside'];
+}
+const SelectContentModalityImpl = React.forwardRef<
+  SelectContentModalityImplElement,
+  SelectContentModalityImplProps
+>((props: ScopedProps<SelectContentModalityImplProps>, forwardedRef) => {
+  const {
+    __scopeSelect,
+    disableOutsideScroll,
+    trapFocus,
+    disableOutsidePointerEvents,
+    onCloseAutoFocus,
+    onEscapeKeyDown,
+    onPointerDownOutside,
+    onFocusOutside,
+    onInteractOutside,
+    onDismiss,
+    children,
+  } = props;
+  const context = useSelectContext(CONTENT_NAME, __scopeSelect);
+
+  return (
+    <RemoveScroll as={Slot} allowPinchZoom enabled={disableOutsideScroll}>
+      <FocusScope
+        asChild
+        trapped={trapFocus}
+        onMountAutoFocus={(event) => {
+          // we prevent open autofocus because we manually focus the selected item
+          event.preventDefault();
+        }}
+        onUnmountAutoFocus={composeEventHandlers(onCloseAutoFocus, (event) => {
+          context.trigger?.focus({ preventScroll: true });
+          event.preventDefault();
+        })}
+      >
+        <DismissableLayer
+          ref={forwardedRef}
+          asChild
+          disableOutsidePointerEvents={disableOutsidePointerEvents}
+          onEscapeKeyDown={onEscapeKeyDown}
+          onPointerDownOutside={onPointerDownOutside}
+          onFocusOutside={onFocusOutside}
+          onInteractOutside={onInteractOutside}
+          onDismiss={onDismiss}
+        >
+          {children}
+        </DismissableLayer>
+      </FocusScope>
+    </RemoveScroll>
+  );
+});
+
+SelectContentModalityImpl.displayName = CONTENT_MODALITY_IMPL_NAME;
+
+type SelectContentModalityImplPublicProps = Omit<
+  SelectContentModalityImplProps,
+  keyof SelectContentModalityImplPrivateProps
+>;
+interface SelectContentModalProps extends SelectContentModalityImplPublicProps {}
+const SelectContentModal = (props: ScopedProps<SelectContentModalProps>) => {
+  const { __scopeSelect, children, ...modalityProps } = props;
+  const context = useSelectContext(CONTENT_NAME, __scopeSelect);
+  const contentRef = React.useRef<SelectContentModalityImplElement>(null);
+
+  // aria-hide everything except the content (better supported equivalent to setting aria-modal)
+  React.useEffect(() => {
+    const content = contentRef.current;
+    if (content) return hideOthers(content);
+  }, []);
+
+  return (
+    <SelectContentModalityImpl
+      ref={contentRef}
+      // we make sure we're not trapping once it's been closed
+      // (closed !== unmounted when animating out)
+      trapFocus={context.open}
+      // make sure to only disable pointer events when open
+      // this avoids blocking interactions while animating out
+      disableOutsidePointerEvents={context.open}
+      disableOutsideScroll
+      {...modalityProps}
+      onFocusOutside={(event) => event.preventDefault()}
+      onDismiss={() => context.onOpenChange(false)}
+    >
+      {children}
+    </SelectContentModalityImpl>
+  );
+};
+
+interface SelectContentNonModalProps extends SelectContentModalityImplPublicProps {}
+const SelectContentNonModal = (props: ScopedProps<SelectContentNonModalProps>) => {
+  const { __scopeSelect, children, ...modalityProps } = props;
+  const context = useSelectContext(CONTENT_NAME, __scopeSelect);
+
+  return (
+    <SelectContentModalityImpl
+      trapFocus={false}
+      disableOutsideScroll={false}
+      disableOutsidePointerEvents={false}
+      {...modalityProps}
+      onDismiss={() => context.onOpenChange(false)}
+    >
+      {children}
+    </SelectContentModalityImpl>
+  );
+};
 
 /* -------------------------------------------------------------------------------------------------
  * SelectViewport
