@@ -352,17 +352,6 @@ const FormControl = React.forwardRef<FormControlElement, FormControlProps>(
       [customMatcherEntries, name, onFieldCustomErrorsChange, onFieldValidityChange]
     );
 
-    React.useEffect(() => {
-      const control = ref.current;
-      if (control) {
-        // We only want validate on change (native `change` event, not React's `onChange`). This is primarily
-        // a UX decision, we don't want to validate on every keystroke and React's `onChange` is the `input` event.
-        const handleChange = () => updateControlValidity(control);
-        control.addEventListener('change', handleChange);
-        return () => control.removeEventListener('change', handleChange);
-      }
-    }, [updateControlValidity]);
-
     const resetControlValidity = React.useCallback(() => {
       const control = ref.current;
       if (control) {
@@ -411,6 +400,10 @@ const FormControl = React.forwardRef<FormControlElement, FormControlProps>(
         onChange={composeEventHandlers(props.onChange, (event) => {
           // reset validity when user changes value
           resetControlValidity();
+        })}
+        onBlur={composeEventHandlers(props.onBlur, (event) => {
+          const control = event.currentTarget;
+          updateControlValidity(control);
         })}
       />
     );
