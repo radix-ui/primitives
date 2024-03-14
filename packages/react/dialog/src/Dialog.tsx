@@ -28,6 +28,7 @@ const [createDialogContext, createDialogScope] = createContextScope(DIALOG_NAME)
 
 type DialogContextValue = {
   triggerRef: React.RefObject<HTMLButtonElement>;
+  overlayRef: React.RefObject<DialogOverlayElement>;
   contentRef: React.RefObject<DialogContentElement>;
   contentId: string;
   titleId: string;
@@ -58,6 +59,7 @@ const Dialog: React.FC<DialogProps> = (props: ScopedProps<DialogProps>) => {
     modal = true,
   } = props;
   const triggerRef = React.useRef<HTMLButtonElement>(null);
+  const overlayRef = React.useRef<DialogOverlayElement>(null);
   const contentRef = React.useRef<DialogContentElement>(null);
   const [open = false, setOpen] = useControllableState({
     prop: openProp,
@@ -69,6 +71,7 @@ const Dialog: React.FC<DialogProps> = (props: ScopedProps<DialogProps>) => {
     <DialogProvider
       scope={__scopeDialog}
       triggerRef={triggerRef}
+      overlayRef={overlayRef}
       contentRef={contentRef}
       contentId={useId()}
       titleId={useId()}
@@ -198,14 +201,15 @@ const DialogOverlayImpl = React.forwardRef<DialogOverlayImplElement, DialogOverl
   (props: ScopedProps<DialogOverlayImplProps>, forwardedRef) => {
     const { __scopeDialog, ...overlayProps } = props;
     const context = useDialogContext(OVERLAY_NAME, __scopeDialog);
+    const overlayRef = React.useRef<HTMLDivElement>(null);
+    const composedRefs = useComposedRefs(forwardedRef, context.overlayRef, overlayRef);
+    const isContentInside = overlayRef.current?.contains(context.contentRef.current);
     return (
-      // Make sure `Content` is scrollable even when it doesn't live inside `RemoveScroll`
-      // ie. when `Overlay` and `Content` are siblings
-      <RemoveScroll as={Slot} allowPinchZoom shards={[context.contentRef]}>
+      <RemoveScroll as={Slot} allowPinchZoom enabled={isContentInside}>
         <Primitive.div
           data-state={getState(context.open)}
           {...overlayProps}
-          ref={forwardedRef}
+          ref={composedRefs}
           // We re-enable pointer-events prevented by `Dialog.Content` to allow scrolling the overlay.
           style={{ pointerEvents: 'auto', ...overlayProps.style }}
         />
@@ -260,6 +264,8 @@ const DialogContentModal = React.forwardRef<DialogContentTypeElement, DialogCont
     const contentRef = React.useRef<HTMLDivElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, context.contentRef, contentRef);
 
+    const isInsideOverlay = context.overlayRef.current?.contains(contentRef.current);
+
     // aria-hide everything except the content (better supported equivalent to setting aria-modal)
     React.useEffect(() => {
       const content = contentRef.current;
@@ -267,32 +273,34 @@ const DialogContentModal = React.forwardRef<DialogContentTypeElement, DialogCont
     }, []);
 
     return (
-      <DialogContentImpl
-        {...props}
-        ref={composedRefs}
-        // we make sure focus isn't trapped once `DialogContent` has been closed
-        // (closed !== unmounted when animating out)
-        trapFocus={context.open}
-        disableOutsidePointerEvents
-        onCloseAutoFocus={composeEventHandlers(props.onCloseAutoFocus, (event) => {
-          event.preventDefault();
-          context.triggerRef.current?.focus();
-        })}
-        onPointerDownOutside={composeEventHandlers(props.onPointerDownOutside, (event) => {
-          const originalEvent = event.detail.originalEvent;
-          const ctrlLeftClick = originalEvent.button === 0 && originalEvent.ctrlKey === true;
-          const isRightClick = originalEvent.button === 2 || ctrlLeftClick;
+      <RemoveScroll as={Slot} allowPinchZoom enabled={!isInsideOverlay}>
+        <DialogContentImpl
+          {...props}
+          ref={composedRefs}
+          // we make sure focus isn't trapped once `DialogContent` has been closed
+          // (closed !== unmounted when animating out)
+          trapFocus={context.open}
+          disableOutsidePointerEvents
+          onCloseAutoFocus={composeEventHandlers(props.onCloseAutoFocus, (event) => {
+            event.preventDefault();
+            context.triggerRef.current?.focus();
+          })}
+          onPointerDownOutside={composeEventHandlers(props.onPointerDownOutside, (event) => {
+            const originalEvent = event.detail.originalEvent;
+            const ctrlLeftClick = originalEvent.button === 0 && originalEvent.ctrlKey === true;
+            const isRightClick = originalEvent.button === 2 || ctrlLeftClick;
 
-          // If the event is a right-click, we shouldn't close because
-          // it is effectively as if we right-clicked the `Overlay`.
-          if (isRightClick) event.preventDefault();
-        })}
-        // When focus is trapped, a `focusout` event may still happen.
-        // We make sure we don't trigger our `onDismiss` in such case.
-        onFocusOutside={composeEventHandlers(props.onFocusOutside, (event) =>
-          event.preventDefault()
-        )}
-      />
+            // If the event is a right-click, we shouldn't close because
+            // it is effectively as if we right-clicked the `Overlay`.
+            if (isRightClick) event.preventDefault();
+          })}
+          // When focus is trapped, a `focusout` event may still happen.
+          // We make sure we don't trigger our `onDismiss` in such case.
+          onFocusOutside={composeEventHandlers(props.onFocusOutside, (event) =>
+            event.preventDefault()
+          )}
+        />
+      </RemoveScroll>
     );
   }
 );
