@@ -30,6 +30,14 @@ export const Basic = () => {
             </select>
           </label>{' '}
           <label>
+            reverse:{' '}
+            <select name="reverse">
+              <option></option>
+              <option>vertical</option>
+              <option>horizontal</option>
+            </select>
+          </label>{' '}
+          <label>
             dir:{' '}
             <select name="dir">
               <option></option>
@@ -370,6 +378,7 @@ const ScrollAreaStory = ({
   animated = false,
   vertical = true,
   horizontal = true,
+  reverse,
   ...props
 }: any) => (
   <ScrollArea.Root
@@ -377,7 +386,9 @@ const ScrollAreaStory = ({
     className={scrollAreaClass()}
     style={{ width: 200, height: 200, ...props.style }}
   >
-    <ScrollArea.Viewport className={scrollAreaViewportClass()}>{children}</ScrollArea.Viewport>
+    <ScrollArea.Viewport className={scrollAreaViewportClass({ reverse })}>
+      {children}
+    </ScrollArea.Viewport>
     {vertical && (
       <ScrollArea.Scrollbar className={scrollbarClass()} orientation="vertical">
         <ScrollArea.Thumb className={animated ? animatedThumbClass() : thumbClass()} />
@@ -431,6 +442,18 @@ const RECOMMENDED_CSS__SCROLLAREA__VIEWPORT: any = {
 
 const scrollAreaViewportClass = css({
   ...RECOMMENDED_CSS__SCROLLAREA__VIEWPORT,
+  variants: {
+    reverse: {
+      vertical: {
+        display: 'flex',
+        flexDirection: 'column-reverse',
+      },
+      horizontal: {
+        display: 'flex',
+        flexDirection: 'row-reverse',
+      },
+    },
+  },
 });
 
 const RECOMMENDED_CSS__SCROLLBAR__ROOT: any = {
