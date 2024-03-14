@@ -124,6 +124,9 @@ const DropdownMenuTrigger = React.forwardRef<DropdownMenuTriggerElement, Dropdow
               if (!context.open) event.preventDefault();
             }
           })}
+          onFocusCapture={(event)=>{
+            event.stopPropagation();  
+          }}
           onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
             if (disabled) return;
             if (['Enter', ' '].includes(event.key)) context.onOpenToggle();
