@@ -94,111 +94,114 @@ interface SelectProps {
   required?: boolean;
 }
 
-const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
-  const {
-    __scopeSelect,
-    children,
-    open: openProp,
-    defaultOpen,
-    onOpenChange,
-    value: valueProp,
-    defaultValue,
-    onValueChange,
-    dir,
-    name,
-    autoComplete,
-    disabled,
-    required,
-  } = props;
-  const popperScope = usePopperScope(__scopeSelect);
-  const [trigger, setTrigger] = React.useState<SelectTriggerElement | null>(null);
-  const [valueNode, setValueNode] = React.useState<SelectValueElement | null>(null);
-  const [valueNodeHasChildren, setValueNodeHasChildren] = React.useState(false);
-  const direction = useDirection(dir);
-  const [open = false, setOpen] = useControllableState({
-    prop: openProp,
-    defaultProp: defaultOpen,
-    onChange: onOpenChange,
-  });
-  const [value, setValue] = useControllableState({
-    prop: valueProp,
-    defaultProp: defaultValue,
-    onChange: onValueChange,
-  });
-  const triggerPointerDownPosRef = React.useRef<{ x: number; y: number } | null>(null);
+const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
+  (props: ScopedProps<SelectProps>, forwardedRef) => {
+    const {
+      __scopeSelect,
+      children,
+      open: openProp,
+      defaultOpen,
+      onOpenChange,
+      value: valueProp,
+      defaultValue,
+      onValueChange,
+      dir,
+      name,
+      autoComplete,
+      disabled,
+      required,
+    } = props;
+    const popperScope = usePopperScope(__scopeSelect);
+    const [trigger, setTrigger] = React.useState<SelectTriggerElement | null>(null);
+    const [valueNode, setValueNode] = React.useState<SelectValueElement | null>(null);
+    const [valueNodeHasChildren, setValueNodeHasChildren] = React.useState(false);
+    const direction = useDirection(dir);
+    const [open = false, setOpen] = useControllableState({
+      prop: openProp,
+      defaultProp: defaultOpen,
+      onChange: onOpenChange,
+    });
+    const [value, setValue] = useControllableState({
+      prop: valueProp,
+      defaultProp: defaultValue,
+      onChange: onValueChange,
+    });
+    const triggerPointerDownPosRef = React.useRef<{ x: number; y: number } | null>(null);
 
-  // We set this to true by default so that events bubble to forms without JS (SSR)
-  const isFormControl = trigger ? Boolean(trigger.closest('form')) : true;
-  const [nativeOptionsSet, setNativeOptionsSet] = React.useState(new Set<NativeOption>());
+    // We set this to true by default so that events bubble to forms without JS (SSR)
+    const isFormControl = trigger ? Boolean(trigger.closest('form')) : true;
+    const [nativeOptionsSet, setNativeOptionsSet] = React.useState(new Set<NativeOption>());
 
-  // The native `select` only associates the correct default value if the corresponding
-  // `option` is rendered as a child **at the same time** as itself.
-  // Because it might take a few renders for our items to gather the information to build
-  // the native `option`(s), we generate a key on the `select` to make sure React re-builds it
-  // each time the options change.
-  const nativeSelectKey = Array.from(nativeOptionsSet)
-    .map((option) => option.props.value)
-    .join(';');
+    // The native `select` only associates the correct default value if the corresponding
+    // `option` is rendered as a child **at the same time** as itself.
+    // Because it might take a few renders for our items to gather the information to build
+    // the native `option`(s), we generate a key on the `select` to make sure React re-builds it
+    // each time the options change.
+    const nativeSelectKey = Array.from(nativeOptionsSet)
+      .map((option) => option.props.value)
+      .join(';');
 
-  return (
-    <PopperPrimitive.Root {...popperScope}>
-      <SelectProvider
-        required={required}
-        scope={__scopeSelect}
-        trigger={trigger}
-        onTriggerChange={setTrigger}
-        valueNode={valueNode}
-        onValueNodeChange={setValueNode}
-        valueNodeHasChildren={valueNodeHasChildren}
-        onValueNodeHasChildrenChange={setValueNodeHasChildren}
-        contentId={useId()}
-        value={value}
-        onValueChange={setValue}
-        open={open}
-        onOpenChange={setOpen}
-        dir={direction}
-        triggerPointerDownPosRef={triggerPointerDownPosRef}
-        disabled={disabled}
-      >
-        <Collection.Provider scope={__scopeSelect}>
-          <SelectNativeOptionsProvider
-            scope={props.__scopeSelect}
-            onNativeOptionAdd={React.useCallback((option) => {
-              setNativeOptionsSet((prev) => new Set(prev).add(option));
-            }, [])}
-            onNativeOptionRemove={React.useCallback((option) => {
-              setNativeOptionsSet((prev) => {
-                const optionsSet = new Set(prev);
-                optionsSet.delete(option);
-                return optionsSet;
-              });
-            }, [])}
-          >
-            {children}
-          </SelectNativeOptionsProvider>
-        </Collection.Provider>
+    return (
+      <PopperPrimitive.Root {...popperScope}>
+        <SelectProvider
+          required={required}
+          scope={__scopeSelect}
+          trigger={trigger}
+          onTriggerChange={setTrigger}
+          valueNode={valueNode}
+          onValueNodeChange={setValueNode}
+          valueNodeHasChildren={valueNodeHasChildren}
+          onValueNodeHasChildrenChange={setValueNodeHasChildren}
+          contentId={useId()}
+          value={value}
+          onValueChange={setValue}
+          open={open}
+          onOpenChange={setOpen}
+          dir={direction}
+          triggerPointerDownPosRef={triggerPointerDownPosRef}
+          disabled={disabled}
+        >
+          <Collection.Provider scope={__scopeSelect}>
+            <SelectNativeOptionsProvider
+              scope={props.__scopeSelect}
+              onNativeOptionAdd={React.useCallback((option) => {
+                setNativeOptionsSet((prev) => new Set(prev).add(option));
+              }, [])}
+              onNativeOptionRemove={React.useCallback((option) => {
+                setNativeOptionsSet((prev) => {
+                  const optionsSet = new Set(prev);
+                  optionsSet.delete(option);
+                  return optionsSet;
+                });
+              }, [])}
+            >
+              {children}
+            </SelectNativeOptionsProvider>
+          </Collection.Provider>
 
-        {isFormControl ? (
-          <BubbleSelect
-            key={nativeSelectKey}
-            aria-hidden
-            required={required}
-            tabIndex={-1}
-            name={name}
-            autoComplete={autoComplete}
-            value={value}
-            // enable form autofill
-            onChange={(event) => setValue(event.target.value)}
-            disabled={disabled}
-          >
-            {value === undefined ? <option value="" /> : null}
-            {Array.from(nativeOptionsSet)}
-          </BubbleSelect>
-        ) : null}
-      </SelectProvider>
-    </PopperPrimitive.Root>
-  );
-};
+          {isFormControl ? (
+            <BubbleSelect
+              key={nativeSelectKey}
+              aria-hidden
+              required={required}
+              tabIndex={-1}
+              name={name}
+              autoComplete={autoComplete}
+              value={value}
+              // enable form autofill
+              onChange={(event) => setValue(event.target.value)}
+              disabled={disabled}
+              ref={forwardedRef}
+            >
+              {value === undefined ? <option value="" /> : null}
+              {Array.from(nativeOptionsSet)}
+            </BubbleSelect>
+          ) : null}
+        </SelectProvider>
+      </PopperPrimitive.Root>
+    );
+  }
+);
 
 Select.displayName = SELECT_NAME;
 
