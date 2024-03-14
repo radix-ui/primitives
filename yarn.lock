@@ -17076,8 +17076,8 @@ __metadata:
   linkType: hard
 
 "react-remove-scroll-bar@npm:^2.3.3, react-remove-scroll-bar@npm:^2.3.4":
-  version: 2.3.5
-  resolution: "react-remove-scroll-bar@npm:2.3.5"
+  version: 2.3.6
+  resolution: "react-remove-scroll-bar@npm:2.3.6"
   dependencies:
     react-style-singleton: "npm:^2.2.1"
     tslib: "npm:^2.0.0"
@@ -17087,7 +17087,7 @@ __metadata:
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: 10/6d05e74ee8049b322ba0aeb398e092ae284a5b04013bc07f0c1f283824b088fd5c1b1f1514a0e0e501c063a9c3b5899373039329d0266a21121222c814052053
+  checksum: 10/5ab8eda61d5b10825447d11e9c824486c929351a471457c22452caa19b6898e18c3af6a46c3fa68010c713baed1eb9956106d068b4a1058bdcf97a1a9bbed734
   languageName: node
   linkType: hard
 
