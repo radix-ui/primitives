@@ -499,6 +499,7 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
                   role="menu"
                   aria-orientation="vertical"
                   data-state={getOpenState(context.open)}
+                  data-menu-state={getOpenState(context.open)}
                   data-radix-menu-content=""
                   dir={rootContext.dir}
                   {...popperScope}
@@ -775,6 +776,7 @@ const MenuCheckboxItem = React.forwardRef<MenuCheckboxItemElement, MenuCheckboxI
           {...checkboxItemProps}
           ref={forwardedRef}
           data-state={getCheckedState(checked)}
+          data-menu-state={getCheckedState(checked)}
           onSelect={composeEventHandlers(
             checkboxItemProps.onSelect,
             () => onCheckedChange?.(isIndeterminate(checked) ? true : !checked),
@@ -843,6 +845,7 @@ const MenuRadioItem = React.forwardRef<MenuRadioItemElement, MenuRadioItemProps>
           {...radioItemProps}
           ref={forwardedRef}
           data-state={getCheckedState(checked)}
+          data-menu-state={getCheckedState(checked)}
           onSelect={composeEventHandlers(
             radioItemProps.onSelect,
             () => context.onValueChange?.(value),
@@ -895,6 +898,7 @@ const MenuItemIndicator = React.forwardRef<MenuItemIndicatorElement, MenuItemInd
           {...itemIndicatorProps}
           ref={forwardedRef}
           data-state={getCheckedState(indicatorContext.checked)}
+          data-menu-state={getCheckedState(indicatorContext.checked)}
         />
       </Presence>
     );
@@ -1050,6 +1054,7 @@ const MenuSubTrigger = React.forwardRef<MenuSubTriggerElement, MenuSubTriggerPro
           aria-expanded={context.open}
           aria-controls={subContext.contentId}
           data-state={getOpenState(context.open)}
+          data-menu-state={getOpenState(context.open)}
           {...props}
           ref={composeRefs(forwardedRef, subContext.onTriggerChange)}
           // This is redundant for mouse users but we cannot determine pointer type from
