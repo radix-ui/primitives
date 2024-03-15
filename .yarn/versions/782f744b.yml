@@ -1,0 +1,4 @@
+releases:
+  "@radix-ui/react-alert-dialog": patch
+  "@radix-ui/react-slot": major
+  "@radix-ui/react-tooltip": patch

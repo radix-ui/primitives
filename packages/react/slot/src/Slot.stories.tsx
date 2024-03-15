@@ -1,5 +1,5 @@
-import * as React from 'react';
 import { Slot, Slottable } from '@radix-ui/react-slot';
+import * as React from 'react';
 
 export default { title: 'Utilities/Slot' };
 
@@ -274,8 +274,14 @@ const SlotWithoutSlottable = React.forwardRef<
 
 const SlotWithSlottable = ({ children, ...props }: any) => (
   <Slot {...props}>
-    <Slottable>{children}</Slottable>
-    <span>world</span>
+    <Slottable child={children}>
+      {(child) => (
+        <>
+          {child}
+          <span>world</span>
+        </>
+      )}
+    </Slottable>
   </Slot>
 );
 
@@ -335,9 +341,15 @@ const Button = React.forwardRef<
         ...props.style,
       }}
     >
-      {iconLeft}
-      <Slottable>{children}</Slottable>
-      {iconRight}
+      <Slottable child={children}>
+        {(child) => (
+          <>
+            {iconLeft}
+            {child}
+            {iconRight}
+          </>
+        )}
+      </Slottable>
     </Comp>
   );
 });

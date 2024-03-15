@@ -1,6 +1,6 @@
-import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
 import { Slot, Slottable } from '@radix-ui/react-slot';
+import { fireEvent, render, screen } from '@testing-library/react';
+import React from 'react';
 
 describe('given a slotted Trigger', () => {
   describe('with onClick on itself', () => {
@@ -151,9 +151,15 @@ const Button = React.forwardRef<
   const Comp = asChild ? Slot : 'button';
   return (
     <Comp {...props} ref={forwardedRef}>
-      {iconLeft}
-      <Slottable>{children}</Slottable>
-      {iconRight}
+      <Slottable child={children}>
+        {(child) => (
+          <>
+            {iconLeft}
+            {child}
+            {iconRight}
+          </>
+        )}
+      </Slottable>
     </Comp>
   );
 });
