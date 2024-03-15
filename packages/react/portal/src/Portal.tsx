@@ -1,3 +1,5 @@
+'use client';
+
 import * as React from 'react';
 import ReactDOM from 'react-dom';
 import { Primitive } from '@radix-ui/react-primitive';

@@ -1,3 +1,5 @@
+'use client';
+
 import * as React from 'react';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
