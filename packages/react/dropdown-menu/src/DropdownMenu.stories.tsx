@@ -41,6 +41,35 @@ export const Styled = () => (
   </div>
 );
 
+export const Horizontal = () => (
+  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '200vh' }}>
+    <DropdownMenu.Root orientation="horizontal">
+      <DropdownMenu.Trigger className={triggerClass()}>Open</DropdownMenu.Trigger>
+      <DropdownMenu.Portal>
+        <DropdownMenu.Content className={contentClass()} sideOffset={5}>
+          <DropdownMenu.Item className={itemClass()} onSelect={() => console.log('undo')}>
+            Undo
+          </DropdownMenu.Item>
+          <DropdownMenu.Item className={itemClass()} onSelect={() => console.log('redo')}>
+            Redo
+          </DropdownMenu.Item>
+          <DropdownMenu.Separator className={separatorClass()} />
+          <DropdownMenu.Item className={itemClass()} disabled onSelect={() => console.log('cut')}>
+            Cut
+          </DropdownMenu.Item>
+          <DropdownMenu.Item className={itemClass()} onSelect={() => console.log('copy')}>
+            Copy
+          </DropdownMenu.Item>
+          <DropdownMenu.Item className={itemClass()} onSelect={() => console.log('paste')}>
+            Paste
+          </DropdownMenu.Item>
+          <DropdownMenu.Arrow />
+        </DropdownMenu.Content>
+      </DropdownMenu.Portal>
+    </DropdownMenu.Root>
+  </div>
+);
+
 export const Modality = () => {
   return (
     <div

@@ -42,6 +42,7 @@ const [DropdownMenuProvider, useDropdownMenuContext] =
 interface DropdownMenuProps {
   children?: React.ReactNode;
   dir?: Direction;
+  orientation?: React.AriaAttributes['aria-orientation'];
   open?: boolean;
   defaultOpen?: boolean;
   onOpenChange?(open: boolean): void;
@@ -53,6 +54,7 @@ const DropdownMenu: React.FC<DropdownMenuProps> = (props: ScopedProps<DropdownMe
     __scopeDropdownMenu,
     children,
     dir,
+    orientation = 'vertical',
     open: openProp,
     defaultOpen,
     onOpenChange,
@@ -77,7 +79,14 @@ const DropdownMenu: React.FC<DropdownMenuProps> = (props: ScopedProps<DropdownMe
       onOpenToggle={React.useCallback(() => setOpen((prevOpen) => !prevOpen), [setOpen])}
       modal={modal}
     >
-      <MenuPrimitive.Root {...menuScope} open={open} onOpenChange={setOpen} dir={dir} modal={modal}>
+      <MenuPrimitive.Root
+        {...menuScope}
+        open={open}
+        onOpenChange={setOpen}
+        dir={dir}
+        modal={modal}
+        orientation={orientation}
+      >
         {children}
       </MenuPrimitive.Root>
     </DropdownMenuProvider>
