@@ -55,40 +55,40 @@ cd primitives
 git remote add upstream https://github.com/radix-ui/primitives.git
 ```
 
-1. Synchronize your local `main` branch with the upstream remote:
+3. Synchronize your local `main` branch with the upstream remote:
 
 ```sh
 git checkout main
 git pull upstream main
 ```
 
-1. Make sure your Node version matches the [.nvmrc](../.nvmrc).
+4. Make sure your Node version matches the [.nvmrc](../.nvmrc).
 
 ```
 node -v
 ```
 
-1. Install dependencies with [yarn](https://yarnpkg.com):
+5. Install dependencies with [yarn](https://yarnpkg.com):
 
 ```sh
 yarn install
 ```
 
-1. Create a new branch related to your PR:
+6. Create a new branch related to your PR:
 
 ```sh
 git checkout -b my-bug-fix
 ```
 
-6. Make changes, then commit and push to your forked repository:
+7. Make changes, then commit and push to your forked repository:
 
 ```sh
 git push -u origin HEAD
 ```
 
-7. Go to [the repository](https://github.com/radix-ui/primitives) and [make a Pull Request](https://docs.github.com/en/free-pro-team@latest/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request).
+8. Go to [the repository](https://github.com/radix-ui/primitives) and [make a Pull Request](https://docs.github.com/en/free-pro-team@latest/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request).
 
-8. We will review your Pull Request and either merge it, request changes to it, or close it with an explanation.
+9. We will review your Pull Request and either merge it, request changes to it, or close it with an explanation.
 
 ## Working locally
 
