@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Slot } from '@radix-ui/react-slot';
 
-const NODES = [
+const NODES: ReadonlyArray<keyof React.JSX.IntrinsicElements> = [
   'a',
   'button',
   'div',
@@ -44,7 +44,7 @@ interface PrimitiveForwardRefComponent<E extends React.ElementType>
 const Primitive = NODES.reduce((primitive, node) => {
   const Node = React.forwardRef((props: PrimitivePropsWithRef<typeof node>, forwardedRef: any) => {
     const { asChild, ...primitiveProps } = props;
-    const Comp: any = asChild ? Slot : node;
+    const Comp: React.ElementType = asChild ? Slot : node;
 
     React.useEffect(() => {
       (window as any)[Symbol.for('radix-ui')] = true;
