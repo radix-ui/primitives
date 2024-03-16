@@ -85,8 +85,17 @@ const DismissableLayer = React.forwardRef<DismissableLayerElement, DismissableLa
 
     const pointerDownOutside = usePointerDownOutside((event) => {
       const target = event.target as HTMLElement;
+      const isRTL = getComputedStyle(target).direction === 'rtl';
+      const offsetX = event.detail.originalEvent.offsetX;
+      const offsetY = event.detail.originalEvent.offsetY;
+      const isPointerDownOnScrollbarX = offsetY > target.clientHeight;
+      let isPointerDownOnScrollbarY = offsetX > target.clientWidth;
+      if (isRTL) {
+        isPointerDownOnScrollbarY = offsetX <= target.offsetWidth - target.clientWidth;
+      }
+      const isPointerDownOnScrollbar = isPointerDownOnScrollbarY || isPointerDownOnScrollbarX;
       const isPointerDownOnBranch = [...context.branches].some((branch) => branch.contains(target));
-      if (!isPointerEventsEnabled || isPointerDownOnBranch) return;
+      if (!isPointerEventsEnabled || isPointerDownOnScrollbar || isPointerDownOnBranch) return;
       onPointerDownOutside?.(event);
       onInteractOutside?.(event);
       if (!event.defaultPrevented) onDismiss?.();
