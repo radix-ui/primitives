@@ -38,6 +38,7 @@ type TooltipProviderContextValue = {
   onPointerInTransitChange(inTransit: boolean): void;
   isPointerInTransitRef: React.MutableRefObject<boolean>;
   disableHoverableContent: boolean;
+  ignoreNonKeyboardFocus: boolean;
 };
 
 const [TooltipProviderContextProvider, useTooltipProviderContext] =
@@ -60,6 +61,14 @@ interface TooltipProviderProps {
    * @defaultValue false
    */
   disableHoverableContent?: boolean;
+  /**
+   * Prevent the tooltip from opening if the focus did not come from
+   * the keyboard by matching against the `:focus-visible` selector.
+   * This is useful if you want to avoid opening it when switching
+   * browser tabs or closing a dialog.
+   * @defaultValue false
+   */
+  ignoreNonKeyboardFocus?: boolean;
 }
 
 const TooltipProvider: React.FC<TooltipProviderProps> = (
@@ -70,6 +79,7 @@ const TooltipProvider: React.FC<TooltipProviderProps> = (
     delayDuration = DEFAULT_DELAY_DURATION,
     skipDelayDuration = 300,
     disableHoverableContent = false,
+    ignoreNonKeyboardFocus = false,
     children,
   } = props;
   const [isOpenDelayed, setIsOpenDelayed] = React.useState(true);
@@ -102,6 +112,7 @@ const TooltipProvider: React.FC<TooltipProviderProps> = (
         isPointerInTransitRef.current = inTransit;
       }, [])}
       disableHoverableContent={disableHoverableContent}
+      ignoreNonKeyboardFocus={ignoreNonKeyboardFocus}
     >
       {children}
     </TooltipProviderContextProvider>
@@ -127,6 +138,7 @@ type TooltipContextValue = {
   onOpen(): void;
   onClose(): void;
   disableHoverableContent: boolean;
+  ignoreNonKeyboardFocus: boolean;
 };
 
 const [TooltipContextProvider, useTooltipContext] =
@@ -148,6 +160,14 @@ interface TooltipProps {
    * @defaultValue false
    */
   disableHoverableContent?: boolean;
+  /**
+   * Prevent the tooltip from opening if the focus did not come from
+   * the keyboard by matching against the `:focus-visible` selector.
+   * This is useful if you want to avoid opening it when switching
+   * browser tabs or closing a dialog.
+   * @defaultValue false
+   */
+  ignoreNonKeyboardFocus?: boolean;
 }
 
 const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
@@ -158,6 +178,7 @@ const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
     defaultOpen = false,
     onOpenChange,
     disableHoverableContent: disableHoverableContentProp,
+    ignoreNonKeyboardFocus: ignoreNonKeyboardFocusProp,
     delayDuration: delayDurationProp,
   } = props;
   const providerContext = useTooltipProviderContext(TOOLTIP_NAME, props.__scopeTooltip);
@@ -167,6 +188,8 @@ const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
   const openTimerRef = React.useRef(0);
   const disableHoverableContent =
     disableHoverableContentProp ?? providerContext.disableHoverableContent;
+  const ignoreNonKeyboardFocus =
+    ignoreNonKeyboardFocusProp ?? providerContext.ignoreNonKeyboardFocus;
   const delayDuration = delayDurationProp ?? providerContext.delayDuration;
   const wasOpenDelayedRef = React.useRef(false);
   const [open = false, setOpen] = useControllableState({
@@ -236,6 +259,7 @@ const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
         onOpen={handleOpen}
         onClose={handleClose}
         disableHoverableContent={disableHoverableContent}
+        ignoreNonKeyboardFocus={ignoreNonKeyboardFocus}
       >
         {children}
       </TooltipContextProvider>
@@ -298,8 +322,10 @@ const TooltipTrigger = React.forwardRef<TooltipTriggerElement, TooltipTriggerPro
             isPointerDownRef.current = true;
             document.addEventListener('pointerup', handlePointerUp, { once: true });
           })}
-          onFocus={composeEventHandlers(props.onFocus, () => {
-            if (!isPointerDownRef.current) context.onOpen();
+          onFocus={composeEventHandlers(props.onFocus, (event) => {
+            if (isPointerDownRef.current) return;
+            if (context.ignoreNonKeyboardFocus && !event.target.matches(':focus-visible')) return;
+            context.onOpen();
           })}
           onBlur={composeEventHandlers(props.onBlur, context.onClose)}
           onClick={composeEventHandlers(props.onClick, context.onClose)}
