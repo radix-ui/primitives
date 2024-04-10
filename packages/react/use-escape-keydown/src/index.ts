@@ -1,1 +1,1 @@
-export { useEscapeKeydown } from './useEscapeKeydown';
+export { useEscapeKeydown } from './useEscapeKeydown.tsx';

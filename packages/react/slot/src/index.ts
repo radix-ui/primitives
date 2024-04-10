@@ -3,5 +3,5 @@ export {
   Slottable,
   //
   Root,
-} from './Slot';
-export type { SlotProps } from './Slot';
+} from './Slot.tsx';
+export type { SlotProps } from './Slot.tsx';

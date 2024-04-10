@@ -1,3 +1,4 @@
+// @deno-types="npm:@types/react@^18.2.0"
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { createCollection } from '@radix-ui/react-collection';
@@ -22,16 +23,25 @@ const EVENT_OPTIONS = { bubbles: false, cancelable: true };
 const GROUP_NAME = 'RovingFocusGroup';
 
 type ItemData = { id: string; focusable: boolean; active: boolean };
-const [Collection, useCollection, createCollectionScope] = createCollection<
+
+const collection: ReturnType<typeof createCollection<
+HTMLSpanElement,
+ItemData
+>> = createCollection<
   HTMLSpanElement,
   ItemData
 >(GROUP_NAME);
+const Collection = collection[0]
+const useCollection = collection[1];
+const createCollectionScope = collection[2];
 
 type ScopedProps<P> = P & { __scopeRovingFocusGroup?: Scope };
-const [createRovingFocusGroupContext, createRovingFocusGroupScope] = createContextScope(
+const contextScope: ReturnType<typeof createContextScope> = createContextScope(
   GROUP_NAME,
   [createCollectionScope]
 );
+const createRovingFocusGroupContext = contextScope[0]
+const createRovingFocusGroupScope = contextScope[1];
 
 type Orientation = React.AriaAttributes['aria-orientation'];
 type Direction = 'ltr' | 'rtl';
@@ -67,7 +77,7 @@ const [RovingFocusProvider, useRovingFocusContext] =
 type RovingFocusGroupElement = RovingFocusGroupImplElement;
 interface RovingFocusGroupProps extends RovingFocusGroupImplProps {}
 
-const RovingFocusGroup = React.forwardRef<RovingFocusGroupElement, RovingFocusGroupProps>(
+const RovingFocusGroup: React.ForwardRefExoticComponent<Omit<RovingFocusGroupProps, "ref"> & React.RefAttributes<HTMLDivElement>> = React.forwardRef<RovingFocusGroupElement, RovingFocusGroupProps>(
   (props: ScopedProps<RovingFocusGroupProps>, forwardedRef) => {
     return (
       <Collection.Provider scope={props.__scopeRovingFocusGroup}>
@@ -95,7 +105,7 @@ interface RovingFocusGroupImplProps
   preventScrollOnEntryFocus?: boolean;
 }
 
-const RovingFocusGroupImpl = React.forwardRef<
+const RovingFocusGroupImpl: React.ForwardRefExoticComponent<Omit<RovingFocusGroupImplProps, "ref"> & React.RefAttributes<HTMLDivElement>> = React.forwardRef<
   RovingFocusGroupImplElement,
   RovingFocusGroupImplProps
 >((props: ScopedProps<RovingFocusGroupImplProps>, forwardedRef) => {
@@ -208,7 +218,7 @@ interface RovingFocusItemProps extends PrimitiveSpanProps {
   active?: boolean;
 }
 
-const RovingFocusGroupItem = React.forwardRef<RovingFocusItemElement, RovingFocusItemProps>(
+const RovingFocusGroupItem: React.ForwardRefExoticComponent<RovingFocusItemProps & React.RefAttributes<HTMLSpanElement>> = React.forwardRef<RovingFocusItemElement, RovingFocusItemProps>(
   (props: ScopedProps<RovingFocusItemProps>, forwardedRef) => {
     const {
       __scopeRovingFocusGroup,

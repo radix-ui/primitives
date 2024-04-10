@@ -6,5 +6,5 @@ export {
   //
   Root,
   Indicator,
-} from './Checkbox';
-export type { CheckboxProps, CheckboxIndicatorProps } from './Checkbox';
+} from './Checkbox.tsx';
+export type { CheckboxProps, CheckboxIndicatorProps } from './Checkbox.tsx';

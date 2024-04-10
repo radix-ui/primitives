@@ -2,5 +2,5 @@ export {
   Toggle,
   //
   Root,
-} from './Toggle';
-export type { ToggleProps } from './Toggle';
+} from './Toggle.tsx';
+export type { ToggleProps } from './Toggle.tsx';

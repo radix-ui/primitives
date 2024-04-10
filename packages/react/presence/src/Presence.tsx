@@ -1,8 +1,9 @@
+// @deno-types="npm:@types/react@^18.2.0"
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
-import { useStateMachine } from './useStateMachine';
+import { useStateMachine } from './useStateMachine.tsx';
 
 interface PresenceProps {
   children: React.ReactElement | ((props: { present: boolean }) => React.ReactElement);

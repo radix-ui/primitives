@@ -8,5 +8,5 @@ export {
   Root,
   Image,
   Fallback,
-} from './Avatar';
-export type { AvatarProps, AvatarImageProps, AvatarFallbackProps } from './Avatar';
+} from './Avatar.tsx';
+export type { AvatarProps, AvatarImageProps, AvatarFallbackProps } from './Avatar.tsx';

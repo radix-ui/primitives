@@ -1,4 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
+// @deno-types="npm:@types/react@^18.2.0"
 import * as React from 'react';
 import { css, keyframes } from '../../../../stitches.config';
 import * as Accordion from '@radix-ui/react-accordion';

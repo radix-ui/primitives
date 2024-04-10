@@ -6,5 +6,5 @@ export {
   //
   Root,
   Indicator,
-} from './Progress';
-export type { ProgressProps, ProgressIndicatorProps } from './Progress';
+} from './Progress.tsx';
+export type { ProgressProps, ProgressIndicatorProps } from './Progress.tsx';

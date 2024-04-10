@@ -1,3 +1,4 @@
+// @deno-types="npm:@types/react@^18.2.0"
 import * as React from 'react';
 
 type Direction = 'ltr' | 'rtl';
@@ -18,7 +19,7 @@ const DirectionProvider: React.FC<DirectionProviderProps> = (props) => {
 
 /* -----------------------------------------------------------------------------------------------*/
 
-function useDirection(localDir?: Direction) {
+function useDirection(localDir?: Direction): Direction {
   const globalDir = React.useContext(DirectionContext);
   return localDir || globalDir || 'ltr';
 }

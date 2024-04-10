@@ -1,3 +1,4 @@
+// @deno-types="npm:@types/react@^18.2.0"
 import * as React from 'react';
 import { DirectionProvider } from '@radix-ui/react-direction';
 import { css } from '../../../../stitches.config';

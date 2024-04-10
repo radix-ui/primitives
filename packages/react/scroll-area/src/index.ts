@@ -12,11 +12,11 @@ export {
   Scrollbar,
   Thumb,
   Corner,
-} from './ScrollArea';
+} from './ScrollArea.tsx';
 export type {
   ScrollAreaProps,
   ScrollAreaViewportProps,
   ScrollAreaScrollbarProps,
   ScrollAreaThumbProps,
   ScrollAreaCornerProps,
-} from './ScrollArea';
+} from './ScrollArea.tsx';

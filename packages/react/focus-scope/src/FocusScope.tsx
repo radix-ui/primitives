@@ -1,3 +1,4 @@
+// @deno-types="npm:@types/react@^18.2.0"
 import * as React from 'react';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { Primitive } from '@radix-ui/react-primitive';
@@ -47,7 +48,7 @@ interface FocusScopeProps extends PrimitiveDivProps {
   onUnmountAutoFocus?: (event: Event) => void;
 }
 
-const FocusScope = React.forwardRef<FocusScopeElement, FocusScopeProps>((props, forwardedRef) => {
+const FocusScope: React.ForwardRefExoticComponent<FocusScopeProps & React.RefAttributes<FocusScopeElement>> = React.forwardRef<FocusScopeElement, FocusScopeProps>((props, forwardedRef) => {
   const {
     loop = false,
     trapped = false,
@@ -228,7 +229,7 @@ function focusFirst(candidates: HTMLElement[], { select = false } = {}) {
 /**
  * Returns the first and last tabbable elements inside a container.
  */
-function getTabbableEdges(container: HTMLElement) {
+function getTabbableEdges(container: HTMLElement): readonly [HTMLElement | undefined, HTMLElement | undefined] {
   const candidates = getTabbableCandidates(container);
   const first = findVisible(candidates, container);
   const last = findVisible(candidates.reverse(), container);
@@ -245,7 +246,7 @@ function getTabbableEdges(container: HTMLElement) {
  * See: https://developer.mozilla.org/en-US/docs/Web/API/TreeWalker
  * Credit: https://github.com/discord/focus-layers/blob/master/src/util/wrapFocus.tsx#L1
  */
-function getTabbableCandidates(container: HTMLElement) {
+function getTabbableCandidates(container: HTMLElement): HTMLElement[] {
   const nodes: HTMLElement[] = [];
   const walker = document.createTreeWalker(container, NodeFilter.SHOW_ELEMENT, {
     acceptNode: (node: any) => {
@@ -308,7 +309,10 @@ function focus(element?: FocusableTarget | null, { select = false } = {}) {
 type FocusScopeAPI = { paused: boolean; pause(): void; resume(): void };
 const focusScopesStack = createFocusScopesStack();
 
-function createFocusScopesStack() {
+function createFocusScopesStack(): {
+  add(focusScope: FocusScopeAPI): void;
+  remove(focusScope: FocusScopeAPI): void;
+} {
   /** A stack of focus scopes, with the active one at the top */
   let stack: FocusScopeAPI[] = [];
 
@@ -331,7 +335,7 @@ function createFocusScopesStack() {
   };
 }
 
-function arrayRemove<T>(array: T[], item: T) {
+function arrayRemove<T>(array: T[], item: T): T[] {
   const updatedArray = [...array];
   const index = updatedArray.indexOf(item);
   if (index !== -1) {
@@ -340,7 +344,7 @@ function arrayRemove<T>(array: T[], item: T) {
   return updatedArray;
 }
 
-function removeLinks(items: HTMLElement[]) {
+function removeLinks(items: HTMLElement[]): HTMLElement[] {
   return items.filter((item) => item.tagName !== 'A');
 }
 

@@ -10,5 +10,5 @@ export {
   List,
   Trigger,
   Content,
-} from './Tabs';
-export type { TabsProps, TabsListProps, TabsTriggerProps, TabsContentProps } from './Tabs';
+} from './Tabs.tsx';
+export type { TabsProps, TabsListProps, TabsTriggerProps, TabsContentProps } from './Tabs.tsx';

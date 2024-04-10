@@ -1,9 +1,10 @@
+// @deno-types="npm:@types/react@^18.2.0"
 import * as React from 'react';
 
 /** Number of components which have requested interest to have focus guards */
 let count = 0;
 
-function FocusGuards(props: any) {
+function FocusGuards(props: any): any {
   useFocusGuards();
   return props.children;
 }

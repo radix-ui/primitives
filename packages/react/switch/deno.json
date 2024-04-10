@@ -1,0 +1,27 @@
+{
+    "name": "@radix-ui-fork/react-switch",
+    "version": "0.0.5",
+    "exclude": ["**/package.json", "**/*.test.tsx", "**/*.stories.tsx"],
+    "imports": {
+      "react": "npm:react@^18.2.0",
+      "@types/react": "npm:@types/react@^18.2.0",
+      "@radix-ui/primitive": "jsr:@radix-ui-fork/primitive@0.0.5",
+      "@radix-ui/rect": "jsr:@radix-ui-fork/rect@0.0.5",
+      "@radix-ui/react-id": "jsr:@radix-ui-fork/react-id@0.0.5",
+      "@radix-ui/react-use-controllable-state": "jsr:@radix-ui-fork/react-use-controllable-state@0.0.5",
+      "@radix-ui/react-use-layout-effect": "jsr:@radix-ui-fork/react-use-layout-effect@0.0.5",
+      "@radix-ui/react-compose-refs": "jsr:@radix-ui-fork/react-compose-refs@0.0.5",
+      "@radix-ui/react-arrow": "jsr:@radix-ui-fork/react-arrow@0.0.5",
+      "@radix-ui/react-use-previous": "jsr:@radix-ui-fork/react-use-previous@0.0.5",
+      "@radix-ui/react-context": "jsr:@radix-ui-fork/react-context@0.0.5",
+      "@radix-ui/react-collapsible": "jsr:@radix-ui-fork/react-collapsible@0.0.5",
+      "@radix-ui/react-collection": "jsr:@radix-ui-fork/react-collection@0.0.5",
+      "@radix-ui/react-use-callback-ref": "jsr:@radix-ui-fork/react-use-callback-ref@0.0.5",
+      "@radix-ui/react-use-size": "jsr:@radix-ui-fork/react-use-size@0.0.5",
+      "@radix-ui/react-primitive": "jsr:@radix-ui-fork/react-primitive@0.0.5"
+    },
+    "exports": {
+      ".": "./src/index.ts"
+    }
+  }
+  

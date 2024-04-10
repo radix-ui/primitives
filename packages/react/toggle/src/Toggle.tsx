@@ -1,3 +1,4 @@
+// @deno-types="npm:@types/react@^18.2.0"
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
@@ -30,7 +31,8 @@ interface ToggleProps extends PrimitiveButtonProps {
   onPressedChange?(pressed: boolean): void;
 }
 
-const Toggle = React.forwardRef<ToggleElement, ToggleProps>((props, forwardedRef) => {
+const Toggle:React.ForwardRefExoticComponent<ToggleProps & React.RefAttributes<ToggleElement>>
+= React.forwardRef<ToggleElement, ToggleProps>((props, forwardedRef) => {
   const { pressed: pressedProp, defaultPressed = false, onPressedChange, ...buttonProps } = props;
 
   const [pressed = false, setPressed] = useControllableState({

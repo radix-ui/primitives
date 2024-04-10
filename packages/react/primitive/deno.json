@@ -1,0 +1,12 @@
+{
+  "name": "@radix-ui-fork/react-primitive",
+  "version": "0.0.5",
+  "imports": {
+    "react": "npm:react@^18.2.0",
+    "@types/react": "npm:@types/react@^18.2.0",
+    "@radix-ui/react-slot": "jsr:@radix-ui-fork/react-slot@0.0.5"
+  },
+  "exports": {
+    ".": "./src/index.ts"
+  }
+}

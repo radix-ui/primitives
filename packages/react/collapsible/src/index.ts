@@ -8,9 +8,9 @@ export {
   Root,
   Trigger,
   Content,
-} from './Collapsible';
+} from './Collapsible.tsx';
 export type {
   CollapsibleProps,
   CollapsibleTriggerProps,
   CollapsibleContentProps,
-} from './Collapsible';
+} from './Collapsible.tsx';

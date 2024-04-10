@@ -1,3 +1,4 @@
+// @deno-types="npm:@types/react@^18.2.0"
 import * as React from 'react';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 

@@ -1,6 +1,7 @@
+// @deno-types="npm:@types/react@^18.2.0"
 import * as React from 'react';
 
-function usePrevious<T>(value: T) {
+function usePrevious<T>(value: T): T {
   const ref = React.useRef({ value, previous: value });
 
   // We compare values before making an update to ensure that

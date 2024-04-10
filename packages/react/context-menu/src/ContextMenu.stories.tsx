@@ -1,3 +1,4 @@
+// @deno-types="npm:@types/react@^18.2.0"
 import * as React from 'react';
 import { css, keyframes } from '../../../../stitches.config';
 import * as ContextMenu from '@radix-ui/react-context-menu';

@@ -1,5 +1,6 @@
+// @deno-types="npm:@types/react@^18.2.0"
 import * as React from 'react';
-import { composeRefs } from '@radix-ui/react-compose-refs';
+import { composeRefs } from "@radix-ui/react-compose-refs";
 
 /* -------------------------------------------------------------------------------------------------
  * Slot
@@ -9,7 +10,7 @@ interface SlotProps extends React.HTMLAttributes<HTMLElement> {
   children?: React.ReactNode;
 }
 
-const Slot = React.forwardRef<HTMLElement, SlotProps>((props, forwardedRef) => {
+const Slot: React.ForwardRefExoticComponent<SlotProps & React.RefAttributes<HTMLElement>> = React.forwardRef<HTMLElement, SlotProps>((props, forwardedRef) => {
   const { children, ...slotProps } = props;
   const childrenArray = React.Children.toArray(children);
   const slottable = childrenArray.find(isSlottable);
@@ -63,7 +64,7 @@ const SlotClone = React.forwardRef<any, SlotCloneProps>((props, forwardedRef) =>
   if (React.isValidElement(children)) {
     return React.cloneElement(children, {
       ...mergeProps(slotProps, children.props),
-      ref: forwardedRef ? composeRefs(forwardedRef, (children as any).ref) : (children as any).ref,
+      ["ref" as any]: forwardedRef ? composeRefs(forwardedRef, (children as any).ref) : (children as any).ref,
     });
   }
 
@@ -76,7 +77,7 @@ SlotClone.displayName = 'SlotClone';
  * Slottable
  * -----------------------------------------------------------------------------------------------*/
 
-const Slottable = ({ children }: { children: React.ReactNode }) => {
+const Slottable = ({ children }: { children: React.ReactNode }): React.ReactElement => {
   return <>{children}</>;
 };
 
@@ -88,7 +89,9 @@ function isSlottable(child: React.ReactNode): child is React.ReactElement {
   return React.isValidElement(child) && child.type === Slottable;
 }
 
-function mergeProps(slotProps: AnyProps, childProps: AnyProps) {
+function mergeProps(slotProps: AnyProps, childProps: AnyProps): {
+  [x: string]: any;
+} {
   // all child props should override
   const overrideProps = { ...childProps };
 

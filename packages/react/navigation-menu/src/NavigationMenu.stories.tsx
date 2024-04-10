@@ -1,3 +1,4 @@
+// @deno-types="npm:@types/react@^18.2.0"
 import * as React from 'react';
 import * as NavigationMenu from '@radix-ui/react-navigation-menu';
 import { DirectionProvider } from '@radix-ui/react-direction';

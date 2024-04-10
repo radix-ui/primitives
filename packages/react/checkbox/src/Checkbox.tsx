@@ -1,3 +1,4 @@
+// @deno-types="npm:@types/react@^18.2.0"
 import * as React from 'react';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
@@ -18,7 +19,9 @@ import type { Scope } from '@radix-ui/react-context';
 const CHECKBOX_NAME = 'Checkbox';
 
 type ScopedProps<P> = P & { __scopeCheckbox?: Scope };
-const [createCheckboxContext, createCheckboxScope] = createContextScope(CHECKBOX_NAME);
+const contextScope: ReturnType<typeof createContextScope> = createContextScope(CHECKBOX_NAME);
+const createCheckboxContext = contextScope[0]
+const createCheckboxScope = contextScope[1];
 
 type CheckedState = boolean | 'indeterminate';
 
@@ -39,7 +42,8 @@ interface CheckboxProps extends Omit<PrimitiveButtonProps, 'checked' | 'defaultC
   onCheckedChange?(checked: CheckedState): void;
 }
 
-const Checkbox = React.forwardRef<CheckboxElement, CheckboxProps>(
+const Checkbox: React.ForwardRefExoticComponent<Omit<CheckboxProps, "ref"> & React.RefAttributes<HTMLButtonElement>>
+= React.forwardRef<CheckboxElement, CheckboxProps>(
   (props: ScopedProps<CheckboxProps>, forwardedRef) => {
     const {
       __scopeCheckbox,
@@ -138,7 +142,7 @@ interface CheckboxIndicatorProps extends PrimitiveSpanProps {
   forceMount?: true;
 }
 
-const CheckboxIndicator = React.forwardRef<CheckboxIndicatorElement, CheckboxIndicatorProps>(
+const CheckboxIndicator: React.ForwardRefExoticComponent<CheckboxIndicatorProps & React.RefAttributes<CheckboxIndicatorElement>> = React.forwardRef<CheckboxIndicatorElement, CheckboxIndicatorProps>(
   (props: ScopedProps<CheckboxIndicatorProps>, forwardedRef) => {
     const { __scopeCheckbox, forceMount, ...indicatorProps } = props;
     const context = useCheckboxContext(INDICATOR_NAME, __scopeCheckbox);
@@ -167,7 +171,7 @@ interface BubbleInputProps extends Omit<InputProps, 'checked'> {
   bubbles: boolean;
 }
 
-const BubbleInput = (props: BubbleInputProps) => {
+const BubbleInput = (props: BubbleInputProps): React.JSX.Element => {
   const { control, checked, bubbles = true, ...inputProps } = props;
   const ref = React.useRef<HTMLInputElement>(null);
   const prevChecked = usePrevious(checked);
@@ -212,7 +216,7 @@ function isIndeterminate(checked?: CheckedState): checked is 'indeterminate' {
   return checked === 'indeterminate';
 }
 
-function getState(checked: CheckedState) {
+function getState(checked: CheckedState): "indeterminate" | "checked" | "unchecked" {
   return isIndeterminate(checked) ? 'indeterminate' : checked ? 'checked' : 'unchecked';
 }
 

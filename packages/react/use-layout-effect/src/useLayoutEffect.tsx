@@ -1,4 +1,5 @@
-import * as React from 'react';
+// @deno-types="npm:@types/react@^18.2.0"
+import * as React from "react";
 
 /**
  * On the server, React emits a warning when calling `useLayoutEffect`.
@@ -7,6 +8,9 @@ import * as React from 'react';
  *
  * See: https://reactjs.org/docs/hooks-reference.html#uselayouteffect
  */
-const useLayoutEffect = Boolean(globalThis?.document) ? React.useLayoutEffect : () => {};
+const useLayoutEffect: (
+  effect: React.EffectCallback,
+  deps?: React.DependencyList | undefined,
+) => void = Boolean(globalThis?.document) ? React.useLayoutEffect : () => {};
 
 export { useLayoutEffect };

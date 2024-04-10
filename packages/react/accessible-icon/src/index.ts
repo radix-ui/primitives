@@ -2,5 +2,5 @@ export {
   AccessibleIcon,
   //
   Root,
-} from './AccessibleIcon';
-export type { AccessibleIconProps } from './AccessibleIcon';
+} from './AccessibleIcon.tsx';
+export type { AccessibleIconProps } from './AccessibleIcon.tsx';

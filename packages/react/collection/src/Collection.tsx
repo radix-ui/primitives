@@ -1,3 +1,4 @@
+// @deno-types="npm:@types/react@^18.2.0"
 import React from 'react';
 import { createContextScope } from '@radix-ui/react-context';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
@@ -11,12 +12,42 @@ interface CollectionProps extends SlotProps {
   scope: any;
 }
 
+type CollectionItemSlotProps<ItemData = {}> = ItemData & {
+  children: React.ReactNode;
+  scope: any;
+};
+
+type ContextValue<ItemElement extends HTMLElement, ItemData = {}> = {
+  collectionRef: React.RefObject<CollectionElement>;
+  itemMap: Map<
+    React.RefObject<ItemElement>,
+    { ref: React.RefObject<ItemElement> } & ItemData
+  >;
+};
+type Collection<ItemElement extends HTMLElement, ItemData = {}> = readonly [
+  {
+    readonly Provider: React.FC<{ children?: React.ReactNode; scope: any }>;
+    readonly Slot: React.ForwardRefExoticComponent<
+      CollectionProps & React.RefAttributes<CollectionElement>
+    >;
+    readonly ItemSlot: React.ForwardRefExoticComponent<
+      & React.PropsWithoutRef<CollectionItemSlotProps<ItemData>>
+      & React.RefAttributes<ItemElement>
+    >;
+  },
+  (scope: any) => () => ({
+    ref: React.RefObject<ItemElement>;
+} & ItemData)[],
+  ReturnType<typeof createContextScope>[1]
+];
+
+
 // We have resorted to returning slots directly rather than exposing primitives that can then
 // be slotted like `<CollectionItem as={Slot}>…</CollectionItem>`.
 // This is because we encountered issues with generic types that cannot be statically analysed
 // due to creating them dynamically via createCollection.
 
-function createCollection<ItemElement extends HTMLElement, ItemData = {}>(name: string) {
+function createCollection<ItemElement extends HTMLElement, ItemData = {}>(name: string): Collection<ItemElement, ItemData> {
   /* -----------------------------------------------------------------------------------------------
    * CollectionProvider
    * ---------------------------------------------------------------------------------------------*/
@@ -24,12 +55,8 @@ function createCollection<ItemElement extends HTMLElement, ItemData = {}>(name: 
   const PROVIDER_NAME = name + 'CollectionProvider';
   const [createCollectionContext, createCollectionScope] = createContextScope(PROVIDER_NAME);
 
-  type ContextValue = {
-    collectionRef: React.RefObject<CollectionElement>;
-    itemMap: Map<React.RefObject<ItemElement>, { ref: React.RefObject<ItemElement> } & ItemData>;
-  };
-
-  const [CollectionProviderImpl, useCollectionContext] = createCollectionContext<ContextValue>(
+  type ContextValueDyn = ContextValue<ItemElement, ItemData>;
+  const [CollectionProviderImpl, useCollectionContext] = createCollectionContext<ContextValueDyn>(
     PROVIDER_NAME,
     { collectionRef: { current: null }, itemMap: new Map() }
   );
@@ -37,7 +64,7 @@ function createCollection<ItemElement extends HTMLElement, ItemData = {}>(name: 
   const CollectionProvider: React.FC<{ children?: React.ReactNode; scope: any }> = (props) => {
     const { scope, children } = props;
     const ref = React.useRef<CollectionElement>(null);
-    const itemMap = React.useRef<ContextValue['itemMap']>(new Map()).current;
+    const itemMap = React.useRef<ContextValueDyn['itemMap']>(new Map()).current;
     return (
       <CollectionProviderImpl scope={scope} itemMap={itemMap} collectionRef={ref}>
         {children}
@@ -71,12 +98,7 @@ function createCollection<ItemElement extends HTMLElement, ItemData = {}>(name: 
   const ITEM_SLOT_NAME = name + 'CollectionItemSlot';
   const ITEM_DATA_ATTR = 'data-radix-collection-item';
 
-  type CollectionItemSlotProps = ItemData & {
-    children: React.ReactNode;
-    scope: any;
-  };
-
-  const CollectionItemSlot = React.forwardRef<ItemElement, CollectionItemSlotProps>(
+  const CollectionItemSlot = React.forwardRef<ItemElement, CollectionItemSlotProps<ItemData>>(
     (props, forwardedRef) => {
       const { scope, children, ...itemData } = props;
       const ref = React.useRef<ItemElement>(null);

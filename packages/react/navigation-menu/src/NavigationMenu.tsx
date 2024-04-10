@@ -1,5 +1,6 @@
-/// <reference types="resize-observer-browser" />
+/// <reference types="npm:@types/resize-observer-browser@0.1.11" />
 
+// @deno-types="npm:@types/react@^18.2.0"
 import * as React from 'react';
 import ReactDOM from 'react-dom';
 import { createContextScope } from '@radix-ui/react-context';
@@ -34,14 +35,19 @@ const [Collection, useCollection, createCollectionScope] = createCollection<
   { value: string }
 >(NAVIGATION_MENU_NAME);
 
-const [FocusGroupCollection, useFocusGroupCollection, createFocusGroupCollectionScope] =
+const collection: ReturnType<typeof createCollection<FocusGroupItemElement, {}>> = 
   createCollection<FocusGroupItemElement, {}>(NAVIGATION_MENU_NAME);
+const FocusGroupCollection = collection[0]
+const useFocusGroupCollection = collection[1];
+const createFocusGroupCollectionScope = collection[2];
+
 
 type ScopedProps<P> = P & { __scopeNavigationMenu?: Scope };
-const [createNavigationMenuContext, createNavigationMenuScope] = createContextScope(
-  NAVIGATION_MENU_NAME,
+const contextScope: ReturnType<typeof createContextScope> = createContextScope(NAVIGATION_MENU_NAME,
   [createCollectionScope, createFocusGroupCollectionScope]
 );
+const createNavigationMenuContext = contextScope[0]
+const createNavigationMenuScope = contextScope[1];
 
 type ContentData = {
   ref?: React.Ref<ViewportContentMounterElement>;
@@ -69,12 +75,17 @@ type NavigationMenuContextValue = {
   onItemDismiss(): void;
 };
 
-const [NavigationMenuProviderImpl, useNavigationMenuContext] =
-  createNavigationMenuContext<NavigationMenuContextValue>(NAVIGATION_MENU_NAME);
+const navigationMenuContext: ReturnType<
+  typeof createNavigationMenuContext<NavigationMenuContextValue>
+> = createNavigationMenuContext(NAVIGATION_MENU_NAME);
+const NavigationMenuProviderImpl = navigationMenuContext[0];
+const useNavigationMenuContext = navigationMenuContext[1];
 
-const [ViewportContentProvider, useViewportContentContext] = createNavigationMenuContext<{
-  items: Map<string, ContentData>;
-}>(NAVIGATION_MENU_NAME);
+const viewportContentContext: ReturnType<
+  typeof createNavigationMenuContext<{ items: Map<string, ContentData> }>
+> = createNavigationMenuContext<{ items: Map<string, ContentData> }>(NAVIGATION_MENU_NAME);
+const ViewportContentProvider = viewportContentContext[0];
+const useViewportContentContext = viewportContentContext[1];
 
 type NavigationMenuElement = React.ElementRef<typeof Primitive.nav>;
 type PrimitiveNavProps = Radix.ComponentPropsWithoutRef<typeof Primitive.nav>;
@@ -98,7 +109,7 @@ interface NavigationMenuProps
   skipDelayDuration?: number;
 }
 
-const NavigationMenu = React.forwardRef<NavigationMenuElement, NavigationMenuProps>(
+const NavigationMenu: React.ForwardRefExoticComponent<NavigationMenuProps & React.RefAttributes<NavigationMenuElement>> = React.forwardRef<NavigationMenuElement, NavigationMenuProps>(
   (props: ScopedProps<NavigationMenuProps>, forwardedRef) => {
     const {
       __scopeNavigationMenu,
@@ -233,7 +244,8 @@ interface NavigationMenuSubProps
   orientation?: Orientation;
 }
 
-const NavigationMenuSub = React.forwardRef<NavigationMenuSubElement, NavigationMenuSubProps>(
+const NavigationMenuSub: React.ForwardRefExoticComponent<NavigationMenuSubProps & React.RefAttributes<NavigationMenuSubElement>>
+= React.forwardRef<NavigationMenuSubElement, NavigationMenuSubProps>(
   (props: ScopedProps<NavigationMenuSubProps>, forwardedRef) => {
     const {
       __scopeNavigationMenu,
@@ -365,7 +377,8 @@ type NavigationMenuListElement = React.ElementRef<typeof Primitive.ul>;
 type PrimitiveUnorderedListProps = Radix.ComponentPropsWithoutRef<typeof Primitive.ul>;
 interface NavigationMenuListProps extends PrimitiveUnorderedListProps {}
 
-const NavigationMenuList = React.forwardRef<NavigationMenuListElement, NavigationMenuListProps>(
+const NavigationMenuList: React.ForwardRefExoticComponent<NavigationMenuListProps & React.RefAttributes<NavigationMenuListElement>>
+= React.forwardRef<NavigationMenuListElement, NavigationMenuListProps>(
   (props: ScopedProps<NavigationMenuListProps>, forwardedRef) => {
     const { __scopeNavigationMenu, ...listProps } = props;
     const context = useNavigationMenuContext(LIST_NAME, __scopeNavigationMenu);
@@ -406,8 +419,10 @@ type NavigationMenuItemContextValue = {
   onContentFocusOutside(): void;
 };
 
-const [NavigationMenuItemContextProvider, useNavigationMenuItemContext] =
+const navigationMenuItemContext: ReturnType<typeof createNavigationMenuContext<NavigationMenuItemContextValue>> = 
   createNavigationMenuContext<NavigationMenuItemContextValue>(ITEM_NAME);
+const NavigationMenuItemContextProvider = navigationMenuItemContext[0]
+const useNavigationMenuItemContext = navigationMenuItemContext[1];
 
 type NavigationMenuItemElement = React.ElementRef<typeof Primitive.li>;
 type PrimitiveListItemProps = Radix.ComponentPropsWithoutRef<typeof Primitive.li>;
@@ -415,7 +430,8 @@ interface NavigationMenuItemProps extends PrimitiveListItemProps {
   value?: string;
 }
 
-const NavigationMenuItem = React.forwardRef<NavigationMenuItemElement, NavigationMenuItemProps>(
+const NavigationMenuItem: React.ForwardRefExoticComponent<NavigationMenuItemProps & React.RefAttributes<NavigationMenuItemElement>>
+= React.forwardRef<NavigationMenuItemElement, NavigationMenuItemProps>(
   (props: ScopedProps<NavigationMenuItemProps>, forwardedRef) => {
     const { __scopeNavigationMenu, value: valueProp, ...itemProps } = props;
     const autoValue = useId();
@@ -474,7 +490,8 @@ type NavigationMenuTriggerElement = React.ElementRef<typeof Primitive.button>;
 type PrimitiveButtonProps = Radix.ComponentPropsWithoutRef<typeof Primitive.button>;
 interface NavigationMenuTriggerProps extends PrimitiveButtonProps {}
 
-const NavigationMenuTrigger = React.forwardRef<
+const NavigationMenuTrigger: React.ForwardRefExoticComponent<NavigationMenuTriggerProps & React.RefAttributes<NavigationMenuTriggerElement>>
+= React.forwardRef<
   NavigationMenuTriggerElement,
   NavigationMenuTriggerProps
 >((props: ScopedProps<NavigationMenuTriggerProps>, forwardedRef) => {
@@ -590,7 +607,8 @@ interface NavigationMenuLinkProps extends Omit<PrimitiveLinkProps, 'onSelect'> {
   onSelect?: (event: Event) => void;
 }
 
-const NavigationMenuLink = React.forwardRef<NavigationMenuLinkElement, NavigationMenuLinkProps>(
+const NavigationMenuLink: React.ForwardRefExoticComponent<Omit<NavigationMenuLinkProps, "ref"> & React.RefAttributes<NavigationMenuLinkElement>>
+= React.forwardRef<NavigationMenuLinkElement, NavigationMenuLinkProps>(
   (props: ScopedProps<NavigationMenuLinkProps>, forwardedRef) => {
     const { __scopeNavigationMenu, active, onSelect, ...linkProps } = props;
 
@@ -645,7 +663,8 @@ interface NavigationMenuIndicatorProps extends NavigationMenuIndicatorImplProps 
   forceMount?: true;
 }
 
-const NavigationMenuIndicator = React.forwardRef<
+const NavigationMenuIndicator: React.ForwardRefExoticComponent<NavigationMenuIndicatorProps & React.RefAttributes<NavigationMenuIndicatorElement>>
+= React.forwardRef<
   NavigationMenuIndicatorElement,
   NavigationMenuIndicatorProps
 >((props: ScopedProps<NavigationMenuIndicatorProps>, forwardedRef) => {
@@ -668,7 +687,8 @@ NavigationMenuIndicator.displayName = INDICATOR_NAME;
 type NavigationMenuIndicatorImplElement = React.ElementRef<typeof Primitive.div>;
 interface NavigationMenuIndicatorImplProps extends PrimitiveDivProps {}
 
-const NavigationMenuIndicatorImpl = React.forwardRef<
+const NavigationMenuIndicatorImpl: React.ForwardRefExoticComponent<NavigationMenuIndicatorImplProps & React.RefAttributes<NavigationMenuIndicatorImplElement>>
+= React.forwardRef<
   NavigationMenuIndicatorImplElement,
   NavigationMenuIndicatorImplProps
 >((props: ScopedProps<NavigationMenuIndicatorImplProps>, forwardedRef) => {
@@ -746,7 +766,8 @@ interface NavigationMenuContentProps
   forceMount?: true;
 }
 
-const NavigationMenuContent = React.forwardRef<
+const NavigationMenuContent: React.ForwardRefExoticComponent<Omit<NavigationMenuContentProps, "ref"> & React.RefAttributes<NavigationMenuContentElement>>
+= React.forwardRef<
   NavigationMenuContentElement,
   NavigationMenuContentProps
 >((props: ScopedProps<NavigationMenuContentProps>, forwardedRef) => {
@@ -802,7 +823,8 @@ interface ViewportContentMounterProps extends NavigationMenuContentImplProps {
   forceMount?: true;
 }
 
-const ViewportContentMounter = React.forwardRef<
+const ViewportContentMounter: React.ForwardRefExoticComponent<Omit<ViewportContentMounterProps, "ref"> & React.RefAttributes<ViewportContentMounterElement>>
+= React.forwardRef<
   ViewportContentMounterElement,
   ViewportContentMounterProps
 >((props: ScopedProps<ViewportContentMounterProps>, forwardedRef) => {
@@ -844,7 +866,7 @@ interface NavigationMenuContentImplProps
   extends Omit<DismissableLayerProps, 'onDismiss' | 'disableOutsidePointerEvents'>,
     NavigationMenuContentImplPrivateProps {}
 
-const NavigationMenuContentImpl = React.forwardRef<
+const NavigationMenuContentImpl: React.ForwardRefExoticComponent<Omit<NavigationMenuContentImplProps, "ref"> & React.RefAttributes<NavigationMenuContentImplElement>> = React.forwardRef<
   NavigationMenuContentImplElement,
   NavigationMenuContentImplProps
 >((props: ScopedProps<NavigationMenuContentImplProps>, forwardedRef) => {
@@ -991,7 +1013,8 @@ interface NavigationMenuViewportProps
   forceMount?: true;
 }
 
-const NavigationMenuViewport = React.forwardRef<
+const NavigationMenuViewport: React.ForwardRefExoticComponent<NavigationMenuViewportProps & React.RefAttributes<NavigationMenuViewportElement>>
+= React.forwardRef<
   NavigationMenuViewportElement,
   NavigationMenuViewportProps
 >((props: ScopedProps<NavigationMenuViewportProps>, forwardedRef) => {
@@ -1013,7 +1036,8 @@ NavigationMenuViewport.displayName = VIEWPORT_NAME;
 type NavigationMenuViewportImplElement = React.ElementRef<typeof Primitive.div>;
 interface NavigationMenuViewportImplProps extends PrimitiveDivProps {}
 
-const NavigationMenuViewportImpl = React.forwardRef<
+const NavigationMenuViewportImpl: React.ForwardRefExoticComponent<NavigationMenuViewportImplProps & React.RefAttributes<NavigationMenuViewportImplElement>>
+= React.forwardRef<
   NavigationMenuViewportImplElement,
   NavigationMenuViewportImplProps
 >((props: ScopedProps<NavigationMenuViewportImplProps>, forwardedRef) => {
@@ -1086,7 +1110,7 @@ const FOCUS_GROUP_NAME = 'FocusGroup';
 type FocusGroupElement = React.ElementRef<typeof Primitive.div>;
 interface FocusGroupProps extends PrimitiveDivProps {}
 
-const FocusGroup = React.forwardRef<FocusGroupElement, FocusGroupProps>(
+const FocusGroup: React.ForwardRefExoticComponent<FocusGroupProps & React.RefAttributes<FocusGroupElement>> = React.forwardRef<FocusGroupElement, FocusGroupProps>(
   (props: ScopedProps<FocusGroupProps>, forwardedRef) => {
     const { __scopeNavigationMenu, ...groupProps } = props;
     const context = useNavigationMenuContext(FOCUS_GROUP_NAME, __scopeNavigationMenu);
@@ -1109,7 +1133,7 @@ const FOCUS_GROUP_ITEM_NAME = 'FocusGroupItem';
 type FocusGroupItemElement = React.ElementRef<typeof Primitive.button>;
 interface FocusGroupItemProps extends PrimitiveButtonProps {}
 
-const FocusGroupItem = React.forwardRef<FocusGroupItemElement, FocusGroupItemProps>(
+const FocusGroupItem: React.ForwardRefExoticComponent<FocusGroupItemProps & React.RefAttributes<FocusGroupItemElement>> = React.forwardRef<FocusGroupItemElement, FocusGroupItemProps>(
   (props: ScopedProps<FocusGroupItemProps>, forwardedRef) => {
     const { __scopeNavigationMenu, ...groupProps } = props;
     const getItems = useFocusGroupCollection(__scopeNavigationMenu);
@@ -1157,7 +1181,7 @@ const FocusGroupItem = React.forwardRef<FocusGroupItemElement, FocusGroupItemPro
  * See: https://developer.mozilla.org/en-US/docs/Web/API/TreeWalker
  * Credit: https://github.com/discord/focus-layers/blob/master/src/util/wrapFocus.tsx#L1
  */
-function getTabbableCandidates(container: HTMLElement) {
+function getTabbableCandidates(container: HTMLElement): HTMLElement[] {
   const nodes: HTMLElement[] = [];
   const walker = document.createTreeWalker(container, NodeFilter.SHOW_ELEMENT, {
     acceptNode: (node: any) => {
@@ -1175,7 +1199,7 @@ function getTabbableCandidates(container: HTMLElement) {
   return nodes;
 }
 
-function focusFirst(candidates: HTMLElement[]) {
+function focusFirst(candidates: HTMLElement[]): boolean {
   const previouslyFocusedElement = document.activeElement;
   return candidates.some((candidate) => {
     // if focus is already where we want to go, we don't want to keep going through the candidates
@@ -1185,7 +1209,7 @@ function focusFirst(candidates: HTMLElement[]) {
   });
 }
 
-function removeFromTabOrder(candidates: HTMLElement[]) {
+function removeFromTabOrder(candidates: HTMLElement[]): () => void {
   candidates.forEach((candidate) => {
     candidate.dataset.tabindex = candidate.getAttribute('tabindex') || '';
     candidate.setAttribute('tabindex', '-1');
@@ -1198,7 +1222,7 @@ function removeFromTabOrder(candidates: HTMLElement[]) {
   };
 }
 
-function useResizeObserver(element: HTMLElement | null, onResize: () => void) {
+function useResizeObserver(element: HTMLElement | null, onResize: () => void): void {
   const handleResize = useCallbackRef(onResize);
   useLayoutEffect(() => {
     let rAF = 0;
@@ -1223,15 +1247,15 @@ function useResizeObserver(element: HTMLElement | null, onResize: () => void) {
   }, [element, handleResize]);
 }
 
-function getOpenState(open: boolean) {
+function getOpenState(open: boolean): 'open' | 'closed' {
   return open ? 'open' : 'closed';
 }
 
-function makeTriggerId(baseId: string, value: string) {
+function makeTriggerId(baseId: string, value: string): string {
   return `${baseId}-trigger-${value}`;
 }
 
-function makeContentId(baseId: string, value: string) {
+function makeContentId(baseId: string, value: string): string {
   return `${baseId}-content-${value}`;
 }
 

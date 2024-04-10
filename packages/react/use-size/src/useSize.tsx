@@ -1,9 +1,13 @@
-/// <reference types="resize-observer-browser" />
+/// <reference types="npm:@types/resize-observer-browser@0.1.11" />
 
+// @deno-types="npm:@types/react@^18.2.0"
 import * as React from 'react';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 
-function useSize(element: HTMLElement | null) {
+function useSize(element: HTMLElement | null): {
+  width: number;
+  height: number;
+} | undefined {
   const [size, setSize] = React.useState<{ width: number; height: number } | undefined>(undefined);
 
   useLayoutEffect(() => {

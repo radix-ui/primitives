@@ -2,5 +2,5 @@ export {
   Announce,
   //
   Root,
-} from './Announce';
-export type { AnnounceProps } from './Announce';
+} from './Announce.tsx';
+export type { AnnounceProps } from './Announce.tsx';

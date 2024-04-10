@@ -1,3 +1,4 @@
+// @deno-types="npm:@types/react@^18.2.0"
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
@@ -7,7 +8,7 @@ import * as RovingFocusGroup from '@radix-ui/react-roving-focus';
 import { createRovingFocusGroupScope } from '@radix-ui/react-roving-focus';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { useDirection } from '@radix-ui/react-direction';
-import { Radio, RadioIndicator, createRadioScope } from './Radio';
+import { Radio, RadioIndicator, createRadioScope } from './Radio.tsx';
 
 import type * as Radix from '@radix-ui/react-primitive';
 import type { Scope } from '@radix-ui/react-context';
@@ -20,12 +21,15 @@ const ARROW_KEYS = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
 const RADIO_GROUP_NAME = 'RadioGroup';
 
 type ScopedProps<P> = P & { __scopeRadioGroup?: Scope };
-const [createRadioGroupContext, createRadioGroupScope] = createContextScope(RADIO_GROUP_NAME, [
+const contextScope: ReturnType<typeof createContextScope> = createContextScope(RADIO_GROUP_NAME, [
   createRovingFocusGroupScope,
   createRadioScope,
 ]);
-const useRovingFocusGroupScope = createRovingFocusGroupScope();
-const useRadioScope = createRadioScope();
+const createRadioGroupContext = contextScope[0]
+const createRadioGroupScope = contextScope[1];
+
+const useRovingFocusGroupScope: ReturnType<typeof createRovingFocusGroupScope> = createRovingFocusGroupScope();
+const useRadioScope: ReturnType<typeof createRadioScope> = createRadioScope();
 
 type RadioGroupContextValue = {
   name?: string;
@@ -35,8 +39,10 @@ type RadioGroupContextValue = {
   onValueChange(value: string): void;
 };
 
-const [RadioGroupProvider, useRadioGroupContext] =
+const radioGroupContext: ReturnType<typeof createRadioGroupContext<RadioGroupContextValue>> = 
   createRadioGroupContext<RadioGroupContextValue>(RADIO_GROUP_NAME);
+const RadioGroupProvider = radioGroupContext[0]
+const useRadioGroupContext = radioGroupContext[1];
 
 type RadioGroupElement = React.ElementRef<typeof Primitive.div>;
 type RovingFocusGroupProps = Radix.ComponentPropsWithoutRef<typeof RovingFocusGroup.Root>;
@@ -53,7 +59,8 @@ interface RadioGroupProps extends PrimitiveDivProps {
   onValueChange?: RadioGroupContextValue['onValueChange'];
 }
 
-const RadioGroup = React.forwardRef<RadioGroupElement, RadioGroupProps>(
+const RadioGroup: React.ForwardRefExoticComponent<RadioGroupProps & React.RefAttributes<RadioGroupElement>>
+= React.forwardRef<RadioGroupElement, RadioGroupProps>(
   (props: ScopedProps<RadioGroupProps>, forwardedRef) => {
     const {
       __scopeRadioGroup,
@@ -121,7 +128,8 @@ interface RadioGroupItemProps extends Omit<RadioProps, 'onCheck' | 'name'> {
   value: string;
 }
 
-const RadioGroupItem = React.forwardRef<RadioGroupItemElement, RadioGroupItemProps>(
+const RadioGroupItem: React.ForwardRefExoticComponent<Omit<RadioGroupItemProps, "ref"> & React.RefAttributes<RadioGroupItemElement>>
+= React.forwardRef<RadioGroupItemElement, RadioGroupItemProps>(
   (props: ScopedProps<RadioGroupItemProps>, forwardedRef) => {
     const { __scopeRadioGroup, disabled, ...itemProps } = props;
     const context = useRadioGroupContext(ITEM_NAME, __scopeRadioGroup);
@@ -194,7 +202,8 @@ type RadioGroupIndicatorElement = React.ElementRef<typeof RadioIndicator>;
 type RadioIndicatorProps = Radix.ComponentPropsWithoutRef<typeof RadioIndicator>;
 interface RadioGroupIndicatorProps extends RadioIndicatorProps {}
 
-const RadioGroupIndicator = React.forwardRef<RadioGroupIndicatorElement, RadioGroupIndicatorProps>(
+const RadioGroupIndicator: React.ForwardRefExoticComponent<RadioGroupIndicatorProps & React.RefAttributes<RadioGroupIndicatorElement>>
+= React.forwardRef<RadioGroupIndicatorElement, RadioGroupIndicatorProps>(
   (props: ScopedProps<RadioGroupIndicatorProps>, forwardedRef) => {
     const { __scopeRadioGroup, ...indicatorProps } = props;
     const radioScope = useRadioScope(__scopeRadioGroup);

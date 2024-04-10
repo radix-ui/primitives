@@ -4,5 +4,5 @@ export {
   //
   Root,
   Branch,
-} from './DismissableLayer';
-export type { DismissableLayerProps } from './DismissableLayer';
+} from './DismissableLayer.tsx';
+export type { DismissableLayerProps } from './DismissableLayer.tsx';

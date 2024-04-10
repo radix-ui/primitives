@@ -1,3 +1,4 @@
+// @deno-types="npm:@types/react@^18.2.0"
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
@@ -26,10 +27,12 @@ import type { Scope } from '@radix-ui/react-context';
 const POPOVER_NAME = 'Popover';
 
 type ScopedProps<P> = P & { __scopePopover?: Scope };
-const [createPopoverContext, createPopoverScope] = createContextScope(POPOVER_NAME, [
+const contextScope: ReturnType<typeof createContextScope> = createContextScope(POPOVER_NAME, [
   createPopperScope,
 ]);
-const usePopperScope = createPopperScope();
+const createPopoverContext = contextScope[0]
+const createPopoverScope = contextScope[1];
+const usePopperScope: ReturnType<typeof createPopperScope> = createPopperScope();
 
 type PopoverContextValue = {
   triggerRef: React.RefObject<HTMLButtonElement>;
@@ -104,7 +107,8 @@ type PopoverAnchorElement = React.ElementRef<typeof PopperPrimitive.Anchor>;
 type PopperAnchorProps = Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Anchor>;
 interface PopoverAnchorProps extends PopperAnchorProps {}
 
-const PopoverAnchor = React.forwardRef<PopoverAnchorElement, PopoverAnchorProps>(
+const PopoverAnchor: React.ForwardRefExoticComponent<PopoverAnchorProps & React.RefAttributes<PopoverAnchorElement>>
+= React.forwardRef<PopoverAnchorElement, PopoverAnchorProps>(
   (props: ScopedProps<PopoverAnchorProps>, forwardedRef) => {
     const { __scopePopover, ...anchorProps } = props;
     const context = usePopoverContext(ANCHOR_NAME, __scopePopover);
@@ -132,7 +136,7 @@ type PopoverTriggerElement = React.ElementRef<typeof Primitive.button>;
 type PrimitiveButtonProps = Radix.ComponentPropsWithoutRef<typeof Primitive.button>;
 interface PopoverTriggerProps extends PrimitiveButtonProps {}
 
-const PopoverTrigger = React.forwardRef<PopoverTriggerElement, PopoverTriggerProps>(
+const PopoverTrigger: React.ForwardRefExoticComponent<PopoverTriggerProps & React.RefAttributes<PopoverTriggerElement>> = React.forwardRef<PopoverTriggerElement, PopoverTriggerProps>(
   (props: ScopedProps<PopoverTriggerProps>, forwardedRef) => {
     const { __scopePopover, ...triggerProps } = props;
     const context = usePopoverContext(TRIGGER_NAME, __scopePopover);
@@ -219,7 +223,8 @@ interface PopoverContentProps extends PopoverContentTypeProps {
   forceMount?: true;
 }
 
-const PopoverContent = React.forwardRef<PopoverContentTypeElement, PopoverContentProps>(
+const PopoverContent: React.ForwardRefExoticComponent<Omit<PopoverContentProps, "ref"> & React.RefAttributes<PopoverContentTypeElement>>
+= React.forwardRef<PopoverContentTypeElement, PopoverContentProps>(
   (props: ScopedProps<PopoverContentProps>, forwardedRef) => {
     const portalContext = usePortalContext(CONTENT_NAME, props.__scopePopover);
     const { forceMount = portalContext.forceMount, ...contentProps } = props;
@@ -244,7 +249,8 @@ type PopoverContentTypeElement = PopoverContentImplElement;
 interface PopoverContentTypeProps
   extends Omit<PopoverContentImplProps, 'trapFocus' | 'disableOutsidePointerEvents'> {}
 
-const PopoverContentModal = React.forwardRef<PopoverContentTypeElement, PopoverContentTypeProps>(
+const PopoverContentModal: React.ForwardRefExoticComponent<Omit<PopoverContentTypeProps, "ref"> & React.RefAttributes<PopoverContentTypeElement>>
+= React.forwardRef<PopoverContentTypeElement, PopoverContentTypeProps>(
   (props: ScopedProps<PopoverContentTypeProps>, forwardedRef) => {
     const context = usePopoverContext(CONTENT_NAME, props.__scopePopover);
     const contentRef = React.useRef<HTMLDivElement>(null);
@@ -294,7 +300,8 @@ const PopoverContentModal = React.forwardRef<PopoverContentTypeElement, PopoverC
   }
 );
 
-const PopoverContentNonModal = React.forwardRef<PopoverContentTypeElement, PopoverContentTypeProps>(
+const PopoverContentNonModal: React.ForwardRefExoticComponent<Omit<PopoverContentTypeProps, "ref"> & React.RefAttributes<PopoverContentTypeElement>>
+= React.forwardRef<PopoverContentTypeElement, PopoverContentTypeProps>(
   (props: ScopedProps<PopoverContentTypeProps>, forwardedRef) => {
     const context = usePopoverContext(CONTENT_NAME, props.__scopePopover);
     const hasInteractedOutsideRef = React.useRef(false);
@@ -376,7 +383,7 @@ interface PopoverContentImplProps
   onCloseAutoFocus?: FocusScopeProps['onUnmountAutoFocus'];
 }
 
-const PopoverContentImpl = React.forwardRef<PopoverContentImplElement, PopoverContentImplProps>(
+const PopoverContentImpl: React.ForwardRefExoticComponent<Omit<PopoverContentImplProps, "ref"> & React.RefAttributes<PopoverContentImplElement>> = React.forwardRef<PopoverContentImplElement, PopoverContentImplProps>(
   (props: ScopedProps<PopoverContentImplProps>, forwardedRef) => {
     const {
       __scopePopover,
@@ -448,7 +455,7 @@ const CLOSE_NAME = 'PopoverClose';
 type PopoverCloseElement = React.ElementRef<typeof Primitive.button>;
 interface PopoverCloseProps extends PrimitiveButtonProps {}
 
-const PopoverClose = React.forwardRef<PopoverCloseElement, PopoverCloseProps>(
+const PopoverClose: React.ForwardRefExoticComponent<PopoverCloseProps & React.RefAttributes<PopoverCloseElement>> = React.forwardRef<PopoverCloseElement, PopoverCloseProps>(
   (props: ScopedProps<PopoverCloseProps>, forwardedRef) => {
     const { __scopePopover, ...closeProps } = props;
     const context = usePopoverContext(CLOSE_NAME, __scopePopover);
@@ -475,7 +482,7 @@ type PopoverArrowElement = React.ElementRef<typeof PopperPrimitive.Arrow>;
 type PopperArrowProps = Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Arrow>;
 interface PopoverArrowProps extends PopperArrowProps {}
 
-const PopoverArrow = React.forwardRef<PopoverArrowElement, PopoverArrowProps>(
+const PopoverArrow: React.ForwardRefExoticComponent<PopoverArrowProps & React.RefAttributes<PopoverArrowElement>> = React.forwardRef<PopoverArrowElement, PopoverArrowProps>(
   (props: ScopedProps<PopoverArrowProps>, forwardedRef) => {
     const { __scopePopover, ...arrowProps } = props;
     const popperScope = usePopperScope(__scopePopover);
@@ -487,7 +494,7 @@ PopoverArrow.displayName = ARROW_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
-function getState(open: boolean) {
+function getState(open: boolean): "open" | "closed" {
   return open ? 'open' : 'closed';
 }
 

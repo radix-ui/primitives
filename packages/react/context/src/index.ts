@@ -1,2 +1,2 @@
-export { createContext, createContextScope } from './createContext';
-export type { CreateScope, Scope } from './createContext';
+export { createContext, createContextScope } from './createContext.tsx';
+export type { CreateScope, Scope } from './createContext.tsx';

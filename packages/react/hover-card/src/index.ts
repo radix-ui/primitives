@@ -12,11 +12,11 @@ export {
   Portal,
   Content,
   Arrow,
-} from './HoverCard';
+} from './HoverCard.tsx';
 export type {
   HoverCardProps,
   HoverCardTriggerProps,
   HoverCardPortalProps,
   HoverCardContentProps,
   HoverCardArrowProps,
-} from './HoverCard';
+} from './HoverCard.tsx';

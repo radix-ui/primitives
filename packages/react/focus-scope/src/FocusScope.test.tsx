@@ -1,3 +1,4 @@
+// @deno-types="npm:@types/react@^18.2.0"
 import * as React from 'react';
 import userEvent from '@testing-library/user-event';
 import { render, waitFor } from '@testing-library/react';
