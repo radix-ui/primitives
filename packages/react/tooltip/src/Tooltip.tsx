@@ -75,6 +75,14 @@ const TooltipProvider: React.FC<TooltipProviderProps> = (
   const [isOpenDelayed, setIsOpenDelayed] = React.useState(true);
   const isPointerInTransitRef = React.useRef(false);
   const skipDelayTimerRef = React.useRef(0);
+  const isMountedRef = React.useRef(false);
+
+  React.useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   React.useEffect(() => {
     const skipDelayTimer = skipDelayTimerRef.current;
@@ -88,14 +96,17 @@ const TooltipProvider: React.FC<TooltipProviderProps> = (
       delayDuration={delayDuration}
       onOpen={React.useCallback(() => {
         window.clearTimeout(skipDelayTimerRef.current);
-        setIsOpenDelayed(false);
+        if (isMountedRef.current) {
+          setIsOpenDelayed(false);
+        }
       }, [])}
       onClose={React.useCallback(() => {
         window.clearTimeout(skipDelayTimerRef.current);
-        skipDelayTimerRef.current = window.setTimeout(
-          () => setIsOpenDelayed(true),
-          skipDelayDuration
-        );
+        skipDelayTimerRef.current = window.setTimeout(() => {
+          if (isMountedRef.current) {
+            setIsOpenDelayed(true);
+          }
+        }, skipDelayDuration);
       }, [skipDelayDuration])}
       isPointerInTransitRef={isPointerInTransitRef}
       onPointerInTransitChange={React.useCallback((inTransit: boolean) => {
