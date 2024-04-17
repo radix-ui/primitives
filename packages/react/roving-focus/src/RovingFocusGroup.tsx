@@ -188,7 +188,13 @@ const RovingFocusGroupImpl = React.forwardRef<
 
           isClickFocusRef.current = false;
         })}
-        onBlur={composeEventHandlers(props.onBlur, () => setIsTabbingBackOut(false))}
+        onBlur={composeEventHandlers(props.onBlur, () => {
+          // We are only shift+tabbing out if the currently active element is NOT
+          // not within the radio group. This can happen in cases where there is a link
+          // inside the radio group item label.
+          const hasActiveElement = ref.current?.contains(document.activeElement);
+          setIsTabbingBackOut(!hasActiveElement);
+        })}
       />
     </RovingFocusProvider>
   );
