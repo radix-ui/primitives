@@ -183,7 +183,10 @@ const ScrollAreaViewport = React.forwardRef<ScrollAreaViewportElement, ScrollAre
            * widths that change. We'll wait to see what use-cases consumers come up with there
            * before trying to resolve it.
            */}
-          <div ref={context.onContentChange} style={{ minWidth: '100%', display: 'table' }}>
+          <div
+            ref={context.onContentChange}
+            style={{ minWidth: '100%', display: 'table', height: '100%' }}
+          >
             {children}
           </div>
         </Primitive.div>
