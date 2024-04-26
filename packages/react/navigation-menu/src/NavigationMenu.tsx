@@ -2,6 +2,7 @@
 
 // @deno-types="npm:@types/react@^18.2.0"
 import * as React from 'react';
+// @deno-types="npm:@types/react-dom@^18.2.0"
 import ReactDOM from 'react-dom';
 import { createContextScope } from '@radix-ui/react-context';
 import { composeEventHandlers } from '@radix-ui/primitive';

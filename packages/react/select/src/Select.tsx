@@ -1,5 +1,6 @@
 // @deno-types="npm:@types/react@^18.2.0"
 import * as React from 'react';
+// @deno-types="npm:@types/react-dom@^18.2.0"
 import * as ReactDOM from 'react-dom';
 import { clamp } from '@radix-ui/number';
 import { composeEventHandlers } from '@radix-ui/primitive';
