@@ -1,4 +1,6 @@
+// @deno-types="npm:@types/react@^18.2.0"
 import * as React from 'react';
+// @deno-types="npm:@types/react-dom@^18.2.0"
 import ReactDOM from 'react-dom';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { Primitive } from '@radix-ui/react-primitive';
@@ -15,7 +17,7 @@ const ROLES: { [key in RegionType]: RegionRole } = {
   off: 'none',
 };
 
-const listenerMap = new Map<Element, number>();
+const listenerMap: Map<Element, number> = new Map<Element, number>();
 
 /* -------------------------------------------------------------------------------------------------
  * Announce
@@ -84,7 +86,7 @@ interface AnnounceProps extends PrimitiveDivProps {
   type?: RegionType;
 }
 
-const Announce = React.forwardRef<AnnounceElement, AnnounceProps>((props, forwardedRef) => {
+const Announce: React.ForwardRefExoticComponent<AnnounceProps & React.RefAttributes<AnnounceElement>> = React.forwardRef<AnnounceElement, AnnounceProps>((props, forwardedRef) => {
   const {
     'aria-relevant': ariaRelevant,
     children,
@@ -193,7 +195,7 @@ type LiveRegionOptions = {
 function buildLiveRegionElement(
   ownerDocument: Document,
   { type, relevant, role, atomic, id }: LiveRegionOptions
-) {
+): HTMLDivElement {
   const element = ownerDocument.createElement('div');
   element.setAttribute(getLiveRegionPartDataAttr(id), '');
   element.setAttribute(
@@ -212,7 +214,7 @@ function buildLiveRegionElement(
   return element;
 }
 
-function buildSelector({ type, relevant, role, atomic, id }: LiveRegionOptions) {
+function buildSelector({ type, relevant, role, atomic, id }: LiveRegionOptions): string {
   return `[${getLiveRegionPartDataAttr(id)}]${[
     ['aria-live', type],
     ['aria-atomic', atomic],
@@ -224,7 +226,7 @@ function buildSelector({ type, relevant, role, atomic, id }: LiveRegionOptions) 
     .join('')}`;
 }
 
-function getLiveRegionPartDataAttr(id?: string) {
+function getLiveRegionPartDataAttr(id?: string): string {
   return 'data-radix-announce-region' + (id ? `-${id}` : '');
 }
 

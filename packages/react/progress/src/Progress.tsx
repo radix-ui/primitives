@@ -1,3 +1,4 @@
+// @deno-types="npm:@types/react@^18.2.0"
 import * as React from 'react';
 import { createContextScope } from '@radix-ui/react-context';
 import { Primitive } from '@radix-ui/react-primitive';
@@ -13,12 +14,15 @@ const PROGRESS_NAME = 'Progress';
 const DEFAULT_MAX = 100;
 
 type ScopedProps<P> = P & { __scopeProgress?: Scope };
-const [createProgressContext, createProgressScope] = createContextScope(PROGRESS_NAME);
+const contextScope: ReturnType<typeof createContextScope> = createContextScope(PROGRESS_NAME);
+const createProgressContext = contextScope[0]
+const createProgressScope = contextScope[1];
 
 type ProgressState = 'indeterminate' | 'complete' | 'loading';
 type ProgressContextValue = { value: number | null; max: number };
-const [ProgressProvider, useProgressContext] =
-  createProgressContext<ProgressContextValue>(PROGRESS_NAME);
+const progressContext: ReturnType<typeof createProgressContext<ProgressContextValue>> = createProgressContext(PROGRESS_NAME);
+const ProgressProvider = progressContext[0]
+const useProgressContext = progressContext[1];
 
 type ProgressElement = React.ElementRef<typeof Primitive.div>;
 type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
@@ -28,7 +32,7 @@ interface ProgressProps extends PrimitiveDivProps {
   getValueLabel?(value: number, max: number): string;
 }
 
-const Progress = React.forwardRef<ProgressElement, ProgressProps>(
+const Progress: React.ForwardRefExoticComponent<ProgressProps & React.RefAttributes<ProgressElement>> = React.forwardRef<ProgressElement, ProgressProps>(
   (props: ScopedProps<ProgressProps>, forwardedRef) => {
     const {
       __scopeProgress,
@@ -92,7 +96,8 @@ const INDICATOR_NAME = 'ProgressIndicator';
 type ProgressIndicatorElement = React.ElementRef<typeof Primitive.div>;
 interface ProgressIndicatorProps extends PrimitiveDivProps {}
 
-const ProgressIndicator = React.forwardRef<ProgressIndicatorElement, ProgressIndicatorProps>(
+const ProgressIndicator: React.ForwardRefExoticComponent<ProgressIndicatorProps & React.RefAttributes<ProgressIndicatorElement>>
+= React.forwardRef<ProgressIndicatorElement, ProgressIndicatorProps>(
   (props: ScopedProps<ProgressIndicatorProps>, forwardedRef) => {
     const { __scopeProgress, ...indicatorProps } = props;
     const context = useProgressContext(INDICATOR_NAME, __scopeProgress);
@@ -112,7 +117,7 @@ ProgressIndicator.displayName = INDICATOR_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
-function defaultGetValueLabel(value: number, max: number) {
+function defaultGetValueLabel(value: number, max: number): string {
   return `${Math.round((value / max) * 100)}%`;
 }
 
@@ -144,11 +149,11 @@ function isValidValueNumber(value: any, max: number): value is number {
 }
 
 // Split this out for clearer readability of the error message.
-function getInvalidMaxError(propValue: string, componentName: string) {
+function getInvalidMaxError(propValue: string, componentName: string): string {
   return `Invalid prop \`max\` of value \`${propValue}\` supplied to \`${componentName}\`. Only numbers greater than 0 are valid max values. Defaulting to \`${DEFAULT_MAX}\`.`;
 }
 
-function getInvalidValueError(propValue: string, componentName: string) {
+function getInvalidValueError(propValue: string, componentName: string): string {
   return `Invalid prop \`value\` of value \`${propValue}\` supplied to \`${componentName}\`. The \`value\` prop must be:
   - a positive number
   - less than the value passed to \`max\` (or ${DEFAULT_MAX} if no \`max\` prop is set)

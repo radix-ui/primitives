@@ -4,4 +4,4 @@ export {
   Root,
   //
   useFocusGuards,
-} from './FocusGuards';
+} from './FocusGuards.tsx';

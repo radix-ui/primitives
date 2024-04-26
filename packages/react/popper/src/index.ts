@@ -13,10 +13,10 @@ export {
   //
   SIDE_OPTIONS,
   ALIGN_OPTIONS,
-} from './Popper';
+} from './Popper.tsx';
 export type {
   PopperProps,
   PopperAnchorProps,
   PopperContentProps,
   PopperArrowProps,
-} from './Popper';
+} from './Popper.tsx';

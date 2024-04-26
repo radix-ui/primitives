@@ -1,3 +1,4 @@
+// @deno-types="npm:@types/react@^18.2.0"
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { Primitive, dispatchDiscreteCustomEvent } from '@radix-ui/react-primitive';
@@ -18,7 +19,11 @@ const FOCUS_OUTSIDE = 'dismissableLayer.focusOutside';
 
 let originalBodyPointerEvents: string;
 
-const DismissableLayerContext = React.createContext({
+const DismissableLayerContext: React.Context<{
+  layers: Set<DismissableLayerElement>;
+  layersWithOutsidePointerEventsDisabled: Set<DismissableLayerElement>;
+  branches: Set<DismissableLayerBranchElement>;
+}> = React.createContext({
   layers: new Set<DismissableLayerElement>(),
   layersWithOutsidePointerEventsDisabled: new Set<DismissableLayerElement>(),
   branches: new Set<DismissableLayerBranchElement>(),
@@ -60,7 +65,7 @@ interface DismissableLayerProps extends PrimitiveDivProps {
   onDismiss?: () => void;
 }
 
-const DismissableLayer = React.forwardRef<DismissableLayerElement, DismissableLayerProps>(
+const DismissableLayer: React.ForwardRefExoticComponent<DismissableLayerProps & React.RefAttributes<DismissableLayerElement>> = React.forwardRef<DismissableLayerElement, DismissableLayerProps>(
   (props, forwardedRef) => {
     const {
       disableOutsidePointerEvents = false,
@@ -187,7 +192,7 @@ const BRANCH_NAME = 'DismissableLayerBranch';
 type DismissableLayerBranchElement = React.ElementRef<typeof Primitive.div>;
 interface DismissableLayerBranchProps extends PrimitiveDivProps {}
 
-const DismissableLayerBranch = React.forwardRef<
+const DismissableLayerBranch: React.ForwardRefExoticComponent<DismissableLayerBranchProps & React.RefAttributes<DismissableLayerBranchElement>> = React.forwardRef<
   DismissableLayerBranchElement,
   DismissableLayerBranchProps
 >((props, forwardedRef) => {
@@ -223,7 +228,9 @@ type FocusOutsideEvent = CustomEvent<{ originalEvent: FocusEvent }>;
 function usePointerDownOutside(
   onPointerDownOutside?: (event: PointerDownOutsideEvent) => void,
   ownerDocument: Document = globalThis?.document
-) {
+): {
+  onPointerDownCapture: () => boolean;
+} {
   const handlePointerDownOutside = useCallbackRef(onPointerDownOutside) as EventListener;
   const isPointerInsideReactTreeRef = React.useRef(false);
   const handleClickRef = React.useRef(() => {});
@@ -304,7 +311,10 @@ function usePointerDownOutside(
 function useFocusOutside(
   onFocusOutside?: (event: FocusOutsideEvent) => void,
   ownerDocument: Document = globalThis?.document
-) {
+): {
+  onFocusCapture: () => boolean;
+  onBlurCapture: () => boolean;
+} {
   const handleFocusOutside = useCallbackRef(onFocusOutside) as EventListener;
   const isFocusInsideReactTreeRef = React.useRef(false);
 

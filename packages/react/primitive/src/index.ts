@@ -4,5 +4,5 @@ export {
   Root,
   //
   dispatchDiscreteCustomEvent,
-} from './Primitive';
-export type { ComponentPropsWithoutRef, PrimitivePropsWithRef } from './Primitive';
+} from './Primitive.tsx';
+export type { ComponentPropsWithoutRef, PrimitivePropsWithRef } from './Primitive.tsx';

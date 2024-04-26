@@ -1,4 +1,6 @@
+// @deno-types="npm:@types/react@^18.2.0"
 import * as React from 'react';
+// @deno-types="npm:@types/react-dom@^18.2.0"
 import * as ReactDOM from 'react-dom';
 import { Slot } from '@radix-ui/react-slot';
 
@@ -41,7 +43,7 @@ interface PrimitiveForwardRefComponent<E extends React.ElementType>
  * Primitive
  * -----------------------------------------------------------------------------------------------*/
 
-const Primitive = NODES.reduce((primitive, node) => {
+const Primitive: Primitives = NODES.reduce((primitive, node) => {
   const Node = React.forwardRef((props: PrimitivePropsWithRef<typeof node>, forwardedRef: any) => {
     const { asChild, ...primitiveProps } = props;
     const Comp: any = asChild ? Slot : node;

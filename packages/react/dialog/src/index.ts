@@ -20,7 +20,7 @@ export {
   Close,
   //
   WarningProvider,
-} from './Dialog';
+} from './Dialog.tsx';
 export type {
   DialogProps,
   DialogTriggerProps,
@@ -30,4 +30,4 @@ export type {
   DialogTitleProps,
   DialogDescriptionProps,
   DialogCloseProps,
-} from './Dialog';
+} from './Dialog.tsx';

@@ -1,3 +1,4 @@
+// @deno-types="npm:@types/react@^18.2.0"
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { createContextScope } from '@radix-ui/react-context';
@@ -19,9 +20,11 @@ import type { Scope } from '@radix-ui/react-context';
 const TABS_NAME = 'Tabs';
 
 type ScopedProps<P> = P & { __scopeTabs?: Scope };
-const [createTabsContext, createTabsScope] = createContextScope(TABS_NAME, [
+const contextScope: ReturnType<typeof createContextScope> = createContextScope(TABS_NAME, [
   createRovingFocusGroupScope,
 ]);
+const createTabsContext = contextScope[0]
+const createTabsScope = contextScope[1];
 const useRovingFocusGroupScope = createRovingFocusGroupScope();
 
 type TabsContextValue = {
@@ -62,7 +65,8 @@ interface TabsProps extends PrimitiveDivProps {
   activationMode?: 'automatic' | 'manual';
 }
 
-const Tabs = React.forwardRef<TabsElement, TabsProps>(
+const Tabs: React.ForwardRefExoticComponent<TabsProps & React.RefAttributes<TabsElement>>
+= React.forwardRef<TabsElement, TabsProps>(
   (props: ScopedProps<TabsProps>, forwardedRef) => {
     const {
       __scopeTabs,
@@ -115,7 +119,8 @@ interface TabsListProps extends PrimitiveDivProps {
   loop?: RovingFocusGroupProps['loop'];
 }
 
-const TabsList = React.forwardRef<TabsListElement, TabsListProps>(
+const TabsList: React.ForwardRefExoticComponent<TabsListProps & React.RefAttributes<TabsListElement>>
+= React.forwardRef<TabsListElement, TabsListProps>(
   (props: ScopedProps<TabsListProps>, forwardedRef) => {
     const { __scopeTabs, loop = true, ...listProps } = props;
     const context = useTabsContext(TAB_LIST_NAME, __scopeTabs);
@@ -153,7 +158,7 @@ interface TabsTriggerProps extends PrimitiveButtonProps {
   value: string;
 }
 
-const TabsTrigger = React.forwardRef<TabsTriggerElement, TabsTriggerProps>(
+const TabsTrigger: React.ForwardRefExoticComponent<TabsTriggerProps & React.RefAttributes<TabsTriggerElement>> = React.forwardRef<TabsTriggerElement, TabsTriggerProps>(
   (props: ScopedProps<TabsTriggerProps>, forwardedRef) => {
     const { __scopeTabs, value, disabled = false, ...triggerProps } = props;
     const context = useTabsContext(TRIGGER_NAME, __scopeTabs);
@@ -225,7 +230,7 @@ interface TabsContentProps extends PrimitiveDivProps {
   forceMount?: true;
 }
 
-const TabsContent = React.forwardRef<TabsContentElement, TabsContentProps>(
+const TabsContent: React.ForwardRefExoticComponent<TabsContentProps & React.RefAttributes<TabsContentElement>> = React.forwardRef<TabsContentElement, TabsContentProps>(
   (props: ScopedProps<TabsContentProps>, forwardedRef) => {
     const { __scopeTabs, value, forceMount, children, ...contentProps } = props;
     const context = useTabsContext(CONTENT_NAME, __scopeTabs);
@@ -269,11 +274,11 @@ TabsContent.displayName = CONTENT_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
-function makeTriggerId(baseId: string, value: string) {
+function makeTriggerId(baseId: string, value: string): string {
   return `${baseId}-trigger-${value}`;
 }
 
-function makeContentId(baseId: string, value: string) {
+function makeContentId(baseId: string, value: string): string {
   return `${baseId}-content-${value}`;
 }
 

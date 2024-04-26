@@ -1,3 +1,4 @@
+// @deno-types="npm:@types/react@^18.2.0"
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
@@ -30,7 +31,8 @@ interface RadioProps extends PrimitiveButtonProps {
   onCheck?(): void;
 }
 
-const Radio = React.forwardRef<RadioElement, RadioProps>(
+const Radio: React.ForwardRefExoticComponent<RadioProps & React.RefAttributes<RadioElement>>
+= React.forwardRef<RadioElement, RadioProps>(
   (props: ScopedProps<RadioProps>, forwardedRef) => {
     const {
       __scopeRadio,
@@ -110,7 +112,8 @@ export interface RadioIndicatorProps extends PrimitiveSpanProps {
   forceMount?: true;
 }
 
-const RadioIndicator = React.forwardRef<RadioIndicatorElement, RadioIndicatorProps>(
+const RadioIndicator: React.ForwardRefExoticComponent<RadioIndicatorProps & React.RefAttributes<RadioIndicatorElement>>
+= React.forwardRef<RadioIndicatorElement, RadioIndicatorProps>(
   (props: ScopedProps<RadioIndicatorProps>, forwardedRef) => {
     const { __scopeRadio, forceMount, ...indicatorProps } = props;
     const context = useRadioContext(INDICATOR_NAME, __scopeRadio);
@@ -138,7 +141,7 @@ interface BubbleInputProps extends Omit<InputProps, 'checked'> {
   bubbles: boolean;
 }
 
-const BubbleInput = (props: BubbleInputProps) => {
+const BubbleInput = (props: BubbleInputProps): React.JSX.Element => {
   const { control, checked, bubbles = true, ...inputProps } = props;
   const ref = React.useRef<HTMLInputElement>(null);
   const prevChecked = usePrevious(checked);
@@ -177,7 +180,7 @@ const BubbleInput = (props: BubbleInputProps) => {
   );
 };
 
-function getState(checked: boolean) {
+function getState(checked: boolean): "checked" | "unchecked" {
   return checked ? 'checked' : 'unchecked';
 }
 

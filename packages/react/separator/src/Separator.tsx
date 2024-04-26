@@ -1,3 +1,4 @@
+// @deno-types="npm:@types/react@^18.2.0"
 import * as React from 'react';
 import { Primitive } from '@radix-ui/react-primitive';
 
@@ -26,7 +27,8 @@ interface SeparatorProps extends PrimitiveDivProps {
   decorative?: boolean;
 }
 
-const Separator = React.forwardRef<SeparatorElement, SeparatorProps>((props, forwardedRef) => {
+const Separator: React.ForwardRefExoticComponent<SeparatorProps & React.RefAttributes<SeparatorElement>>
+= React.forwardRef<SeparatorElement, SeparatorProps>((props, forwardedRef) => {
   const { decorative, orientation: orientationProp = DEFAULT_ORIENTATION, ...domProps } = props;
   const orientation = isValidOrientation(orientationProp) ? orientationProp : DEFAULT_ORIENTATION;
   // `aria-orientation` defaults to `horizontal` so we only need it if `orientation` is vertical

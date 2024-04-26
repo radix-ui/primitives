@@ -1,3 +1,4 @@
+// @deno-types="npm:@types/react@^18.2.0"
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
@@ -24,7 +25,9 @@ import type { Scope } from '@radix-ui/react-context';
 const DIALOG_NAME = 'Dialog';
 
 type ScopedProps<P> = P & { __scopeDialog?: Scope };
-const [createDialogContext, createDialogScope] = createContextScope(DIALOG_NAME);
+const contextScope: ReturnType<typeof createContextScope> = createContextScope(DIALOG_NAME);
+const createDialogContext = contextScope[0]
+const createDialogScope = contextScope[1];
 
 type DialogContextValue = {
   triggerRef: React.RefObject<HTMLButtonElement>;
@@ -95,7 +98,7 @@ type DialogTriggerElement = React.ElementRef<typeof Primitive.button>;
 type PrimitiveButtonProps = Radix.ComponentPropsWithoutRef<typeof Primitive.button>;
 interface DialogTriggerProps extends PrimitiveButtonProps {}
 
-const DialogTrigger = React.forwardRef<DialogTriggerElement, DialogTriggerProps>(
+const DialogTrigger: React.ForwardRefExoticComponent<DialogTriggerProps & React.RefAttributes<DialogTriggerElement>> = React.forwardRef<DialogTriggerElement, DialogTriggerProps>(
   (props: ScopedProps<DialogTriggerProps>, forwardedRef) => {
     const { __scopeDialog, ...triggerProps } = props;
     const context = useDialogContext(TRIGGER_NAME, __scopeDialog);
@@ -175,7 +178,7 @@ interface DialogOverlayProps extends DialogOverlayImplProps {
   forceMount?: true;
 }
 
-const DialogOverlay = React.forwardRef<DialogOverlayElement, DialogOverlayProps>(
+const DialogOverlay: React.ForwardRefExoticComponent<DialogOverlayProps & React.RefAttributes<DialogOverlayElement>> = React.forwardRef<DialogOverlayElement, DialogOverlayProps>(
   (props: ScopedProps<DialogOverlayProps>, forwardedRef) => {
     const portalContext = usePortalContext(OVERLAY_NAME, props.__scopeDialog);
     const { forceMount = portalContext.forceMount, ...overlayProps } = props;
@@ -194,7 +197,7 @@ type DialogOverlayImplElement = React.ElementRef<typeof Primitive.div>;
 type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface DialogOverlayImplProps extends PrimitiveDivProps {}
 
-const DialogOverlayImpl = React.forwardRef<DialogOverlayImplElement, DialogOverlayImplProps>(
+const DialogOverlayImpl: React.ForwardRefExoticComponent<DialogOverlayImplProps & React.RefAttributes<DialogOverlayImplElement>> = React.forwardRef<DialogOverlayImplElement, DialogOverlayImplProps>(
   (props: ScopedProps<DialogOverlayImplProps>, forwardedRef) => {
     const { __scopeDialog, ...overlayProps } = props;
     const context = useDialogContext(OVERLAY_NAME, __scopeDialog);
@@ -229,7 +232,7 @@ interface DialogContentProps extends DialogContentTypeProps {
   forceMount?: true;
 }
 
-const DialogContent = React.forwardRef<DialogContentElement, DialogContentProps>(
+const DialogContent: React.ForwardRefExoticComponent<Omit<DialogContentProps, "ref"> & React.RefAttributes<DialogContentElement>> = React.forwardRef<DialogContentElement, DialogContentProps>(
   (props: ScopedProps<DialogContentProps>, forwardedRef) => {
     const portalContext = usePortalContext(CONTENT_NAME, props.__scopeDialog);
     const { forceMount = portalContext.forceMount, ...contentProps } = props;
@@ -254,7 +257,7 @@ type DialogContentTypeElement = DialogContentImplElement;
 interface DialogContentTypeProps
   extends Omit<DialogContentImplProps, 'trapFocus' | 'disableOutsidePointerEvents'> {}
 
-const DialogContentModal = React.forwardRef<DialogContentTypeElement, DialogContentTypeProps>(
+const DialogContentModal: React.ForwardRefExoticComponent<Omit<DialogContentTypeProps, "ref"> & React.RefAttributes<DialogContentTypeElement>> = React.forwardRef<DialogContentTypeElement, DialogContentTypeProps>(
   (props: ScopedProps<DialogContentTypeProps>, forwardedRef) => {
     const context = useDialogContext(CONTENT_NAME, props.__scopeDialog);
     const contentRef = React.useRef<HTMLDivElement>(null);
@@ -299,7 +302,7 @@ const DialogContentModal = React.forwardRef<DialogContentTypeElement, DialogCont
 
 /* -----------------------------------------------------------------------------------------------*/
 
-const DialogContentNonModal = React.forwardRef<DialogContentTypeElement, DialogContentTypeProps>(
+const DialogContentNonModal: React.ForwardRefExoticComponent<Omit<DialogContentTypeProps, "ref"> & React.RefAttributes<DialogContentTypeElement>> = React.forwardRef<DialogContentTypeElement, DialogContentTypeProps>(
   (props: ScopedProps<DialogContentTypeProps>, forwardedRef) => {
     const context = useDialogContext(CONTENT_NAME, props.__scopeDialog);
     const hasInteractedOutsideRef = React.useRef(false);
@@ -379,7 +382,7 @@ interface DialogContentImplProps extends Omit<DismissableLayerProps, 'onDismiss'
   onCloseAutoFocus?: FocusScopeProps['onUnmountAutoFocus'];
 }
 
-const DialogContentImpl = React.forwardRef<DialogContentImplElement, DialogContentImplProps>(
+const DialogContentImpl: React.ForwardRefExoticComponent<Omit<DialogContentImplProps, "ref"> & React.RefAttributes<DialogContentImplElement>> = React.forwardRef<DialogContentImplElement, DialogContentImplProps>(
   (props: ScopedProps<DialogContentImplProps>, forwardedRef) => {
     const { __scopeDialog, trapFocus, onOpenAutoFocus, onCloseAutoFocus, ...contentProps } = props;
     const context = useDialogContext(CONTENT_NAME, __scopeDialog);
@@ -410,7 +413,8 @@ const DialogContentImpl = React.forwardRef<DialogContentImplElement, DialogConte
             onDismiss={() => context.onOpenChange(false)}
           />
         </FocusScope>
-        {process.env.NODE_ENV !== 'production' && (
+        {((globalThis as any).NODE_ENV &&
+          (globalThis as any).NODE_ENV !== "production") && (
           <>
             <TitleWarning titleId={context.titleId} />
             <DescriptionWarning contentRef={contentRef} descriptionId={context.descriptionId} />
@@ -431,7 +435,7 @@ type DialogTitleElement = React.ElementRef<typeof Primitive.h2>;
 type PrimitiveHeading2Props = Radix.ComponentPropsWithoutRef<typeof Primitive.h2>;
 interface DialogTitleProps extends PrimitiveHeading2Props {}
 
-const DialogTitle = React.forwardRef<DialogTitleElement, DialogTitleProps>(
+const DialogTitle: React.ForwardRefExoticComponent<DialogTitleProps & React.RefAttributes<DialogTitleElement>> = React.forwardRef<DialogTitleElement, DialogTitleProps>(
   (props: ScopedProps<DialogTitleProps>, forwardedRef) => {
     const { __scopeDialog, ...titleProps } = props;
     const context = useDialogContext(TITLE_NAME, __scopeDialog);
@@ -451,7 +455,7 @@ type DialogDescriptionElement = React.ElementRef<typeof Primitive.p>;
 type PrimitiveParagraphProps = Radix.ComponentPropsWithoutRef<typeof Primitive.p>;
 interface DialogDescriptionProps extends PrimitiveParagraphProps {}
 
-const DialogDescription = React.forwardRef<DialogDescriptionElement, DialogDescriptionProps>(
+const DialogDescription: React.ForwardRefExoticComponent<DialogDescriptionProps & React.RefAttributes<DialogDescriptionElement>> = React.forwardRef<DialogDescriptionElement, DialogDescriptionProps>(
   (props: ScopedProps<DialogDescriptionProps>, forwardedRef) => {
     const { __scopeDialog, ...descriptionProps } = props;
     const context = useDialogContext(DESCRIPTION_NAME, __scopeDialog);
@@ -470,7 +474,7 @@ const CLOSE_NAME = 'DialogClose';
 type DialogCloseElement = React.ElementRef<typeof Primitive.button>;
 interface DialogCloseProps extends PrimitiveButtonProps {}
 
-const DialogClose = React.forwardRef<DialogCloseElement, DialogCloseProps>(
+const DialogClose: React.ForwardRefExoticComponent<DialogCloseProps & React.RefAttributes<DialogCloseElement>> = React.forwardRef<DialogCloseElement, DialogCloseProps>(
   (props: ScopedProps<DialogCloseProps>, forwardedRef) => {
     const { __scopeDialog, ...closeProps } = props;
     const context = useDialogContext(CLOSE_NAME, __scopeDialog);
@@ -489,17 +493,32 @@ DialogClose.displayName = CLOSE_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
-function getState(open: boolean) {
+function getState(open: boolean): "open" | "closed" {
   return open ? 'open' : 'closed';
 }
 
 const TITLE_WARNING_NAME = 'DialogTitleWarning';
 
-const [WarningProvider, useWarningContext] = createContext(TITLE_WARNING_NAME, {
+const context: readonly [{
+  (props: {
+      contentName: string;
+      titleName: string;
+      docsSlug: string;
+  } & {
+      children: React.ReactNode;
+  }): React.JSX.Element;
+  displayName: string;
+}, (consumerName: string) => {
+  contentName: string;
+  titleName: string;
+  docsSlug: string;
+}] = createContext(TITLE_WARNING_NAME, {
   contentName: CONTENT_NAME,
   titleName: TITLE_NAME,
   docsSlug: 'dialog',
 });
+const WarningProvider = context[0]
+const useWarningContext = context[1];
 
 type TitleWarningProps = { titleId?: string };
 

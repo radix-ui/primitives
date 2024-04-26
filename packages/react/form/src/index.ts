@@ -16,7 +16,7 @@ export {
   Message,
   ValidityState,
   Submit,
-} from './Form';
+} from './Form.tsx';
 
 export type {
   FormProps,
@@ -26,4 +26,4 @@ export type {
   FormMessageProps,
   FormValidityStateProps,
   FormSubmitProps,
-} from './Form';
+} from './Form.tsx';

@@ -20,7 +20,7 @@ export {
   Indicator,
   Content,
   Viewport,
-} from './NavigationMenu';
+} from './NavigationMenu.tsx';
 export type {
   NavigationMenuProps,
   NavigationMenuSubProps,
@@ -31,4 +31,4 @@ export type {
   NavigationMenuIndicatorProps,
   NavigationMenuContentProps,
   NavigationMenuViewportProps,
-} from './NavigationMenu';
+} from './NavigationMenu.tsx';

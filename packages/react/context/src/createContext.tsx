@@ -1,9 +1,17 @@
+// @deno-types="npm:@types/react@^18.2.0"
 import * as React from 'react';
 
 function createContext<ContextValueType extends object | null>(
   rootComponentName: string,
-  defaultContext?: ContextValueType
-) {
+  defaultContext?: ContextValueType,
+): readonly [{
+  (
+    props: ContextValueType & {
+      children: React.ReactNode;
+    },
+  ): React.JSX.Element;
+  displayName: string;
+}, (consumerName: string) => ContextValueType] {
   const Context = React.createContext<ContextValueType | undefined>(defaultContext);
 
   function Provider(props: ContextValueType & { children: React.ReactNode }) {
@@ -37,7 +45,14 @@ interface CreateScope {
   (): ScopeHook;
 }
 
-function createContextScope(scopeName: string, createContextScopeDeps: CreateScope[] = []) {
+function createContextScope(scopeName: string, createContextScopeDeps: CreateScope[] = []):readonly [<ContextValueType extends object | null>(rootComponentName: string, defaultContext?: ContextValueType | undefined) => readonly [{
+  (props: ContextValueType & {
+    scope: Scope,
+    children: React.ReactNode;
+  }): React.JSX.Element;
+  displayName: string;
+}, (consumerName: string, scope: Scope) => ContextValueType], CreateScope]
+{
   let defaultContexts: any[] = [];
 
   /* -----------------------------------------------------------------------------------------------

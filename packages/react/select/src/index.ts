@@ -34,7 +34,7 @@ export {
   ScrollDownButton,
   Separator,
   Arrow,
-} from './Select';
+} from './Select.tsx';
 export type {
   SelectProps,
   SelectTriggerProps,
@@ -52,4 +52,4 @@ export type {
   SelectScrollDownButtonProps,
   SelectSeparatorProps,
   SelectArrowProps,
-} from './Select';
+} from './Select.tsx';

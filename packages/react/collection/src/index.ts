@@ -1,2 +1,2 @@
-export { createCollection } from './Collection';
-export type { CollectionProps } from './Collection';
+export { createCollection } from './Collection.tsx';
+export type { CollectionProps } from './Collection.tsx';

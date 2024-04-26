@@ -1,3 +1,4 @@
+// @deno-types="npm:@types/react@^18.2.0"
 import * as React from 'react';
 import { Primitive } from '@radix-ui/react-primitive';
 
@@ -13,7 +14,7 @@ type LabelElement = React.ElementRef<typeof Primitive.label>;
 type PrimitiveLabelProps = Radix.ComponentPropsWithoutRef<typeof Primitive.label>;
 interface LabelProps extends PrimitiveLabelProps {}
 
-const Label = React.forwardRef<LabelElement, LabelProps>((props, forwardedRef) => {
+const Label: React.ForwardRefExoticComponent<LabelProps & React.RefAttributes<LabelElement>> = React.forwardRef<LabelElement, LabelProps>((props, forwardedRef) => {
   return (
     <Primitive.label
       {...props}

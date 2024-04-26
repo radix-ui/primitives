@@ -20,7 +20,7 @@ export {
   Cancel,
   Title,
   Description,
-} from './AlertDialog';
+} from './AlertDialog.tsx';
 export type {
   AlertDialogProps,
   AlertDialogTriggerProps,
@@ -31,4 +31,4 @@ export type {
   AlertDialogCancelProps,
   AlertDialogTitleProps,
   AlertDialogDescriptionProps,
-} from './AlertDialog';
+} from './AlertDialog.tsx';

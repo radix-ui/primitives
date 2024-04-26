@@ -1,1 +1,1 @@
-export { clamp } from './number';
+export { clamp } from './number.ts';

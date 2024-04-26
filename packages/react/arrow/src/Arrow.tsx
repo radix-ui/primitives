@@ -1,3 +1,4 @@
+// @deno-types="npm:@types/react@^18.2.0"
 import * as React from 'react';
 import { Primitive } from '@radix-ui/react-primitive';
 
@@ -13,7 +14,7 @@ type ArrowElement = React.ElementRef<typeof Primitive.svg>;
 type PrimitiveSvgProps = Radix.ComponentPropsWithoutRef<typeof Primitive.svg>;
 interface ArrowProps extends PrimitiveSvgProps {}
 
-const Arrow = React.forwardRef<ArrowElement, ArrowProps>((props, forwardedRef) => {
+const Arrow: React.ForwardRefExoticComponent<ArrowProps & React.RefAttributes<ArrowElement>> = React.forwardRef<ArrowElement, ArrowProps>((props, forwardedRef) => {
   const { children, width = 10, height = 5, ...arrowProps } = props;
   return (
     <Primitive.svg

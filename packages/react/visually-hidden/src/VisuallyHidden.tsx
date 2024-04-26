@@ -1,3 +1,4 @@
+// @deno-types="npm:@types/react@^18.2.0"
 import * as React from 'react';
 import { Primitive } from '@radix-ui/react-primitive';
 
@@ -13,7 +14,7 @@ type VisuallyHiddenElement = React.ElementRef<typeof Primitive.span>;
 type PrimitiveSpanProps = Radix.ComponentPropsWithoutRef<typeof Primitive.span>;
 interface VisuallyHiddenProps extends PrimitiveSpanProps {}
 
-const VisuallyHidden = React.forwardRef<VisuallyHiddenElement, VisuallyHiddenProps>(
+const VisuallyHidden: React.ForwardRefExoticComponent<VisuallyHiddenProps & React.RefAttributes<HTMLSpanElement>> = React.forwardRef<VisuallyHiddenElement, VisuallyHiddenProps>(
   (props, forwardedRef) => {
     return (
       <Primitive.span

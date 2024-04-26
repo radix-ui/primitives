@@ -1,3 +1,4 @@
+// @deno-types="npm:@types/react@^18.2.0"
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
@@ -17,10 +18,14 @@ import type { Scope } from '@radix-ui/react-context';
 const SWITCH_NAME = 'Switch';
 
 type ScopedProps<P> = P & { __scopeSwitch?: Scope };
-const [createSwitchContext, createSwitchScope] = createContextScope(SWITCH_NAME);
+const contextScope: ReturnType<typeof createContextScope> = createContextScope(SWITCH_NAME);
+const createSwitchContext = contextScope[0]
+const createSwitchScope = contextScope[1];
 
 type SwitchContextValue = { checked: boolean; disabled?: boolean };
-const [SwitchProvider, useSwitchContext] = createSwitchContext<SwitchContextValue>(SWITCH_NAME);
+const switchContext: ReturnType<typeof createSwitchContext<SwitchContextValue>> = createSwitchContext(SWITCH_NAME);
+const SwitchProvider = switchContext[0]
+const useSwitchContext = switchContext[1];
 
 type SwitchElement = React.ElementRef<typeof Primitive.button>;
 type PrimitiveButtonProps = Radix.ComponentPropsWithoutRef<typeof Primitive.button>;
@@ -31,7 +36,7 @@ interface SwitchProps extends PrimitiveButtonProps {
   onCheckedChange?(checked: boolean): void;
 }
 
-const Switch = React.forwardRef<SwitchElement, SwitchProps>(
+const Switch: React.ForwardRefExoticComponent<SwitchProps & React.RefAttributes<SwitchElement>> = React.forwardRef<SwitchElement, SwitchProps>(
   (props: ScopedProps<SwitchProps>, forwardedRef) => {
     const {
       __scopeSwitch,
@@ -111,7 +116,8 @@ type SwitchThumbElement = React.ElementRef<typeof Primitive.span>;
 type PrimitiveSpanProps = Radix.ComponentPropsWithoutRef<typeof Primitive.span>;
 interface SwitchThumbProps extends PrimitiveSpanProps {}
 
-const SwitchThumb = React.forwardRef<SwitchThumbElement, SwitchThumbProps>(
+const SwitchThumb: React.ForwardRefExoticComponent<SwitchThumbProps & React.RefAttributes<SwitchThumbElement>>
+= React.forwardRef<SwitchThumbElement, SwitchThumbProps>(
   (props: ScopedProps<SwitchThumbProps>, forwardedRef) => {
     const { __scopeSwitch, ...thumbProps } = props;
     const context = useSwitchContext(THUMB_NAME, __scopeSwitch);
@@ -137,7 +143,7 @@ interface BubbleInputProps extends Omit<InputProps, 'checked'> {
   bubbles: boolean;
 }
 
-const BubbleInput = (props: BubbleInputProps) => {
+const BubbleInput = (props: BubbleInputProps): React.JSX.Element => {
   const { control, checked, bubbles = true, ...inputProps } = props;
   const ref = React.useRef<HTMLInputElement>(null);
   const prevChecked = usePrevious(checked);
@@ -176,7 +182,7 @@ const BubbleInput = (props: BubbleInputProps) => {
   );
 };
 
-function getState(checked: boolean) {
+function getState(checked: boolean): "checked" | "unchecked" {
   return checked ? 'checked' : 'unchecked';
 }
 

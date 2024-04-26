@@ -1,3 +1,4 @@
+// @deno-types="npm:@types/react@^18.2.0"
 import * as React from 'react';
 import { clamp } from '@radix-ui/number';
 import { composeEventHandlers } from '@radix-ui/primitive';
@@ -32,13 +33,18 @@ const BACK_KEYS: Record<SlideDirection, string[]> = {
 
 const SLIDER_NAME = 'Slider';
 
-const [Collection, useCollection, createCollectionScope] =
+const collection: ReturnType<typeof createCollection<SliderThumbElement>> = 
   createCollection<SliderThumbElement>(SLIDER_NAME);
+const Collection = collection[0]
+const useCollection = collection[1];
+const createCollectionScope = collection[2];
 
 type ScopedProps<P> = P & { __scopeSlider?: Scope };
-const [createSliderContext, createSliderScope] = createContextScope(SLIDER_NAME, [
+const contextScope: ReturnType<typeof createContextScope> = createContextScope(SLIDER_NAME, [
   createCollectionScope,
 ]);
+const createSliderContext = contextScope[0]
+const createSliderScope = contextScope[1];
 
 type SliderContextValue = {
   name?: string;
@@ -51,7 +57,11 @@ type SliderContextValue = {
   orientation: SliderProps['orientation'];
 };
 
-const [SliderProvider, useSliderContext] = createSliderContext<SliderContextValue>(SLIDER_NAME);
+const sliderContext: ReturnType<
+  typeof createSliderContext<SliderContextValue>
+> = createSliderContext<SliderContextValue>(SLIDER_NAME);
+const SliderProvider = sliderContext[0];
+const useSliderContext = sliderContext[1];
 
 type SliderElement = SliderHorizontalElement | SliderVerticalElement;
 interface SliderProps
@@ -74,7 +84,8 @@ interface SliderProps
   inverted?: boolean;
 }
 
-const Slider = React.forwardRef<SliderElement, SliderProps>(
+const Slider: React.ForwardRefExoticComponent<SliderProps & React.RefAttributes<SliderElement>> = 
+React.forwardRef<SliderElement, SliderProps>(
   (props: ScopedProps<SliderProps>, forwardedRef) => {
     const {
       name,
@@ -200,17 +211,22 @@ Slider.displayName = SLIDER_NAME;
 
 type Side = 'top' | 'right' | 'bottom' | 'left';
 
-const [SliderOrientationProvider, useSliderOrientationContext] = createSliderContext<{
+type SliderOrientationContextValue = {
   startEdge: Side;
   endEdge: Side;
   size: keyof NonNullable<ReturnType<typeof useSize>>;
   direction: number;
-}>(SLIDER_NAME, {
+};
+const sliderOrientationContext: ReturnType<
+  typeof createSliderContext<SliderOrientationContextValue>
+> = createSliderContext<SliderOrientationContextValue>(SLIDER_NAME, {
   startEdge: 'left',
   endEdge: 'right',
   size: 'width',
   direction: 1,
 });
+const SliderOrientationProvider = sliderOrientationContext[0];
+const useSliderOrientationContext = sliderOrientationContext[1];
 
 type SliderOrientationPrivateProps = {
   min: number;
@@ -232,7 +248,8 @@ interface SliderHorizontalProps extends SliderOrientationProps {
   dir?: Direction;
 }
 
-const SliderHorizontal = React.forwardRef<SliderHorizontalElement, SliderHorizontalProps>(
+const SliderHorizontal: React.ForwardRefExoticComponent<SliderHorizontalProps & React.RefAttributes<SliderHorizontalElement>>
+= React.forwardRef<SliderHorizontalElement, SliderHorizontalProps>(
   (props: ScopedProps<SliderHorizontalProps>, forwardedRef) => {
     const {
       min,
@@ -309,7 +326,7 @@ const SliderHorizontal = React.forwardRef<SliderHorizontalElement, SliderHorizon
 type SliderVerticalElement = SliderImplElement;
 interface SliderVerticalProps extends SliderOrientationProps {}
 
-const SliderVertical = React.forwardRef<SliderVerticalElement, SliderVerticalProps>(
+const SliderVertical: React.ForwardRefExoticComponent<SliderVerticalProps & React.RefAttributes<SliderVerticalElement>> = React.forwardRef<SliderVerticalElement, SliderVerticalProps>(
   (props: ScopedProps<SliderVerticalProps>, forwardedRef) => {
     const {
       min,
@@ -391,7 +408,8 @@ type SliderImplPrivateProps = {
 };
 interface SliderImplProps extends PrimitiveDivProps, SliderImplPrivateProps {}
 
-const SliderImpl = React.forwardRef<SliderImplElement, SliderImplProps>(
+const SliderImpl: React.ForwardRefExoticComponent<SliderImplProps & React.RefAttributes<SliderImplElement>>
+= React.forwardRef<SliderImplElement, SliderImplProps>(
   (props: ScopedProps<SliderImplProps>, forwardedRef) => {
     const {
       __scopeSlider,
@@ -463,7 +481,7 @@ type SliderTrackElement = React.ElementRef<typeof Primitive.span>;
 type PrimitiveSpanProps = Radix.ComponentPropsWithoutRef<typeof Primitive.span>;
 interface SliderTrackProps extends PrimitiveSpanProps {}
 
-const SliderTrack = React.forwardRef<SliderTrackElement, SliderTrackProps>(
+const SliderTrack: React.ForwardRefExoticComponent<SliderTrackProps & React.RefAttributes<SliderTrackElement>> = React.forwardRef<SliderTrackElement, SliderTrackProps>(
   (props: ScopedProps<SliderTrackProps>, forwardedRef) => {
     const { __scopeSlider, ...trackProps } = props;
     const context = useSliderContext(TRACK_NAME, __scopeSlider);
@@ -489,7 +507,8 @@ const RANGE_NAME = 'SliderRange';
 type SliderRangeElement = React.ElementRef<typeof Primitive.span>;
 interface SliderRangeProps extends PrimitiveSpanProps {}
 
-const SliderRange = React.forwardRef<SliderRangeElement, SliderRangeProps>(
+const SliderRange: React.ForwardRefExoticComponent<SliderRangeProps & React.RefAttributes<SliderRangeElement>>
+= React.forwardRef<SliderRangeElement, SliderRangeProps>(
   (props: ScopedProps<SliderRangeProps>, forwardedRef) => {
     const { __scopeSlider, ...rangeProps } = props;
     const context = useSliderContext(RANGE_NAME, __scopeSlider);
@@ -530,7 +549,8 @@ const THUMB_NAME = 'SliderThumb';
 type SliderThumbElement = SliderThumbImplElement;
 interface SliderThumbProps extends Omit<SliderThumbImplProps, 'index'> {}
 
-const SliderThumb = React.forwardRef<SliderThumbElement, SliderThumbProps>(
+const SliderThumb: React.ForwardRefExoticComponent<SliderThumbProps & React.RefAttributes<SliderThumbElement>>
+= React.forwardRef<SliderThumbElement, SliderThumbProps>(
   (props: ScopedProps<SliderThumbProps>, forwardedRef) => {
     const getItems = useCollection(props.__scopeSlider);
     const [thumb, setThumb] = React.useState<SliderThumbImplElement | null>(null);
@@ -549,7 +569,8 @@ interface SliderThumbImplProps extends PrimitiveSpanProps {
   name?: string;
 }
 
-const SliderThumbImpl = React.forwardRef<SliderThumbImplElement, SliderThumbImplProps>(
+const SliderThumbImpl: React.ForwardRefExoticComponent<SliderThumbImplProps & React.RefAttributes<SliderThumbImplElement>>
+= React.forwardRef<SliderThumbImplElement, SliderThumbImplProps>(
   (props: ScopedProps<SliderThumbImplProps>, forwardedRef) => {
     const { __scopeSlider, index, name, ...thumbProps } = props;
     const context = useSliderContext(THUMB_NAME, __scopeSlider);
@@ -631,7 +652,7 @@ SliderThumb.displayName = THUMB_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
-const BubbleInput = (props: Radix.ComponentPropsWithoutRef<'input'>) => {
+const BubbleInput = (props: Radix.ComponentPropsWithoutRef<'input'>): React.JSX.Element => {
   const { value, ...inputProps } = props;
   const ref = React.useRef<HTMLInputElement>(null);
   const prevValue = usePrevious(value);
@@ -661,13 +682,13 @@ const BubbleInput = (props: Radix.ComponentPropsWithoutRef<'input'>) => {
   return <input style={{ display: 'none' }} {...inputProps} ref={ref} defaultValue={value} />;
 };
 
-function getNextSortedValues(prevValues: number[] = [], nextValue: number, atIndex: number) {
+function getNextSortedValues(prevValues: number[] = [], nextValue: number, atIndex: number): number[] {
   const nextValues = [...prevValues];
   nextValues[atIndex] = nextValue;
   return nextValues.sort((a, b) => a - b);
 }
 
-function convertValueToPercentage(value: number, min: number, max: number) {
+function convertValueToPercentage(value: number, min: number, max: number): number {
   const maxSteps = max - min;
   const percentPerStep = 100 / maxSteps;
   const percentage = percentPerStep * (value - min);
@@ -677,7 +698,7 @@ function convertValueToPercentage(value: number, min: number, max: number) {
 /**
  * Returns a label for each thumb when there are two or more thumbs
  */
-function getLabel(index: number, totalValues: number) {
+function getLabel(index: number, totalValues: number): string | undefined {
   if (totalValues > 2) {
     return `Value ${index + 1} of ${totalValues}`;
   } else if (totalValues === 2) {
@@ -695,7 +716,7 @@ function getLabel(index: number, totalValues: number) {
  * // returns 1
  * getClosestValueIndex([10, 30], 25);
  */
-function getClosestValueIndex(values: number[], nextValue: number) {
+function getClosestValueIndex(values: number[], nextValue: number): number {
   if (values.length === 1) return 0;
   const distances = values.map((value) => Math.abs(value - nextValue));
   const closestDistance = Math.min(...distances);
@@ -706,7 +727,7 @@ function getClosestValueIndex(values: number[], nextValue: number) {
  * Offsets the thumb centre point while sliding to ensure it remains
  * within the bounds of the slider when reaching the edges
  */
-function getThumbInBoundsOffset(width: number, left: number, direction: number) {
+function getThumbInBoundsOffset(width: number, left: number, direction: number): number {
   const halfWidth = width / 2;
   const halfPercent = 50;
   const offset = linearScale([0, halfPercent], [0, halfWidth]);
@@ -720,7 +741,7 @@ function getThumbInBoundsOffset(width: number, left: number, direction: number) 
  * // returns [1, 9]
  * getStepsBetweenValues([10, 11, 20]);
  */
-function getStepsBetweenValues(values: number[]) {
+function getStepsBetweenValues(values: number[]): number[] {
   return values.slice(0, -1).map((value, index) => values[index + 1] - value);
 }
 
@@ -736,7 +757,7 @@ function getStepsBetweenValues(values: number[]) {
  * // returns true
  * hasMinStepsBetweenValues([1,2,3], 1);
  */
-function hasMinStepsBetweenValues(values: number[], minStepsBetweenValues: number) {
+function hasMinStepsBetweenValues(values: number[], minStepsBetweenValues: number): boolean {
   if (minStepsBetweenValues > 0) {
     const stepsBetweenValues = getStepsBetweenValues(values);
     const actualMinStepsBetweenValues = Math.min(...stepsBetweenValues);
@@ -746,7 +767,7 @@ function hasMinStepsBetweenValues(values: number[], minStepsBetweenValues: numbe
 }
 
 // https://github.com/tmcw-up-for-adoption/simple-linear-scale/blob/master/index.js
-function linearScale(input: readonly [number, number], output: readonly [number, number]) {
+function linearScale(input: readonly [number, number], output: readonly [number, number]): (value: number) => number {
   return (value: number) => {
     if (input[0] === input[1] || output[0] === output[1]) return output[0];
     const ratio = (output[1] - output[0]) / (input[1] - input[0]);
@@ -754,11 +775,11 @@ function linearScale(input: readonly [number, number], output: readonly [number,
   };
 }
 
-function getDecimalCount(value: number) {
+function getDecimalCount(value: number): number {
   return (String(value).split('.')[1] || '').length;
 }
 
-function roundValue(value: number, decimalCount: number) {
+function roundValue(value: number, decimalCount: number): number {
   const rounder = Math.pow(10, decimalCount);
   return Math.round(value * rounder) / rounder;
 }

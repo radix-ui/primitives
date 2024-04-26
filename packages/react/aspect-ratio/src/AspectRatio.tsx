@@ -1,3 +1,4 @@
+// @deno-types="npm:@types/react@^18.2.0"
 import * as React from 'react';
 import { Primitive } from '@radix-ui/react-primitive';
 
@@ -15,7 +16,7 @@ interface AspectRatioProps extends PrimitiveDivProps {
   ratio?: number;
 }
 
-const AspectRatio = React.forwardRef<AspectRatioElement, AspectRatioProps>(
+const AspectRatio: React.ForwardRefExoticComponent<AspectRatioProps & React.RefAttributes<AspectRatioElement>> = React.forwardRef<AspectRatioElement, AspectRatioProps>(
   (props, forwardedRef) => {
     const { ratio = 1 / 1, style, ...aspectRatioProps } = props;
     return (

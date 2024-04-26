@@ -1,3 +1,4 @@
+// @deno-types="npm:@types/react@^18.2.0"
 import * as React from 'react';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 
@@ -13,7 +14,7 @@ function useControllableState<T>({
   prop,
   defaultProp,
   onChange = () => {},
-}: UseControllableStateParams<T>) {
+}: UseControllableStateParams<T>): readonly [T | undefined, React.Dispatch<React.SetStateAction<T | undefined>>] {
   const [uncontrolledProp, setUncontrolledProp] = useUncontrolledState({ defaultProp, onChange });
   const isControlled = prop !== undefined;
   const value = isControlled ? prop : uncontrolledProp;

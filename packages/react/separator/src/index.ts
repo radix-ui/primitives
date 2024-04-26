@@ -2,5 +2,5 @@ export {
   Separator,
   //
   Root,
-} from './Separator';
-export type { SeparatorProps } from './Separator';
+} from './Separator.tsx';
+export type { SeparatorProps } from './Separator.tsx';

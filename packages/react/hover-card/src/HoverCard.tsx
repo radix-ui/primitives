@@ -1,3 +1,4 @@
+// @deno-types="npm:@types/react@^18.2.0"
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { createContextScope } from '@radix-ui/react-context';
@@ -22,10 +23,12 @@ let originalBodyUserSelect: string;
 const HOVERCARD_NAME = 'HoverCard';
 
 type ScopedProps<P> = P & { __scopeHoverCard?: Scope };
-const [createHoverCardContext, createHoverCardScope] = createContextScope(HOVERCARD_NAME, [
+const contextScope: ReturnType<typeof createContextScope> = createContextScope(HOVERCARD_NAME, [
   createPopperScope,
 ]);
-const usePopperScope = createPopperScope();
+const createHoverCardContext = contextScope[0]
+const createHoverCardScope = contextScope[1];
+const usePopperScope: ReturnType<typeof createPopperScope> = createPopperScope();
 
 type HoverCardContextValue = {
   open: boolean;
@@ -37,8 +40,9 @@ type HoverCardContextValue = {
   isPointerDownOnContentRef: React.MutableRefObject<boolean>;
 };
 
-const [HoverCardProvider, useHoverCardContext] =
-  createHoverCardContext<HoverCardContextValue>(HOVERCARD_NAME);
+const hoverCardContext: ReturnType<typeof createHoverCardContext<HoverCardContextValue>> = createHoverCardContext(HOVERCARD_NAME);
+const HoverCardProvider = hoverCardContext[0]
+const useHoverCardContext = hoverCardContext[1];
 
 interface HoverCardProps {
   children?: React.ReactNode;
@@ -121,7 +125,8 @@ type HoverCardTriggerElement = React.ElementRef<typeof Primitive.a>;
 type PrimitiveLinkProps = Radix.ComponentPropsWithoutRef<typeof Primitive.a>;
 interface HoverCardTriggerProps extends PrimitiveLinkProps {}
 
-const HoverCardTrigger = React.forwardRef<HoverCardTriggerElement, HoverCardTriggerProps>(
+const HoverCardTrigger: React.ForwardRefExoticComponent<HoverCardTriggerProps & React.RefAttributes<HoverCardTriggerElement>>
+= React.forwardRef<HoverCardTriggerElement, HoverCardTriggerProps>(
   (props: ScopedProps<HoverCardTriggerProps>, forwardedRef) => {
     const { __scopeHoverCard, ...triggerProps } = props;
     const context = useHoverCardContext(TRIGGER_NAME, __scopeHoverCard);
@@ -153,9 +158,11 @@ HoverCardTrigger.displayName = TRIGGER_NAME;
 const PORTAL_NAME = 'HoverCardPortal';
 
 type PortalContextValue = { forceMount?: true };
-const [PortalProvider, usePortalContext] = createHoverCardContext<PortalContextValue>(PORTAL_NAME, {
+const portalContext: ReturnType<typeof createHoverCardContext<PortalContextValue>> = createHoverCardContext(PORTAL_NAME, {
   forceMount: undefined,
-});
+} as PortalContextValue);
+const PortalProvider = portalContext[0]
+const usePortalContext = portalContext[1];
 
 type PortalProps = React.ComponentPropsWithoutRef<typeof PortalPrimitive>;
 interface HoverCardPortalProps {
@@ -204,7 +211,8 @@ interface HoverCardContentProps extends HoverCardContentImplProps {
   forceMount?: true;
 }
 
-const HoverCardContent = React.forwardRef<HoverCardContentElement, HoverCardContentProps>(
+const HoverCardContent: React.ForwardRefExoticComponent<Omit<HoverCardContentProps, "ref"> & React.RefAttributes<HoverCardContentElement>>
+= React.forwardRef<HoverCardContentElement, HoverCardContentProps>(
   (props: ScopedProps<HoverCardContentProps>, forwardedRef) => {
     const portalContext = usePortalContext(CONTENT_NAME, props.__scopeHoverCard);
     const { forceMount = portalContext.forceMount, ...contentProps } = props;
@@ -254,7 +262,8 @@ interface HoverCardContentImplProps extends Omit<PopperContentProps, 'onPlaced'>
   onInteractOutside?: DismissableLayerProps['onInteractOutside'];
 }
 
-const HoverCardContentImpl = React.forwardRef<
+const HoverCardContentImpl: React.ForwardRefExoticComponent<Omit<HoverCardContentImplProps, "ref"> & React.RefAttributes<HoverCardContentImplElement>>
+= React.forwardRef<
   HoverCardContentImplElement,
   HoverCardContentImplProps
 >((props: ScopedProps<HoverCardContentImplProps>, forwardedRef) => {
@@ -370,7 +379,8 @@ type HoverCardArrowElement = React.ElementRef<typeof PopperPrimitive.Arrow>;
 type PopperArrowProps = Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Arrow>;
 interface HoverCardArrowProps extends PopperArrowProps {}
 
-const HoverCardArrow = React.forwardRef<HoverCardArrowElement, HoverCardArrowProps>(
+const HoverCardArrow: React.ForwardRefExoticComponent<HoverCardArrowProps & React.RefAttributes<HoverCardArrowElement>>
+= React.forwardRef<HoverCardArrowElement, HoverCardArrowProps>(
   (props: ScopedProps<HoverCardArrowProps>, forwardedRef) => {
     const { __scopeHoverCard, ...arrowProps } = props;
     const popperScope = usePopperScope(__scopeHoverCard);
@@ -382,7 +392,7 @@ HoverCardArrow.displayName = ARROW_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
-function excludeTouch<E>(eventHandler: () => void) {
+function excludeTouch<E>(eventHandler: () => void): (event: React.PointerEvent<E>) => void {
   return (event: React.PointerEvent<E>) =>
     event.pointerType === 'touch' ? undefined : eventHandler();
 }
@@ -391,7 +401,7 @@ function excludeTouch<E>(eventHandler: () => void) {
  * Returns a list of nodes that can be in the tab sequence.
  * @see: https://developer.mozilla.org/en-US/docs/Web/API/TreeWalker
  */
-function getTabbableNodes(container: HTMLElement) {
+function getTabbableNodes(container: HTMLElement): HTMLElement[] {
   const nodes: HTMLElement[] = [];
   const walker = document.createTreeWalker(container, NodeFilter.SHOW_ELEMENT, {
     acceptNode: (node: any) => {

@@ -1,3 +1,4 @@
+// @deno-types="npm:@types/react@^18.2.0"
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
@@ -10,8 +11,9 @@ import type * as Radix from '@radix-ui/react-primitive';
 import type { Scope } from '@radix-ui/react-context';
 
 type ScopedProps<P> = P & { __scopeForm?: Scope };
-const [createFormContext, createFormScope] = createContextScope('Form');
-
+const contextScope: ReturnType<typeof createContextScope> = createContextScope('Form');
+const createFormContext = contextScope[0]
+const createFormScope = contextScope[1];
 /* -------------------------------------------------------------------------------------------------
  * Form
  * -----------------------------------------------------------------------------------------------*/
@@ -35,8 +37,11 @@ type ValidationContextValue = {
 
   onFieldValiditionClear(fieldName: string): void;
 };
-const [ValidationProvider, useValidationContext] =
-  createFormContext<ValidationContextValue>(FORM_NAME);
+const validationContext: ReturnType<
+  typeof createFormContext<ValidationContextValue>
+> = createFormContext<ValidationContextValue>(FORM_NAME);
+const ValidationProvider = validationContext[0];
+const useValidationContext = validationContext[1];
 
 type MessageIdsMap = { [fieldName: string]: Set<string> };
 
@@ -54,7 +59,8 @@ interface FormProps extends PrimitiveFormProps {
   onClearServerErrors?(): void;
 }
 
-const Form = React.forwardRef<FormElement, FormProps>(
+const Form: React.ForwardRefExoticComponent<FormProps & React.RefAttributes<FormElement>>
+ = React.forwardRef<FormElement, FormProps>(
   (props: ScopedProps<FormProps>, forwardedRef) => {
     const { __scopeForm, onClearServerErrors = () => {}, ...rootProps } = props;
     const formRef = React.useRef<HTMLFormElement>(null);
@@ -198,8 +204,9 @@ type FormFieldContextValue = {
   name: string;
   serverInvalid: boolean;
 };
-const [FormFieldProvider, useFormFieldContext] =
-  createFormContext<FormFieldContextValue>(FIELD_NAME);
+const formContext: ReturnType<typeof createFormContext<FormFieldContextValue>> = createFormContext<FormFieldContextValue>(FIELD_NAME);
+const FormFieldProvider = formContext[0]
+const useFormFieldContext = formContext[1];
 
 type FormFieldElement = React.ElementRef<typeof Primitive.div>;
 type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
@@ -208,7 +215,8 @@ interface FormFieldProps extends PrimitiveDivProps {
   serverInvalid?: boolean;
 }
 
-const FormField = React.forwardRef<FormFieldElement, FormFieldProps>(
+const FormField: React.ForwardRefExoticComponent<FormFieldProps & React.RefAttributes<FormFieldElement>>
+= React.forwardRef<FormFieldElement, FormFieldProps>(
   (props: ScopedProps<FormFieldProps>, forwardedRef) => {
     const { __scopeForm, name, serverInvalid = false, ...fieldProps } = props;
     const validationContext = useValidationContext(FIELD_NAME, __scopeForm);
@@ -240,7 +248,7 @@ type FormLabelElement = React.ElementRef<typeof LabelPrimitive>;
 type LabelProps = Radix.ComponentPropsWithoutRef<typeof LabelPrimitive>;
 interface FormLabelProps extends LabelProps {}
 
-const FormLabel = React.forwardRef<FormLabelElement, FormLabelProps>(
+const FormLabel: React.ForwardRefExoticComponent<FormLabelProps & React.RefAttributes<FormLabelElement>> = React.forwardRef<FormLabelElement, FormLabelProps>(
   (props: ScopedProps<FormLabelProps>, forwardedRef) => {
     const { __scopeForm, ...labelProps } = props;
     const validationContext = useValidationContext(LABEL_NAME, __scopeForm);
@@ -272,7 +280,8 @@ type FormControlElement = React.ElementRef<typeof Primitive.input>;
 type PrimitiveInputProps = Radix.ComponentPropsWithoutRef<typeof Primitive.input>;
 interface FormControlProps extends PrimitiveInputProps {}
 
-const FormControl = React.forwardRef<FormControlElement, FormControlProps>(
+const FormControl: React.ForwardRefExoticComponent<FormControlProps & React.RefAttributes<FormControlElement>>
+ = React.forwardRef<FormControlElement, FormControlProps>(
   (props: ScopedProps<FormControlProps>, forwardedRef) => {
     const { __scopeForm, ...controlProps } = props;
 
@@ -460,7 +469,7 @@ interface FormMessageProps extends Omit<FormMessageImplProps, 'name'> {
   name?: string;
 }
 
-const FormMessage = React.forwardRef<FormMessageElement, FormMessageProps>(
+const FormMessage: React.ForwardRefExoticComponent<FormMessageProps & React.RefAttributes<FormMessageElement>> = React.forwardRef<FormMessageElement, FormMessageProps>(
   (props: ScopedProps<FormMessageProps>, forwardedRef) => {
     const { match, name: nameProp, ...messageProps } = props;
     const fieldContext = useFormFieldContext(MESSAGE_NAME, props.__scopeForm);
@@ -489,7 +498,8 @@ interface FormBuiltInMessageProps extends FormMessageImplProps {
   name: string;
 }
 
-const FormBuiltInMessage = React.forwardRef<FormBuiltInMessageElement, FormBuiltInMessageProps>(
+const FormBuiltInMessage: React.ForwardRefExoticComponent<FormBuiltInMessageProps & React.RefAttributes<FormBuiltInMessageElement>>
+= React.forwardRef<FormBuiltInMessageElement, FormBuiltInMessageProps>(
   (props: ScopedProps<FormBuiltInMessageProps>, forwardedRef) => {
     const { match, forceMatch = false, name, children, ...messageProps } = props;
     const validationContext = useValidationContext(MESSAGE_NAME, messageProps.__scopeForm);
@@ -515,7 +525,7 @@ interface FormCustomMessageProps extends Radix.ComponentPropsWithoutRef<typeof F
   name: string;
 }
 
-const FormCustomMessage = React.forwardRef<FormCustomMessageElement, FormCustomMessageProps>(
+const FormCustomMessage: React.ForwardRefExoticComponent<FormCustomMessageProps & React.RefAttributes<FormCustomMessageElement>> = React.forwardRef<FormCustomMessageElement, FormCustomMessageProps>(
   (props: ScopedProps<FormCustomMessageProps>, forwardedRef) => {
     const { match, forceMatch = false, name, id: idProp, children, ...messageProps } = props;
     const validationContext = useValidationContext(MESSAGE_NAME, messageProps.__scopeForm);
@@ -555,7 +565,8 @@ interface FormMessageImplProps extends PrimitiveSpanProps {
   name: string;
 }
 
-const FormMessageImpl = React.forwardRef<FormMessageImplElement, FormMessageImplProps>(
+const FormMessageImpl: React.ForwardRefExoticComponent<FormMessageImplProps & React.RefAttributes<FormMessageImplElement>>
+= React.forwardRef<FormMessageImplElement, FormMessageImplProps>(
   (props: ScopedProps<FormMessageImplProps>, forwardedRef) => {
     const { __scopeForm, id: idProp, name, ...messageProps } = props;
     const ariaDescriptionContext = useAriaDescriptionContext(MESSAGE_NAME, __scopeForm);
@@ -583,7 +594,7 @@ interface FormValidityStateProps {
   name?: string;
 }
 
-const FormValidityState = (props: ScopedProps<FormValidityStateProps>) => {
+const FormValidityState = (props: ScopedProps<FormValidityStateProps>): React.JSX.Element => {
   const { __scopeForm, name: nameProp, children } = props;
   const validationContext = useValidationContext(VALIDITY_STATE_NAME, __scopeForm);
   const fieldContext = useFormFieldContext(VALIDITY_STATE_NAME, __scopeForm);
@@ -604,7 +615,7 @@ type FormSubmitElement = React.ElementRef<typeof Primitive.button>;
 type PrimitiveButtonProps = Radix.ComponentPropsWithoutRef<typeof Primitive.button>;
 interface FormSubmitProps extends PrimitiveButtonProps {}
 
-const FormSubmit = React.forwardRef<FormSubmitElement, FormSubmitProps>(
+const FormSubmit: React.ForwardRefExoticComponent<FormSubmitProps & React.RefAttributes<FormSubmitElement>> = React.forwardRef<FormSubmitElement, FormSubmitProps>(
   (props: ScopedProps<FormSubmitProps>, forwardedRef) => {
     const { __scopeForm, ...submitProps } = props;
     return <Primitive.button type="submit" {...submitProps} ref={forwardedRef} />;
@@ -624,7 +635,7 @@ type SyncCustomMatcherEntry = { id: string; match: SyncCustomMatcher };
 type AsyncCustomMatcherEntry = { id: string; match: AsyncCustomMatcher };
 type CustomMatcherArgs = [string, FormData];
 
-function validityStateToObject(validity: ValidityState) {
+function validityStateToObject(validity: ValidityState): Record<keyof ValidityState, boolean> {
   const object: any = {};
   for (const key in validity) {
     object[key] = validity[key as ValidityStateKey];
@@ -640,7 +651,7 @@ function isFormControl(element: any): element is { validity: ValidityState } {
   return 'validity' in element;
 }
 
-function isInvalid(control: HTMLElement) {
+function isInvalid(control: HTMLElement): boolean {
   return (
     isFormControl(control) &&
     (control.validity.valid === false || control.getAttribute('aria-invalid') === 'true')
@@ -664,11 +675,11 @@ function isSyncCustomMatcherEntry(entry: CustomMatcherEntry): entry is SyncCusto
   return entry.match.constructor.name === 'Function';
 }
 
-function returnsPromise(func: Function, args: Array<unknown>) {
+function returnsPromise(func: Function, args: Array<unknown>): boolean {
   return func(...args) instanceof Promise;
 }
 
-function hasBuiltInError(validity: ValidityState) {
+function hasBuiltInError(validity: ValidityState): boolean {
   let error = false;
   for (const validityKey in validity) {
     const key = validityKey as ValidityStateKey;
@@ -680,11 +691,11 @@ function hasBuiltInError(validity: ValidityState) {
   return error;
 }
 
-function getValidAttribute(validity: ValidityState | undefined, serverInvalid: boolean) {
+function getValidAttribute(validity: ValidityState | undefined, serverInvalid: boolean): true | undefined {
   if (validity?.valid === true && !serverInvalid) return true;
   return undefined;
 }
-function getInvalidAttribute(validity: ValidityState | undefined, serverInvalid: boolean) {
+function getInvalidAttribute(validity: ValidityState | undefined, serverInvalid: boolean): true | undefined {
   if (validity?.valid === false || serverInvalid) return true;
   return undefined;
 }

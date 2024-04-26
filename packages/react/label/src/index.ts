@@ -2,5 +2,5 @@ export {
   Label,
   //
   Root,
-} from './Label';
-export type { LabelProps } from './Label';
+} from './Label.tsx';
+export type { LabelProps } from './Label.tsx';
