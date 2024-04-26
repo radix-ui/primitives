@@ -1,15 +1,15 @@
 {
     "name": "@radix-ui-fork/react-dismissable-layer",
-    "version": "0.0.5",
+    "version": "0.0.6",
     "exclude": ["**/package.json", "**/*.test.tsx", "**/*.stories.tsx"],
     "imports": {
       "react": "npm:react@^18.2.0",
       "@types/react": "npm:@types/react@^18.2.0",
-      "@radix-ui/react-primitive": "jsr:@radix-ui-fork/react-primitive@0.0.5",
-      "@radix-ui/primitive": "jsr:@radix-ui-fork/primitive@0.0.5",
-      "@radix-ui/react-compose-refs": "jsr:@radix-ui-fork/react-compose-refs@0.0.5",
-      "@radix-ui/react-use-callback-ref": "jsr:@radix-ui-fork/react-use-callback-ref@0.0.5",
-      "@radix-ui/react-use-escape-keydown": "jsr:@radix-ui-fork/react-use-escape-keydown@0.0.5"
+      "@radix-ui/react-primitive": "jsr:@radix-ui-fork/react-primitive@0.0.6",
+      "@radix-ui/primitive": "jsr:@radix-ui-fork/primitive@0.0.6",
+      "@radix-ui/react-compose-refs": "jsr:@radix-ui-fork/react-compose-refs@0.0.6",
+      "@radix-ui/react-use-callback-ref": "jsr:@radix-ui-fork/react-use-callback-ref@0.0.6",
+      "@radix-ui/react-use-escape-keydown": "jsr:@radix-ui-fork/react-use-escape-keydown@0.0.6"
     },
     "exports": {
       ".": "./src/index.ts"

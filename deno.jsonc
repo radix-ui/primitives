@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui-fork/primitives",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "exclude": ["**/package.json", "**/*.test.tsx", "**/*.stories.tsx"],
   "compilerOptions": {
     "noErrorTruncation": true,

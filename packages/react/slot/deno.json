@@ -1,10 +1,10 @@
 {
   "name": "@radix-ui-fork/react-slot",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "imports": {
     "react": "npm:react@^18.2.0",
     "@types/react": "npm:@types/react@^18.2.0",
-    "@radix-ui/react-compose-refs": "jsr:@radix-ui-fork/react-compose-refs@0.0.5"
+    "@radix-ui/react-compose-refs": "jsr:@radix-ui-fork/react-compose-refs@0.0.6"
   },
   "exports": {
     ".": "./src/index.ts"
