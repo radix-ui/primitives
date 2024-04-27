@@ -19,7 +19,10 @@ const Presence: React.FC<PresenceProps> = (props) => {
       : React.Children.only(children)
   ) as React.ReactElement;
 
-  const ref = useComposedRefs(presence.ref, (child as any).ref);
+  // Accessing the ref from props, else fallback to element.ref
+  // https://github.com/facebook/react/pull/28348
+  const childrenRef = child.props.ref ?? (child as any).ref;
+  const ref = useComposedRefs(presence.ref, childrenRef);
   const forceMount = typeof children === 'function';
   return forceMount || presence.isPresent ? React.cloneElement(child, { ref }) : null;
 };
