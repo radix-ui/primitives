@@ -7,10 +7,10 @@ async function build(path) {
   const dist = `${path}/dist`;
 
   const esbuildConfig = {
-    bundle: true,
     entryPoints: [file],
     external: ['@radix-ui/*', 'react-dom', 'react'],
     packages: 'external',
+    bundle: true,
     sourcemap: true,
     splitting: false,
     minify: true,
@@ -28,11 +28,17 @@ async function build(path) {
   });
   console.log(`Built ${path}/dist/index.mjs`);
 
-  // Note: tsup is quite slow when emitting d.ts files
+  // tsup is used to emit d.ts files only (esbuild can't do that).
+  //
+  // Notes:
+  // 1. Emitting d.ts files is super slow for whatever reason.
+  // 2. It could have fully replaced esbuild (as it uses that internally),
+  //    but at the moment its esbuild version is somewhat outdated.
+  //    It’s also harder to configure and esbuild docs are more thorough.
   await tsup.build({
-    dts: { only: true },
     entry: [file],
     format: ['cjs', 'esm'],
+    dts: { only: true },
     outDir: dist,
     silent: true,
     external: [/@radix-ui\/.+/],
