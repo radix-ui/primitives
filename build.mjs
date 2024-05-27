@@ -13,7 +13,6 @@ async function build(path) {
     bundle: true,
     sourcemap: true,
     splitting: false,
-    minify: true,
     target: 'es2022',
     outdir: dist,
   };
