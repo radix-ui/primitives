@@ -18,6 +18,7 @@
     "cypress:dev": "cypress open",
     "dev": "yarn storybook",
     "build-storybook": "storybook build",
+    "build": "node build.mjs",
     "publish:stable": "yarn bump:stable && yarn clean && yarn build && yarn workspaces foreach -pvW --exclude primitives --exclude ssr-testing npm publish --tolerate-republish --access public",
     "publish:next": "yarn bump:next && yarn clean && yarn build && yarn workspaces foreach -pvW --exclude primitives --exclude ssr-testing npm publish --tolerate-republish --access public --tag next",
     "clean": "yarn workspaces foreach -pvW --exclude primitives --exclude ssr-testing run clean",
