@@ -28,7 +28,6 @@
     "version": "yarn version"
   },
   "dependencies": {
-    "@babel/runtime": "^7.13.10",
     "@radix-ui/react-visually-hidden": "workspace:*"
   },
   "peerDependencies": {

@@ -28,7 +28,6 @@
     "version": "yarn version"
   },
   "dependencies": {
-    "@babel/runtime": "^7.13.10",
     "@radix-ui/number": "workspace:*",
     "@radix-ui/primitive": "workspace:*",
     "@radix-ui/react-collection": "workspace:*",
