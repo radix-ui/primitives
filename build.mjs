@@ -11,6 +11,7 @@ async function build(path) {
     entryPoints: [file],
     external: ['@radix-ui/*', 'react-dom', 'react'],
     packages: 'external',
+    sourcemap: true,
     splitting: false,
     target: 'es2022',
     outdir: dist,
@@ -30,7 +31,7 @@ async function build(path) {
   await tsup.build({
     dts: { only: true },
     entry: [file],
-    format: ['cjs'],
+    format: ['cjs', 'esm'],
     outDir: dist,
     silent: true,
     external: [/@radix-ui\/.+/],
