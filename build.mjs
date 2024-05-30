@@ -8,11 +8,10 @@ async function build(path) {
 
   const esbuildConfig = {
     entryPoints: [file],
-    external: ['@radix-ui/*', 'react-dom', 'react'],
+    external: ['@radix-ui/*'],
     packages: 'external',
     bundle: true,
     sourcemap: true,
-    splitting: false,
     target: 'es2022',
     outdir: dist,
   };
