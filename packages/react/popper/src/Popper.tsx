@@ -120,6 +120,7 @@ interface PopperContentProps extends PrimitiveDivProps {
   avoidCollisions?: boolean;
   collisionBoundary?: Boundary | Boundary[];
   collisionPadding?: number | Partial<Record<Side, number>>;
+  collisionStrategy?: 'shift' | 'flip';
   sticky?: 'partial' | 'always';
   hideWhenDetached?: boolean;
   updatePositionStrategy?: 'optimized' | 'always';
@@ -138,6 +139,7 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
       avoidCollisions = true,
       collisionBoundary = [],
       collisionPadding: collisionPaddingProp = 0,
+      collisionStrategy = 'flip',
       sticky = 'partial',
       hideWhenDetached = false,
       updatePositionStrategy = 'optimized',
@@ -190,11 +192,11 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
         avoidCollisions &&
           shift({
             mainAxis: true,
-            crossAxis: false,
+            crossAxis: collisionStrategy === 'shift',
             limiter: sticky === 'partial' ? limitShift() : undefined,
             ...detectOverflowOptions,
           }),
-        avoidCollisions && flip({ ...detectOverflowOptions }),
+        avoidCollisions && collisionStrategy === 'flip' && flip({ ...detectOverflowOptions }),
         size({
           ...detectOverflowOptions,
           apply: ({ elements, rects, availableWidth, availableHeight }) => {
