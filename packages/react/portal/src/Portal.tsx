@@ -1,6 +1,7 @@
 import * as React from 'react';
 import ReactDOM from 'react-dom';
 import { Primitive } from '@radix-ui/react-primitive';
+import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 
 import type * as Radix from '@radix-ui/react-primitive';
 
@@ -16,11 +17,14 @@ interface PortalProps extends PrimitiveDivProps {
   /**
    * An optional container where the portaled content should be appended.
    */
-  container?: HTMLElement | null;
+  container?: Element | null;
 }
 
 const Portal = React.forwardRef<PortalElement, PortalProps>((props, forwardedRef) => {
-  const { container = globalThis?.document?.body, ...portalProps } = props;
+  const { container: containerProp, ...portalProps } = props;
+  const [mounted, setMounted] = React.useState(false);
+  useLayoutEffect(() => setMounted(true), []);
+  const container = containerProp || (mounted && globalThis?.document?.body);
   return container
     ? ReactDOM.createPortal(<Primitive.div {...portalProps} ref={forwardedRef} />, container)
     : null;
