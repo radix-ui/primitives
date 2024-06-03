@@ -1,7 +1,10 @@
 releases:
+  "@radix-ui/react-accessible-icon": patch
   "@radix-ui/react-accordion": patch
   "@radix-ui/react-alert-dialog": patch
   "@radix-ui/react-announce": patch
+  "@radix-ui/react-arrow": patch
+  "@radix-ui/react-aspect-ratio": patch
   "@radix-ui/react-avatar": patch
   "@radix-ui/react-checkbox": patch
   "@radix-ui/react-collapsible": patch
@@ -28,6 +31,7 @@ releases:
   "@radix-ui/react-roving-focus": patch
   "@radix-ui/react-scroll-area": patch
   "@radix-ui/react-select": patch
+  "@radix-ui/react-separator": patch
   "@radix-ui/react-slider": patch
   "@radix-ui/react-switch": patch
   "@radix-ui/react-tabs": patch
@@ -36,6 +40,7 @@ releases:
   "@radix-ui/react-toggle-group": patch
   "@radix-ui/react-toolbar": patch
   "@radix-ui/react-tooltip": patch
+  "@radix-ui/react-visually-hidden": patch
 
 declined:
   - primitives
