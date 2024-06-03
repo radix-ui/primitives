@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-form",
-  "version": "0.0.4-rc.7",
+  "version": "0.1.0-rc.1",
   "license": "MIT",
   "exports": {
     ".": {
