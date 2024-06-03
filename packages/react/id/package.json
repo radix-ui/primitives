@@ -45,7 +45,6 @@
     "url": "https://github.com/radix-ui/primitives/issues"
   },
   "dependencies": {
-    "@babel/runtime": "^7.13.10",
     "@radix-ui/react-use-layout-effect": "workspace:*"
   }
 }

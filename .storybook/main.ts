@@ -17,6 +17,16 @@ const config: StorybookConfig = {
       strictMode: true,
     },
   },
+  swc: () => ({
+    jsc: {
+      transform: {
+        react: {
+          // Do not require importing React into scope to use JSX
+          runtime: 'automatic',
+        },
+      },
+    },
+  }),
 
   // we need to add aliases to webpack so it knows how to follow
   // to the source of the packages rather than the built version (dist)
