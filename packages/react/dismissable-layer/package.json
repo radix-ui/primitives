@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-dismissable-layer",
-  "version": "1.0.6-rc.5",
+  "version": "1.0.6-rc.6",
   "license": "MIT",
   "exports": {
     ".": {
