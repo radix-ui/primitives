@@ -12,6 +12,7 @@ async function build(path) {
     packages: 'external',
     bundle: true,
     sourcemap: true,
+    format: 'cjs',
     target: 'es2022',
     outdir: dist,
   };
