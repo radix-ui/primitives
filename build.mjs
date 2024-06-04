@@ -34,15 +34,15 @@ async function build(path) {
   // 2. It could have fully replaced esbuild (as it uses that internally),
   //    but at the moment its esbuild version is somewhat outdated.
   //    It’s also harder to configure and esbuild docs are more thorough.
-  await tsup.build({
-    entry: [file],
-    format: ['cjs', 'esm'],
-    dts: { only: true },
-    outDir: dist,
-    silent: true,
-    external: [/@radix-ui\/.+/],
-  });
-  console.log(`Built ${path}/dist/index.d.ts`);
+  // await tsup.build({
+  //   entry: [file],
+  //   format: ['cjs', 'esm'],
+  //   dts: { only: true },
+  //   outDir: dist,
+  //   silent: true,
+  //   external: [/@radix-ui\/.+/],
+  // });
+  // console.log(`Built ${path}/dist/index.d.ts`);
 }
 
 globSync('packages/*/*').forEach(build);
