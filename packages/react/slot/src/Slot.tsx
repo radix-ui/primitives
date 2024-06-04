@@ -61,9 +61,12 @@ const SlotClone = React.forwardRef<any, SlotCloneProps>((props, forwardedRef) =>
   const { children, ...slotProps } = props;
 
   if (React.isValidElement(children)) {
+    // Accessing the ref from props, else fallback to element.ref
+    // https://github.com/facebook/react/pull/28348
+    const childrenRef = children.props.ref ?? (children as any).ref;
     return React.cloneElement(children, {
       ...mergeProps(slotProps, children.props),
-      ref: forwardedRef ? composeRefs(forwardedRef, (children as any).ref) : (children as any).ref,
+      ref: forwardedRef ? composeRefs(forwardedRef, childrenRef) : childrenRef,
     });
   }
 
