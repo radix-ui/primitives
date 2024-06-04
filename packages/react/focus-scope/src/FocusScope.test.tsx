@@ -35,21 +35,27 @@ describe('FocusScope', () => {
     });
 
     it('should focus the next element in the scope on tab', () => {
-      tabbableFirst.focus();
-      userEvent.tab();
-      waitFor(() => expect(tabbableSecond).toHaveFocus());
+      React.act(() => {
+        tabbableFirst.focus();
+        userEvent.tab();
+        waitFor(() => expect(tabbableSecond).toHaveFocus());
+      });
     });
 
     it('should focus the last element in the scope on shift+tab from the first element in scope', () => {
-      tabbableFirst.focus();
-      userEvent.tab({ shift: true });
-      waitFor(() => expect(tabbableLast).toHaveFocus());
+      React.act(() => {
+        tabbableFirst.focus();
+        userEvent.tab({ shift: true });
+        waitFor(() => expect(tabbableLast).toHaveFocus());
+      });
     });
 
     it('should focus the first element in scope on tab from the last element in scope', async () => {
-      tabbableLast.focus();
-      userEvent.tab();
-      waitFor(() => expect(tabbableFirst).toHaveFocus());
+      React.act(() => {
+        tabbableLast.focus();
+        userEvent.tab();
+        waitFor(() => expect(tabbableFirst).toHaveFocus());
+      });
     });
   });
 
@@ -77,15 +83,19 @@ describe('FocusScope', () => {
     });
 
     it('should skip the element with a negative tabindex on tab', () => {
-      tabbableLast.focus();
-      userEvent.tab();
-      waitFor(() => expect(tabbableSecond).toHaveFocus());
+      React.act(() => {
+        tabbableLast.focus();
+        userEvent.tab();
+        waitFor(() => expect(tabbableSecond).toHaveFocus());
+      });
     });
 
     it('should skip the element with a negative tabindex on shift+tab', () => {
-      tabbableSecond.focus();
-      userEvent.tab({ shift: true });
-      waitFor(() => expect(tabbableLast).toHaveFocus());
+      React.act(() => {
+        tabbableSecond.focus();
+        userEvent.tab({ shift: true });
+        waitFor(() => expect(tabbableLast).toHaveFocus());
+      });
     });
   });
 
@@ -109,10 +119,12 @@ describe('FocusScope', () => {
 
     it('should properly blur the last element in the scope before cycling back', async () => {
       // Tab back and then tab forward to cycle through the scope
-      tabbableFirst.focus();
-      userEvent.tab({ shift: true });
-      userEvent.tab();
-      waitFor(() => expect(handleLastFocusableElementBlur).toHaveBeenCalledTimes(1));
+      React.act(() => {
+        tabbableFirst.focus();
+        userEvent.tab({ shift: true });
+        userEvent.tab();
+        waitFor(() => expect(handleLastFocusableElementBlur).toHaveBeenCalledTimes(1));
+      });
     });
   });
 });

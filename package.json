@@ -40,7 +40,7 @@
     "@storybook/test": "^7.6.17",
     "@testing-library/cypress": "^7.0.6",
     "@testing-library/jest-dom": "^5.16.4",
-    "@testing-library/react": "^13.0.1",
+    "@testing-library/react": "^15.0.7",
     "@testing-library/user-event": "^14.1.0",
     "@types/eslint": "^7.28.0",
     "@types/fs-extra": "^11",
