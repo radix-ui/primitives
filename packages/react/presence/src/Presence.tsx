@@ -144,7 +144,7 @@ function getAnimationName(styles?: CSSStyleDeclaration) {
 }
 
 // Before React 19 accessing `element.props.ref` will throw a warning and suggest using `element.ref`
-// After React 19 accessing `element.ref` does the opposite, throwing a warning and suggesting to use `element.props.ref`
+// After React 19 accessing `element.ref` does the opposite
 // https://github.com/facebook/react/pull/28348
 //
 // Access the ref using the method that doesn't yield a warning
