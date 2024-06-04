@@ -560,108 +560,112 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
         )}
 
         <ToastInteractiveProvider scope={__scopeToast} onClose={handleClose}>
-          {ReactDOM.createPortal(
-            <Collection.ItemSlot scope={__scopeToast}>
-              <DismissableLayer.Root
-                asChild
-                onEscapeKeyDown={composeEventHandlers(onEscapeKeyDown, () => {
-                  if (!context.isFocusedToastEscapeKeyDownRef.current) handleClose();
-                  context.isFocusedToastEscapeKeyDownRef.current = false;
-                })}
-              >
-                <Primitive.li
-                  // Ensure toasts are announced as status list or status when focused
-                  role="status"
-                  aria-live="off"
-                  aria-atomic
-                  tabIndex={0}
-                  data-state={open ? 'open' : 'closed'}
-                  data-swipe-direction={context.swipeDirection}
-                  {...toastProps}
-                  ref={composedRefs}
-                  style={{ userSelect: 'none', touchAction: 'none', ...props.style }}
-                  onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
-                    if (event.key !== 'Escape') return;
-                    onEscapeKeyDown?.(event.nativeEvent);
-                    if (!event.nativeEvent.defaultPrevented) {
-                      context.isFocusedToastEscapeKeyDownRef.current = true;
-                      handleClose();
-                    }
+          <>
+            {ReactDOM.createPortal(
+              <Collection.ItemSlot scope={__scopeToast}>
+                <DismissableLayer.Root
+                  asChild
+                  onEscapeKeyDown={composeEventHandlers(onEscapeKeyDown, () => {
+                    if (!context.isFocusedToastEscapeKeyDownRef.current) handleClose();
+                    context.isFocusedToastEscapeKeyDownRef.current = false;
                   })}
-                  onPointerDown={composeEventHandlers(props.onPointerDown, (event) => {
-                    if (event.button !== 0) return;
-                    pointerStartRef.current = { x: event.clientX, y: event.clientY };
-                  })}
-                  onPointerMove={composeEventHandlers(props.onPointerMove, (event) => {
-                    if (!pointerStartRef.current) return;
-                    const x = event.clientX - pointerStartRef.current.x;
-                    const y = event.clientY - pointerStartRef.current.y;
-                    const hasSwipeMoveStarted = Boolean(swipeDeltaRef.current);
-                    const isHorizontalSwipe = ['left', 'right'].includes(context.swipeDirection);
-                    const clamp = ['left', 'up'].includes(context.swipeDirection)
-                      ? Math.min
-                      : Math.max;
-                    const clampedX = isHorizontalSwipe ? clamp(0, x) : 0;
-                    const clampedY = !isHorizontalSwipe ? clamp(0, y) : 0;
-                    const moveStartBuffer = event.pointerType === 'touch' ? 10 : 2;
-                    const delta = { x: clampedX, y: clampedY };
-                    const eventDetail = { originalEvent: event, delta };
-                    if (hasSwipeMoveStarted) {
-                      swipeDeltaRef.current = delta;
-                      handleAndDispatchCustomEvent(TOAST_SWIPE_MOVE, onSwipeMove, eventDetail, {
-                        discrete: false,
-                      });
-                    } else if (isDeltaInDirection(delta, context.swipeDirection, moveStartBuffer)) {
-                      swipeDeltaRef.current = delta;
-                      handleAndDispatchCustomEvent(TOAST_SWIPE_START, onSwipeStart, eventDetail, {
-                        discrete: false,
-                      });
-                      (event.target as HTMLElement).setPointerCapture(event.pointerId);
-                    } else if (Math.abs(x) > moveStartBuffer || Math.abs(y) > moveStartBuffer) {
-                      // User is swiping in wrong direction so we disable swipe gesture
-                      // for the current pointer down interaction
-                      pointerStartRef.current = null;
-                    }
-                  })}
-                  onPointerUp={composeEventHandlers(props.onPointerUp, (event) => {
-                    const delta = swipeDeltaRef.current;
-                    const target = event.target as HTMLElement;
-                    if (target.hasPointerCapture(event.pointerId)) {
-                      target.releasePointerCapture(event.pointerId);
-                    }
-                    swipeDeltaRef.current = null;
-                    pointerStartRef.current = null;
-                    if (delta) {
-                      const toast = event.currentTarget;
-                      const eventDetail = { originalEvent: event, delta };
-                      if (
-                        isDeltaInDirection(delta, context.swipeDirection, context.swipeThreshold)
-                      ) {
-                        handleAndDispatchCustomEvent(TOAST_SWIPE_END, onSwipeEnd, eventDetail, {
-                          discrete: true,
-                        });
-                      } else {
-                        handleAndDispatchCustomEvent(
-                          TOAST_SWIPE_CANCEL,
-                          onSwipeCancel,
-                          eventDetail,
-                          {
-                            discrete: true,
-                          }
-                        );
+                >
+                  <Primitive.li
+                    // Ensure toasts are announced as status list or status when focused
+                    role="status"
+                    aria-live="off"
+                    aria-atomic
+                    tabIndex={0}
+                    data-state={open ? 'open' : 'closed'}
+                    data-swipe-direction={context.swipeDirection}
+                    {...toastProps}
+                    ref={composedRefs}
+                    style={{ userSelect: 'none', touchAction: 'none', ...props.style }}
+                    onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
+                      if (event.key !== 'Escape') return;
+                      onEscapeKeyDown?.(event.nativeEvent);
+                      if (!event.nativeEvent.defaultPrevented) {
+                        context.isFocusedToastEscapeKeyDownRef.current = true;
+                        handleClose();
                       }
-                      // Prevent click event from triggering on items within the toast when
-                      // pointer up is part of a swipe gesture
-                      toast.addEventListener('click', (event) => event.preventDefault(), {
-                        once: true,
-                      });
-                    }
-                  })}
-                />
-              </DismissableLayer.Root>
-            </Collection.ItemSlot>,
-            context.viewport
-          )}
+                    })}
+                    onPointerDown={composeEventHandlers(props.onPointerDown, (event) => {
+                      if (event.button !== 0) return;
+                      pointerStartRef.current = { x: event.clientX, y: event.clientY };
+                    })}
+                    onPointerMove={composeEventHandlers(props.onPointerMove, (event) => {
+                      if (!pointerStartRef.current) return;
+                      const x = event.clientX - pointerStartRef.current.x;
+                      const y = event.clientY - pointerStartRef.current.y;
+                      const hasSwipeMoveStarted = Boolean(swipeDeltaRef.current);
+                      const isHorizontalSwipe = ['left', 'right'].includes(context.swipeDirection);
+                      const clamp = ['left', 'up'].includes(context.swipeDirection)
+                        ? Math.min
+                        : Math.max;
+                      const clampedX = isHorizontalSwipe ? clamp(0, x) : 0;
+                      const clampedY = !isHorizontalSwipe ? clamp(0, y) : 0;
+                      const moveStartBuffer = event.pointerType === 'touch' ? 10 : 2;
+                      const delta = { x: clampedX, y: clampedY };
+                      const eventDetail = { originalEvent: event, delta };
+                      if (hasSwipeMoveStarted) {
+                        swipeDeltaRef.current = delta;
+                        handleAndDispatchCustomEvent(TOAST_SWIPE_MOVE, onSwipeMove, eventDetail, {
+                          discrete: false,
+                        });
+                      } else if (
+                        isDeltaInDirection(delta, context.swipeDirection, moveStartBuffer)
+                      ) {
+                        swipeDeltaRef.current = delta;
+                        handleAndDispatchCustomEvent(TOAST_SWIPE_START, onSwipeStart, eventDetail, {
+                          discrete: false,
+                        });
+                        (event.target as HTMLElement).setPointerCapture(event.pointerId);
+                      } else if (Math.abs(x) > moveStartBuffer || Math.abs(y) > moveStartBuffer) {
+                        // User is swiping in wrong direction so we disable swipe gesture
+                        // for the current pointer down interaction
+                        pointerStartRef.current = null;
+                      }
+                    })}
+                    onPointerUp={composeEventHandlers(props.onPointerUp, (event) => {
+                      const delta = swipeDeltaRef.current;
+                      const target = event.target as HTMLElement;
+                      if (target.hasPointerCapture(event.pointerId)) {
+                        target.releasePointerCapture(event.pointerId);
+                      }
+                      swipeDeltaRef.current = null;
+                      pointerStartRef.current = null;
+                      if (delta) {
+                        const toast = event.currentTarget;
+                        const eventDetail = { originalEvent: event, delta };
+                        if (
+                          isDeltaInDirection(delta, context.swipeDirection, context.swipeThreshold)
+                        ) {
+                          handleAndDispatchCustomEvent(TOAST_SWIPE_END, onSwipeEnd, eventDetail, {
+                            discrete: true,
+                          });
+                        } else {
+                          handleAndDispatchCustomEvent(
+                            TOAST_SWIPE_CANCEL,
+                            onSwipeCancel,
+                            eventDetail,
+                            {
+                              discrete: true,
+                            }
+                          );
+                        }
+                        // Prevent click event from triggering on items within the toast when
+                        // pointer up is part of a swipe gesture
+                        toast.addEventListener('click', (event) => event.preventDefault(), {
+                          once: true,
+                        });
+                      }
+                    })}
+                  />
+                </DismissableLayer.Root>
+              </Collection.ItemSlot>,
+              context.viewport
+            )}
+          </>
         </ToastInteractiveProvider>
       </>
     );

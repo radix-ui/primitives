@@ -405,16 +405,20 @@ const SelectContent = React.forwardRef<SelectContentElement, SelectContentProps>
 
     if (!context.open) {
       const frag = fragment as Element | undefined;
-      return frag
-        ? ReactDOM.createPortal(
-            <SelectContentProvider scope={props.__scopeSelect}>
-              <Collection.Slot scope={props.__scopeSelect}>
-                <div>{props.children}</div>
-              </Collection.Slot>
-            </SelectContentProvider>,
-            frag
-          )
-        : null;
+      return (
+        <>
+          {frag
+            ? ReactDOM.createPortal(
+                <SelectContentProvider scope={props.__scopeSelect}>
+                  <Collection.Slot scope={props.__scopeSelect}>
+                    <div>{props.children}</div>
+                  </Collection.Slot>
+                </SelectContentProvider>,
+                frag
+              )
+            : null}
+        </>
+      );
     }
 
     return <SelectContentImpl {...props} ref={forwardedRef} />;

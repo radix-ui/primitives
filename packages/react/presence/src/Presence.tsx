@@ -152,7 +152,7 @@ function getElementRef(element: React.ReactElement) {
   // Pre React 19 there's a getter on `element.props.ref` that throws a warning when attempting to access it.
   // This is safe to rely on. (As in... obviously, old React versions won't change).
   // https://github.com/facebook/react/blob/408258268edb5acdfdbf77bc6e0b0dc6396c0e6f/packages/react/src/jsx/ReactJSXElement.js#L89-L99
-  const getter = Object.getOwnPropertyDescriptor(element.props, 'ref')?.get;
+  const getter = Object.getOwnPropertyDescriptor(element.props, 'ref')?.get as any;
   const hasPropWarning = getter && 'isReactWarning' in getter && getter.isReactWarning;
 
   if (hasPropWarning) {

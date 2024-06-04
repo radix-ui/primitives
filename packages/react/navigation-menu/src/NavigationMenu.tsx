@@ -652,14 +652,18 @@ const NavigationMenuIndicator = React.forwardRef<
   const context = useNavigationMenuContext(INDICATOR_NAME, props.__scopeNavigationMenu);
   const isVisible = Boolean(context.value);
 
-  return context.indicatorTrack
-    ? ReactDOM.createPortal(
-        <Presence present={forceMount || isVisible}>
-          <NavigationMenuIndicatorImpl {...indicatorProps} ref={forwardedRef} />
-        </Presence>,
-        context.indicatorTrack
-      )
-    : null;
+  return (
+    <>
+      {context.indicatorTrack
+        ? ReactDOM.createPortal(
+            <Presence present={forceMount || isVisible}>
+              <NavigationMenuIndicatorImpl {...indicatorProps} ref={forwardedRef} />
+            </Presence>,
+            context.indicatorTrack
+          )
+        : null}
+    </>
+  );
 });
 
 NavigationMenuIndicator.displayName = INDICATOR_NAME;

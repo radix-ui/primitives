@@ -171,7 +171,7 @@ const Announce = React.forwardRef<AnnounceElement, AnnounceProps>((props, forwar
       </Primitive.div>
 
       {/* portal into live region for screen reader announcements */}
-      {region && ReactDOM.createPortal(<div>{children}</div>, region)}
+      <>{region && ReactDOM.createPortal(<div>{children}</div>, region)}</>
     </React.Fragment>
   );
 });
