@@ -5,7 +5,7 @@ __metadata:
   version: 8
   cacheKey: 10
 
-"@adobe/css-tools@npm:^4.0.1, @adobe/css-tools@npm:^4.3.2":
+"@adobe/css-tools@npm:^4.3.2":
   version: 4.3.3
   resolution: "@adobe/css-tools@npm:4.3.3"
   checksum: 10/0e77057efb4e18182560855503066b75edca98671be327d3f8a7ae89ec3da6821e693114b55225909fca00d7e7ed8422f3d79d71fe95dd4d5df1f2026a9fda02
@@ -1497,7 +1497,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.10.2, @babel/runtime@npm:^7.10.3, @babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.13.10, @babel/runtime@npm:^7.17.8, @babel/runtime@npm:^7.23.2, @babel/runtime@npm:^7.8.4, @babel/runtime@npm:^7.9.2":
+"@babel/runtime@npm:^7.10.2, @babel/runtime@npm:^7.10.3, @babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.13.10, @babel/runtime@npm:^7.14.6, @babel/runtime@npm:^7.17.8, @babel/runtime@npm:^7.23.2, @babel/runtime@npm:^7.8.4, @babel/runtime@npm:^7.9.2":
   version: 7.24.6
   resolution: "@babel/runtime@npm:7.24.6"
   dependencies:
@@ -5907,19 +5907,35 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@testing-library/cypress@npm:^7.0.6":
-  version: 7.0.7
-  resolution: "@testing-library/cypress@npm:7.0.7"
+"@testing-library/cypress@npm:^10.0.2":
+  version: 10.0.2
+  resolution: "@testing-library/cypress@npm:10.0.2"
   dependencies:
-    "@babel/runtime": "npm:^7.12.5"
-    "@testing-library/dom": "npm:^7.29.6"
+    "@babel/runtime": "npm:^7.14.6"
+    "@testing-library/dom": "npm:^10.1.0"
   peerDependencies:
-    cypress: ^2.1.0 || ^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0
-  checksum: 10/c9ed1e18d36b493bc708f3abc47094c71ef4bbb190a8cb2392769a564352ade0206a2dca77d11a7c183ea1b0956d5b2f9a56a933d6166537e0a90cbcf9f8b300
+    cypress: ^12.0.0 || ^13.0.0
+  checksum: 10/8eaa8c38808350b2adfd75a8b51d28bd862bfa7249188e070ef6022338c6b90f7dc3a9db1f58509bd16e21a17f8409498e12afec852a2807e47f86a170baa0c2
   languageName: node
   linkType: hard
 
-"@testing-library/dom@npm:^7.22.3, @testing-library/dom@npm:^7.29.6":
+"@testing-library/dom@npm:^10.0.0, @testing-library/dom@npm:^10.1.0":
+  version: 10.1.0
+  resolution: "@testing-library/dom@npm:10.1.0"
+  dependencies:
+    "@babel/code-frame": "npm:^7.10.4"
+    "@babel/runtime": "npm:^7.12.5"
+    "@types/aria-query": "npm:^5.0.1"
+    aria-query: "npm:5.3.0"
+    chalk: "npm:^4.1.0"
+    dom-accessibility-api: "npm:^0.5.9"
+    lz-string: "npm:^1.5.0"
+    pretty-format: "npm:^27.0.2"
+  checksum: 10/6d6ef942deedf547180c76d4cc2c43fe8e52a98ef68be6ba7382a43d3b1e1e5696d9c32ae0b2df12c92ea50023187d132ad2542fc118ba4b900f149e97d019e0
+  languageName: node
+  linkType: hard
+
+"@testing-library/dom@npm:^7.22.3":
   version: 7.31.2
   resolution: "@testing-library/dom@npm:7.31.2"
   dependencies:
@@ -5932,22 +5948,6 @@ __metadata:
     lz-string: "npm:^1.4.4"
     pretty-format: "npm:^26.6.2"
   checksum: 10/5082aaf14c80df529738d4ee3e85170371236162ce908430516ab6c9c581ea31e9ac9b87fdc9a8d298f98956c683b2068b029fcfdb5785ab7247348a6eab3854
-  languageName: node
-  linkType: hard
-
-"@testing-library/dom@npm:^8.5.0":
-  version: 8.20.1
-  resolution: "@testing-library/dom@npm:8.20.1"
-  dependencies:
-    "@babel/code-frame": "npm:^7.10.4"
-    "@babel/runtime": "npm:^7.12.5"
-    "@types/aria-query": "npm:^5.0.1"
-    aria-query: "npm:5.1.3"
-    chalk: "npm:^4.1.0"
-    dom-accessibility-api: "npm:^0.5.9"
-    lz-string: "npm:^1.5.0"
-    pretty-format: "npm:^27.0.2"
-  checksum: 10/6c7a92fcc89931ef62a9a92dacec09b3e5ee5c3aba2171aa8de6c7504927b7c9364d73d2ed87b72447d6783108c1c92c207d16f788de64c69bc97059d7105e3c
   languageName: node
   linkType: hard
 
@@ -5967,24 +5967,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@testing-library/jest-dom@npm:^5.16.4":
-  version: 5.17.0
-  resolution: "@testing-library/jest-dom@npm:5.17.0"
-  dependencies:
-    "@adobe/css-tools": "npm:^4.0.1"
-    "@babel/runtime": "npm:^7.9.2"
-    "@types/testing-library__jest-dom": "npm:^5.9.1"
-    aria-query: "npm:^5.0.0"
-    chalk: "npm:^3.0.0"
-    css.escape: "npm:^1.5.1"
-    dom-accessibility-api: "npm:^0.5.6"
-    lodash: "npm:^4.17.15"
-    redent: "npm:^3.0.0"
-  checksum: 10/5a75f2094f935d2da58ea1d2b3d0c9f58dc0bca2592f2ca8125176596b4adba88b742b7553ef228e2085eadcb498ce6cece3e78402e34e6af7b6bc26bf0a0baa
-  languageName: node
-  linkType: hard
-
-"@testing-library/jest-dom@npm:^6.1.3":
+"@testing-library/jest-dom@npm:^6.1.3, @testing-library/jest-dom@npm:^6.4.5":
   version: 6.4.5
   resolution: "@testing-library/jest-dom@npm:6.4.5"
   dependencies:
@@ -6030,17 +6013,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@testing-library/react@npm:^13.0.1":
-  version: 13.4.0
-  resolution: "@testing-library/react@npm:13.4.0"
+"@testing-library/react@npm:^15.0.7":
+  version: 15.0.7
+  resolution: "@testing-library/react@npm:15.0.7"
   dependencies:
     "@babel/runtime": "npm:^7.12.5"
-    "@testing-library/dom": "npm:^8.5.0"
+    "@testing-library/dom": "npm:^10.0.0"
     "@types/react-dom": "npm:^18.0.0"
   peerDependencies:
+    "@types/react": ^18.0.0
     react: ^18.0.0
     react-dom: ^18.0.0
-  checksum: 10/788249aad25a0161b197b7d387011e2578701ab18451b69a987eb073b2d24eb1041f242581c3dd4800f5abcf4f11811f5f6b1e682a45f1840a08fdde3ce559b7
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+  checksum: 10/a9342ad09b019b0f99688fb50265899bc93adfe23c22aa6743fd920635b43fdc66877e66d95f240923aa6f7d3aa360837f5b053fb363a31975788974dff7bc93
   languageName: node
   linkType: hard
 
@@ -6053,7 +6040,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@testing-library/user-event@npm:^14.1.0":
+"@testing-library/user-event@npm:^14.5.2":
   version: 14.5.2
   resolution: "@testing-library/user-event@npm:14.5.2"
   peerDependencies:
@@ -6592,15 +6579,6 @@ __metadata:
   version: 2.0.3
   resolution: "@types/stack-utils@npm:2.0.3"
   checksum: 10/72576cc1522090fe497337c2b99d9838e320659ac57fa5560fcbdcbafcf5d0216c6b3a0a8a4ee4fdb3b1f5e3420aa4f6223ab57b82fef3578bec3206425c6cf5
-  languageName: node
-  linkType: hard
-
-"@types/testing-library__jest-dom@npm:^5.9.1":
-  version: 5.14.9
-  resolution: "@types/testing-library__jest-dom@npm:5.14.9"
-  dependencies:
-    "@types/jest": "npm:*"
-  checksum: 10/e257de95a4a9385cc09ae4ca3396d23ad4b5cfb8e021a1ca3454c424c34636075f6fe151b2f881f79bf9d497aa04fbfae62449b135f293e8d2d614fa899898a8
   languageName: node
   linkType: hard
 
@@ -7331,6 +7309,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"aria-query@npm:5.3.0, aria-query@npm:^5.0.0, aria-query@npm:^5.3.0":
+  version: 5.3.0
+  resolution: "aria-query@npm:5.3.0"
+  dependencies:
+    dequal: "npm:^2.0.3"
+  checksum: 10/c3e1ed127cc6886fea4732e97dd6d3c3938e64180803acfb9df8955517c4943760746ffaf4020ce8f7ffaa7556a3b5f85c3769a1f5ca74a1288e02d042f9ae4e
+  languageName: node
+  linkType: hard
+
 "aria-query@npm:^4.2.2":
   version: 4.2.2
   resolution: "aria-query@npm:4.2.2"
@@ -7338,15 +7325,6 @@ __metadata:
     "@babel/runtime": "npm:^7.10.2"
     "@babel/runtime-corejs3": "npm:^7.10.2"
   checksum: 10/c9f0b85c1f948fe76c60bd1e08fc61a73c9d12cae046723d31b1dd0e029a1b23f8d3badea651453475fa3ff974c801fb96065ff58a1344d9bd7eef992096116e
-  languageName: node
-  linkType: hard
-
-"aria-query@npm:^5.0.0, aria-query@npm:^5.3.0":
-  version: 5.3.0
-  resolution: "aria-query@npm:5.3.0"
-  dependencies:
-    dequal: "npm:^2.0.3"
-  checksum: 10/c3e1ed127cc6886fea4732e97dd6d3c3938e64180803acfb9df8955517c4943760746ffaf4020ce8f7ffaa7556a3b5f85c3769a1f5ca74a1288e02d042f9ae4e
   languageName: node
   linkType: hard
 
@@ -15127,10 +15105,10 @@ __metadata:
     "@storybook/react": "npm:^7.6.17"
     "@storybook/react-webpack5": "npm:^7.6.17"
     "@storybook/test": "npm:^7.6.17"
-    "@testing-library/cypress": "npm:^7.0.6"
-    "@testing-library/jest-dom": "npm:^5.16.4"
-    "@testing-library/react": "npm:^13.0.1"
-    "@testing-library/user-event": "npm:^14.1.0"
+    "@testing-library/cypress": "npm:^10.0.2"
+    "@testing-library/jest-dom": "npm:^6.4.5"
+    "@testing-library/react": "npm:^15.0.7"
+    "@testing-library/user-event": "npm:^14.5.2"
     "@types/eslint": "npm:^7.28.0"
     "@types/fs-extra": "npm:^11"
     "@types/jest": "npm:^27.4.1"
