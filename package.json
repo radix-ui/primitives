@@ -28,8 +28,8 @@
     "bump:check": "yarn version check"
   },
   "dependencies": {
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0"
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
     "@stitches/core": "^1.2.8",
@@ -46,9 +46,8 @@
     "@types/fs-extra": "^11",
     "@types/jest": "^27.4.1",
     "@types/jest-axe": "^3.5.3",
-    "@types/react": "^18.0.5",
-    "@types/react-dom": "^18.0.0",
-    "@types/react-test-renderer": "^18.0.0",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
     "@typescript-eslint/eslint-plugin": "^5.19.0",
     "@typescript-eslint/parser": "^5.19.0",
     "cypress": "^8.0.0",
@@ -72,7 +71,6 @@
     "lint-staged": "^10.5.3",
     "prettier": "^2.0.5",
     "pretty-quick": "^2.0.1",
-    "react-test-renderer": "^18.0.0",
     "replace-in-files": "^3.0.0",
     "start-server-and-test": "^1.12.5",
     "storybook": "^7.6.17",
