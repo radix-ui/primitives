@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
@@ -12,9 +11,10 @@ import { Primitive } from '@radix-ui/react-primitive';
 import { Slottable } from '@radix-ui/react-slot';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import * as VisuallyHiddenPrimitive from '@radix-ui/react-visually-hidden';
+import * as React from 'react';
 
-import type * as Radix from '@radix-ui/react-primitive';
 import type { Scope } from '@radix-ui/react-context';
+import type * as Radix from '@radix-ui/react-primitive';
 
 type ScopedProps<P = {}> = P & { __scopeTooltip?: Scope };
 const [createTooltipContext, createTooltipScope] = createContextScope('Tooltip', [
@@ -548,12 +548,18 @@ const TooltipContentImpl = React.forwardRef<TooltipContentImplElement, TooltipCo
             },
           }}
         >
-          <Slottable>{children}</Slottable>
-          <VisuallyHiddenContentContextProvider scope={__scopeTooltip} isInside={true}>
-            <VisuallyHiddenPrimitive.Root id={context.contentId} role="tooltip">
-              {ariaLabel || children}
-            </VisuallyHiddenPrimitive.Root>
-          </VisuallyHiddenContentContextProvider>
+          <Slottable child={children}>
+            {(child) => (
+              <>
+                {child}
+                <VisuallyHiddenContentContextProvider scope={__scopeTooltip} isInside={true}>
+                  <VisuallyHiddenPrimitive.Root id={context.contentId} role="tooltip">
+                    {ariaLabel || children}
+                  </VisuallyHiddenPrimitive.Root>
+                </VisuallyHiddenContentContextProvider>
+              </>
+            )}
+          </Slottable>
         </PopperPrimitive.Content>
       </DismissableLayer>
     );
@@ -738,26 +744,26 @@ const Content = TooltipContent;
 const Arrow = TooltipArrow;
 
 export {
-  createTooltipScope,
-  //
-  TooltipProvider,
-  Tooltip,
-  TooltipTrigger,
-  TooltipPortal,
-  TooltipContent,
-  TooltipArrow,
+  Arrow,
+  Content,
+  Portal,
   //
   Provider,
   Root,
+  Tooltip,
+  TooltipArrow,
+  TooltipContent,
+  TooltipPortal,
+  //
+  TooltipProvider,
+  TooltipTrigger,
   Trigger,
-  Portal,
-  Content,
-  Arrow,
+  createTooltipScope,
 };
 export type {
+  TooltipArrowProps,
+  TooltipContentProps,
+  TooltipPortalProps,
   TooltipProps,
   TooltipTriggerProps,
-  TooltipPortalProps,
-  TooltipContentProps,
-  TooltipArrowProps,
 };
