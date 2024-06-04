@@ -19,10 +19,7 @@ const Presence: React.FC<PresenceProps> = (props) => {
       : React.Children.only(children)
   ) as React.ReactElement;
 
-  // Accessing the ref from props, else fallback to element.ref
-  // https://github.com/facebook/react/pull/28348
-  const childrenRef = child.props.ref ?? (child as any).ref;
-  const ref = useComposedRefs(presence.ref, childrenRef);
+  const ref = useComposedRefs(presence.ref, getElementRef(child));
   const forceMount = typeof children === 'function';
   return forceMount || presence.isPresent ? React.cloneElement(child, { ref }) : null;
 };
@@ -144,6 +141,25 @@ function usePresence(present: boolean) {
 
 function getAnimationName(styles?: CSSStyleDeclaration) {
   return styles?.animationName || 'none';
+}
+
+// Before React 19 accessing `element.props.ref` will throw a warning and suggest using `element.ref`
+// After React 19 accessing `element.ref` does the opposite, throwing a warning and suggesting to use `element.props.ref`
+// https://github.com/facebook/react/pull/28348
+//
+// Access the ref using the method that doesn't yield a warning
+function getElementRef(element: React.ReactElement) {
+  // Pre React 19 there's a getter on `element.props.ref` that throws a warning when attempting to access it.
+  // This is safe to rely on. (As in... obviously, old React versions won't change).
+  // https://github.com/facebook/react/blob/408258268edb5acdfdbf77bc6e0b0dc6396c0e6f/packages/react/src/jsx/ReactJSXElement.js#L89-L99
+  const getter = Object.getOwnPropertyDescriptor(element.props, 'ref')?.get;
+  const hasPropWarning = getter && 'isReactWarning' in getter && getter.isReactWarning;
+
+  if (hasPropWarning) {
+    return (element as any).ref;
+  }
+
+  return element.props.ref;
 }
 
 export { Presence };
