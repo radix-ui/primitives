@@ -2,7 +2,6 @@ import * as React from 'react';
 import { createContextScope } from '@radix-ui/react-context';
 import { Primitive } from '@radix-ui/react-primitive';
 
-import type * as Radix from '@radix-ui/react-primitive';
 import type { Scope } from '@radix-ui/react-context';
 
 /* -------------------------------------------------------------------------------------------------
@@ -21,7 +20,7 @@ const [ProgressProvider, useProgressContext] =
   createProgressContext<ProgressContextValue>(PROGRESS_NAME);
 
 type ProgressElement = React.ElementRef<typeof Primitive.div>;
-type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
+type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface ProgressProps extends PrimitiveDivProps {
   value?: number | null | undefined;
   max?: number;

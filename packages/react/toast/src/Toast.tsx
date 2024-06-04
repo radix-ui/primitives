@@ -13,7 +13,6 @@ import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 
-import type * as Radix from '@radix-ui/react-primitive';
 import type { Scope } from '@radix-ui/react-context';
 
 /* -------------------------------------------------------------------------------------------------
@@ -122,7 +121,7 @@ const VIEWPORT_PAUSE = 'toast.viewportPause';
 const VIEWPORT_RESUME = 'toast.viewportResume';
 
 type ToastViewportElement = React.ElementRef<typeof Primitive.ol>;
-type PrimitiveOrderedListProps = Radix.ComponentPropsWithoutRef<typeof Primitive.ol>;
+type PrimitiveOrderedListProps = React.ComponentPropsWithoutRef<typeof Primitive.ol>;
 interface ToastViewportProps extends PrimitiveOrderedListProps {
   /**
    * The keys to use as the keyboard shortcut that will move focus to the toast viewport.
@@ -327,7 +326,7 @@ ToastViewport.displayName = VIEWPORT_NAME;
 const FOCUS_PROXY_NAME = 'ToastFocusProxy';
 
 type FocusProxyElement = React.ElementRef<typeof VisuallyHidden>;
-type VisuallyHiddenProps = Radix.ComponentPropsWithoutRef<typeof VisuallyHidden>;
+type VisuallyHiddenProps = React.ComponentPropsWithoutRef<typeof VisuallyHidden>;
 interface FocusProxyProps extends VisuallyHiddenProps {
   onFocusFromOutsideViewport(): void;
 }
@@ -441,9 +440,9 @@ const [ToastInteractiveProvider, useToastInteractiveContext] = createToastContex
 });
 
 type ToastImplElement = React.ElementRef<typeof Primitive.li>;
-type DismissableLayerProps = Radix.ComponentPropsWithoutRef<typeof DismissableLayer.Root>;
+type DismissableLayerProps = React.ComponentPropsWithoutRef<typeof DismissableLayer.Root>;
 type ToastImplPrivateProps = { open: boolean; onClose(): void };
-type PrimitiveListItemProps = Radix.ComponentPropsWithoutRef<typeof Primitive.li>;
+type PrimitiveListItemProps = React.ComponentPropsWithoutRef<typeof Primitive.li>;
 interface ToastImplProps extends ToastImplPrivateProps, PrimitiveListItemProps {
   type?: 'foreground' | 'background';
   /**
@@ -709,7 +708,7 @@ const ToastAnnounce: React.FC<ToastAnnounceProps> = (props: ScopedProps<ToastAnn
 const TITLE_NAME = 'ToastTitle';
 
 type ToastTitleElement = React.ElementRef<typeof Primitive.div>;
-type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
+type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface ToastTitleProps extends PrimitiveDivProps {}
 
 const ToastTitle = React.forwardRef<ToastTitleElement, ToastTitleProps>(
@@ -782,7 +781,7 @@ ToastAction.displayName = ACTION_NAME;
 const CLOSE_NAME = 'ToastClose';
 
 type ToastCloseElement = React.ElementRef<typeof Primitive.button>;
-type PrimitiveButtonProps = Radix.ComponentPropsWithoutRef<typeof Primitive.button>;
+type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
 interface ToastCloseProps extends PrimitiveButtonProps {}
 
 const ToastClose = React.forwardRef<ToastCloseElement, ToastCloseProps>(

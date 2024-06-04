@@ -13,7 +13,6 @@ import { Primitive } from '@radix-ui/react-primitive';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 
 import type { Scope } from '@radix-ui/react-context';
-import type * as Radix from '@radix-ui/react-primitive';
 
 type Direction = 'ltr' | 'rtl';
 
@@ -51,8 +50,8 @@ const [MenubarContextProvider, useMenubarContext] =
   createMenubarContext<MenubarContextValue>(MENUBAR_NAME);
 
 type MenubarElement = React.ElementRef<typeof Primitive.div>;
-type RovingFocusGroupProps = Radix.ComponentPropsWithoutRef<typeof RovingFocusGroup.Root>;
-type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
+type RovingFocusGroupProps = React.ComponentPropsWithoutRef<typeof RovingFocusGroup.Root>;
+type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface MenubarProps extends PrimitiveDivProps {
   value?: string;
   defaultValue?: string;
@@ -203,7 +202,7 @@ MenubarMenu.displayName = MENU_NAME;
 const TRIGGER_NAME = 'MenubarTrigger';
 
 type MenubarTriggerElement = React.ElementRef<typeof Primitive.button>;
-type PrimitiveButtonProps = Radix.ComponentPropsWithoutRef<typeof Primitive.button>;
+type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
 interface MenubarTriggerProps extends PrimitiveButtonProps {}
 
 const MenubarTrigger = React.forwardRef<MenubarTriggerElement, MenubarTriggerProps>(
@@ -304,7 +303,7 @@ MenubarPortal.displayName = PORTAL_NAME;
 const CONTENT_NAME = 'MenubarContent';
 
 type MenubarContentElement = React.ElementRef<typeof MenuPrimitive.Content>;
-type MenuContentProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.Content>;
+type MenuContentProps = React.ComponentPropsWithoutRef<typeof MenuPrimitive.Content>;
 interface MenubarContentProps extends Omit<MenuContentProps, 'onEntryFocus'> {}
 
 const MenubarContent = React.forwardRef<MenubarContentElement, MenubarContentProps>(
@@ -405,7 +404,7 @@ MenubarContent.displayName = CONTENT_NAME;
 const GROUP_NAME = 'MenubarGroup';
 
 type MenubarGroupElement = React.ElementRef<typeof MenuPrimitive.Group>;
-type MenuGroupProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.Group>;
+type MenuGroupProps = React.ComponentPropsWithoutRef<typeof MenuPrimitive.Group>;
 interface MenubarGroupProps extends MenuGroupProps {}
 
 const MenubarGroup = React.forwardRef<MenubarGroupElement, MenubarGroupProps>(
@@ -425,7 +424,7 @@ MenubarGroup.displayName = GROUP_NAME;
 const LABEL_NAME = 'MenubarLabel';
 
 type MenubarLabelElement = React.ElementRef<typeof MenuPrimitive.Label>;
-type MenuLabelProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.Label>;
+type MenuLabelProps = React.ComponentPropsWithoutRef<typeof MenuPrimitive.Label>;
 interface MenubarLabelProps extends MenuLabelProps {}
 
 const MenubarLabel = React.forwardRef<MenubarLabelElement, MenubarLabelProps>(
@@ -445,7 +444,7 @@ MenubarLabel.displayName = LABEL_NAME;
 const ITEM_NAME = 'MenubarItem';
 
 type MenubarItemElement = React.ElementRef<typeof MenuPrimitive.Item>;
-type MenuItemProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.Item>;
+type MenuItemProps = React.ComponentPropsWithoutRef<typeof MenuPrimitive.Item>;
 interface MenubarItemProps extends MenuItemProps {}
 
 const MenubarItem = React.forwardRef<MenubarItemElement, MenubarItemProps>(
@@ -465,7 +464,7 @@ MenubarItem.displayName = ITEM_NAME;
 const CHECKBOX_ITEM_NAME = 'MenubarCheckboxItem';
 
 type MenubarCheckboxItemElement = React.ElementRef<typeof MenuPrimitive.CheckboxItem>;
-type MenuCheckboxItemProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.CheckboxItem>;
+type MenuCheckboxItemProps = React.ComponentPropsWithoutRef<typeof MenuPrimitive.CheckboxItem>;
 interface MenubarCheckboxItemProps extends MenuCheckboxItemProps {}
 
 const MenubarCheckboxItem = React.forwardRef<MenubarCheckboxItemElement, MenubarCheckboxItemProps>(
@@ -485,7 +484,7 @@ MenubarCheckboxItem.displayName = CHECKBOX_ITEM_NAME;
 const RADIO_GROUP_NAME = 'MenubarRadioGroup';
 
 type MenubarRadioGroupElement = React.ElementRef<typeof MenuPrimitive.RadioGroup>;
-type MenuRadioGroupProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.RadioGroup>;
+type MenuRadioGroupProps = React.ComponentPropsWithoutRef<typeof MenuPrimitive.RadioGroup>;
 interface MenubarRadioGroupProps extends MenuRadioGroupProps {}
 
 const MenubarRadioGroup = React.forwardRef<MenubarRadioGroupElement, MenubarRadioGroupProps>(
@@ -505,7 +504,7 @@ MenubarRadioGroup.displayName = RADIO_GROUP_NAME;
 const RADIO_ITEM_NAME = 'MenubarRadioItem';
 
 type MenubarRadioItemElement = React.ElementRef<typeof MenuPrimitive.RadioItem>;
-type MenuRadioItemProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.RadioItem>;
+type MenuRadioItemProps = React.ComponentPropsWithoutRef<typeof MenuPrimitive.RadioItem>;
 interface MenubarRadioItemProps extends MenuRadioItemProps {}
 
 const MenubarRadioItem = React.forwardRef<MenubarRadioItemElement, MenubarRadioItemProps>(
@@ -525,7 +524,7 @@ MenubarRadioItem.displayName = RADIO_ITEM_NAME;
 const INDICATOR_NAME = 'MenubarItemIndicator';
 
 type MenubarItemIndicatorElement = React.ElementRef<typeof MenuPrimitive.ItemIndicator>;
-type MenuItemIndicatorProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.ItemIndicator>;
+type MenuItemIndicatorProps = React.ComponentPropsWithoutRef<typeof MenuPrimitive.ItemIndicator>;
 interface MenubarItemIndicatorProps extends MenuItemIndicatorProps {}
 
 const MenubarItemIndicator = React.forwardRef<
@@ -546,7 +545,7 @@ MenubarItemIndicator.displayName = INDICATOR_NAME;
 const SEPARATOR_NAME = 'MenubarSeparator';
 
 type MenubarSeparatorElement = React.ElementRef<typeof MenuPrimitive.Separator>;
-type MenuSeparatorProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.Separator>;
+type MenuSeparatorProps = React.ComponentPropsWithoutRef<typeof MenuPrimitive.Separator>;
 interface MenubarSeparatorProps extends MenuSeparatorProps {}
 
 const MenubarSeparator = React.forwardRef<MenubarSeparatorElement, MenubarSeparatorProps>(
@@ -566,7 +565,7 @@ MenubarSeparator.displayName = SEPARATOR_NAME;
 const ARROW_NAME = 'MenubarArrow';
 
 type MenubarArrowElement = React.ElementRef<typeof MenuPrimitive.Arrow>;
-type MenuArrowProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.Arrow>;
+type MenuArrowProps = React.ComponentPropsWithoutRef<typeof MenuPrimitive.Arrow>;
 interface MenubarArrowProps extends MenuArrowProps {}
 
 const MenubarArrow = React.forwardRef<MenubarArrowElement, MenubarArrowProps>(
@@ -617,7 +616,7 @@ MenubarSub.displayName = SUB_NAME;
 const SUB_TRIGGER_NAME = 'MenubarSubTrigger';
 
 type MenubarSubTriggerElement = React.ElementRef<typeof MenuPrimitive.SubTrigger>;
-type MenuSubTriggerProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.SubTrigger>;
+type MenuSubTriggerProps = React.ComponentPropsWithoutRef<typeof MenuPrimitive.SubTrigger>;
 interface MenubarSubTriggerProps extends MenuSubTriggerProps {}
 
 const MenubarSubTrigger = React.forwardRef<MenubarSubTriggerElement, MenubarSubTriggerProps>(
@@ -644,7 +643,7 @@ MenubarSubTrigger.displayName = SUB_TRIGGER_NAME;
 const SUB_CONTENT_NAME = 'MenubarSubContent';
 
 type MenubarSubContentElement = React.ElementRef<typeof MenuPrimitive.Content>;
-type MenuSubContentProps = Radix.ComponentPropsWithoutRef<typeof MenuPrimitive.SubContent>;
+type MenuSubContentProps = React.ComponentPropsWithoutRef<typeof MenuPrimitive.SubContent>;
 interface MenubarSubContentProps extends MenuSubContentProps {}
 
 const MenubarSubContent = React.forwardRef<MenubarSubContentElement, MenubarSubContentProps>(

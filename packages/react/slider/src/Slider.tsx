@@ -10,7 +10,6 @@ import { useSize } from '@radix-ui/react-use-size';
 import { Primitive } from '@radix-ui/react-primitive';
 import { createCollection } from '@radix-ui/react-collection';
 
-import type * as Radix from '@radix-ui/react-primitive';
 import type { Scope } from '@radix-ui/react-context';
 
 type Direction = 'ltr' | 'rtl';
@@ -380,7 +379,7 @@ const SliderVertical = React.forwardRef<SliderVerticalElement, SliderVerticalPro
  * -----------------------------------------------------------------------------------------------*/
 
 type SliderImplElement = React.ElementRef<typeof Primitive.span>;
-type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
+type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 type SliderImplPrivateProps = {
   onSlideStart(event: React.PointerEvent): void;
   onSlideMove(event: React.PointerEvent): void;
@@ -460,7 +459,7 @@ const SliderImpl = React.forwardRef<SliderImplElement, SliderImplProps>(
 const TRACK_NAME = 'SliderTrack';
 
 type SliderTrackElement = React.ElementRef<typeof Primitive.span>;
-type PrimitiveSpanProps = Radix.ComponentPropsWithoutRef<typeof Primitive.span>;
+type PrimitiveSpanProps = React.ComponentPropsWithoutRef<typeof Primitive.span>;
 interface SliderTrackProps extends PrimitiveSpanProps {}
 
 const SliderTrack = React.forwardRef<SliderTrackElement, SliderTrackProps>(
@@ -631,7 +630,7 @@ SliderThumb.displayName = THUMB_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
-const BubbleInput = (props: Radix.ComponentPropsWithoutRef<'input'>) => {
+const BubbleInput = (props: React.ComponentPropsWithoutRef<'input'>) => {
   const { value, ...inputProps } = props;
   const ref = React.useRef<HTMLInputElement>(null);
   const prevValue = usePrevious(value);
