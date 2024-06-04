@@ -83,8 +83,9 @@ const ToastProvider: React.FC<ToastProviderProps> = (props: ScopedProps<ToastPro
   const isClosePausedRef = React.useRef(false);
 
   if (!label.trim()) {
-    const error = `Invalid prop \`label\` supplied to \`${PROVIDER_NAME}\`. Expected non-empty \`string\`.`;
-    throw new Error(error);
+    console.error(
+      `Invalid prop \`label\` supplied to \`${PROVIDER_NAME}\`. Expected non-empty \`string\`.`
+    );
   }
 
   return (
@@ -760,8 +761,10 @@ const ToastAction = React.forwardRef<ToastActionElement, ToastActionProps>(
     const { altText, ...actionProps } = props;
 
     if (!altText.trim()) {
-      const error = `Invalid prop \`altText\` supplied to \`${ACTION_NAME}\`. Expected non-empty \`string\`.`;
-      throw new Error(error);
+      console.error(
+        `Invalid prop \`altText\` supplied to \`${ACTION_NAME}\`. Expected non-empty \`string\`.`
+      );
+      return null;
     }
 
     return (

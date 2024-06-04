@@ -38,13 +38,13 @@ const Progress = React.forwardRef<ProgressElement, ProgressProps>(
     } = props;
 
     if ((maxProp || maxProp === 0) && !isValidMaxNumber(maxProp)) {
-      throw new Error(getInvalidMaxError(`${maxProp}`, 'Progress'));
+      console.error(getInvalidMaxError(`${maxProp}`, 'Progress'));
     }
 
     const max = isValidMaxNumber(maxProp) ? maxProp : DEFAULT_MAX;
 
     if (valueProp !== null && !isValidValueNumber(valueProp, max)) {
-      throw new Error(getInvalidValueError(`${valueProp}`, 'Progress'));
+      console.error(getInvalidValueError(`${valueProp}`, 'Progress'));
     }
 
     const value = isValidValueNumber(valueProp, max) ? valueProp : null;
