@@ -59,28 +59,6 @@ const Accordion = React.forwardRef<AccordionElement, AccordionSingleProps | Acco
 
 Accordion.displayName = ACCORDION_NAME;
 
-Accordion.propTypes = {
-  type(props) {
-    const value = props.value || props.defaultValue;
-    if (props.type && !['single', 'multiple'].includes(props.type)) {
-      return new Error(
-        'Invalid prop `type` supplied to `Accordion`. Expected one of `single | multiple`.'
-      );
-    }
-    if (props.type === 'multiple' && typeof value === 'string') {
-      return new Error(
-        'Invalid prop `type` supplied to `Accordion`. Expected `single` when `defaultValue` or `value` is type `string`.'
-      );
-    }
-    if (props.type === 'single' && Array.isArray(value)) {
-      return new Error(
-        'Invalid prop `type` supplied to `Accordion`. Expected `multiple` when `defaultValue` or `value` is type `string[]`.'
-      );
-    }
-    return null;
-  },
-};
-
 /* -----------------------------------------------------------------------------------------------*/
 
 type AccordionValueContextValue = {

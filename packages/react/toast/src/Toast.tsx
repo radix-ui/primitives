@@ -82,6 +82,12 @@ const ToastProvider: React.FC<ToastProviderProps> = (props: ScopedProps<ToastPro
   const [toastCount, setToastCount] = React.useState(0);
   const isFocusedToastEscapeKeyDownRef = React.useRef(false);
   const isClosePausedRef = React.useRef(false);
+
+  if (!label.trim()) {
+    const error = `Invalid prop \`label\` supplied to \`${PROVIDER_NAME}\`. Expected non-empty \`string\`.`;
+    throw new Error(error);
+  }
+
   return (
     <Collection.Provider scope={__scopeToast}>
       <ToastProviderProvider
@@ -102,16 +108,6 @@ const ToastProvider: React.FC<ToastProviderProps> = (props: ScopedProps<ToastPro
       </ToastProviderProvider>
     </Collection.Provider>
   );
-};
-
-ToastProvider.propTypes = {
-  label(props) {
-    if (props.label && typeof props.label === 'string' && !props.label.trim()) {
-      const error = `Invalid prop \`label\` supplied to \`${PROVIDER_NAME}\`. Expected non-empty \`string\`.`;
-      return new Error(error);
-    }
-    return null;
-  },
 };
 
 ToastProvider.displayName = PROVIDER_NAME;
@@ -672,16 +668,6 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
   }
 );
 
-ToastImpl.propTypes = {
-  type(props) {
-    if (props.type && !['foreground', 'background'].includes(props.type)) {
-      const error = `Invalid prop \`type\` supplied to \`${TOAST_NAME}\`. Expected \`foreground | background\`.`;
-      return new Error(error);
-    }
-    return null;
-  },
-};
-
 /* -----------------------------------------------------------------------------------------------*/
 
 interface ToastAnnounceProps
@@ -773,7 +759,12 @@ interface ToastActionProps extends ToastCloseProps {
 const ToastAction = React.forwardRef<ToastActionElement, ToastActionProps>(
   (props: ScopedProps<ToastActionProps>, forwardedRef) => {
     const { altText, ...actionProps } = props;
-    if (!altText) return null;
+
+    if (!altText.trim()) {
+      const error = `Invalid prop \`altText\` supplied to \`${ACTION_NAME}\`. Expected non-empty \`string\`.`;
+      throw new Error(error);
+    }
+
     return (
       <ToastAnnounceExclude altText={altText} asChild>
         <ToastClose {...actionProps} ref={forwardedRef} />
@@ -781,15 +772,6 @@ const ToastAction = React.forwardRef<ToastActionElement, ToastActionProps>(
     );
   }
 );
-
-ToastAction.propTypes = {
-  altText(props) {
-    if (!props.altText) {
-      return new Error(`Missing prop \`altText\` expected on \`${ACTION_NAME}\``);
-    }
-    return null;
-  },
-};
 
 ToastAction.displayName = ACTION_NAME;
 

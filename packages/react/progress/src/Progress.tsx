@@ -38,7 +38,16 @@ const Progress = React.forwardRef<ProgressElement, ProgressProps>(
       ...progressProps
     } = props;
 
+    if ((maxProp || maxProp === 0) && !isValidMaxNumber(maxProp)) {
+      throw new Error(getInvalidMaxError(`${maxProp}`, 'Progress'));
+    }
+
     const max = isValidMaxNumber(maxProp) ? maxProp : DEFAULT_MAX;
+
+    if (valueProp !== null && !isValidValueNumber(valueProp, max)) {
+      throw new Error(getInvalidValueError(`${valueProp}`, 'Progress'));
+    }
+
     const value = isValidValueNumber(valueProp, max) ? valueProp : null;
     const valueLabel = isNumber(value) ? getValueLabel(value, max) : undefined;
 
@@ -62,26 +71,6 @@ const Progress = React.forwardRef<ProgressElement, ProgressProps>(
 );
 
 Progress.displayName = PROGRESS_NAME;
-
-Progress.propTypes = {
-  max(props, propName, componentName) {
-    const propValue = props[propName];
-    const strVal = String(propValue);
-    if (propValue && !isValidMaxNumber(propValue)) {
-      return new Error(getInvalidMaxError(strVal, componentName));
-    }
-    return null;
-  },
-  value(props, propName, componentName) {
-    const valueProp = props[propName];
-    const strVal = String(valueProp);
-    const max = isValidMaxNumber(props.max) ? props.max : DEFAULT_MAX;
-    if (valueProp != null && !isValidValueNumber(valueProp, max)) {
-      return new Error(getInvalidValueError(strVal, componentName));
-    }
-    return null;
-  },
-};
 
 /* -------------------------------------------------------------------------------------------------
  * ProgressIndicator
