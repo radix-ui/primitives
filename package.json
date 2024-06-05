@@ -75,7 +75,7 @@
     "pretty-quick": "^2.0.1",
     "react-test-renderer": "^18.0.0",
     "replace-in-files": "^3.0.0",
-    "start-server-and-test": "^1.12.5",
+    "start-server-and-test": "2.0.3",
     "storybook": "^7.6.17",
     "ts-jest": "^27.1.4",
     "tsup": "8.0.2",
