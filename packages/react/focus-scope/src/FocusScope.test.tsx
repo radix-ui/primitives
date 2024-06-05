@@ -35,11 +35,9 @@ describe('FocusScope', () => {
     });
 
     it('should focus the next element in the scope on tab', () => {
-      React.act(() => {
-        tabbableFirst.focus();
-        userEvent.tab();
-        waitFor(() => expect(tabbableSecond).toHaveFocus());
-      });
+      tabbableFirst.focus();
+      userEvent.tab();
+      waitFor(() => expect(tabbableSecond).toHaveFocus());
     });
 
     it('should focus the last element in the scope on shift+tab from the first element in scope', () => {
@@ -79,11 +77,9 @@ describe('FocusScope', () => {
     });
 
     it('should skip the element with a negative tabindex on tab', () => {
-      React.act(() => {
-        tabbableLast.focus();
-        userEvent.tab();
-        waitFor(() => expect(tabbableSecond).toHaveFocus());
-      });
+      tabbableLast.focus();
+      userEvent.tab();
+      waitFor(() => expect(tabbableSecond).toHaveFocus());
     });
 
     it('should skip the element with a negative tabindex on shift+tab', () => {
