@@ -829,7 +829,9 @@ export const Cypress = () => {
             </Select.Portal>
           </Select.Root>
         </Label>
-        <button type="submit">buy</button>
+        <button type="submit" style={{ width: 100, height: 50 }}>
+          buy
+        </button>
         {data.size ? <p>You picked t-shirt size {data.size}</p> : null}
       </form>
 
@@ -876,7 +878,7 @@ export const Cypress = () => {
           </Select.Root>
         </Label>
 
-        <button type="button" onClick={() => setModel('')}>
+        <button type="button" style={{ width: 100, height: 50 }} onClick={() => setModel('')}>
           unset
         </button>
       </div>
@@ -1106,6 +1108,10 @@ const itemClass = css({
   ...itemStyles,
   position: 'relative',
   outline: 'none',
+
+  '&:active': {
+    backgroundColor: '$gray100',
+  },
 
   '&[data-highlighted]': {
     backgroundColor: '$black',
