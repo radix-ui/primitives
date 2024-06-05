@@ -8,6 +8,7 @@ describe('Form', () => {
   });
 
   function checkControlMessageAssociation() {
+    cy.get('@control').should('have.attr', 'aria-describedby');
     cy.get('@control')
       .invoke('attr', 'aria-describedby')
       .then((ariaDescribedby) =>
