@@ -787,7 +787,7 @@ export const Cypress = () => {
   }
 
   return (
-    <div style={{ height: '200vh' }}>
+    <>
       <form
         style={{ padding: 50 }}
         onSubmit={(event) => {
@@ -882,7 +882,7 @@ export const Cypress = () => {
           unset
         </button>
       </div>
-    </div>
+    </>
   );
 };
 
