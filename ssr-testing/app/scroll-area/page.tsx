@@ -9,29 +9,17 @@ import {
 
 export default function Page() {
   return (
-    <ScrollArea style={{ width: '400px', height: '400px' }}>
-      <Scrollbar orientation="vertical">
-        <ScrollAreaThumb />
-      </Scrollbar>
+    <div>
+      <ScrollArea>
+        <Scrollbar orientation="vertical">
+          <ScrollAreaThumb />
+        </Scrollbar>
 
-      <Scrollbar orientation="horizontal">
-        <ScrollAreaThumb />
-      </Scrollbar>
+        <Scrollbar orientation="horizontal">
+          <ScrollAreaThumb />
+        </Scrollbar>
 
-      <ScrollAreaViewport>
-        <div style={{ width: '2000px', padding: 20 }}>
-          <LongContent />
-          <LongContent />
-          <LongContent />
-          <LongContent />
-          <LongContent />
-          <LongContent />
-          <LongContent />
-        </div>
-      </ScrollAreaViewport>
-
-      <ScrollAreaViewport asChild>
-        <section style={{ border: '1px solid' }}>
+        <ScrollAreaViewport style={{ width: '400px', height: '400px' }}>
           <div style={{ width: '2000px', padding: 20 }}>
             <LongContent />
             <LongContent />
@@ -41,11 +29,37 @@ export default function Page() {
             <LongContent />
             <LongContent />
           </div>
-        </section>
-      </ScrollAreaViewport>
+        </ScrollAreaViewport>
 
-      <ScrollAreaCorner />
-    </ScrollArea>
+        <ScrollAreaCorner />
+      </ScrollArea>
+
+      <ScrollArea>
+        <Scrollbar orientation="vertical">
+          <ScrollAreaThumb />
+        </Scrollbar>
+
+        <Scrollbar orientation="horizontal">
+          <ScrollAreaThumb />
+        </Scrollbar>
+
+        <ScrollAreaViewport style={{ width: '400px', height: '400px' }} asChild>
+          <section style={{ border: '1px solid' }}>
+            <div style={{ width: '2000px', padding: 20 }}>
+              <LongContent />
+              <LongContent />
+              <LongContent />
+              <LongContent />
+              <LongContent />
+              <LongContent />
+              <LongContent />
+            </div>
+          </section>
+        </ScrollAreaViewport>
+
+        <ScrollAreaCorner />
+      </ScrollArea>
+    </div>
   );
 }
 
