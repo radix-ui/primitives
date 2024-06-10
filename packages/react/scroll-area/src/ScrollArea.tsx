@@ -162,13 +162,15 @@ const ScrollAreaViewport = React.forwardRef<ScrollAreaViewportElement, ScrollAre
 :where([data-radix-scroll-area-viewport]) {
   display: flex;
   flex-direction: column;
+  align-items: stretch;
   width: 100%;
   height: 100%;
 }
 :where([data-radix-scroll-area-content]) {
   flex-grow: 1;
-  min-width: 100%;
-  width: fit-content;
+}
+:where([data-radix-scroll-area-content-horitzontal]) {
+  flex-grow: 1;
 }
 `,
           }}
@@ -197,7 +199,18 @@ const ScrollAreaViewport = React.forwardRef<ScrollAreaViewportElement, ScrollAre
           }}
         >
           {getSubtree({ asChild, children }, (children) => (
-            <div data-radix-scroll-area-content="" ref={context.onContentChange}>
+            <div
+              data-radix-scroll-area-content=""
+              ref={context.onContentChange}
+              /**
+               * When horizontal scrollbar is visible: this element should be at least
+               * as wide as its children for size calculations to work correctly.
+               *
+               * When horizontal scrollbar is NOT visible: this element's width should
+               * be constrained by the parent container to enable `text-overflow: ellipsis`
+               */
+              style={{ minWidth: context.scrollbarXEnabled ? 'fit-content' : undefined }}
+            >
               {children}
             </div>
           ))}
