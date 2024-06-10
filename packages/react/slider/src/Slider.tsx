@@ -547,11 +547,12 @@ type SliderThumbImplElement = React.ElementRef<typeof Primitive.span>;
 interface SliderThumbImplProps extends PrimitiveSpanProps {
   index: number;
   name?: string;
+  ignoreThumbOffset?: boolean
 }
 
 const SliderThumbImpl = React.forwardRef<SliderThumbImplElement, SliderThumbImplProps>(
   (props: ScopedProps<SliderThumbImplProps>, forwardedRef) => {
-    const { __scopeSlider, index, name, ...thumbProps } = props;
+    const { __scopeSlider, index, name, ignoreThumbOffset = false, ...thumbProps } = props;
     const context = useSliderContext(THUMB_NAME, __scopeSlider);
     const orientation = useSliderOrientationContext(THUMB_NAME, __scopeSlider);
     const [thumb, setThumb] = React.useState<HTMLSpanElement | null>(null);
@@ -565,7 +566,7 @@ const SliderThumbImpl = React.forwardRef<SliderThumbImplElement, SliderThumbImpl
       value === undefined ? 0 : convertValueToPercentage(value, context.min, context.max);
     const label = getLabel(index, context.values.length);
     const orientationSize = size?.[orientation.size];
-    const thumbInBoundsOffset = orientationSize
+    const thumbInBoundsOffset = orientationSize && !ignoreThumbOffset
       ? getThumbInBoundsOffset(orientationSize, percent, orientation.direction)
       : 0;
 
