@@ -163,8 +163,6 @@ const ScrollAreaViewport = React.forwardRef<ScrollAreaViewportElement, ScrollAre
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  width: 100%;
-  height: 100%;
 }
 :where([data-radix-scroll-area-content]) {
   flex-grow: 1;

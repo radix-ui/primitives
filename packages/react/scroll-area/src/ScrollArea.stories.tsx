@@ -512,7 +512,14 @@ const scrollAreaClass = css({
   border: '1px solid black',
 });
 
-const scrollAreaViewportClass = css();
+const RECOMMENDED_CSS__SCROLLAREA__VIEWPORT: any = {
+  width: '100%',
+  height: '100%',
+};
+
+const scrollAreaViewportClass = css({
+  ...RECOMMENDED_CSS__SCROLLAREA__VIEWPORT,
+});
 
 const RECOMMENDED_CSS__SCROLLBAR__ROOT: any = {
   display: 'flex',
