@@ -1,0 +1,6 @@
+releases:
+  "@radix-ui/react-scroll-area": minor
+
+declined:
+  - primitives
+  - ssr-testing
