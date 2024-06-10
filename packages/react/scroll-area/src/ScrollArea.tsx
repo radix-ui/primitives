@@ -142,7 +142,7 @@ interface ScrollAreaViewportProps extends PrimitiveDivProps {
 
 const ScrollAreaViewport = React.forwardRef<ScrollAreaViewportElement, ScrollAreaViewportProps>(
   (props: ScopedProps<ScrollAreaViewportProps>, forwardedRef) => {
-    const { __scopeScrollArea, children, nonce, ...viewportProps } = props;
+    const { __scopeScrollArea, children, asChild, nonce, ...viewportProps } = props;
     const context = useScrollAreaContext(VIEWPORT_NAME, __scopeScrollArea);
     const ref = React.useRef<ScrollAreaViewportElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, ref, context.onViewportChange);
@@ -177,6 +177,7 @@ const ScrollAreaViewport = React.forwardRef<ScrollAreaViewportElement, ScrollAre
         <Primitive.div
           data-radix-scroll-area-viewport=""
           {...viewportProps}
+          asChild={asChild}
           ref={composedRefs}
           style={{
             /**
@@ -195,9 +196,11 @@ const ScrollAreaViewport = React.forwardRef<ScrollAreaViewportElement, ScrollAre
             ...props.style,
           }}
         >
-          <div data-radix-scroll-area-content="" ref={context.onContentChange}>
-            {children}
-          </div>
+          {getSubtree({ asChild, children }, (children) => (
+            <div data-radix-scroll-area-content="" ref={context.onContentChange}>
+              {children}
+            </div>
+          ))}
         </Primitive.div>
       </>
     );
@@ -1020,6 +1023,26 @@ function useResizeObserver(element: HTMLElement | null, onResize: () => void) {
       };
     }
   }, [element, handleResize]);
+}
+
+/**
+ * This is a helper function that is used when a component supports `asChild`
+ * using the `Slot` component but its implementation contains nested DOM elements.
+ *
+ * Using it ensures if a consumer uses the `asChild` prop, the elements are in
+ * correct order in the DOM, adopting the intended consumer `children`.
+ */
+function getSubtree(
+  options: { asChild: boolean | undefined; children: React.ReactNode },
+  content: React.ReactNode | ((children: React.ReactNode) => React.ReactNode)
+) {
+  const { asChild, children } = options;
+  if (!asChild) return typeof content === 'function' ? content(children) : content;
+
+  const firstChild = React.Children.only(children) as React.ReactElement;
+  return React.cloneElement(firstChild, {
+    children: typeof content === 'function' ? content(firstChild.props.children) : content,
+  });
 }
 
 /* -----------------------------------------------------------------------------------------------*/
