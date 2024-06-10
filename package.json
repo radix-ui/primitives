@@ -28,8 +28,8 @@
     "bump:check": "yarn version check"
   },
   "dependencies": {
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0"
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
     "@stitches/core": "^1.2.8",
@@ -39,8 +39,9 @@
     "@storybook/react-webpack5": "^7.6.17",
     "@storybook/test": "^7.6.17",
     "@testing-library/cypress": "^7.0.6",
+    "@testing-library/dom": "^10.1.0",
     "@testing-library/jest-dom": "^5.16.4",
-    "@testing-library/react": "^13.0.1",
+    "@testing-library/react": "^16.0.0",
     "@testing-library/user-event": "^14.1.0",
     "@types/eslint": "^7.28.0",
     "@types/fs-extra": "^11",
@@ -74,7 +75,7 @@
     "pretty-quick": "^2.0.1",
     "react-test-renderer": "^18.0.0",
     "replace-in-files": "^3.0.0",
-    "start-server-and-test": "^1.12.5",
+    "start-server-and-test": "2.0.3",
     "storybook": "^7.6.17",
     "ts-jest": "^27.1.4",
     "tsup": "8.0.2",

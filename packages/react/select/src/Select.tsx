@@ -23,7 +23,6 @@ import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { hideOthers } from 'aria-hidden';
 import { RemoveScroll } from 'react-remove-scroll';
 
-import type * as Radix from '@radix-ui/react-primitive';
 import type { Scope } from '@radix-ui/react-context';
 
 type Direction = 'ltr' | 'rtl';
@@ -209,7 +208,7 @@ Select.displayName = SELECT_NAME;
 const TRIGGER_NAME = 'SelectTrigger';
 
 type SelectTriggerElement = React.ElementRef<typeof Primitive.button>;
-type PrimitiveButtonProps = Radix.ComponentPropsWithoutRef<typeof Primitive.button>;
+type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
 interface SelectTriggerProps extends PrimitiveButtonProps {}
 
 const SelectTrigger = React.forwardRef<SelectTriggerElement, SelectTriggerProps>(
@@ -308,7 +307,7 @@ SelectTrigger.displayName = TRIGGER_NAME;
 const VALUE_NAME = 'SelectValue';
 
 type SelectValueElement = React.ElementRef<typeof Primitive.span>;
-type PrimitiveSpanProps = Radix.ComponentPropsWithoutRef<typeof Primitive.span>;
+type PrimitiveSpanProps = React.ComponentPropsWithoutRef<typeof Primitive.span>;
 interface SelectValueProps extends Omit<PrimitiveSpanProps, 'placeholder'> {
   placeholder?: React.ReactNode;
 }
@@ -456,7 +455,7 @@ const CONTENT_IMPL_NAME = 'SelectContentImpl';
 
 type SelectContentImplElement = SelectPopperPositionElement | SelectItemAlignedPositionElement;
 type DismissableLayerProps = React.ComponentPropsWithoutRef<typeof DismissableLayer>;
-type FocusScopeProps = Radix.ComponentPropsWithoutRef<typeof FocusScope>;
+type FocusScopeProps = React.ComponentPropsWithoutRef<typeof FocusScope>;
 
 type SelectPopperPrivateProps = { onPlaced?: PopperContentProps['onPlaced'] };
 
@@ -1036,7 +1035,7 @@ const [SelectViewportProvider, useSelectViewportContext] =
 const VIEWPORT_NAME = 'SelectViewport';
 
 type SelectViewportElement = React.ElementRef<typeof Primitive.div>;
-type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
+type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface SelectViewportProps extends PrimitiveDivProps {
   nonce?: string;
 }
@@ -1530,7 +1529,7 @@ SelectSeparator.displayName = SEPARATOR_NAME;
 const ARROW_NAME = 'SelectArrow';
 
 type SelectArrowElement = React.ElementRef<typeof PopperPrimitive.Arrow>;
-type PopperArrowProps = Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Arrow>;
+type PopperArrowProps = React.ComponentPropsWithoutRef<typeof PopperPrimitive.Arrow>;
 interface SelectArrowProps extends PopperArrowProps {}
 
 const SelectArrow = React.forwardRef<SelectArrowElement, SelectArrowProps>(

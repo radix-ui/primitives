@@ -3,8 +3,6 @@ import ReactDOM from 'react-dom';
 import { Primitive } from '@radix-ui/react-primitive';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 
-import type * as Radix from '@radix-ui/react-primitive';
-
 /* -------------------------------------------------------------------------------------------------
  * Portal
  * -----------------------------------------------------------------------------------------------*/
@@ -12,7 +10,7 @@ import type * as Radix from '@radix-ui/react-primitive';
 const PORTAL_NAME = 'Portal';
 
 type PortalElement = React.ElementRef<typeof Primitive.div>;
-type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
+type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface PortalProps extends PrimitiveDivProps {
   /**
    * An optional container where the portaled content should be appended.
