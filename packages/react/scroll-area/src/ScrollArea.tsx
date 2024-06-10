@@ -148,10 +148,29 @@ const ScrollAreaViewport = React.forwardRef<ScrollAreaViewportElement, ScrollAre
     const composedRefs = useComposedRefs(forwardedRef, ref, context.onViewportChange);
     return (
       <>
-        {/* Hide scrollbars cross-browser and enable momentum scroll for touch devices */}
         <style
           dangerouslySetInnerHTML={{
-            __html: `[data-radix-scroll-area-viewport]{scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;}[data-radix-scroll-area-viewport]::-webkit-scrollbar{display:none}`,
+            __html: `
+[data-radix-scroll-area-viewport] {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  -webkit-overflow-scrolling: touch;
+}
+[data-radix-scroll-area-viewport]::-webkit-scrollbar {
+  display: none;
+}
+:where([data-radix-scroll-area-viewport]) {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+:where([data-radix-scroll-area-content]) {
+  flex-grow: 1;
+  min-width: 100%;
+  width: fit-content;
+}
+`,
           }}
           nonce={nonce}
         />
@@ -176,14 +195,7 @@ const ScrollAreaViewport = React.forwardRef<ScrollAreaViewportElement, ScrollAre
             ...props.style,
           }}
         >
-          {/**
-           * `display: table` ensures our content div will match the size of its children in both
-           * horizontal and vertical axis so we can determine if scroll width/height changed and
-           * recalculate thumb sizes. This doesn't account for children with *percentage*
-           * widths that change. We'll wait to see what use-cases consumers come up with there
-           * before trying to resolve it.
-           */}
-          <div ref={context.onContentChange} style={{ minWidth: '100%', display: 'table' }}>
+          <div data-radix-scroll-area-content="" ref={context.onContentChange}>
             {children}
           </div>
         </Primitive.div>

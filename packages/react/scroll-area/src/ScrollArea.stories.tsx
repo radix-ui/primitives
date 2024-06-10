@@ -307,6 +307,85 @@ export const Chromatic = () => (
 );
 Chromatic.parameters = { chromatic: { disable: false } };
 
+const COPY_SHORT = `
+  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce sit amet eros iaculis,
+  bibendum tellus ac, lobortis odio. Aliquam bibendum elit est, in iaculis est commodo id.
+  Donec pulvinar est libero. Proin consectetur pellentesque molestie.
+`;
+
+export const ChromaticFillParentHeight = () => (
+  <>
+    <h1>Parent has fixed height, short content</h1>
+    <div
+      style={{
+        display: 'flex',
+        width: 600,
+        height: 300,
+        overflow: 'hidden',
+      }}
+    >
+      <ScrollAreaStory type="always" vertical horizontal style={{ width: '50%', height: 'auto' }}>
+        <div>{COPY_SHORT}</div>
+      </ScrollAreaStory>
+      <ScrollAreaStory type="always" vertical horizontal style={{ width: '50%', height: 'auto' }}>
+        <div>{COPY_SHORT}</div>
+      </ScrollAreaStory>
+    </div>
+
+    <h1>Parent has fixed height, tall content</h1>
+    <div
+      style={{
+        display: 'flex',
+        width: 600,
+        height: 300,
+        overflow: 'hidden',
+      }}
+    >
+      <ScrollAreaStory type="always" vertical horizontal style={{ width: '50%', height: 'auto' }}>
+        <div>{COPY_SHORT}</div>
+      </ScrollAreaStory>
+      <ScrollAreaStory type="always" vertical horizontal style={{ width: '50%', height: 'auto' }}>
+        <Copy style={{ width: 'auto' }} />
+      </ScrollAreaStory>
+    </div>
+
+    <h1>Parent has max height</h1>
+    <div
+      style={{
+        display: 'flex',
+        width: 600,
+        maxHeight: 300,
+        overflow: 'hidden',
+      }}
+    >
+      <ScrollAreaStory type="always" vertical horizontal style={{ width: '50%', height: 'auto' }}>
+        <div>{COPY_SHORT}</div>
+      </ScrollAreaStory>
+      <ScrollAreaStory type="always" vertical horizontal style={{ width: '50%', height: 'auto' }}>
+        <Copy style={{ width: 'auto' }} />
+      </ScrollAreaStory>
+    </div>
+
+    <h1>Parent has auto height</h1>
+    <div
+      style={{
+        display: 'flex',
+        width: 600,
+        overflow: 'hidden',
+      }}
+    >
+      <ScrollAreaStory type="always" vertical horizontal style={{ width: '50%', height: 'auto' }}>
+        <div>{COPY_SHORT}</div>
+      </ScrollAreaStory>
+      <ScrollAreaStory type="always" vertical horizontal style={{ width: '50%', height: 'auto' }}>
+        <Copy style={{ width: 'auto' }} />
+      </ScrollAreaStory>
+    </div>
+
+    <div style={{ height: 200 }} />
+  </>
+);
+
 const DYNAMIC_CONTENT_DELAY = 2000;
 
 export const ChromaticDynamicContentBeforeLoaded = () => {
@@ -424,14 +503,7 @@ const scrollAreaClass = css({
   border: '1px solid black',
 });
 
-const RECOMMENDED_CSS__SCROLLAREA__VIEWPORT: any = {
-  width: '100%',
-  height: '100%',
-};
-
-const scrollAreaViewportClass = css({
-  ...RECOMMENDED_CSS__SCROLLAREA__VIEWPORT,
-});
+const scrollAreaViewportClass = css();
 
 const RECOMMENDED_CSS__SCROLLBAR__ROOT: any = {
   display: 'flex',
