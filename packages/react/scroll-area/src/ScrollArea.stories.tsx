@@ -316,14 +316,7 @@ const COPY_SHORT = `
 export const ChromaticFillParentHeight = () => (
   <>
     <h1>Parent has fixed height, short content</h1>
-    <div
-      style={{
-        display: 'flex',
-        width: 600,
-        height: 300,
-        overflow: 'hidden',
-      }}
-    >
+    <div style={{ display: 'flex', width: 600, height: 300, overflow: 'hidden' }}>
       <ScrollAreaStory type="always" vertical horizontal style={{ width: '50%', height: 'auto' }}>
         <div>{COPY_SHORT}</div>
       </ScrollAreaStory>
@@ -333,14 +326,7 @@ export const ChromaticFillParentHeight = () => (
     </div>
 
     <h1>Parent has fixed height, tall content</h1>
-    <div
-      style={{
-        display: 'flex',
-        width: 600,
-        height: 300,
-        overflow: 'hidden',
-      }}
-    >
+    <div style={{ display: 'flex', width: 600, height: 300, overflow: 'hidden' }}>
       <ScrollAreaStory type="always" vertical horizontal style={{ width: '50%', height: 'auto' }}>
         <div>{COPY_SHORT}</div>
       </ScrollAreaStory>
@@ -350,14 +336,7 @@ export const ChromaticFillParentHeight = () => (
     </div>
 
     <h1>Parent has max height</h1>
-    <div
-      style={{
-        display: 'flex',
-        width: 600,
-        maxHeight: 300,
-        overflow: 'hidden',
-      }}
-    >
+    <div style={{ display: 'flex', width: 600, maxHeight: 300, overflow: 'hidden' }}>
       <ScrollAreaStory type="always" vertical horizontal style={{ width: '50%', height: 'auto' }}>
         <div>{COPY_SHORT}</div>
       </ScrollAreaStory>
@@ -367,13 +346,7 @@ export const ChromaticFillParentHeight = () => (
     </div>
 
     <h1>Parent has auto height</h1>
-    <div
-      style={{
-        display: 'flex',
-        width: 600,
-        overflow: 'hidden',
-      }}
-    >
+    <div style={{ display: 'flex', width: 600, overflow: 'hidden' }}>
       <ScrollAreaStory type="always" vertical horizontal style={{ width: '50%', height: 'auto' }}>
         <div>{COPY_SHORT}</div>
       </ScrollAreaStory>
