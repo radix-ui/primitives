@@ -169,9 +169,6 @@ const ScrollAreaViewport = React.forwardRef<ScrollAreaViewportElement, ScrollAre
 :where([data-radix-scroll-area-content]) {
   flex-grow: 1;
 }
-:where([data-radix-scroll-area-content-horitzontal]) {
-  flex-grow: 1;
-}
 `,
           }}
           nonce={nonce}
