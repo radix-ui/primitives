@@ -18,14 +18,30 @@ export default function Page() {
         <ScrollAreaThumb />
       </Scrollbar>
 
-      <ScrollAreaViewport style={{ width: '2000px', padding: 20 }}>
-        <LongContent />
-        <LongContent />
-        <LongContent />
-        <LongContent />
-        <LongContent />
-        <LongContent />
-        <LongContent />
+      <ScrollAreaViewport>
+        <div style={{ width: '2000px', padding: 20 }}>
+          <LongContent />
+          <LongContent />
+          <LongContent />
+          <LongContent />
+          <LongContent />
+          <LongContent />
+          <LongContent />
+        </div>
+      </ScrollAreaViewport>
+
+      <ScrollAreaViewport asChild>
+        <section style={{ border: '1px solid' }}>
+          <div style={{ width: '2000px', padding: 20 }}>
+            <LongContent />
+            <LongContent />
+            <LongContent />
+            <LongContent />
+            <LongContent />
+            <LongContent />
+            <LongContent />
+          </div>
+        </section>
       </ScrollAreaViewport>
 
       <ScrollAreaCorner />
