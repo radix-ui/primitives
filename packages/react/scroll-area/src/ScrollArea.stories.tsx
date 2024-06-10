@@ -358,6 +358,7 @@ export const ChromaticFillParentHeight = () => (
     <div style={{ height: 200 }} />
   </>
 );
+ChromaticFillParentHeight.parameters = { chromatic: { disable: false } };
 
 const DYNAMIC_CONTENT_DELAY = 2000;
 
