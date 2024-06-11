@@ -1,0 +1,5 @@
+releases:
+  "@radix-ui/react-progress": minor
+
+declined:
+  - primitives
