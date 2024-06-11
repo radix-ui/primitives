@@ -514,7 +514,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   React.useEffect(() => {
     if (titleId) {
       const hasTitle = document.getElementById(titleId);
-      if (!hasTitle) throw new Error(MESSAGE);
+      if (!hasTitle) console.error(MESSAGE);
     }
   }, [MESSAGE, titleId]);
 
