@@ -31,7 +31,7 @@ const Progress = React.forwardRef<ProgressElement, ProgressProps>(
   (props: ScopedProps<ProgressProps>, forwardedRef) => {
     const {
       __scopeProgress,
-      value: valueProp,
+      value: valueProp = null,
       max: maxProp,
       getValueLabel = defaultGetValueLabel,
       ...progressProps
@@ -140,7 +140,7 @@ function getInvalidValueError(propValue: string, componentName: string) {
   return `Invalid prop \`value\` of value \`${propValue}\` supplied to \`${componentName}\`. The \`value\` prop must be:
   - a positive number
   - less than the value passed to \`max\` (or ${DEFAULT_MAX} if no \`max\` prop is set)
-  - \`null\` if the progress is indeterminate.
+  - \`null\` or \`undefined\` if the progress is indeterminate.
 
 Defaulting to \`null\`.`;
 }
