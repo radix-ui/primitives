@@ -3028,8 +3028,8 @@ __metadata:
   peerDependencies:
     "@types/react": "*"
     "@types/react-dom": "*"
-    react: ^16.8 || ^17.0 || ^18.0 || ^19.0
-    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -3054,8 +3054,8 @@ __metadata:
   peerDependencies:
     "@types/react": "*"
     "@types/react-dom": "*"
-    react: ^16.8 || ^17.0 || ^18.0 || ^19.0
-    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -3077,8 +3077,8 @@ __metadata:
   peerDependencies:
     "@types/react": "*"
     "@types/react-dom": "*"
-    react: ^16.8 || ^17.0 || ^18.0 || ^19.0
-    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -3097,8 +3097,8 @@ __metadata:
   peerDependencies:
     "@types/react": "*"
     "@types/react-dom": "*"
-    react: ^16.8 || ^17.0 || ^18.0 || ^19.0
-    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -3135,8 +3135,8 @@ __metadata:
   peerDependencies:
     "@types/react": "*"
     "@types/react-dom": "*"
-    react: ^16.8 || ^17.0 || ^18.0 || ^19.0
-    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -3153,8 +3153,8 @@ __metadata:
   peerDependencies:
     "@types/react": "*"
     "@types/react-dom": "*"
-    react: ^16.8 || ^17.0 || ^18.0 || ^19.0
-    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -3174,8 +3174,8 @@ __metadata:
   peerDependencies:
     "@types/react": "*"
     "@types/react-dom": "*"
-    react: ^16.8 || ^17.0 || ^18.0 || ^19.0
-    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -3199,8 +3199,8 @@ __metadata:
   peerDependencies:
     "@types/react": "*"
     "@types/react-dom": "*"
-    react: ^16.8 || ^17.0 || ^18.0 || ^19.0
-    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -3224,8 +3224,8 @@ __metadata:
   peerDependencies:
     "@types/react": "*"
     "@types/react-dom": "*"
-    react: ^16.8 || ^17.0 || ^18.0 || ^19.0
-    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -3268,8 +3268,8 @@ __metadata:
   peerDependencies:
     "@types/react": "*"
     "@types/react-dom": "*"
-    react: ^16.8 || ^17.0 || ^18.0 || ^19.0
-    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -3298,7 +3298,7 @@ __metadata:
   resolution: "@radix-ui/react-compose-refs@workspace:packages/react/compose-refs"
   peerDependencies:
     "@types/react": "*"
-    react: ^16.8 || ^17.0 || ^18.0 || ^19.0
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -3318,8 +3318,8 @@ __metadata:
   peerDependencies:
     "@types/react": "*"
     "@types/react-dom": "*"
-    react: ^16.8 || ^17.0 || ^18.0 || ^19.0
-    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -3348,7 +3348,7 @@ __metadata:
   resolution: "@radix-ui/react-context@workspace:packages/react/context"
   peerDependencies:
     "@types/react": "*"
-    react: ^16.8 || ^17.0 || ^18.0 || ^19.0
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -3376,8 +3376,8 @@ __metadata:
   peerDependencies:
     "@types/react": "*"
     "@types/react-dom": "*"
-    react: ^16.8 || ^17.0 || ^18.0 || ^19.0
-    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -3406,7 +3406,7 @@ __metadata:
   resolution: "@radix-ui/react-direction@workspace:packages/react/direction"
   peerDependencies:
     "@types/react": "*"
-    react: ^16.8 || ^17.0 || ^18.0 || ^19.0
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -3450,8 +3450,8 @@ __metadata:
   peerDependencies:
     "@types/react": "*"
     "@types/react-dom": "*"
-    react: ^16.8 || ^17.0 || ^18.0 || ^19.0
-    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -3474,8 +3474,8 @@ __metadata:
   peerDependencies:
     "@types/react": "*"
     "@types/react-dom": "*"
-    react: ^16.8 || ^17.0 || ^18.0 || ^19.0
-    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -3504,7 +3504,7 @@ __metadata:
   resolution: "@radix-ui/react-focus-guards@workspace:packages/react/focus-guards"
   peerDependencies:
     "@types/react": "*"
-    react: ^16.8 || ^17.0 || ^18.0 || ^19.0
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -3543,8 +3543,8 @@ __metadata:
   peerDependencies:
     "@types/react": "*"
     "@types/react-dom": "*"
-    react: ^16.8 || ^17.0 || ^18.0 || ^19.0
-    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -3566,8 +3566,8 @@ __metadata:
   peerDependencies:
     "@types/react": "*"
     "@types/react-dom": "*"
-    react: ^16.8 || ^17.0 || ^18.0 || ^19.0
-    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -3592,8 +3592,8 @@ __metadata:
   peerDependencies:
     "@types/react": "*"
     "@types/react-dom": "*"
-    react: ^16.8 || ^17.0 || ^18.0 || ^19.0
-    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -3625,7 +3625,7 @@ __metadata:
     "@radix-ui/react-use-layout-effect": "workspace:*"
   peerDependencies:
     "@types/react": "*"
-    react: ^16.8 || ^17.0 || ^18.0 || ^19.0
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -3640,8 +3640,8 @@ __metadata:
   peerDependencies:
     "@types/react": "*"
     "@types/react-dom": "*"
-    react: ^16.8 || ^17.0 || ^18.0 || ^19.0
-    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -3675,8 +3675,8 @@ __metadata:
   peerDependencies:
     "@types/react": "*"
     "@types/react-dom": "*"
-    react: ^16.8 || ^17.0 || ^18.0 || ^19.0
-    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -3702,8 +3702,8 @@ __metadata:
   peerDependencies:
     "@types/react": "*"
     "@types/react-dom": "*"
-    react: ^16.8 || ^17.0 || ^18.0 || ^19.0
-    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -3733,8 +3733,8 @@ __metadata:
   peerDependencies:
     "@types/react": "*"
     "@types/react-dom": "*"
-    react: ^16.8 || ^17.0 || ^18.0 || ^19.0
-    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -3765,8 +3765,8 @@ __metadata:
   peerDependencies:
     "@types/react": "*"
     "@types/react-dom": "*"
-    react: ^16.8 || ^17.0 || ^18.0 || ^19.0
-    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -3821,8 +3821,8 @@ __metadata:
   peerDependencies:
     "@types/react": "*"
     "@types/react-dom": "*"
-    react: ^16.8 || ^17.0 || ^18.0 || ^19.0
-    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -3859,8 +3859,8 @@ __metadata:
   peerDependencies:
     "@types/react": "*"
     "@types/react-dom": "*"
-    react: ^16.8 || ^17.0 || ^18.0 || ^19.0
-    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -3878,8 +3878,8 @@ __metadata:
   peerDependencies:
     "@types/react": "*"
     "@types/react-dom": "*"
-    react: ^16.8 || ^17.0 || ^18.0 || ^19.0
-    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -3917,8 +3917,8 @@ __metadata:
   peerDependencies:
     "@types/react": "*"
     "@types/react-dom": "*"
-    react: ^16.8 || ^17.0 || ^18.0 || ^19.0
-    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -3936,8 +3936,8 @@ __metadata:
   peerDependencies:
     "@types/react": "*"
     "@types/react-dom": "*"
-    react: ^16.8 || ^17.0 || ^18.0 || ^19.0
-    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -3963,8 +3963,8 @@ __metadata:
   peerDependencies:
     "@types/react": "*"
     "@types/react-dom": "*"
-    react: ^16.8 || ^17.0 || ^18.0 || ^19.0
-    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -4017,8 +4017,8 @@ __metadata:
   peerDependencies:
     "@types/react": "*"
     "@types/react-dom": "*"
-    react: ^16.8 || ^17.0 || ^18.0 || ^19.0
-    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -4044,8 +4044,8 @@ __metadata:
   peerDependencies:
     "@types/react": "*"
     "@types/react-dom": "*"
-    react: ^16.8 || ^17.0 || ^18.0 || ^19.0
-    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -4122,8 +4122,8 @@ __metadata:
   peerDependencies:
     "@types/react": "*"
     "@types/react-dom": "*"
-    react: ^16.8 || ^17.0 || ^18.0 || ^19.0
-    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -4160,8 +4160,8 @@ __metadata:
   peerDependencies:
     "@types/react": "*"
     "@types/react-dom": "*"
-    react: ^16.8 || ^17.0 || ^18.0 || ^19.0
-    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -4190,8 +4190,8 @@ __metadata:
   peerDependencies:
     "@types/react": "*"
     "@types/react-dom": "*"
-    react: ^16.8 || ^17.0 || ^18.0 || ^19.0
-    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -4223,7 +4223,7 @@ __metadata:
     "@radix-ui/react-compose-refs": "workspace:*"
   peerDependencies:
     "@types/react": "*"
-    react: ^16.8 || ^17.0 || ^18.0 || ^19.0
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -4244,8 +4244,8 @@ __metadata:
   peerDependencies:
     "@types/react": "*"
     "@types/react-dom": "*"
-    react: ^16.8 || ^17.0 || ^18.0 || ^19.0
-    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -4269,8 +4269,8 @@ __metadata:
   peerDependencies:
     "@types/react": "*"
     "@types/react-dom": "*"
-    react: ^16.8 || ^17.0 || ^18.0 || ^19.0
-    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -4298,8 +4298,8 @@ __metadata:
   peerDependencies:
     "@types/react": "*"
     "@types/react-dom": "*"
-    react: ^16.8 || ^17.0 || ^18.0 || ^19.0
-    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -4348,8 +4348,8 @@ __metadata:
   peerDependencies:
     "@types/react": "*"
     "@types/react-dom": "*"
-    react: ^16.8 || ^17.0 || ^18.0 || ^19.0
-    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -4390,8 +4390,8 @@ __metadata:
   peerDependencies:
     "@types/react": "*"
     "@types/react-dom": "*"
-    react: ^16.8 || ^17.0 || ^18.0 || ^19.0
-    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -4440,8 +4440,8 @@ __metadata:
   peerDependencies:
     "@types/react": "*"
     "@types/react-dom": "*"
-    react: ^16.8 || ^17.0 || ^18.0 || ^19.0
-    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -4469,8 +4469,8 @@ __metadata:
   peerDependencies:
     "@types/react": "*"
     "@types/react-dom": "*"
-    react: ^16.8 || ^17.0 || ^18.0 || ^19.0
-    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -4499,7 +4499,7 @@ __metadata:
   resolution: "@radix-ui/react-use-callback-ref@workspace:packages/react/use-callback-ref"
   peerDependencies:
     "@types/react": "*"
-    react: ^16.8 || ^17.0 || ^18.0 || ^19.0
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -4529,7 +4529,7 @@ __metadata:
     "@radix-ui/react-use-callback-ref": "workspace:*"
   peerDependencies:
     "@types/react": "*"
-    react: ^16.8 || ^17.0 || ^18.0 || ^19.0
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -4559,7 +4559,7 @@ __metadata:
     "@radix-ui/react-use-callback-ref": "workspace:*"
   peerDependencies:
     "@types/react": "*"
-    react: ^16.8 || ^17.0 || ^18.0 || ^19.0
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -4586,7 +4586,7 @@ __metadata:
   resolution: "@radix-ui/react-use-layout-effect@workspace:packages/react/use-layout-effect"
   peerDependencies:
     "@types/react": "*"
-    react: ^16.8 || ^17.0 || ^18.0 || ^19.0
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -4613,7 +4613,7 @@ __metadata:
   resolution: "@radix-ui/react-use-previous@workspace:packages/react/use-previous"
   peerDependencies:
     "@types/react": "*"
-    react: ^16.8 || ^17.0 || ^18.0 || ^19.0
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -4643,7 +4643,7 @@ __metadata:
     "@radix-ui/rect": "workspace:*"
   peerDependencies:
     "@types/react": "*"
-    react: ^16.8 || ^17.0 || ^18.0 || ^19.0
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -4674,7 +4674,7 @@ __metadata:
     "@types/resize-observer-browser": "npm:^0.1.4"
   peerDependencies:
     "@types/react": "*"
-    react: ^16.8 || ^17.0 || ^18.0 || ^19.0
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -4709,8 +4709,8 @@ __metadata:
   peerDependencies:
     "@types/react": "*"
     "@types/react-dom": "*"
-    react: ^16.8 || ^17.0 || ^18.0 || ^19.0
-    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
   peerDependenciesMeta:
     "@types/react":
       optional: true
