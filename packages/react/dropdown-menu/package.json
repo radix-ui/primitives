@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-dropdown-menu",
-  "version": "2.1.0-rc.7",
+  "version": "2.1.0",
   "license": "MIT",
   "exports": {
     ".": {
@@ -57,6 +57,5 @@
   },
   "bugs": {
     "url": "https://github.com/radix-ui/primitives/issues"
-  },
-  "stableVersion": "2.0.6"
+  }
 }

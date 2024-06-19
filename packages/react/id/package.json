@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-id",
-  "version": "1.1.0-rc.7",
+  "version": "1.1.0",
   "license": "MIT",
   "exports": {
     ".": {
@@ -46,6 +46,5 @@
   },
   "dependencies": {
     "@radix-ui/react-use-layout-effect": "workspace:*"
-  },
-  "stableVersion": "1.0.1"
+  }
 }
