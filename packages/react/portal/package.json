@@ -28,7 +28,8 @@
     "version": "yarn version"
   },
   "dependencies": {
-    "@radix-ui/react-primitive": "workspace:*"
+    "@radix-ui/react-primitive": "workspace:*",
+    "@radix-ui/react-use-layout-effect": "workspace:*"
   },
   "peerDependencies": {
     "@types/react": "*",
