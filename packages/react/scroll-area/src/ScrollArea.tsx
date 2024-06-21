@@ -162,7 +162,7 @@ const ScrollAreaViewport = React.forwardRef<ScrollAreaViewportElement, ScrollAre
             /**
              * We don't support `visible` because the intention is to have at least one scrollbar
              * if this component is used and `visible` will behave like `auto` in that case
-             * https://developer.mozilla.org/en-US/docs/Web/CSS/overflowed#description
+             * https://developer.mozilla.org/en-US/docs/Web/CSS/overflow#description
              *
              * We don't handle `auto` because the intention is for the native implementation
              * to be hidden if using this component. We just want to ensure the node is scrollable
