@@ -227,4 +227,4 @@ export {
   Root,
   Indicator,
 };
-export type { CheckboxProps, CheckboxIndicatorProps };
+export type { CheckboxProps, CheckboxIndicatorProps, CheckedState };
