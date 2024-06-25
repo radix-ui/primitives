@@ -754,6 +754,7 @@ export {
   Arrow,
 };
 export type {
+  TooltipProviderProps,
   TooltipProps,
   TooltipTriggerProps,
   TooltipPortalProps,
