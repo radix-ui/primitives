@@ -8,4 +8,4 @@ export {
   Root,
   Indicator,
 } from './Checkbox';
-export type { CheckboxProps, CheckboxIndicatorProps } from './Checkbox';
+export type { CheckboxProps, CheckboxIndicatorProps, CheckedState } from './Checkbox';
