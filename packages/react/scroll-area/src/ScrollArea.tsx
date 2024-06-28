@@ -141,22 +141,39 @@ interface ScrollAreaViewportProps extends PrimitiveDivProps {
 
 const ScrollAreaViewport = React.forwardRef<ScrollAreaViewportElement, ScrollAreaViewportProps>(
   (props: ScopedProps<ScrollAreaViewportProps>, forwardedRef) => {
-    const { __scopeScrollArea, children, nonce, ...viewportProps } = props;
+    const { __scopeScrollArea, children, asChild, nonce, ...viewportProps } = props;
     const context = useScrollAreaContext(VIEWPORT_NAME, __scopeScrollArea);
     const ref = React.useRef<ScrollAreaViewportElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, ref, context.onViewportChange);
     return (
       <>
-        {/* Hide scrollbars cross-browser and enable momentum scroll for touch devices */}
         <style
           dangerouslySetInnerHTML={{
-            __html: `[data-radix-scroll-area-viewport]{scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;}[data-radix-scroll-area-viewport]::-webkit-scrollbar{display:none}`,
+            __html: `
+[data-radix-scroll-area-viewport] {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  -webkit-overflow-scrolling: touch;
+}
+[data-radix-scroll-area-viewport]::-webkit-scrollbar {
+  display: none;
+}
+:where([data-radix-scroll-area-viewport]) {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+:where([data-radix-scroll-area-content]) {
+  flex-grow: 1;
+}
+`,
           }}
           nonce={nonce}
         />
         <Primitive.div
           data-radix-scroll-area-viewport=""
           {...viewportProps}
+          asChild={asChild}
           ref={composedRefs}
           style={{
             /**
@@ -175,16 +192,22 @@ const ScrollAreaViewport = React.forwardRef<ScrollAreaViewportElement, ScrollAre
             ...props.style,
           }}
         >
-          {/**
-           * `display: table` ensures our content div will match the size of its children in both
-           * horizontal and vertical axis so we can determine if scroll width/height changed and
-           * recalculate thumb sizes. This doesn't account for children with *percentage*
-           * widths that change. We'll wait to see what use-cases consumers come up with there
-           * before trying to resolve it.
-           */}
-          <div ref={context.onContentChange} style={{ minWidth: '100%', display: 'table' }}>
-            {children}
-          </div>
+          {getSubtree({ asChild, children }, (children) => (
+            <div
+              data-radix-scroll-area-content=""
+              ref={context.onContentChange}
+              /**
+               * When horizontal scrollbar is visible: this element should be at least
+               * as wide as its children for size calculations to work correctly.
+               *
+               * When horizontal scrollbar is NOT visible: this element's width should
+               * be constrained by the parent container to enable `text-overflow: ellipsis`
+               */
+              style={{ minWidth: context.scrollbarXEnabled ? 'fit-content' : undefined }}
+            >
+              {children}
+            </div>
+          ))}
         </Primitive.div>
       </>
     );
@@ -1007,6 +1030,26 @@ function useResizeObserver(element: HTMLElement | null, onResize: () => void) {
       };
     }
   }, [element, handleResize]);
+}
+
+/**
+ * This is a helper function that is used when a component supports `asChild`
+ * using the `Slot` component but its implementation contains nested DOM elements.
+ *
+ * Using it ensures if a consumer uses the `asChild` prop, the elements are in
+ * correct order in the DOM, adopting the intended consumer `children`.
+ */
+function getSubtree(
+  options: { asChild: boolean | undefined; children: React.ReactNode },
+  content: React.ReactNode | ((children: React.ReactNode) => React.ReactNode)
+) {
+  const { asChild, children } = options;
+  if (!asChild) return typeof content === 'function' ? content(children) : content;
+
+  const firstChild = React.Children.only(children) as React.ReactElement;
+  return React.cloneElement(firstChild, {
+    children: typeof content === 'function' ? content(firstChild.props.children) : content,
+  });
 }
 
 /* -----------------------------------------------------------------------------------------------*/

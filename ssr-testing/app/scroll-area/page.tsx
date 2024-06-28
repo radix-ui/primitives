@@ -9,27 +9,57 @@ import {
 
 export default function Page() {
   return (
-    <ScrollArea style={{ width: '400px', height: '400px' }}>
-      <Scrollbar orientation="vertical">
-        <ScrollAreaThumb />
-      </Scrollbar>
+    <div>
+      <ScrollArea>
+        <Scrollbar orientation="vertical">
+          <ScrollAreaThumb />
+        </Scrollbar>
 
-      <Scrollbar orientation="horizontal">
-        <ScrollAreaThumb />
-      </Scrollbar>
+        <Scrollbar orientation="horizontal">
+          <ScrollAreaThumb />
+        </Scrollbar>
 
-      <ScrollAreaViewport style={{ width: '2000px', padding: 20 }}>
-        <LongContent />
-        <LongContent />
-        <LongContent />
-        <LongContent />
-        <LongContent />
-        <LongContent />
-        <LongContent />
-      </ScrollAreaViewport>
+        <ScrollAreaViewport style={{ width: '400px', height: '400px' }}>
+          <div style={{ width: '2000px', padding: 20 }}>
+            <LongContent />
+            <LongContent />
+            <LongContent />
+            <LongContent />
+            <LongContent />
+            <LongContent />
+            <LongContent />
+          </div>
+        </ScrollAreaViewport>
 
-      <ScrollAreaCorner />
-    </ScrollArea>
+        <ScrollAreaCorner />
+      </ScrollArea>
+
+      <ScrollArea>
+        <Scrollbar orientation="vertical">
+          <ScrollAreaThumb />
+        </Scrollbar>
+
+        <Scrollbar orientation="horizontal">
+          <ScrollAreaThumb />
+        </Scrollbar>
+
+        <ScrollAreaViewport style={{ width: '400px', height: '400px' }} asChild>
+          <section style={{ border: '1px solid' }}>
+            <div style={{ width: '2000px', padding: 20 }}>
+              <LongContent />
+              <LongContent />
+              <LongContent />
+              <LongContent />
+              <LongContent />
+              <LongContent />
+              <LongContent />
+            </div>
+          </section>
+        </ScrollAreaViewport>
+
+        <ScrollAreaCorner />
+      </ScrollArea>
+    </div>
   );
 }
 
