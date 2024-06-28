@@ -10,4 +10,4 @@ $ npm install @radix-ui/react-scroll-area
 
 ## Usage
 
-View docs [here](https://radix-ui.com/primitives/docs/components/scrollbar).
+View docs [here](https://radix-ui.com/primitives/docs/components/scroll-area).
