@@ -723,7 +723,7 @@ const MenuItemImpl = React.forwardRef<MenuItemImplElement, MenuItemImplProps>(
             onPointerMove={composeEventHandlers(
               props.onPointerMove,
               whenMouse((event) => {
-                if (disabled) {
+                if (disabled || event.nativeEvent.offsetY < 0) {
                   contentContext.onItemLeave(event);
                 } else {
                   contentContext.onItemEnter(event);
