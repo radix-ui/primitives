@@ -74,7 +74,7 @@ const Primitive = NODES.reduce((primitive, node) => {
  *
  * In order to ensure that updates from custom events are applied predictably, we need to manually flush the batch.
  * This utility should be used when dispatching a custom event from within another `discrete` event, this utility
- * is not nessesary when dispatching known event types, or if dispatching a custom type inside a non-discrete event.
+ * is not necessary when dispatching known event types, or if dispatching a custom type inside a non-discrete event.
  * For example:
  *
  * dispatching a known click 👎

@@ -393,7 +393,7 @@ const PopoverContentImpl = React.forwardRef<PopoverContentImplElement, PopoverCo
     const popperScope = usePopperScope(__scopePopover);
 
     // Make sure the whole tree has focus guards as our `Popover` may be
-    // the last element in the DOM (beacuse of the `Portal`)
+    // the last element in the DOM (because of the `Portal`)
     useFocusGuards();
 
     return (

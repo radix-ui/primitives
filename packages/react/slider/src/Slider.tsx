@@ -653,8 +653,8 @@ const BubbleInput = (props: React.ComponentPropsWithoutRef<'input'>) => {
    * wrap it will not be able to access its value via the FormData API.
    *
    * We purposefully do not add the `value` attribute here to allow the value
-   * to be set programatically and bubble to any parent form `onChange` event.
-   * Adding the `value` will cause React to consider the programatic
+   * to be set programmatically and bubble to any parent form `onChange` event.
+   * Adding the `value` will cause React to consider the programmatic
    * dispatch a duplicate and it will get swallowed.
    */
   return <input style={{ display: 'none' }} {...inputProps} ref={ref} defaultValue={value} />;

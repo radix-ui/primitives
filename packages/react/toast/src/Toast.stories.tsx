@@ -405,7 +405,7 @@ export const Chromatic = () => {
         <Toast.Viewport className={chromaticViewport()}></Toast.Viewport>
       </Toast.Provider>
 
-      <h2>Duration overidden</h2>
+      <h2>Duration overridden</h2>
       <Toast.Provider duration={Infinity}>
         <Toast.Root duration={SNAPSHOT_DELAY - 100} className={rootClass()}>
           <div className={headerClass()}>
