@@ -272,7 +272,7 @@ const DialogContentModal = React.forwardRef<DialogContentTypeElement, DialogCont
         // we make sure focus isn't trapped once `DialogContent` has been closed
         // (closed !== unmounted when animating out)
         trapFocus={context.open}
-        disableOutsidePointerEvents
+        disableOutsidePointerEvents={context.open}
         onCloseAutoFocus={composeEventHandlers(props.onCloseAutoFocus, (event) => {
           event.preventDefault();
           context.triggerRef.current?.focus();
