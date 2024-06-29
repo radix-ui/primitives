@@ -91,6 +91,7 @@ interface SelectProps {
   autoComplete?: string;
   disabled?: boolean;
   required?: boolean;
+  id?: string;
 }
 
 const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
@@ -108,6 +109,7 @@ const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
     autoComplete,
     disabled,
     required,
+    id,
   } = props;
   const popperScope = usePopperScope(__scopeSelect);
   const [trigger, setTrigger] = React.useState<SelectTriggerElement | null>(null);
@@ -189,6 +191,10 @@ const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
             // enable form autofill
             onChange={(event) => setValue(event.target.value)}
             disabled={disabled}
+            id={id}
+            onFocus={() => {
+              if (trigger) trigger.focus();
+            }}
           >
             {value === undefined ? <option value="" /> : null}
             {Array.from(nativeOptionsSet)}
