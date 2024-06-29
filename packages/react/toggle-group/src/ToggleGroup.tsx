@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { createContextScope } from '@radix-ui/react-context';
 import { Primitive } from '@radix-ui/react-primitive';

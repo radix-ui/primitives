@@ -1,3 +1,5 @@
+'use client';
+
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { composeEventHandlers } from '@radix-ui/primitive';
