@@ -35,6 +35,7 @@ export const WithDeferredMountAnimation = () => {
   const timerRef = React.useRef(0);
   const [open, setOpen] = React.useState(false);
   const [animate, setAnimate] = React.useState(false);
+  const [animationEndCount, setAnimationEndCount] = React.useState(0);
 
   React.useEffect(() => {
     if (open) {
@@ -45,15 +46,28 @@ export const WithDeferredMountAnimation = () => {
     }
   }, [open]);
 
+  const handleAnimationEnd = React.useCallback(() => {
+    setAnimationEndCount((count) => count + 1);
+  }, []);
+
   return (
     <>
       <p>
         Deferred animation should unmount correctly when toggled. Content will flash briefly while
         we wait for animation to be applied.
       </p>
-      <Toggles nodeRef={ref} open={open} onOpenChange={setOpen} />
+      <Toggles
+        nodeRef={ref}
+        open={open}
+        onOpenChange={setOpen}
+        animationEndCount={animationEndCount}
+      />
       <Presence present={open}>
-        <div className={animate ? mountAnimationClass() : undefined} ref={ref}>
+        <div
+          className={animate ? mountAnimationClass() : undefined}
+          onAnimationEnd={handleAnimationEnd}
+          ref={ref}
+        >
           Content
         </div>
       </Presence>
@@ -64,12 +78,27 @@ export const WithDeferredMountAnimation = () => {
 function Animation(props: React.ComponentProps<'div'>) {
   const ref = React.useRef<HTMLDivElement>(null);
   const [open, setOpen] = React.useState(false);
+  const [animationEndCount, setAnimationEndCount] = React.useState(0);
+
+  const handleAnimationEnd = React.useCallback(() => {
+    setAnimationEndCount((count) => count + 1);
+  }, []);
 
   return (
     <>
-      <Toggles nodeRef={ref} open={open} onOpenChange={setOpen} />
+      <Toggles
+        nodeRef={ref}
+        open={open}
+        onOpenChange={setOpen}
+        animationEndCount={animationEndCount}
+      />
       <Presence present={open}>
-        <div {...props} data-state={open ? 'open' : 'closed'} ref={ref}>
+        <div
+          {...props}
+          data-state={open ? 'open' : 'closed'}
+          onAnimationEnd={handleAnimationEnd}
+          ref={ref}
+        >
           Content
         </div>
       </Presence>
@@ -77,7 +106,7 @@ function Animation(props: React.ComponentProps<'div'>) {
   );
 }
 
-function Toggles({ open, onOpenChange, nodeRef }: any) {
+function Toggles({ open, onOpenChange, animationEndCount, nodeRef }: any) {
   function handleToggleVisibility() {
     const node = nodeRef.current;
     if (node) {
@@ -102,6 +131,10 @@ function Toggles({ open, onOpenChange, nodeRef }: any) {
         <button type="button" onClick={handleToggleVisibility}>
           toggle
         </button>
+      </fieldset>
+      <fieldset>
+        <legend>Animation end counter</legend>
+        <output>{animationEndCount}</output>
       </fieldset>
     </form>
   );
