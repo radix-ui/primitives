@@ -1149,7 +1149,7 @@ type MenuSubContentElement = MenuContentImplElement;
 interface MenuSubContentProps
   extends Omit<
     MenuContentImplProps,
-    keyof MenuContentImplPrivateProps | 'onCloseAutoFocus' | 'onEntryFocus' | 'side' | 'align'
+    keyof MenuContentImplPrivateProps | 'onCloseAutoFocus' | 'onEntryFocus' | 'align'
   > {
   /**
    * Used to force mounting when more control is needed. Useful when
@@ -1167,6 +1167,7 @@ const MenuSubContent = React.forwardRef<MenuSubContentElement, MenuSubContentPro
     const subContext = useMenuSubContext(SUB_CONTENT_NAME, props.__scopeMenu);
     const ref = React.useRef<MenuSubContentElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, ref);
+    const sideFromDir = rootContext.dir === 'rtl' ? 'left' : 'right';
     return (
       <Collection.Provider scope={props.__scopeMenu}>
         <Presence present={forceMount || context.open}>
@@ -1175,9 +1176,9 @@ const MenuSubContent = React.forwardRef<MenuSubContentElement, MenuSubContentPro
               id={subContext.contentId}
               aria-labelledby={subContext.triggerId}
               {...subContentProps}
+              side={subContentProps.side ?? sideFromDir}
               ref={composedRefs}
               align="start"
-              side={rootContext.dir === 'rtl' ? 'left' : 'right'}
               disableOutsidePointerEvents={false}
               disableOutsideScroll={false}
               trapFocus={false}
