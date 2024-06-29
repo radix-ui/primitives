@@ -982,7 +982,7 @@ const VIEWPORT_NAME = 'NavigationMenuViewport';
 
 type NavigationMenuViewportElement = NavigationMenuViewportImplElement;
 interface NavigationMenuViewportProps
-  extends Omit<NavigationMenuViewportImplProps, 'children' | 'activeContentValue'> {
+  extends Omit<NavigationMenuViewportImplProps, 'activeContentValue'> {
   /**
    * Used to force mounting when more control is needed. Useful when
    * controlling animation with React animation libraries.
