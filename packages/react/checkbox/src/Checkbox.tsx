@@ -82,6 +82,7 @@ const Checkbox = React.forwardRef<CheckboxElement, CheckboxProps>(
           data-disabled={disabled ? '' : undefined}
           disabled={disabled}
           value={value}
+          name={!isFormControl ? name : undefined}
           {...checkboxProps}
           ref={composedRefs}
           onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
