@@ -36,7 +36,7 @@ const SELECTION_KEYS = [' ', 'Enter'];
 
 const SELECT_NAME = 'Select';
 
-type ItemData = { value: string; disabled: boolean; textValue: string };
+type ItemData = { value: string | number; disabled: boolean; textValue: string };
 const [Collection, useCollection, createCollectionScope] = createCollection<
   SelectItemElement,
   ItemData
@@ -57,8 +57,8 @@ type SelectContextValue = {
   valueNodeHasChildren: boolean;
   onValueNodeHasChildrenChange(hasChildren: boolean): void;
   contentId: string;
-  value?: string;
-  onValueChange(value: string): void;
+  value?: string | number;
+  onValueChange(value: string | number): void;
   open: boolean;
   required?: boolean;
   onOpenChange(open: boolean): void;
@@ -80,9 +80,9 @@ const [SelectNativeOptionsProvider, useSelectNativeOptionsContext] =
 
 interface SelectProps {
   children?: React.ReactNode;
-  value?: string;
-  defaultValue?: string;
-  onValueChange?(value: string): void;
+  value?: string | number;
+  defaultValue?: string | number;
+  onValueChange?(value: string | number): void;
   open?: boolean;
   defaultOpen?: boolean;
   onOpenChange?(open: boolean): void;
@@ -433,12 +433,16 @@ type SelectContentContextValue = {
   content?: SelectContentElement | null;
   viewport?: SelectViewportElement | null;
   onViewportChange?: (node: SelectViewportElement | null) => void;
-  itemRefCallback?: (node: SelectItemElement | null, value: string, disabled: boolean) => void;
+  itemRefCallback?: (
+    node: SelectItemElement | null,
+    value: string | number,
+    disabled: boolean
+  ) => void;
   selectedItem?: SelectItemElement | null;
   onItemLeave?: () => void;
   itemTextRefCallback?: (
     node: SelectItemTextElement | null,
-    value: string,
+    value: string | number,
     disabled: boolean
   ) => void;
   focusSelectedItem?: () => void;
@@ -621,7 +625,7 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
     });
 
     const itemRefCallback = React.useCallback(
-      (node: SelectItemElement | null, value: string, disabled: boolean) => {
+      (node: SelectItemElement | null, value: string | number, disabled: boolean) => {
         const isFirstValidItem = !firstValidItemFoundRef.current && !disabled;
         const isSelectedItem = context.value !== undefined && context.value === value;
         if (isSelectedItem || isFirstValidItem) {
@@ -633,7 +637,7 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
     );
     const handleItemLeave = React.useCallback(() => content?.focus(), [content]);
     const itemTextRefCallback = React.useCallback(
-      (node: SelectItemTextElement | null, value: string, disabled: boolean) => {
+      (node: SelectItemTextElement | null, value: string | number, disabled: boolean) => {
         const isFirstValidItem = !firstValidItemFoundRef.current && !disabled;
         const isSelectedItem = context.value !== undefined && context.value === value;
         if (isSelectedItem || isFirstValidItem) {
@@ -1161,7 +1165,7 @@ SelectLabel.displayName = LABEL_NAME;
 const ITEM_NAME = 'SelectItem';
 
 type SelectItemContextValue = {
-  value: string;
+  value: string | number;
   disabled: boolean;
   textId: string;
   isSelected: boolean;
@@ -1173,7 +1177,7 @@ const [SelectItemContextProvider, useSelectItemContext] =
 
 type SelectItemElement = React.ElementRef<typeof Primitive.div>;
 interface SelectItemProps extends PrimitiveDivProps {
-  value: string;
+  value: string | number;
   disabled?: boolean;
   textValue?: string;
 }
@@ -1548,7 +1552,7 @@ SelectArrow.displayName = ARROW_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
-function shouldShowPlaceholder(value?: string) {
+function shouldShowPlaceholder(value?: string | number) {
   return value === '' || value === undefined;
 }
 
