@@ -141,7 +141,7 @@ interface ScrollAreaViewportProps extends PrimitiveDivProps {
 
 const ScrollAreaViewport = React.forwardRef<ScrollAreaViewportElement, ScrollAreaViewportProps>(
   (props: ScopedProps<ScrollAreaViewportProps>, forwardedRef) => {
-    const { __scopeScrollArea, children, nonce, ...viewportProps } = props;
+    const { __scopeScrollArea, asChild, children, nonce, ...viewportProps } = props;
     const context = useScrollAreaContext(VIEWPORT_NAME, __scopeScrollArea);
     const ref = React.useRef<ScrollAreaViewportElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, ref, context.onViewportChange);
@@ -182,9 +182,9 @@ const ScrollAreaViewport = React.forwardRef<ScrollAreaViewportElement, ScrollAre
            * widths that change. We'll wait to see what use-cases consumers come up with there
            * before trying to resolve it.
            */}
-          <div ref={context.onContentChange} style={{ minWidth: '100%', display: 'table' }}>
+          <Primitive.div ref={context.onContentChange} style={{ minWidth: '100%', display: 'table' }} asChild={asChild}>
             {children}
-          </div>
+          </Primitive.div>
         </Primitive.div>
       </>
     );
