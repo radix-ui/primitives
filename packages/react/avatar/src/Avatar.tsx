@@ -56,27 +56,57 @@ type AvatarImageElement = React.ElementRef<typeof Primitive.img>;
 type PrimitiveImageProps = React.ComponentPropsWithoutRef<typeof Primitive.img>;
 interface AvatarImageProps extends PrimitiveImageProps {
   onLoadingStatusChange?: (status: ImageLoadingStatus) => void;
+  component?: React.ComponentType;
 }
 
 const AvatarImage = React.forwardRef<AvatarImageElement, AvatarImageProps>(
   (props: ScopedProps<AvatarImageProps>, forwardedRef) => {
-    const { __scopeAvatar, src, onLoadingStatusChange = () => {}, ...imageProps } = props;
+    const {
+      __scopeAvatar,
+      src,
+      onLoadingStatusChange = () => {},
+      component: Component = Primitive.img,
+      ...imageProps
+    } = props;
+
     const context = useAvatarContext(IMAGE_NAME, __scopeAvatar);
-    const imageLoadingStatus = useImageLoadingStatus(src);
     const handleLoadingStatusChange = useCallbackRef((status: ImageLoadingStatus) => {
       onLoadingStatusChange(status);
       context.onImageLoadingStatusChange(status);
     });
 
     useLayoutEffect(() => {
-      if (imageLoadingStatus !== 'idle') {
-        handleLoadingStatusChange(imageLoadingStatus);
+      if (!src) {
+        handleLoadingStatusChange('error');
+        return;
       }
-    }, [imageLoadingStatus, handleLoadingStatusChange]);
 
-    return imageLoadingStatus === 'loaded' ? (
-      <Primitive.img {...imageProps} ref={forwardedRef} src={src} />
-    ) : null;
+      handleLoadingStatusChange('loading');
+    }, [handleLoadingStatusChange, src]);
+
+    return (
+      <Component
+        {...imageProps}
+        ref={forwardedRef}
+        src={src}
+        onLoad={(event) => {
+          handleLoadingStatusChange('loaded');
+          if (imageProps.onLoad) {
+            imageProps.onLoad(event);
+          }
+        }}
+        onError={(event) => {
+          handleLoadingStatusChange('error');
+          if (imageProps.onError) {
+            imageProps.onError(event);
+          }
+        }}
+        style={{
+          display: context.imageLoadingStatus !== 'loaded' ? 'none' : undefined,
+          ...imageProps.style,
+        }}
+      />
+    );
   }
 );
 
@@ -116,35 +146,6 @@ AvatarFallback.displayName = FALLBACK_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
-function useImageLoadingStatus(src?: string) {
-  const [loadingStatus, setLoadingStatus] = React.useState<ImageLoadingStatus>('idle');
-
-  useLayoutEffect(() => {
-    if (!src) {
-      setLoadingStatus('error');
-      return;
-    }
-
-    let isMounted = true;
-    const image = new window.Image();
-
-    const updateStatus = (status: ImageLoadingStatus) => () => {
-      if (!isMounted) return;
-      setLoadingStatus(status);
-    };
-
-    setLoadingStatus('loading');
-    image.onload = updateStatus('loaded');
-    image.onerror = updateStatus('error');
-    image.src = src;
-
-    return () => {
-      isMounted = false;
-    };
-  }, [src]);
-
-  return loadingStatus;
-}
 const Root = Avatar;
 const Image = AvatarImage;
 const Fallback = AvatarFallback;
