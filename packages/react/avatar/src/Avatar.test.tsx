@@ -1,6 +1,6 @@
 import { axe } from 'jest-axe';
 import type { RenderResult } from '@testing-library/react';
-import { render } from '@testing-library/react';
+import { fireEvent, render } from '@testing-library/react';
 import * as Avatar from '@radix-ui/react-avatar';
 
 const ROOT_TEST_ID = 'avatar-root';
@@ -27,24 +27,6 @@ describe('given an Avatar with fallback and no image', () => {
 describe('given an Avatar with fallback and a working image', () => {
   let rendered: RenderResult;
   let image: HTMLElement | null = null;
-  const orignalGlobalImage = window.Image;
-
-  beforeAll(() => {
-    (window.Image as any) = class MockImage {
-      onload: () => void = () => {};
-      src: string = '';
-      constructor() {
-        setTimeout(() => {
-          this.onload();
-        }, DELAY);
-        return this;
-      }
-    };
-  });
-
-  afterAll(() => {
-    window.Image = orignalGlobalImage;
-  });
 
   beforeEach(() => {
     rendered = render(
@@ -66,6 +48,7 @@ describe('given an Avatar with fallback and a working image', () => {
   });
 
   it('should render the image after it has loaded', async () => {
+    fireEvent.load(rendered.getByRole('img', { hidden: true }));
     image = await rendered.findByRole('img');
     expect(image).toBeInTheDocument();
   });
