@@ -116,35 +116,46 @@ AvatarFallback.displayName = FALLBACK_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
+function setImageSrcAndGetInitialState(image: HTMLImageElement, src?: string): ImageLoadingStatus {
+  if (!src) {
+    return 'error';
+  }
+  if (image.src !== src) {
+    image.src = src;
+  }
+  return image.complete && image.naturalWidth > 0 ? 'loaded' : 'loading';
+}
+
 function useImageLoadingStatus(src?: string, referrerPolicy?: React.HTMLAttributeReferrerPolicy) {
-  const [loadingStatus, setLoadingStatus] = React.useState<ImageLoadingStatus>('idle');
+  const image = React.useRef(new window.Image());
+  const [loadingStatus, setLoadingStatus] = React.useState<ImageLoadingStatus>(() =>
+    setImageSrcAndGetInitialState(image.current, src)
+  );
 
   useLayoutEffect(() => {
-    if (!src) {
-      setLoadingStatus('error');
-      return;
-    }
+    setLoadingStatus(setImageSrcAndGetInitialState(image.current, src));
+  }, [src]);
 
-    let isMounted = true;
-    const image = new window.Image();
-
+  useLayoutEffect(() => {
     const updateStatus = (status: ImageLoadingStatus) => () => {
-      if (!isMounted) return;
       setLoadingStatus(status);
     };
 
-    setLoadingStatus('loading');
-    image.onload = updateStatus('loaded');
-    image.onerror = updateStatus('error');
-    image.src = src;
+    const img = image.current;
+
+    const handleLoad = updateStatus('loaded');
+    const handleError = updateStatus('error');
+    img.addEventListener('load', handleLoad);
+    img.addEventListener('error', handleError);
     if (referrerPolicy) {
-      image.referrerPolicy = referrerPolicy;
+      img.referrerPolicy = referrerPolicy;
     }
 
     return () => {
-      isMounted = false;
+      img.removeEventListener('load', handleLoad);
+      img.removeEventListener('error', handleError);
     };
-  }, [src, referrerPolicy]);
+  }, [referrerPolicy]);
 
   return loadingStatus;
 }
