@@ -26,6 +26,7 @@ const [AvatarProvider, useAvatarContext] = createAvatarContext<AvatarContextValu
 
 type AvatarElement = React.ElementRef<typeof Primitive.span>;
 type PrimitiveSpanProps = React.ComponentPropsWithoutRef<typeof Primitive.span>;
+
 interface AvatarProps extends PrimitiveSpanProps {}
 
 const Avatar = React.forwardRef<AvatarElement, AvatarProps>(
@@ -54,6 +55,7 @@ const IMAGE_NAME = 'AvatarImage';
 
 type AvatarImageElement = React.ElementRef<typeof Primitive.img>;
 type PrimitiveImageProps = React.ComponentPropsWithoutRef<typeof Primitive.img>;
+
 interface AvatarImageProps extends PrimitiveImageProps {
   onLoadingStatusChange?: (status: ImageLoadingStatus) => void;
 }
@@ -89,6 +91,7 @@ AvatarImage.displayName = IMAGE_NAME;
 const FALLBACK_NAME = 'AvatarFallback';
 
 type AvatarFallbackElement = React.ElementRef<typeof Primitive.span>;
+
 interface AvatarFallbackProps extends PrimitiveSpanProps {
   delayMs?: number;
 }
@@ -116,35 +119,47 @@ AvatarFallback.displayName = FALLBACK_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
+function setImageSrcAndGetInitialState(image: HTMLImageElement, src?: string): ImageLoadingStatus {
+  if (!src) {
+    return 'error';
+  }
+  if (image.src !== src) {
+    image.src = src;
+  }
+  return image.complete && image.naturalWidth > 0 ? 'loaded' : 'loading';
+}
+
 function useImageLoadingStatus(src?: string) {
-  const [loadingStatus, setLoadingStatus] = React.useState<ImageLoadingStatus>('idle');
+  const image = React.useRef(new window.Image());
+  const [loadingStatus, setLoadingStatus] = React.useState<ImageLoadingStatus>(() =>
+    setImageSrcAndGetInitialState(image.current, src)
+  );
 
   useLayoutEffect(() => {
-    if (!src) {
-      setLoadingStatus('error');
-      return;
-    }
+    setLoadingStatus(setImageSrcAndGetInitialState(image.current, src));
+  }, [src]);
 
-    let isMounted = true;
-    const image = new window.Image();
-
+  useLayoutEffect(() => {
     const updateStatus = (status: ImageLoadingStatus) => () => {
-      if (!isMounted) return;
       setLoadingStatus(status);
     };
 
-    setLoadingStatus('loading');
-    image.onload = updateStatus('loaded');
-    image.onerror = updateStatus('error');
-    image.src = src;
+    const img = image.current;
+
+    const handleLoad = updateStatus('loaded');
+    const handleError = updateStatus('error');
+    img.addEventListener('load', handleLoad);
+    img.addEventListener('error', handleError);
 
     return () => {
-      isMounted = false;
+      img.removeEventListener('load', handleLoad);
+      img.removeEventListener('error', handleError);
     };
-  }, [src]);
+  }, []);
 
   return loadingStatus;
 }
+
 const Root = Avatar;
 const Image = AvatarImage;
 const Fallback = AvatarFallback;
