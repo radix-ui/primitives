@@ -545,12 +545,13 @@ const SliderThumb = React.forwardRef<SliderThumbElement, SliderThumbProps>(
 type SliderThumbImplElement = React.ElementRef<typeof Primitive.span>;
 interface SliderThumbImplProps extends PrimitiveSpanProps {
   index: number;
+  inputRef?: React.RefObject<BubbleInputElement> | undefined;
   name?: string;
 }
 
 const SliderThumbImpl = React.forwardRef<SliderThumbImplElement, SliderThumbImplProps>(
   (props: ScopedProps<SliderThumbImplProps>, forwardedRef) => {
-    const { __scopeSlider, index, name, ...thumbProps } = props;
+    const { __scopeSlider, index, inputRef, name, ...thumbProps } = props;
     const context = useSliderContext(THUMB_NAME, __scopeSlider);
     const orientation = useSliderOrientationContext(THUMB_NAME, __scopeSlider);
     const [thumb, setThumb] = React.useState<HTMLSpanElement | null>(null);
@@ -618,6 +619,7 @@ const SliderThumbImpl = React.forwardRef<SliderThumbImplElement, SliderThumbImpl
               name ??
               (context.name ? context.name + (context.values.length > 1 ? '[]' : '') : undefined)
             }
+            inputRef={inputRef}
             value={value}
           />
         )}
@@ -630,10 +632,17 @@ SliderThumb.displayName = THUMB_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
-const BubbleInput = (props: React.ComponentPropsWithoutRef<'input'>) => {
-  const { value, ...inputProps } = props;
-  const ref = React.useRef<HTMLInputElement>(null);
+type BubbleInputElement = React.ElementRef<typeof Primitive.input>
+
+interface BubbleInputProps extends React.ComponentPropsWithoutRef<'input'> {
+  inputRef?: React.RefObject<BubbleInputElement> | undefined;
+}
+
+const BubbleInput = (props: BubbleInputProps) => {
+  const { value, inputRef, ...inputProps } = props;
   const prevValue = usePrevious(value);
+  let ref = React.useRef<BubbleInputElement>(null);
+  if (inputRef) ref = inputRef;  
 
   // Bubble value change to parents (e.g form change event)
   React.useEffect(() => {

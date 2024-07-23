@@ -3,6 +3,7 @@ import { DirectionProvider } from '@radix-ui/react-direction';
 import { css } from '../../../../stitches.config';
 import serialize from 'form-serialize';
 import * as Slider from '@radix-ui/react-slider';
+import { Primitive } from '@radix-ui/react-primitive';
 
 export default { title: 'Components/Slider' };
 
@@ -264,12 +265,16 @@ export const SmallSteps = () => {
 export const WithinForm = () => {
   const [data, setData] = React.useState({
     single: [0],
+    input: [0],
     multiple: [10, 15, 20, 80],
     price: {
       min: 30,
       max: 70,
     },
   });
+
+  const inputRef = React.useRef<React.ElementRef<typeof Primitive.input>>(null);
+
   return (
     <form
       onSubmit={(event) => {
@@ -278,6 +283,9 @@ export const WithinForm = () => {
       }}
       onChange={(event) => {
         const formData = serialize(event.currentTarget, { hash: true });
+        if (event.target !== inputRef.current) {
+          console.log("This is the event from our input reference");
+        }
         setData(formData as any);
       }}
     >
@@ -288,6 +296,19 @@ export const WithinForm = () => {
             <Slider.Range className={rangeClass()} />
           </Slider.Track>
           <Slider.Thumb className={thumbClass()} />
+        </Slider.Root>
+      </fieldset>
+
+      <br />
+      <br />
+
+      <fieldset>
+        <legend>Input Ref value: {String(inputRef.current?.value)}</legend>
+        <Slider.Root name="input" defaultValue={data.single} className={rootClass()}>
+          <Slider.Track className={trackClass()}>
+            <Slider.Range className={rangeClass()} />
+          </Slider.Track>
+          <Slider.Thumb className={thumbClass()} inputRef={inputRef} />
         </Slider.Root>
       </fieldset>
 
