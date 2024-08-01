@@ -462,8 +462,16 @@ interface FormMessageProps extends Omit<FormMessageImplProps, 'name'> {
 const FormMessage = React.forwardRef<FormMessageElement, FormMessageProps>(
   (props: ScopedProps<FormMessageProps>, forwardedRef) => {
     const { match, name: nameProp, ...messageProps } = props;
-    const fieldContext = useFormFieldContext(MESSAGE_NAME, props.__scopeForm);
+    const fieldContext = useFormFieldContext(MESSAGE_NAME, props.__scopeForm, {
+      isOptional: !!nameProp,
+    });
     const name = nameProp ?? fieldContext.name;
+
+    if (!nameProp && !fieldContext?.name) {
+      throw new Error(
+        `\`${MESSAGE_NAME}\` must be used within \`${FIELD_NAME}\` or specify the \`name\` prop`
+      );
+    }
 
     if (match === undefined) {
       return (
