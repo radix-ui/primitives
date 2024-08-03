@@ -56,7 +56,7 @@ function createContextScope(scopeName: string, createContextScopeDeps: CreateSco
       props: ContextValueType & { scope: Scope<ContextValueType>; children: React.ReactNode }
     ) {
       const { scope, children, ...context } = props;
-      const Context = scope?.[scopeName][index] || BaseContext;
+      const Context = scope?.[scopeName]?.[index] || BaseContext;
       // Only re-memoize when prop values change
       // eslint-disable-next-line react-hooks/exhaustive-deps
       const value = React.useMemo(() => context, Object.values(context)) as ContextValueType;
@@ -64,7 +64,7 @@ function createContextScope(scopeName: string, createContextScopeDeps: CreateSco
     }
 
     function useContext(consumerName: string, scope: Scope<ContextValueType | undefined>) {
-      const Context = scope?.[scopeName][index] || BaseContext;
+      const Context = scope?.[scopeName]?.[index] || BaseContext;
       const context = React.useContext(Context);
       if (context) return context;
       if (defaultContext !== undefined) return defaultContext;
