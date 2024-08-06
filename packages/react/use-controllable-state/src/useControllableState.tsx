@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
+import { usePrevious } from '@radix-ui/react-use-previous';
 
 type UseControllableStateParams<T> = {
   prop?: T | undefined;
@@ -41,15 +42,14 @@ function useUncontrolledState<T>({
 }: Omit<UseControllableStateParams<T>, 'prop'>) {
   const uncontrolledState = React.useState<T | undefined>(defaultProp);
   const [value] = uncontrolledState;
-  const prevValueRef = React.useRef(value);
+  const prevValue = usePrevious(value);
   const handleChange = useCallbackRef(onChange);
 
   React.useEffect(() => {
-    if (prevValueRef.current !== value) {
+    if (prevValue !== value) {
       handleChange(value as T);
-      prevValueRef.current = value;
     }
-  }, [value, prevValueRef, handleChange]);
+  }, [value, prevValue, handleChange]);
 
   return uncontrolledState;
 }
