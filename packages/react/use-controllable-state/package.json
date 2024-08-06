@@ -28,7 +28,8 @@
     "version": "yarn version"
   },
   "dependencies": {
-    "@radix-ui/react-use-callback-ref": "workspace:*"
+    "@radix-ui/react-use-callback-ref": "workspace:*",
+    "@radix-ui/react-use-previous": "workspace:*"
   },
   "peerDependencies": {
     "@types/react": "*",
