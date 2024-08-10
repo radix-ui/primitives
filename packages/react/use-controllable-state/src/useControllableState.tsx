@@ -30,7 +30,7 @@ function useControllableState<T>({
 
       handleChange(nextValue as T);
     },
-    [isControlled, value, setUncontrolledProp, handleChange]
+    [isControlled, value, handleChange]
   );
 
   return [value, setValue] as const;
