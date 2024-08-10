@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-popover",
-  "version": "1.0.7",
+  "version": "1.1.1",
   "license": "MIT",
   "exports": {
     ".": {
@@ -28,7 +28,6 @@
     "version": "yarn version"
   },
   "dependencies": {
-    "@babel/runtime": "^7.13.10",
     "@radix-ui/primitive": "workspace:*",
     "@radix-ui/react-compose-refs": "workspace:*",
     "@radix-ui/react-context": "workspace:*",
@@ -43,13 +42,13 @@
     "@radix-ui/react-slot": "workspace:*",
     "@radix-ui/react-use-controllable-state": "workspace:*",
     "aria-hidden": "^1.1.1",
-    "react-remove-scroll": "2.5.5"
+    "react-remove-scroll": "2.5.7"
   },
   "peerDependencies": {
     "@types/react": "*",
     "@types/react-dom": "*",
-    "react": "^16.8 || ^17.0 || ^18.0",
-    "react-dom": "^16.8 || ^17.0 || ^18.0"
+    "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc",
+    "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
   },
   "peerDependenciesMeta": {
     "@types/react": {

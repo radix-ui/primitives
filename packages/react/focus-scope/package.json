@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-focus-scope",
-  "version": "1.0.4",
+  "version": "1.1.0",
   "license": "MIT",
   "exports": {
     ".": {
@@ -28,7 +28,6 @@
     "version": "yarn version"
   },
   "dependencies": {
-    "@babel/runtime": "^7.13.10",
     "@radix-ui/react-compose-refs": "workspace:*",
     "@radix-ui/react-primitive": "workspace:*",
     "@radix-ui/react-use-callback-ref": "workspace:*"
@@ -36,8 +35,8 @@
   "peerDependencies": {
     "@types/react": "*",
     "@types/react-dom": "*",
-    "react": "^16.8 || ^17.0 || ^18.0",
-    "react-dom": "^16.8 || ^17.0 || ^18.0"
+    "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc",
+    "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
   },
   "peerDependenciesMeta": {
     "@types/react": {

@@ -16,7 +16,6 @@ import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { hideOthers } from 'aria-hidden';
 import { RemoveScroll } from 'react-remove-scroll';
 
-import type * as Radix from '@radix-ui/react-primitive';
 import type { Scope } from '@radix-ui/react-context';
 
 /* -------------------------------------------------------------------------------------------------
@@ -101,7 +100,7 @@ Popover.displayName = POPOVER_NAME;
 const ANCHOR_NAME = 'PopoverAnchor';
 
 type PopoverAnchorElement = React.ElementRef<typeof PopperPrimitive.Anchor>;
-type PopperAnchorProps = Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Anchor>;
+type PopperAnchorProps = React.ComponentPropsWithoutRef<typeof PopperPrimitive.Anchor>;
 interface PopoverAnchorProps extends PopperAnchorProps {}
 
 const PopoverAnchor = React.forwardRef<PopoverAnchorElement, PopoverAnchorProps>(
@@ -129,7 +128,7 @@ PopoverAnchor.displayName = ANCHOR_NAME;
 const TRIGGER_NAME = 'PopoverTrigger';
 
 type PopoverTriggerElement = React.ElementRef<typeof Primitive.button>;
-type PrimitiveButtonProps = Radix.ComponentPropsWithoutRef<typeof Primitive.button>;
+type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
 interface PopoverTriggerProps extends PrimitiveButtonProps {}
 
 const PopoverTrigger = React.forwardRef<PopoverTriggerElement, PopoverTriggerProps>(
@@ -351,9 +350,9 @@ const PopoverContentNonModal = React.forwardRef<PopoverContentTypeElement, Popov
 /* -----------------------------------------------------------------------------------------------*/
 
 type PopoverContentImplElement = React.ElementRef<typeof PopperPrimitive.Content>;
-type FocusScopeProps = Radix.ComponentPropsWithoutRef<typeof FocusScope>;
-type DismissableLayerProps = Radix.ComponentPropsWithoutRef<typeof DismissableLayer>;
-type PopperContentProps = Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Content>;
+type FocusScopeProps = React.ComponentPropsWithoutRef<typeof FocusScope>;
+type DismissableLayerProps = React.ComponentPropsWithoutRef<typeof DismissableLayer>;
+type PopperContentProps = React.ComponentPropsWithoutRef<typeof PopperPrimitive.Content>;
 interface PopoverContentImplProps
   extends Omit<PopperContentProps, 'onPlaced'>,
     Omit<DismissableLayerProps, 'onDismiss'> {
@@ -472,7 +471,7 @@ PopoverClose.displayName = CLOSE_NAME;
 const ARROW_NAME = 'PopoverArrow';
 
 type PopoverArrowElement = React.ElementRef<typeof PopperPrimitive.Arrow>;
-type PopperArrowProps = Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Arrow>;
+type PopperArrowProps = React.ComponentPropsWithoutRef<typeof PopperPrimitive.Arrow>;
 interface PopoverArrowProps extends PopperArrowProps {}
 
 const PopoverArrow = React.forwardRef<PopoverArrowElement, PopoverArrowProps>(

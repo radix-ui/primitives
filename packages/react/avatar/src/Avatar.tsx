@@ -4,7 +4,6 @@ import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { Primitive } from '@radix-ui/react-primitive';
 
-import type * as Radix from '@radix-ui/react-primitive';
 import type { Scope } from '@radix-ui/react-context';
 
 /* -------------------------------------------------------------------------------------------------
@@ -26,7 +25,7 @@ type AvatarContextValue = {
 const [AvatarProvider, useAvatarContext] = createAvatarContext<AvatarContextValue>(AVATAR_NAME);
 
 type AvatarElement = React.ElementRef<typeof Primitive.span>;
-type PrimitiveSpanProps = Radix.ComponentPropsWithoutRef<typeof Primitive.span>;
+type PrimitiveSpanProps = React.ComponentPropsWithoutRef<typeof Primitive.span>;
 interface AvatarProps extends PrimitiveSpanProps {}
 
 const Avatar = React.forwardRef<AvatarElement, AvatarProps>(
@@ -54,7 +53,7 @@ Avatar.displayName = AVATAR_NAME;
 const IMAGE_NAME = 'AvatarImage';
 
 type AvatarImageElement = React.ElementRef<typeof Primitive.img>;
-type PrimitiveImageProps = Radix.ComponentPropsWithoutRef<typeof Primitive.img>;
+type PrimitiveImageProps = React.ComponentPropsWithoutRef<typeof Primitive.img>;
 interface AvatarImageProps extends PrimitiveImageProps {
   onLoadingStatusChange?: (status: ImageLoadingStatus) => void;
 }
