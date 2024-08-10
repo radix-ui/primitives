@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { css } from '../../../../stitches.config';
 import { Label } from '@radix-ui/react-label';
 
@@ -18,6 +17,15 @@ export const WithControl = () => {
       <Control id="control" className={controlClass()} />
       <Label htmlFor="control">Label</Label>
     </>
+  );
+};
+
+export const WithInputNumber = (props: any) => {
+  return (
+    <Label>
+      <span>Name:</span>
+      <input type="number" />
+    </Label>
   );
 };
 

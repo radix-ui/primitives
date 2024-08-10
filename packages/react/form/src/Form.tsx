@@ -6,7 +6,6 @@ import { useId } from '@radix-ui/react-id';
 import { Label as LabelPrimitive } from '@radix-ui/react-label';
 import { Primitive } from '@radix-ui/react-primitive';
 
-import type * as Radix from '@radix-ui/react-primitive';
 import type { Scope } from '@radix-ui/react-context';
 
 type ScopedProps<P> = P & { __scopeForm?: Scope };
@@ -49,7 +48,7 @@ const [AriaDescriptionProvider, useAriaDescriptionContext] =
   createFormContext<AriaDescriptionContextValue>(FORM_NAME);
 
 type FormElement = React.ElementRef<typeof Primitive.form>;
-type PrimitiveFormProps = Radix.ComponentPropsWithoutRef<typeof Primitive.form>;
+type PrimitiveFormProps = React.ComponentPropsWithoutRef<typeof Primitive.form>;
 interface FormProps extends PrimitiveFormProps {
   onClearServerErrors?(): void;
 }
@@ -202,7 +201,7 @@ const [FormFieldProvider, useFormFieldContext] =
   createFormContext<FormFieldContextValue>(FIELD_NAME);
 
 type FormFieldElement = React.ElementRef<typeof Primitive.div>;
-type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
+type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface FormFieldProps extends PrimitiveDivProps {
   name: string;
   serverInvalid?: boolean;
@@ -237,7 +236,7 @@ FormField.displayName = FIELD_NAME;
 const LABEL_NAME = 'FormLabel';
 
 type FormLabelElement = React.ElementRef<typeof LabelPrimitive>;
-type LabelProps = Radix.ComponentPropsWithoutRef<typeof LabelPrimitive>;
+type LabelProps = React.ComponentPropsWithoutRef<typeof LabelPrimitive>;
 interface FormLabelProps extends LabelProps {}
 
 const FormLabel = React.forwardRef<FormLabelElement, FormLabelProps>(
@@ -269,7 +268,7 @@ FormLabel.displayName = LABEL_NAME;
 const CONTROL_NAME = 'FormControl';
 
 type FormControlElement = React.ElementRef<typeof Primitive.input>;
-type PrimitiveInputProps = Radix.ComponentPropsWithoutRef<typeof Primitive.input>;
+type PrimitiveInputProps = React.ComponentPropsWithoutRef<typeof Primitive.input>;
 interface FormControlProps extends PrimitiveInputProps {}
 
 const FormControl = React.forwardRef<FormControlElement, FormControlProps>(
@@ -435,7 +434,7 @@ const validityMatchers = [
   'valid',
   'valueMissing',
 ] as const;
-type ValidityMatcher = typeof validityMatchers[number];
+type ValidityMatcher = (typeof validityMatchers)[number];
 
 const DEFAULT_INVALID_MESSAGE = 'This value is not valid';
 const DEFAULT_BUILT_IN_MESSAGES: Record<ValidityMatcher, string | undefined> = {
@@ -509,7 +508,7 @@ const FormBuiltInMessage = React.forwardRef<FormBuiltInMessageElement, FormBuilt
 );
 
 type FormCustomMessageElement = React.ElementRef<typeof FormMessageImpl>;
-interface FormCustomMessageProps extends Radix.ComponentPropsWithoutRef<typeof FormMessageImpl> {
+interface FormCustomMessageProps extends React.ComponentPropsWithoutRef<typeof FormMessageImpl> {
   match: CustomMatcher;
   forceMatch?: boolean;
   name: string;
@@ -550,7 +549,7 @@ const FormCustomMessage = React.forwardRef<FormCustomMessageElement, FormCustomM
 );
 
 type FormMessageImplElement = React.ElementRef<typeof Primitive.span>;
-type PrimitiveSpanProps = Radix.ComponentPropsWithoutRef<typeof Primitive.span>;
+type PrimitiveSpanProps = React.ComponentPropsWithoutRef<typeof Primitive.span>;
 interface FormMessageImplProps extends PrimitiveSpanProps {
   name: string;
 }
@@ -601,7 +600,7 @@ FormValidityState.displayName = VALIDITY_STATE_NAME;
 const SUBMIT_NAME = 'FormSubmit';
 
 type FormSubmitElement = React.ElementRef<typeof Primitive.button>;
-type PrimitiveButtonProps = Radix.ComponentPropsWithoutRef<typeof Primitive.button>;
+type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
 interface FormSubmitProps extends PrimitiveButtonProps {}
 
 const FormSubmit = React.forwardRef<FormSubmitElement, FormSubmitProps>(

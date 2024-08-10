@@ -12,7 +12,6 @@ import { clamp } from '@radix-ui/number';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { useStateMachine } from './useStateMachine';
 
-import type * as Radix from '@radix-ui/react-primitive';
 import type { Scope } from '@radix-ui/react-context';
 
 type Direction = 'ltr' | 'rtl';
@@ -60,7 +59,7 @@ const [ScrollAreaProvider, useScrollAreaContext] =
   createScrollAreaContext<ScrollAreaContextValue>(SCROLL_AREA_NAME);
 
 type ScrollAreaElement = React.ElementRef<typeof Primitive.div>;
-type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
+type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface ScrollAreaProps extends PrimitiveDivProps {
   type?: ScrollAreaContextValue['type'];
   dir?: ScrollAreaContextValue['dir'];
@@ -136,11 +135,13 @@ ScrollArea.displayName = SCROLL_AREA_NAME;
 const VIEWPORT_NAME = 'ScrollAreaViewport';
 
 type ScrollAreaViewportElement = React.ElementRef<typeof Primitive.div>;
-interface ScrollAreaViewportProps extends PrimitiveDivProps {}
+interface ScrollAreaViewportProps extends PrimitiveDivProps {
+  nonce?: string;
+}
 
 const ScrollAreaViewport = React.forwardRef<ScrollAreaViewportElement, ScrollAreaViewportProps>(
   (props: ScopedProps<ScrollAreaViewportProps>, forwardedRef) => {
-    const { __scopeScrollArea, children, ...viewportProps } = props;
+    const { __scopeScrollArea, children, nonce, ...viewportProps } = props;
     const context = useScrollAreaContext(VIEWPORT_NAME, __scopeScrollArea);
     const ref = React.useRef<ScrollAreaViewportElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, ref, context.onViewportChange);
@@ -151,6 +152,7 @@ const ScrollAreaViewport = React.forwardRef<ScrollAreaViewportElement, ScrollAre
           dangerouslySetInnerHTML={{
             __html: `[data-radix-scroll-area-viewport]{scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;}[data-radix-scroll-area-viewport]::-webkit-scrollbar{display:none}`,
           }}
+          nonce={nonce}
         />
         <Primitive.div
           data-radix-scroll-area-viewport=""
@@ -160,7 +162,7 @@ const ScrollAreaViewport = React.forwardRef<ScrollAreaViewportElement, ScrollAre
             /**
              * We don't support `visible` because the intention is to have at least one scrollbar
              * if this component is used and `visible` will behave like `auto` in that case
-             * https://developer.mozilla.org/en-US/docs/Web/CSS/overflowed#description
+             * https://developer.mozilla.org/en-US/docs/Web/CSS/overflow#description
              *
              * We don't handle `auto` because the intention is for the native implementation
              * to be hidden if using this component. We just want to ensure the node is scrollable
@@ -630,7 +632,7 @@ type ScrollAreaScrollbarImplPrivateProps = {
   onResize(): void;
 };
 interface ScrollAreaScrollbarImplProps
-  extends PrimitiveDivProps,
+  extends Omit<PrimitiveDivProps, keyof ScrollAreaScrollbarImplPrivateProps>,
     ScrollAreaScrollbarImplPrivateProps {}
 
 const ScrollAreaScrollbarImpl = React.forwardRef<

@@ -38,7 +38,7 @@ export const Chromatic = () => (
     </Progress.Root>
 
     <h1>Indeterminate</h1>
-    <Progress.Root className={rootClass()} value={null}>
+    <Progress.Root className={rootClass()}>
       <Progress.Indicator className={chromaticIndicatorClass()}>/</Progress.Indicator>
     </Progress.Root>
 
@@ -54,7 +54,7 @@ export const Chromatic = () => (
     </Progress.Root>
 
     <h2>Indeterminate</h2>
-    <Progress.Root className={rootAttrClass()} value={null}>
+    <Progress.Root className={rootAttrClass()}>
       <Progress.Indicator className={indicatorAttrClass()}>/</Progress.Indicator>
     </Progress.Root>
 

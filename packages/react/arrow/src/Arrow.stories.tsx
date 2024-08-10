@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { Arrow } from '@radix-ui/react-arrow';
 
 export default { title: 'Utilities/Arrow' };
