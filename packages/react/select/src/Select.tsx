@@ -859,7 +859,7 @@ const SelectItemAlignedPosition = React.forwardRef<
       const willAlignWithoutTopOverflow = contentTopToItemMiddle <= topEdgeToTriggerMiddle;
 
       if (willAlignWithoutTopOverflow) {
-        const isLastItem = selectedItem === items[items.length - 1].ref.current;
+        const isLastItem = items.length > 0 && selectedItem === items[items.length - 1].ref.current;
         contentWrapper.style.bottom = 0 + 'px';
         const viewportOffsetBottom =
           content.clientHeight - viewport.offsetTop - viewport.offsetHeight;
@@ -874,7 +874,7 @@ const SelectItemAlignedPosition = React.forwardRef<
         const height = contentTopToItemMiddle + clampedTriggerMiddleToBottomEdge;
         contentWrapper.style.height = height + 'px';
       } else {
-        const isFirstItem = selectedItem === items[0].ref.current;
+        const isFirstItem = items.length > 0 && selectedItem === items[0].ref.current;
         contentWrapper.style.top = 0 + 'px';
         const clampedTopEdgeToTriggerMiddle = Math.max(
           topEdgeToTriggerMiddle,
