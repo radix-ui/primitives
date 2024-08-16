@@ -9,7 +9,6 @@ import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { useDirection } from '@radix-ui/react-direction';
 
-import type * as Radix from '@radix-ui/react-primitive';
 import type { Scope } from '@radix-ui/react-context';
 
 const ENTRY_FOCUS = 'rovingFocusGroup.onEntryFocus';
@@ -84,7 +83,7 @@ RovingFocusGroup.displayName = GROUP_NAME;
 /* -----------------------------------------------------------------------------------------------*/
 
 type RovingFocusGroupImplElement = React.ElementRef<typeof Primitive.div>;
-type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
+type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface RovingFocusGroupImplProps
   extends Omit<PrimitiveDivProps, 'dir'>,
     RovingFocusGroupOptions {
@@ -201,7 +200,7 @@ const RovingFocusGroupImpl = React.forwardRef<
 const ITEM_NAME = 'RovingFocusGroupItem';
 
 type RovingFocusItemElement = React.ElementRef<typeof Primitive.span>;
-type PrimitiveSpanProps = Radix.ComponentPropsWithoutRef<typeof Primitive.span>;
+type PrimitiveSpanProps = React.ComponentPropsWithoutRef<typeof Primitive.span>;
 interface RovingFocusItemProps extends PrimitiveSpanProps {
   tabStopId?: string;
   focusable?: boolean;

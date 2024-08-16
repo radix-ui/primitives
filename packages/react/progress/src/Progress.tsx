@@ -2,7 +2,6 @@ import * as React from 'react';
 import { createContextScope } from '@radix-ui/react-context';
 import { Primitive } from '@radix-ui/react-primitive';
 
-import type * as Radix from '@radix-ui/react-primitive';
 import type { Scope } from '@radix-ui/react-context';
 
 /* -------------------------------------------------------------------------------------------------
@@ -21,7 +20,7 @@ const [ProgressProvider, useProgressContext] =
   createProgressContext<ProgressContextValue>(PROGRESS_NAME);
 
 type ProgressElement = React.ElementRef<typeof Primitive.div>;
-type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
+type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface ProgressProps extends PrimitiveDivProps {
   value?: number | null | undefined;
   max?: number;
@@ -32,13 +31,22 @@ const Progress = React.forwardRef<ProgressElement, ProgressProps>(
   (props: ScopedProps<ProgressProps>, forwardedRef) => {
     const {
       __scopeProgress,
-      value: valueProp,
+      value: valueProp = null,
       max: maxProp,
       getValueLabel = defaultGetValueLabel,
       ...progressProps
     } = props;
 
+    if ((maxProp || maxProp === 0) && !isValidMaxNumber(maxProp)) {
+      console.error(getInvalidMaxError(`${maxProp}`, 'Progress'));
+    }
+
     const max = isValidMaxNumber(maxProp) ? maxProp : DEFAULT_MAX;
+
+    if (valueProp !== null && !isValidValueNumber(valueProp, max)) {
+      console.error(getInvalidValueError(`${valueProp}`, 'Progress'));
+    }
+
     const value = isValidValueNumber(valueProp, max) ? valueProp : null;
     const valueLabel = isNumber(value) ? getValueLabel(value, max) : undefined;
 
@@ -62,26 +70,6 @@ const Progress = React.forwardRef<ProgressElement, ProgressProps>(
 );
 
 Progress.displayName = PROGRESS_NAME;
-
-Progress.propTypes = {
-  max(props, propName, componentName) {
-    const propValue = props[propName];
-    const strVal = String(propValue);
-    if (propValue && !isValidMaxNumber(propValue)) {
-      return new Error(getInvalidMaxError(strVal, componentName));
-    }
-    return null;
-  },
-  value(props, propName, componentName) {
-    const valueProp = props[propName];
-    const strVal = String(valueProp);
-    const max = isValidMaxNumber(props.max) ? props.max : DEFAULT_MAX;
-    if (valueProp != null && !isValidValueNumber(valueProp, max)) {
-      return new Error(getInvalidValueError(strVal, componentName));
-    }
-    return null;
-  },
-};
 
 /* -------------------------------------------------------------------------------------------------
  * ProgressIndicator
@@ -152,7 +140,7 @@ function getInvalidValueError(propValue: string, componentName: string) {
   return `Invalid prop \`value\` of value \`${propValue}\` supplied to \`${componentName}\`. The \`value\` prop must be:
   - a positive number
   - less than the value passed to \`max\` (or ${DEFAULT_MAX} if no \`max\` prop is set)
-  - \`null\` if the progress is indeterminate.
+  - \`null\` or \`undefined\` if the progress is indeterminate.
 
 Defaulting to \`null\`.`;
 }
