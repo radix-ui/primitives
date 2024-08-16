@@ -13,7 +13,6 @@ import { Slottable } from '@radix-ui/react-slot';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import * as VisuallyHiddenPrimitive from '@radix-ui/react-visually-hidden';
 
-import type * as Radix from '@radix-ui/react-primitive';
 import type { Scope } from '@radix-ui/react-context';
 
 type ScopedProps<P = {}> = P & { __scopeTooltip?: Scope };
@@ -252,7 +251,7 @@ Tooltip.displayName = TOOLTIP_NAME;
 const TRIGGER_NAME = 'TooltipTrigger';
 
 type TooltipTriggerElement = React.ElementRef<typeof Primitive.button>;
-type PrimitiveButtonProps = Radix.ComponentPropsWithoutRef<typeof Primitive.button>;
+type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
 interface TooltipTriggerProps extends PrimitiveButtonProps {}
 
 const TooltipTrigger = React.forwardRef<TooltipTriggerElement, TooltipTriggerProps>(
@@ -323,8 +322,12 @@ const [PortalProvider, usePortalContext] = createTooltipContext<PortalContextVal
 });
 
 type PortalProps = React.ComponentPropsWithoutRef<typeof PortalPrimitive>;
-interface TooltipPortalProps extends Omit<PortalProps, 'asChild'> {
+interface TooltipPortalProps {
   children?: React.ReactNode;
+  /**
+   * Specify a container element to portal the content into.
+   */
+  container?: PortalProps['container'];
   /**
    * Used to force mounting when more control is needed. Useful when
    * controlling animation with React animation libraries.
@@ -412,15 +415,9 @@ const TooltipContentHoverable = React.forwardRef<
       const currentTarget = event.currentTarget as HTMLElement;
       const exitPoint = { x: event.clientX, y: event.clientY };
       const exitSide = getExitSideFromRect(exitPoint, currentTarget.getBoundingClientRect());
-
-      const bleed = exitSide === 'right' || exitSide === 'bottom' ? -5 : 5;
-      const isXAxis = exitSide === 'right' || exitSide === 'left';
-      const startPoint = isXAxis
-        ? { x: event.clientX + bleed, y: event.clientY }
-        : { x: event.clientX, y: event.clientY + bleed };
-
+      const paddedExitPoints = getPaddedExitPoints(exitPoint, exitSide);
       const hoverTargetPoints = getPointsFromRect(hoverTarget.getBoundingClientRect());
-      const graceArea = getHull([startPoint, ...hoverTargetPoints]);
+      const graceArea = getHull([...paddedExitPoints, ...hoverTargetPoints]);
       setPointerGraceArea(graceArea);
       onPointerInTransitChange(true);
     },
@@ -472,8 +469,8 @@ const [VisuallyHiddenContentContextProvider, useVisuallyHiddenContentContext] =
   createTooltipContext(TOOLTIP_NAME, { isInside: false });
 
 type TooltipContentImplElement = React.ElementRef<typeof PopperPrimitive.Content>;
-type DismissableLayerProps = Radix.ComponentPropsWithoutRef<typeof DismissableLayer>;
-type PopperContentProps = Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Content>;
+type DismissableLayerProps = React.ComponentPropsWithoutRef<typeof DismissableLayer>;
+type PopperContentProps = React.ComponentPropsWithoutRef<typeof PopperPrimitive.Content>;
 interface TooltipContentImplProps extends Omit<PopperContentProps, 'onPlaced'> {
   /**
    * A more descriptive label for accessibility purpose
@@ -571,7 +568,7 @@ TooltipContent.displayName = CONTENT_NAME;
 const ARROW_NAME = 'TooltipArrow';
 
 type TooltipArrowElement = React.ElementRef<typeof PopperPrimitive.Arrow>;
-type PopperArrowProps = Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Arrow>;
+type PopperArrowProps = React.ComponentPropsWithoutRef<typeof PopperPrimitive.Arrow>;
 interface TooltipArrowProps extends PopperArrowProps {}
 
 const TooltipArrow = React.forwardRef<TooltipArrowElement, TooltipArrowProps>(
@@ -594,7 +591,9 @@ TooltipArrow.displayName = ARROW_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
-function getExitSideFromRect(point: Point, rect: DOMRect) {
+type Side = NonNullable<TooltipContentProps['side']>;
+
+function getExitSideFromRect(point: Point, rect: DOMRect): Side {
   const top = Math.abs(rect.top - point.y);
   const bottom = Math.abs(rect.bottom - point.y);
   const right = Math.abs(rect.right - point.x);
@@ -610,8 +609,39 @@ function getExitSideFromRect(point: Point, rect: DOMRect) {
     case bottom:
       return 'bottom';
     default:
-      return null;
+      throw new Error('unreachable');
   }
+}
+
+function getPaddedExitPoints(exitPoint: Point, exitSide: Side, padding = 5) {
+  const paddedExitPoints: Point[] = [];
+  switch (exitSide) {
+    case 'top':
+      paddedExitPoints.push(
+        { x: exitPoint.x - padding, y: exitPoint.y + padding },
+        { x: exitPoint.x + padding, y: exitPoint.y + padding }
+      );
+      break;
+    case 'bottom':
+      paddedExitPoints.push(
+        { x: exitPoint.x - padding, y: exitPoint.y - padding },
+        { x: exitPoint.x + padding, y: exitPoint.y - padding }
+      );
+      break;
+    case 'left':
+      paddedExitPoints.push(
+        { x: exitPoint.x + padding, y: exitPoint.y - padding },
+        { x: exitPoint.x + padding, y: exitPoint.y + padding }
+      );
+      break;
+    case 'right':
+      paddedExitPoints.push(
+        { x: exitPoint.x - padding, y: exitPoint.y - padding },
+        { x: exitPoint.x - padding, y: exitPoint.y + padding }
+      );
+      break;
+  }
+  return paddedExitPoints;
 }
 
 function getPointsFromRect(rect: DOMRect) {
@@ -724,6 +754,7 @@ export {
   Arrow,
 };
 export type {
+  TooltipProviderProps,
   TooltipProps,
   TooltipTriggerProps,
   TooltipPortalProps,

@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/accessible-emoji */
 
-import React from 'react';
-import ReactDOM from 'react-dom';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom/client';
 import { FocusScope } from '@radix-ui/react-focus-scope';
 import * as Popper from '@radix-ui/react-popper';
 import { Portal } from '@radix-ui/react-portal';
@@ -13,7 +13,7 @@ import { Slot } from '@radix-ui/react-slot';
 type DismissableLayerProps = React.ComponentProps<typeof DismissableLayer>;
 type FocusScopeProps = React.ComponentProps<typeof FocusScope>;
 
-export default { title: 'Components/DismissableLayer' };
+export default { title: 'Utilities/DismissableLayer' };
 
 const SYSTEM_FONT =
   '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"';
@@ -656,7 +656,7 @@ export const InPopupWindow = () => {
     const containerNode = popupWindow.document.createElement('div');
     popupWindow.document.body.append(containerNode);
 
-    ReactDOM.render(<DismissableBox />, containerNode);
+    ReactDOM.createRoot(containerNode).render(<DismissableBox />);
   }, []);
   return (
     <div style={{ fontFamily: 'sans-serif', textAlign: 'center' }}>

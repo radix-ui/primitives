@@ -1,6 +1,4 @@
-<a href="https://radix-ui.com/primitives" >
-  <img alt="Radix UI hero image" src="https://repository-images.githubusercontent.com/316012819/b7b19180-3f85-11eb-884c-1e19ce2f493a">
-</a>
+[![Radix Primitives Logo](primitives.png)](https://radix-ui.com/primitives)
 
 # Radix Primitives
 

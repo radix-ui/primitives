@@ -9,7 +9,6 @@ import { useDirection } from '@radix-ui/react-direction';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { useId } from '@radix-ui/react-id';
 
-import type * as Radix from '@radix-ui/react-primitive';
 import type { Scope } from '@radix-ui/react-context';
 
 /* -------------------------------------------------------------------------------------------------
@@ -36,8 +35,8 @@ type TabsContextValue = {
 const [TabsProvider, useTabsContext] = createTabsContext<TabsContextValue>(TABS_NAME);
 
 type TabsElement = React.ElementRef<typeof Primitive.div>;
-type RovingFocusGroupProps = Radix.ComponentPropsWithoutRef<typeof RovingFocusGroup.Root>;
-type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
+type RovingFocusGroupProps = React.ComponentPropsWithoutRef<typeof RovingFocusGroup.Root>;
+type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface TabsProps extends PrimitiveDivProps {
   /** The value for the selected tab, if controlled */
   value?: string;
@@ -148,7 +147,7 @@ TabsList.displayName = TAB_LIST_NAME;
 const TRIGGER_NAME = 'TabsTrigger';
 
 type TabsTriggerElement = React.ElementRef<typeof Primitive.button>;
-type PrimitiveButtonProps = Radix.ComponentPropsWithoutRef<typeof Primitive.button>;
+type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
 interface TabsTriggerProps extends PrimitiveButtonProps {
   value: string;
 }

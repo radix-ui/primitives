@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+import * as ReactDOM from 'react-dom/client';
 import { css } from '../../../../stitches.config';
 import * as Tooltip from '@radix-ui/react-tooltip';
 import * as Dialog from '@radix-ui/react-dialog';
@@ -842,7 +842,7 @@ export const InPopupWindow = () => {
     const containerNode = popupWindow.document.createElement('div');
     popupWindow.document.body.append(containerNode);
 
-    ReactDOM.render(
+    ReactDOM.createRoot(containerNode).render(
       <DropdownMenu.Root>
         <DropdownMenu.Trigger>Open</DropdownMenu.Trigger>
         <DropdownMenu.Portal container={containerNode}>
@@ -855,8 +855,7 @@ export const InPopupWindow = () => {
             </DropdownMenu.Item>
           </DropdownMenu.Content>
         </DropdownMenu.Portal>
-      </DropdownMenu.Root>,
-      containerNode
+      </DropdownMenu.Root>
     );
   }, []);
   return (

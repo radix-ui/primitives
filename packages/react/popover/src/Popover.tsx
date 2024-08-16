@@ -16,7 +16,6 @@ import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { hideOthers } from 'aria-hidden';
 import { RemoveScroll } from 'react-remove-scroll';
 
-import type * as Radix from '@radix-ui/react-primitive';
 import type { Scope } from '@radix-ui/react-context';
 
 /* -------------------------------------------------------------------------------------------------
@@ -101,7 +100,7 @@ Popover.displayName = POPOVER_NAME;
 const ANCHOR_NAME = 'PopoverAnchor';
 
 type PopoverAnchorElement = React.ElementRef<typeof PopperPrimitive.Anchor>;
-type PopperAnchorProps = Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Anchor>;
+type PopperAnchorProps = React.ComponentPropsWithoutRef<typeof PopperPrimitive.Anchor>;
 interface PopoverAnchorProps extends PopperAnchorProps {}
 
 const PopoverAnchor = React.forwardRef<PopoverAnchorElement, PopoverAnchorProps>(
@@ -129,7 +128,7 @@ PopoverAnchor.displayName = ANCHOR_NAME;
 const TRIGGER_NAME = 'PopoverTrigger';
 
 type PopoverTriggerElement = React.ElementRef<typeof Primitive.button>;
-type PrimitiveButtonProps = Radix.ComponentPropsWithoutRef<typeof Primitive.button>;
+type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
 interface PopoverTriggerProps extends PrimitiveButtonProps {}
 
 const PopoverTrigger = React.forwardRef<PopoverTriggerElement, PopoverTriggerProps>(
@@ -176,8 +175,12 @@ const [PortalProvider, usePortalContext] = createPopoverContext<PortalContextVal
 });
 
 type PortalProps = React.ComponentPropsWithoutRef<typeof PortalPrimitive>;
-interface PopoverPortalProps extends Omit<PortalProps, 'asChild'> {
+interface PopoverPortalProps {
   children?: React.ReactNode;
+  /**
+   * Specify a container element to portal the content into.
+   */
+  container?: PortalProps['container'];
   /**
    * Used to force mounting when more control is needed. Useful when
    * controlling animation with React animation libraries.
@@ -294,6 +297,7 @@ const PopoverContentNonModal = React.forwardRef<PopoverContentTypeElement, Popov
   (props: ScopedProps<PopoverContentTypeProps>, forwardedRef) => {
     const context = usePopoverContext(CONTENT_NAME, props.__scopePopover);
     const hasInteractedOutsideRef = React.useRef(false);
+    const hasPointerDownOutsideRef = React.useRef(false);
 
     return (
       <PopoverContentImpl
@@ -311,21 +315,32 @@ const PopoverContentNonModal = React.forwardRef<PopoverContentTypeElement, Popov
           }
 
           hasInteractedOutsideRef.current = false;
+          hasPointerDownOutsideRef.current = false;
         }}
         onInteractOutside={(event) => {
           props.onInteractOutside?.(event);
 
-          if (!event.defaultPrevented) hasInteractedOutsideRef.current = true;
+          if (!event.defaultPrevented) {
+            hasInteractedOutsideRef.current = true;
+            if (event.detail.originalEvent.type === 'pointerdown') {
+              hasPointerDownOutsideRef.current = true;
+            }
+          }
 
           // Prevent dismissing when clicking the trigger.
           // As the trigger is already setup to close, without doing so would
           // cause it to close and immediately open.
-          //
-          // We use `onInteractOutside` as some browsers also
-          // focus on pointer down, creating the same issue.
           const target = event.target as HTMLElement;
           const targetIsTrigger = context.triggerRef.current?.contains(target);
           if (targetIsTrigger) event.preventDefault();
+
+          // On Safari if the trigger is inside a container with tabIndex={0}, when clicked
+          // we will get the pointer down outside event on the trigger, but then a subsequent
+          // focus outside event on the container, we ignore any focus outside event when we've
+          // already had a pointer down outside event.
+          if (event.detail.originalEvent.type === 'focusin' && hasPointerDownOutsideRef.current) {
+            event.preventDefault();
+          }
         }}
       />
     );
@@ -335,9 +350,9 @@ const PopoverContentNonModal = React.forwardRef<PopoverContentTypeElement, Popov
 /* -----------------------------------------------------------------------------------------------*/
 
 type PopoverContentImplElement = React.ElementRef<typeof PopperPrimitive.Content>;
-type FocusScopeProps = Radix.ComponentPropsWithoutRef<typeof FocusScope>;
-type DismissableLayerProps = Radix.ComponentPropsWithoutRef<typeof DismissableLayer>;
-type PopperContentProps = Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Content>;
+type FocusScopeProps = React.ComponentPropsWithoutRef<typeof FocusScope>;
+type DismissableLayerProps = React.ComponentPropsWithoutRef<typeof DismissableLayer>;
+type PopperContentProps = React.ComponentPropsWithoutRef<typeof PopperPrimitive.Content>;
 interface PopoverContentImplProps
   extends Omit<PopperContentProps, 'onPlaced'>,
     Omit<DismissableLayerProps, 'onDismiss'> {
@@ -456,7 +471,7 @@ PopoverClose.displayName = CLOSE_NAME;
 const ARROW_NAME = 'PopoverArrow';
 
 type PopoverArrowElement = React.ElementRef<typeof PopperPrimitive.Arrow>;
-type PopperArrowProps = Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Arrow>;
+type PopperArrowProps = React.ComponentPropsWithoutRef<typeof PopperPrimitive.Arrow>;
 interface PopoverArrowProps extends PopperArrowProps {}
 
 const PopoverArrow = React.forwardRef<PopoverArrowElement, PopoverArrowProps>(

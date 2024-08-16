@@ -5,8 +5,6 @@ import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useEscapeKeydown } from '@radix-ui/react-use-escape-keydown';
 
-import type * as Radix from '@radix-ui/react-primitive';
-
 /* -------------------------------------------------------------------------------------------------
  * DismissableLayer
  * -----------------------------------------------------------------------------------------------*/
@@ -25,7 +23,7 @@ const DismissableLayerContext = React.createContext({
 });
 
 type DismissableLayerElement = React.ElementRef<typeof Primitive.div>;
-type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
+type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface DismissableLayerProps extends PrimitiveDivProps {
   /**
    * When `true`, hover/focus/click interactions will be disabled on elements outside
@@ -261,6 +259,10 @@ function usePointerDownOutside(
         } else {
           handleAndDispatchPointerDownOutsideEvent();
         }
+      } else {
+        // We need to remove the event listener in case the outside click has been canceled.
+        // See: https://github.com/radix-ui/primitives/issues/2171
+        ownerDocument.removeEventListener('click', handleClickRef.current);
       }
       isPointerInsideReactTreeRef.current = false;
     };

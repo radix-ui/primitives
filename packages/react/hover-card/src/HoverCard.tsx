@@ -10,7 +10,6 @@ import { Presence } from '@radix-ui/react-presence';
 import { Primitive } from '@radix-ui/react-primitive';
 import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
 
-import type * as Radix from '@radix-ui/react-primitive';
 import type { Scope } from '@radix-ui/react-context';
 
 /* -------------------------------------------------------------------------------------------------
@@ -118,7 +117,7 @@ HoverCard.displayName = HOVERCARD_NAME;
 const TRIGGER_NAME = 'HoverCardTrigger';
 
 type HoverCardTriggerElement = React.ElementRef<typeof Primitive.a>;
-type PrimitiveLinkProps = Radix.ComponentPropsWithoutRef<typeof Primitive.a>;
+type PrimitiveLinkProps = React.ComponentPropsWithoutRef<typeof Primitive.a>;
 interface HoverCardTriggerProps extends PrimitiveLinkProps {}
 
 const HoverCardTrigger = React.forwardRef<HoverCardTriggerElement, HoverCardTriggerProps>(
@@ -158,8 +157,12 @@ const [PortalProvider, usePortalContext] = createHoverCardContext<PortalContextV
 });
 
 type PortalProps = React.ComponentPropsWithoutRef<typeof PortalPrimitive>;
-interface HoverCardPortalProps extends Omit<PortalProps, 'asChild'> {
+interface HoverCardPortalProps {
   children?: React.ReactNode;
+  /**
+   * Specify a container element to portal the content into.
+   */
+  container?: PortalProps['container'];
   /**
    * Used to force mounting when more control is needed. Useful when
    * controlling animation with React animation libraries.
@@ -224,8 +227,8 @@ HoverCardContent.displayName = CONTENT_NAME;
 /* ---------------------------------------------------------------------------------------------- */
 
 type HoverCardContentImplElement = React.ElementRef<typeof PopperPrimitive.Content>;
-type DismissableLayerProps = Radix.ComponentPropsWithoutRef<typeof DismissableLayer>;
-type PopperContentProps = Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Content>;
+type DismissableLayerProps = React.ComponentPropsWithoutRef<typeof DismissableLayer>;
+type PopperContentProps = React.ComponentPropsWithoutRef<typeof PopperPrimitive.Content>;
 interface HoverCardContentImplProps extends Omit<PopperContentProps, 'onPlaced'> {
   /**
    * Event handler called when the escape key is down.
@@ -363,7 +366,7 @@ const HoverCardContentImpl = React.forwardRef<
 const ARROW_NAME = 'HoverCardArrow';
 
 type HoverCardArrowElement = React.ElementRef<typeof PopperPrimitive.Arrow>;
-type PopperArrowProps = Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Arrow>;
+type PopperArrowProps = React.ComponentPropsWithoutRef<typeof PopperPrimitive.Arrow>;
 interface HoverCardArrowProps extends PopperArrowProps {}
 
 const HoverCardArrow = React.forwardRef<HoverCardArrowElement, HoverCardArrowProps>(

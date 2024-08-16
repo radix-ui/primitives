@@ -638,40 +638,45 @@ export const RequiredWithinForm = () => {
 };
 
 export const WithinDialog = () => (
-  <Dialog.Root>
-    <Dialog.Trigger>Open Dialog</Dialog.Trigger>
-    <Dialog.Content aria-describedby={undefined}>
-      <Dialog.Title>A select in a dialog</Dialog.Title>
-      <Label>
-        Choose a number:
-        <Select.Root defaultValue="2">
-          <Select.Trigger className={triggerClass()}>
-            <Select.Value />
-            <Select.Icon />
-          </Select.Trigger>
-          <Select.Portal>
-            <Select.Content className={contentClass()}>
-              <Select.ScrollUpButton className={scrollUpButtonClass()}>▲</Select.ScrollUpButton>
-              <Select.Viewport className={viewportClass()}>
-                {Array.from({ length: 30 }, (_, i) => (
-                  <Select.Item key={i} className={itemClass()} value={String(i)}>
-                    <Select.ItemText>Item {i}</Select.ItemText>
-                    <Select.ItemIndicator className={indicatorClass()}>
-                      <TickIcon />
-                    </Select.ItemIndicator>
-                  </Select.Item>
-                ))}
-              </Select.Viewport>
-              <Select.ScrollDownButton className={scrollDownButtonClass()}>
-                ▼
-              </Select.ScrollDownButton>
-            </Select.Content>
-          </Select.Portal>
-        </Select.Root>
-      </Label>
-      <Dialog.Close>Close Dialog</Dialog.Close>
-    </Dialog.Content>
-  </Dialog.Root>
+  <div style={{ height: '120vh' }}>
+    <Dialog.Root>
+      <Dialog.Trigger>Open Dialog</Dialog.Trigger>
+      <Dialog.Portal>
+        <Dialog.Overlay />
+        <Dialog.Content aria-describedby={undefined} style={{ position: 'fixed', top: 100 }}>
+          <Dialog.Title>A select in a dialog</Dialog.Title>
+          <Label>
+            Choose a number:
+            <Select.Root defaultValue="2">
+              <Select.Trigger className={triggerClass()}>
+                <Select.Value />
+                <Select.Icon />
+              </Select.Trigger>
+              <Select.Portal>
+                <Select.Content className={contentClass()}>
+                  <Select.ScrollUpButton className={scrollUpButtonClass()}>▲</Select.ScrollUpButton>
+                  <Select.Viewport className={viewportClass()}>
+                    {Array.from({ length: 30 }, (_, i) => (
+                      <Select.Item key={i} className={itemClass()} value={String(i)}>
+                        <Select.ItemText>Item {i}</Select.ItemText>
+                        <Select.ItemIndicator className={indicatorClass()}>
+                          <TickIcon />
+                        </Select.ItemIndicator>
+                      </Select.Item>
+                    ))}
+                  </Select.Viewport>
+                  <Select.ScrollDownButton className={scrollDownButtonClass()}>
+                    ▼
+                  </Select.ScrollDownButton>
+                </Select.Content>
+              </Select.Portal>
+            </Select.Root>
+          </Label>
+          <Dialog.Close>Close Dialog</Dialog.Close>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
+  </div>
 );
 
 export const ChromaticShortOptionsPaddedContent = () => (
@@ -774,6 +779,7 @@ ChromaticNoDefaultValue.parameters = { chromatic: { disable: false } };
 
 export const Cypress = () => {
   const [data, setData] = React.useState<{ size?: 'S' | 'M' | 'L' }>({});
+  const [model, setModel] = React.useState<string | undefined>('');
 
   function handleChange(event: React.FormEvent<HTMLFormElement>) {
     const formData = new FormData(event.currentTarget);
@@ -826,6 +832,54 @@ export const Cypress = () => {
         <button type="submit">buy</button>
         {data.size ? <p>You picked t-shirt size {data.size}</p> : null}
       </form>
+
+      <hr />
+
+      <div style={{ padding: 50 }}>
+        <Label>
+          choose a model
+          <Select.Root name="model" value={model} onValueChange={setModel}>
+            <Select.Trigger className={triggerClass()}>
+              <Select.Value placeholder="…" />
+              <Select.Icon />
+            </Select.Trigger>
+            <Select.Portal>
+              <Select.Content className={contentClass()}>
+                <Select.Viewport className={viewportClass()}>
+                  <Select.Item className={itemClass()} value="S">
+                    <Select.ItemText>Model S</Select.ItemText>
+                    <Select.ItemIndicator className={indicatorClass()}>
+                      <TickIcon />
+                    </Select.ItemIndicator>
+                  </Select.Item>
+                  <Select.Item className={itemClass()} value="3">
+                    <Select.ItemText>Modal 3</Select.ItemText>
+                    <Select.ItemIndicator className={indicatorClass()}>
+                      <TickIcon />
+                    </Select.ItemIndicator>
+                  </Select.Item>
+                  <Select.Item className={itemClass()} value="X">
+                    <Select.ItemText>Model X</Select.ItemText>
+                    <Select.ItemIndicator className={indicatorClass()}>
+                      <TickIcon />
+                    </Select.ItemIndicator>
+                  </Select.Item>
+                  <Select.Item className={itemClass()} value="Y">
+                    <Select.ItemText>Model Y</Select.ItemText>
+                    <Select.ItemIndicator className={indicatorClass()}>
+                      <TickIcon />
+                    </Select.ItemIndicator>
+                  </Select.Item>
+                </Select.Viewport>
+              </Select.Content>
+            </Select.Portal>
+          </Select.Root>
+        </Label>
+
+        <button type="button" onClick={() => setModel('')}>
+          unset
+        </button>
+      </div>
     </>
   );
 };
@@ -1082,6 +1136,7 @@ const scrollButtonClass = css({
   backgroundColor: '$white',
   color: '$black',
   cursor: 'default',
+  userSelect: 'none',
 });
 
 const scrollUpButtonClass = css(scrollButtonClass, {

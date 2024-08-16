@@ -14,7 +14,6 @@ import { RemoveScroll } from 'react-remove-scroll';
 import { hideOthers } from 'aria-hidden';
 import { Slot } from '@radix-ui/react-slot';
 
-import type * as Radix from '@radix-ui/react-primitive';
 import type { Scope } from '@radix-ui/react-context';
 
 /* -------------------------------------------------------------------------------------------------
@@ -92,7 +91,7 @@ Dialog.displayName = DIALOG_NAME;
 const TRIGGER_NAME = 'DialogTrigger';
 
 type DialogTriggerElement = React.ElementRef<typeof Primitive.button>;
-type PrimitiveButtonProps = Radix.ComponentPropsWithoutRef<typeof Primitive.button>;
+type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
 interface DialogTriggerProps extends PrimitiveButtonProps {}
 
 const DialogTrigger = React.forwardRef<DialogTriggerElement, DialogTriggerProps>(
@@ -129,8 +128,12 @@ const [PortalProvider, usePortalContext] = createDialogContext<PortalContextValu
 });
 
 type PortalProps = React.ComponentPropsWithoutRef<typeof PortalPrimitive>;
-interface DialogPortalProps extends Omit<PortalProps, 'asChild'> {
+interface DialogPortalProps {
   children?: React.ReactNode;
+  /**
+   * Specify a container element to portal the content into.
+   */
+  container?: PortalProps['container'];
   /**
    * Used to force mounting when more control is needed. Useful when
    * controlling animation with React animation libraries.
@@ -187,7 +190,7 @@ const DialogOverlay = React.forwardRef<DialogOverlayElement, DialogOverlayProps>
 DialogOverlay.displayName = OVERLAY_NAME;
 
 type DialogOverlayImplElement = React.ElementRef<typeof Primitive.div>;
-type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
+type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface DialogOverlayImplProps extends PrimitiveDivProps {}
 
 const DialogOverlayImpl = React.forwardRef<DialogOverlayImplElement, DialogOverlayImplProps>(
@@ -299,6 +302,7 @@ const DialogContentNonModal = React.forwardRef<DialogContentTypeElement, DialogC
   (props: ScopedProps<DialogContentTypeProps>, forwardedRef) => {
     const context = useDialogContext(CONTENT_NAME, props.__scopeDialog);
     const hasInteractedOutsideRef = React.useRef(false);
+    const hasPointerDownOutsideRef = React.useRef(false);
 
     return (
       <DialogContentImpl
@@ -316,21 +320,32 @@ const DialogContentNonModal = React.forwardRef<DialogContentTypeElement, DialogC
           }
 
           hasInteractedOutsideRef.current = false;
+          hasPointerDownOutsideRef.current = false;
         }}
         onInteractOutside={(event) => {
           props.onInteractOutside?.(event);
 
-          if (!event.defaultPrevented) hasInteractedOutsideRef.current = true;
+          if (!event.defaultPrevented) {
+            hasInteractedOutsideRef.current = true;
+            if (event.detail.originalEvent.type === 'pointerdown') {
+              hasPointerDownOutsideRef.current = true;
+            }
+          }
 
           // Prevent dismissing when clicking the trigger.
           // As the trigger is already setup to close, without doing so would
           // cause it to close and immediately open.
-          //
-          // We use `onInteractOutside` as some browsers also
-          // focus on pointer down, creating the same issue.
           const target = event.target as HTMLElement;
           const targetIsTrigger = context.triggerRef.current?.contains(target);
           if (targetIsTrigger) event.preventDefault();
+
+          // On Safari if the trigger is inside a container with tabIndex={0}, when clicked
+          // we will get the pointer down outside event on the trigger, but then a subsequent
+          // focus outside event on the container, we ignore any focus outside event when we've
+          // already had a pointer down outside event.
+          if (event.detail.originalEvent.type === 'focusin' && hasPointerDownOutsideRef.current) {
+            event.preventDefault();
+          }
         }}
       />
     );
@@ -340,8 +355,8 @@ const DialogContentNonModal = React.forwardRef<DialogContentTypeElement, DialogC
 /* -----------------------------------------------------------------------------------------------*/
 
 type DialogContentImplElement = React.ElementRef<typeof DismissableLayer>;
-type DismissableLayerProps = Radix.ComponentPropsWithoutRef<typeof DismissableLayer>;
-type FocusScopeProps = Radix.ComponentPropsWithoutRef<typeof FocusScope>;
+type DismissableLayerProps = React.ComponentPropsWithoutRef<typeof DismissableLayer>;
+type FocusScopeProps = React.ComponentPropsWithoutRef<typeof FocusScope>;
 interface DialogContentImplProps extends Omit<DismissableLayerProps, 'onDismiss'> {
   /**
    * When `true`, focus cannot escape the `Content` via keyboard,
@@ -412,7 +427,7 @@ const DialogContentImpl = React.forwardRef<DialogContentImplElement, DialogConte
 const TITLE_NAME = 'DialogTitle';
 
 type DialogTitleElement = React.ElementRef<typeof Primitive.h2>;
-type PrimitiveHeading2Props = Radix.ComponentPropsWithoutRef<typeof Primitive.h2>;
+type PrimitiveHeading2Props = React.ComponentPropsWithoutRef<typeof Primitive.h2>;
 interface DialogTitleProps extends PrimitiveHeading2Props {}
 
 const DialogTitle = React.forwardRef<DialogTitleElement, DialogTitleProps>(
@@ -432,7 +447,7 @@ DialogTitle.displayName = TITLE_NAME;
 const DESCRIPTION_NAME = 'DialogDescription';
 
 type DialogDescriptionElement = React.ElementRef<typeof Primitive.p>;
-type PrimitiveParagraphProps = Radix.ComponentPropsWithoutRef<typeof Primitive.p>;
+type PrimitiveParagraphProps = React.ComponentPropsWithoutRef<typeof Primitive.p>;
 interface DialogDescriptionProps extends PrimitiveParagraphProps {}
 
 const DialogDescription = React.forwardRef<DialogDescriptionElement, DialogDescriptionProps>(
@@ -499,7 +514,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   React.useEffect(() => {
     if (titleId) {
       const hasTitle = document.getElementById(titleId);
-      if (!hasTitle) throw new Error(MESSAGE);
+      if (!hasTitle) console.error(MESSAGE);
     }
   }, [MESSAGE, titleId]);
 

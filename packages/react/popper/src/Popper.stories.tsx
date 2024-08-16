@@ -3,7 +3,7 @@ import { css, keyframes } from '../../../../stitches.config';
 import { Portal } from '@radix-ui/react-portal';
 import * as Popper from '@radix-ui/react-popper';
 
-export default { title: 'Components/Popper' };
+export default { title: 'Utilities/Popper' };
 
 export const Styled = () => {
   const [open, setOpen] = React.useState(false);
@@ -82,6 +82,43 @@ export const WithPortal = () => {
         {open && (
           <Portal asChild>
             <Popper.Content className={contentClass()} sideOffset={5}>
+              <button onClick={() => setOpen(false)}>close</button>
+              <Popper.Arrow className={arrowClass()} width={20} height={10} />
+            </Popper.Content>
+          </Portal>
+        )}
+      </Popper.Root>
+    </Scrollable>
+  );
+};
+
+export const WithUpdatePositionStrategyAlways = () => {
+  const [open, setOpen] = React.useState(false);
+  const [left, setLeft] = React.useState(0);
+  React.useEffect(() => {
+    const intervalId = setInterval(() => {
+      setLeft((prev) => (prev + 50) % 300);
+    }, 500);
+    return () => clearInterval(intervalId);
+  }, []);
+  return (
+    <Scrollable>
+      <Popper.Root>
+        <Popper.Anchor
+          className={anchorClass()}
+          onClick={() => setOpen(true)}
+          style={{ marginLeft: left }}
+        >
+          open
+        </Popper.Anchor>
+
+        {open && (
+          <Portal asChild>
+            <Popper.Content
+              className={contentClass()}
+              sideOffset={5}
+              updatePositionStrategy="always"
+            >
               <button onClick={() => setOpen(false)}>close</button>
               <Popper.Arrow className={arrowClass()} width={20} height={10} />
             </Popper.Content>
