@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-popper",
-  "version": "1.1.4-rc.8",
+  "version": "1.2.0",
   "license": "MIT",
   "exports": {
     ".": {
@@ -28,7 +28,6 @@
     "version": "yarn version"
   },
   "dependencies": {
-    "@babel/runtime": "^7.13.10",
     "@floating-ui/react-dom": "^2.0.0",
     "@radix-ui/react-arrow": "workspace:*",
     "@radix-ui/react-compose-refs": "workspace:*",
@@ -43,8 +42,8 @@
   "peerDependencies": {
     "@types/react": "*",
     "@types/react-dom": "*",
-    "react": "^16.8 || ^17.0 || ^18.0",
-    "react-dom": "^16.8 || ^17.0 || ^18.0"
+    "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc",
+    "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
   },
   "peerDependenciesMeta": {
     "@types/react": {
@@ -61,6 +60,5 @@
   },
   "bugs": {
     "url": "https://github.com/radix-ui/primitives/issues"
-  },
-  "stableVersion": "1.1.3"
+  }
 }

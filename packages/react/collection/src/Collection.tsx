@@ -3,9 +3,7 @@ import { createContextScope } from '@radix-ui/react-context';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { Slot } from '@radix-ui/react-slot';
 
-import type * as Radix from '@radix-ui/react-primitive';
-
-type SlotProps = Radix.ComponentPropsWithoutRef<typeof Slot>;
+type SlotProps = React.ComponentPropsWithoutRef<typeof Slot>;
 type CollectionElement = HTMLElement;
 interface CollectionProps extends SlotProps {
   scope: any;

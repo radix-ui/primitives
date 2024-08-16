@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-select",
-  "version": "2.0.1-rc.11",
+  "version": "2.1.2-rc.4",
   "license": "MIT",
   "exports": {
     ".": {
@@ -28,7 +28,6 @@
     "version": "yarn version"
   },
   "dependencies": {
-    "@babel/runtime": "^7.13.10",
     "@radix-ui/number": "workspace:*",
     "@radix-ui/primitive": "workspace:*",
     "@radix-ui/react-collection": "workspace:*",
@@ -54,8 +53,8 @@
   "peerDependencies": {
     "@types/react": "*",
     "@types/react-dom": "*",
-    "react": "^16.8 || ^17.0 || ^18.0",
-    "react-dom": "^16.8 || ^17.0 || ^18.0"
+    "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc",
+    "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
   },
   "peerDependenciesMeta": {
     "@types/react": {
@@ -73,5 +72,5 @@
   "bugs": {
     "url": "https://github.com/radix-ui/primitives/issues"
   },
-  "stableVersion": "2.0.0"
+  "stableVersion": "2.1.1"
 }

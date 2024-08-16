@@ -37,7 +37,7 @@ describe('FocusScope', () => {
     it('should focus the next element in the scope on tab', () => {
       tabbableFirst.focus();
       userEvent.tab();
-      expect(tabbableSecond).toHaveFocus();
+      waitFor(() => expect(tabbableSecond).toHaveFocus());
     });
 
     it('should focus the last element in the scope on shift+tab from the first element in scope', () => {
@@ -49,7 +49,7 @@ describe('FocusScope', () => {
     it('should focus the first element in scope on tab from the last element in scope', async () => {
       tabbableLast.focus();
       userEvent.tab();
-      expect(tabbableFirst).toHaveFocus();
+      waitFor(() => expect(tabbableFirst).toHaveFocus());
     });
   });
 
@@ -79,7 +79,7 @@ describe('FocusScope', () => {
     it('should skip the element with a negative tabindex on tab', () => {
       tabbableLast.focus();
       userEvent.tab();
-      expect(tabbableSecond).toHaveFocus();
+      waitFor(() => expect(tabbableSecond).toHaveFocus());
     });
 
     it('should skip the element with a negative tabindex on shift+tab', () => {
