@@ -1580,8 +1580,8 @@ const BubbleSelect = React.forwardRef<HTMLSelectElement, React.ComponentPropsWit
      * as possible.
      *
      * We purposefully do not add the `value` attribute here to allow the value
-     * to be set programatically and bubble to any parent form `onChange` event.
-     * Adding the `value` will cause React to consider the programatic
+     * to be set programmatically and bubble to any parent form `onChange` event.
+     * Adding the `value` will cause React to consider the programmatic
      * dispatch a duplicate and it will get swallowed.
      *
      * We use `VisuallyHidden` rather than `display: "none"` because Safari autofill

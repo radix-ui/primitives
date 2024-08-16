@@ -386,7 +386,7 @@ const DialogContentImpl = React.forwardRef<DialogContentImplElement, DialogConte
     const composedRefs = useComposedRefs(forwardedRef, contentRef);
 
     // Make sure the whole tree has focus guards as our `Dialog` will be
-    // the last element in the DOM (beacuse of the `Portal`)
+    // the last element in the DOM (because of the `Portal`)
     useFocusGuards();
 
     return (
