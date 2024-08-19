@@ -116,7 +116,7 @@ AvatarFallback.displayName = FALLBACK_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
-function setImageSrcAndGetInitialState(image: HTMLImageElement, src?: string): ImageLoadingStatus {
+function resolveLoadingStatus(image: HTMLImageElement, src?: string): ImageLoadingStatus {
   if (!src) {
     return 'error';
   }
@@ -129,11 +129,11 @@ function setImageSrcAndGetInitialState(image: HTMLImageElement, src?: string): I
 function useImageLoadingStatus(src?: string, referrerPolicy?: React.HTMLAttributeReferrerPolicy) {
   const image = React.useRef(new window.Image());
   const [loadingStatus, setLoadingStatus] = React.useState<ImageLoadingStatus>(() =>
-    setImageSrcAndGetInitialState(image.current, src)
+    resolveLoadingStatus(image.current, src)
   );
 
   useLayoutEffect(() => {
-    setLoadingStatus(setImageSrcAndGetInitialState(image.current, src));
+    setLoadingStatus(resolveLoadingStatus(image.current, src));
   }, [src]);
 
   useLayoutEffect(() => {
