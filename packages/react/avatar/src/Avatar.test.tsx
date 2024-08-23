@@ -2,7 +2,8 @@ import { axe } from 'jest-axe';
 import type { RenderResult } from '@testing-library/react';
 import { render, waitFor } from '@testing-library/react';
 import * as Avatar from '@radix-ui/react-avatar';
-import { HTMLAttributeReferrerPolicy } from 'react';
+import { HTMLAttributeReferrerPolicy, ReactElement } from 'react';
+import { renderToString } from 'react-dom/server';
 
 const ROOT_TEST_ID = 'avatar-root';
 const FALLBACK_TEXT = 'AB';
@@ -11,22 +12,28 @@ const DELAY = 300;
 const cache = new Set<string>();
 
 describe('given an Avatar with fallback and no image', () => {
-  let rendered: RenderResult;
-
-  beforeEach(() => {
-    rendered = render(
-      <Avatar.Root data-testid={ROOT_TEST_ID}>
-        <Avatar.Fallback>{FALLBACK_TEXT}</Avatar.Fallback>
-      </Avatar.Root>
-    );
-  });
+  const ui = (
+    <Avatar.Root data-testid={ROOT_TEST_ID}>
+      <Avatar.Fallback>{FALLBACK_TEXT}</Avatar.Fallback>
+    </Avatar.Root>
+  );
 
   it('should have no accessibility violations', async () => {
+    const rendered = render(ui);
     expect(await axe(rendered.container)).toHaveNoViolations();
+  });
+
+  it('should work with SSR', () => {
+    const container = document.createElement('div');
+    document.body.appendChild(container);
+    container.innerHTML = renderToString(ui);
+    const rendered = render(ui, { hydrate: true, container });
+    const fallback = rendered.queryByText(FALLBACK_TEXT);
+    expect(fallback).toBeInTheDocument();
   });
 });
 
-describe('given an Avatar with fallback and a working image', () => {
+describe('given an Avatar with fallback and an image', () => {
   let rendered: RenderResult;
   let image: HTMLElement | null = null;
   const originalGlobalImage = window.Image;
@@ -129,6 +136,32 @@ describe('given an Avatar with fallback and a working image', () => {
     expect(fallback).toBeInTheDocument();
     spy.mockRestore();
   });
+
+  describe('SSR', () => {
+    function renderAndHydrate(ui: ReactElement) {
+      const container = document.createElement('div');
+      document.body.appendChild(container);
+      container.innerHTML = renderToString(ui);
+      return render(ui, { hydrate: true, container });
+    }
+
+    it('can render with working image', async () => {
+      const rendered = renderAndHydrate(ui('/test.png'));
+      let image = rendered.queryByRole('img');
+      expect(image).not.toBeInTheDocument();
+
+      image = await rendered.findByRole('img');
+      expect(image).toBeInTheDocument();
+    });
+
+    it('can render with no src', () => {
+      const rendered = renderAndHydrate(ui());
+      const image = rendered.queryByRole('img');
+      expect(image).not.toBeInTheDocument();
+      const fallback = rendered.queryByText(FALLBACK_TEXT);
+      expect(fallback).toBeInTheDocument();
+    });
+  });
 });
 
 describe('given an Avatar with fallback and delayed render', () => {
@@ -169,6 +202,7 @@ describe('given an Avatar with an image that only works when referrerPolicy=no-r
   beforeAll(() => {
     (window.Image as any) = class MockNoReferrerImage extends MockImage {
       referrerPolicy: string | undefined;
+
       onSrcChange() {
         setTimeout(() => {
           if (this.referrerPolicy === 'no-referrer') {
@@ -237,7 +271,6 @@ describe('given an Avatar with an image that only works when referrerPolicy=no-r
     });
   });
 });
-
 
 class MockImage extends EventTarget {
   _src: string = '';

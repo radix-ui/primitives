@@ -116,7 +116,10 @@ AvatarFallback.displayName = FALLBACK_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
-function resolveLoadingStatus(image: HTMLImageElement, src?: string): ImageLoadingStatus {
+function resolveLoadingStatus(image: HTMLImageElement | null, src?: string): ImageLoadingStatus {
+  if (!image) {
+    return 'idle';
+  }
   if (!src) {
     return 'error';
   }
@@ -127,21 +130,30 @@ function resolveLoadingStatus(image: HTMLImageElement, src?: string): ImageLoadi
 }
 
 function useImageLoadingStatus(src?: string, referrerPolicy?: React.HTMLAttributeReferrerPolicy) {
-  const image = React.useRef(new window.Image());
+  const isHydrated = useIsHydrated()
+  const image = React.useRef(isHydrated ? new window.Image() : null);
+  const img = (() => {
+    if (!isHydrated) return null;
+    if (!image.current) {
+      image.current = new window.Image();
+    }
+    return image.current;
+  })();
+
   const [loadingStatus, setLoadingStatus] = React.useState<ImageLoadingStatus>(() =>
-    resolveLoadingStatus(image.current, src)
+    resolveLoadingStatus(img, src)
   );
 
   useLayoutEffect(() => {
-    setLoadingStatus(resolveLoadingStatus(image.current, src));
-  }, [src]);
+    setLoadingStatus(resolveLoadingStatus(img, src));
+  }, [img, src]);
 
   useLayoutEffect(() => {
     const updateStatus = (status: ImageLoadingStatus) => () => {
       setLoadingStatus(status);
     };
 
-    const img = image.current;
+    if (!img) return;
 
     const handleLoad = updateStatus('loaded');
     const handleError = updateStatus('error');
@@ -155,10 +167,23 @@ function useImageLoadingStatus(src?: string, referrerPolicy?: React.HTMLAttribut
       img.removeEventListener('load', handleLoad);
       img.removeEventListener('error', handleError);
     };
-  }, [referrerPolicy]);
+  }, [img, referrerPolicy]);
 
   return loadingStatus;
 }
+
+function subscribe() {
+  return () => {};
+}
+
+function useIsHydrated() {
+  return React.useSyncExternalStore(
+    subscribe,
+    () => true,
+    () => false
+  );
+}
+
 const Root = Avatar;
 const Image = AvatarImage;
 const Fallback = AvatarFallback;
