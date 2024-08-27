@@ -140,7 +140,11 @@ const DismissableLayer = React.forwardRef<DismissableLayerElement, DismissableLa
       return () => {
         if (!node) return;
         context.layers.delete(node);
-        context.layersWithOutsidePointerEventsDisabled.delete(node);
+        const deletedAPointerEventsLayer = context.layersWithOutsidePointerEventsDisabled.delete(node);
+        if(!context.layersWithOutsidePointerEventsDisabled.size && deletedAPointerEventsLayer) {
+          // Work around https://github.com/radix-ui/primitives/issues/2597#issuecomment-2312839713
+          ownerDocument.body.style.pointerEvents = originalBodyPointerEvents;
+        }
         dispatchUpdate();
       };
     }, [node, context]);
