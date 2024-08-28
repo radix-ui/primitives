@@ -1382,10 +1382,7 @@ SelectItemIndicator.displayName = ITEM_INDICATOR_NAME;
 const SCROLL_UP_BUTTON_NAME = 'SelectScrollUpButton';
 
 type SelectScrollUpButtonElement = SelectScrollButtonImplElement;
-interface SelectScrollUpButtonProps extends Omit<SelectScrollButtonImplProps, 'onAutoScroll'> {
-  scrollFactor?: number;
-  applyScrollFactorOnMobile?: boolean;
-}
+interface SelectScrollUpButtonProps extends Omit<SelectScrollButtonImplProps, 'onAutoScroll'> {}
 
 const SelectScrollUpButton = React.forwardRef<
   SelectScrollUpButtonElement,
@@ -1416,9 +1413,7 @@ const SelectScrollUpButton = React.forwardRef<
       onAutoScroll={() => {
         const { viewport, selectedItem } = contentContext;
         if (viewport && selectedItem) {
-          const isMobile = navigator.maxTouchPoints > 0;
-          const factor = isMobile && !props.applyScrollFactorOnMobile ? 1 : props.scrollFactor ?? 1;
-          viewport.scrollTop = viewport.scrollTop - selectedItem.offsetHeight * Math.abs(factor);
+          viewport.scrollTop = viewport.scrollTop - selectedItem.offsetHeight;
         }
       }}
     />
@@ -1434,10 +1429,7 @@ SelectScrollUpButton.displayName = SCROLL_UP_BUTTON_NAME;
 const SCROLL_DOWN_BUTTON_NAME = 'SelectScrollDownButton';
 
 type SelectScrollDownButtonElement = SelectScrollButtonImplElement;
-interface SelectScrollDownButtonProps extends Omit<SelectScrollButtonImplProps, 'onAutoScroll'> {
-  scrollFactor?: number;
-  applyScrollFactorOnMobile?: boolean;
-}
+interface SelectScrollDownButtonProps extends Omit<SelectScrollButtonImplProps, 'onAutoScroll'> {}
 
 const SelectScrollDownButton = React.forwardRef<
   SelectScrollDownButtonElement,
@@ -1471,9 +1463,7 @@ const SelectScrollDownButton = React.forwardRef<
       onAutoScroll={() => {
         const { viewport, selectedItem } = contentContext;
         if (viewport && selectedItem) {
-          const isMobile = navigator.maxTouchPoints > 0;
-          const factor = isMobile && !props.applyScrollFactorOnMobile ? 1 : props.scrollFactor ?? 1;
-          viewport.scrollTop = viewport.scrollTop + selectedItem.offsetHeight * Math.abs(factor);
+          viewport.scrollTop = viewport.scrollTop + selectedItem.offsetHeight;
         }
       }}
     />
