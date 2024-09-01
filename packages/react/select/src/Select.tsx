@@ -340,6 +340,7 @@ const SelectValue = React.forwardRef<SelectValueElement, SelectValueProps>(
     return (
       <Primitive.span
         {...valueProps}
+        className={className}
         ref={composedRefs}
         // we don't want events from the portalled `SelectValue` children to bubble
         // through the item they came from
