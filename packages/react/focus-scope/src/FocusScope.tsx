@@ -108,11 +108,12 @@ const FocusScope = React.forwardRef<FocusScopeElement, FocusScopeProps>((props, 
       // When the focused element gets removed from the DOM, browsers move focus
       // back to the document.body. In this case, we move focus to the container
       // to keep focus trapped correctly.
-      function handleMutations(mutations: MutationRecord[]) {
-        const focusedElement = document.activeElement as HTMLElement | null;
-        if (focusedElement !== document.body) return;
-        for (const mutation of mutations) {
-          if (mutation.removedNodes.length > 0) focus(container);
+      function handleMutations() {
+        const lastFocusedElementStillInContainer = container?.contains(
+          lastFocusedElementRef.current
+        );
+        if (!lastFocusedElementStillInContainer) {
+          focus(container);
         }
       }
 
