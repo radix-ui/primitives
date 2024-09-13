@@ -219,6 +219,7 @@ const SelectTrigger = React.forwardRef<SelectTriggerElement, SelectTriggerProps>
     const isDisabled = context.disabled || disabled;
     const composedRefs = useComposedRefs(forwardedRef, context.onTriggerChange);
     const getItems = useCollection(__scopeSelect);
+    const pointerTypeRef = React.useRef<React.PointerEvent['pointerType']>('touch');
 
     const [searchRef, handleTypeaheadSearch, resetTypeahead] = useTypeaheadSearch((search) => {
       const enabledItems = getItems().filter((item) => !item.disabled);
@@ -229,11 +230,18 @@ const SelectTrigger = React.forwardRef<SelectTriggerElement, SelectTriggerProps>
       }
     });
 
-    const handleOpen = () => {
+    const handleOpen = (pointerEvent?: React.MouseEvent | React.PointerEvent) => {
       if (!isDisabled) {
         context.onOpenChange(true);
         // reset typeahead when we open
         resetTypeahead();
+      }
+
+      if (pointerEvent) {
+        context.triggerPointerDownPosRef.current = {
+          x: Math.round(pointerEvent.pageX),
+          y: Math.round(pointerEvent.pageY),
+        };
       }
     };
 
@@ -261,8 +269,15 @@ const SelectTrigger = React.forwardRef<SelectTriggerElement, SelectTriggerProps>
             // because we are preventing default in `onPointerDown` so effectively
             // this only runs for a label "click"
             event.currentTarget.focus();
+
+            // Open on click when using a touch or pen device
+            if (pointerTypeRef.current !== 'mouse') {
+              handleOpen(event);
+            }
           })}
           onPointerDown={composeEventHandlers(triggerProps.onPointerDown, (event) => {
+            pointerTypeRef.current = event.pointerType;
+
             // prevent implicit pointer capture
             // https://www.w3.org/TR/pointerevents3/#implicit-pointer-capture
             const target = event.target as HTMLElement;
@@ -271,13 +286,10 @@ const SelectTrigger = React.forwardRef<SelectTriggerElement, SelectTriggerProps>
             }
 
             // only call handler if it's the left button (mousedown gets triggered by all mouse buttons)
-            // but not when the control key is pressed (avoiding MacOS right click)
-            if (event.button === 0 && event.ctrlKey === false) {
-              handleOpen();
-              context.triggerPointerDownPosRef.current = {
-                x: Math.round(event.pageX),
-                y: Math.round(event.pageY),
-              };
+            // but not when the control key is pressed (avoiding MacOS right click); also not for touch
+            // devices because that would open the menu on scroll. (pen devices behave as touch on iOS).
+            if (event.button === 0 && event.ctrlKey === false && event.pointerType === 'mouse') {
+              handleOpen(event);
               // prevent trigger from stealing focus from the active item after opening.
               event.preventDefault();
             }
@@ -859,7 +871,7 @@ const SelectItemAlignedPosition = React.forwardRef<
       const willAlignWithoutTopOverflow = contentTopToItemMiddle <= topEdgeToTriggerMiddle;
 
       if (willAlignWithoutTopOverflow) {
-        const isLastItem = selectedItem === items[items.length - 1].ref.current;
+        const isLastItem = items.length > 0 && selectedItem === items[items.length - 1].ref.current;
         contentWrapper.style.bottom = 0 + 'px';
         const viewportOffsetBottom =
           content.clientHeight - viewport.offsetTop - viewport.offsetHeight;
@@ -874,7 +886,7 @@ const SelectItemAlignedPosition = React.forwardRef<
         const height = contentTopToItemMiddle + clampedTriggerMiddleToBottomEdge;
         contentWrapper.style.height = height + 'px';
       } else {
-        const isFirstItem = selectedItem === items[0].ref.current;
+        const isFirstItem = items.length > 0 && selectedItem === items[0].ref.current;
         contentWrapper.style.top = 0 + 'px';
         const clampedTopEdgeToTriggerMiddle = Math.max(
           topEdgeToTriggerMiddle,
@@ -1196,6 +1208,7 @@ const SelectItem = React.forwardRef<SelectItemElement, SelectItemProps>(
       contentContext.itemRefCallback?.(node, value, disabled)
     );
     const textId = useId();
+    const pointerTypeRef = React.useRef<React.PointerEvent['pointerType']>('touch');
 
     const handleSelect = () => {
       if (!disabled) {
@@ -1241,11 +1254,24 @@ const SelectItem = React.forwardRef<SelectItemElement, SelectItemProps>(
             ref={composedRefs}
             onFocus={composeEventHandlers(itemProps.onFocus, () => setIsFocused(true))}
             onBlur={composeEventHandlers(itemProps.onBlur, () => setIsFocused(false))}
-            onPointerUp={composeEventHandlers(itemProps.onPointerUp, handleSelect)}
+            onClick={composeEventHandlers(itemProps.onClick, () => {
+              // Open on click when using a touch or pen device
+              if (pointerTypeRef.current !== 'mouse') handleSelect();
+            })}
+            onPointerUp={composeEventHandlers(itemProps.onPointerUp, () => {
+              // Using a mouse you should be able to do pointer down, move through
+              // the list, and release the pointer over the item to select it.
+              if (pointerTypeRef.current === 'mouse') handleSelect();
+            })}
+            onPointerDown={composeEventHandlers(itemProps.onPointerDown, (event) => {
+              pointerTypeRef.current = event.pointerType;
+            })}
             onPointerMove={composeEventHandlers(itemProps.onPointerMove, (event) => {
+              // Remember pointer type when sliding over to this item from another one
+              pointerTypeRef.current = event.pointerType;
               if (disabled) {
                 contentContext.onItemLeave?.();
-              } else {
+              } else if (pointerTypeRef.current === 'mouse') {
                 // even though safari doesn't support this option, it's acceptable
                 // as it only means it might scroll a few pixels when using the pointer.
                 event.currentTarget.focus({ preventScroll: true });
@@ -1580,8 +1606,8 @@ const BubbleSelect = React.forwardRef<HTMLSelectElement, React.ComponentPropsWit
      * as possible.
      *
      * We purposefully do not add the `value` attribute here to allow the value
-     * to be set programatically and bubble to any parent form `onChange` event.
-     * Adding the `value` will cause React to consider the programatic
+     * to be set programmatically and bubble to any parent form `onChange` event.
+     * Adding the `value` will cause React to consider the programmatic
      * dispatch a duplicate and it will get swallowed.
      *
      * We use `VisuallyHidden` rather than `display: "none"` because Safari autofill

@@ -163,3 +163,90 @@ describe('given an Avatar with fallback and child image', () => {
     expect(frameworkImage).toBeInTheDocument();
   });
 });
+
+describe('given an Avatar with an image that only works when referrerPolicy=no-referrer', () => {
+  let rendered: RenderResult;
+  const orignalGlobalImage = window.Image;
+
+  beforeAll(() => {
+    (window.Image as any) = class MockImage {
+      onload: () => void = () => {};
+      onerror: () => void = () => {};
+      src: string = '';
+      referrerPolicy: string | undefined;
+      constructor() {
+        setTimeout(() => {
+          if (this.referrerPolicy === 'no-referrer') {
+            this.onload();
+          } else {
+            this.onerror();
+          }
+        }, DELAY);
+        return this;
+      }
+    };
+  });
+
+  afterAll(() => {
+    window.Image = orignalGlobalImage;
+  });
+
+  describe('referrerPolicy=no-referrer', () => {
+    beforeEach(() => {
+      rendered = render(
+        <Avatar.Root data-testid={ROOT_TEST_ID}>
+          <Avatar.Fallback>{FALLBACK_TEXT}</Avatar.Fallback>
+          <Avatar.Image src="/test.jpg" alt={IMAGE_ALT_TEXT} referrerPolicy="no-referrer" />
+        </Avatar.Root>
+      );
+    });
+
+    it('should render the fallback initially', () => {
+      const fallback = rendered.queryByText(FALLBACK_TEXT);
+      expect(fallback).toBeInTheDocument();
+    });
+
+    it('should not render the image initially', () => {
+      const image = rendered.queryByRole('img');
+      expect(image).not.toBeInTheDocument();
+    });
+
+    it('should render the image after it has loaded', async () => {
+      const image = await rendered.findByRole('img');
+      expect(image).toBeInTheDocument();
+    });
+
+    it('should have alt text on the image', async () => {
+      const image = await rendered.findByAltText(IMAGE_ALT_TEXT);
+      expect(image).toBeInTheDocument();
+    });
+  });
+
+  describe('referrerPolicy=origin', () => {
+    beforeEach(() => {
+      rendered = render(
+        <Avatar.Root data-testid={ROOT_TEST_ID}>
+          <Avatar.Fallback>{FALLBACK_TEXT}</Avatar.Fallback>
+          <Avatar.Image src="/test.jpg" alt={IMAGE_ALT_TEXT} referrerPolicy="origin" />
+        </Avatar.Root>
+      );
+    });
+
+    it('should render the fallback initially', () => {
+      const fallback = rendered.queryByText(FALLBACK_TEXT);
+      expect(fallback).toBeInTheDocument();
+    });
+
+    it('should never render the image', async () => {
+      try {
+        await waitFor(() => rendered.getByRole('img'), {
+          timeout: DELAY + 100,
+        });
+      } catch (error) {
+        expect(error).toBeInstanceOf(Error);
+        expect((error as Error).name).toBe('TestingLibraryElementError');
+        expect((error as Error).message).toContain('Unable to find role="img"');
+      }
+    });
+  });
+});
