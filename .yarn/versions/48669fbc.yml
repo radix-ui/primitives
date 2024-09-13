@@ -1,2 +1,3 @@
 releases:
   "@radix-ui/react-avatar": minor
+  primitives: patch
