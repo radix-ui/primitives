@@ -123,6 +123,7 @@ interface PopperContentProps extends PrimitiveDivProps {
   hideWhenDetached?: boolean;
   updatePositionStrategy?: 'optimized' | 'always';
   onPlaced?: () => void;
+  skipStyleInjection?: boolean;
 }
 
 const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>(
@@ -141,6 +142,7 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
       hideWhenDetached = false,
       updatePositionStrategy = 'optimized',
       onPlaced,
+      skipStyleInjection,
       ...contentProps
     } = props;
 
@@ -224,10 +226,15 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
     const arrowY = middlewareData.arrow?.y;
     const cannotCenterArrow = middlewareData.arrow?.centerOffset !== 0;
 
+    const [contentZIndex, setContentZIndex] = React.useState<string>();
     const updateStyleVariables = React.useCallback(() => {
       if (refs.floating.current) {
         if (content) {
-          refs.floating.current.style.zIndex = window.getComputedStyle(content).zIndex;
+          if (skipStyleInjection) {
+            refs.floating.current.style.zIndex = window.getComputedStyle(content).zIndex;
+          } else {
+            setContentZIndex(window.getComputedStyle(content).zIndex);
+          }
         }
 
         /* if the PopperContent hasn't been placed yet (not all measurements done)
@@ -262,7 +269,7 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
         refs.floating.current.style.left = floatingStyles.left as string;
         refs.floating.current.style.top = floatingStyles.top as string;
       }
-    }, [content, floatingStyles, isPositioned, middlewareData, refs.floating]);
+    }, [content, floatingStyles, isPositioned, middlewareData, refs.floating, skipStyleInjection]);
 
     useLayoutEffect(() => {
       updateStyleVariables();
@@ -274,6 +281,28 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
       <div
         ref={refs.setFloating}
         data-radix-popper-content-wrapper=""
+        style={
+          skipStyleInjection
+            ? undefined
+            : {
+                ...floatingStyles,
+                transform: isPositioned ? floatingStyles.transform : 'translate(0, -200%)', // keep off the page when measuring
+                minWidth: 'max-content',
+                zIndex: contentZIndex,
+                ['--radix-popper-transform-origin' as any]: [
+                  middlewareData.transformOrigin?.x,
+                  middlewareData.transformOrigin?.y,
+                ].join(' '),
+
+                // hide the content if using the hide middleware and should be hidden
+                // set visibility to hidden and disable pointer events so the UI behaves
+                // as if the PopperContent isn't there at all
+                ...(middlewareData.hide?.referenceHidden && {
+                  visibility: 'hidden',
+                  pointerEvents: 'none',
+                }),
+              }
+        }
         // Floating UI interally calculates logical alignment based the `dir` attribute on
         // the reference/floating node, we must add this attribute here to ensure
         // this is calculated when portalled as well as inline.
@@ -293,6 +322,16 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
             data-align={placedAlign}
             {...contentProps}
             ref={composedRefs}
+            style={
+              skipStyleInjection
+                ? undefined
+                : {
+                    ...contentProps.style,
+                    // if the PopperContent hasn't been placed yet (not all measurements done)
+                    // we prevent animations so that users's animation don't kick in too early referring wrong sides
+                    animation: !isPositioned ? 'none' : undefined,
+                  }
+            }
           />
         </PopperContentProvider>
       </div>

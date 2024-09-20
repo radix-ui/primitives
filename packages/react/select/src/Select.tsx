@@ -322,12 +322,21 @@ type SelectValueElement = React.ElementRef<typeof Primitive.span>;
 type PrimitiveSpanProps = React.ComponentPropsWithoutRef<typeof Primitive.span>;
 interface SelectValueProps extends Omit<PrimitiveSpanProps, 'placeholder'> {
   placeholder?: React.ReactNode;
+  skipStyleInjection?: boolean;
 }
 
 const SelectValue = React.forwardRef<SelectValueElement, SelectValueProps>(
   (props: ScopedProps<SelectValueProps>, forwardedRef) => {
     // We ignore `className` and `style` as this part shouldn't be styled.
-    const { __scopeSelect, className, style, children, placeholder = '', ...valueProps } = props;
+    const {
+      __scopeSelect,
+      className,
+      style,
+      children,
+      placeholder = '',
+      skipStyleInjection,
+      ...valueProps
+    } = props;
     const context = useSelectContext(VALUE_NAME, __scopeSelect);
     const { onValueNodeHasChildrenChange } = context;
     const hasChildren = children !== undefined;
@@ -338,7 +347,12 @@ const SelectValue = React.forwardRef<SelectValueElement, SelectValueProps>(
     }, [onValueNodeHasChildrenChange, hasChildren]);
 
     return (
-      <Primitive.span data-radix-select-value="" {...valueProps} ref={composedRefs}>
+      <Primitive.span
+        data-radix-select-value=""
+        {...valueProps}
+        ref={composedRefs}
+        style={skipStyleInjection ? undefined : { pointerEvents: 'none' }}
+      >
         {shouldShowPlaceholder(context.value) ? <>{placeholder}</> : children}
       </Primitive.span>
     );
@@ -485,6 +499,7 @@ interface SelectContentImplProps
   onPointerDownOutside?: DismissableLayerProps['onPointerDownOutside'];
 
   position?: 'item-aligned' | 'popper';
+  skipStyleInjection?: boolean;
 }
 
 const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectContentImplProps>(
@@ -507,6 +522,7 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
       sticky,
       hideWhenDetached,
       avoidCollisions,
+      skipStyleInjection,
       //
       ...contentProps
     } = props;
@@ -720,6 +736,18 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
                 {...popperContentProps}
                 onPlaced={() => setIsPositioned(true)}
                 ref={composedRefs}
+                style={
+                  skipStyleInjection
+                    ? undefined
+                    : {
+                        // flex layout so we can place the scroll buttons properly
+                        display: 'flex',
+                        flexDirection: 'column',
+                        // reset the outline by default as the content MAY get focused
+                        outline: 'none',
+                        ...contentProps.style,
+                      }
+                }
                 onKeyDown={composeEventHandlers(contentProps.onKeyDown, (event) => {
                   const isModifierKey = event.ctrlKey || event.altKey || event.metaKey;
 
@@ -768,13 +796,15 @@ SelectContentImpl.displayName = CONTENT_IMPL_NAME;
 const ITEM_ALIGNED_POSITION_NAME = 'SelectItemAlignedPosition';
 
 type SelectItemAlignedPositionElement = React.ElementRef<typeof Primitive.div>;
-interface SelectItemAlignedPositionProps extends PrimitiveDivProps, SelectPopperPrivateProps {}
+interface SelectItemAlignedPositionProps extends PrimitiveDivProps, SelectPopperPrivateProps {
+  skipStyleInjection?: boolean;
+}
 
 const SelectItemAlignedPosition = React.forwardRef<
   SelectItemAlignedPositionElement,
   SelectItemAlignedPositionProps
 >((props: ScopedProps<SelectItemAlignedPositionProps>, forwardedRef) => {
-  const { __scopeSelect, onPlaced, ...popperProps } = props;
+  const { __scopeSelect, onPlaced, skipStyleInjection, ...popperProps } = props;
   const context = useSelectContext(CONTENT_NAME, __scopeSelect);
   const contentContext = useSelectContentContext(CONTENT_NAME, __scopeSelect);
   const [contentWrapper, setContentWrapper] = React.useState<HTMLDivElement | null>(null);
@@ -914,11 +944,17 @@ const SelectItemAlignedPosition = React.forwardRef<
 
   useLayoutEffect(() => position(), [position]);
 
+  // copy z-index from content to wrapper
+  const [contentZIndex, setContentZIndex] = React.useState<string>();
   useLayoutEffect(() => {
     if (content && contentWrapper) {
-      contentWrapper.style.zIndex = window.getComputedStyle(content).zIndex;
+      if (skipStyleInjection) {
+        contentWrapper.style.zIndex = window.getComputedStyle(content).zIndex;
+      } else {
+        setContentZIndex(window.getComputedStyle(content).zIndex);
+      }
     }
-  }, [content, contentWrapper]);
+  }, [content, contentWrapper, skipStyleInjection]);
 
   // When the viewport becomes scrollable at the top, the scroll up button will mount.
   // Because it is part of the normal flow, it will push down the viewport, thus throwing our
@@ -942,11 +978,36 @@ const SelectItemAlignedPosition = React.forwardRef<
       shouldExpandOnScrollRef={shouldExpandOnScrollRef}
       onScrollButtonChange={handleScrollButtonChange}
     >
-      <div data-radix-select-item-aligned-position="" ref={setContentWrapper}>
+      <div
+        data-radix-select-item-aligned-position=""
+        ref={setContentWrapper}
+        style={
+          skipStyleInjection
+            ? undefined
+            : {
+                display: 'flex',
+                flexDirection: 'column',
+                position: 'fixed',
+                zIndex: contentZIndex,
+              }
+        }
+      >
         <Primitive.div
           {...popperProps}
           data-radix-select-item-aligned-popper=""
           ref={composedRefs}
+          style={
+            skipStyleInjection
+              ? undefined
+              : {
+                  // When we get the height of the content, it includes borders. If we were to set
+                  // the height without having `boxSizing: 'border-box'` it would be too big.
+                  boxSizing: 'border-box',
+                  // We need to ensure the content doesn't get taller than the wrapper
+                  maxHeight: '100%',
+                  ...popperProps.style,
+                }
+          }
         />
       </div>
     </SelectViewportProvider>
@@ -963,7 +1024,9 @@ const POPPER_POSITION_NAME = 'SelectPopperPosition';
 
 type SelectPopperPositionElement = React.ElementRef<typeof PopperPrimitive.Content>;
 type PopperContentProps = React.ComponentPropsWithoutRef<typeof PopperPrimitive.Content>;
-interface SelectPopperPositionProps extends PopperContentProps, SelectPopperPrivateProps {}
+interface SelectPopperPositionProps extends PopperContentProps, SelectPopperPrivateProps {
+  skipStyleInjection?: boolean;
+}
 
 const SelectPopperPosition = React.forwardRef<
   SelectPopperPositionElement,
@@ -973,6 +1036,7 @@ const SelectPopperPosition = React.forwardRef<
     __scopeSelect,
     align = 'start',
     collisionPadding = CONTENT_MARGIN,
+    skipStyleInjection,
     ...popperProps
   } = props;
   const popperScope = usePopperScope(__scopeSelect);
@@ -985,6 +1049,23 @@ const SelectPopperPosition = React.forwardRef<
       ref={forwardedRef}
       align={align}
       collisionPadding={collisionPadding}
+      style={
+        skipStyleInjection
+          ? undefined
+          : {
+              // Ensure border-box for floating-ui calculations
+              boxSizing: 'border-box',
+              ...popperProps.style,
+              // re-namespace exposed content custom properties
+              ...{
+                '--radix-select-content-transform-origin': 'var(--radix-popper-transform-origin)',
+                '--radix-select-content-available-width': 'var(--radix-popper-available-width)',
+                '--radix-select-content-available-height': 'var(--radix-popper-available-height)',
+                '--radix-select-trigger-width': 'var(--radix-popper-anchor-width)',
+                '--radix-select-trigger-height': 'var(--radix-popper-anchor-height)',
+              },
+            }
+      }
     />
   );
 });
@@ -1037,6 +1118,19 @@ const SelectViewport = React.forwardRef<SelectViewportElement, SelectViewportPro
             role="presentation"
             {...viewportProps}
             ref={composedRefs}
+            style={
+              skipStyleInjection
+                ? undefined
+                : {
+                    // we use position: 'relative' here on the `viewport` so that when we call
+                    // `selectedItem.offsetTop` in calculations, the offset is relative to the viewport
+                    // (independent of the scrollUpButton).
+                    position: 'relative',
+                    flex: 1,
+                    overflow: 'auto',
+                    ...viewportProps.style,
+                  }
+            }
             onScroll={composeEventHandlers(viewportProps.onScroll, (event) => {
               const viewport = event.currentTarget;
               const { contentWrapper, shouldExpandOnScrollRef } = viewportContext;
@@ -1429,13 +1523,14 @@ SelectScrollDownButton.displayName = SCROLL_DOWN_BUTTON_NAME;
 type SelectScrollButtonImplElement = React.ElementRef<typeof Primitive.div>;
 interface SelectScrollButtonImplProps extends PrimitiveDivProps {
   onAutoScroll(): void;
+  skipStyleInjection?: boolean;
 }
 
 const SelectScrollButtonImpl = React.forwardRef<
   SelectScrollButtonImplElement,
   SelectScrollButtonImplProps
 >((props: ScopedProps<SelectScrollButtonImplProps>, forwardedRef) => {
-  const { __scopeSelect, onAutoScroll, ...scrollIndicatorProps } = props;
+  const { __scopeSelect, onAutoScroll, skipStyleInjection, ...scrollIndicatorProps } = props;
   const contentContext = useSelectContentContext('SelectScrollButton', __scopeSelect);
   const autoScrollTimerRef = React.useRef<number | null>(null);
   const getItems = useCollection(__scopeSelect);
@@ -1466,6 +1561,7 @@ const SelectScrollButtonImpl = React.forwardRef<
       data-radix-select-scroll-button-impl=""
       {...scrollIndicatorProps}
       ref={forwardedRef}
+      style={skipStyleInjection ? undefined : { flexShrink: 0, ...scrollIndicatorProps.style }}
       onPointerDown={composeEventHandlers(scrollIndicatorProps.onPointerDown, () => {
         if (autoScrollTimerRef.current === null) {
           autoScrollTimerRef.current = window.setInterval(onAutoScroll, 50);
