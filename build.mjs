@@ -1,6 +1,8 @@
 import { globSync } from 'glob';
 import * as esbuild from 'esbuild';
 import * as tsup from 'tsup';
+import { basename } from 'path';
+import { copyFileSync } from 'fs';
 
 async function build(path) {
   const file = `${path}/src/index.ts`;
@@ -43,6 +45,14 @@ async function build(path) {
     external: [/@radix-ui\/.+/],
   });
   console.log(`Built ${path}/dist/index.d.ts`);
+
+  const cssFiles = globSync(`${path}/src/**/*.css`);
+  cssFiles.forEach((cssFile) => {
+    const fileName = basename(cssFile);
+    const dest = `${dist}/${fileName}`;
+    copyFileSync(cssFile, dest);
+    console.log(`Copied ${cssFile} to ${dest}`);
+  });
 }
 
 globSync('packages/*/*').forEach(build);

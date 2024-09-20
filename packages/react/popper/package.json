@@ -12,6 +12,10 @@
         "types": "./dist/index.d.ts",
         "default": "./dist/index.js"
       }
+    },
+    "./styles": {
+      "import": "./dist/popperStyles.css",
+      "require": "./dist/popperStyles.css"
     }
   },
   "source": "./src/index.ts",

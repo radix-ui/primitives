@@ -338,13 +338,7 @@ const SelectValue = React.forwardRef<SelectValueElement, SelectValueProps>(
     }, [onValueNodeHasChildrenChange, hasChildren]);
 
     return (
-      <Primitive.span
-        {...valueProps}
-        ref={composedRefs}
-        // we don't want events from the portalled `SelectValue` children to bubble
-        // through the item they came from
-        style={{ pointerEvents: 'none' }}
-      >
+      <Primitive.span data-radix-select-value="" {...valueProps} ref={composedRefs}>
         {shouldShowPlaceholder(context.value) ? <>{placeholder}</> : children}
       </Primitive.span>
     );
@@ -716,6 +710,7 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
               onDismiss={() => context.onOpenChange(false)}
             >
               <SelectPosition
+                data-radix-select-content-impl=""
                 role="listbox"
                 id={context.contentId}
                 data-state={context.open ? 'open' : 'closed'}
@@ -725,14 +720,6 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
                 {...popperContentProps}
                 onPlaced={() => setIsPositioned(true)}
                 ref={composedRefs}
-                style={{
-                  // flex layout so we can place the scroll buttons properly
-                  display: 'flex',
-                  flexDirection: 'column',
-                  // reset the outline by default as the content MAY get focused
-                  outline: 'none',
-                  ...contentProps.style,
-                }}
                 onKeyDown={composeEventHandlers(contentProps.onKeyDown, (event) => {
                   const isModifierKey = event.ctrlKey || event.altKey || event.metaKey;
 
@@ -927,11 +914,11 @@ const SelectItemAlignedPosition = React.forwardRef<
 
   useLayoutEffect(() => position(), [position]);
 
-  // copy z-index from content to wrapper
-  const [contentZIndex, setContentZIndex] = React.useState<string>();
   useLayoutEffect(() => {
-    if (content) setContentZIndex(window.getComputedStyle(content).zIndex);
-  }, [content]);
+    if (content && contentWrapper) {
+      contentWrapper.style.zIndex = window.getComputedStyle(content).zIndex;
+    }
+  }, [content, contentWrapper]);
 
   // When the viewport becomes scrollable at the top, the scroll up button will mount.
   // Because it is part of the normal flow, it will push down the viewport, thus throwing our
@@ -955,26 +942,11 @@ const SelectItemAlignedPosition = React.forwardRef<
       shouldExpandOnScrollRef={shouldExpandOnScrollRef}
       onScrollButtonChange={handleScrollButtonChange}
     >
-      <div
-        ref={setContentWrapper}
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          position: 'fixed',
-          zIndex: contentZIndex,
-        }}
-      >
+      <div data-radix-select-item-aligned-position="" ref={setContentWrapper}>
         <Primitive.div
           {...popperProps}
+          data-radix-select-item-aligned-popper=""
           ref={composedRefs}
-          style={{
-            // When we get the height of the content, it includes borders. If we were to set
-            // the height without having `boxSizing: 'border-box'` it would be too big.
-            boxSizing: 'border-box',
-            // We need to ensure the content doesn't get taller than the wrapper
-            maxHeight: '100%',
-            ...popperProps.style,
-          }}
         />
       </div>
     </SelectViewportProvider>
@@ -1007,24 +979,12 @@ const SelectPopperPosition = React.forwardRef<
 
   return (
     <PopperPrimitive.Content
+      data-radix-select-popper-position=""
       {...popperScope}
       {...popperProps}
       ref={forwardedRef}
       align={align}
       collisionPadding={collisionPadding}
-      style={{
-        // Ensure border-box for floating-ui calculations
-        boxSizing: 'border-box',
-        ...popperProps.style,
-        // re-namespace exposed content custom properties
-        ...{
-          '--radix-select-content-transform-origin': 'var(--radix-popper-transform-origin)',
-          '--radix-select-content-available-width': 'var(--radix-popper-available-width)',
-          '--radix-select-content-available-height': 'var(--radix-popper-available-height)',
-          '--radix-select-trigger-width': 'var(--radix-popper-anchor-width)',
-          '--radix-select-trigger-height': 'var(--radix-popper-anchor-height)',
-        },
-      }}
     />
   );
 });
@@ -1050,11 +1010,12 @@ type SelectViewportElement = React.ElementRef<typeof Primitive.div>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface SelectViewportProps extends PrimitiveDivProps {
   nonce?: string;
+  skipStyleInjection?: boolean;
 }
 
 const SelectViewport = React.forwardRef<SelectViewportElement, SelectViewportProps>(
   (props: ScopedProps<SelectViewportProps>, forwardedRef) => {
-    const { __scopeSelect, nonce, ...viewportProps } = props;
+    const { __scopeSelect, nonce, skipStyleInjection, ...viewportProps } = props;
     const contentContext = useSelectContentContext(VIEWPORT_NAME, __scopeSelect);
     const viewportContext = useSelectViewportContext(VIEWPORT_NAME, __scopeSelect);
     const composedRefs = useComposedRefs(forwardedRef, contentContext.onViewportChange);
@@ -1062,27 +1023,20 @@ const SelectViewport = React.forwardRef<SelectViewportElement, SelectViewportPro
     return (
       <>
         {/* Hide scrollbars cross-browser and enable momentum scroll for touch devices */}
-        <style
-          dangerouslySetInnerHTML={{
-            __html: `[data-radix-select-viewport]{scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;}[data-radix-select-viewport]::-webkit-scrollbar{display:none}`,
-          }}
-          nonce={nonce}
-        />
+        {!skipStyleInjection && (
+          <style
+            dangerouslySetInnerHTML={{
+              __html: `[data-radix-select-viewport]{scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;}[data-radix-select-viewport]::-webkit-scrollbar{display:none}`,
+            }}
+            nonce={nonce}
+          />
+        )}
         <Collection.Slot scope={__scopeSelect}>
           <Primitive.div
             data-radix-select-viewport=""
             role="presentation"
             {...viewportProps}
             ref={composedRefs}
-            style={{
-              // we use position: 'relative' here on the `viewport` so that when we call
-              // `selectedItem.offsetTop` in calculations, the offset is relative to the viewport
-              // (independent of the scrollUpButton).
-              position: 'relative',
-              flex: 1,
-              overflow: 'auto',
-              ...viewportProps.style,
-            }}
             onScroll={composeEventHandlers(viewportProps.onScroll, (event) => {
               const viewport = event.currentTarget;
               const { contentWrapper, shouldExpandOnScrollRef } = viewportContext;
@@ -1509,9 +1463,9 @@ const SelectScrollButtonImpl = React.forwardRef<
   return (
     <Primitive.div
       aria-hidden
+      data-radix-select-scroll-button-impl=""
       {...scrollIndicatorProps}
       ref={forwardedRef}
-      style={{ flexShrink: 0, ...scrollIndicatorProps.style }}
       onPointerDown={composeEventHandlers(scrollIndicatorProps.onPointerDown, () => {
         if (autoScrollTimerRef.current === null) {
           autoScrollTimerRef.current = window.setInterval(onAutoScroll, 50);

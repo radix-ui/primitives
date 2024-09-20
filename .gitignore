@@ -27,3 +27,7 @@ cypress/screenshots
 
 # So devs can maintain their own todo lists in the project
 TODO.md
+
+# For those using yalc to test publishes locally
+.yalc
+yalc.lock

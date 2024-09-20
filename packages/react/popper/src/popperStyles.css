@@ -1,0 +1,11 @@
+[data-radix-popper-content-wrapper] {
+  --popper-content-wrapper-z-index: 0;
+  --popper-content-animation: unset;
+
+  min-width: max-content;
+  z-index: var(--popper-content-wrapper-z-index);
+}
+
+[data-radix-popper-content] {
+  animation: var(--popper-content-animation);
+}

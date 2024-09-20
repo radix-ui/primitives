@@ -1,0 +1,64 @@
+@import '@radix-ui/react-popper/styles';
+
+[data-radix-select-value] {
+  /* we don't want events from the portalled `SelectValue` children to buble
+   * through the item they came from.
+   */
+  pointer-events: none;
+}
+
+[data-radix-select-content-impl] {
+  /* flex layout so we can place the scroll buttons properly */
+  display: flex;
+  flex-direction: column;
+  /* reset the outline by default as the content MAY get focused */
+  outline: none;
+}
+[data-radix-select-item-aligned-position] {
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+}
+
+[data-radix-select-item-aligned-position] > [data-radix-select-item-aligned-popper] {
+  /* When we get the height of the content, it includes borders. If we were to set
+     * the height without having `boxSizing: 'border-box'` it would be too big.
+     */
+  box-sizing: border-box;
+  /* We need to ensure the content doesn't get taller than the wrapper */
+  max-height: 100%;
+}
+
+[data-radix-select-popper-position] {
+  /* Ensure border-box for floating-ui calculations */
+  box-sizing: border-box;
+
+  /* re-namespace exposed content custom properties */
+  --radix-select-content-transform-origin: var(--radix-popper-transform-origin);
+  --radix-select-content-available-width: var(--radix-popper-available-width);
+  --radix-select-content-available-height: var(--radix-popper-available-height);
+  --radix-select-trigger-width: var(--radix-popper-anchor-width);
+  --radix-select-trigger-height: var(--radix-popper-anchor-height);
+}
+
+[data-radix-select-viewport] {
+  /* we use position: 'relative' here on the `viewport` so that when we call
+   * `selectedItem.offsetTop` in calculations, the offset is relative to the viewport
+   * (independent of the scrollUpButton).
+   */
+
+  position: relative;
+  flex: 1;
+  overflow: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+[data-radix-select-viewport]::-webkit-scrollbar {
+  display: none;
+}
+
+[data-radix-select-scroll-button-impl] {
+  flex-shrink: 0;
+}

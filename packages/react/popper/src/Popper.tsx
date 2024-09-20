@@ -224,33 +224,56 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
     const arrowY = middlewareData.arrow?.y;
     const cannotCenterArrow = middlewareData.arrow?.centerOffset !== 0;
 
-    const [contentZIndex, setContentZIndex] = React.useState<string>();
+    const updateStyleVariables = React.useCallback(() => {
+      if (refs.floating.current) {
+        if (content) {
+          refs.floating.current.style.zIndex = window.getComputedStyle(content).zIndex;
+        }
+
+        /* if the PopperContent hasn't been placed yet (not all measurements done)
+         * we prevent animations so user's animation don't kick in too early referring wrong sides
+         */
+        refs.floating.current.style.setProperty(
+          '--popper-content-animation',
+          isPositioned ? 'none' : 'unset'
+        );
+        /* Keep off page when measuring */
+        refs.floating.current.style.transform = isPositioned
+          ? (floatingStyles.transform as string)
+          : 'translate(0, -200%)';
+
+        refs.floating.current.style.setProperty(
+          '--radix-popper-transform-origin',
+          `${middlewareData.transformOrigin?.x} ${middlewareData.transformOrigin?.y}`
+        );
+
+        /* hide the content if using the hid emiddleware and should be hidden
+         * set visibility to hidden and disable pointer events so the UI behaves
+         * as if the PopperContent isn't there at all
+         */
+        refs.floating.current.style.visibility = middlewareData.hide?.referenceHidden
+          ? 'hidden'
+          : 'unset';
+        refs.floating.current.style.pointerEvents = middlewareData.hide?.referenceHidden
+          ? 'none'
+          : 'unset';
+
+        refs.floating.current.style.position = floatingStyles.position as string;
+        refs.floating.current.style.left = floatingStyles.left as string;
+        refs.floating.current.style.top = floatingStyles.top as string;
+      }
+    }, [content, floatingStyles, isPositioned, middlewareData, refs.floating]);
+
     useLayoutEffect(() => {
-      if (content) setContentZIndex(window.getComputedStyle(content).zIndex);
-    }, [content]);
+      updateStyleVariables();
+    }, [updateStyleVariables]);
+
+    debugger;
 
     return (
       <div
         ref={refs.setFloating}
         data-radix-popper-content-wrapper=""
-        style={{
-          ...floatingStyles,
-          transform: isPositioned ? floatingStyles.transform : 'translate(0, -200%)', // keep off the page when measuring
-          minWidth: 'max-content',
-          zIndex: contentZIndex,
-          ['--radix-popper-transform-origin' as any]: [
-            middlewareData.transformOrigin?.x,
-            middlewareData.transformOrigin?.y,
-          ].join(' '),
-
-          // hide the content if using the hide middleware and should be hidden
-          // set visibility to hidden and disable pointer events so the UI behaves
-          // as if the PopperContent isn't there at all
-          ...(middlewareData.hide?.referenceHidden && {
-            visibility: 'hidden',
-            pointerEvents: 'none',
-          }),
-        }}
         // Floating UI interally calculates logical alignment based the `dir` attribute on
         // the reference/floating node, we must add this attribute here to ensure
         // this is calculated when portalled as well as inline.
@@ -265,16 +288,11 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
           shouldHideArrow={cannotCenterArrow}
         >
           <Primitive.div
+            data-radix-popper-content=""
             data-side={placedSide}
             data-align={placedAlign}
             {...contentProps}
             ref={composedRefs}
-            style={{
-              ...contentProps.style,
-              // if the PopperContent hasn't been placed yet (not all measurements done)
-              // we prevent animations so that users's animation don't kick in too early referring wrong sides
-              animation: !isPositioned ? 'none' : undefined,
-            }}
           />
         </PopperContentProvider>
       </div>

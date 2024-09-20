@@ -12,6 +12,10 @@
         "types": "./dist/index.d.ts",
         "default": "./dist/index.js"
       }
+    },
+    "./styles": {
+      "import": "./dist/selectStyles.css",
+      "require": "./dist/selectStyles.css"
     }
   },
   "source": "./src/index.ts",
