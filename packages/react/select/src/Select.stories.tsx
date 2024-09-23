@@ -637,6 +637,72 @@ export const RequiredWithinForm = () => {
   );
 };
 
+export const LinkedToForm = () => {
+  const [data, setData] = React.useState({});
+
+  function handleChange(event: React.FormEvent<HTMLFormElement>) {
+    const formData = new FormData(event.currentTarget);
+    setData(Object.fromEntries((formData as any).entries()));
+  }
+
+  const formId = React.useId();
+
+  return (
+    <div style={{ display: 'flex', gap: 20, padding: 50 }}>
+      <Label style={{ display: 'block' }}>
+        Country
+        <Select.Root name="country" autoComplete="country" defaultValue="fr" form={formId}>
+          <Select.Trigger className={triggerClass()}>
+            <Select.Value />
+            <Select.Icon />
+          </Select.Trigger>
+          <Select.Portal>
+            <Select.Content className={contentClass()}>
+              <Select.Viewport className={viewportClass()}>
+                <Select.Item className={itemClass()} value="fr">
+                  <Select.ItemText>France</Select.ItemText>
+                  <Select.ItemIndicator className={indicatorClass()}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+                <Select.Item className={itemClass()} value="uk">
+                  <Select.ItemText>United Kingdom</Select.ItemText>
+                  <Select.ItemIndicator className={indicatorClass()}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+                <Select.Item className={itemClass()} value="es">
+                  <Select.ItemText>Spain</Select.ItemText>
+                  <Select.ItemIndicator className={indicatorClass()}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+              </Select.Viewport>
+            </Select.Content>
+          </Select.Portal>
+        </Select.Root>
+      </Label>
+      <form
+        id={formId}
+        onSubmit={(event) => {
+          handleChange(event);
+          event.preventDefault();
+        }}
+        onChange={handleChange}
+      >
+        <Label style={{ display: 'block' }}>
+          Name
+          <input name="name" autoComplete="name" style={{ display: 'block' }} />
+        </Label>
+        <br />
+        <button type="submit">Submit</button>
+        <br />
+        <pre>{JSON.stringify(data, null, 2)}</pre>
+      </form>
+    </div>
+  );
+};
+
 export const WithinDialog = () => (
   <div style={{ height: '120vh' }}>
     <Dialog.Root>
@@ -780,10 +846,20 @@ ChromaticNoDefaultValue.parameters = { chromatic: { disable: false } };
 export const Cypress = () => {
   const [data, setData] = React.useState<{ size?: 'S' | 'M' | 'L' }>({});
   const [model, setModel] = React.useState<string | undefined>('');
+  const planets = React.useMemo(
+    () => ['Mercury', 'Venus', 'Earth', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune'] as const,
+    []
+  );
+  const [planetData, setPlanetData] = React.useState<{ planet?: (typeof planets)[number] }>({});
 
   function handleChange(event: React.FormEvent<HTMLFormElement>) {
     const formData = new FormData(event.currentTarget);
     setData(Object.fromEntries((formData as any).entries()));
+  }
+
+  function handlePlanetChange(event: React.FormEvent<HTMLFormElement>) {
+    const formData = new FormData(event.currentTarget);
+    setPlanetData(Object.fromEntries(formData.entries()));
   }
 
   return (
@@ -881,6 +957,47 @@ export const Cypress = () => {
         <button type="button" style={{ width: 100, height: 50 }} onClick={() => setModel('')}>
           unset
         </button>
+      </div>
+
+      <hr />
+
+      <div style={{ padding: 50 }}>
+        <Label>
+          choose a planet:
+          <Select.Root defaultValue="Earth" name="planet" form="planetForm">
+            <Select.Trigger className={triggerClass()}>
+              <Select.Value />
+              <Select.Icon />
+            </Select.Trigger>
+            <Select.Portal>
+              <Select.Content className={contentClass()}>
+                <Select.Viewport className={viewportClass()}>
+                  {planets.map((planet) => (
+                    <Select.Item key={planet} className={itemClass()} value={planet}>
+                      <Select.ItemText>{planet}</Select.ItemText>
+                      <Select.ItemIndicator className={indicatorClass()}>
+                        <TickIcon />
+                      </Select.ItemIndicator>
+                    </Select.Item>
+                  ))}
+                </Select.Viewport>
+              </Select.Content>
+            </Select.Portal>
+          </Select.Root>
+        </Label>
+        <form
+          id="planetForm"
+          onSubmit={(event) => {
+            handlePlanetChange(event);
+            event.preventDefault();
+          }}
+          onChange={handlePlanetChange}
+        >
+          <button type="submit" style={{ width: 100, height: 50 }}>
+            go to
+          </button>
+          {planetData.planet ? <p>You are going to {planetData.planet}</p> : null}
+        </form>
       </div>
     </>
   );

@@ -59,6 +59,38 @@ export default function Page() {
           </Select.Portal>
         </Select.Root>
       </form>
+
+      <form id="selectForm">
+        <button type="submit" value="submit">
+          Submit
+        </button>
+      </form>
+      <Select.Root form="selectForm" name="select" defaultValue="1">
+        <Select.Trigger>
+          <Select.Value placeholder="Pick an option" />
+          <Select.Icon>▼</Select.Icon>
+        </Select.Trigger>
+        <Select.Portal>
+          <Select.Content>
+            <Select.ScrollUpButton>▲</Select.ScrollUpButton>
+            <Select.Viewport>
+              <Select.Item value="1">
+                <Select.ItemText>Item 1</Select.ItemText>
+                <Select.ItemIndicator>✔</Select.ItemIndicator>
+              </Select.Item>
+              <Select.Item value="2">
+                <Select.ItemText>Item 2</Select.ItemText>
+                <Select.ItemIndicator>✔</Select.ItemIndicator>
+              </Select.Item>
+              <Select.Item value="3">
+                <Select.ItemText>Item 3</Select.ItemText>
+                <Select.ItemIndicator>✔</Select.ItemIndicator>
+              </Select.Item>
+            </Select.Viewport>
+            <Select.ScrollDownButton>▼</Select.ScrollDownButton>
+          </Select.Content>
+        </Select.Portal>
+      </Select.Root>
     </>
   );
 }
