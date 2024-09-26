@@ -170,6 +170,107 @@ export const Position = () => (
   </div>
 );
 
+export const Modality = () => (
+  <div
+    style={{
+      display: 'flex',
+      gap: 50,
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: '300vw',
+      height: '300vh',
+    }}
+  >
+    <div>
+      <h2>Modal (default)</h2>
+      <Label>
+        Choose a number:
+        <Select.Root defaultValue="two">
+          <Select.Trigger className={triggerClass()}>
+            <Select.Value />
+            <Select.Icon />
+          </Select.Trigger>
+          <Select.Portal>
+            <Select.Content className={contentClass()} position="popper" sideOffset={5}>
+              <Select.Viewport className={viewportClass()}>
+                <Select.Item className={itemClass()} value="one">
+                  <Select.ItemText>
+                    One<span aria-hidden> 👍</span>
+                  </Select.ItemText>
+                  <Select.ItemIndicator className={indicatorClass()}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+                <Select.Item className={itemClass()} value="two">
+                  <Select.ItemText>
+                    Two<span aria-hidden> 👌</span>
+                  </Select.ItemText>
+                  <Select.ItemIndicator className={indicatorClass()}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+                <Select.Item className={itemClass()} value="three">
+                  <Select.ItemText>
+                    Three<span aria-hidden> 🤘</span>
+                  </Select.ItemText>
+                  <Select.ItemIndicator className={indicatorClass()}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+              </Select.Viewport>
+              <Select.Arrow />
+            </Select.Content>
+          </Select.Portal>
+        </Select.Root>
+      </Label>
+    </div>
+
+    <div>
+      <h2>Non modal</h2>
+      <Label>
+        Choose a number:
+        <Select.Root defaultValue="two" modal={false}>
+          <Select.Trigger className={triggerClass()}>
+            <Select.Value />
+            <Select.Icon />
+          </Select.Trigger>
+          <Select.Portal>
+            <Select.Content className={contentClass()} position="popper" sideOffset={5}>
+              <Select.Viewport className={viewportClass()}>
+                <Select.Item className={itemClass()} value="one">
+                  <Select.ItemText>
+                    One<span aria-hidden> 👍</span>
+                  </Select.ItemText>
+                  <Select.ItemIndicator className={indicatorClass()}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+                <Select.Item className={itemClass()} value="two">
+                  <Select.ItemText>
+                    Two<span aria-hidden> 👌</span>
+                  </Select.ItemText>
+                  <Select.ItemIndicator className={indicatorClass()}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+                <Select.Item className={itemClass()} value="three">
+                  <Select.ItemText>
+                    Three<span aria-hidden> 🤘</span>
+                  </Select.ItemText>
+                  <Select.ItemIndicator className={indicatorClass()}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+              </Select.Viewport>
+              <Select.Arrow />
+            </Select.Content>
+          </Select.Portal>
+        </Select.Root>
+      </Label>
+    </div>
+  </div>
+);
+
 export const NoDefaultValue = () => (
   <div
     style={{
