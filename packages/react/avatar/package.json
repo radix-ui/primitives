@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-avatar",
-  "version": "1.1.1-rc.10",
+  "version": "1.1.1-rc.11",
   "license": "MIT",
   "exports": {
     ".": {
