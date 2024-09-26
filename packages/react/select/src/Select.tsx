@@ -129,7 +129,7 @@ const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
   const triggerPointerDownPosRef = React.useRef<{ x: number; y: number } | null>(null);
 
   // We set this to true by default so that events bubble to forms without JS (SSR)
-  const isFormControl = trigger ? (Boolean(trigger.closest('form')) || form) : true;
+  const isFormControl = trigger ? Boolean(trigger.closest('form')) || form : true;
   const [nativeOptionsSet, setNativeOptionsSet] = React.useState(new Set<NativeOption>());
 
   // The native `select` only associates the correct default value if the corresponding
