@@ -7,7 +7,6 @@ import { usePrevious } from '@radix-ui/react-use-previous';
 import { useSize } from '@radix-ui/react-use-size';
 import { Primitive } from '@radix-ui/react-primitive';
 
-import type * as Radix from '@radix-ui/react-primitive';
 import type { Scope } from '@radix-ui/react-context';
 
 /* -------------------------------------------------------------------------------------------------
@@ -23,7 +22,7 @@ type SwitchContextValue = { checked: boolean; disabled?: boolean };
 const [SwitchProvider, useSwitchContext] = createSwitchContext<SwitchContextValue>(SWITCH_NAME);
 
 type SwitchElement = React.ElementRef<typeof Primitive.button>;
-type PrimitiveButtonProps = Radix.ComponentPropsWithoutRef<typeof Primitive.button>;
+type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
 interface SwitchProps extends PrimitiveButtonProps {
   checked?: boolean;
   defaultChecked?: boolean;
@@ -108,7 +107,7 @@ Switch.displayName = SWITCH_NAME;
 const THUMB_NAME = 'SwitchThumb';
 
 type SwitchThumbElement = React.ElementRef<typeof Primitive.span>;
-type PrimitiveSpanProps = Radix.ComponentPropsWithoutRef<typeof Primitive.span>;
+type PrimitiveSpanProps = React.ComponentPropsWithoutRef<typeof Primitive.span>;
 interface SwitchThumbProps extends PrimitiveSpanProps {}
 
 const SwitchThumb = React.forwardRef<SwitchThumbElement, SwitchThumbProps>(
@@ -130,7 +129,7 @@ SwitchThumb.displayName = THUMB_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
-type InputProps = Radix.ComponentPropsWithoutRef<'input'>;
+type InputProps = React.ComponentPropsWithoutRef<'input'>;
 interface BubbleInputProps extends Omit<InputProps, 'checked'> {
   checked: boolean;
   control: HTMLElement | null;

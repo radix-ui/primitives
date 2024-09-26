@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { css } from '../../../../stitches.config';
 import { Separator } from '@radix-ui/react-separator';
 
