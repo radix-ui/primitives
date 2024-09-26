@@ -20,18 +20,23 @@ global.ResizeObserver = class ResizeObserver {
 };
 
 describe('given a default Checkbox', () => {
+  const checkboxName = 'Primitive Checkbox';
   let rendered: RenderResult;
   let checkbox: HTMLElement;
   let indicator: HTMLElement | null;
 
   beforeEach(() => {
-    rendered = render(<CheckboxTest />);
+    rendered = render(<CheckboxTest name={checkboxName} />);
     checkbox = rendered.getByRole(CHECKBOX_ROLE);
     indicator = rendered.queryByTestId(INDICATOR_TEST_ID);
   });
 
   it('should have no accessibility violations', async () => {
     expect(await axe(rendered.container)).toHaveNoViolations();
+  });
+
+  it('should have name prop on button when it not inside a form', async () => {
+    expect(checkbox).toHaveAttribute('name', checkboxName);
   });
 
   describe('when clicking the checkbox', () => {
@@ -117,6 +122,24 @@ describe('given a controlled `checked` Checkbox', () => {
     it('should call `onCheckedChange` prop', () => {
       expect(onCheckedChange).toHaveBeenCalled();
     });
+  });
+});
+
+describe('given a Checkbox inside a Form', () => {
+  let rendered: RenderResult;
+  let checkbox: HTMLElement;
+
+  beforeEach(() => {
+    rendered = render(
+      <form>
+        <CheckboxTest />
+      </form>
+    );
+    checkbox = rendered.getByRole(CHECKBOX_ROLE);
+  });
+
+  it('should have no name prop', async () => {
+    expect(checkbox).not.toHaveAttribute('name');
   });
 });
 
