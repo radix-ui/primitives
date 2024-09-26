@@ -7,7 +7,6 @@ import { Toggle } from '@radix-ui/react-toggle';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { useDirection } from '@radix-ui/react-direction';
 
-import type * as Radix from '@radix-ui/react-primitive';
 import type { Scope } from '@radix-ui/react-context';
 
 /* -------------------------------------------------------------------------------------------------
@@ -177,9 +176,9 @@ type ToggleGroupContextValue = { rovingFocus: boolean; disabled: boolean };
 const [ToggleGroupContext, useToggleGroupContext] =
   createToggleGroupContext<ToggleGroupContextValue>(TOGGLE_GROUP_NAME);
 
-type RovingFocusGroupProps = Radix.ComponentPropsWithoutRef<typeof RovingFocusGroup.Root>;
+type RovingFocusGroupProps = React.ComponentPropsWithoutRef<typeof RovingFocusGroup.Root>;
 type ToggleGroupImplElement = React.ElementRef<typeof Primitive.div>;
-type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
+type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface ToggleGroupImplProps extends PrimitiveDivProps {
   /**
    * Whether the group is disabled from user interaction.
@@ -269,7 +268,7 @@ ToggleGroupItem.displayName = ITEM_NAME;
 /* -----------------------------------------------------------------------------------------------*/
 
 type ToggleGroupItemImplElement = React.ElementRef<typeof Toggle>;
-type ToggleProps = Radix.ComponentPropsWithoutRef<typeof Toggle>;
+type ToggleProps = React.ComponentPropsWithoutRef<typeof Toggle>;
 interface ToggleGroupItemImplProps extends Omit<ToggleProps, 'defaultPressed' | 'onPressedChange'> {
   /**
    * A string value for the toggle group item. All items within a toggle group should use a unique value.
