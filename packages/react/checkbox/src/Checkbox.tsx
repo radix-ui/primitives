@@ -19,7 +19,7 @@ const CHECKBOX_NAME = 'Checkbox';
 type ScopedProps<P> = P & { __scopeCheckbox?: Scope };
 const [createCheckboxContext, createCheckboxScope] = createContextScope(CHECKBOX_NAME);
 
-export type CheckedState = boolean | 'indeterminate';
+type CheckedState = boolean | 'indeterminate';
 
 type CheckboxContextValue = {
   state: CheckedState;
