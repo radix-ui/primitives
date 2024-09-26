@@ -8,7 +8,6 @@ import { Primitive } from '@radix-ui/react-primitive';
 import { Presence } from '@radix-ui/react-presence';
 import { useId } from '@radix-ui/react-id';
 
-import type * as Radix from '@radix-ui/react-primitive';
 import type { Scope } from '@radix-ui/react-context';
 
 /* -------------------------------------------------------------------------------------------------
@@ -31,7 +30,7 @@ const [CollapsibleProvider, useCollapsibleContext] =
   createCollapsibleContext<CollapsibleContextValue>(COLLAPSIBLE_NAME);
 
 type CollapsibleElement = React.ElementRef<typeof Primitive.div>;
-type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
+type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface CollapsibleProps extends PrimitiveDivProps {
   defaultOpen?: boolean;
   open?: boolean;
@@ -84,7 +83,7 @@ Collapsible.displayName = COLLAPSIBLE_NAME;
 const TRIGGER_NAME = 'CollapsibleTrigger';
 
 type CollapsibleTriggerElement = React.ElementRef<typeof Primitive.button>;
-type PrimitiveButtonProps = Radix.ComponentPropsWithoutRef<typeof Primitive.button>;
+type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
 interface CollapsibleTriggerProps extends PrimitiveButtonProps {}
 
 const CollapsibleTrigger = React.forwardRef<CollapsibleTriggerElement, CollapsibleTriggerProps>(

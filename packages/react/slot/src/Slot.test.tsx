@@ -106,6 +106,43 @@ describe('given a slotted Trigger', () => {
       expect(handleChildClick).toHaveBeenCalledTimes(1);
     });
   });
+
+  describe('with className on itself', () => {
+    beforeEach(() => {
+      render(
+        <Trigger as={Slot} className="btn">
+          <button type="button">Click me</button>
+        </Trigger>
+      );
+    });
+
+    it('should apply the className to the child', () => {
+      expect(screen.getByRole('button')).toHaveClass('btn');
+    });
+  });
+
+  describe('with className on itself AND the child', () => {
+    beforeEach(() => {
+      render(
+        <Trigger as={Slot} className="btn   btn-sm">
+          <button type="button" className=" btn btn-primary  ">
+            Click me
+          </button>
+        </Trigger>
+      );
+    });
+
+    it('should merge className and apply it to the child', () => {
+      expect(screen.getByRole('button')).toHaveClass('btn', 'btn-sm', 'btn-primary');
+    });
+
+    it('should deduplicate merged className', () => {
+      const classNames = screen.getByRole('button').className.split(' ');
+
+      expect(classNames).toHaveLength(3);
+      expect(classNames.filter((name) => name === 'btn')).toHaveLength(1);
+    });
+  });
 });
 
 describe('given a Button with Slottable', () => {
