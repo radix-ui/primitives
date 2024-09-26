@@ -678,7 +678,7 @@ const ScrollAreaScrollbarImpl = React.forwardRef<
   const context = useScrollAreaContext(SCROLLBAR_NAME, __scopeScrollArea);
   const [scrollbar, setScrollbar] = React.useState<ScrollAreaScrollbarElement | null>(null);
   const composeRefs = useComposedRefs(forwardedRef, (node) => setScrollbar(node));
-  const rectRef = React.useRef<ClientRect | null>(null);
+  const rectRef = React.useRef<DOMRect | null>(null);
   const prevWebkitUserSelectRef = React.useRef<string>('');
   const viewport = context.viewport;
   const maxScrollPos = sizes.content - sizes.viewport;

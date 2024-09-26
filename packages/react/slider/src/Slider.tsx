@@ -246,7 +246,7 @@ const SliderHorizontal = React.forwardRef<SliderHorizontalElement, SliderHorizon
     } = props;
     const [slider, setSlider] = React.useState<SliderImplElement | null>(null);
     const composedRefs = useComposedRefs(forwardedRef, (node) => setSlider(node));
-    const rectRef = React.useRef<ClientRect>();
+    const rectRef = React.useRef<DOMRect>();
     const direction = useDirection(dir);
     const isDirectionLTR = direction === 'ltr';
     const isSlidingFromLeft = (isDirectionLTR && !inverted) || (!isDirectionLTR && inverted);
@@ -322,7 +322,7 @@ const SliderVertical = React.forwardRef<SliderVerticalElement, SliderVerticalPro
     } = props;
     const sliderRef = React.useRef<SliderImplElement>(null);
     const ref = useComposedRefs(forwardedRef, sliderRef);
-    const rectRef = React.useRef<ClientRect>();
+    const rectRef = React.useRef<DOMRect>();
     const isSlidingFromBottom = !inverted;
 
     function getValueFromPointer(pointerPosition: number) {
