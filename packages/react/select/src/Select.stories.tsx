@@ -679,6 +679,44 @@ export const WithinDialog = () => (
   </div>
 );
 
+export const WithVeryLongSelectItems = () => (
+  <div style={{ paddingLeft: 300 }}>
+    <Label>
+      What is the meaning of life?
+      <Select.Root defaultValue="1">
+        <Select.Trigger className={triggerClass()}>
+          <Select.Value />
+          <Select.Icon />
+        </Select.Trigger>
+        <Select.Portal>
+          <Select.Content className={contentClass()}>
+            <Select.ScrollUpButton className={scrollUpButtonClass()}>▲</Select.ScrollUpButton>
+            <Select.Viewport className={viewportClass()}>
+              {[
+                'The meaning of life is a complex topic that has been the subject of much philosophical, scientific, and theological speculation, with no definitive answer. The meaning of life can be interpreted in many different ways, depending on individual beliefs, values, and experiences.',
+                '42',
+              ].map((opt, i) => (
+                <Select.Item
+                  key={opt}
+                  className={itemClass()}
+                  value={String(i)}
+                  // style={{ maxWidth: 500 }}
+                >
+                  <Select.ItemText>{opt}</Select.ItemText>
+                  <Select.ItemIndicator className={indicatorClass()}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+              ))}
+            </Select.Viewport>
+            <Select.ScrollDownButton className={scrollDownButtonClass()}>▼</Select.ScrollDownButton>
+          </Select.Content>
+        </Select.Portal>
+      </Select.Root>
+    </Label>
+  </div>
+);
+
 export const ChromaticShortOptionsPaddedContent = () => (
   <ChromaticStoryShortOptions paddedElement="content" />
 );
@@ -1055,6 +1093,7 @@ const triggerClass = css({
   fontFamily: '-apple-system, BlinkMacSystemFont, helvetica, arial, sans-serif',
   fontSize: 13,
   lineHeight: 1,
+  overflow: 'hidden',
 
   '&:focus': {
     outline: 'none',
