@@ -49,6 +49,8 @@ describe('given a default Dialog', () => {
   let closeButton: HTMLElement;
   let consoleWarnMock: jest.SpyInstance;
   let consoleWarnMockFunction: jest.Mock;
+  let consoleErrorMock: jest.SpyInstance;
+  let consoleErrorMockFunction: jest.Mock;
 
   beforeEach(() => {
     // This surpresses React error boundary logs for testing intentionally
@@ -56,6 +58,8 @@ describe('given a default Dialog', () => {
     // this here: https://github.com/facebook/react/issues/11098
     consoleWarnMockFunction = jest.fn();
     consoleWarnMock = jest.spyOn(console, 'warn').mockImplementation(consoleWarnMockFunction);
+    consoleErrorMockFunction = jest.fn();
+    consoleErrorMock = jest.spyOn(console, 'error').mockImplementation(consoleErrorMockFunction);
 
     rendered = render(<DialogTest />);
     trigger = rendered.getByText(OPEN_TEXT);
@@ -64,6 +68,8 @@ describe('given a default Dialog', () => {
   afterEach(() => {
     consoleWarnMock.mockRestore();
     consoleWarnMockFunction.mockClear();
+    consoleErrorMock.mockRestore();
+    consoleErrorMockFunction.mockClear();
   });
 
   it('should have no accessibility violations in default state', async () => {
@@ -83,10 +89,15 @@ describe('given a default Dialog', () => {
     });
 
     describe('when no title has been provided', () => {
-      it('should throw an error', () =>
-        expect(() => {
-          renderAndClickDialogTrigger(<NoLabelDialogTest />);
-        }).toThrowError());
+      beforeEach(() => {
+        cleanup();
+      });
+      it('should display an error in the console', () => {
+        consoleErrorMockFunction.mockClear();
+
+        renderAndClickDialogTrigger(<NoLabelDialogTest />);
+        expect(consoleErrorMockFunction).toHaveBeenCalled();
+      });
     });
 
     describe('when aria-describedby is set to undefined', () => {

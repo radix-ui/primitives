@@ -13,7 +13,6 @@ import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 
-import type * as Radix from '@radix-ui/react-primitive';
 import type { Scope } from '@radix-ui/react-context';
 
 /* -------------------------------------------------------------------------------------------------
@@ -82,6 +81,13 @@ const ToastProvider: React.FC<ToastProviderProps> = (props: ScopedProps<ToastPro
   const [toastCount, setToastCount] = React.useState(0);
   const isFocusedToastEscapeKeyDownRef = React.useRef(false);
   const isClosePausedRef = React.useRef(false);
+
+  if (!label.trim()) {
+    console.error(
+      `Invalid prop \`label\` supplied to \`${PROVIDER_NAME}\`. Expected non-empty \`string\`.`
+    );
+  }
+
   return (
     <Collection.Provider scope={__scopeToast}>
       <ToastProviderProvider
@@ -104,16 +110,6 @@ const ToastProvider: React.FC<ToastProviderProps> = (props: ScopedProps<ToastPro
   );
 };
 
-ToastProvider.propTypes = {
-  label(props) {
-    if (props.label && typeof props.label === 'string' && !props.label.trim()) {
-      const error = `Invalid prop \`label\` supplied to \`${PROVIDER_NAME}\`. Expected non-empty \`string\`.`;
-      return new Error(error);
-    }
-    return null;
-  },
-};
-
 ToastProvider.displayName = PROVIDER_NAME;
 
 /* -------------------------------------------------------------------------------------------------
@@ -126,7 +122,7 @@ const VIEWPORT_PAUSE = 'toast.viewportPause';
 const VIEWPORT_RESUME = 'toast.viewportResume';
 
 type ToastViewportElement = React.ElementRef<typeof Primitive.ol>;
-type PrimitiveOrderedListProps = Radix.ComponentPropsWithoutRef<typeof Primitive.ol>;
+type PrimitiveOrderedListProps = React.ComponentPropsWithoutRef<typeof Primitive.ol>;
 interface ToastViewportProps extends PrimitiveOrderedListProps {
   /**
    * The keys to use as the keyboard shortcut that will move focus to the toast viewport.
@@ -331,7 +327,7 @@ ToastViewport.displayName = VIEWPORT_NAME;
 const FOCUS_PROXY_NAME = 'ToastFocusProxy';
 
 type FocusProxyElement = React.ElementRef<typeof VisuallyHidden>;
-type VisuallyHiddenProps = Radix.ComponentPropsWithoutRef<typeof VisuallyHidden>;
+type VisuallyHiddenProps = React.ComponentPropsWithoutRef<typeof VisuallyHidden>;
 interface FocusProxyProps extends VisuallyHiddenProps {
   onFocusFromOutsideViewport(): void;
 }
@@ -445,9 +441,9 @@ const [ToastInteractiveProvider, useToastInteractiveContext] = createToastContex
 });
 
 type ToastImplElement = React.ElementRef<typeof Primitive.li>;
-type DismissableLayerProps = Radix.ComponentPropsWithoutRef<typeof DismissableLayer.Root>;
+type DismissableLayerProps = React.ComponentPropsWithoutRef<typeof DismissableLayer.Root>;
 type ToastImplPrivateProps = { open: boolean; onClose(): void };
-type PrimitiveListItemProps = Radix.ComponentPropsWithoutRef<typeof Primitive.li>;
+type PrimitiveListItemProps = React.ComponentPropsWithoutRef<typeof Primitive.li>;
 interface ToastImplProps extends ToastImplPrivateProps, PrimitiveListItemProps {
   type?: 'foreground' | 'background';
   /**
@@ -672,16 +668,6 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
   }
 );
 
-ToastImpl.propTypes = {
-  type(props) {
-    if (props.type && !['foreground', 'background'].includes(props.type)) {
-      const error = `Invalid prop \`type\` supplied to \`${TOAST_NAME}\`. Expected \`foreground | background\`.`;
-      return new Error(error);
-    }
-    return null;
-  },
-};
-
 /* -----------------------------------------------------------------------------------------------*/
 
 interface ToastAnnounceProps
@@ -723,7 +709,7 @@ const ToastAnnounce: React.FC<ToastAnnounceProps> = (props: ScopedProps<ToastAnn
 const TITLE_NAME = 'ToastTitle';
 
 type ToastTitleElement = React.ElementRef<typeof Primitive.div>;
-type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
+type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface ToastTitleProps extends PrimitiveDivProps {}
 
 const ToastTitle = React.forwardRef<ToastTitleElement, ToastTitleProps>(
@@ -773,7 +759,14 @@ interface ToastActionProps extends ToastCloseProps {
 const ToastAction = React.forwardRef<ToastActionElement, ToastActionProps>(
   (props: ScopedProps<ToastActionProps>, forwardedRef) => {
     const { altText, ...actionProps } = props;
-    if (!altText) return null;
+
+    if (!altText.trim()) {
+      console.error(
+        `Invalid prop \`altText\` supplied to \`${ACTION_NAME}\`. Expected non-empty \`string\`.`
+      );
+      return null;
+    }
+
     return (
       <ToastAnnounceExclude altText={altText} asChild>
         <ToastClose {...actionProps} ref={forwardedRef} />
@@ -781,15 +774,6 @@ const ToastAction = React.forwardRef<ToastActionElement, ToastActionProps>(
     );
   }
 );
-
-ToastAction.propTypes = {
-  altText(props) {
-    if (!props.altText) {
-      return new Error(`Missing prop \`altText\` expected on \`${ACTION_NAME}\``);
-    }
-    return null;
-  },
-};
 
 ToastAction.displayName = ACTION_NAME;
 
@@ -800,7 +784,7 @@ ToastAction.displayName = ACTION_NAME;
 const CLOSE_NAME = 'ToastClose';
 
 type ToastCloseElement = React.ElementRef<typeof Primitive.button>;
-type PrimitiveButtonProps = Radix.ComponentPropsWithoutRef<typeof Primitive.button>;
+type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
 interface ToastCloseProps extends PrimitiveButtonProps {}
 
 const ToastClose = React.forwardRef<ToastCloseElement, ToastCloseProps>(
