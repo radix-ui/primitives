@@ -8,7 +8,6 @@ import { useSize } from '@radix-ui/react-use-size';
 import { Presence } from '@radix-ui/react-presence';
 import { Primitive } from '@radix-ui/react-primitive';
 
-import type * as Radix from '@radix-ui/react-primitive';
 import type { Scope } from '@radix-ui/react-context';
 
 /* -------------------------------------------------------------------------------------------------
@@ -20,7 +19,7 @@ const CHECKBOX_NAME = 'Checkbox';
 type ScopedProps<P> = P & { __scopeCheckbox?: Scope };
 const [createCheckboxContext, createCheckboxScope] = createContextScope(CHECKBOX_NAME);
 
-type CheckedState = boolean | 'indeterminate';
+export type CheckedState = boolean | 'indeterminate';
 
 type CheckboxContextValue = {
   state: CheckedState;
@@ -31,7 +30,7 @@ const [CheckboxProvider, useCheckboxContext] =
   createCheckboxContext<CheckboxContextValue>(CHECKBOX_NAME);
 
 type CheckboxElement = React.ElementRef<typeof Primitive.button>;
-type PrimitiveButtonProps = Radix.ComponentPropsWithoutRef<typeof Primitive.button>;
+type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
 interface CheckboxProps extends Omit<PrimitiveButtonProps, 'checked' | 'defaultChecked'> {
   checked?: CheckedState;
   defaultChecked?: CheckedState;
@@ -113,6 +112,7 @@ const Checkbox = React.forwardRef<CheckboxElement, CheckboxProps>(
             // rendered it **after** the button. This pulls it back to sit on top
             // of the button.
             style={{ transform: 'translateX(-100%)' }}
+            defaultChecked={isIndeterminate(defaultChecked) ? false : defaultChecked}
           />
         )}
       </CheckboxProvider>
@@ -129,7 +129,7 @@ Checkbox.displayName = CHECKBOX_NAME;
 const INDICATOR_NAME = 'CheckboxIndicator';
 
 type CheckboxIndicatorElement = React.ElementRef<typeof Primitive.span>;
-type PrimitiveSpanProps = Radix.ComponentPropsWithoutRef<typeof Primitive.span>;
+type PrimitiveSpanProps = React.ComponentPropsWithoutRef<typeof Primitive.span>;
 interface CheckboxIndicatorProps extends PrimitiveSpanProps {
   /**
    * Used to force mounting when more control is needed. Useful when
@@ -160,7 +160,7 @@ CheckboxIndicator.displayName = INDICATOR_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
-type InputProps = Radix.ComponentPropsWithoutRef<'input'>;
+type InputProps = React.ComponentPropsWithoutRef<'input'>;
 interface BubbleInputProps extends Omit<InputProps, 'checked'> {
   checked: CheckedState;
   control: HTMLElement | null;
@@ -168,7 +168,7 @@ interface BubbleInputProps extends Omit<InputProps, 'checked'> {
 }
 
 const BubbleInput = (props: BubbleInputProps) => {
-  const { control, checked, bubbles = true, ...inputProps } = props;
+  const { control, checked, bubbles = true, defaultChecked, ...inputProps } = props;
   const ref = React.useRef<HTMLInputElement>(null);
   const prevChecked = usePrevious(checked);
   const controlSize = useSize(control);
@@ -188,11 +188,12 @@ const BubbleInput = (props: BubbleInputProps) => {
     }
   }, [prevChecked, checked, bubbles]);
 
+  const defaultCheckedRef = React.useRef(isIndeterminate(checked) ? false : checked);
   return (
     <input
       type="checkbox"
       aria-hidden
-      defaultChecked={isIndeterminate(checked) ? false : checked}
+      defaultChecked={defaultChecked ?? defaultCheckedRef.current}
       {...inputProps}
       tabIndex={-1}
       ref={ref}
@@ -228,4 +229,4 @@ export {
   Root,
   Indicator,
 };
-export type { CheckboxProps, CheckboxIndicatorProps };
+export type { CheckboxProps, CheckboxIndicatorProps, CheckedState };

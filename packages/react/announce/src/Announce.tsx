@@ -4,8 +4,6 @@ import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { Primitive } from '@radix-ui/react-primitive';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 
-import type * as Radix from '@radix-ui/react-primitive';
-
 type RegionType = 'polite' | 'assertive' | 'off';
 type RegionRole = 'status' | 'alert' | 'log' | 'none';
 
@@ -24,7 +22,7 @@ const listenerMap = new Map<Element, number>();
 const NAME = 'Announce';
 
 type AnnounceElement = React.ElementRef<typeof Primitive.div>;
-type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
+type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface AnnounceProps extends PrimitiveDivProps {
   /**
    * Mirrors the `aria-atomic` DOM attribute for live regions. It is an optional attribute that

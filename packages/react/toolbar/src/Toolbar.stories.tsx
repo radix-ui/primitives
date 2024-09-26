@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { DirectionProvider } from '@radix-ui/react-direction';
 import { css } from '../../../../stitches.config';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';

@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { css } from '../../../../stitches.config';
 import * as Avatar from '@radix-ui/react-avatar';
 

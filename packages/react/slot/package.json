@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-slot",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "license": "MIT",
   "exports": {
     ".": {
@@ -28,12 +28,11 @@
     "version": "yarn version"
   },
   "dependencies": {
-    "@babel/runtime": "^7.13.10",
     "@radix-ui/react-compose-refs": "workspace:*"
   },
   "peerDependencies": {
     "@types/react": "*",
-    "react": "^16.8 || ^17.0 || ^18.0"
+    "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
   },
   "peerDependenciesMeta": {
     "@types/react": {

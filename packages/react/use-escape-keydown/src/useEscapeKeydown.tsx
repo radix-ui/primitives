@@ -16,8 +16,8 @@ function useEscapeKeydown(
         onEscapeKeyDown(event);
       }
     };
-    ownerDocument.addEventListener('keydown', handleKeyDown);
-    return () => ownerDocument.removeEventListener('keydown', handleKeyDown);
+    ownerDocument.addEventListener('keydown', handleKeyDown, { capture: true });
+    return () => ownerDocument.removeEventListener('keydown', handleKeyDown, { capture: true });
   }, [onEscapeKeyDown, ownerDocument]);
 }
 
