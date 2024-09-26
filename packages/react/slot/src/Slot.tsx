@@ -61,9 +61,11 @@ const SlotClone = React.forwardRef<any, SlotCloneProps>((props, forwardedRef) =>
   const { children, ...slotProps } = props;
 
   if (React.isValidElement(children)) {
+    const childrenRef = getElementRef(children);
     return React.cloneElement(children, {
       ...mergeProps(slotProps, children.props),
-      ref: forwardedRef ? composeRefs(forwardedRef, (children as any).ref) : (children as any).ref,
+      // @ts-ignore
+      ref: forwardedRef ? composeRefs(forwardedRef, childrenRef) : childrenRef,
     });
   }
 
@@ -113,12 +115,53 @@ function mergeProps(slotProps: AnyProps, childProps: AnyProps) {
     // if it's `style`, we merge them
     else if (propName === 'style') {
       overrideProps[propName] = { ...slotPropValue, ...childPropValue };
-    } else if (propName === 'className') {
-      overrideProps[propName] = [slotPropValue, childPropValue].filter(Boolean).join(' ');
+    }
+    // if it's `className`, we deduplicate and merge them
+    else if (propName === 'className') {
+      const classNameSet = new Set<string>();
+
+      if (slotPropValue && typeof slotPropValue === 'string') {
+        slotPropValue
+          .split(' ')
+          .filter(Boolean)
+          .forEach((name) => classNameSet.add(name));
+      }
+      if (childPropValue && typeof childPropValue === 'string') {
+        childPropValue
+          .split(' ')
+          .filter(Boolean)
+          .forEach((name) => classNameSet.add(name));
+      }
+
+      overrideProps[propName] = [...classNameSet].join(' ');
     }
   }
 
   return { ...slotProps, ...overrideProps };
+}
+
+// Before React 19 accessing `element.props.ref` will throw a warning and suggest using `element.ref`
+// After React 19 accessing `element.ref` does the opposite.
+// https://github.com/facebook/react/pull/28348
+//
+// Access the ref using the method that doesn't yield a warning.
+function getElementRef(element: React.ReactElement) {
+  // React <=18 in DEV
+  let getter = Object.getOwnPropertyDescriptor(element.props, 'ref')?.get;
+  let mayWarn = getter && 'isReactWarning' in getter && getter.isReactWarning;
+  if (mayWarn) {
+    return (element as any).ref;
+  }
+
+  // React 19 in DEV
+  getter = Object.getOwnPropertyDescriptor(element, 'ref')?.get;
+  mayWarn = getter && 'isReactWarning' in getter && getter.isReactWarning;
+  if (mayWarn) {
+    return element.props.ref;
+  }
+
+  // Not DEV
+  return element.props.ref || (element as any).ref;
 }
 
 const Root = Slot;

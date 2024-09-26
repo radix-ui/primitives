@@ -1,8 +1,6 @@
 import * as React from 'react';
 import { Primitive } from '@radix-ui/react-primitive';
 
-import type * as Radix from '@radix-ui/react-primitive';
-
 /* -------------------------------------------------------------------------------------------------
  * VisuallyHidden
  * -----------------------------------------------------------------------------------------------*/
@@ -10,7 +8,7 @@ import type * as Radix from '@radix-ui/react-primitive';
 const NAME = 'VisuallyHidden';
 
 type VisuallyHiddenElement = React.ElementRef<typeof Primitive.span>;
-type PrimitiveSpanProps = Radix.ComponentPropsWithoutRef<typeof Primitive.span>;
+type PrimitiveSpanProps = React.ComponentPropsWithoutRef<typeof Primitive.span>;
 interface VisuallyHiddenProps extends PrimitiveSpanProps {}
 
 const VisuallyHidden = React.forwardRef<VisuallyHiddenElement, VisuallyHiddenProps>(
@@ -20,7 +18,7 @@ const VisuallyHidden = React.forwardRef<VisuallyHiddenElement, VisuallyHiddenPro
         {...props}
         ref={forwardedRef}
         style={{
-          // See: https://github.com/twbs/bootstrap/blob/master/scss/mixins/_screen-reader.scss
+          // See: https://github.com/twbs/bootstrap/blob/main/scss/mixins/_visually-hidden.scss
           position: 'absolute',
           border: 0,
           width: 1,

@@ -120,6 +120,68 @@ describe('given a controlled `checked` Checkbox', () => {
   });
 });
 
+describe('given an uncontrolled Checkbox in form', () => {
+  describe('when clicking the checkbox', () => {
+    it('should receive change event with target `defaultChecked` same as the `defaultChecked` prop of Checkbox', (done) => {
+      const rendered = render(
+        <form
+          onChange={(event) => {
+            const target = event.target as HTMLInputElement;
+            expect(target.defaultChecked).toBe(true);
+          }}
+        >
+          <CheckboxTest defaultChecked />
+        </form>
+      );
+      const checkbox = rendered.getByRole(CHECKBOX_ROLE);
+      fireEvent.click(checkbox);
+      rendered.rerender(
+        <form
+          onChange={(event) => {
+            const target = event.target as HTMLInputElement;
+            expect(target.defaultChecked).toBe(false);
+            done();
+          }}
+        >
+          <CheckboxTest defaultChecked={false} />
+        </form>
+      );
+      fireEvent.click(checkbox);
+    });
+  });
+});
+
+describe('given a controlled Checkbox in a form', () => {
+  describe('when clicking the checkbox', () => {
+    it('should receive change event with target `defaultChecked` same as initial value of `checked` of Checkbox', (done) => {
+      const rendered = render(
+        <form
+          onChange={(event) => {
+            const target = event.target as HTMLInputElement;
+            expect(target.defaultChecked).toBe(true);
+          }}
+        >
+          <CheckboxTest checked />
+        </form>
+      );
+      const checkbox = rendered.getByRole(CHECKBOX_ROLE);
+      fireEvent.click(checkbox);
+      rendered.rerender(
+        <form
+          onChange={(event) => {
+            const target = event.target as HTMLInputElement;
+            expect(target.defaultChecked).toBe(true);
+            done();
+          }}
+        >
+          <CheckboxTest checked={false} />
+        </form>
+      );
+      fireEvent.click(checkbox);
+    });
+  });
+});
+
 function CheckboxTest(props: React.ComponentProps<typeof Checkbox>) {
   const containerRef = React.useRef<HTMLDivElement>(null);
   React.useEffect(() => {

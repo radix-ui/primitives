@@ -9,7 +9,6 @@ import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { useDirection } from '@radix-ui/react-direction';
 import { Radio, RadioIndicator, createRadioScope } from './Radio';
 
-import type * as Radix from '@radix-ui/react-primitive';
 import type { Scope } from '@radix-ui/react-context';
 
 const ARROW_KEYS = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
@@ -39,12 +38,12 @@ const [RadioGroupProvider, useRadioGroupContext] =
   createRadioGroupContext<RadioGroupContextValue>(RADIO_GROUP_NAME);
 
 type RadioGroupElement = React.ElementRef<typeof Primitive.div>;
-type RovingFocusGroupProps = Radix.ComponentPropsWithoutRef<typeof RovingFocusGroup.Root>;
-type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
+type RovingFocusGroupProps = React.ComponentPropsWithoutRef<typeof RovingFocusGroup.Root>;
+type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface RadioGroupProps extends PrimitiveDivProps {
   name?: RadioGroupContextValue['name'];
-  required?: Radix.ComponentPropsWithoutRef<typeof Radio>['required'];
-  disabled?: Radix.ComponentPropsWithoutRef<typeof Radio>['disabled'];
+  required?: React.ComponentPropsWithoutRef<typeof Radio>['required'];
+  disabled?: React.ComponentPropsWithoutRef<typeof Radio>['disabled'];
   dir?: RovingFocusGroupProps['dir'];
   orientation?: RovingFocusGroupProps['orientation'];
   loop?: RovingFocusGroupProps['loop'];
@@ -116,7 +115,7 @@ RadioGroup.displayName = RADIO_GROUP_NAME;
 const ITEM_NAME = 'RadioGroupItem';
 
 type RadioGroupItemElement = React.ElementRef<typeof Radio>;
-type RadioProps = Radix.ComponentPropsWithoutRef<typeof Radio>;
+type RadioProps = React.ComponentPropsWithoutRef<typeof Radio>;
 interface RadioGroupItemProps extends Omit<RadioProps, 'onCheck' | 'name'> {
   value: string;
 }
@@ -191,7 +190,7 @@ RadioGroupItem.displayName = ITEM_NAME;
 const INDICATOR_NAME = 'RadioGroupIndicator';
 
 type RadioGroupIndicatorElement = React.ElementRef<typeof RadioIndicator>;
-type RadioIndicatorProps = Radix.ComponentPropsWithoutRef<typeof RadioIndicator>;
+type RadioIndicatorProps = React.ComponentPropsWithoutRef<typeof RadioIndicator>;
 interface RadioGroupIndicatorProps extends RadioIndicatorProps {}
 
 const RadioGroupIndicator = React.forwardRef<RadioGroupIndicatorElement, RadioGroupIndicatorProps>(

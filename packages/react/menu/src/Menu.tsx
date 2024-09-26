@@ -20,7 +20,6 @@ import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { hideOthers } from 'aria-hidden';
 import { RemoveScroll } from 'react-remove-scroll';
 
-import type * as Radix from '@radix-ui/react-primitive';
 import type { Scope } from '@radix-ui/react-context';
 
 type Direction = 'ltr' | 'rtl';
@@ -142,7 +141,7 @@ Menu.displayName = MENU_NAME;
 const ANCHOR_NAME = 'MenuAnchor';
 
 type MenuAnchorElement = React.ElementRef<typeof PopperPrimitive.Anchor>;
-type PopperAnchorProps = Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Anchor>;
+type PopperAnchorProps = React.ComponentPropsWithoutRef<typeof PopperPrimitive.Anchor>;
 interface MenuAnchorProps extends PopperAnchorProps {}
 
 const MenuAnchor = React.forwardRef<MenuAnchorElement, MenuAnchorProps>(
@@ -312,10 +311,10 @@ const MenuRootContentNonModal = React.forwardRef<
 /* ---------------------------------------------------------------------------------------------- */
 
 type MenuContentImplElement = React.ElementRef<typeof PopperPrimitive.Content>;
-type FocusScopeProps = Radix.ComponentPropsWithoutRef<typeof FocusScope>;
-type DismissableLayerProps = Radix.ComponentPropsWithoutRef<typeof DismissableLayer>;
-type RovingFocusGroupProps = Radix.ComponentPropsWithoutRef<typeof RovingFocusGroup.Root>;
-type PopperContentProps = Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Content>;
+type FocusScopeProps = React.ComponentPropsWithoutRef<typeof FocusScope>;
+type DismissableLayerProps = React.ComponentPropsWithoutRef<typeof DismissableLayer>;
+type RovingFocusGroupProps = React.ComponentPropsWithoutRef<typeof RovingFocusGroup.Root>;
+type PopperContentProps = React.ComponentPropsWithoutRef<typeof PopperPrimitive.Content>;
 type MenuContentImplPrivateProps = {
   onOpenAutoFocus?: FocusScopeProps['onMountAutoFocus'];
   onDismiss?: DismissableLayerProps['onDismiss'];
@@ -423,7 +422,7 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
     }, []);
 
     // Make sure the whole tree has focus guards as our `MenuContent` may be
-    // the last element in the DOM (beacuse of the `Portal`)
+    // the last element in the DOM (because of the `Portal`)
     useFocusGuards();
 
     const isPointerMovingToSubmenu = React.useCallback((event: React.PointerEvent) => {
@@ -468,7 +467,7 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
               // when opening, explicitly focus the content area only and leave
               // `onEntryFocus` in  control of focusing first item
               event.preventDefault();
-              contentRef.current?.focus();
+              contentRef.current?.focus({ preventScroll: true });
             })}
             onUnmountAutoFocus={onCloseAutoFocus}
           >
@@ -493,6 +492,7 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
                   // only focus first item when using keyboard
                   if (!rootContext.isUsingKeyboardRef.current) event.preventDefault();
                 })}
+                preventScrollOnEntryFocus
               >
                 <PopperPrimitive.Content
                   role="menu"
@@ -567,7 +567,7 @@ MenuContent.displayName = CONTENT_NAME;
 const GROUP_NAME = 'MenuGroup';
 
 type MenuGroupElement = React.ElementRef<typeof Primitive.div>;
-type PrimitiveDivProps = Radix.ComponentPropsWithoutRef<typeof Primitive.div>;
+type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface MenuGroupProps extends PrimitiveDivProps {}
 
 const MenuGroup = React.forwardRef<MenuGroupElement, MenuGroupProps>(
@@ -729,7 +729,7 @@ const MenuItemImpl = React.forwardRef<MenuItemImplElement, MenuItemImplProps>(
                   contentContext.onItemEnter(event);
                   if (!event.defaultPrevented) {
                     const item = event.currentTarget;
-                    item.focus();
+                    item.focus({ preventScroll: true });
                   }
                 }
               })
@@ -869,7 +869,7 @@ const [ItemIndicatorProvider, useItemIndicatorContext] = createMenuContext<Check
 );
 
 type MenuItemIndicatorElement = React.ElementRef<typeof Primitive.span>;
-type PrimitiveSpanProps = Radix.ComponentPropsWithoutRef<typeof Primitive.span>;
+type PrimitiveSpanProps = React.ComponentPropsWithoutRef<typeof Primitive.span>;
 interface MenuItemIndicatorProps extends PrimitiveSpanProps {
   /**
    * Used to force mounting when more control is needed. Useful when
@@ -934,7 +934,7 @@ MenuSeparator.displayName = SEPARATOR_NAME;
 const ARROW_NAME = 'MenuArrow';
 
 type MenuArrowElement = React.ElementRef<typeof PopperPrimitive.Arrow>;
-type PopperArrowProps = Radix.ComponentPropsWithoutRef<typeof PopperPrimitive.Arrow>;
+type PopperArrowProps = React.ComponentPropsWithoutRef<typeof PopperPrimitive.Arrow>;
 interface MenuArrowProps extends PopperArrowProps {}
 
 const MenuArrow = React.forwardRef<MenuArrowElement, MenuArrowProps>(
