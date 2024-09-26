@@ -159,7 +159,8 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
       const handleKeyDown = (event: KeyboardEvent) => {
         // we use `event.code` as it is consistent regardless of meta keys that were pressed.
         // for example, `event.key` for `Control+Alt+t` is `†` and `t !== †`
-        const isHotkeyPressed = hotkey.every((key) => (event as any)[key] || event.code === key);
+        const isHotkeyPressed =
+          hotkey.length !== 0 && hotkey.every((key) => (event as any)[key] || event.code === key);
         if (isHotkeyPressed) ref.current?.focus();
       };
       document.addEventListener('keydown', handleKeyDown);
