@@ -32,7 +32,10 @@ function createFocusGuard() {
   const element = document.createElement('span');
   element.setAttribute('data-radix-focus-guard', '');
   element.tabIndex = 0;
-  element.style.cssText = 'outline: none; opacity: 0; position: fixed; pointer-events: none';
+  element.style.outline = 'none';
+  element.style.opacity = '0';
+  element.style.position = 'fixed';
+  element.style.pointerEvents = 'none';
   return element;
 }
 
