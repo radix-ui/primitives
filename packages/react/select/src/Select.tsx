@@ -827,7 +827,15 @@ const SelectItemAlignedPosition = React.forwardRef<
         const minContentWidth = triggerRect.width + leftDelta;
         const contentWidth = Math.max(minContentWidth, contentRect.width);
         const rightEdge = window.innerWidth - CONTENT_MARGIN;
-        const clampedLeft = clamp(left, [CONTENT_MARGIN, rightEdge - contentWidth]);
+        const clampedLeft = clamp(left, [
+          CONTENT_MARGIN,
+          // Prevents the content from going off the starting edge of the
+          // viewport. It may still go off the ending edge, but this can be
+          // controlled by the user since they may want to manage overflow in a
+          // specific way.
+          // https://github.com/radix-ui/primitives/issues/2049
+          Math.max(CONTENT_MARGIN, rightEdge - contentWidth),
+        ]);
 
         contentWrapper.style.minWidth = minContentWidth + 'px';
         contentWrapper.style.left = clampedLeft + 'px';
@@ -838,7 +846,10 @@ const SelectItemAlignedPosition = React.forwardRef<
         const minContentWidth = triggerRect.width + rightDelta;
         const contentWidth = Math.max(minContentWidth, contentRect.width);
         const leftEdge = window.innerWidth - CONTENT_MARGIN;
-        const clampedRight = clamp(right, [CONTENT_MARGIN, leftEdge - contentWidth]);
+        const clampedRight = clamp(right, [
+          CONTENT_MARGIN,
+          Math.max(CONTENT_MARGIN, leftEdge - contentWidth),
+        ]);
 
         contentWrapper.style.minWidth = minContentWidth + 'px';
         contentWrapper.style.right = clampedRight + 'px';
@@ -1083,7 +1094,11 @@ const SelectViewport = React.forwardRef<SelectViewportElement, SelectViewportPro
               // (independent of the scrollUpButton).
               position: 'relative',
               flex: 1,
-              overflow: 'auto',
+              // Viewport should only be scrollable in the vertical direction.
+              // This won't work in vertical writing modes, so we'll need to
+              // revisit this if/when that is supported
+              // https://developer.chrome.com/blog/vertical-form-controls
+              overflow: 'hidden auto',
               ...viewportProps.style,
             }}
             onScroll={composeEventHandlers(viewportProps.onScroll, (event) => {
