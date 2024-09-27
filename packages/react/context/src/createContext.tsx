@@ -6,13 +6,15 @@ function createContext<ContextValueType extends object | null>(
 ) {
   const Context = React.createContext<ContextValueType | undefined>(defaultContext);
 
-  function Provider(props: ContextValueType & { children: React.ReactNode }) {
+  const Provider: React.FC<ContextValueType & { children: React.ReactNode }> = (props) => {
     const { children, ...context } = props;
     // Only re-memoize when prop values change
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const value = React.useMemo(() => context, Object.values(context)) as ContextValueType;
     return <Context.Provider value={value}>{children}</Context.Provider>;
-  }
+  };
+
+  Provider.displayName = rootComponentName + 'Provider';
 
   function useContext(consumerName: string) {
     const context = React.useContext(Context);
@@ -22,7 +24,6 @@ function createContext<ContextValueType extends object | null>(
     throw new Error(`\`${consumerName}\` must be used within \`${rootComponentName}\``);
   }
 
-  Provider.displayName = rootComponentName + 'Provider';
   return [Provider, useContext] as const;
 }
 
@@ -52,16 +53,18 @@ function createContextScope(scopeName: string, createContextScopeDeps: CreateSco
     const index = defaultContexts.length;
     defaultContexts = [...defaultContexts, defaultContext];
 
-    function Provider(
-      props: ContextValueType & { scope: Scope<ContextValueType>; children: React.ReactNode }
-    ) {
+    const Provider: React.FC<
+      ContextValueType & { scope: Scope<ContextValueType>; children: React.ReactNode }
+    > = (props) => {
       const { scope, children, ...context } = props;
       const Context = scope?.[scopeName][index] || BaseContext;
       // Only re-memoize when prop values change
       // eslint-disable-next-line react-hooks/exhaustive-deps
       const value = React.useMemo(() => context, Object.values(context)) as ContextValueType;
       return <Context.Provider value={value}>{children}</Context.Provider>;
-    }
+    };
+
+    Provider.displayName = rootComponentName + 'Provider';
 
     function useContext(consumerName: string, scope: Scope<ContextValueType | undefined>) {
       const Context = scope?.[scopeName][index] || BaseContext;
@@ -72,7 +75,6 @@ function createContextScope(scopeName: string, createContextScopeDeps: CreateSco
       throw new Error(`\`${consumerName}\` must be used within \`${rootComponentName}\``);
     }
 
-    Provider.displayName = rootComponentName + 'Provider';
     return [Provider, useContext] as const;
   }
 
