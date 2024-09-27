@@ -6,6 +6,16 @@ export default { title: 'Components/Avatar' };
 const src = 'https://picsum.photos/id/1005/400/400';
 const srcBroken = 'https://broken.link.com/broken-pic.jpg';
 
+const FakeFrameworkImage = (props: any) => {
+  console.log(props);
+
+  return (
+    <div>
+      <img {...props} alt="framework test" data-testid="framework-image-component" />
+    </div>
+  );
+};
+
 export const Styled = () => (
   <>
     <h1>Without image & with fallback</h1>
@@ -30,6 +40,31 @@ export const Styled = () => (
         onLoadingStatusChange={console.log}
       />
       <Avatar.Fallback className={fallbackClass()}>
+        <AvatarIcon />
+      </Avatar.Fallback>
+    </Avatar.Root>
+
+    <h1>With image framework component & with fallback</h1>
+    <Avatar.Root className={rootClass()}>
+      <Avatar.Image className={imageClass()} alt="John Smith" asChild>
+        <FakeFrameworkImage src={src} />
+      </Avatar.Image>
+      <Avatar.Fallback delayMs={300} className={fallbackClass()}>
+        JS
+      </Avatar.Fallback>
+    </Avatar.Root>
+
+    <h1>With image framework component & with fallback (but broken src)</h1>
+    <Avatar.Root className={rootClass()}>
+      <Avatar.Image
+        className={imageClass()}
+        alt="John Smith"
+        onLoadingStatusChange={console.log}
+        asChild
+      >
+        <FakeFrameworkImage src={srcBroken} />
+      </Avatar.Image>
+      <Avatar.Fallback delayMs={300} className={fallbackClass()}>
         <AvatarIcon />
       </Avatar.Fallback>
     </Avatar.Root>
