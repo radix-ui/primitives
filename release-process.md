@@ -29,7 +29,7 @@ Release candidates are automatically published when new changes are merged into 
 
 Our documentation is in a [separate repository](https://github.com/radix-ui/website) and updating it is a three step process:
 
-1. Write and update the [change log](https://github.com/radix-ui/website/blob/main/data/primitives/overview/releases.mdx)
+1. Write and update the [change log](https://github.com/radix-ui/website/blob/main/data/primitives/docs/overview/releases.mdx)
 2. Bump package version/s and create / update the pages for each version change
 3. Perform documentation updates and remove live demos from previous versions
 

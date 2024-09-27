@@ -1,0 +1,9 @@
+releases:
+  "@radix-ui/react-focus-guards": patch
+
+declined:
+  - primitives
+  - "@radix-ui/react-dialog"
+  - "@radix-ui/react-menu"
+  - "@radix-ui/react-popover"
+  - "@radix-ui/react-select"

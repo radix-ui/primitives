@@ -638,40 +638,83 @@ export const RequiredWithinForm = () => {
 };
 
 export const WithinDialog = () => (
-  <Dialog.Root>
-    <Dialog.Trigger>Open Dialog</Dialog.Trigger>
-    <Dialog.Content aria-describedby={undefined}>
-      <Dialog.Title>A select in a dialog</Dialog.Title>
-      <Label>
-        Choose a number:
-        <Select.Root defaultValue="2">
-          <Select.Trigger className={triggerClass()}>
-            <Select.Value />
-            <Select.Icon />
-          </Select.Trigger>
-          <Select.Portal>
-            <Select.Content className={contentClass()}>
-              <Select.ScrollUpButton className={scrollUpButtonClass()}>▲</Select.ScrollUpButton>
-              <Select.Viewport className={viewportClass()}>
-                {Array.from({ length: 30 }, (_, i) => (
-                  <Select.Item key={i} className={itemClass()} value={String(i)}>
-                    <Select.ItemText>Item {i}</Select.ItemText>
-                    <Select.ItemIndicator className={indicatorClass()}>
-                      <TickIcon />
-                    </Select.ItemIndicator>
-                  </Select.Item>
-                ))}
-              </Select.Viewport>
-              <Select.ScrollDownButton className={scrollDownButtonClass()}>
-                ▼
-              </Select.ScrollDownButton>
-            </Select.Content>
-          </Select.Portal>
-        </Select.Root>
-      </Label>
-      <Dialog.Close>Close Dialog</Dialog.Close>
-    </Dialog.Content>
-  </Dialog.Root>
+  <div style={{ height: '120vh' }}>
+    <Dialog.Root>
+      <Dialog.Trigger>Open Dialog</Dialog.Trigger>
+      <Dialog.Portal>
+        <Dialog.Overlay />
+        <Dialog.Content aria-describedby={undefined} style={{ position: 'fixed', top: 100 }}>
+          <Dialog.Title>A select in a dialog</Dialog.Title>
+          <Label>
+            Choose a number:
+            <Select.Root defaultValue="2">
+              <Select.Trigger className={triggerClass()}>
+                <Select.Value />
+                <Select.Icon />
+              </Select.Trigger>
+              <Select.Portal>
+                <Select.Content className={contentClass()}>
+                  <Select.ScrollUpButton className={scrollUpButtonClass()}>▲</Select.ScrollUpButton>
+                  <Select.Viewport className={viewportClass()}>
+                    {Array.from({ length: 30 }, (_, i) => (
+                      <Select.Item key={i} className={itemClass()} value={String(i)}>
+                        <Select.ItemText>Item {i}</Select.ItemText>
+                        <Select.ItemIndicator className={indicatorClass()}>
+                          <TickIcon />
+                        </Select.ItemIndicator>
+                      </Select.Item>
+                    ))}
+                  </Select.Viewport>
+                  <Select.ScrollDownButton className={scrollDownButtonClass()}>
+                    ▼
+                  </Select.ScrollDownButton>
+                </Select.Content>
+              </Select.Portal>
+            </Select.Root>
+          </Label>
+          <Dialog.Close>Close Dialog</Dialog.Close>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
+  </div>
+);
+
+export const WithVeryLongSelectItems = () => (
+  <div style={{ paddingLeft: 300 }}>
+    <Label>
+      What is the meaning of life?
+      <Select.Root defaultValue="1">
+        <Select.Trigger className={triggerClass()}>
+          <Select.Value />
+          <Select.Icon />
+        </Select.Trigger>
+        <Select.Portal>
+          <Select.Content className={contentClass()}>
+            <Select.ScrollUpButton className={scrollUpButtonClass()}>▲</Select.ScrollUpButton>
+            <Select.Viewport className={viewportClass()}>
+              {[
+                'The meaning of life is a complex topic that has been the subject of much philosophical, scientific, and theological speculation, with no definitive answer. The meaning of life can be interpreted in many different ways, depending on individual beliefs, values, and experiences.',
+                '42',
+              ].map((opt, i) => (
+                <Select.Item
+                  key={opt}
+                  className={itemClass()}
+                  value={String(i)}
+                  // style={{ maxWidth: 500 }}
+                >
+                  <Select.ItemText>{opt}</Select.ItemText>
+                  <Select.ItemIndicator className={indicatorClass()}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+              ))}
+            </Select.Viewport>
+            <Select.ScrollDownButton className={scrollDownButtonClass()}>▼</Select.ScrollDownButton>
+          </Select.Content>
+        </Select.Portal>
+      </Select.Root>
+    </Label>
+  </div>
 );
 
 export const ChromaticShortOptionsPaddedContent = () => (
@@ -824,7 +867,9 @@ export const Cypress = () => {
             </Select.Portal>
           </Select.Root>
         </Label>
-        <button type="submit">buy</button>
+        <button type="submit" style={{ width: 100, height: 50 }}>
+          buy
+        </button>
         {data.size ? <p>You picked t-shirt size {data.size}</p> : null}
       </form>
 
@@ -871,7 +916,7 @@ export const Cypress = () => {
           </Select.Root>
         </Label>
 
-        <button type="button" onClick={() => setModel('')}>
+        <button type="button" style={{ width: 100, height: 50 }} onClick={() => setModel('')}>
           unset
         </button>
       </div>
@@ -1048,6 +1093,7 @@ const triggerClass = css({
   fontFamily: '-apple-system, BlinkMacSystemFont, helvetica, arial, sans-serif',
   fontSize: 13,
   lineHeight: 1,
+  overflow: 'hidden',
 
   '&:focus': {
     outline: 'none',
@@ -1101,6 +1147,10 @@ const itemClass = css({
   ...itemStyles,
   position: 'relative',
   outline: 'none',
+
+  '&:active': {
+    backgroundColor: '$gray100',
+  },
 
   '&[data-highlighted]': {
     backgroundColor: '$black',

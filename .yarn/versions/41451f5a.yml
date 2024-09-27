@@ -1,0 +1,16 @@
+releases:
+  "@radix-ui/react-alert-dialog": patch
+  "@radix-ui/react-context-menu": patch
+  "@radix-ui/react-dialog": patch
+  "@radix-ui/react-dropdown-menu": patch
+  "@radix-ui/react-hover-card": patch
+  "@radix-ui/react-menu": patch
+  "@radix-ui/react-menubar": patch
+  "@radix-ui/react-popover": patch
+  "@radix-ui/react-portal": patch
+  "@radix-ui/react-select": patch
+  "@radix-ui/react-toast": patch
+  "@radix-ui/react-tooltip": patch
+
+declined:
+  - primitives
