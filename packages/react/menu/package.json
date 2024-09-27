@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-menu",
-  "version": "2.1.2-rc.10",
+  "version": "2.1.2-rc.11",
   "license": "MIT",
   "exports": {
     ".": {
