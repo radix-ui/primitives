@@ -5,6 +5,7 @@ export default { title: 'Components/Avatar' };
 
 const src = 'https://picsum.photos/id/1005/400/400';
 const srcBroken = 'https://broken.link.com/broken-pic.jpg';
+const otherSrc = 'https://picsum.photos/id/1006/400/400';
 
 const FakeFrameworkImage = (props: any) => {
   console.log(props);
@@ -47,7 +48,7 @@ export const Styled = () => (
     <h1>With image framework component & with fallback</h1>
     <Avatar.Root className={rootClass()}>
       <Avatar.Image className={imageClass()} alt="John Smith" asChild>
-        <FakeFrameworkImage src={src} />
+        <FakeFrameworkImage src={otherSrc} />
       </Avatar.Image>
       <Avatar.Fallback delayMs={300} className={fallbackClass()}>
         JS
