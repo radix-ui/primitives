@@ -1,0 +1,25 @@
+releases:
+  "@radix-ui/react-accordion": minor
+  "@radix-ui/react-alert-dialog": minor
+  "@radix-ui/react-checkbox": minor
+  "@radix-ui/react-collapsible": minor
+  "@radix-ui/react-context-menu": minor
+  "@radix-ui/react-dialog": minor
+  "@radix-ui/react-dropdown-menu": minor
+  "@radix-ui/react-hover-card": minor
+  "@radix-ui/react-menu": minor
+  "@radix-ui/react-menubar": minor
+  "@radix-ui/react-navigation-menu": minor
+  "@radix-ui/react-popover": minor
+  "@radix-ui/react-radio-group": minor
+  "@radix-ui/react-roving-focus": minor
+  "@radix-ui/react-select": minor
+  "@radix-ui/react-slider": minor
+  "@radix-ui/react-switch": minor
+  "@radix-ui/react-tabs": minor
+  "@radix-ui/react-toast": minor
+  "@radix-ui/react-toggle": minor
+  "@radix-ui/react-toggle-group": minor
+  "@radix-ui/react-toolbar": minor
+  "@radix-ui/react-tooltip": minor
+  "@radix-ui/react-use-controllable-state": minor
