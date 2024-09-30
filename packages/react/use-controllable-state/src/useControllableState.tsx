@@ -9,13 +9,11 @@ type UseControllableStateParams<T> = {
 
 type SetStateFn<T> = (prevState?: T) => T;
 
-function useControllableState<T>({
-  prop,
-  defaultProp,
-  onChange = () => {},
-}: UseControllableStateParams<T>) {
+function useControllableState<T>(params: UseControllableStateParams<T>) {
+  const { prop, defaultProp, onChange } = params;
+
   const [uncontrolledProp, setUncontrolledProp] = useUncontrolledState({ defaultProp, onChange });
-  const isControlled = prop !== undefined;
+  const isControlled = 'prop' in params;
   const value = isControlled ? prop : uncontrolledProp;
   const handleChange = useCallbackRef(onChange);
 
