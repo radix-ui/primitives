@@ -24,7 +24,7 @@ const [SwitchProvider, useSwitchContext] = createSwitchContext<SwitchContextValu
 type SwitchElement = React.ElementRef<typeof Primitive.button>;
 type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
 interface SwitchProps extends PrimitiveButtonProps {
-  checked?: boolean;
+  checked?: boolean | undefined;
   defaultChecked?: boolean;
   required?: boolean;
   onCheckedChange?(checked: boolean): void;
@@ -84,7 +84,7 @@ const Switch = React.forwardRef<SwitchElement, SwitchProps>(
             bubbles={!hasConsumerStoppedPropagationRef.current}
             name={name}
             value={value}
-            checked={checked}
+            checked={checked ? true : undefined}
             required={required}
             disabled={disabled}
             // We transform because the input is absolutely positioned but we have
@@ -131,7 +131,7 @@ SwitchThumb.displayName = THUMB_NAME;
 
 type InputProps = React.ComponentPropsWithoutRef<'input'>;
 interface BubbleInputProps extends Omit<InputProps, 'checked'> {
-  checked: boolean;
+  checked: boolean | undefined;
   control: HTMLElement | null;
   bubbles: boolean;
 }

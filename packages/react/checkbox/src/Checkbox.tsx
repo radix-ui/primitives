@@ -19,7 +19,7 @@ const CHECKBOX_NAME = 'Checkbox';
 type ScopedProps<P> = P & { __scopeCheckbox?: Scope };
 const [createCheckboxContext, createCheckboxScope] = createContextScope(CHECKBOX_NAME);
 
-type CheckedState = boolean | 'indeterminate';
+type CheckedState = boolean | 'indeterminate' | undefined;
 
 type CheckboxContextValue = {
   state: CheckedState;
@@ -105,7 +105,7 @@ const Checkbox = React.forwardRef<CheckboxElement, CheckboxProps>(
             bubbles={!hasConsumerStoppedPropagationRef.current}
             name={name}
             value={value}
-            checked={checked}
+            checked={checked ? true : undefined}
             required={required}
             disabled={disabled}
             // We transform because the input is absolutely positioned but we have

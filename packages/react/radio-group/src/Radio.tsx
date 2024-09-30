@@ -24,7 +24,7 @@ const [RadioProvider, useRadioContext] = createRadioContext<RadioContextValue>(R
 type RadioElement = React.ElementRef<typeof Primitive.button>;
 type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
 interface RadioProps extends PrimitiveButtonProps {
-  checked?: boolean;
+  checked?: boolean | undefined;
   required?: boolean;
   onCheck?(): void;
 }
@@ -77,7 +77,7 @@ const Radio = React.forwardRef<RadioElement, RadioProps>(
             bubbles={!hasConsumerStoppedPropagationRef.current}
             name={name}
             value={value}
-            checked={checked}
+            checked={checked ? true : undefined}
             required={required}
             disabled={disabled}
             // We transform because the input is absolutely positioned but we have
@@ -132,7 +132,7 @@ RadioIndicator.displayName = INDICATOR_NAME;
 
 type InputProps = React.ComponentPropsWithoutRef<'input'>;
 interface BubbleInputProps extends Omit<InputProps, 'checked'> {
-  checked: boolean;
+  checked: boolean | undefined;
   control: HTMLElement | null;
   bubbles: boolean;
 }
