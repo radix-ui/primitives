@@ -23,3 +23,6 @@ releases:
   "@radix-ui/react-toolbar": minor
   "@radix-ui/react-tooltip": minor
   "@radix-ui/react-use-controllable-state": minor
+
+declined:
+  - primitives
