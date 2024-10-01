@@ -115,25 +115,8 @@ function mergeProps(slotProps: AnyProps, childProps: AnyProps) {
     // if it's `style`, we merge them
     else if (propName === 'style') {
       overrideProps[propName] = { ...slotPropValue, ...childPropValue };
-    }
-    // if it's `className`, we deduplicate and merge them
-    else if (propName === 'className') {
-      const classNameSet = new Set<string>();
-
-      if (slotPropValue && typeof slotPropValue === 'string') {
-        slotPropValue
-          .split(' ')
-          .filter(Boolean)
-          .forEach((name) => classNameSet.add(name));
-      }
-      if (childPropValue && typeof childPropValue === 'string') {
-        childPropValue
-          .split(' ')
-          .filter(Boolean)
-          .forEach((name) => classNameSet.add(name));
-      }
-
-      overrideProps[propName] = [...classNameSet].join(' ');
+    } else if (propName === 'className') {
+      overrideProps[propName] = [slotPropValue, childPropValue].filter(Boolean).join(' ');
     }
   }
 
