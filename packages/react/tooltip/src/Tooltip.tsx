@@ -190,12 +190,14 @@ const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
 
   const handleOpen = React.useCallback(() => {
     window.clearTimeout(openTimerRef.current);
+    openTimerRef.current = 0;
     wasOpenDelayedRef.current = false;
     setOpen(true);
   }, [setOpen]);
 
   const handleClose = React.useCallback(() => {
     window.clearTimeout(openTimerRef.current);
+    openTimerRef.current = 0;
     setOpen(false);
   }, [setOpen]);
 
@@ -204,11 +206,17 @@ const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
     openTimerRef.current = window.setTimeout(() => {
       wasOpenDelayedRef.current = true;
       setOpen(true);
+      openTimerRef.current = 0;
     }, delayDuration);
   }, [delayDuration, setOpen]);
 
   React.useEffect(() => {
-    return () => window.clearTimeout(openTimerRef.current);
+    return () => {
+      if (openTimerRef.current) {
+        window.clearTimeout(openTimerRef.current);
+        openTimerRef.current = 0;
+      }
+    };
   }, []);
 
   return (
@@ -230,6 +238,7 @@ const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
           } else {
             // Clear the timer in case the pointer leaves the trigger before the tooltip is opened.
             window.clearTimeout(openTimerRef.current);
+            openTimerRef.current = 0;
           }
         }, [handleClose, disableHoverableContent])}
         onOpen={handleOpen}
