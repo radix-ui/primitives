@@ -41,13 +41,14 @@ const Switch = React.forwardRef<SwitchElement, SwitchProps>(
       disabled,
       value = 'on',
       onCheckedChange,
+      form,
       ...switchProps
     } = props;
     const [button, setButton] = React.useState<HTMLButtonElement | null>(null);
     const composedRefs = useComposedRefs(forwardedRef, (node) => setButton(node));
     const hasConsumerStoppedPropagationRef = React.useRef(false);
     // We set this to true by default so that events bubble to forms without JS (SSR)
-    const isFormControl = button ? Boolean(button.closest('form')) : true;
+    const isFormControl = button ? form || !!button.closest('form') : true;
     const [checked = false, setChecked] = useControllableState({
       prop: checkedProp,
       defaultProp: defaultChecked,
@@ -87,6 +88,7 @@ const Switch = React.forwardRef<SwitchElement, SwitchProps>(
             checked={checked}
             required={required}
             disabled={disabled}
+            form={form}
             // We transform because the input is absolutely positioned but we have
             // rendered it **after** the button. This pulls it back to sit on top
             // of the button.

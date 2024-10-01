@@ -40,14 +40,15 @@ const [createSliderContext, createSliderScope] = createContextScope(SLIDER_NAME,
 ]);
 
 type SliderContextValue = {
-  name?: string;
-  disabled?: boolean;
+  name: string | undefined;
+  disabled: boolean | undefined;
   min: number;
   max: number;
   values: number[];
   valueIndexToChangeRef: React.MutableRefObject<number>;
   thumbs: Set<SliderThumbElement>;
   orientation: SliderProps['orientation'];
+  form: string | undefined;
 };
 
 const [SliderProvider, useSliderContext] = createSliderContext<SliderContextValue>(SLIDER_NAME);
@@ -71,6 +72,7 @@ interface SliderProps
   onValueChange?(value: number[]): void;
   onValueCommit?(value: number[]): void;
   inverted?: boolean;
+  form?: string;
 }
 
 const Slider = React.forwardRef<SliderElement, SliderProps>(
@@ -88,6 +90,7 @@ const Slider = React.forwardRef<SliderElement, SliderProps>(
       onValueChange = () => {},
       onValueCommit = () => {},
       inverted = false,
+      form,
       ...sliderProps
     } = props;
     const thumbRefs = React.useRef<SliderContextValue['thumbs']>(new Set());
@@ -151,6 +154,7 @@ const Slider = React.forwardRef<SliderElement, SliderProps>(
         thumbs={thumbRefs.current}
         values={values}
         orientation={orientation}
+        form={form}
       >
         <Collection.Provider scope={props.__scopeSlider}>
           <Collection.Slot scope={props.__scopeSlider}>
@@ -556,7 +560,7 @@ const SliderThumbImpl = React.forwardRef<SliderThumbImplElement, SliderThumbImpl
     const [thumb, setThumb] = React.useState<HTMLSpanElement | null>(null);
     const composedRefs = useComposedRefs(forwardedRef, (node) => setThumb(node));
     // We set this to true by default so that events bubble to forms without JS (SSR)
-    const isFormControl = thumb ? Boolean(thumb.closest('form')) : true;
+    const isFormControl = thumb ? context.form || !!thumb.closest('form') : true;
     const size = useSize(thumb);
     // We cast because index could be `-1` which would return undefined
     const value = context.values[index] as number | undefined;
@@ -618,6 +622,7 @@ const SliderThumbImpl = React.forwardRef<SliderThumbImplElement, SliderThumbImpl
               name ??
               (context.name ? context.name + (context.values.length > 1 ? '[]' : '') : undefined)
             }
+            form={context.form}
             value={value}
           />
         )}
