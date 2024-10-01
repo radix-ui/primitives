@@ -1,4 +1,5 @@
-undecided:
-  - "@radix-ui/react-checkbox"
-  - "@radix-ui/react-radio-group"
-  - "@radix-ui/react-switch"
+releases:
+  "@radix-ui/react-checkbox": patch
+  "@radix-ui/react-radio-group": patch
+  "@radix-ui/react-switch": patch
+
