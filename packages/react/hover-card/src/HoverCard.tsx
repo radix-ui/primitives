@@ -129,6 +129,7 @@ const HoverCardTrigger = React.forwardRef<HoverCardTriggerElement, HoverCardTrig
       <PopperPrimitive.Anchor asChild {...popperScope}>
         <Primitive.a
           data-state={context.open ? 'open' : 'closed'}
+          data-hover-card-state={context.open ? 'open' : 'closed'}
           {...triggerProps}
           ref={forwardedRef}
           onPointerEnter={composeEventHandlers(props.onPointerEnter, excludeTouch(context.onOpen))}
@@ -212,6 +213,7 @@ const HoverCardContent = React.forwardRef<HoverCardContentElement, HoverCardCont
       <Presence present={forceMount || context.open}>
         <HoverCardContentImpl
           data-state={context.open ? 'open' : 'closed'}
+          data-hover-card-state={context.open ? 'open' : 'closed'}
           {...contentProps}
           onPointerEnter={composeEventHandlers(props.onPointerEnter, excludeTouch(context.onOpen))}
           onPointerLeave={composeEventHandlers(props.onPointerLeave, excludeTouch(context.onClose))}

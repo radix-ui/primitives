@@ -55,6 +55,7 @@ const Radio = React.forwardRef<RadioElement, RadioProps>(
           role="radio"
           aria-checked={checked}
           data-state={getState(checked)}
+          data-radio-state={getState(checked)}
           data-disabled={disabled ? '' : undefined}
           disabled={disabled}
           value={value}
@@ -119,6 +120,7 @@ const RadioIndicator = React.forwardRef<RadioIndicatorElement, RadioIndicatorPro
       <Presence present={forceMount || context.checked}>
         <Primitive.span
           data-state={getState(context.checked)}
+          data-radio-state={getState(context.checked)}
           data-disabled={context.disabled ? '' : undefined}
           {...indicatorProps}
           ref={forwardedRef}
