@@ -37,6 +37,9 @@ export const Submenus = () => {
   const [open4, setOpen4] = React.useState(false);
   const [rtl, setRtl] = React.useState(false);
   const [animated, setAnimated] = React.useState(false);
+  const [sideOverride, setSide] = React.useState<'bottom' | 'left' | 'right' | 'top' | undefined>(
+    undefined
+  );
 
   React.useEffect(() => {
     if (rtl) {
@@ -64,79 +67,92 @@ export const Submenus = () => {
           />
           Animated
         </label>
+        <label>
+          <span>Side </span>
+          <select
+            onChange={(e) => setSide((e.target.value as any) || undefined)}
+            style={{ width: '100px' }}
+          >
+            <option value="">auto</option>
+            <option value="left">left</option>
+            <option value="right">right</option>
+          </select>
+        </label>
       </div>
-      <MenuWithAnchor>
-        <Menu.Item className={itemClass()} onSelect={() => window.alert('undo')}>
-          Undo
-        </Menu.Item>
-        <Submenu open={open1} onOpenChange={setOpen1} animated={animated}>
-          <Menu.Item className={itemClass()} disabled>
-            Disabled
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <MenuWithAnchor>
+          <Menu.Item className={itemClass()} onSelect={() => window.alert('undo')}>
+            Undo
           </Menu.Item>
-          <Menu.Item className={itemClass()} onSelect={() => window.alert('one')}>
-            One
-          </Menu.Item>
-          <Submenu open={open2} onOpenChange={setOpen2} animated={animated}>
+          <Submenu open={open1} onOpenChange={setOpen1} animated={animated} side={sideOverride}>
+            <Menu.Item className={itemClass()} disabled>
+              Disabled
+            </Menu.Item>
             <Menu.Item className={itemClass()} onSelect={() => window.alert('one')}>
               One
             </Menu.Item>
+            <Submenu open={open2} onOpenChange={setOpen2} animated={animated}>
+              <Menu.Item className={itemClass()} onSelect={() => window.alert('one')}>
+                One
+              </Menu.Item>
+              <Menu.Item className={itemClass()} onSelect={() => window.alert('two')}>
+                Two
+              </Menu.Item>
+              <Menu.Item className={itemClass()} onSelect={() => window.alert('three')}>
+                Three
+              </Menu.Item>
+              <Menu.Item className={itemClass()} onSelect={() => window.alert('four')}>
+                Four
+              </Menu.Item>
+              <Menu.Item className={itemClass()} onSelect={() => window.alert('five')}>
+                Five
+              </Menu.Item>
+              <Menu.Item className={itemClass()} onSelect={() => window.alert('six')}>
+                Six
+              </Menu.Item>
+            </Submenu>
+            <Submenu heading="Sub Menu" open={open3} onOpenChange={setOpen3} animated={animated}>
+              <Menu.Item className={itemClass()} onSelect={() => window.alert('one')}>
+                One
+              </Menu.Item>
+              <Menu.Item className={itemClass()} onSelect={() => window.alert('two')}>
+                Two
+              </Menu.Item>
+              <Menu.Item className={itemClass()} onSelect={() => window.alert('three')}>
+                Three
+              </Menu.Item>
+            </Submenu>
             <Menu.Item className={itemClass()} onSelect={() => window.alert('two')}>
               Two
             </Menu.Item>
-            <Menu.Item className={itemClass()} onSelect={() => window.alert('three')}>
-              Three
-            </Menu.Item>
-            <Menu.Item className={itemClass()} onSelect={() => window.alert('four')}>
-              Four
-            </Menu.Item>
-            <Menu.Item className={itemClass()} onSelect={() => window.alert('five')}>
-              Five
-            </Menu.Item>
-            <Menu.Item className={itemClass()} onSelect={() => window.alert('six')}>
-              Six
-            </Menu.Item>
-          </Submenu>
-          <Submenu heading="Sub Menu" open={open3} onOpenChange={setOpen3} animated={animated}>
-            <Menu.Item className={itemClass()} onSelect={() => window.alert('one')}>
-              One
-            </Menu.Item>
-            <Menu.Item className={itemClass()} onSelect={() => window.alert('two')}>
-              Two
-            </Menu.Item>
+            <Submenu open={open4} onOpenChange={setOpen4} animated={animated} disabled>
+              <Menu.Item className={itemClass()} onSelect={() => window.alert('one')}>
+                One
+              </Menu.Item>
+              <Menu.Item className={itemClass()} onSelect={() => window.alert('two')}>
+                Two
+              </Menu.Item>
+              <Menu.Item className={itemClass()} onSelect={() => window.alert('three')}>
+                Three
+              </Menu.Item>
+            </Submenu>
             <Menu.Item className={itemClass()} onSelect={() => window.alert('three')}>
               Three
             </Menu.Item>
           </Submenu>
-          <Menu.Item className={itemClass()} onSelect={() => window.alert('two')}>
-            Two
-          </Menu.Item>
-          <Submenu open={open4} onOpenChange={setOpen4} animated={animated} disabled>
-            <Menu.Item className={itemClass()} onSelect={() => window.alert('one')}>
-              One
-            </Menu.Item>
-            <Menu.Item className={itemClass()} onSelect={() => window.alert('two')}>
-              Two
-            </Menu.Item>
-            <Menu.Item className={itemClass()} onSelect={() => window.alert('three')}>
-              Three
-            </Menu.Item>
-          </Submenu>
-          <Menu.Item className={itemClass()} onSelect={() => window.alert('three')}>
-            Three
-          </Menu.Item>
-        </Submenu>
 
-        <Menu.Separator className={separatorClass()} />
-        <Menu.Item className={itemClass()} disabled onSelect={() => window.alert('cut')}>
-          Cut
-        </Menu.Item>
-        <Menu.Item className={itemClass()} onSelect={() => window.alert('copy')}>
-          Copy
-        </Menu.Item>
-        <Menu.Item className={itemClass()} onSelect={() => window.alert('paste')}>
-          Paste
-        </Menu.Item>
-      </MenuWithAnchor>
+          <Menu.Separator className={separatorClass()} />
+          <Menu.Item className={itemClass()} disabled onSelect={() => window.alert('cut')}>
+            Cut
+          </Menu.Item>
+          <Menu.Item className={itemClass()} onSelect={() => window.alert('copy')}>
+            Copy
+          </Menu.Item>
+          <Menu.Item className={itemClass()} onSelect={() => window.alert('paste')}>
+            Paste
+          </Menu.Item>
+        </MenuWithAnchor>
+      </div>
     </DirectionProvider>
   );
 };
