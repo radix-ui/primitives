@@ -494,6 +494,7 @@ interface SelectContentImplProps
   onPointerDownOutside?: DismissableLayerProps['onPointerDownOutside'];
 
   position?: 'item-aligned' | 'popper';
+  shadowRoot?: ShadowRoot;
 }
 
 const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectContentImplProps>(
@@ -530,6 +531,7 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
     const getItems = useCollection(__scopeSelect);
     const [isPositioned, setIsPositioned] = React.useState(false);
     const firstValidItemFoundRef = React.useRef(false);
+    const activeElement = props.shadowRoot?.activeElement || document.activeElement;
 
     // aria-hide everything except the content (better supported equivalent to setting aria-modal)
     React.useEffect(() => {
@@ -545,7 +547,8 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
         const [firstItem, ...restItems] = getItems().map((item) => item.ref.current);
         const [lastItem] = restItems.slice(-1);
 
-        const PREVIOUSLY_FOCUSED_ELEMENT = document.activeElement;
+        const PREVIOUSLY_FOCUSED_ELEMENT = activeElement;
+
         for (const candidate of candidates) {
           // if focus is already where we want to go, we don't want to keep going through the candidates
           if (candidate === PREVIOUSLY_FOCUSED_ELEMENT) return;
@@ -624,7 +627,7 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
 
     const [searchRef, handleTypeaheadSearch] = useTypeaheadSearch((search) => {
       const enabledItems = getItems().filter((item) => !item.disabled);
-      const currentItem = enabledItems.find((item) => item.ref.current === document.activeElement);
+      const currentItem = enabledItems.find((item) => item.ref.current === activeElement);
       const nextItem = findNextItem(enabledItems, search, currentItem);
       if (nextItem) {
         /**
@@ -747,7 +750,6 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
                   if (['ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) {
                     const items = getItems().filter((item) => !item.disabled);
                     let candidateNodes = items.map((item) => item.ref.current!);
-
                     if (['ArrowUp', 'End'].includes(event.key)) {
                       candidateNodes = candidateNodes.slice().reverse();
                     }
