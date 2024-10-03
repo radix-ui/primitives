@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { Slot, Slottable } from '@radix-ui/react-slot';
+import { PropMergers, Slot, Slottable } from '@radix-ui/react-slot';
 
 describe('given a slotted Trigger', () => {
   describe('with onClick on itself', () => {
@@ -103,6 +103,80 @@ describe('given a slotted Trigger', () => {
     });
 
     it("should call the child's onClick", async () => {
+      expect(handleChildClick).toHaveBeenCalledTimes(1);
+    });
+  });
+});
+
+describe('given propMergers', () => {
+  describe("with propMergers' onClick defined to only call slot's onClick AND className not defined", () => {
+    let handleSlotClick: jest.Mock;
+    let handleChildClick: jest.Mock;
+
+    beforeEach(() => {
+      handleSlotClick = jest.fn();
+      handleChildClick = jest.fn();
+
+      const propMergers: PropMergers = {
+        onClick: (slotPropValue, childPropValue) => (event) => {
+          if (slotPropValue) {
+            slotPropValue(event);
+            return;
+          }
+          if (childPropValue) childPropValue(event);
+        },
+      };
+
+      render(
+        <Slot onClick={handleSlotClick} className="slot-class" propMergers={propMergers}>
+          <button onClick={handleChildClick} className="child-class">
+            Click me
+          </button>
+        </Slot>
+      );
+
+      fireEvent.click(screen.getByRole('button'));
+    });
+
+    it('should use the custom merging behavior for onClick', () => {
+      expect(handleSlotClick).toHaveBeenCalledTimes(1);
+      expect(handleChildClick).not.toHaveBeenCalled();
+    });
+
+    it('should join the classNames from child and slot', () => {
+      expect(screen.getByRole('button')).toHaveAttribute('class', 'slot-class child-class');
+    });
+  });
+
+  describe("with propMergers' className defined in propMergers to only use slot's className AND onClick not defined", () => {
+    let handleSlotClick: jest.Mock;
+    let handleChildClick: jest.Mock;
+
+    beforeEach(() => {
+      handleSlotClick = jest.fn();
+      handleChildClick = jest.fn();
+
+      const propMergers: PropMergers = {
+        className: (slotPropValue) => slotPropValue,
+      };
+
+      render(
+        <Slot onClick={handleSlotClick} className="slot-class" propMergers={propMergers}>
+          <button onClick={handleChildClick} className="child-class">
+            Click me
+          </button>
+        </Slot>
+      );
+
+      fireEvent.click(screen.getByRole('button'));
+    });
+
+    it("should only use slot's className", () => {
+      expect(screen.getByRole('button')).toHaveAttribute('class', 'slot-class');
+    });
+
+    it('should call the both onClick handlers from child and slot', () => {
+      expect(handleSlotClick).toHaveBeenCalledTimes(1);
       expect(handleChildClick).toHaveBeenCalledTimes(1);
     });
   });

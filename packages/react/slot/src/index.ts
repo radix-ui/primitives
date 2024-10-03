@@ -4,4 +4,4 @@ export {
   //
   Root,
 } from './Slot';
-export type { SlotProps } from './Slot';
+export type { SlotProps, PropMergers, PropMerger, CustomizableMergingPropName } from './Slot';
