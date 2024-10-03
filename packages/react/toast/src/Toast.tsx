@@ -125,14 +125,15 @@ type ToastViewportElement = React.ElementRef<typeof Primitive.ol>;
 type PrimitiveOrderedListProps = React.ComponentPropsWithoutRef<typeof Primitive.ol>;
 interface ToastViewportProps extends PrimitiveOrderedListProps {
   /**
-   * The keys to use as the keyboard shortcut that will move focus to the toast viewport.
+   * The keys to use as the keyboard shortcut that will move focus to the toast viewport. 
+   * You can pass `false` to disable the keyboard shortcut.
    * @defaultValue ['F8']
    */
-  hotkey?: string[];
+  hotkey?: string[] | false; 
   /**
    * An author-localized label for the toast viewport to provide context for screen reader users
    * when navigating page landmarks. The available `{hotkey}` placeholder will be replaced for you.
-   * @defaultValue 'Notifications ({hotkey})'
+   * @defaultValue 'Notifications ({hotkey})' if `hotkey` is not `false`, otherwise 'Notifications'
    */
   label?: string;
 }
@@ -142,7 +143,7 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
     const {
       __scopeToast,
       hotkey = VIEWPORT_DEFAULT_HOTKEY,
-      label = 'Notifications ({hotkey})',
+      label = props.hotkey === false ? "Notifications" : 'Notifications ({hotkey})',
       ...viewportProps
     } = props;
     const context = useToastProviderContext(VIEWPORT_NAME, __scopeToast);
@@ -152,10 +153,14 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
     const tailFocusProxyRef = React.useRef<FocusProxyElement>(null);
     const ref = React.useRef<ToastViewportElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, ref, context.onViewportChange);
-    const hotkeyLabel = hotkey.join('+').replace(/Key/g, '').replace(/Digit/g, '');
+    const hotkeyLabel = hotkey ? hotkey.join('+').replace(/Key/g, '').replace(/Digit/g, '') : ""
     const hasToasts = context.toastCount > 0;
 
     React.useEffect(() => {
+      if (!hotkey) {
+        return
+      }
+
       const handleKeyDown = (event: KeyboardEvent) => {
         // we use `event.code` as it is consistent regardless of meta keys that were pressed.
         // for example, `event.key` for `Control+Alt+t` is `†` and `t !== †`
