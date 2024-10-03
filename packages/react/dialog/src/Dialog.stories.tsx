@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { css, keyframes } from '../../../../stitches.config';
 import * as Dialog from '@radix-ui/react-dialog';
+import * as Popover from '@radix-ui/react-popover';
 
 export default { title: 'Components/Dialog' };
 
@@ -231,6 +232,19 @@ export const InnerScrollable = () => (
       <Dialog.Content className={contentScrollableClass()}>
         <Dialog.Title>Booking info</Dialog.Title>
         <Dialog.Description>Please enter the info for your booking below.</Dialog.Description>
+        <Popover.Root>
+          <Popover.Trigger>Open</Popover.Trigger>
+          <Popover.Portal>
+            <Popover.Content className={popoverContentClass()}>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer feugiat mattis
+              malesuada. Fusce elementum vulputate aliquet. Integer fringilla porta eros. Ut
+              ultricies mattis nisi. Sed et tempor massa. Sed non arcu ut velit scelerisque bibendum
+              tempor sed mi. In non consequat sapien. Donec sollicitudin eget tellus ut venenatis.
+              Donec posuere sem ante, nec iaculis arcu varius sit amet. Praesent non tortor quam.
+              Curabitur dapibus justo a commodo ornare.
+            </Popover.Content>
+          </Popover.Portal>
+        </Popover.Root>
         <div style={{ backgroundColor: '#eee', height: 500 }} />
         <Dialog.Close className={closeClass()}>close</Dialog.Close>
       </Dialog.Content>
@@ -247,6 +261,19 @@ export const OuterScrollable = () => (
         <Dialog.Content className={contentInScrollableOverlayClass()}>
           <Dialog.Title>Booking info</Dialog.Title>
           <Dialog.Description>Please enter the info for your booking below.</Dialog.Description>
+          <Popover.Root>
+            <Popover.Trigger>Open</Popover.Trigger>
+            <Popover.Portal>
+              <Popover.Content className={popoverContentClass()}>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer feugiat mattis
+                malesuada. Fusce elementum vulputate aliquet. Integer fringilla porta eros. Ut
+                ultricies mattis nisi. Sed et tempor massa. Sed non arcu ut velit scelerisque
+                bibendum tempor sed mi. In non consequat sapien. Donec sollicitudin eget tellus ut
+                venenatis. Donec posuere sem ante, nec iaculis arcu varius sit amet. Praesent non
+                tortor quam. Curabitur dapibus justo a commodo ornare.
+              </Popover.Content>
+            </Popover.Portal>
+          </Popover.Root>
           <div style={{ backgroundColor: '#eee', height: 500 }} />
           <Dialog.Close className={closeClass()}>close</Dialog.Close>
         </Dialog.Content>
@@ -646,3 +673,13 @@ const triggerAttrClass = css(styles);
 const overlayAttrClass = css(overlayClass, styles);
 const contentAttrClass = css(chromaticContentClass, styles);
 const closeAttrClass = css(styles);
+
+const popoverContentClass = css({
+  backgroundColor: '$white',
+  padding: 20,
+  borderRadius: 5,
+  maxHeight: 100,
+  overflowY: 'auto',
+  width: 200,
+  boxShadow: '0 5px 10px 0 rgba(0, 0, 0, 0.1)',
+});
