@@ -19,6 +19,7 @@ export {
 export type {
   TooltipProviderProps,
   TooltipProps,
+  TooltipProviderProps,
   TooltipTriggerProps,
   TooltipPortalProps,
   TooltipContentProps,
