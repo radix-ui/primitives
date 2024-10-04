@@ -1,6 +1,6 @@
 import { createStitches } from '@stitches/core';
 
-export const { css, keyframes } = createStitches({
+export const { css, keyframes, getCssText } = createStitches({
   theme: {
     colors: {
       white: '#fff',

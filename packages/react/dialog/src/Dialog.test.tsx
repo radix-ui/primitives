@@ -2,6 +2,7 @@ import React from 'react';
 import { axe } from 'jest-axe';
 import { render, fireEvent, RenderResult, cleanup } from '@testing-library/react';
 import * as Dialog from '@radix-ui/react-dialog';
+import { activeElement } from '@radix-ui/primitive';
 
 const OPEN_TEXT = 'Open';
 const CLOSE_TEXT = 'Close';
@@ -126,7 +127,7 @@ describe('given a default Dialog', () => {
 
     describe('when pressing escape', () => {
       beforeEach(() => {
-        fireEvent.keyDown(document.activeElement!, { key: 'Escape' });
+        fireEvent.keyDown(activeElement()!, { key: 'Escape' });
       });
 
       it('should close the content', () => {

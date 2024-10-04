@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom/client';
-import { css } from '../../../../stitches.config';
+import { css, getCssText } from '../../../../stitches.config';
 import * as Tooltip from '@radix-ui/react-tooltip';
 import * as Dialog from '@radix-ui/react-dialog';
 import { SIDE_OPTIONS, ALIGN_OPTIONS } from '@radix-ui/react-popper';
@@ -863,6 +863,160 @@ export const InPopupWindow = () => {
       style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '200vh' }}
     >
       <button onClick={handlePopupClick}>Open Popup</button>
+    </div>
+  );
+};
+
+export const InShadowRoot = () => {
+  const ref = React.useRef<HTMLDivElement>(null);
+  React.useEffect(() => {
+    if (!ref.current?.shadowRoot) {
+      ref.current!.attachShadow({ mode: 'open' });
+    }
+
+    const shadowRoot = ref.current!.shadowRoot!;
+
+    const styleElement = document.createElement('style');
+    styleElement.textContent = getCssText();
+
+    const container = document.createElement('div');
+    shadowRoot.appendChild(styleElement);
+    shadowRoot.appendChild(container);
+    const appRoot = ReactDOM.createRoot(container);
+    appRoot.render(
+      <DropdownMenu.Root>
+        <DropdownMenu.Trigger className={triggerClass()}>Open</DropdownMenu.Trigger>
+        <DropdownMenu.Content className={contentClass()} sideOffset={5}>
+          <DropdownMenu.Item className={itemClass()} onSelect={() => console.log('new-tab')}>
+            New Tab
+          </DropdownMenu.Item>
+          <DropdownMenu.Item className={itemClass()} onSelect={() => console.log('new-window')}>
+            New Window
+          </DropdownMenu.Item>
+          <DropdownMenu.Separator className={separatorClass()} />
+          <DropdownMenu.Sub>
+            <DropdownMenu.SubTrigger className={subTriggerClass()}>
+              Bookmarks →
+            </DropdownMenu.SubTrigger>
+            <DropdownMenu.SubContent className={contentClass()} sideOffset={12} alignOffset={-6}>
+              <DropdownMenu.Item className={itemClass()} onSelect={() => console.log('index')}>
+                Inbox
+              </DropdownMenu.Item>
+              <DropdownMenu.Item className={itemClass()} onSelect={() => console.log('calendar')}>
+                Calendar
+              </DropdownMenu.Item>
+              <DropdownMenu.Separator className={separatorClass()} />
+              <DropdownMenu.Sub>
+                <DropdownMenu.SubTrigger className={subTriggerClass()}>
+                  WorkOS →
+                </DropdownMenu.SubTrigger>
+                <DropdownMenu.Portal>
+                  <DropdownMenu.SubContent
+                    className={contentClass()}
+                    sideOffset={12}
+                    alignOffset={-6}
+                  >
+                    <DropdownMenu.Item
+                      className={itemClass()}
+                      onSelect={() => console.log('stitches')}
+                    >
+                      Stitches
+                    </DropdownMenu.Item>
+                    <DropdownMenu.Item
+                      className={itemClass()}
+                      onSelect={() => console.log('composer')}
+                    >
+                      Composer
+                    </DropdownMenu.Item>
+                    <DropdownMenu.Item
+                      className={itemClass()}
+                      onSelect={() => console.log('radix')}
+                    >
+                      Radix
+                    </DropdownMenu.Item>
+                    <DropdownMenu.Arrow />
+                  </DropdownMenu.SubContent>
+                </DropdownMenu.Portal>
+              </DropdownMenu.Sub>
+              <DropdownMenu.Separator className={separatorClass()} />
+              <DropdownMenu.Item className={itemClass()} onSelect={() => console.log('notion')}>
+                Notion
+              </DropdownMenu.Item>
+              <DropdownMenu.Arrow />
+            </DropdownMenu.SubContent>
+          </DropdownMenu.Sub>
+          <DropdownMenu.Sub>
+            <DropdownMenu.SubTrigger className={subTriggerClass()} disabled>
+              History →
+            </DropdownMenu.SubTrigger>
+            <DropdownMenu.Portal>
+              <DropdownMenu.SubContent className={contentClass()} sideOffset={12} alignOffset={-6}>
+                <DropdownMenu.Item className={itemClass()} onSelect={() => console.log('github')}>
+                  Github
+                </DropdownMenu.Item>
+                <DropdownMenu.Item className={itemClass()} onSelect={() => console.log('google')}>
+                  Google
+                </DropdownMenu.Item>
+                <DropdownMenu.Item
+                  className={itemClass()}
+                  onSelect={() => console.log('stack-overflow')}
+                >
+                  Stack Overflow
+                </DropdownMenu.Item>
+                <DropdownMenu.Arrow />
+              </DropdownMenu.SubContent>
+            </DropdownMenu.Portal>
+          </DropdownMenu.Sub>
+          <DropdownMenu.Sub>
+            <DropdownMenu.SubTrigger className={subTriggerClass()}>Tools →</DropdownMenu.SubTrigger>
+            <DropdownMenu.Portal>
+              <DropdownMenu.SubContent className={contentClass()} sideOffset={12} alignOffset={-6}>
+                <DropdownMenu.Item
+                  className={itemClass()}
+                  onSelect={() => console.log('extensions')}
+                >
+                  Extensions
+                </DropdownMenu.Item>
+                <DropdownMenu.Item
+                  className={itemClass()}
+                  onSelect={() => console.log('task-manager')}
+                >
+                  Task Manager
+                </DropdownMenu.Item>
+                <DropdownMenu.Item
+                  className={itemClass()}
+                  onSelect={() => console.log('developer-tools')}
+                >
+                  Developer Tools
+                </DropdownMenu.Item>
+                <DropdownMenu.Arrow />
+              </DropdownMenu.SubContent>
+            </DropdownMenu.Portal>
+          </DropdownMenu.Sub>
+          <DropdownMenu.Separator className={separatorClass()} />
+          <DropdownMenu.Item className={itemClass()} disabled onSelect={() => console.log('print')}>
+            Print…
+          </DropdownMenu.Item>
+          <DropdownMenu.Item className={itemClass()} onSelect={() => console.log('cast')}>
+            Cast…
+          </DropdownMenu.Item>
+          <DropdownMenu.Item className={itemClass()} onSelect={() => console.log('find')}>
+            Find…
+          </DropdownMenu.Item>
+          <DropdownMenu.Arrow />
+        </DropdownMenu.Content>
+      </DropdownMenu.Root>
+    );
+
+    return () => {
+      appRoot.unmount();
+    };
+  }, []);
+  return (
+    <div
+      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '200vh' }}
+    >
+      <div ref={ref}></div>
     </div>
   );
 };
