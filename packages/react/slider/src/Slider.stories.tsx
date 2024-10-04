@@ -346,6 +346,26 @@ export const Strict = () => (
   </React.StrictMode>
 );
 
+export const InScrollableContext = () => {
+  const [value, setValue] = React.useState(0);
+
+  return (
+    <div style={{ width: '40vw', overflowX: 'scroll', border: '1px' }}>
+      <Slider.Root
+        className={rootClass()}
+        style={{ width: '100vw' }}
+        value={[value]}
+        onValueChange={([newValue]: [number]) => setValue(newValue)}
+      >
+        <Slider.Track className={trackClass()}>
+          <Slider.Range className={rangeClass()} />
+        </Slider.Track>
+        <Slider.Thumb className={thumbClass()} />
+      </Slider.Root>
+    </div>
+  );
+};
+
 export const Chromatic = () => (
   <>
     <h1>Uncontrolled</h1>
