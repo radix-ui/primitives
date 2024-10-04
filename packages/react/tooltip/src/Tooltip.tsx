@@ -510,7 +510,32 @@ const TooltipContentImpl = React.forwardRef<TooltipContentImplElement, TooltipCo
     } = props;
     const context = useTooltipContext(CONTENT_NAME, __scopeTooltip);
     const popperScope = usePopperScope(__scopeTooltip);
+    const [hasIntersectedOnce, setHasIntersectedOnce] = React.useState(false);
     const { onClose } = context;
+
+    // track if the trigger has intersected with the viewport once
+    React.useEffect(() => {
+      if (context.trigger) {
+        const observer = new IntersectionObserver(
+          ([entry]) => {
+            if (entry.isIntersecting) {
+              setHasIntersectedOnce(true);
+            }
+          },
+          {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1,
+          }
+        );
+
+        observer.observe(context.trigger);
+
+        return () => {
+          observer.disconnect();
+        };
+      }
+    }, [context.trigger]);
 
     // Close this tooltip if another one opens
     React.useEffect(() => {
@@ -518,17 +543,17 @@ const TooltipContentImpl = React.forwardRef<TooltipContentImplElement, TooltipCo
       return () => document.removeEventListener(TOOLTIP_OPEN, onClose);
     }, [onClose]);
 
-    // Close the tooltip if the trigger is scrolled
+    // Close the tooltip if the trigger is scrolled and it's already intersected with viewport once
     React.useEffect(() => {
       if (context.trigger) {
         const handleScroll = (event: Event) => {
           const target = event.target as HTMLElement;
-          if (target?.contains(context.trigger)) onClose();
+          if (target?.contains(context.trigger) && hasIntersectedOnce) onClose();
         };
         window.addEventListener('scroll', handleScroll, { capture: true });
         return () => window.removeEventListener('scroll', handleScroll, { capture: true });
       }
-    }, [context.trigger, onClose]);
+    }, [context.trigger, onClose, hasIntersectedOnce]);
 
     return (
       <DismissableLayer
