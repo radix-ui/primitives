@@ -109,11 +109,26 @@ const FocusScope = React.forwardRef<FocusScopeElement, FocusScopeProps>((props, 
       // back to the document.body. In this case, we move focus to the container
       // to keep focus trapped correctly.
       function handleMutations(mutations: MutationRecord[]) {
-        const focusedElement = document.activeElement as HTMLElement | null;
-        if (focusedElement !== document.body) return;
-        for (const mutation of mutations) {
-          if (mutation.removedNodes.length > 0) focus(container);
-        }
+        // If the activeElement is not the document body, then the focus was not
+        // lost, so we don't need to rescue the focus.  Please note that this is
+        // not perfectly robust, because the active element can still be
+        // document.body even in some cases where the focus was not lost.  For
+        // example, during a blur event, browsers set the activeElement to
+        // document.body just before activeElement may be set to the next
+        // element
+        if (document.activeElement !== document.body) return;
+
+        // If no elements were removed, then we don't need to rescue focus
+        if (noElementsRemoved(mutations)) return;
+
+        // If the last focused element is still in the container, then it wasn't
+        // removed and we don't need to rescue focus
+        const lastFocusedElementStillInContainer = container?.contains(
+          lastFocusedElementRef.current
+        );
+        if (lastFocusedElementStillInContainer) return;
+
+        focus(container);
       }
 
       document.addEventListener('focusin', handleFocusIn);
@@ -340,6 +355,15 @@ function arrayRemove<T>(array: T[], item: T) {
 
 function removeLinks(items: HTMLElement[]) {
   return items.filter((item) => item.tagName !== 'A');
+}
+
+function noElementsRemoved(mutations: MutationRecord[]) {
+  for (const mutation of mutations) {
+    if (mutation.removedNodes.length > 0) {
+      return false;
+    }
+  }
+  return true;
 }
 
 const Root = FocusScope;
