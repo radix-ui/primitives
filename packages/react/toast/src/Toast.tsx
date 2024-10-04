@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { composeEventHandlers } from '@radix-ui/primitive';
+import { composePreventableEventHandlers } from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createCollection } from '@radix-ui/react-collection';
 import { createContextScope } from '@radix-ui/react-context';
@@ -397,23 +397,23 @@ const Toast = React.forwardRef<ToastElement, ToastProps>(
           onClose={() => setOpen(false)}
           onPause={useCallbackRef(props.onPause)}
           onResume={useCallbackRef(props.onResume)}
-          onSwipeStart={composeEventHandlers(props.onSwipeStart, (event) => {
+          onSwipeStart={composePreventableEventHandlers(props.onSwipeStart, (event) => {
             event.currentTarget.setAttribute('data-swipe', 'start');
           })}
-          onSwipeMove={composeEventHandlers(props.onSwipeMove, (event) => {
+          onSwipeMove={composePreventableEventHandlers(props.onSwipeMove, (event) => {
             const { x, y } = event.detail.delta;
             event.currentTarget.setAttribute('data-swipe', 'move');
             event.currentTarget.style.setProperty('--radix-toast-swipe-move-x', `${x}px`);
             event.currentTarget.style.setProperty('--radix-toast-swipe-move-y', `${y}px`);
           })}
-          onSwipeCancel={composeEventHandlers(props.onSwipeCancel, (event) => {
+          onSwipeCancel={composePreventableEventHandlers(props.onSwipeCancel, (event) => {
             event.currentTarget.setAttribute('data-swipe', 'cancel');
             event.currentTarget.style.removeProperty('--radix-toast-swipe-move-x');
             event.currentTarget.style.removeProperty('--radix-toast-swipe-move-y');
             event.currentTarget.style.removeProperty('--radix-toast-swipe-end-x');
             event.currentTarget.style.removeProperty('--radix-toast-swipe-end-y');
           })}
-          onSwipeEnd={composeEventHandlers(props.onSwipeEnd, (event) => {
+          onSwipeEnd={composePreventableEventHandlers(props.onSwipeEnd, (event) => {
             const { x, y } = event.detail.delta;
             event.currentTarget.setAttribute('data-swipe', 'end');
             event.currentTarget.style.removeProperty('--radix-toast-swipe-move-x');
@@ -565,7 +565,7 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
             <Collection.ItemSlot scope={__scopeToast}>
               <DismissableLayer.Root
                 asChild
-                onEscapeKeyDown={composeEventHandlers(onEscapeKeyDown, () => {
+                onEscapeKeyDown={composePreventableEventHandlers(onEscapeKeyDown, () => {
                   if (!context.isFocusedToastEscapeKeyDownRef.current) handleClose();
                   context.isFocusedToastEscapeKeyDownRef.current = false;
                 })}
@@ -581,7 +581,7 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
                   {...toastProps}
                   ref={composedRefs}
                   style={{ userSelect: 'none', touchAction: 'none', ...props.style }}
-                  onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
+                  onKeyDown={composePreventableEventHandlers(props.onKeyDown, (event) => {
                     if (event.key !== 'Escape') return;
                     onEscapeKeyDown?.(event.nativeEvent);
                     if (!event.nativeEvent.defaultPrevented) {
@@ -589,11 +589,11 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
                       handleClose();
                     }
                   })}
-                  onPointerDown={composeEventHandlers(props.onPointerDown, (event) => {
+                  onPointerDown={composePreventableEventHandlers(props.onPointerDown, (event) => {
                     if (event.button !== 0) return;
                     pointerStartRef.current = { x: event.clientX, y: event.clientY };
                   })}
-                  onPointerMove={composeEventHandlers(props.onPointerMove, (event) => {
+                  onPointerMove={composePreventableEventHandlers(props.onPointerMove, (event) => {
                     if (!pointerStartRef.current) return;
                     const x = event.clientX - pointerStartRef.current.x;
                     const y = event.clientY - pointerStartRef.current.y;
@@ -624,7 +624,7 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
                       pointerStartRef.current = null;
                     }
                   })}
-                  onPointerUp={composeEventHandlers(props.onPointerUp, (event) => {
+                  onPointerUp={composePreventableEventHandlers(props.onPointerUp, (event) => {
                     const delta = swipeDeltaRef.current;
                     const target = event.target as HTMLElement;
                     if (target.hasPointerCapture(event.pointerId)) {
@@ -799,7 +799,7 @@ const ToastClose = React.forwardRef<ToastCloseElement, ToastCloseProps>(
           type="button"
           {...closeProps}
           ref={forwardedRef}
-          onClick={composeEventHandlers(props.onClick, interactiveContext.onClose)}
+          onClick={composePreventableEventHandlers(props.onClick, interactiveContext.onClose)}
         />
       </ToastAnnounceExclude>
     );

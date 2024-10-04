@@ -1,6 +1,6 @@
 'use client';
 import * as React from 'react';
-import { composeEventHandlers } from '@radix-ui/primitive';
+import { composePreventableEventHandlers } from '@radix-ui/primitive';
 import * as RovingFocusGroup from '@radix-ui/react-roving-focus';
 
 type RovingFocusGroupProps = React.ComponentProps<typeof RovingFocusGroup.Root>;
@@ -159,7 +159,7 @@ const Button = (props: ButtonProps) => {
             : {}),
         }}
         onClick={props.disabled ? undefined : () => setValue(props.value)}
-        onFocus={composeEventHandlers(props.onFocus, (event) => {
+        onFocus={composePreventableEventHandlers(props.onFocus, (event) => {
           if (contextValue !== undefined) {
             event.target.click();
           }

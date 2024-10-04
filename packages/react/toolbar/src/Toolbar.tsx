@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { composeEventHandlers } from '@radix-ui/primitive';
+import { composePreventableEventHandlers } from '@radix-ui/primitive';
 import { createContextScope } from '@radix-ui/react-context';
 import * as RovingFocusGroup from '@radix-ui/react-roving-focus';
 import { createRovingFocusGroupScope } from '@radix-ui/react-roving-focus';
@@ -139,7 +139,7 @@ const ToolbarLink = React.forwardRef<ToolbarLinkElement, ToolbarLinkProps>(
         <Primitive.a
           {...linkProps}
           ref={forwardedRef}
-          onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
+          onKeyDown={composePreventableEventHandlers(props.onKeyDown, (event) => {
             if (event.key === ' ') event.currentTarget.click();
           })}
         />

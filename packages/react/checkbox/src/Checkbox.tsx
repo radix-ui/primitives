@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
-import { composeEventHandlers } from '@radix-ui/primitive';
+import { composePreventableEventHandlers } from '@radix-ui/primitive';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { usePrevious } from '@radix-ui/react-use-previous';
 import { useSize } from '@radix-ui/react-use-size';
@@ -85,11 +85,11 @@ const Checkbox = React.forwardRef<CheckboxElement, CheckboxProps>(
           value={value}
           {...checkboxProps}
           ref={composedRefs}
-          onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
+          onKeyDown={composePreventableEventHandlers(props.onKeyDown, (event) => {
             // According to WAI ARIA, Checkboxes don't activate on enter keypress
             if (event.key === 'Enter') event.preventDefault();
           })}
-          onClick={composeEventHandlers(props.onClick, (event) => {
+          onClick={composePreventableEventHandlers(props.onClick, (event) => {
             setChecked((prevChecked) => (isIndeterminate(prevChecked) ? true : !prevChecked));
             if (isFormControl) {
               hasConsumerStoppedPropagationRef.current = event.isPropagationStopped();

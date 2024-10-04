@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { composeEventHandlers } from '@radix-ui/primitive';
+import { composePreventableEventHandlers } from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContext, createContextScope } from '@radix-ui/react-context';
 import { useId } from '@radix-ui/react-id';
@@ -108,7 +108,7 @@ const DialogTrigger = React.forwardRef<DialogTriggerElement, DialogTriggerProps>
         data-state={getState(context.open)}
         {...triggerProps}
         ref={composedTriggerRef}
-        onClick={composeEventHandlers(props.onClick, context.onOpenToggle)}
+        onClick={composePreventableEventHandlers(props.onClick, context.onOpenToggle)}
       />
     );
   }
@@ -273,22 +273,25 @@ const DialogContentModal = React.forwardRef<DialogContentTypeElement, DialogCont
         // (closed !== unmounted when animating out)
         trapFocus={context.open}
         disableOutsidePointerEvents
-        onCloseAutoFocus={composeEventHandlers(props.onCloseAutoFocus, (event) => {
+        onCloseAutoFocus={composePreventableEventHandlers(props.onCloseAutoFocus, (event) => {
           event.preventDefault();
           context.triggerRef.current?.focus();
         })}
-        onPointerDownOutside={composeEventHandlers(props.onPointerDownOutside, (event) => {
-          const originalEvent = event.detail.originalEvent;
-          const ctrlLeftClick = originalEvent.button === 0 && originalEvent.ctrlKey === true;
-          const isRightClick = originalEvent.button === 2 || ctrlLeftClick;
+        onPointerDownOutside={composePreventableEventHandlers(
+          props.onPointerDownOutside,
+          (event) => {
+            const originalEvent = event.detail.originalEvent;
+            const ctrlLeftClick = originalEvent.button === 0 && originalEvent.ctrlKey === true;
+            const isRightClick = originalEvent.button === 2 || ctrlLeftClick;
 
-          // If the event is a right-click, we shouldn't close because
-          // it is effectively as if we right-clicked the `Overlay`.
-          if (isRightClick) event.preventDefault();
-        })}
+            // If the event is a right-click, we shouldn't close because
+            // it is effectively as if we right-clicked the `Overlay`.
+            if (isRightClick) event.preventDefault();
+          }
+        )}
         // When focus is trapped, a `focusout` event may still happen.
         // We make sure we don't trigger our `onDismiss` in such case.
-        onFocusOutside={composeEventHandlers(props.onFocusOutside, (event) =>
+        onFocusOutside={composePreventableEventHandlers(props.onFocusOutside, (event) =>
           event.preventDefault()
         )}
       />
@@ -478,7 +481,7 @@ const DialogClose = React.forwardRef<DialogCloseElement, DialogCloseProps>(
         type="button"
         {...closeProps}
         ref={forwardedRef}
-        onClick={composeEventHandlers(props.onClick, () => context.onOpenChange(false))}
+        onClick={composePreventableEventHandlers(props.onClick, () => context.onOpenChange(false))}
       />
     );
   }

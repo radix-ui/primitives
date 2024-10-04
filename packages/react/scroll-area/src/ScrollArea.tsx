@@ -9,7 +9,7 @@ import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useDirection } from '@radix-ui/react-direction';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { clamp } from '@radix-ui/number';
-import { composeEventHandlers } from '@radix-ui/primitive';
+import { composePreventableEventHandlers } from '@radix-ui/primitive';
 import { useStateMachine } from './useStateMachine';
 
 import type { Scope } from '@radix-ui/react-context';
@@ -367,8 +367,12 @@ const ScrollAreaScrollbarScroll = React.forwardRef<
         data-state={state === 'hidden' ? 'hidden' : 'visible'}
         {...scrollbarProps}
         ref={forwardedRef}
-        onPointerEnter={composeEventHandlers(props.onPointerEnter, () => send('POINTER_ENTER'))}
-        onPointerLeave={composeEventHandlers(props.onPointerLeave, () => send('POINTER_LEAVE'))}
+        onPointerEnter={composePreventableEventHandlers(props.onPointerEnter, () =>
+          send('POINTER_ENTER')
+        )}
+        onPointerLeave={composePreventableEventHandlers(props.onPointerLeave, () =>
+          send('POINTER_LEAVE')
+        )}
       />
     </Presence>
   );
@@ -730,7 +734,7 @@ const ScrollAreaScrollbarImpl = React.forwardRef<
         {...scrollbarProps}
         ref={composeRefs}
         style={{ position: 'absolute', ...scrollbarProps.style }}
-        onPointerDown={composeEventHandlers(props.onPointerDown, (event) => {
+        onPointerDown={composePreventableEventHandlers(props.onPointerDown, (event) => {
           const mainPointer = 0;
           if (event.button === mainPointer) {
             const element = event.target as HTMLElement;
@@ -744,8 +748,8 @@ const ScrollAreaScrollbarImpl = React.forwardRef<
             handleDragScroll(event);
           }
         })}
-        onPointerMove={composeEventHandlers(props.onPointerMove, handleDragScroll)}
-        onPointerUp={composeEventHandlers(props.onPointerUp, (event) => {
+        onPointerMove={composePreventableEventHandlers(props.onPointerMove, handleDragScroll)}
+        onPointerUp={composePreventableEventHandlers(props.onPointerUp, (event) => {
           const element = event.target as HTMLElement;
           if (element.hasPointerCapture(event.pointerId)) {
             element.releasePointerCapture(event.pointerId);
@@ -840,14 +844,20 @@ const ScrollAreaThumbImpl = React.forwardRef<ScrollAreaThumbImplElement, ScrollA
           height: 'var(--radix-scroll-area-thumb-height)',
           ...style,
         }}
-        onPointerDownCapture={composeEventHandlers(props.onPointerDownCapture, (event) => {
-          const thumb = event.target as HTMLElement;
-          const thumbRect = thumb.getBoundingClientRect();
-          const x = event.clientX - thumbRect.left;
-          const y = event.clientY - thumbRect.top;
-          scrollbarContext.onThumbPointerDown({ x, y });
-        })}
-        onPointerUp={composeEventHandlers(props.onPointerUp, scrollbarContext.onThumbPointerUp)}
+        onPointerDownCapture={composePreventableEventHandlers(
+          props.onPointerDownCapture,
+          (event) => {
+            const thumb = event.target as HTMLElement;
+            const thumbRect = thumb.getBoundingClientRect();
+            const x = event.clientX - thumbRect.left;
+            const y = event.clientY - thumbRect.top;
+            scrollbarContext.onThumbPointerDown({ x, y });
+          }
+        )}
+        onPointerUp={composePreventableEventHandlers(
+          props.onPointerUp,
+          scrollbarContext.onThumbPointerUp
+        )}
       />
     );
   }

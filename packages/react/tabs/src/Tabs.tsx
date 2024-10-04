@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { composeEventHandlers } from '@radix-ui/primitive';
+import { composePreventableEventHandlers } from '@radix-ui/primitive';
 import { createContextScope } from '@radix-ui/react-context';
 import { createRovingFocusGroupScope } from '@radix-ui/react-roving-focus';
 import { Presence } from '@radix-ui/react-presence';
@@ -178,7 +178,7 @@ const TabsTrigger = React.forwardRef<TabsTriggerElement, TabsTriggerProps>(
           id={triggerId}
           {...triggerProps}
           ref={forwardedRef}
-          onMouseDown={composeEventHandlers(props.onMouseDown, (event) => {
+          onMouseDown={composePreventableEventHandlers(props.onMouseDown, (event) => {
             // only call handler if it's the left button (mousedown gets triggered by all mouse buttons)
             // but not when the control key is pressed (avoiding MacOS right click)
             if (!disabled && event.button === 0 && event.ctrlKey === false) {
@@ -188,10 +188,10 @@ const TabsTrigger = React.forwardRef<TabsTriggerElement, TabsTriggerProps>(
               event.preventDefault();
             }
           })}
-          onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
+          onKeyDown={composePreventableEventHandlers(props.onKeyDown, (event) => {
             if ([' ', 'Enter'].includes(event.key)) context.onValueChange(value);
           })}
-          onFocus={composeEventHandlers(props.onFocus, () => {
+          onFocus={composePreventableEventHandlers(props.onFocus, () => {
             // handle "automatic" activation if necessary
             // ie. activate tab following focus
             const isAutomaticActivation = context.activationMode !== 'manual';

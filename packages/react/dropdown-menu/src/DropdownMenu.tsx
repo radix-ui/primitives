@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { composeEventHandlers } from '@radix-ui/primitive';
+import { composePreventableEventHandlers } from '@radix-ui/primitive';
 import { composeRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
@@ -113,7 +113,7 @@ const DropdownMenuTrigger = React.forwardRef<DropdownMenuTriggerElement, Dropdow
           disabled={disabled}
           {...triggerProps}
           ref={composeRefs(forwardedRef, context.triggerRef)}
-          onPointerDown={composeEventHandlers(props.onPointerDown, (event) => {
+          onPointerDown={composePreventableEventHandlers(props.onPointerDown, (event) => {
             // only call handler if it's the left button (mousedown gets triggered by all mouse buttons)
             // but not when the control key is pressed (avoiding MacOS right click)
             if (!disabled && event.button === 0 && event.ctrlKey === false) {
@@ -123,7 +123,7 @@ const DropdownMenuTrigger = React.forwardRef<DropdownMenuTriggerElement, Dropdow
               if (!context.open) event.preventDefault();
             }
           })}
-          onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
+          onKeyDown={composePreventableEventHandlers(props.onKeyDown, (event) => {
             if (disabled) return;
             if (['Enter', ' '].includes(event.key)) context.onOpenToggle();
             if (event.key === 'ArrowDown') context.onOpenChange(true);
@@ -182,13 +182,13 @@ const DropdownMenuContent = React.forwardRef<DropdownMenuContentElement, Dropdow
         {...menuScope}
         {...contentProps}
         ref={forwardedRef}
-        onCloseAutoFocus={composeEventHandlers(props.onCloseAutoFocus, (event) => {
+        onCloseAutoFocus={composePreventableEventHandlers(props.onCloseAutoFocus, (event) => {
           if (!hasInteractedOutsideRef.current) context.triggerRef.current?.focus();
           hasInteractedOutsideRef.current = false;
           // Always prevent auto focus because we either focus manually or want user agent focus
           event.preventDefault();
         })}
-        onInteractOutside={composeEventHandlers(props.onInteractOutside, (event) => {
+        onInteractOutside={composePreventableEventHandlers(props.onInteractOutside, (event) => {
           const originalEvent = event.detail.originalEvent as PointerEvent;
           const ctrlLeftClick = originalEvent.button === 0 && originalEvent.ctrlKey === true;
           const isRightClick = originalEvent.button === 2 || ctrlLeftClick;

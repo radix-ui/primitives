@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { clamp } from '@radix-ui/number';
-import { composeEventHandlers } from '@radix-ui/primitive';
+import { composePreventableEventHandlers } from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
@@ -163,7 +163,7 @@ const Slider = React.forwardRef<SliderElement, SliderProps>(
               data-disabled={disabled ? '' : undefined}
               {...sliderProps}
               ref={forwardedRef}
-              onPointerDown={composeEventHandlers(sliderProps.onPointerDown, () => {
+              onPointerDown={composePreventableEventHandlers(sliderProps.onPointerDown, () => {
                 if (!disabled) valuesBeforeSlideStartRef.current = values;
               })}
               min={min}
@@ -412,7 +412,7 @@ const SliderImpl = React.forwardRef<SliderImplElement, SliderImplProps>(
       <Primitive.span
         {...sliderProps}
         ref={forwardedRef}
-        onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
+        onKeyDown={composePreventableEventHandlers(props.onKeyDown, (event) => {
           if (event.key === 'Home') {
             onHomeKeyDown(event);
             // Prevent scrolling to page start
@@ -427,7 +427,7 @@ const SliderImpl = React.forwardRef<SliderImplElement, SliderImplProps>(
             event.preventDefault();
           }
         })}
-        onPointerDown={composeEventHandlers(props.onPointerDown, (event) => {
+        onPointerDown={composePreventableEventHandlers(props.onPointerDown, (event) => {
           const target = event.target as HTMLElement;
           target.setPointerCapture(event.pointerId);
           // Prevent browser focus behaviour because we focus a thumb manually when values change.
@@ -440,11 +440,11 @@ const SliderImpl = React.forwardRef<SliderImplElement, SliderImplProps>(
             onSlideStart(event);
           }
         })}
-        onPointerMove={composeEventHandlers(props.onPointerMove, (event) => {
+        onPointerMove={composePreventableEventHandlers(props.onPointerMove, (event) => {
           const target = event.target as HTMLElement;
           if (target.hasPointerCapture(event.pointerId)) onSlideMove(event);
         })}
-        onPointerUp={composeEventHandlers(props.onPointerUp, (event) => {
+        onPointerUp={composePreventableEventHandlers(props.onPointerUp, (event) => {
           const target = event.target as HTMLElement;
           if (target.hasPointerCapture(event.pointerId)) {
             target.releasePointerCapture(event.pointerId);
@@ -609,7 +609,7 @@ const SliderThumbImpl = React.forwardRef<SliderThumbImplElement, SliderThumbImpl
              * slower connections.
              */
             style={value === undefined ? { display: 'none' } : props.style}
-            onFocus={composeEventHandlers(props.onFocus, () => {
+            onFocus={composePreventableEventHandlers(props.onFocus, () => {
               context.valueIndexToChangeRef.current = index;
             })}
           />

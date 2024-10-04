@@ -1,1 +1,1 @@
-export { composeEventHandlers } from './primitive';
+export { composeEventHandlers, composePreventableEventHandlers } from './primitive';

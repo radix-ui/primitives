@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { composeEventHandlers } from '@radix-ui/primitive';
+import { composePreventableEventHandlers } from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
 import { Primitive } from '@radix-ui/react-primitive';
@@ -163,11 +163,11 @@ const RadioGroupItem = React.forwardRef<RadioGroupItemElement, RadioGroupItemPro
           name={context.name}
           ref={composedRefs}
           onCheck={() => context.onValueChange(itemProps.value)}
-          onKeyDown={composeEventHandlers((event) => {
+          onKeyDown={composePreventableEventHandlers((event) => {
             // According to WAI ARIA, radio groups don't activate items on enter keypress
             if (event.key === 'Enter') event.preventDefault();
           })}
-          onFocus={composeEventHandlers(itemProps.onFocus, () => {
+          onFocus={composePreventableEventHandlers(itemProps.onFocus, () => {
             /**
              * Our `RovingFocusGroup` will focus the radio when navigating with arrow keys
              * and we need to "check" it in that case. We click it to "check" it (instead

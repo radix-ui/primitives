@@ -2,7 +2,7 @@ import React from 'react';
 import { createContextScope } from '@radix-ui/react-context';
 import { createCollection } from '@radix-ui/react-collection';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
-import { composeEventHandlers } from '@radix-ui/primitive';
+import { composePreventableEventHandlers } from '@radix-ui/primitive';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { Primitive } from '@radix-ui/react-primitive';
 import * as CollapsiblePrimitive from '@radix-ui/react-collapsible';
@@ -228,7 +228,7 @@ const AccordionImpl = React.forwardRef<AccordionImplElement, AccordionImplProps>
     const direction = useDirection(dir);
     const isDirectionLTR = direction === 'ltr';
 
-    const handleKeyDown = composeEventHandlers(props.onKeyDown, (event) => {
+    const handleKeyDown = composePreventableEventHandlers(props.onKeyDown, (event) => {
       if (!ACCORDION_KEYS.includes(event.key)) return;
       const target = event.target as HTMLElement;
       const triggerCollection = getItems().filter((item) => !item.ref.current?.disabled);

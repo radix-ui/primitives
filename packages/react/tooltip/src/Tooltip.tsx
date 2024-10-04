@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { composeEventHandlers } from '@radix-ui/primitive';
+import { composePreventableEventHandlers } from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
 import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
@@ -288,7 +288,7 @@ const TooltipTrigger = React.forwardRef<TooltipTriggerElement, TooltipTriggerPro
           data-state={context.stateAttribute}
           {...triggerProps}
           ref={composedRefs}
-          onPointerMove={composeEventHandlers(props.onPointerMove, (event) => {
+          onPointerMove={composePreventableEventHandlers(props.onPointerMove, (event) => {
             if (event.pointerType === 'touch') return;
             if (
               !hasPointerMoveOpenedRef.current &&
@@ -298,19 +298,19 @@ const TooltipTrigger = React.forwardRef<TooltipTriggerElement, TooltipTriggerPro
               hasPointerMoveOpenedRef.current = true;
             }
           })}
-          onPointerLeave={composeEventHandlers(props.onPointerLeave, () => {
+          onPointerLeave={composePreventableEventHandlers(props.onPointerLeave, () => {
             context.onTriggerLeave();
             hasPointerMoveOpenedRef.current = false;
           })}
-          onPointerDown={composeEventHandlers(props.onPointerDown, () => {
+          onPointerDown={composePreventableEventHandlers(props.onPointerDown, () => {
             isPointerDownRef.current = true;
             document.addEventListener('pointerup', handlePointerUp, { once: true });
           })}
-          onFocus={composeEventHandlers(props.onFocus, () => {
+          onFocus={composePreventableEventHandlers(props.onFocus, () => {
             if (!isPointerDownRef.current) context.onOpen();
           })}
-          onBlur={composeEventHandlers(props.onBlur, context.onClose)}
-          onClick={composeEventHandlers(props.onClick, context.onClose)}
+          onBlur={composePreventableEventHandlers(props.onBlur, context.onClose)}
+          onClick={composePreventableEventHandlers(props.onClick, context.onClose)}
         />
       </PopperPrimitive.Anchor>
     );

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { createCollection } from '@radix-ui/react-collection';
 import { useDirection } from '@radix-ui/react-direction';
-import { composeEventHandlers } from '@radix-ui/primitive';
+import { composeEventHandlers, composePreventableEventHandlers } from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
 import { useId } from '@radix-ui/react-id';
@@ -239,7 +239,7 @@ const MenubarTrigger = React.forwardRef<MenubarTriggerElement, MenubarTriggerPro
               disabled={disabled}
               {...triggerProps}
               ref={composedRefs}
-              onPointerDown={composeEventHandlers(props.onPointerDown, (event) => {
+              onPointerDown={composePreventableEventHandlers(props.onPointerDown, (event) => {
                 // only call handler if it's the left button (mousedown gets triggered by all mouse buttons)
                 // but not when the control key is pressed (avoiding MacOS right click)
                 if (!disabled && event.button === 0 && event.ctrlKey === false) {
@@ -249,14 +249,14 @@ const MenubarTrigger = React.forwardRef<MenubarTriggerElement, MenubarTriggerPro
                   if (!open) event.preventDefault();
                 }
               })}
-              onPointerEnter={composeEventHandlers(props.onPointerEnter, () => {
+              onPointerEnter={composePreventableEventHandlers(props.onPointerEnter, () => {
                 const menubarOpen = Boolean(context.value);
                 if (menubarOpen && !open) {
                   context.onMenuOpen(menuContext.value);
                   ref.current?.focus();
                 }
               })}
-              onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
+              onKeyDown={composePreventableEventHandlers(props.onKeyDown, (event) => {
                 if (disabled) return;
                 if (['Enter', ' '].includes(event.key)) context.onMenuToggle(menuContext.value);
                 if (event.key === 'ArrowDown') context.onMenuOpen(menuContext.value);
@@ -267,8 +267,8 @@ const MenubarTrigger = React.forwardRef<MenubarTriggerElement, MenubarTriggerPro
                   event.preventDefault();
                 }
               })}
-              onFocus={composeEventHandlers(props.onFocus, () => setIsFocused(true))}
-              onBlur={composeEventHandlers(props.onBlur, () => setIsFocused(false))}
+              onFocus={composePreventableEventHandlers(props.onFocus, () => setIsFocused(true))}
+              onBlur={composePreventableEventHandlers(props.onBlur, () => setIsFocused(false))}
             />
           </MenuPrimitive.Anchor>
         </RovingFocusGroup.Item>
@@ -324,7 +324,7 @@ const MenubarContent = React.forwardRef<MenubarContentElement, MenubarContentPro
         {...contentProps}
         ref={forwardedRef}
         align={align}
-        onCloseAutoFocus={composeEventHandlers(props.onCloseAutoFocus, (event) => {
+        onCloseAutoFocus={composePreventableEventHandlers(props.onCloseAutoFocus, (event) => {
           const menubarOpen = Boolean(context.value);
           if (!menubarOpen && !hasInteractedOutsideRef.current) {
             menuContext.triggerRef.current?.focus();
@@ -334,51 +334,47 @@ const MenubarContent = React.forwardRef<MenubarContentElement, MenubarContentPro
           // Always prevent auto focus because we either focus manually or want user agent focus
           event.preventDefault();
         })}
-        onFocusOutside={composeEventHandlers(props.onFocusOutside, (event) => {
+        onFocusOutside={composePreventableEventHandlers(props.onFocusOutside, (event) => {
           const target = event.target as HTMLElement;
           const isMenubarTrigger = getItems().some((item) => item.ref.current?.contains(target));
           if (isMenubarTrigger) event.preventDefault();
         })}
-        onInteractOutside={composeEventHandlers(props.onInteractOutside, () => {
+        onInteractOutside={composePreventableEventHandlers(props.onInteractOutside, () => {
           hasInteractedOutsideRef.current = true;
         })}
         onEntryFocus={(event) => {
           if (!menuContext.wasKeyboardTriggerOpenRef.current) event.preventDefault();
         }}
-        onKeyDown={composeEventHandlers(
-          props.onKeyDown,
-          (event) => {
-            if (['ArrowRight', 'ArrowLeft'].includes(event.key)) {
-              const target = event.target as HTMLElement;
-              const targetIsSubTrigger = target.hasAttribute('data-radix-menubar-subtrigger');
-              const isKeyDownInsideSubMenu =
-                target.closest('[data-radix-menubar-content]') !== event.currentTarget;
+        onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
+          if (['ArrowRight', 'ArrowLeft'].includes(event.key)) {
+            const target = event.target as HTMLElement;
+            const targetIsSubTrigger = target.hasAttribute('data-radix-menubar-subtrigger');
+            const isKeyDownInsideSubMenu =
+              target.closest('[data-radix-menubar-content]') !== event.currentTarget;
 
-              const prevMenuKey = context.dir === 'rtl' ? 'ArrowRight' : 'ArrowLeft';
-              const isPrevKey = prevMenuKey === event.key;
-              const isNextKey = !isPrevKey;
+            const prevMenuKey = context.dir === 'rtl' ? 'ArrowRight' : 'ArrowLeft';
+            const isPrevKey = prevMenuKey === event.key;
+            const isNextKey = !isPrevKey;
 
-              // Prevent navigation when we're opening a submenu
-              if (isNextKey && targetIsSubTrigger) return;
-              // or we're inside a submenu and are moving backwards to close it
-              if (isKeyDownInsideSubMenu && isPrevKey) return;
+            // Prevent navigation when we're opening a submenu
+            if (isNextKey && targetIsSubTrigger) return;
+            // or we're inside a submenu and are moving backwards to close it
+            if (isKeyDownInsideSubMenu && isPrevKey) return;
 
-              const items = getItems().filter((item) => !item.disabled);
-              let candidateValues = items.map((item) => item.value);
-              if (isPrevKey) candidateValues.reverse();
+            const items = getItems().filter((item) => !item.disabled);
+            let candidateValues = items.map((item) => item.value);
+            if (isPrevKey) candidateValues.reverse();
 
-              const currentIndex = candidateValues.indexOf(menuContext.value);
+            const currentIndex = candidateValues.indexOf(menuContext.value);
 
-              candidateValues = context.loop
-                ? wrapArray(candidateValues, currentIndex + 1)
-                : candidateValues.slice(currentIndex + 1);
+            candidateValues = context.loop
+              ? wrapArray(candidateValues, currentIndex + 1)
+              : candidateValues.slice(currentIndex + 1);
 
-              const [nextValue] = candidateValues;
-              if (nextValue) context.onMenuOpen(nextValue);
-            }
-          },
-          { checkForDefaultPrevented: false }
-        )}
+            const [nextValue] = candidateValues;
+            if (nextValue) context.onMenuOpen(nextValue);
+          }
+        })}
         style={{
           ...props.style,
           // re-namespace exposed content custom properties

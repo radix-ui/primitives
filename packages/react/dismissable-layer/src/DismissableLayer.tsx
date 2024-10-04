@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { composeEventHandlers } from '@radix-ui/primitive';
+import { composePreventableEventHandlers } from '@radix-ui/primitive';
 import { Primitive, dispatchDiscreteCustomEvent } from '@radix-ui/react-primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
@@ -163,9 +163,15 @@ const DismissableLayer = React.forwardRef<DismissableLayerElement, DismissableLa
             : undefined,
           ...props.style,
         }}
-        onFocusCapture={composeEventHandlers(props.onFocusCapture, focusOutside.onFocusCapture)}
-        onBlurCapture={composeEventHandlers(props.onBlurCapture, focusOutside.onBlurCapture)}
-        onPointerDownCapture={composeEventHandlers(
+        onFocusCapture={composePreventableEventHandlers(
+          props.onFocusCapture,
+          focusOutside.onFocusCapture
+        )}
+        onBlurCapture={composePreventableEventHandlers(
+          props.onBlurCapture,
+          focusOutside.onBlurCapture
+        )}
+        onPointerDownCapture={composePreventableEventHandlers(
           props.onPointerDownCapture,
           pointerDownOutside.onPointerDownCapture
         )}

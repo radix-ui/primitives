@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { composeEventHandlers } from '@radix-ui/primitive';
+import { composeEventHandlers, composePreventableEventHandlers } from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
 import { useId } from '@radix-ui/react-id';
@@ -164,7 +164,7 @@ const Form = React.forwardRef<FormElement, FormProps>(
             {...rootProps}
             ref={composedFormRef}
             // focus first invalid control when the form is submitted
-            onInvalid={composeEventHandlers(props.onInvalid, (event) => {
+            onInvalid={composePreventableEventHandlers(props.onInvalid, (event) => {
               const firstInvalidControl = getFirstInvalidControl(event.currentTarget);
               if (firstInvalidControl === event.target) firstInvalidControl.focus();
 
@@ -172,11 +172,9 @@ const Form = React.forwardRef<FormElement, FormProps>(
               event.preventDefault();
             })}
             // clear server errors when the form is re-submitted
-            onSubmit={composeEventHandlers(props.onSubmit, onClearServerErrors, {
-              checkForDefaultPrevented: false,
-            })}
+            onSubmit={composeEventHandlers(props.onSubmit, onClearServerErrors)}
             // clear server errors when the form is reset
-            onReset={composeEventHandlers(props.onReset, onClearServerErrors)}
+            onReset={composePreventableEventHandlers(props.onReset, onClearServerErrors)}
           />
         </AriaDescriptionProvider>
       </ValidationProvider>
@@ -403,11 +401,11 @@ const FormControl = React.forwardRef<FormControlElement, FormControlProps>(
         ref={composedRef}
         id={id}
         name={name}
-        onInvalid={composeEventHandlers(props.onInvalid, (event) => {
+        onInvalid={composePreventableEventHandlers(props.onInvalid, (event) => {
           const control = event.currentTarget;
           updateControlValidity(control);
         })}
-        onChange={composeEventHandlers(props.onChange, (event) => {
+        onChange={composePreventableEventHandlers(props.onChange, (event) => {
           // reset validity when user changes value
           resetControlValidity();
         })}
