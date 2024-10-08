@@ -19,6 +19,7 @@ import { Slot } from '@radix-ui/react-slot';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { hideOthers } from 'aria-hidden';
 import { RemoveScroll } from 'react-remove-scroll';
+import { useIsUsingKeyboard } from './useIsUsingKeyboard';
 
 import type { Scope } from '@radix-ui/react-context';
 
@@ -69,7 +70,6 @@ const [MenuProvider, useMenuContext] = createMenuContext<MenuContextValue>(MENU_
 
 type MenuRootContextValue = {
   onClose(): void;
-  isUsingKeyboardRef: React.RefObject<boolean>;
   dir: Direction;
   modal: boolean;
 };
@@ -88,26 +88,8 @@ const Menu: React.FC<MenuProps> = (props: ScopedProps<MenuProps>) => {
   const { __scopeMenu, open = false, children, dir, onOpenChange, modal = true } = props;
   const popperScope = usePopperScope(__scopeMenu);
   const [content, setContent] = React.useState<MenuContentElement | null>(null);
-  const isUsingKeyboardRef = React.useRef(false);
   const handleOpenChange = useCallbackRef(onOpenChange);
   const direction = useDirection(dir);
-
-  React.useEffect(() => {
-    // Capture phase ensures we set the boolean before any side effects execute
-    // in response to the key or pointer event as they might depend on this value.
-    const handleKeyDown = () => {
-      isUsingKeyboardRef.current = true;
-      document.addEventListener('pointerdown', handlePointer, { capture: true, once: true });
-      document.addEventListener('pointermove', handlePointer, { capture: true, once: true });
-    };
-    const handlePointer = () => (isUsingKeyboardRef.current = false);
-    document.addEventListener('keydown', handleKeyDown, { capture: true });
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown, { capture: true });
-      document.removeEventListener('pointerdown', handlePointer, { capture: true });
-      document.removeEventListener('pointermove', handlePointer, { capture: true });
-    };
-  }, []);
 
   return (
     <PopperPrimitive.Root {...popperScope}>
@@ -121,7 +103,6 @@ const Menu: React.FC<MenuProps> = (props: ScopedProps<MenuProps>) => {
         <MenuRootProvider
           scope={__scopeMenu}
           onClose={React.useCallback(() => handleOpenChange(false), [handleOpenChange])}
-          isUsingKeyboardRef={isUsingKeyboardRef}
           dir={direction}
           modal={modal}
         >
@@ -386,6 +367,7 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
     const pointerGraceIntentRef = React.useRef<GraceIntent | null>(null);
     const pointerDirRef = React.useRef<Side>('right');
     const lastPointerXRef = React.useRef(0);
+    const getIsUsingKeyboard = useIsUsingKeyboard();
 
     const ScrollLockWrapper = disableOutsideScroll ? RemoveScroll : React.Fragment;
     const scrollLockWrapperProps = disableOutsideScroll
@@ -490,7 +472,7 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
                 onCurrentTabStopIdChange={setCurrentItemId}
                 onEntryFocus={composeEventHandlers(onEntryFocus, (event) => {
                   // only focus first item when using keyboard
-                  if (!rootContext.isUsingKeyboardRef.current) event.preventDefault();
+                  if (!getIsUsingKeyboard()) event.preventDefault();
                 })}
                 preventScrollOnEntryFocus
               >
@@ -1167,6 +1149,7 @@ const MenuSubContent = React.forwardRef<MenuSubContentElement, MenuSubContentPro
     const subContext = useMenuSubContext(SUB_CONTENT_NAME, props.__scopeMenu);
     const ref = React.useRef<MenuSubContentElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, ref);
+    const getIsUsingKeyboard = useIsUsingKeyboard();
     return (
       <Collection.Provider scope={props.__scopeMenu}>
         <Presence present={forceMount || context.open}>
@@ -1183,7 +1166,7 @@ const MenuSubContent = React.forwardRef<MenuSubContentElement, MenuSubContentPro
               trapFocus={false}
               onOpenAutoFocus={(event) => {
                 // when opening a submenu, focus content for keyboard users only
-                if (rootContext.isUsingKeyboardRef.current) ref.current?.focus();
+                if (getIsUsingKeyboard()) ref.current?.focus();
                 event.preventDefault();
               }}
               // The menu might close because of focusing another menu item in the parent menu. We
