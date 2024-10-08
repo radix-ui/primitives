@@ -95,6 +95,11 @@ interface NavigationMenuProps
    * @defaultValue 300
    */
   skipDelayDuration?: number;
+  /**
+   * The delay before closing menu when the pointer leaves trigger or content area.
+   * @defaultValue 150
+   */
+  closeDelayDuration?: number;
 }
 
 const NavigationMenu = React.forwardRef<NavigationMenuElement, NavigationMenuProps>(
@@ -106,6 +111,7 @@ const NavigationMenu = React.forwardRef<NavigationMenuElement, NavigationMenuPro
       defaultValue,
       delayDuration = 200,
       skipDelayDuration = 300,
+      closeDelayDuration = 150,
       orientation = 'horizontal',
       dir,
       ...NavigationMenuProps
@@ -141,7 +147,7 @@ const NavigationMenu = React.forwardRef<NavigationMenuElement, NavigationMenuPro
 
     const startCloseTimer = React.useCallback(() => {
       window.clearTimeout(closeTimerRef.current);
-      closeTimerRef.current = window.setTimeout(() => setValue(''), 150);
+      closeTimerRef.current = window.setTimeout(() => setValue(''), closeDelayDuration);
     }, [setValue]);
 
     const handleOpen = React.useCallback(

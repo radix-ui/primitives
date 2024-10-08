@@ -86,6 +86,16 @@ export const CustomDurations = () => {
 
       <h2>Custom (2000ms to move from one trigger to another)</h2>
       <DurationNavigation delayDuration={500} skipDelayDuration={2000} />
+
+      <h1 style={{ marginTop: 50 }}>Close delay duration</h1>
+      <h2>Default (150ms)</h2>
+      <DurationNavigation />
+
+      <h2>Custom (500ms)</h2>
+      <DurationNavigation closeDelayDuration={500} />
+
+      <h2>Custom (1000ms)</h2>
+      <DurationNavigation closeDelayDuration={1000} />
     </div>
   );
 };
