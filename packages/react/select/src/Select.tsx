@@ -288,10 +288,18 @@ const SelectTrigger = React.forwardRef<SelectTriggerElement, SelectTriggerProps>
               target.releasePointerCapture(event.pointerId);
             }
 
+            const fieldset = target.closest('fieldset');
+            const fieldsetDisabled = fieldset ? fieldset.disabled : false;
+
             // only call handler if it's the left button (mousedown gets triggered by all mouse buttons)
             // but not when the control key is pressed (avoiding MacOS right click); also not for touch
             // devices because that would open the menu on scroll. (pen devices behave as touch on iOS).
-            if (event.button === 0 && event.ctrlKey === false && event.pointerType === 'mouse') {
+            if (
+              event.button === 0 &&
+              event.ctrlKey === false &&
+              event.pointerType === 'mouse' &&
+              !fieldsetDisabled
+            ) {
               handleOpen(event);
               // prevent trigger from stealing focus from the active item after opening.
               event.preventDefault();
