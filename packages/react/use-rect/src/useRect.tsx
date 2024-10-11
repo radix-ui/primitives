@@ -8,7 +8,7 @@ import type { Measurable } from '@radix-ui/rect';
  * and observe it along time.
  */
 function useRect(measurable: Measurable | null) {
-  const [rect, setRect] = React.useState<ClientRect>();
+  const [rect, setRect] = React.useState<DOMRect>();
   React.useEffect(() => {
     if (measurable) {
       const unobserve = observeElementRect(measurable, setRect);

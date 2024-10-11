@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-dismissable-layer",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "license": "MIT",
   "exports": {
     ".": {
@@ -35,7 +35,7 @@
     "@radix-ui/react-use-escape-keydown": "workspace:*"
   },
   "devDependencies": {
-    "react-remove-scroll": "2.5.7"
+    "react-remove-scroll": "2.6.0"
   },
   "peerDependencies": {
     "@types/react": "*",

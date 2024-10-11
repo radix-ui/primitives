@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-popover",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "license": "MIT",
   "exports": {
     ".": {
@@ -42,7 +42,7 @@
     "@radix-ui/react-slot": "workspace:*",
     "@radix-ui/react-use-controllable-state": "workspace:*",
     "aria-hidden": "^1.1.1",
-    "react-remove-scroll": "2.5.7"
+    "react-remove-scroll": "2.6.0"
   },
   "peerDependencies": {
     "@types/react": "*",

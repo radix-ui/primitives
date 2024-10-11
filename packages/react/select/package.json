@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-select",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "license": "MIT",
   "exports": {
     ".": {
@@ -48,7 +48,7 @@
     "@radix-ui/react-use-previous": "workspace:*",
     "@radix-ui/react-visually-hidden": "workspace:*",
     "aria-hidden": "^1.1.1",
-    "react-remove-scroll": "2.5.7"
+    "react-remove-scroll": "2.6.0"
   },
   "peerDependencies": {
     "@types/react": "*",

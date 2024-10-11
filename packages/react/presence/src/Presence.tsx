@@ -1,5 +1,4 @@
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { useStateMachine } from './useStateMachine';
@@ -92,6 +91,8 @@ function usePresence(present: boolean) {
 
   useLayoutEffect(() => {
     if (node) {
+      let timeoutId: number;
+      const ownerWindow = node.ownerDocument.defaultView ?? window;
       /**
        * Triggering an ANIMATION_OUT during an ANIMATION_IN will fire an `animationcancel`
        * event for ANIMATION_IN after we have entered `unmountSuspended` state. So, we
@@ -101,10 +102,30 @@ function usePresence(present: boolean) {
         const currentAnimationName = getAnimationName(stylesRef.current);
         const isCurrentAnimation = currentAnimationName.includes(event.animationName);
         if (event.target === node && isCurrentAnimation) {
-          // With React 18 concurrency this update is applied
-          // a frame after the animation ends, creating a flash of visible content.
-          // By manually flushing we ensure they sync within a frame, removing the flash.
-          ReactDOM.flushSync(() => send('ANIMATION_END'));
+          // With React 18 concurrency this update is applied a frame after the
+          // animation ends, creating a flash of visible content. By setting the
+          // animation fill mode to "forwards", we force the node to keep the
+          // styles of the last keyframe, removing the flash.
+          //
+          // Previously we flushed the update via ReactDom.flushSync, but with
+          // exit animations this resulted in the node being removed from the
+          // DOM before the synthetic animationEnd event was dispatched, meaning
+          // user-provided event handlers would not be called.
+          // https://github.com/radix-ui/primitives/pull/1849
+          send('ANIMATION_END');
+          if (!prevPresentRef.current) {
+            const currentFillMode = node.style.animationFillMode;
+            node.style.animationFillMode = 'forwards';
+            // Reset the style after the node had time to unmount (for cases
+            // where the component chooses not to unmount). Doing this any
+            // sooner than `setTimeout` (e.g. with `requestAnimationFrame`)
+            // still causes a flash.
+            timeoutId = ownerWindow.setTimeout(() => {
+              if (node.style.animationFillMode === 'forwards') {
+                node.style.animationFillMode = currentFillMode;
+              }
+            });
+          }
         }
       };
       const handleAnimationStart = (event: AnimationEvent) => {
@@ -117,6 +138,7 @@ function usePresence(present: boolean) {
       node.addEventListener('animationcancel', handleAnimationEnd);
       node.addEventListener('animationend', handleAnimationEnd);
       return () => {
+        ownerWindow.clearTimeout(timeoutId);
         node.removeEventListener('animationstart', handleAnimationStart);
         node.removeEventListener('animationcancel', handleAnimationEnd);
         node.removeEventListener('animationend', handleAnimationEnd);
