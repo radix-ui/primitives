@@ -252,6 +252,7 @@ const SliderHorizontal = React.forwardRef<SliderHorizontalElement, SliderHorizon
       onStepKeyDown,
       ...sliderProps
     } = props;
+    const context = useSliderContext(SLIDER_NAME, props.__scopeSlider);
     const [slider, setSlider] = React.useState<SliderImplElement | null>(null);
     const composedRefs = useComposedRefs(forwardedRef, (node) => setSlider(node));
     const rectRef = React.useRef<ClientRect>();
@@ -261,12 +262,16 @@ const SliderHorizontal = React.forwardRef<SliderHorizontalElement, SliderHorizon
 
     function getValueFromPointer(pointerPosition: number) {
       const rect = rectRef.current || slider!.getBoundingClientRect();
-      const input: [number, number] = [0, rect.width];
+      const thumbWidthOffset =
+        thumbAlignment === 'contain'
+          ? [...context.thumbs][context.valueIndexToChangeRef.current].clientWidth
+          : 0;
+      const input: [number, number] = [0, rect.width - thumbWidthOffset];
       const output: [number, number] = isSlidingFromLeft ? [min, max] : [max, min];
       const value = linearScale(input, output);
 
       rectRef.current = rect;
-      return value(pointerPosition - rect.left);
+      return value(pointerPosition - rect.left - thumbWidthOffset / 2);
     }
 
     return (
@@ -332,6 +337,7 @@ const SliderVertical = React.forwardRef<SliderVerticalElement, SliderVerticalPro
       onStepKeyDown,
       ...sliderProps
     } = props;
+    const context = useSliderContext(SLIDER_NAME, props.__scopeSlider);
     const sliderRef = React.useRef<SliderImplElement>(null);
     const ref = useComposedRefs(forwardedRef, sliderRef);
     const rectRef = React.useRef<ClientRect>();
@@ -339,12 +345,16 @@ const SliderVertical = React.forwardRef<SliderVerticalElement, SliderVerticalPro
 
     function getValueFromPointer(pointerPosition: number) {
       const rect = rectRef.current || sliderRef.current!.getBoundingClientRect();
-      const input: [number, number] = [0, rect.height];
+      const thumbHeightOffset =
+        thumbAlignment === 'contain'
+          ? [...context.thumbs][context.valueIndexToChangeRef.current].clientHeight
+          : 0;
+      const input: [number, number] = [0, rect.height - thumbHeightOffset];
       const output: [number, number] = isSlidingFromBottom ? [max, min] : [min, max];
       const value = linearScale(input, output);
 
       rectRef.current = rect;
-      return value(pointerPosition - rect.top);
+      return value(pointerPosition - rect.top - thumbHeightOffset / 2);
     }
 
     return (
