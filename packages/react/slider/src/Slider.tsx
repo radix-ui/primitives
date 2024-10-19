@@ -41,8 +41,8 @@ const [createSliderContext, createSliderScope] = createContextScope(SLIDER_NAME,
 ]);
 
 type SliderContextValue = {
-  name?: string;
-  disabled?: boolean;
+  name: string | undefined;
+  disabled: boolean | undefined;
   min: number;
   max: number;
   values: number[];
@@ -50,6 +50,7 @@ type SliderContextValue = {
   thumbs: Set<SliderThumbElement>;
   orientation: SliderProps['orientation'];
   thumbAlignment: ThumbAlignment;
+  form: string | undefined;
 };
 
 const [SliderProvider, useSliderContext] = createSliderContext<SliderContextValue>(SLIDER_NAME);
@@ -74,6 +75,7 @@ interface SliderProps
   onValueCommit?(value: number[]): void;
   inverted?: boolean;
   thumbAlignment?: ThumbAlignment;
+  form?: string;
 }
 
 const Slider = React.forwardRef<SliderElement, SliderProps>(
@@ -92,6 +94,7 @@ const Slider = React.forwardRef<SliderElement, SliderProps>(
       onValueCommit = () => {},
       inverted = false,
       thumbAlignment = 'contain',
+      form,
       ...sliderProps
     } = props;
     const thumbRefs = React.useRef<SliderContextValue['thumbs']>(new Set());
@@ -156,6 +159,7 @@ const Slider = React.forwardRef<SliderElement, SliderProps>(
         values={values}
         orientation={orientation}
         thumbAlignment={thumbAlignment}
+        form={form}
       >
         <Collection.Provider scope={props.__scopeSlider}>
           <Collection.Slot scope={props.__scopeSlider}>
@@ -255,7 +259,7 @@ const SliderHorizontal = React.forwardRef<SliderHorizontalElement, SliderHorizon
     const context = useSliderContext(SLIDER_NAME, props.__scopeSlider);
     const [slider, setSlider] = React.useState<SliderImplElement | null>(null);
     const composedRefs = useComposedRefs(forwardedRef, (node) => setSlider(node));
-    const rectRef = React.useRef<ClientRect>();
+    const rectRef = React.useRef<DOMRect>();
     const direction = useDirection(dir);
     const isDirectionLTR = direction === 'ltr';
     const isSlidingFromLeft = (isDirectionLTR && !inverted) || (!isDirectionLTR && inverted);
@@ -340,7 +344,7 @@ const SliderVertical = React.forwardRef<SliderVerticalElement, SliderVerticalPro
     const context = useSliderContext(SLIDER_NAME, props.__scopeSlider);
     const sliderRef = React.useRef<SliderImplElement>(null);
     const ref = useComposedRefs(forwardedRef, sliderRef);
-    const rectRef = React.useRef<ClientRect>();
+    const rectRef = React.useRef<DOMRect>();
     const isSlidingFromBottom = !inverted;
 
     function getValueFromPointer(pointerPosition: number) {
@@ -581,7 +585,7 @@ const SliderThumbImpl = React.forwardRef<SliderThumbImplElement, SliderThumbImpl
     const [thumb, setThumb] = React.useState<HTMLSpanElement | null>(null);
     const composedRefs = useComposedRefs(forwardedRef, (node) => setThumb(node));
     // We set this to true by default so that events bubble to forms without JS (SSR)
-    const isFormControl = thumb ? Boolean(thumb.closest('form')) : true;
+    const isFormControl = thumb ? context.form || !!thumb.closest('form') : true;
     const size = useSize(thumb);
     // We cast because index could be `-1` which would return undefined
     const value = context.values[index] as number | undefined;
@@ -644,6 +648,7 @@ const SliderThumbImpl = React.forwardRef<SliderThumbImplElement, SliderThumbImpl
               name ??
               (context.name ? context.name + (context.values.length > 1 ? '[]' : '') : undefined)
             }
+            form={context.form}
             value={value}
           />
         )}
@@ -679,8 +684,8 @@ const BubbleInput = (props: React.ComponentPropsWithoutRef<'input'>) => {
    * wrap it will not be able to access its value via the FormData API.
    *
    * We purposefully do not add the `value` attribute here to allow the value
-   * to be set programatically and bubble to any parent form `onChange` event.
-   * Adding the `value` will cause React to consider the programatic
+   * to be set programmatically and bubble to any parent form `onChange` event.
+   * Adding the `value` will cause React to consider the programmatic
    * dispatch a duplicate and it will get swallowed.
    */
   return <input style={{ display: 'none' }} {...inputProps} ref={ref} defaultValue={value} />;
