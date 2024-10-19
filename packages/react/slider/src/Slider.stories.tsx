@@ -544,9 +544,9 @@ export const ThumbAlignment = () => (
       </Slider.Root>
     </div>
 
-    <h2>Centered on slider edges</h2>
+    <h2>Extending beyond slider edges</h2>
     <div style={{ padding: 20 }}>
-      <Slider.Root className={rootClass()} thumbAlignment="center">
+      <Slider.Root className={rootClass()} thumbAlignment="overflow">
         <Slider.Track className={trackClass()}>
           <Slider.Range className={rangeClass()} />
         </Slider.Track>
@@ -567,8 +567,8 @@ export const ThumbAlignment = () => (
       </div>
 
       <div style={{ flex: 1 }}>
-        <h3>Centered on slider edges</h3>
-        <Slider.Root className={rootClass()} orientation="vertical" thumbAlignment="center">
+        <h3>Extending beyond slider edges</h3>
+        <Slider.Root className={rootClass()} orientation="vertical" thumbAlignment="overflow">
           <Slider.Track className={trackClass()}>
             <Slider.Range className={rangeClass()} />
           </Slider.Track>

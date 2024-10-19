@@ -13,7 +13,7 @@ import { createCollection } from '@radix-ui/react-collection';
 import type { Scope } from '@radix-ui/react-context';
 
 type Direction = 'ltr' | 'rtl';
-type ThumbAlignment = 'contain' | 'center';
+type ThumbAlignment = 'contain' | 'overflow';
 
 const PAGE_KEYS = ['PageUp', 'PageDown'];
 const ARROW_KEYS = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
@@ -290,7 +290,7 @@ const SliderHorizontal = React.forwardRef<SliderHorizontalElement, SliderHorizon
           style={{
             ...sliderProps.style,
             ['--radix-slider-thumb-transform' as any]:
-              !isSlidingFromLeft && thumbAlignment === 'center'
+              !isSlidingFromLeft && thumbAlignment === 'overflow'
                 ? 'translateX(50%)'
                 : 'translateX(-50%)',
           }}
@@ -372,7 +372,7 @@ const SliderVertical = React.forwardRef<SliderVerticalElement, SliderVerticalPro
           style={{
             ...sliderProps.style,
             ['--radix-slider-thumb-transform' as any]:
-              !isSlidingFromBottom && thumbAlignment === 'center'
+              !isSlidingFromBottom && thumbAlignment === 'overflow'
                 ? 'translateY(-50%)'
                 : 'translateY(50%)',
           }}
