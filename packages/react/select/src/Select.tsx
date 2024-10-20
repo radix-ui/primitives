@@ -1272,7 +1272,8 @@ const SelectItem = React.forwardRef<SelectItemElement, SelectItemProps>(
             ref={composedRefs}
             onFocus={composeEventHandlers(itemProps.onFocus, () => setIsFocused(true))}
             onBlur={composeEventHandlers(itemProps.onBlur, () => setIsFocused(false))}
-            onClick={composeEventHandlers(itemProps.onClick, () => {
+            onClick={composeEventHandlers(itemProps.onClick, (event) => {
+              event.stopPropagation();
               // Open on click when using a touch or pen device
               if (pointerTypeRef.current !== 'mouse') handleSelect();
             })}
