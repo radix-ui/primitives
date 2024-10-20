@@ -49,6 +49,7 @@ interface PopoverProps {
   children?: React.ReactNode;
   open?: boolean;
   defaultOpen?: boolean;
+  toggleOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
   modal?: boolean;
 }
@@ -59,6 +60,7 @@ const Popover: React.FC<PopoverProps> = (props: ScopedProps<PopoverProps>) => {
     children,
     open: openProp,
     defaultOpen,
+    toggleOpen = true,
     onOpenChange,
     modal = false,
   } = props;
@@ -79,7 +81,10 @@ const Popover: React.FC<PopoverProps> = (props: ScopedProps<PopoverProps>) => {
         triggerRef={triggerRef}
         open={open}
         onOpenChange={setOpen}
-        onOpenToggle={React.useCallback(() => setOpen((prevOpen) => !prevOpen), [setOpen])}
+        onOpenToggle={React.useCallback(
+          () => (toggleOpen ? setOpen((prevOpen) => !prevOpen) : setOpen(true)),
+          [setOpen, toggleOpen]
+        )}
         hasCustomAnchor={hasCustomAnchor}
         onCustomAnchorAdd={React.useCallback(() => setHasCustomAnchor(true), [])}
         onCustomAnchorRemove={React.useCallback(() => setHasCustomAnchor(false), [])}
