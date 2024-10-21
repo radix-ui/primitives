@@ -445,6 +445,33 @@ export const Chromatic = () => {
 };
 Chromatic.parameters = { chromatic: { disable: false } };
 
+export const WithAbsolutePositionStrategy = () => {
+  return (
+    <div
+      style={{
+        padding: '300px',
+        height: '200vh',
+        width: '200vw',
+      }}
+    >
+      <Popper.Root>
+        <Popper.Anchor className={anchorClass({ size: 'small' })}>#1</Popper.Anchor>
+        <Portal asChild>
+          <Popper.Content
+            positionStrategy="absolute"
+            disablePositionUpdate
+            className={contentClass({ size: 'small' })}
+            sideOffset={5}
+          >
+            <Popper.Arrow className={arrowClass()} width={10} height={5} />
+            Some content
+          </Popper.Content>
+        </Portal>
+      </Popper.Root>
+    </div>
+  );
+};
+
 const Scrollable = (props: any) => (
   <div
     style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '200vh' }}
