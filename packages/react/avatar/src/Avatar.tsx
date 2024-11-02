@@ -131,7 +131,7 @@ function resolveLoadingStatus(image: HTMLImageElement | null, src?: string): Ima
 
 function useImageLoadingStatus(src?: string, referrerPolicy?: React.HTMLAttributeReferrerPolicy) {
   const isHydrated = useIsHydrated()
-  const image = React.useRef(isHydrated ? new window.Image() : null);
+  const image = React.useRef<HTMLImageElement | null>(null);
   const img = (() => {
     if (!isHydrated) return null;
     if (!image.current) {
