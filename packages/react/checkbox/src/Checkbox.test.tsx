@@ -148,6 +148,19 @@ describe('given an uncontrolled Checkbox in form', () => {
       );
       fireEvent.click(checkbox);
     });
+
+    it('should trigger a change event on BubbleInput which changes `checked` to the opposite value of `defaultChecked` of Checkbox', () => {
+      const rendered = render(
+        <form>
+          <CheckboxTest defaultChecked />
+        </form>
+      );
+
+      const checkbox = rendered.getByRole(CHECKBOX_ROLE);
+      const input = rendered.getByTestId('bubble-input') as HTMLInputElement;
+      fireEvent.click(checkbox);
+      expect(input.checked).toBe(false);
+    });
   });
 });
 
@@ -179,6 +192,19 @@ describe('given a controlled Checkbox in a form', () => {
       );
       fireEvent.click(checkbox);
     });
+
+    it('should trigger a change event on BubbleInput which changes `checked` to same as initial value of `checked` of Checkbox', () => {
+      const rendered = render(
+        <form>
+          <CheckboxTest checked />
+        </form>
+      );
+
+      const checkbox = rendered.getByRole(CHECKBOX_ROLE);
+      const input = rendered.getByTestId('bubble-input') as HTMLInputElement;
+      fireEvent.click(checkbox);
+      expect(input.checked).toBe(true);
+    });
   });
 });
 
@@ -191,7 +217,10 @@ function CheckboxTest(props: React.ComponentProps<typeof Checkbox>) {
     // input doesn't have a label. This adds an additional `aria-hidden` attribute to the input to
     // get around that.
     // https://developer.paciellogroup.com/blog/2012/05/html5-accessibility-chops-hidden-and-aria-hidden/
-    containerRef.current?.querySelector('input')?.setAttribute('aria-hidden', 'true');
+    const input = containerRef.current?.querySelector('input');
+    input?.setAttribute('aria-hidden', 'true');
+    // Add testid so that we can find the input element in tests
+    input?.setAttribute('data-testid', 'bubble-input');
   }, []);
   return (
     <div ref={containerRef}>
