@@ -212,23 +212,24 @@ const BubbleInput = React.forwardRef<HTMLInputElement, BubbleInputProps>((props,
 
   const defaultCheckedRef = React.useRef(isIndeterminate(checked) ? false : checked);
   return (
-    <input
-      type="checkbox"
-      aria-hidden
-      defaultChecked={defaultChecked ?? defaultCheckedRef.current}
-      {...inputProps}
-      tabIndex={-1}
-      ref={inputRef}
-      onInvalid={props.onInvalid}
-      style={{
-        ...props.style,
-        ...controlSize,
-        position: 'absolute',
-        pointerEvents: 'none',
-        opacity: 0,
-        margin: 0,
-      }}
-    />
+    <span aria-hidden>
+      <input
+        type="checkbox"
+        defaultChecked={defaultChecked ?? defaultCheckedRef.current}
+        {...inputProps}
+        tabIndex={-1}
+        ref={inputRef}
+        onInvalid={props.onInvalid}
+        style={{
+          ...props.style,
+          ...controlSize,
+          position: 'absolute',
+          pointerEvents: 'none',
+          opacity: 0,
+          margin: 0,
+        }}
+      />
+    </span>
   );
 });
 
