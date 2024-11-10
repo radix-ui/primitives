@@ -3,6 +3,7 @@ import { css, keyframes } from '../../../../stitches.config';
 import { Label as LabelPrimitive } from '@radix-ui/react-label';
 import { RECOMMENDED_CSS__LABEL__ROOT } from '../../label/src/Label.stories';
 import * as Checkbox from '@radix-ui/react-checkbox';
+import * as Form from '@radix-ui/react-form';
 
 export default { title: 'Components/Checkbox' };
 
@@ -172,6 +173,34 @@ export const WithinForm = () => {
   );
 };
 
+export const WithinFormPrimitive = () => {
+  return (
+    <Form.Root
+      onSubmit={(event) => {
+        event.preventDefault();
+        const data = Object.fromEntries(new FormData(event.currentTarget as HTMLFormElement));
+
+        window.alert(JSON.stringify(data, null, 2));
+      }}
+      className={formClass()}
+    >
+      <Form.Field name="consent">
+        <Form.Control asChild>
+          <Checkbox.Root defaultChecked={false} className={rootClass()} required value={'yes'}>
+            <Checkbox.Indicator className={indicatorClass()} />
+          </Checkbox.Root>
+        </Form.Control>
+        <Form.Label>Agree to T & C</Form.Label>
+        <div>
+          <Form.Message match="valueMissing">Agree to T & C is required</Form.Message>
+        </div>
+      </Form.Field>
+      <button type="reset">Reset</button>
+      <button>Submit</button>
+    </Form.Root>
+  );
+};
+
 export const Animated = () => {
   const [checked, setChecked] = React.useState<boolean | 'indeterminate'>('indeterminate');
 
@@ -335,3 +364,8 @@ const styles = {
 };
 const rootAttrClass = css(styles);
 const indicatorAttrClass = css(styles);
+
+const formClass = css({
+  '& *[data-invalid]': { color: 'red', outlineColor: 'CurrentColor' },
+  '& *[data-valid]': { color: 'green', outlineColor: 'CurrentColor' },
+});
