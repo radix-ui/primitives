@@ -59,7 +59,6 @@ const Checkbox = React.forwardRef<CheckboxElement, CheckboxProps>(
     const composedRefs = useComposedRefs(forwardedRef, (node) => setButton(node));
     const inputRef = React.useRef<HTMLInputElement & HTMLButtonElement>(null); // Create an internal ref
     React.useImperativeHandle(forwardedRef, () => inputRef.current!);
-
     const hasConsumerStoppedPropagationRef = React.useRef(false);
     // We set this to true by default so that events bubble to forms without JS (SSR)
     const isFormControl = button ? form || !!button.closest('form') : true;
