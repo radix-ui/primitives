@@ -4,57 +4,133 @@ import * as Select from '@radix-ui/react-select';
 import { Label } from '@radix-ui/react-label';
 import * as Dialog from '@radix-ui/react-dialog';
 import { foodGroups } from '../../../../test-data/foods';
+import { Portal } from '@radix-ui/react-portal';
 
 export default { title: 'Components/Select' };
 
 const POSITIONS = ['item-aligned', 'popper'] as const;
 
-export const Styled = () => (
-  <div style={{ display: 'flex', gap: 20, padding: 50 }}>
-    {POSITIONS.map((position) => (
-      <Label key={position}>
-        Choose a number:
-        <Select.Root defaultValue="two">
-          <Select.Trigger className={triggerClass()}>
-            <Select.Value />
-            <Select.Icon />
-          </Select.Trigger>
-          <Select.Portal>
-            <Select.Content className={contentClass()} position={position} sideOffset={5}>
-              <Select.Viewport className={viewportClass()}>
-                <Select.Item className={itemClass()} value="one">
-                  <Select.ItemText>
-                    One<span aria-hidden> 👍</span>
-                  </Select.ItemText>
-                  <Select.ItemIndicator className={indicatorClass()}>
-                    <TickIcon />
-                  </Select.ItemIndicator>
-                </Select.Item>
-                <Select.Item className={itemClass()} value="two">
-                  <Select.ItemText>
-                    Two<span aria-hidden> 👌</span>
-                  </Select.ItemText>
-                  <Select.ItemIndicator className={indicatorClass()}>
-                    <TickIcon />
-                  </Select.ItemIndicator>
-                </Select.Item>
-                <Select.Item className={itemClass()} value="three">
-                  <Select.ItemText>
-                    Three<span aria-hidden> 🤘</span>
-                  </Select.ItemText>
-                  <Select.ItemIndicator className={indicatorClass()}>
-                    <TickIcon />
-                  </Select.ItemIndicator>
-                </Select.Item>
-              </Select.Viewport>
-              <Select.Arrow />
-            </Select.Content>
-          </Select.Portal>
-        </Select.Root>
-      </Label>
-    ))}
-  </div>
-);
+export const Styled = () => {
+  const appendShadowRootToBody = () => {
+    const SHADOW_HOST = 'SHADOW_HOST';
+    const REACT_ROOT = 'REACT_ROOT';
+
+    const prevShadowHost = document.querySelector(`#${SHADOW_HOST}`);
+    if (prevShadowHost) return prevShadowHost;
+    const shadowHost = document.createElement('div');
+    shadowHost.setAttribute('id', SHADOW_HOST);
+
+    const shadowRoot = shadowHost.attachShadow({ mode: 'open' });
+    shadowRoot.innerHTML = `
+         <div id=${REACT_ROOT} />
+         `;
+    document.body.appendChild(shadowHost);
+
+    return shadowRoot;
+  };
+
+  appendShadowRootToBody();
+
+  const shadow = document.querySelector(`#SHADOW_HOST`)?.shadowRoot;
+  const reactRoot = shadow?.querySelector(`#REACT_ROOT`);
+
+  return (
+    <div style={{ display: 'flex', gap: 20, padding: 50 }}>
+      {POSITIONS.map((position) => (
+        <Label key={position}>
+          Choose a number:
+          <Select.Root defaultValue="two">
+            <Select.Trigger className={triggerClass()}>
+              <Select.Value />
+              <Select.Icon />
+            </Select.Trigger>
+            <Select.Portal>
+              <Select.Content className={contentClass()} position={position} sideOffset={5}>
+                <Select.Viewport className={viewportClass()}>
+                  <Select.Item className={itemClass()} value="one">
+                    <Select.ItemText>
+                      One<span aria-hidden> 👍</span>
+                    </Select.ItemText>
+                    <Select.ItemIndicator className={indicatorClass()}>
+                      <TickIcon />
+                    </Select.ItemIndicator>
+                  </Select.Item>
+                  <Select.Item className={itemClass()} value="two">
+                    <Select.ItemText>
+                      Two<span aria-hidden> 👌</span>
+                    </Select.ItemText>
+                    <Select.ItemIndicator className={indicatorClass()}>
+                      <TickIcon />
+                    </Select.ItemIndicator>
+                  </Select.Item>
+                  <Select.Item className={itemClass()} value="three">
+                    <Select.ItemText>
+                      Three<span aria-hidden> 🤘</span>
+                    </Select.ItemText>
+                    <Select.ItemIndicator className={indicatorClass()}>
+                      <TickIcon />
+                    </Select.ItemIndicator>
+                  </Select.Item>
+                </Select.Viewport>
+                <Select.Arrow />
+              </Select.Content>
+            </Select.Portal>
+          </Select.Root>
+        </Label>
+      ))}
+
+      {POSITIONS.map((position) => (
+        <Portal container={(reactRoot as HTMLElement) || document.body}>
+          <Label key={position}>
+            Choose a number (rendered in shadow dom):
+            <Select.Root defaultValue="two">
+              <Select.Trigger className={triggerClass()}>
+                <Select.Value />
+                <Select.Icon />
+              </Select.Trigger>
+              <Select.Portal container={(reactRoot as HTMLElement) || document.body}>
+                <Select.Content
+                  className={contentClass()}
+                  position={position}
+                  sideOffset={5}
+                  shadowRoot={shadow as ShadowRoot}
+                >
+                  <Select.Viewport className={viewportClass()}>
+                    <Select.Item className={itemClass()} value="one">
+                      <Select.ItemText>
+                        One<span aria-hidden> 👍</span>
+                      </Select.ItemText>
+                      <Select.ItemIndicator className={indicatorClass()}>
+                        <TickIcon />
+                      </Select.ItemIndicator>
+                    </Select.Item>
+                    <Select.Item className={itemClass()} value="two">
+                      <Select.ItemText>
+                        Two<span aria-hidden> 👌</span>
+                      </Select.ItemText>
+                      <Select.ItemIndicator className={indicatorClass()}>
+                        <TickIcon />
+                      </Select.ItemIndicator>
+                    </Select.Item>
+                    <Select.Item className={itemClass()} value="three">
+                      <Select.ItemText>
+                        Three<span aria-hidden> 🤘</span>
+                      </Select.ItemText>
+                      <Select.ItemIndicator className={indicatorClass()}>
+                        <TickIcon />
+                      </Select.ItemIndicator>
+                    </Select.Item>
+                  </Select.Viewport>
+                  <Select.Arrow />
+                </Select.Content>
+              </Select.Portal>
+            </Select.Root>
+          </Label>
+        </Portal>
+      ))}
+    </div>
+  );
+};
 
 export const Controlled = () => {
   const [value, setValue] = React.useState('uk');
