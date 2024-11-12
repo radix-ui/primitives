@@ -31,11 +31,13 @@ const [CheckboxProvider, useCheckboxContext] =
 
 type CheckboxElement = React.ElementRef<typeof Primitive.button>;
 type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
-interface CheckboxProps extends Omit<PrimitiveButtonProps, 'checked' | 'defaultChecked'> {
+interface CheckboxProps
+  extends Omit<PrimitiveButtonProps, 'checked' | 'defaultChecked' | 'onInvalid'> {
   checked?: CheckedState;
   defaultChecked?: CheckedState;
   required?: boolean;
   onCheckedChange?(checked: CheckedState): void;
+  onInvalid?(event: React.InvalidEvent<HTMLInputElement>): void;
 }
 
 const Checkbox = React.forwardRef<CheckboxElement, CheckboxProps>(
@@ -49,11 +51,14 @@ const Checkbox = React.forwardRef<CheckboxElement, CheckboxProps>(
       disabled,
       value = 'on',
       onCheckedChange,
+      onInvalid,
       form,
       ...checkboxProps
     } = props;
     const [button, setButton] = React.useState<HTMLButtonElement | null>(null);
     const composedRefs = useComposedRefs(forwardedRef, (node) => setButton(node));
+    const inputRef = React.useRef<HTMLInputElement & HTMLButtonElement>(null); // Create an internal ref
+    React.useImperativeHandle(forwardedRef, () => inputRef.current!);
     const hasConsumerStoppedPropagationRef = React.useRef(false);
     // We set this to true by default so that events bubble to forms without JS (SSR)
     const isFormControl = button ? form || !!button.closest('form') : true;
@@ -71,6 +76,17 @@ const Checkbox = React.forwardRef<CheckboxElement, CheckboxProps>(
         return () => form.removeEventListener('reset', reset);
       }
     }, [button, setChecked]);
+
+    React.useEffect(() => {
+      if (isFormControl) {
+        const input = inputRef.current!;
+        isIndeterminate(checked) ? (input.indeterminate = true) : (input.checked = checked);
+
+        // Create and dispatch a change event
+        const changeEvent = new Event('change', { bubbles: true });
+        input.dispatchEvent(changeEvent);
+      }
+    }, [isFormControl, checked]);
 
     return (
       <CheckboxProvider scope={__scopeCheckbox} state={checked} disabled={disabled}>
@@ -115,6 +131,8 @@ const Checkbox = React.forwardRef<CheckboxElement, CheckboxProps>(
             // of the button.
             style={{ transform: 'translateX(-100%)' }}
             defaultChecked={isIndeterminate(defaultChecked) ? false : defaultChecked}
+            ref={inputRef}
+            onInvalid={onInvalid}
           />
         )}
       </CheckboxProvider>
@@ -169,15 +187,16 @@ interface BubbleInputProps extends Omit<InputProps, 'checked'> {
   bubbles: boolean;
 }
 
-const BubbleInput = (props: BubbleInputProps) => {
+const BubbleInput = React.forwardRef<HTMLInputElement, BubbleInputProps>((props, ref) => {
   const { control, checked, bubbles = true, defaultChecked, ...inputProps } = props;
-  const ref = React.useRef<HTMLInputElement>(null);
+  const inputRef = React.useRef<HTMLInputElement>(null); // Create an internal ref
   const prevChecked = usePrevious(checked);
   const controlSize = useSize(control);
+  React.useImperativeHandle(ref, () => inputRef.current!);
 
   // Bubble checked change to parents (e.g form change event)
   React.useEffect(() => {
-    const input = ref.current!;
+    const input = inputRef.current!;
     const inputProto = window.HTMLInputElement.prototype;
     const descriptor = Object.getOwnPropertyDescriptor(inputProto, 'checked') as PropertyDescriptor;
     const setChecked = descriptor.set;
@@ -192,24 +211,26 @@ const BubbleInput = (props: BubbleInputProps) => {
 
   const defaultCheckedRef = React.useRef(isIndeterminate(checked) ? false : checked);
   return (
-    <input
-      type="checkbox"
-      aria-hidden
-      defaultChecked={defaultChecked ?? defaultCheckedRef.current}
-      {...inputProps}
-      tabIndex={-1}
-      ref={ref}
-      style={{
-        ...props.style,
-        ...controlSize,
-        position: 'absolute',
-        pointerEvents: 'none',
-        opacity: 0,
-        margin: 0,
-      }}
-    />
+    <span aria-hidden>
+      <input
+        type="checkbox"
+        defaultChecked={defaultChecked ?? defaultCheckedRef.current}
+        {...inputProps}
+        tabIndex={-1}
+        ref={inputRef}
+        onInvalid={props.onInvalid}
+        style={{
+          ...props.style,
+          ...controlSize,
+          position: 'absolute',
+          pointerEvents: 'none',
+          opacity: 0,
+          margin: 0,
+        }}
+      />
+    </span>
   );
-};
+});
 
 function isIndeterminate(checked?: CheckedState): checked is 'indeterminate' {
   return checked === 'indeterminate';
