@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { composeEventHandlers } from '@radix-ui/primitive';
+import { activeElement, composeEventHandlers } from '@radix-ui/primitive';
 import { createCollection } from '@radix-ui/react-collection';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
@@ -316,12 +316,12 @@ function getFocusIntent(event: React.KeyboardEvent, orientation?: Orientation, d
 }
 
 function focusFirst(candidates: HTMLElement[], preventScroll = false) {
-  const PREVIOUSLY_FOCUSED_ELEMENT = document.activeElement;
+  const PREVIOUSLY_FOCUSED_ELEMENT = activeElement();
   for (const candidate of candidates) {
     // if focus is already where we want to go, we don't want to keep going through the candidates
     if (candidate === PREVIOUSLY_FOCUSED_ELEMENT) return;
     candidate.focus({ preventScroll });
-    if (document.activeElement !== PREVIOUSLY_FOCUSED_ELEMENT) return;
+    if (activeElement() !== PREVIOUSLY_FOCUSED_ELEMENT) return;
   }
 }
 
