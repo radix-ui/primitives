@@ -577,6 +577,7 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
                   aria-atomic
                   tabIndex={0}
                   data-state={open ? 'open' : 'closed'}
+                  data-toast-state={open ? 'open' : 'closed'}
                   data-swipe-direction={context.swipeDirection}
                   {...toastProps}
                   ref={composedRefs}

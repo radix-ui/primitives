@@ -80,6 +80,7 @@ const Checkbox = React.forwardRef<CheckboxElement, CheckboxProps>(
           aria-checked={isIndeterminate(checked) ? 'mixed' : checked}
           aria-required={required}
           data-state={getState(checked)}
+          data-checkbox-state={getState(checked)}
           data-disabled={disabled ? '' : undefined}
           disabled={disabled}
           value={value}
@@ -148,6 +149,7 @@ const CheckboxIndicator = React.forwardRef<CheckboxIndicatorElement, CheckboxInd
       <Presence present={forceMount || isIndeterminate(context.state) || context.state === true}>
         <Primitive.span
           data-state={getState(context.state)}
+          data-checkbox-state={getState(context.state)}
           data-disabled={context.disabled ? '' : undefined}
           {...indicatorProps}
           ref={forwardedRef}
