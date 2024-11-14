@@ -103,7 +103,7 @@ const Slider = React.forwardRef<SliderElement, SliderProps>(
       defaultProp: defaultValue,
       onChange: (value) => {
         const thumbs = [...thumbRefs.current];
-        thumbs[valueIndexToChangeRef.current]?.focus();
+        thumbs[valueIndexToChangeRef.current]?.focus({ preventScroll: true });
         onValueChange(value);
       },
     });
@@ -435,7 +435,7 @@ const SliderImpl = React.forwardRef<SliderImplElement, SliderImplProps>(
           // Touch devices have a delay before focusing so won't focus if touch immediately moves
           // away from target (sliding). We want thumb to focus regardless.
           if (context.thumbs.has(target)) {
-            target.focus();
+            target.focus({ preventScroll: true });
           } else {
             onSlideStart(event);
           }
