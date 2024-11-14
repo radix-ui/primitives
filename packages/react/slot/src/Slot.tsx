@@ -7,6 +7,7 @@ import { composeRefs } from '@radix-ui/react-compose-refs';
 
 interface SlotProps extends React.HTMLAttributes<HTMLElement> {
   children?: React.ReactNode;
+  propMergers?: PropMergers;
 }
 
 const Slot = React.forwardRef<HTMLElement, SlotProps>((props, forwardedRef) => {
@@ -55,15 +56,16 @@ Slot.displayName = 'Slot';
 
 interface SlotCloneProps {
   children: React.ReactNode;
+  propMergers?: PropMergers;
 }
 
 const SlotClone = React.forwardRef<any, SlotCloneProps>((props, forwardedRef) => {
-  const { children, ...slotProps } = props;
+  const { children, propMergers, ...slotProps } = props;
 
   if (React.isValidElement(children)) {
     const childrenRef = getElementRef(children);
     return React.cloneElement(children, {
-      ...mergeProps(slotProps, children.props),
+      ...mergeProps(slotProps, children.props, { ...defaultPropMergers, ...propMergers }),
       // @ts-ignore
       ref: forwardedRef ? composeRefs(forwardedRef, childrenRef) : childrenRef,
     });
@@ -84,13 +86,33 @@ const Slottable = ({ children }: { children: React.ReactNode }) => {
 
 /* ---------------------------------------------------------------------------------------------- */
 
+type CustomizableMergingPropName = Exclude<keyof React.HTMLAttributes<HTMLElement>, 'children'>;
+
+type PropMerger<PropName extends CustomizableMergingPropName> = (
+  slotPropValue: React.HTMLAttributes<HTMLElement>[PropName],
+  childPropValue: React.HTMLAttributes<HTMLElement>[PropName]
+) => React.HTMLAttributes<HTMLElement>[PropName];
+
+type PropMergers = {
+  [propName in CustomizableMergingPropName]?: PropMerger<propName>;
+};
+
 type AnyProps = Record<string, any>;
+
+const defaultPropMergers = {
+  style: (slotPropValue, childPropValue) => ({
+    ...slotPropValue,
+    ...childPropValue,
+  }),
+  className: (slotPropValue, childPropValue) =>
+    [slotPropValue, childPropValue].filter(Boolean).join(' '),
+} as const satisfies PropMergers;
 
 function isSlottable(child: React.ReactNode): child is React.ReactElement {
   return React.isValidElement(child) && child.type === Slottable;
 }
 
-function mergeProps(slotProps: AnyProps, childProps: AnyProps) {
+function mergeProps(slotProps: AnyProps, childProps: AnyProps, propMergers: PropMergers) {
   // all child props should override
   const overrideProps = { ...childProps };
 
@@ -98,25 +120,26 @@ function mergeProps(slotProps: AnyProps, childProps: AnyProps) {
     const slotPropValue = slotProps[propName];
     const childPropValue = childProps[propName];
 
-    const isHandler = /^on[A-Z]/.test(propName);
-    if (isHandler) {
-      // if the handler exists on both, we compose them
-      if (slotPropValue && childPropValue) {
-        overrideProps[propName] = (...args: unknown[]) => {
-          childPropValue(...args);
-          slotPropValue(...args);
-        };
+    if (propName in propMergers) {
+      overrideProps[propName] = propMergers[propName as CustomizableMergingPropName]!(
+        slotPropValue,
+        childPropValue
+      );
+    } else {
+      const isHandler = /^on[A-Z]/.test(propName);
+      if (isHandler) {
+        // if the handler exists on both, we compose them
+        if (slotPropValue && childPropValue) {
+          overrideProps[propName] = (...args: unknown[]) => {
+            childPropValue(...args);
+            slotPropValue(...args);
+          };
+        }
+        // but if it exists only on the slot, we use only this one
+        else if (slotPropValue) {
+          overrideProps[propName] = slotPropValue;
+        }
       }
-      // but if it exists only on the slot, we use only this one
-      else if (slotPropValue) {
-        overrideProps[propName] = slotPropValue;
-      }
-    }
-    // if it's `style`, we merge them
-    else if (propName === 'style') {
-      overrideProps[propName] = { ...slotPropValue, ...childPropValue };
-    } else if (propName === 'className') {
-      overrideProps[propName] = [slotPropValue, childPropValue].filter(Boolean).join(' ');
     }
   }
 
@@ -155,4 +178,4 @@ export {
   //
   Root,
 };
-export type { SlotProps };
+export type { SlotProps, PropMergers, PropMerger, CustomizableMergingPropName };
