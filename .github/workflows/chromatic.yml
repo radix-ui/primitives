@@ -13,14 +13,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Read Node version
         id: node_version
         run: echo "NVMRC=$(cat .nvmrc)" >> $GITHUB_OUTPUT
       - name: Set Node version
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: '${{ steps.node_version.outputs.NVMRC }}'
       - name: Install dependencies
