@@ -62,11 +62,16 @@ const SlotClone = React.forwardRef<any, SlotCloneProps>((props, forwardedRef) =>
 
   if (React.isValidElement(children)) {
     const childrenRef = getElementRef(children);
-    return React.cloneElement(children, {
+    const props = {
       ...mergeProps(slotProps, children.props),
-      // @ts-ignore
-      ref: forwardedRef ? composeRefs(forwardedRef, childrenRef) : childrenRef,
-    });
+    };
+
+    // do not pass ref to React.Fragment for React 19 compatibility
+    if (children.type !== React.Fragment) {
+      props.ref = forwardedRef ? composeRefs(forwardedRef, childrenRef) : childrenRef;
+    }
+
+    return React.cloneElement(children, props);
   }
 
   return React.Children.count(children) > 1 ? React.Children.only(null) : null;
