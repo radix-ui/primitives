@@ -153,7 +153,12 @@ function usePresence(present: boolean) {
   return {
     isPresent: ['mounted', 'unmountSuspended'].includes(state),
     ref: React.useCallback((node: HTMLElement) => {
-      if (node) stylesRef.current = getComputedStyle(node);
+      if (node) {
+        stylesRef.current = getComputedStyle(node);
+      }
+      else {
+        stylesRef.current = {} as any;
+      }
       setNode(node);
     }, []),
   };
