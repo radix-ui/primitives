@@ -93,7 +93,7 @@ const CollapsibleTrigger = React.forwardRef<CollapsibleTriggerElement, Collapsib
     return (
       <Primitive.button
         type="button"
-        aria-controls={context.contentId}
+        aria-controls={context.open ? context.contentId : undefined}
         aria-expanded={context.open || false}
         data-state={getState(context.open)}
         data-disabled={context.disabled ? '' : undefined}
