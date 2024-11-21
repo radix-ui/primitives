@@ -2,6 +2,7 @@ releases:
   "@radix-ui/react-alert-dialog": minor
   "@radix-ui/react-dialog": minor
   "@radix-ui/react-popover": minor
+  "@radix-ui/react-select": minor
 
 declined:
   - primitives
