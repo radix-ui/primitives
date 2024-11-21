@@ -253,7 +253,7 @@ const SelectTrigger = React.forwardRef<SelectTriggerElement, SelectTriggerProps>
         <Primitive.button
           type="button"
           role="combobox"
-          aria-controls={context.contentId}
+          aria-controls={context.open ? context.contentId : undefined}
           aria-expanded={context.open}
           aria-required={context.required}
           aria-autocomplete="none"
