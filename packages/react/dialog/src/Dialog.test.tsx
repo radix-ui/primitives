@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { act } from 'react';
 import { axe } from 'jest-axe';
 import { render, fireEvent, RenderResult, cleanup } from '@testing-library/react';
 import * as Dialog from '@radix-ui/react-dialog';
@@ -132,6 +132,23 @@ describe('given a default Dialog', () => {
       it('should close the content', () => {
         expect(closeButton).not.toBeInTheDocument();
       });
+    });
+  });
+
+  describe("it's aria-controls", () => {
+    it('should not be defined when the dialog is closed', async () => {
+      expect(rendered.queryByText(TITLE_TEXT)).not.toBeInTheDocument();
+      expect(trigger.getAttribute('aria-controls')).toBeNull();
+    });
+
+    it('should be valid when the dialog is open', () => {
+      act(() => trigger.click());
+      const ariaControls = trigger.getAttribute('aria-controls');
+      expect(ariaControls).not.toBeNull();
+
+      const dialog = rendered.getByRole('dialog');
+      expect(dialog).toBeInTheDocument();
+      expect(dialog.id).toBe(ariaControls);
     });
   });
 });
