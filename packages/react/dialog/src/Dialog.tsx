@@ -104,7 +104,7 @@ const DialogTrigger = React.forwardRef<DialogTriggerElement, DialogTriggerProps>
         type="button"
         aria-haspopup="dialog"
         aria-expanded={context.open}
-        aria-controls={context.contentId}
+        aria-controls={context.open ? context.contentId : undefined}
         data-state={getState(context.open)}
         {...triggerProps}
         ref={composedTriggerRef}
