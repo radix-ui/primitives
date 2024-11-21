@@ -100,6 +100,8 @@ const DropdownMenuTrigger = React.forwardRef<DropdownMenuTriggerElement, Dropdow
     const { __scopeDropdownMenu, disabled = false, ...triggerProps } = props;
     const context = useDropdownMenuContext(TRIGGER_NAME, __scopeDropdownMenu);
     const menuScope = useMenuScope(__scopeDropdownMenu);
+    const pointerTypeRef = React.useRef<React.PointerEvent['pointerType']>('touch');
+
     return (
       <MenuPrimitive.Anchor asChild {...menuScope}>
         <Primitive.button
@@ -113,10 +115,19 @@ const DropdownMenuTrigger = React.forwardRef<DropdownMenuTriggerElement, Dropdow
           disabled={disabled}
           {...triggerProps}
           ref={composeRefs(forwardedRef, context.triggerRef)}
+          onClick={composeEventHandlers(props.onClick, () => {
+            // Open on click when using a touch or pen device
+            if (!disabled && pointerTypeRef.current !== 'mouse') {
+              context.onOpenToggle();
+            }
+          })}
           onPointerDown={composeEventHandlers(props.onPointerDown, (event) => {
+            pointerTypeRef.current = event.pointerType;
+
             // only call handler if it's the left button (mousedown gets triggered by all mouse buttons)
-            // but not when the control key is pressed (avoiding MacOS right click)
-            if (!disabled && event.button === 0 && event.ctrlKey === false) {
+            // but not when the control key is pressed (avoiding MacOS right click); also not for touch
+            // devices because that would open the menu on scroll. (pen devices behave as touch on iOS).
+            if (!disabled && event.button === 0 && event.ctrlKey === false && event.pointerType === 'mouse') {
               context.onOpenToggle();
               // prevent trigger focusing when opening
               // this allows the content to be given focus without competition
