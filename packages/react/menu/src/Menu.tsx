@@ -1047,7 +1047,7 @@ const MenuSubTrigger = React.forwardRef<MenuSubTriggerElement, MenuSubTriggerPro
           id={subContext.triggerId}
           aria-haspopup="menu"
           aria-expanded={context.open}
-          aria-controls={subContext.contentId}
+          aria-controls={context.open ? subContext.contentId : undefined}
           data-state={getOpenState(context.open)}
           {...props}
           ref={composeRefs(forwardedRef, subContext.onTriggerChange)}
