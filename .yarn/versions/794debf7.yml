@@ -5,6 +5,7 @@ releases:
   "@radix-ui/react-dropdown-menu": minor
   "@radix-ui/react-menu": minor
   "@radix-ui/react-menubar": minor
+  "@radix-ui/react-navigation-menu": minor
   "@radix-ui/react-popover": minor
   "@radix-ui/react-select": minor
 
