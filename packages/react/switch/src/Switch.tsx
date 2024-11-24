@@ -57,6 +57,10 @@ const Switch = React.forwardRef<SwitchElement, SwitchProps>(
 
     return (
       <SwitchProvider scope={__scopeSwitch} checked={checked} disabled={disabled}>
+        {/*
+        Wrap with div to prevent input from escaping component bounds
+        link : https://github.com/radix-ui/primitives/issues/3235
+        */}
         <div style={{ position: 'relative', display: 'inline-flex' }}>
           <Primitive.button
             type="button"
