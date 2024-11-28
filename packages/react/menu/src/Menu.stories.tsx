@@ -74,7 +74,7 @@ export const Submenus = () => {
           Scrollable
         </label>
       </div>
-      <MenuWithAnchor style={scrollable ? { overflow: 'scroll', height: 100 } : undefined}>
+      <MenuWithAnchor className={scrollable ? scrollableMenuClass() : undefined}>
         <Menu.Item className={itemClass()} onSelect={() => window.alert('undo')}>
           Undo
         </Menu.Item>
@@ -520,6 +520,11 @@ const animatedItemIndicatorClass = css({
   },
 });
 
+const scrollableMenuClass = css({
+  overflow: 'scroll',
+  height: 100,
+});
+
 export const TickIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -542,4 +547,5 @@ export const classes = {
   itemClass,
   separatorClass,
   subTriggerClass,
+  scrollableMenuClass,
 };
