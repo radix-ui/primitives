@@ -1,12 +1,12 @@
-import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
+import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
+import { useId } from '@radix-ui/react-id';
+import { Presence } from '@radix-ui/react-presence';
+import { Primitive } from '@radix-ui/react-primitive';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
-import { useComposedRefs } from '@radix-ui/react-compose-refs';
-import { Primitive } from '@radix-ui/react-primitive';
-import { Presence } from '@radix-ui/react-presence';
-import { useId } from '@radix-ui/react-id';
+import * as React from 'react';
 
 import type { Scope } from '@radix-ui/react-context';
 
@@ -211,8 +211,8 @@ const CollapsibleContentImpl = React.forwardRef<
       {...contentProps}
       ref={composedRefs}
       style={{
-        [`--radix-collapsible-content-height` as any]: height ? `${height}px` : undefined,
-        [`--radix-collapsible-content-width` as any]: width ? `${width}px` : undefined,
+        [`--radix-collapsible-content-height` as any]: height ? `${height}px` : 0,
+        [`--radix-collapsible-content-width` as any]: width ? `${width}px` : 0,
         ...props.style,
       }}
     >
@@ -232,14 +232,14 @@ const Trigger = CollapsibleTrigger;
 const Content = CollapsibleContent;
 
 export {
-  createCollapsibleScope,
   //
   Collapsible,
-  CollapsibleTrigger,
   CollapsibleContent,
+  CollapsibleTrigger,
+  Content,
+  createCollapsibleScope,
   //
   Root,
   Trigger,
-  Content,
 };
-export type { CollapsibleProps, CollapsibleTriggerProps, CollapsibleContentProps };
+export type { CollapsibleContentProps, CollapsibleProps, CollapsibleTriggerProps };
