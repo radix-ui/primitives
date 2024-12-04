@@ -16,6 +16,7 @@ import { usePrevious } from '@radix-ui/react-use-previous';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import * as VisuallyHiddenPrimitive from '@radix-ui/react-visually-hidden';
+import { Portal as PortalPrimitive } from '@radix-ui/react-portal';
 
 import type { Scope } from '@radix-ui/react-context';
 
@@ -1100,6 +1101,49 @@ const FocusGroup = React.forwardRef<FocusGroupElement, FocusGroupProps>(
   }
 );
 
+/* -------------------------------------------------------------------------------------------------
+ * NaviationMenuPortal
+ * -----------------------------------------------------------------------------------------------*/
+
+const PORTAL_NAME = 'NavigationMenuPortal';
+
+type PortalContextValue = { forceMount?: true };
+const [PortalProvider] = createNavigationMenuContext<PortalContextValue>(PORTAL_NAME, {
+  forceMount: undefined,
+});
+
+type PortalProps = React.ComponentPropsWithoutRef<typeof PortalPrimitive>;
+interface NavigationMenuPortalProps {
+  children?: React.ReactNode;
+  /**
+   * Specify a container element to portal the content into.
+   */
+  container?: PortalProps['container'];
+  /**
+   * Used to force mounting when more control is needed. Useful when
+   * controlling animation with React animation libraries.
+   */
+  forceMount?: true;
+}
+
+const NavigationMenuPortal: React.FC<NavigationMenuPortalProps> = (
+  props: ScopedProps<NavigationMenuContentProps>
+) => {
+  const { __scopeNavigationMenu, forceMount, children } = props;
+  const context = useNavigationMenuContext(PORTAL_NAME, __scopeNavigationMenu);
+  return (
+    <PortalProvider scope={__scopeNavigationMenu} forceMount={forceMount}>
+      {React.Children.map(children, (child) => (
+        <Presence present={forceMount || context.isRootMenu}>
+          <PortalPrimitive asChild>{child}</PortalPrimitive>
+        </Presence>
+      ))}
+    </PortalProvider>
+  );
+};
+
+NavigationMenuPortal.displayName = PORTAL_NAME;
+
 /* -----------------------------------------------------------------------------------------------*/
 
 const ARROW_KEYS = ['ArrowRight', 'ArrowLeft', 'ArrowUp', 'ArrowDown'];
@@ -1249,6 +1293,7 @@ const Link = NavigationMenuLink;
 const Indicator = NavigationMenuIndicator;
 const Content = NavigationMenuContent;
 const Viewport = NavigationMenuViewport;
+const Portal = NavigationMenuPortal;
 
 export {
   createNavigationMenuScope,
@@ -1262,6 +1307,7 @@ export {
   NavigationMenuIndicator,
   NavigationMenuContent,
   NavigationMenuViewport,
+  NavigationMenuPortal,
   //
   Root,
   Sub,
@@ -1272,6 +1318,7 @@ export {
   Indicator,
   Content,
   Viewport,
+  Portal,
 };
 export type {
   NavigationMenuProps,
@@ -1283,4 +1330,5 @@ export type {
   NavigationMenuIndicatorProps,
   NavigationMenuContentProps,
   NavigationMenuViewportProps,
+  NavigationMenuPortalProps,
 };
