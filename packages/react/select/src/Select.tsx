@@ -1616,7 +1616,8 @@ const BubbleSelect = React.forwardRef<HTMLSelectElement, React.ComponentPropsWit
         const event = new Event('change', { bubbles: true });
         setValue.call(select, value);
         // delay the dispatch to the next tick to ensure React has updated the select options
-        window.setTimeout(() => select.dispatchEvent(event));
+        const id = window.setTimeout(() => select.dispatchEvent(event));
+        return () => window.clearTimeout(id);
       }
     }, [prevValue, value]);
 
