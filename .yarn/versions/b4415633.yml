@@ -1,3 +1,5 @@
 releases:
   "@radix-ui/react-select": patch
-  primitives: major
+
+declined:
+  - primitives
