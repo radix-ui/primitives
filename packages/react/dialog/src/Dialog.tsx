@@ -555,6 +555,7 @@ const Close = DialogClose;
 
 export {
   createDialogScope,
+  useDialogContext,
   //
   Dialog,
   DialogTrigger,
