@@ -15,7 +15,7 @@ export const Styled = () => (
   </Slider.Root>
 );
 
-export const onValueCommit = () => (
+export const WithOnValueCommit = () => (
   <>
     <Slider.Root className={rootClass()} defaultValue={[20]} onValueCommit={console.log}>
       <Slider.Track className={trackClass()}>

@@ -8,13 +8,13 @@
     "start": "next start"
   },
   "dependencies": {
-    "next": "15.0.0-rc.0",
-    "react": "19.0.0-rc.0",
-    "react-dom": "19.0.0-rc.0"
+    "next": "15.1.0",
+    "react": "19.0.0",
+    "react-dom": "19.0.0"
   },
   "devDependencies": {
-    "@types/react": "^18.3.3",
-    "@types/react-dom": "^18.3.0",
-    "typescript": "^4.6.3"
+    "@types/react": "^19.0.1",
+    "@types/react-dom": "^19.0.2",
+    "typescript": "^5.7.2"
   }
 }
