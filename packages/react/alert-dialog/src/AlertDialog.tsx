@@ -238,7 +238,7 @@ AlertDialogCancel.displayName = CANCEL_NAME;
 /* ---------------------------------------------------------------------------------------------- */
 
 type DescriptionWarningProps = {
-  contentRef: React.RefObject<AlertDialogContentElement>;
+  contentRef: React.RefObject<AlertDialogContentElement | null>;
 };
 
 const DescriptionWarning: React.FC<DescriptionWarningProps> = ({ contentRef }) => {

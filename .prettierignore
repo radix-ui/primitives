@@ -1,2 +1,5 @@
+.next
 node_modules
 .yarn
+dist
+storybook-static

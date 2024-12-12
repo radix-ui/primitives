@@ -26,8 +26,8 @@ type ScopedProps<P> = P & { __scopeDialog?: Scope };
 const [createDialogContext, createDialogScope] = createContextScope(DIALOG_NAME);
 
 type DialogContextValue = {
-  triggerRef: React.RefObject<HTMLButtonElement>;
-  contentRef: React.RefObject<DialogContentElement>;
+  triggerRef: React.RefObject<HTMLButtonElement | null>;
+  contentRef: React.RefObject<DialogContentElement | null>;
   contentId: string;
   titleId: string;
   descriptionId: string;
@@ -524,7 +524,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
 const DESCRIPTION_WARNING_NAME = 'DialogDescriptionWarning';
 
 type DescriptionWarningProps = {
-  contentRef: React.RefObject<DialogContentElement>;
+  contentRef: React.RefObject<DialogContentElement | null>;
   descriptionId?: string;
 };
 

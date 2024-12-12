@@ -139,7 +139,7 @@ const MENU_NAME = 'MenubarMenu';
 type MenubarMenuContextValue = {
   value: string;
   triggerId: string;
-  triggerRef: React.RefObject<MenubarTriggerElement>;
+  triggerRef: React.RefObject<MenubarTriggerElement | null>;
   contentId: string;
   wasKeyboardTriggerOpenRef: React.MutableRefObject<boolean>;
 };

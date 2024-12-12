@@ -16,7 +16,7 @@ const Slot = React.forwardRef<HTMLElement, SlotProps>((props, forwardedRef) => {
 
   if (slottable) {
     // the new element to render is the one passed as a child of `Slottable`
-    const newElement = slottable.props.children as React.ReactNode;
+    const newElement = slottable.props.children;
 
     const newChildren = childrenArray.map((child) => {
       if (child === slottable) {
@@ -24,7 +24,7 @@ const Slot = React.forwardRef<HTMLElement, SlotProps>((props, forwardedRef) => {
         // in grabbing its children (`newElement.props.children`)
         if (React.Children.count(newElement) > 1) return React.Children.only(null);
         return React.isValidElement(newElement)
-          ? (newElement.props.children as React.ReactNode)
+          ? (newElement.props as { children: React.ReactNode }).children
           : null;
       } else {
         return child;
@@ -63,7 +63,7 @@ const SlotClone = React.forwardRef<any, SlotCloneProps>((props, forwardedRef) =>
   if (React.isValidElement(children)) {
     const childrenRef = getElementRef(children);
     return React.cloneElement(children, {
-      ...mergeProps(slotProps, children.props),
+      ...mergeProps(slotProps, children.props as AnyProps),
       // @ts-ignore
       ref: forwardedRef ? composeRefs(forwardedRef, childrenRef) : childrenRef,
     });
@@ -86,7 +86,9 @@ const Slottable = ({ children }: { children: React.ReactNode }) => {
 
 type AnyProps = Record<string, any>;
 
-function isSlottable(child: React.ReactNode): child is React.ReactElement {
+function isSlottable(
+  child: React.ReactNode
+): child is React.ReactElement<React.ComponentProps<typeof Slottable>, typeof Slottable> {
   return React.isValidElement(child) && child.type === Slottable;
 }
 
@@ -140,11 +142,11 @@ function getElementRef(element: React.ReactElement) {
   getter = Object.getOwnPropertyDescriptor(element, 'ref')?.get;
   mayWarn = getter && 'isReactWarning' in getter && getter.isReactWarning;
   if (mayWarn) {
-    return element.props.ref;
+    return (element.props as { ref?: React.Ref<unknown> }).ref;
   }
 
   // Not DEV
-  return element.props.ref || (element as any).ref;
+  return (element.props as { ref?: React.Ref<unknown> }).ref || (element as any).ref;
 }
 
 const Root = Slot;

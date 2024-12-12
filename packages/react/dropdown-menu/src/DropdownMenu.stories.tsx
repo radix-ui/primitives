@@ -868,7 +868,7 @@ export const InPopupWindow = () => {
 };
 
 // change order slightly for more pleasing visual
-const SIDES = SIDE_OPTIONS.filter((side) => side !== 'bottom').concat(['bottom']);
+const SIDES = [...SIDE_OPTIONS.filter((side) => side !== 'bottom'), 'bottom' as const];
 
 export const Chromatic = () => {
   const checkboxItems = [
