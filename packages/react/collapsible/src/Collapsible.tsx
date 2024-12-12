@@ -163,7 +163,7 @@ const CollapsibleContentImpl = React.forwardRef<
   // when closing we delay `present` to retrieve dimensions before closing
   const isOpen = context.open || isPresent;
   const isMountAnimationPreventedRef = React.useRef(isOpen);
-  const originalStylesRef = React.useRef<Record<string, string>>();
+  const originalStylesRef = React.useRef<Record<string, string>>(undefined);
 
   React.useEffect(() => {
     const rAF = requestAnimationFrame(() => (isMountAnimationPreventedRef.current = false));

@@ -446,7 +446,7 @@ export const WithSlottedContent = () => (
 );
 
 // change order slightly for more pleasing visual
-const SIDES = SIDE_OPTIONS.filter((side) => side !== 'bottom').concat(['bottom']);
+const SIDES = [...SIDE_OPTIONS.filter((side) => side !== 'bottom'), 'bottom' as const];
 
 export const Chromatic = () => (
   <div style={{ padding: 200, paddingBottom: 500 }}>

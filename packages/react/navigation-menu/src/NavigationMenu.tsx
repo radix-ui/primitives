@@ -395,9 +395,9 @@ type FocusProxyElement = React.ElementRef<typeof VisuallyHiddenPrimitive.Root>;
 
 type NavigationMenuItemContextValue = {
   value: string;
-  triggerRef: React.RefObject<NavigationMenuTriggerElement>;
-  contentRef: React.RefObject<NavigationMenuContentElement>;
-  focusProxyRef: React.RefObject<FocusProxyElement>;
+  triggerRef: React.RefObject<NavigationMenuTriggerElement | null>;
+  contentRef: React.RefObject<NavigationMenuContentElement | null>;
+  focusProxyRef: React.RefObject<FocusProxyElement | null>;
   wasEscapeCloseRef: React.MutableRefObject<boolean>;
   onEntryKeyDown(): void;
   onFocusProxyEnter(side: 'start' | 'end'): void;
@@ -833,8 +833,8 @@ type DismissableLayerProps = React.ComponentPropsWithoutRef<typeof DismissableLa
 
 interface NavigationMenuContentImplPrivateProps {
   value: string;
-  triggerRef: React.RefObject<NavigationMenuTriggerElement>;
-  focusProxyRef: React.RefObject<FocusProxyElement>;
+  triggerRef: React.RefObject<NavigationMenuTriggerElement | null>;
+  focusProxyRef: React.RefObject<FocusProxyElement | null>;
   wasEscapeCloseRef: React.MutableRefObject<boolean>;
   onContentFocusOutside(): void;
   onRootContentClose(): void;

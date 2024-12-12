@@ -120,7 +120,7 @@ export const Multiple = () => {
 };
 
 // true => default focus, false => no focus, ref => focus element
-type FocusParam = boolean | React.RefObject<HTMLElement>;
+type FocusParam = boolean | React.RefObject<HTMLElement | null>;
 
 export const WithOptions = () => {
   const [open, setOpen] = React.useState(false);

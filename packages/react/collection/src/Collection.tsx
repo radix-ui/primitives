@@ -23,8 +23,11 @@ function createCollection<ItemElement extends HTMLElement, ItemData = {}>(name: 
   const [createCollectionContext, createCollectionScope] = createContextScope(PROVIDER_NAME);
 
   type ContextValue = {
-    collectionRef: React.RefObject<CollectionElement>;
-    itemMap: Map<React.RefObject<ItemElement>, { ref: React.RefObject<ItemElement> } & ItemData>;
+    collectionRef: React.RefObject<CollectionElement | null>;
+    itemMap: Map<
+      React.RefObject<ItemElement | null>,
+      { ref: React.RefObject<ItemElement | null> } & ItemData
+    >;
   };
 
   const [CollectionProviderImpl, useCollectionContext] = createCollectionContext<ContextValue>(
