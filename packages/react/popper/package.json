@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-popper",
-  "version": "1.2.1-rc.2",
+  "version": "1.2.1-rc.3",
   "license": "MIT",
   "exports": {
     ".": {
