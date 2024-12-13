@@ -21,15 +21,17 @@ function setRef<T>(ref: PossibleRef<T>, value: T) {
 function composeRefs<T>(...refs: PossibleRef<T>[]) {
   return (node: T) => {
     const cleanups = refs.map((ref) => setRef(ref, node));
-    return () => {
-      cleanups.forEach((cleanup, i) => {
-        if (typeof cleanup == 'function') {
-          cleanup();
-        } else {
-          setRef(refs[i], null);
-        }
-      });
-    };
+    if (cleanups.some((c) => typeof c == 'function')) {
+      return () => {
+        cleanups.forEach((cleanup, i) => {
+          if (typeof cleanup == 'function') {
+            cleanup();
+          } else {
+            setRef(refs[i], null);
+          }
+        });
+      };
+    }
   };
 }
 
