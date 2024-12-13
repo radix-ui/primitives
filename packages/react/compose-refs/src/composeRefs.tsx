@@ -18,18 +18,31 @@ function setRef<T>(ref: PossibleRef<T>, value: T) {
  * A utility to compose multiple refs together
  * Accepts callback refs and RefObject(s)
  */
-function composeRefs<T>(...refs: PossibleRef<T>[]) {
-  return (node: T) => {
-    const cleanups = refs.map((ref) => setRef(ref, node));
-    if (cleanups.some((c) => typeof c == 'function')) {
+function composeRefs<T>(...refs: PossibleRef<T>[]): React.RefCallback<T> {
+  return (node) => {
+    let hasCleanup = false;
+    const cleanups = refs.map((ref) => {
+      const cleanup = setRef(ref, node);
+      if (!hasCleanup && typeof cleanup == 'function') {
+        hasCleanup = true;
+      }
+      return cleanup;
+    });
+
+    // React <19 will log an error to the console if a callback ref returns a
+    // value. We don't use ref cleanups internally so this will only happen if a
+    // user's ref callback returns a value, which we only expect if they are
+    // using the cleanup functionality added in React 19.
+    if (hasCleanup) {
       return () => {
-        cleanups.forEach((cleanup, i) => {
+        for (let i = 0; i < cleanups.length; i++) {
+          const cleanup = cleanups[i];
           if (typeof cleanup == 'function') {
             cleanup();
           } else {
             setRef(refs[i], null);
           }
-        });
+        }
       };
     }
   };
@@ -39,7 +52,7 @@ function composeRefs<T>(...refs: PossibleRef<T>[]) {
  * A custom hook that composes multiple refs
  * Accepts callback refs and RefObject(s)
  */
-function useComposedRefs<T>(...refs: PossibleRef<T>[]) {
+function useComposedRefs<T>(...refs: PossibleRef<T>[]): React.RefCallback<T> {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   return React.useCallback(composeRefs(...refs), refs);
 }
