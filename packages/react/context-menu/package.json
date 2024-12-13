@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-context-menu",
-  "version": "2.2.3-rc.3",
+  "version": "2.2.3",
   "license": "MIT",
   "exports": {
     ".": {
@@ -56,6 +56,5 @@
   },
   "bugs": {
     "url": "https://github.com/radix-ui/primitives/issues"
-  },
-  "stableVersion": "2.2.2"
+  }
 }

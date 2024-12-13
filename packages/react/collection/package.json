@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-collection",
-  "version": "1.1.1-rc.3",
+  "version": "1.1.1",
   "license": "MIT",
   "exports": {
     ".": {
@@ -54,6 +54,5 @@
   },
   "bugs": {
     "url": "https://github.com/radix-ui/primitives/issues"
-  },
-  "stableVersion": "1.1.0"
+  }
 }
