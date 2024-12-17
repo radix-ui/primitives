@@ -216,7 +216,7 @@ const CollapsibleContentImpl = React.forwardRef<
         ...props.style,
       }}
     >
-      {isOpen && children}
+      {children}
     </Primitive.div>
   );
 });
