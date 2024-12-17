@@ -420,8 +420,8 @@ const ScrollAreaScrollbarVisible = React.forwardRef<
     onThumbPointerDown: (pointerPos) => (pointerOffsetRef.current = pointerPos),
   };
 
-  function getScrollPosition(pointerPos: number, dir?: Direction) {
-    return getScrollPositionFromPointer(pointerPos, pointerOffsetRef.current, sizes, dir);
+  function getScrollPosition(pointerPos: number, reversed?: boolean, dir?: Direction) {
+    return getScrollPositionFromPointer(pointerPos, pointerOffsetRef.current, sizes, reversed, dir);
   }
 
   if (orientation === 'horizontal') {
@@ -432,7 +432,8 @@ const ScrollAreaScrollbarVisible = React.forwardRef<
         onThumbPositionChange={() => {
           if (context.viewport && thumbRef.current) {
             const scrollPos = context.viewport.scrollLeft;
-            const offset = getThumbOffsetFromScroll(scrollPos, sizes, context.dir);
+            const reversed = getComputedStyle(context.viewport).flexDirection === 'row-reverse';
+            const offset = getThumbOffsetFromScroll(scrollPos, sizes, reversed, context.dir);
             thumbRef.current.style.transform = `translate3d(${offset}px, 0, 0)`;
           }
         }}
@@ -441,7 +442,8 @@ const ScrollAreaScrollbarVisible = React.forwardRef<
         }}
         onDragScroll={(pointerPos) => {
           if (context.viewport) {
-            context.viewport.scrollLeft = getScrollPosition(pointerPos, context.dir);
+            const reversed = getComputedStyle(context.viewport).flexDirection === 'row-reverse';
+            context.viewport.scrollLeft = getScrollPosition(pointerPos, reversed, context.dir);
           }
         }}
       />
@@ -456,7 +458,8 @@ const ScrollAreaScrollbarVisible = React.forwardRef<
         onThumbPositionChange={() => {
           if (context.viewport && thumbRef.current) {
             const scrollPos = context.viewport.scrollTop;
-            const offset = getThumbOffsetFromScroll(scrollPos, sizes);
+            const reversed = getComputedStyle(context.viewport).flexDirection === 'column-reverse';
+            const offset = getThumbOffsetFromScroll(scrollPos, sizes, reversed);
             thumbRef.current.style.transform = `translate3d(0, ${offset}px, 0)`;
           }
         }}
@@ -464,7 +467,10 @@ const ScrollAreaScrollbarVisible = React.forwardRef<
           if (context.viewport) context.viewport.scrollTop = scrollPos;
         }}
         onDragScroll={(pointerPos) => {
-          if (context.viewport) context.viewport.scrollTop = getScrollPosition(pointerPos);
+          if (context.viewport) {
+            const reversed = getComputedStyle(context.viewport).flexDirection === 'column-reverse';
+            context.viewport.scrollTop = getScrollPosition(pointerPos, reversed);
+          }
         }}
       />
     );
@@ -919,6 +925,7 @@ function getScrollPositionFromPointer(
   pointerPos: number,
   pointerOffset: number,
   sizes: Sizes,
+  reversed = false,
   dir: Direction = 'ltr'
 ) {
   const thumbSizePx = getThumbSize(sizes);
@@ -928,20 +935,36 @@ function getScrollPositionFromPointer(
   const minPointerPos = sizes.scrollbar.paddingStart + offset;
   const maxPointerPos = sizes.scrollbar.size - sizes.scrollbar.paddingEnd - thumbOffsetFromEnd;
   const maxScrollPos = sizes.content - sizes.viewport;
-  const scrollRange = dir === 'ltr' ? [0, maxScrollPos] : [maxScrollPos * -1, 0];
+  const scrollRange =
+    (dir === 'ltr' && reversed) || (dir === 'rtl' && !reversed)
+      ? [maxScrollPos * -1, 0]
+      : [0, maxScrollPos];
   const interpolate = linearScale([minPointerPos, maxPointerPos], scrollRange as [number, number]);
   return interpolate(pointerPos);
 }
 
-function getThumbOffsetFromScroll(scrollPos: number, sizes: Sizes, dir: Direction = 'ltr') {
+function getThumbOffsetFromScroll(
+  scrollPos: number,
+  sizes: Sizes,
+  reversed = false,
+  dir: Direction = 'ltr'
+) {
   const thumbSizePx = getThumbSize(sizes);
   const scrollbarPadding = sizes.scrollbar.paddingStart + sizes.scrollbar.paddingEnd;
   const scrollbar = sizes.scrollbar.size - scrollbarPadding;
   const maxScrollPos = sizes.content - sizes.viewport;
   const maxThumbPos = scrollbar - thumbSizePx;
   const scrollClampRange = dir === 'ltr' ? [0, maxScrollPos] : [maxScrollPos * -1, 0];
-  const scrollWithoutMomentum = clamp(scrollPos, scrollClampRange as [number, number]);
-  const interpolate = linearScale([0, maxScrollPos], [0, maxThumbPos]);
+  const inputFactor = reversed && dir === 'ltr' ? -1 : 1;
+  const outputFactor = reversed && dir === 'rtl' ? -1 : 1;
+  const scrollPosRange = reversed ? [0, maxScrollPos * inputFactor] : [maxScrollPos, 0];
+  const interpolateScrollPos = linearScale(scrollPosRange as [number, number], [
+    maxScrollPos * outputFactor,
+    0,
+  ]);
+  const interpolatedScrollPos = interpolateScrollPos(scrollPos);
+  const scrollWithoutMomentum = clamp(interpolatedScrollPos, scrollClampRange as [number, number]);
+  const interpolate = linearScale([0, maxScrollPos], [0, maxThumbPos] as [number, number]);
   return interpolate(scrollWithoutMomentum);
 }
 
