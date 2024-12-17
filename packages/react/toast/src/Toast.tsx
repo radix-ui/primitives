@@ -99,7 +99,13 @@ const ToastProvider: React.FC<ToastProviderProps> = (props: ScopedProps<ToastPro
         toastCount={toastCount}
         viewport={viewport}
         onViewportChange={setViewport}
-        onToastAdd={React.useCallback(() => setToastCount((prevCount) => prevCount + 1), [])}
+        onToastAdd={React.useCallback(() => {
+          // Reset the isClosePausedRef when a new toast is added
+          isClosePausedRef.current = false;
+          // I assume this one has the same issue as the one above
+          // isFocusedToastEscapeKeyDownRef.current = false;
+          setToastCount((prevCount) => prevCount + 1);
+        }, [])}
         onToastRemove={React.useCallback(() => setToastCount((prevCount) => prevCount - 1), [])}
         isFocusedToastEscapeKeyDownRef={isFocusedToastEscapeKeyDownRef}
         isClosePausedRef={isClosePausedRef}
@@ -532,6 +538,11 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
     // we include `open` in deps because closed !== unmounted when animating
     // so it could reopen before being completely unmounted
     React.useEffect(() => {
+      // Needs to reset the timer when the toast is rerendered with the new duration
+      // in case the toast is initially rendered with a different duration.
+      // i.e. Change a loading toast with `Infinity` duration to a success Toast with `2000` duration.
+      closeTimerRemainingTimeRef.current = duration;
+
       if (open && !context.isClosePausedRef.current) startTimer(duration);
     }, [open, duration, context.isClosePausedRef, startTimer]);
 
