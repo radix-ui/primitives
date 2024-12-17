@@ -163,7 +163,7 @@ const RadioGroupItem = React.forwardRef<RadioGroupItemElement, RadioGroupItemPro
           name={context.name}
           ref={composedRefs}
           onCheck={() => context.onValueChange(itemProps.value)}
-          onKeyDown={composeEventHandlers((event) => {
+          onKeyDown={composeEventHandlers(itemProps.onKeyDown, (event) => {
             // According to WAI ARIA, radio groups don't activate items on enter keypress
             if (event.key === 'Enter') event.preventDefault();
           })}
