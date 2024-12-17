@@ -229,6 +229,18 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
       if (content) setContentZIndex(window.getComputedStyle(content).zIndex);
     }, [content]);
 
+    useLayoutEffect(() => {
+      const anchor = context.anchor;
+      if (isPositioned && anchor instanceof HTMLElement) {
+        anchor.setAttribute('data-side', placedSide);
+        anchor.setAttribute('data-align', placedAlign);
+        return () => {
+          anchor.removeAttribute('data-side');
+          anchor.removeAttribute('data-align');
+        };
+      }
+    }, [context.anchor, isPositioned, placedAlign, placedSide]);
+
     return (
       <div
         ref={refs.setFloating}
