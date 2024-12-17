@@ -135,7 +135,7 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
       alignOffset = 0,
       arrowPadding = 0,
       avoidCollisions = true,
-      collisionBoundary = [],
+      collisionBoundary,
       collisionPadding: collisionPaddingProp = 0,
       sticky = 'partial',
       hideWhenDetached = false,
@@ -161,12 +161,16 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
         ? collisionPaddingProp
         : { top: 0, right: 0, bottom: 0, left: 0, ...collisionPaddingProp };
 
-    const boundary = Array.isArray(collisionBoundary) ? collisionBoundary : [collisionBoundary];
-    const hasExplicitBoundaries = boundary.length > 0;
+    const boundary = collisionBoundary
+      ? Array.isArray(collisionBoundary)
+        ? collisionBoundary
+        : [collisionBoundary]
+      : undefined;
+    const hasExplicitBoundaries = boundary !== undefined && boundary.length > 0;
 
     const detectOverflowOptions = {
       padding: collisionPadding,
-      boundary: boundary.filter(isNotNull),
+      boundary: boundary ? boundary.filter(isNotNull) : undefined,
       // with `strategy: 'fixed'`, this is the only way to get it to respect boundaries
       altBoundary: hasExplicitBoundaries,
     };
