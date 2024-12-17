@@ -2,6 +2,7 @@ import * as React from 'react';
 import { axe } from 'jest-axe';
 import { render, fireEvent, RenderResult } from '@testing-library/react';
 import * as Accordion from '@radix-ui/react-accordion';
+import { activeElement } from '@radix-ui/primitive';
 
 const ITEMS = ['One', 'Two', 'Three'];
 
@@ -27,14 +28,14 @@ describe('given a single Accordion', () => {
 
       describe('on `ArrowDown`', () => {
         it('should move focus to the next trigger', () => {
-          fireEvent.keyDown(document.activeElement!, { key: 'ArrowDown' });
+          fireEvent.keyDown(activeElement()!, { key: 'ArrowDown' });
           expect(rendered.getByText('Trigger Two')).toHaveFocus();
         });
 
         it('should move focus to the first item if at the end', () => {
           const trigger = rendered.getByText('Trigger Three');
           trigger.focus();
-          fireEvent.keyDown(document.activeElement!, { key: 'ArrowDown' });
+          fireEvent.keyDown(activeElement()!, { key: 'ArrowDown' });
           expect(rendered.getByText('Trigger One')).toHaveFocus();
         });
       });
@@ -43,28 +44,28 @@ describe('given a single Accordion', () => {
         it('should move focus to the previous trigger', () => {
           const trigger = rendered.getByText('Trigger Three');
           trigger.focus();
-          fireEvent.keyDown(document.activeElement!, { key: 'ArrowUp' });
+          fireEvent.keyDown(activeElement()!, { key: 'ArrowUp' });
           expect(rendered.getByText('Trigger Two')).toHaveFocus();
         });
 
         it('should move focus to the last item if at the beginning', () => {
           const trigger = rendered.getByText('Trigger One');
           trigger.focus();
-          fireEvent.keyDown(document.activeElement!, { key: 'ArrowUp' });
+          fireEvent.keyDown(activeElement()!, { key: 'ArrowUp' });
           expect(rendered.getByText('Trigger Three')).toHaveFocus();
         });
       });
 
       describe('on `Home`', () => {
         it('should move focus to the first trigger', () => {
-          fireEvent.keyDown(document.activeElement!, { key: 'Home' });
+          fireEvent.keyDown(activeElement()!, { key: 'Home' });
           expect(rendered.getByText('Trigger One')).toHaveFocus();
         });
       });
 
       describe('on `End`', () => {
         it('should move focus to the last trigger', () => {
-          fireEvent.keyDown(document.activeElement!, { key: 'End' });
+          fireEvent.keyDown(activeElement()!, { key: 'End' });
           expect(rendered.getByText('Trigger Three')).toHaveFocus();
         });
       });
@@ -145,28 +146,28 @@ describe('given a single Accordion', () => {
 
         describe('on `ArrowUp`', () => {
           it('should do nothing', () => {
-            fireEvent.keyDown(document.activeElement!, { key: 'ArrowUp' });
+            fireEvent.keyDown(activeElement()!, { key: 'ArrowUp' });
             expect(rendered.getByText('Trigger One')).toHaveFocus();
           });
         });
 
         describe('on `ArrowDown`', () => {
           it('should do nothing', () => {
-            fireEvent.keyDown(document.activeElement!, { key: 'ArrowDown' });
+            fireEvent.keyDown(activeElement()!, { key: 'ArrowDown' });
             expect(rendered.getByText('Trigger One')).toHaveFocus();
           });
         });
 
         describe('on `ArrowRight`', () => {
           it('should move focus to the next trigger', () => {
-            fireEvent.keyDown(document.activeElement!, { key: 'ArrowRight' });
+            fireEvent.keyDown(activeElement()!, { key: 'ArrowRight' });
             expect(rendered.getByText('Trigger Two')).toHaveFocus();
           });
 
           it('should move focus to the first item if at the end', () => {
             const trigger = rendered.getByText('Trigger Three');
             trigger.focus();
-            fireEvent.keyDown(document.activeElement!, { key: 'ArrowRight' });
+            fireEvent.keyDown(activeElement()!, { key: 'ArrowRight' });
             expect(rendered.getByText('Trigger One')).toHaveFocus();
           });
         });
@@ -175,28 +176,28 @@ describe('given a single Accordion', () => {
           it('should move focus to the previous trigger', () => {
             const trigger = rendered.getByText('Trigger Three');
             trigger.focus();
-            fireEvent.keyDown(document.activeElement!, { key: 'ArrowLeft' });
+            fireEvent.keyDown(activeElement()!, { key: 'ArrowLeft' });
             expect(rendered.getByText('Trigger Two')).toHaveFocus();
           });
 
           it('should move focus to the last item if at the beginning', () => {
             const trigger = rendered.getByText('Trigger One');
             trigger.focus();
-            fireEvent.keyDown(document.activeElement!, { key: 'ArrowLeft' });
+            fireEvent.keyDown(activeElement()!, { key: 'ArrowLeft' });
             expect(rendered.getByText('Trigger Three')).toHaveFocus();
           });
         });
 
         describe('on `Home`', () => {
           it('should move focus to the first trigger', () => {
-            fireEvent.keyDown(document.activeElement!, { key: 'Home' });
+            fireEvent.keyDown(activeElement()!, { key: 'Home' });
             expect(rendered.getByText('Trigger One')).toHaveFocus();
           });
         });
 
         describe('on `End`', () => {
           it('should move focus to the last trigger', () => {
-            fireEvent.keyDown(document.activeElement!, { key: 'End' });
+            fireEvent.keyDown(activeElement()!, { key: 'End' });
             expect(rendered.getByText('Trigger Three')).toHaveFocus();
           });
         });
@@ -224,14 +225,14 @@ describe('given a single Accordion', () => {
 
         describe('on `ArrowUp`', () => {
           it('should do nothing', () => {
-            fireEvent.keyDown(document.activeElement!, { key: 'ArrowUp' });
+            fireEvent.keyDown(activeElement()!, { key: 'ArrowUp' });
             expect(rendered.getByText('Trigger One')).toHaveFocus();
           });
         });
 
         describe('on `ArrowDown`', () => {
           it('should do nothing', () => {
-            fireEvent.keyDown(document.activeElement!, { key: 'ArrowDown' });
+            fireEvent.keyDown(activeElement()!, { key: 'ArrowDown' });
             expect(rendered.getByText('Trigger One')).toHaveFocus();
           });
         });
@@ -240,40 +241,40 @@ describe('given a single Accordion', () => {
           it('should move focus to the previous trigger', () => {
             const trigger = rendered.getByText('Trigger Two');
             trigger.focus();
-            fireEvent.keyDown(document.activeElement!, { key: 'ArrowRight' });
+            fireEvent.keyDown(activeElement()!, { key: 'ArrowRight' });
             expect(rendered.getByText('Trigger One')).toHaveFocus();
           });
 
           it('should move focus to the last item if at the beginning', () => {
-            fireEvent.keyDown(document.activeElement!, { key: 'ArrowRight' });
+            fireEvent.keyDown(activeElement()!, { key: 'ArrowRight' });
             expect(rendered.getByText('Trigger Three')).toHaveFocus();
           });
         });
 
         describe('on `ArrowLeft`', () => {
           it('should move focus to the next trigger', () => {
-            fireEvent.keyDown(document.activeElement!, { key: 'ArrowLeft' });
+            fireEvent.keyDown(activeElement()!, { key: 'ArrowLeft' });
             expect(rendered.getByText('Trigger Two')).toHaveFocus();
           });
 
           it('should move focus to the first item if at the end', () => {
             const trigger = rendered.getByText('Trigger Three');
             trigger.focus();
-            fireEvent.keyDown(document.activeElement!, { key: 'ArrowLeft' });
+            fireEvent.keyDown(activeElement()!, { key: 'ArrowLeft' });
             expect(rendered.getByText('Trigger One')).toHaveFocus();
           });
         });
 
         describe('on `Home`', () => {
           it('should move focus to the first trigger', () => {
-            fireEvent.keyDown(document.activeElement!, { key: 'Home' });
+            fireEvent.keyDown(activeElement()!, { key: 'Home' });
             expect(rendered.getByText('Trigger One')).toHaveFocus();
           });
         });
 
         describe('on `End`', () => {
           it('should move focus to the last trigger', () => {
-            fireEvent.keyDown(document.activeElement!, { key: 'End' });
+            fireEvent.keyDown(activeElement()!, { key: 'End' });
             expect(rendered.getByText('Trigger Three')).toHaveFocus();
           });
         });
@@ -302,28 +303,28 @@ describe('given a multiple Accordion', () => {
 
     describe('on `ArrowDown`', () => {
       it('should move focus to the next trigger', () => {
-        fireEvent.keyDown(document.activeElement!, { key: 'ArrowDown' });
+        fireEvent.keyDown(activeElement()!, { key: 'ArrowDown' });
         expect(rendered.getByText('Trigger Two')).toHaveFocus();
       });
     });
 
     describe('on `ArrowUp`', () => {
       it('should move focus to the previous trigger', () => {
-        fireEvent.keyDown(document.activeElement!, { key: 'ArrowUp' });
+        fireEvent.keyDown(activeElement()!, { key: 'ArrowUp' });
         expect(rendered.getByText('Trigger Three')).toHaveFocus();
       });
     });
 
     describe('on `Home`', () => {
       it('should move focus to the first trigger', () => {
-        fireEvent.keyDown(document.activeElement!, { key: 'Home' });
+        fireEvent.keyDown(activeElement()!, { key: 'Home' });
         expect(rendered.getByText('Trigger One')).toHaveFocus();
       });
     });
 
     describe('on `End`', () => {
       it('should move focus to the last trigger', () => {
-        fireEvent.keyDown(document.activeElement!, { key: 'End' });
+        fireEvent.keyDown(activeElement()!, { key: 'End' });
         expect(rendered.getByText('Trigger Three')).toHaveFocus();
       });
     });

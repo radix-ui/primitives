@@ -12,4 +12,8 @@ function composeEventHandlers<E>(
   };
 }
 
-export { composeEventHandlers };
+function activeElement() {
+  return document.activeElement?.shadowRoot?.activeElement ?? document.activeElement;
+}
+
+export { composeEventHandlers, activeElement };
