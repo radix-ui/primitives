@@ -62,7 +62,10 @@ const AvatarImage = React.forwardRef<AvatarImageElement, AvatarImageProps>(
   (props: ScopedProps<AvatarImageProps>, forwardedRef) => {
     const { __scopeAvatar, src, onLoadingStatusChange = () => {}, ...imageProps } = props;
     const context = useAvatarContext(IMAGE_NAME, __scopeAvatar);
-    const imageLoadingStatus = useImageLoadingStatus(src, imageProps.referrerPolicy);
+    const imageLoadingStatus = useImageLoadingStatus(src, {
+      referrerPolicy: imageProps.referrerPolicy,
+      crossOrigin: imageProps.crossOrigin,
+    });
     const handleLoadingStatusChange = useCallbackRef((status: ImageLoadingStatus) => {
       onLoadingStatusChange(status);
       context.onImageLoadingStatusChange(status);
@@ -116,7 +119,12 @@ AvatarFallback.displayName = FALLBACK_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
-function useImageLoadingStatus(src?: string, referrerPolicy?: React.HTMLAttributeReferrerPolicy) {
+interface UseImageLoadingStatusOptions {
+  referrerPolicy?: React.HTMLAttributeReferrerPolicy;
+  crossOrigin?: string | null;
+}
+
+function useImageLoadingStatus(src?: string, options?: UseImageLoadingStatusOptions) {
   const [loadingStatus, setLoadingStatus] = React.useState<ImageLoadingStatus>('idle');
 
   useLayoutEffect(() => {
@@ -137,14 +145,17 @@ function useImageLoadingStatus(src?: string, referrerPolicy?: React.HTMLAttribut
     image.onload = updateStatus('loaded');
     image.onerror = updateStatus('error');
     image.src = src;
-    if (referrerPolicy) {
-      image.referrerPolicy = referrerPolicy;
+    if (options?.referrerPolicy) {
+      image.referrerPolicy = options.referrerPolicy;
+    }
+    if (options?.crossOrigin) {
+      image.crossOrigin = options.crossOrigin;
     }
 
     return () => {
       isMounted = false;
     };
-  }, [src, referrerPolicy]);
+  }, [src, options]);
 
   return loadingStatus;
 }
