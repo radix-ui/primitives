@@ -109,6 +109,7 @@ const DropdownMenuTrigger = React.forwardRef<DropdownMenuTriggerElement, Dropdow
           aria-expanded={context.open}
           aria-controls={context.open ? context.contentId : undefined}
           data-state={context.open ? 'open' : 'closed'}
+          data-dropdown-state={context.open ? 'open' : 'closed'}
           data-disabled={disabled ? '' : undefined}
           disabled={disabled}
           {...triggerProps}
