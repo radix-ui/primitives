@@ -330,8 +330,11 @@ const PopoverContentNonModal = React.forwardRef<PopoverContentTypeElement, Popov
           // Prevent dismissing when clicking the trigger.
           // As the trigger is already setup to close, without doing so would
           // cause it to close and immediately open.
-          const target = event.target as HTMLElement;
-          const targetIsTrigger = context.triggerRef.current?.contains(target);
+          const triggerEl = context.triggerRef.current;
+          const targetIsTrigger =
+            triggerEl &&
+            (event.composedPath().includes(triggerEl) ||
+              event.detail.originalEvent.composedPath().includes(triggerEl));
           if (targetIsTrigger) event.preventDefault();
 
           // On Safari if the trigger is inside a container with tabIndex={0}, when clicked
