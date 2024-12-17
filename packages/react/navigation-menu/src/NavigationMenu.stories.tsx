@@ -369,6 +369,55 @@ export const Submenus = () => {
   );
 };
 
+export const WithPortalContainer = () => {
+  const [portalContainer, setPortalContainer] = React.useState<HTMLDivElement | null>(null);
+
+  return (
+    <StoryFrame>
+      <NavigationMenu.Root>
+        <div data-portal-container="" ref={setPortalContainer} />
+        <NavigationMenu.List className={mainListClass()}>
+          <NavigationMenu.Item className={expandableItemClass()}>
+            <TriggerWithIndicator>Portaled Products</TriggerWithIndicator>
+            <NavigationMenu.Portal container={portalContainer}>
+              <NavigationMenu.Content className={basicContentClass()}>
+                <LinkGroup
+                  bordered={false}
+                  items={[
+                    'Fusce pellentesque',
+                    'Aliquam porttitor',
+                    'Pellentesque',
+                    'Fusce pellentesque',
+                    'Aliquam porttitor',
+                    'Pellentesque',
+                  ]}
+                />
+              </NavigationMenu.Content>
+            </NavigationMenu.Portal>
+          </NavigationMenu.Item>
+
+          <NavigationMenu.Item className={expandableItemClass()}>
+            <TriggerWithIndicator>Not Portaled Products</TriggerWithIndicator>
+            <NavigationMenu.Content className={basicContentClass()}>
+              <LinkGroup
+                bordered={false}
+                items={[
+                  'Fusce pellentesque',
+                  'Aliquam porttitor',
+                  'Pellentesque',
+                  'Fusce pellentesque',
+                  'Aliquam porttitor',
+                  'Pellentesque',
+                ]}
+              />
+            </NavigationMenu.Content>
+          </NavigationMenu.Item>
+        </NavigationMenu.List>
+      </NavigationMenu.Root>
+    </StoryFrame>
+  );
+};
+
 /* -----------------------------------------------------------------------------------------------*/
 
 const StoryFrame: React.FC<{ children: React.ReactNode }> = ({ children }) => {

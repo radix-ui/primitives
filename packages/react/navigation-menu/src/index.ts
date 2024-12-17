@@ -11,6 +11,7 @@ export {
   NavigationMenuIndicator,
   NavigationMenuContent,
   NavigationMenuViewport,
+  NavigationMenuPortal,
   //
   Root,
   Sub,
@@ -21,6 +22,7 @@ export {
   Indicator,
   Content,
   Viewport,
+  Portal,
 } from './NavigationMenu';
 export type {
   NavigationMenuProps,
@@ -32,4 +34,5 @@ export type {
   NavigationMenuIndicatorProps,
   NavigationMenuContentProps,
   NavigationMenuViewportProps,
+  NavigationMenuPortalProps,
 } from './NavigationMenu';
