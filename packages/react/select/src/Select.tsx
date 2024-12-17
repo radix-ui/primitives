@@ -1493,60 +1493,66 @@ SelectScrollDownButton.displayName = SCROLL_DOWN_BUTTON_NAME;
 type SelectScrollButtonImplElement = React.ElementRef<typeof Primitive.div>;
 interface SelectScrollButtonImplProps extends PrimitiveDivProps {
   onAutoScroll(): void;
+  autoScrollInterval?: number;
 }
 
 const SelectScrollButtonImpl = React.forwardRef<
   SelectScrollButtonImplElement,
   SelectScrollButtonImplProps
->((props: ScopedProps<SelectScrollButtonImplProps>, forwardedRef) => {
-  const { __scopeSelect, onAutoScroll, ...scrollIndicatorProps } = props;
-  const contentContext = useSelectContentContext('SelectScrollButton', __scopeSelect);
-  const autoScrollTimerRef = React.useRef<number | null>(null);
-  const getItems = useCollection(__scopeSelect);
+>(
+  (
+    { autoScrollInterval = 50, ...props }: ScopedProps<SelectScrollButtonImplProps>,
+    forwardedRef
+  ) => {
+    const { __scopeSelect, onAutoScroll, ...scrollIndicatorProps } = props;
+    const contentContext = useSelectContentContext('SelectScrollButton', __scopeSelect);
+    const autoScrollTimerRef = React.useRef<number | null>(null);
+    const getItems = useCollection(__scopeSelect);
 
-  const clearAutoScrollTimer = React.useCallback(() => {
-    if (autoScrollTimerRef.current !== null) {
-      window.clearInterval(autoScrollTimerRef.current);
-      autoScrollTimerRef.current = null;
-    }
-  }, []);
+    const clearAutoScrollTimer = React.useCallback(() => {
+      if (autoScrollTimerRef.current !== null) {
+        window.clearInterval(autoScrollTimerRef.current);
+        autoScrollTimerRef.current = null;
+      }
+    }, []);
 
-  React.useEffect(() => {
-    return () => clearAutoScrollTimer();
-  }, [clearAutoScrollTimer]);
+    React.useEffect(() => {
+      return () => clearAutoScrollTimer();
+    }, [clearAutoScrollTimer]);
 
-  // When the viewport becomes scrollable on either side, the relevant scroll button will mount.
-  // Because it is part of the normal flow, it will push down (top button) or shrink (bottom button)
-  // the viewport, potentially causing the active item to now be partially out of view.
-  // We re-run the `scrollIntoView` logic to make sure it stays within the viewport.
-  useLayoutEffect(() => {
-    const activeItem = getItems().find((item) => item.ref.current === document.activeElement);
-    activeItem?.ref.current?.scrollIntoView({ block: 'nearest' });
-  }, [getItems]);
+    // When the viewport becomes scrollable on either side, the relevant scroll button will mount.
+    // Because it is part of the normal flow, it will push down (top button) or shrink (bottom button)
+    // the viewport, potentially causing the active item to now be partially out of view.
+    // We re-run the `scrollIntoView` logic to make sure it stays within the viewport.
+    useLayoutEffect(() => {
+      const activeItem = getItems().find((item) => item.ref.current === document.activeElement);
+      activeItem?.ref.current?.scrollIntoView({ block: 'nearest' });
+    }, [getItems]);
 
-  return (
-    <Primitive.div
-      aria-hidden
-      {...scrollIndicatorProps}
-      ref={forwardedRef}
-      style={{ flexShrink: 0, ...scrollIndicatorProps.style }}
-      onPointerDown={composeEventHandlers(scrollIndicatorProps.onPointerDown, () => {
-        if (autoScrollTimerRef.current === null) {
-          autoScrollTimerRef.current = window.setInterval(onAutoScroll, 50);
-        }
-      })}
-      onPointerMove={composeEventHandlers(scrollIndicatorProps.onPointerMove, () => {
-        contentContext.onItemLeave?.();
-        if (autoScrollTimerRef.current === null) {
-          autoScrollTimerRef.current = window.setInterval(onAutoScroll, 50);
-        }
-      })}
-      onPointerLeave={composeEventHandlers(scrollIndicatorProps.onPointerLeave, () => {
-        clearAutoScrollTimer();
-      })}
-    />
-  );
-});
+    return (
+      <Primitive.div
+        aria-hidden
+        {...scrollIndicatorProps}
+        ref={forwardedRef}
+        style={{ flexShrink: 0, ...scrollIndicatorProps.style }}
+        onPointerDown={composeEventHandlers(scrollIndicatorProps.onPointerDown, () => {
+          if (autoScrollTimerRef.current === null) {
+            autoScrollTimerRef.current = window.setInterval(onAutoScroll, autoScrollInterval);
+          }
+        })}
+        onPointerMove={composeEventHandlers(scrollIndicatorProps.onPointerMove, () => {
+          contentContext.onItemLeave?.();
+          if (autoScrollTimerRef.current === null) {
+            autoScrollTimerRef.current = window.setInterval(onAutoScroll, autoScrollInterval);
+          }
+        })}
+        onPointerLeave={composeEventHandlers(scrollIndicatorProps.onPointerLeave, () => {
+          clearAutoScrollTimer();
+        })}
+      />
+    );
+  }
+);
 
 /* -------------------------------------------------------------------------------------------------
  * SelectSeparator
