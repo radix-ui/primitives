@@ -54,7 +54,7 @@ Slot.displayName = 'Slot';
  * -----------------------------------------------------------------------------------------------*/
 
 interface SlotCloneProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 const SlotClone = React.forwardRef<any, SlotCloneProps>((props, forwardedRef) => {
