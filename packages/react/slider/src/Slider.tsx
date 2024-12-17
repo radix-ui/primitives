@@ -13,6 +13,7 @@ import { createCollection } from '@radix-ui/react-collection';
 import type { Scope } from '@radix-ui/react-context';
 
 type Direction = 'ltr' | 'rtl';
+type ThumbAlignment = 'contain' | 'overflow';
 
 const PAGE_KEYS = ['PageUp', 'PageDown'];
 const ARROW_KEYS = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
@@ -48,6 +49,7 @@ type SliderContextValue = {
   valueIndexToChangeRef: React.MutableRefObject<number>;
   thumbs: Set<SliderThumbElement>;
   orientation: SliderProps['orientation'];
+  thumbAlignment: ThumbAlignment;
   form: string | undefined;
 };
 
@@ -72,6 +74,7 @@ interface SliderProps
   onValueChange?(value: number[]): void;
   onValueCommit?(value: number[]): void;
   inverted?: boolean;
+  thumbAlignment?: ThumbAlignment;
   form?: string;
 }
 
@@ -90,6 +93,7 @@ const Slider = React.forwardRef<SliderElement, SliderProps>(
       onValueChange = () => {},
       onValueCommit = () => {},
       inverted = false,
+      thumbAlignment = 'contain',
       form,
       ...sliderProps
     } = props;
@@ -154,6 +158,7 @@ const Slider = React.forwardRef<SliderElement, SliderProps>(
         thumbs={thumbRefs.current}
         values={values}
         orientation={orientation}
+        thumbAlignment={thumbAlignment}
         form={form}
       >
         <Collection.Provider scope={props.__scopeSlider}>
@@ -169,6 +174,7 @@ const Slider = React.forwardRef<SliderElement, SliderProps>(
               min={min}
               max={max}
               inverted={inverted}
+              thumbAlignment={thumbAlignment}
               onSlideStart={disabled ? undefined : handleSlideStart}
               onSlideMove={disabled ? undefined : handleSlideMove}
               onSlideEnd={disabled ? undefined : handleSlideEnd}
@@ -219,6 +225,7 @@ type SliderOrientationPrivateProps = {
   min: number;
   max: number;
   inverted: boolean;
+  thumbAlignment?: ThumbAlignment;
   onSlideStart?(value: number): void;
   onSlideMove?(value: number): void;
   onSlideEnd?(): void;
@@ -242,12 +249,14 @@ const SliderHorizontal = React.forwardRef<SliderHorizontalElement, SliderHorizon
       max,
       dir,
       inverted,
+      thumbAlignment,
       onSlideStart,
       onSlideMove,
       onSlideEnd,
       onStepKeyDown,
       ...sliderProps
     } = props;
+    const context = useSliderContext(SLIDER_NAME, props.__scopeSlider);
     const [slider, setSlider] = React.useState<SliderImplElement | null>(null);
     const composedRefs = useComposedRefs(forwardedRef, (node) => setSlider(node));
     const rectRef = React.useRef<DOMRect>(undefined);
@@ -257,12 +266,16 @@ const SliderHorizontal = React.forwardRef<SliderHorizontalElement, SliderHorizon
 
     function getValueFromPointer(pointerPosition: number) {
       const rect = rectRef.current || slider!.getBoundingClientRect();
-      const input: [number, number] = [0, rect.width];
+      const thumbWidthOffset =
+        thumbAlignment === 'contain'
+          ? [...context.thumbs][context.valueIndexToChangeRef.current].clientWidth
+          : 0;
+      const input: [number, number] = [0, rect.width - thumbWidthOffset];
       const output: [number, number] = isSlidingFromLeft ? [min, max] : [max, min];
       const value = linearScale(input, output);
 
       rectRef.current = rect;
-      return value(pointerPosition - rect.left);
+      return value(pointerPosition - rect.left - thumbWidthOffset / 2);
     }
 
     return (
@@ -280,7 +293,10 @@ const SliderHorizontal = React.forwardRef<SliderHorizontalElement, SliderHorizon
           ref={composedRefs}
           style={{
             ...sliderProps.style,
-            ['--radix-slider-thumb-transform' as any]: 'translateX(-50%)',
+            ['--radix-slider-thumb-transform' as any]:
+              !isSlidingFromLeft && thumbAlignment === 'overflow'
+                ? 'translateX(50%)'
+                : 'translateX(-50%)',
           }}
           onSlideStart={(event) => {
             const value = getValueFromPointer(event.clientX);
@@ -318,12 +334,14 @@ const SliderVertical = React.forwardRef<SliderVerticalElement, SliderVerticalPro
       min,
       max,
       inverted,
+      thumbAlignment,
       onSlideStart,
       onSlideMove,
       onSlideEnd,
       onStepKeyDown,
       ...sliderProps
     } = props;
+    const context = useSliderContext(SLIDER_NAME, props.__scopeSlider);
     const sliderRef = React.useRef<SliderImplElement>(null);
     const ref = useComposedRefs(forwardedRef, sliderRef);
     const rectRef = React.useRef<DOMRect>(undefined);
@@ -331,12 +349,16 @@ const SliderVertical = React.forwardRef<SliderVerticalElement, SliderVerticalPro
 
     function getValueFromPointer(pointerPosition: number) {
       const rect = rectRef.current || sliderRef.current!.getBoundingClientRect();
-      const input: [number, number] = [0, rect.height];
+      const thumbHeightOffset =
+        thumbAlignment === 'contain'
+          ? [...context.thumbs][context.valueIndexToChangeRef.current].clientHeight
+          : 0;
+      const input: [number, number] = [0, rect.height - thumbHeightOffset];
       const output: [number, number] = isSlidingFromBottom ? [max, min] : [min, max];
       const value = linearScale(input, output);
 
       rectRef.current = rect;
-      return value(pointerPosition - rect.top);
+      return value(pointerPosition - rect.top - thumbHeightOffset / 2);
     }
 
     return (
@@ -353,7 +375,10 @@ const SliderVertical = React.forwardRef<SliderVerticalElement, SliderVerticalPro
           ref={ref}
           style={{
             ...sliderProps.style,
-            ['--radix-slider-thumb-transform' as any]: 'translateY(50%)',
+            ['--radix-slider-thumb-transform' as any]:
+              !isSlidingFromBottom && thumbAlignment === 'overflow'
+                ? 'translateY(-50%)'
+                : 'translateY(50%)',
           }}
           onSlideStart={(event) => {
             const value = getValueFromPointer(event.clientY);
@@ -568,9 +593,10 @@ const SliderThumbImpl = React.forwardRef<SliderThumbImplElement, SliderThumbImpl
       value === undefined ? 0 : convertValueToPercentage(value, context.min, context.max);
     const label = getLabel(index, context.values.length);
     const orientationSize = size?.[orientation.size];
-    const thumbInBoundsOffset = orientationSize
-      ? getThumbInBoundsOffset(orientationSize, percent, orientation.direction)
-      : 0;
+    const thumbInBoundsOffset =
+      orientationSize && context.thumbAlignment === 'contain'
+        ? getThumbInBoundsOffset(orientationSize, percent, orientation.direction)
+        : 0;
 
     React.useEffect(() => {
       if (thumb) {
