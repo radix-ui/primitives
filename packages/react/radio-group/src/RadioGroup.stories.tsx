@@ -413,6 +413,36 @@ export const Chromatic = () => {
 };
 Chromatic.parameters = { chromatic: { disable: false } };
 
+export const WithLinks = () => (
+  <Label>
+    Favourite pet
+    <button>Random Focusable Element</button>
+    <RadioGroup.Root className={rootClass()} defaultValue="1" loop={false}>
+      <div className={withLinksItem()}>
+        <RadioGroup.Item className={itemClass()} value="1">
+          <RadioGroup.Indicator className={indicatorClass()} />
+        </RadioGroup.Item>
+        <Label>Dog</Label>
+        <a href="https://google.com">Dog Link</a>
+      </div>
+      <div className={withLinksItem()}>
+        <RadioGroup.Item className={itemClass()} value="2">
+          <RadioGroup.Indicator className={indicatorClass()} />
+        </RadioGroup.Item>
+        <Label>Cat</Label>
+        <a href="https://google.com">Cat Link</a>
+      </div>
+      <div className={withLinksItem()}>
+        <RadioGroup.Item className={itemClass()} value="3">
+          <RadioGroup.Indicator className={indicatorClass()} />
+        </RadioGroup.Item>
+        <Label>Rabbit</Label>
+        <a href="https://google.com">Rabbit Link</a>
+      </div>
+    </RadioGroup.Root>
+  </Label>
+);
+
 const Label = (props: any) => <LabelPrimitive {...props} style={RECOMMENDED_CSS__LABEL__ROOT} />;
 
 const rootClass = css({});
@@ -488,3 +518,9 @@ const styles = {
 const rootAttrClass = css(styles);
 const itemAttrClass = css(styles);
 const indicatorAttrClass = css(styles);
+
+const withLinksItem = css({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '5px',
+});
