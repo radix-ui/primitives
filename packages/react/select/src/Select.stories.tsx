@@ -1,4 +1,5 @@
 import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 import { css } from '../../../../stitches.config';
 import * as Select from '@radix-ui/react-select';
 import { Label } from '@radix-ui/react-label';
@@ -507,6 +508,62 @@ export const WithinForm = () => {
       <button type="submit">Submit</button>
       <br />
       <pre>{JSON.stringify(data, null, 2)}</pre>
+    </form>
+  );
+};
+
+export const RefreshItemsWithinForm = function SelectDemo() {
+  const [value, setValue] = React.useState<string>('apple');
+  const [hide, setHide] = React.useState(false);
+
+  return (
+    <form onSubmit={(e) => e.preventDefault()}>
+      <p>current value: {value}</p>
+      <button
+        onClick={() => {
+          ReactDOM.flushSync(() => {
+            setHide(true);
+          });
+          ReactDOM.flushSync(() => {
+            setValue('banana');
+            setHide(false);
+          });
+        }}
+      >
+        Update to banana
+      </button>
+
+      <Select.Root value={value} onValueChange={setValue}>
+        <Select.Trigger className={triggerClass()}>
+          <Select.Value placeholder="select a fruit" />
+          <Select.Icon />
+        </Select.Trigger>
+        <Select.Portal>
+          <Select.Content className={contentClass()}>
+            <Select.Viewport className={viewportClass()}>
+              {hide ? null : (
+                <>
+                  <Select.Item className={itemClass()} value="apple">
+                    <Select.ItemText>Apple</Select.ItemText>
+                  </Select.Item>
+                  <Select.Item className={itemClass()} value="banana">
+                    <Select.ItemText>Banana</Select.ItemText>
+                  </Select.Item>
+                  <Select.Item className={itemClass()} value="blueberry">
+                    <Select.ItemText>Blueberry</Select.ItemText>
+                  </Select.Item>
+                  <Select.Item className={itemClass()} value="grapes">
+                    <Select.ItemText>Grapes</Select.ItemText>
+                  </Select.Item>
+                  <Select.Item className={itemClass()} value="pineapple">
+                    <Select.ItemText>Pineapple</Select.ItemText>
+                  </Select.Item>
+                </>
+              )}
+            </Select.Viewport>
+          </Select.Content>
+        </Select.Portal>
+      </Select.Root>
     </form>
   );
 };
