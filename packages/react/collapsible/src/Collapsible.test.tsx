@@ -48,6 +48,10 @@ describe('given a default Collapsible', () => {
       });
     });
   });
+
+  it('should not have an aria-controls attribute', () => {
+    expect(trigger.getAttribute('aria-controls')).toBeNull();
+  });
 });
 
 describe('given an open uncontrolled Collapsible', () => {
@@ -99,5 +103,12 @@ describe('given an open controlled Collapsible', () => {
     it('should not close the content', () => {
       expect(content).toBeVisible();
     });
+  });
+
+  it('should have a valid aria-controls attribute', () => {
+    const trigger = rendered.getByText(TRIGGER_TEXT);
+    const ariaControls = trigger.getAttribute('aria-controls');
+    expect(ariaControls).not.toBeNull();
+    expect(ariaControls).toBe(content.id);
   });
 });
