@@ -265,6 +265,14 @@ const SliderHorizontal = React.forwardRef<SliderHorizontalElement, SliderHorizon
       return value(pointerPosition - rect.left);
     }
 
+    function getValueFromEvent(event: React.PointerEvent | React.TouchEvent) {
+      const pointerPosition =
+        'changedTouches' in event && event.changedTouches && event.changedTouches.length > 0
+          ? event.changedTouches[0].clientX
+          : event.clientX;
+      return getValueFromPointer(pointerPosition);
+    }
+
     return (
       <SliderOrientationProvider
         scope={props.__scopeSlider}
@@ -283,11 +291,11 @@ const SliderHorizontal = React.forwardRef<SliderHorizontalElement, SliderHorizon
             ['--radix-slider-thumb-transform' as any]: 'translateX(-50%)',
           }}
           onSlideStart={(event) => {
-            const value = getValueFromPointer(event.clientX);
+            const value = getValueFromEvent(event);
             onSlideStart?.(value);
           }}
           onSlideMove={(event) => {
-            const value = getValueFromPointer(event.clientX);
+            const value = getValueFromEvent(event);
             onSlideMove?.(value);
           }}
           onSlideEnd={() => {
@@ -339,6 +347,14 @@ const SliderVertical = React.forwardRef<SliderVerticalElement, SliderVerticalPro
       return value(pointerPosition - rect.top);
     }
 
+    function getValueFromEvent(event: React.PointerEvent | React.TouchEvent) {
+      const pointerPosition =
+        'changedTouches' in event && event.changedTouches && event.changedTouches.length > 0
+          ? event.changedTouches[0].clientY
+          : event.clientY;
+      return getValueFromPointer(pointerPosition);
+    }
+
     return (
       <SliderOrientationProvider
         scope={props.__scopeSlider}
@@ -356,11 +372,11 @@ const SliderVertical = React.forwardRef<SliderVerticalElement, SliderVerticalPro
             ['--radix-slider-thumb-transform' as any]: 'translateY(50%)',
           }}
           onSlideStart={(event) => {
-            const value = getValueFromPointer(event.clientY);
+            const value = getValueFromEvent(event);
             onSlideStart?.(value);
           }}
           onSlideMove={(event) => {
-            const value = getValueFromPointer(event.clientY);
+            const value = getValueFromEvent(event);
             onSlideMove?.(value);
           }}
           onSlideEnd={() => {
@@ -385,9 +401,9 @@ const SliderVertical = React.forwardRef<SliderVerticalElement, SliderVerticalPro
 type SliderImplElement = React.ElementRef<typeof Primitive.span>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 type SliderImplPrivateProps = {
-  onSlideStart(event: React.PointerEvent): void;
-  onSlideMove(event: React.PointerEvent): void;
-  onSlideEnd(event: React.PointerEvent): void;
+  onSlideStart(event: React.PointerEvent | React.TouchEvent): void;
+  onSlideMove(event: React.PointerEvent | React.TouchEvent): void;
+  onSlideEnd(event: React.PointerEvent | React.TouchEvent): void;
   onHomeKeyDown(event: React.KeyboardEvent): void;
   onEndKeyDown(event: React.KeyboardEvent): void;
   onStepKeyDown(event: React.KeyboardEvent): void;
@@ -450,6 +466,17 @@ const SliderImpl = React.forwardRef<SliderImplElement, SliderImplProps>(
             target.releasePointerCapture(event.pointerId);
             onSlideEnd(event);
           }
+        })}
+        onTouchMove={composeEventHandlers(props.onTouchMove, (event) => {
+          event.preventDefault();
+          onSlideMove(event);
+        })}
+        onTouchStart={composeEventHandlers(props.onTouchStart, (event) => {
+          event.preventDefault();
+          onSlideStart(event);
+        })}
+        onTouchEnd={composeEventHandlers(props.onTouchEnd, (event) => {
+          onSlideEnd(event);
         })}
       />
     );
