@@ -48,7 +48,7 @@
     "@radix-ui/react-use-previous": "workspace:*",
     "@radix-ui/react-visually-hidden": "workspace:*",
     "aria-hidden": "^1.1.1",
-    "react-remove-scroll": "2.6.0"
+    "react-remove-scroll": "^2.6.1"
   },
   "peerDependencies": {
     "@types/react": "*",
