@@ -1,0 +1,5 @@
+releases:
+  "@radix-ui/react-tooltip": minor
+
+declined:
+  - primitives
