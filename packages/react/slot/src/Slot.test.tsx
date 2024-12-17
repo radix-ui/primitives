@@ -106,6 +106,66 @@ describe('given a slotted Trigger', () => {
       expect(handleChildClick).toHaveBeenCalledTimes(1);
     });
   });
+
+  describe('with aria-describedby on itself', () => {
+    beforeEach(() => {
+      render(
+        <Trigger as={Slot} aria-describedby="description">
+          <button type="button">Click me</button>
+        </Trigger>
+      );
+    });
+
+    it('should set aria-describedby on the child', async () => {
+      expect(screen.getByRole('button')).toHaveAttribute('aria-describedby', 'description');
+    });
+  });
+  describe('with aria-describedby on the child', () => {
+    beforeEach(() => {
+      render(
+        <Trigger as={Slot}>
+          <button type="button" aria-describedby="description">
+            Click me
+          </button>
+        </Trigger>
+      );
+    });
+
+    it('should set aria-describedby on the child', async () => {
+      expect(screen.getByRole('button')).toHaveAttribute('aria-describedby', 'description');
+    });
+  });
+  describe('with aria-describedby on itself AND the child', () => {
+    beforeEach(() => {
+      render(
+        <Trigger as={Slot} aria-describedby="description1">
+          <button type="button" aria-describedby="description2">
+            Click me
+          </button>
+        </Trigger>
+      );
+    });
+
+    it('should concatenate both aria-describedby on the child', async () => {
+      expect(screen.getByRole('button')).toHaveAttribute(
+        'aria-describedby',
+        'description1 description2'
+      );
+    });
+  });
+  describe('with undefined aria-describedby on itself AND aria-describedby on the child', () => {
+    beforeEach(() => {
+      render(
+        <Trigger as={Slot}>
+          <button type="button">Click me</button>
+        </Trigger>
+      );
+    });
+
+    it('should set aria-describedby on the child', async () => {
+      expect(screen.getByRole('button')).not.toHaveAttribute('aria-describedby');
+    });
+  });
 });
 
 describe('given a Button with Slottable', () => {
