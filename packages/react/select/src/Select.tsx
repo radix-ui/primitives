@@ -58,6 +58,7 @@ type SelectContextValue = {
   onValueNodeHasChildrenChange(hasChildren: boolean): void;
   contentId: string;
   value?: string;
+  modal: boolean;
   onValueChange(value: string): void;
   open: boolean;
   required?: boolean;
@@ -82,6 +83,7 @@ interface SelectProps {
   children?: React.ReactNode;
   value?: string;
   defaultValue?: string;
+  modal?: boolean;
   onValueChange?(value: string): void;
   open?: boolean;
   defaultOpen?: boolean;
@@ -105,6 +107,7 @@ const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
     defaultValue,
     onValueChange,
     dir,
+    modal = true,
     name,
     autoComplete,
     disabled,
@@ -154,6 +157,7 @@ const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
         onValueNodeHasChildrenChange={setValueNodeHasChildren}
         contentId={useId()}
         value={value}
+        modal={modal}
         onValueChange={setValue}
         open={open}
         onOpenChange={setOpen}
@@ -498,184 +502,39 @@ interface SelectContentImplProps
 
 const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectContentImplProps>(
   (props: ScopedProps<SelectContentImplProps>, forwardedRef) => {
+    const { __scopeSelect, position = 'item-aligned' } = props;
+
     const {
-      __scopeSelect,
-      position = 'item-aligned',
-      onCloseAutoFocus,
-      onEscapeKeyDown,
-      onPointerDownOutside,
-      //
-      // PopperContent props
-      side,
-      sideOffset,
-      align,
-      alignOffset,
-      arrowPadding,
-      collisionBoundary,
-      collisionPadding,
-      sticky,
-      hideWhenDetached,
-      avoidCollisions,
-      //
-      ...contentProps
-    } = props;
-    const context = useSelectContext(CONTENT_NAME, __scopeSelect);
-    const [content, setContent] = React.useState<SelectContentImplElement | null>(null);
-    const [viewport, setViewport] = React.useState<SelectViewportElement | null>(null);
-    const composedRefs = useComposedRefs(forwardedRef, (node) => setContent(node));
-    const [selectedItem, setSelectedItem] = React.useState<SelectItemElement | null>(null);
-    const [selectedItemText, setSelectedItemText] = React.useState<SelectItemTextElement | null>(
-      null
-    );
-    const getItems = useCollection(__scopeSelect);
-    const [isPositioned, setIsPositioned] = React.useState(false);
-    const firstValidItemFoundRef = React.useRef(false);
+      content,
+      context,
+      setContent,
+      viewport,
+      setViewport,
+      selectedItem,
+      setSelectedItem,
+      selectedItemText,
+      setSelectedItemText,
+      getItems,
+      focusFirst,
+      isPositioned,
+      setIsPositioned,
+      searchRef,
+      handleTypeaheadSearch,
+      itemRefCallback,
+      handleItemLeave,
+      itemTextRefCallback,
+      focusSelectedItem,
+    } = useContentHooks(__scopeSelect);
 
-    // aria-hide everything except the content (better supported equivalent to setting aria-modal)
-    React.useEffect(() => {
-      if (content) return hideOthers(content);
-    }, [content]);
-
-    // Make sure the whole tree has focus guards as our `Select` may be
-    // the last element in the DOM (because of the `Portal`)
-    useFocusGuards();
-
-    const focusFirst = React.useCallback(
-      (candidates: Array<HTMLElement | null>) => {
-        const [firstItem, ...restItems] = getItems().map((item) => item.ref.current);
-        const [lastItem] = restItems.slice(-1);
-
-        const PREVIOUSLY_FOCUSED_ELEMENT = document.activeElement;
-        for (const candidate of candidates) {
-          // if focus is already where we want to go, we don't want to keep going through the candidates
-          if (candidate === PREVIOUSLY_FOCUSED_ELEMENT) return;
-          candidate?.scrollIntoView({ block: 'nearest' });
-          // viewport might have padding so scroll to its edges when focusing first/last items.
-          if (candidate === firstItem && viewport) viewport.scrollTop = 0;
-          if (candidate === lastItem && viewport) viewport.scrollTop = viewport.scrollHeight;
-          candidate?.focus();
-          if (document.activeElement !== PREVIOUSLY_FOCUSED_ELEMENT) return;
-        }
-      },
-      [getItems, viewport]
-    );
-
-    const focusSelectedItem = React.useCallback(
-      () => focusFirst([selectedItem, content]),
-      [focusFirst, selectedItem, content]
-    );
-
-    // Since this is not dependent on layout, we want to ensure this runs at the same time as
-    // other effects across components. Hence why we don't call `focusSelectedItem` inside `position`.
-    React.useEffect(() => {
-      if (isPositioned) {
-        focusSelectedItem();
-      }
-    }, [isPositioned, focusSelectedItem]);
-
-    // prevent selecting items on `pointerup` in some cases after opening from `pointerdown`
-    // and close on `pointerup` outside.
-    const { onOpenChange, triggerPointerDownPosRef } = context;
-    React.useEffect(() => {
-      if (content) {
-        let pointerMoveDelta = { x: 0, y: 0 };
-
-        const handlePointerMove = (event: PointerEvent) => {
-          pointerMoveDelta = {
-            x: Math.abs(Math.round(event.pageX) - (triggerPointerDownPosRef.current?.x ?? 0)),
-            y: Math.abs(Math.round(event.pageY) - (triggerPointerDownPosRef.current?.y ?? 0)),
-          };
-        };
-        const handlePointerUp = (event: PointerEvent) => {
-          // If the pointer hasn't moved by a certain threshold then we prevent selecting item on `pointerup`.
-          if (pointerMoveDelta.x <= 10 && pointerMoveDelta.y <= 10) {
-            event.preventDefault();
-          } else {
-            // otherwise, if the event was outside the content, close.
-            if (!content.contains(event.target as HTMLElement)) {
-              onOpenChange(false);
-            }
-          }
-          document.removeEventListener('pointermove', handlePointerMove);
-          triggerPointerDownPosRef.current = null;
-        };
-
-        if (triggerPointerDownPosRef.current !== null) {
-          document.addEventListener('pointermove', handlePointerMove);
-          document.addEventListener('pointerup', handlePointerUp, { capture: true, once: true });
-        }
-
-        return () => {
-          document.removeEventListener('pointermove', handlePointerMove);
-          document.removeEventListener('pointerup', handlePointerUp, { capture: true });
-        };
-      }
-    }, [content, onOpenChange, triggerPointerDownPosRef]);
-
-    React.useEffect(() => {
-      const close = () => onOpenChange(false);
-      window.addEventListener('blur', close);
-      window.addEventListener('resize', close);
-      return () => {
-        window.removeEventListener('blur', close);
-        window.removeEventListener('resize', close);
-      };
-    }, [onOpenChange]);
-
-    const [searchRef, handleTypeaheadSearch] = useTypeaheadSearch((search) => {
-      const enabledItems = getItems().filter((item) => !item.disabled);
-      const currentItem = enabledItems.find((item) => item.ref.current === document.activeElement);
-      const nextItem = findNextItem(enabledItems, search, currentItem);
-      if (nextItem) {
-        /**
-         * Imperative focus during keydown is risky so we prevent React's batching updates
-         * to avoid potential bugs. See: https://github.com/facebook/react/issues/20332
-         */
-        setTimeout(() => (nextItem.ref.current as HTMLElement).focus());
-      }
-    });
-
-    const itemRefCallback = React.useCallback(
-      (node: SelectItemElement | null, value: string, disabled: boolean) => {
-        const isFirstValidItem = !firstValidItemFoundRef.current && !disabled;
-        const isSelectedItem = context.value !== undefined && context.value === value;
-        if (isSelectedItem || isFirstValidItem) {
-          setSelectedItem(node);
-          if (isFirstValidItem) firstValidItemFoundRef.current = true;
-        }
-      },
-      [context.value]
-    );
-    const handleItemLeave = React.useCallback(() => content?.focus(), [content]);
-    const itemTextRefCallback = React.useCallback(
-      (node: SelectItemTextElement | null, value: string, disabled: boolean) => {
-        const isFirstValidItem = !firstValidItemFoundRef.current && !disabled;
-        const isSelectedItem = context.value !== undefined && context.value === value;
-        if (isSelectedItem || isFirstValidItem) {
-          setSelectedItemText(node);
-        }
-      },
-      [context.value]
-    );
-
-    const SelectPosition = position === 'popper' ? SelectPopperPosition : SelectItemAlignedPosition;
-
-    // Silently ignore props that are not supported by `SelectItemAlignedPosition`
-    const popperContentProps =
-      SelectPosition === SelectPopperPosition
-        ? {
-            side,
-            sideOffset,
-            align,
-            alignOffset,
-            arrowPadding,
-            collisionBoundary,
-            collisionPadding,
-            sticky,
-            hideWhenDetached,
-            avoidCollisions,
-          }
-        : {};
+    const actionProps = {
+      focusFirst,
+      getItems,
+      handleTypeaheadSearch,
+      setContent,
+      setSelectedItem,
+      setSelectedItemText,
+      setIsPositioned,
+    };
 
     return (
       <SelectContentProvider
@@ -693,87 +552,341 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
         isPositioned={isPositioned}
         searchRef={searchRef}
       >
-        <RemoveScroll as={Slot} allowPinchZoom>
-          <FocusScope
-            asChild
-            // we make sure we're not trapping once it's been closed
-            // (closed !== unmounted when animating out)
-            trapped={context.open}
-            onMountAutoFocus={(event) => {
-              // we prevent open autofocus because we manually focus the selected item
-              event.preventDefault();
-            }}
-            onUnmountAutoFocus={composeEventHandlers(onCloseAutoFocus, (event) => {
-              context.trigger?.focus({ preventScroll: true });
-              event.preventDefault();
-            })}
-          >
-            <DismissableLayer
-              asChild
-              disableOutsidePointerEvents
-              onEscapeKeyDown={onEscapeKeyDown}
-              onPointerDownOutside={onPointerDownOutside}
-              // When focus is trapped, a focusout event may still happen.
-              // We make sure we don't trigger our `onDismiss` in such case.
-              onFocusOutside={(event) => event.preventDefault()}
-              onDismiss={() => context.onOpenChange(false)}
-            >
-              <SelectPosition
-                role="listbox"
-                id={context.contentId}
-                data-state={context.open ? 'open' : 'closed'}
-                dir={context.dir}
-                onContextMenu={(event) => event.preventDefault()}
-                {...contentProps}
-                {...popperContentProps}
-                onPlaced={() => setIsPositioned(true)}
-                ref={composedRefs}
-                style={{
-                  // flex layout so we can place the scroll buttons properly
-                  display: 'flex',
-                  flexDirection: 'column',
-                  // reset the outline by default as the content MAY get focused
-                  outline: 'none',
-                  ...contentProps.style,
-                }}
-                onKeyDown={composeEventHandlers(contentProps.onKeyDown, (event) => {
-                  const isModifierKey = event.ctrlKey || event.altKey || event.metaKey;
-
-                  // select should not be navigated using tab key so we prevent it
-                  if (event.key === 'Tab') event.preventDefault();
-
-                  if (!isModifierKey && event.key.length === 1) handleTypeaheadSearch(event.key);
-
-                  if (['ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) {
-                    const items = getItems().filter((item) => !item.disabled);
-                    let candidateNodes = items.map((item) => item.ref.current!);
-
-                    if (['ArrowUp', 'End'].includes(event.key)) {
-                      candidateNodes = candidateNodes.slice().reverse();
-                    }
-                    if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
-                      const currentElement = event.target as SelectItemElement;
-                      const currentIndex = candidateNodes.indexOf(currentElement);
-                      candidateNodes = candidateNodes.slice(currentIndex + 1);
-                    }
-
-                    /**
-                     * Imperative focus during keydown is risky so we prevent React's batching updates
-                     * to avoid potential bugs. See: https://github.com/facebook/react/issues/20332
-                     */
-                    setTimeout(() => focusFirst(candidateNodes));
-
-                    event.preventDefault();
-                  }
-                })}
-              />
-            </DismissableLayer>
-          </FocusScope>
-        </RemoveScroll>
+        {context.modal ? (
+          <SelectContentModal {...props} {...actionProps} ref={forwardedRef} />
+        ) : (
+          <SelectContentNonModal {...props} {...actionProps} ref={forwardedRef} />
+        )}
       </SelectContentProvider>
     );
   }
 );
+
+const useContentHooks = (__scopeSelect: Scope) => {
+  const context = useSelectContext(CONTENT_NAME, __scopeSelect);
+  const [content, setContent] = React.useState<SelectContentImplElement | null>(null);
+  const [viewport, setViewport] = React.useState<SelectViewportElement | null>(null);
+  const [selectedItem, setSelectedItem] = React.useState<SelectItemElement | null>(null);
+  const [selectedItemText, setSelectedItemText] = React.useState<SelectItemTextElement | null>(
+    null
+  );
+  const getItems = useCollection(__scopeSelect);
+  const [isPositioned, setIsPositioned] = React.useState(false);
+  const firstValidItemFoundRef = React.useRef(false);
+
+  useFocusGuards();
+
+  const focusFirst = React.useCallback(
+    (candidates: Array<HTMLElement | null>) => {
+      const [firstItem, ...restItems] = getItems().map((item) => item.ref.current);
+      const [lastItem] = restItems.slice(-1);
+
+      const PREVIOUSLY_FOCUSED_ELEMENT = document.activeElement;
+      for (const candidate of candidates) {
+        // if focus is already where we want to go, we don't want to keep going through the candidates
+        if (candidate === PREVIOUSLY_FOCUSED_ELEMENT) return;
+        candidate?.scrollIntoView({ block: 'nearest' });
+        // viewport might have padding so scroll to its edges when focusing first/last items.
+        if (candidate === firstItem && viewport) viewport.scrollTop = 0;
+        if (candidate === lastItem && viewport) viewport.scrollTop = viewport.scrollHeight;
+        candidate?.focus();
+        if (document.activeElement !== PREVIOUSLY_FOCUSED_ELEMENT) return;
+      }
+    },
+    [getItems, viewport]
+  );
+
+  const focusSelectedItem = React.useCallback(
+    () => focusFirst([selectedItem, content]),
+    [focusFirst, selectedItem, content]
+  );
+
+  // Since this is not dependent on layout, we want to ensure this runs at the same time as
+  // other effects across components. Hence why we don't call `focusSelectedItem` inside `position`.
+  React.useEffect(() => {
+    if (isPositioned) {
+      focusSelectedItem();
+    }
+  }, [isPositioned, focusSelectedItem]);
+
+  // prevent selecting items on `pointerup` in some cases after opening from `pointerdown`
+  // and close on `pointerup` outside.
+  const { onOpenChange, triggerPointerDownPosRef } = context;
+  React.useEffect(() => {
+    if (content) {
+      let pointerMoveDelta = { x: 0, y: 0 };
+
+      const handlePointerMove = (event: PointerEvent) => {
+        pointerMoveDelta = {
+          x: Math.abs(Math.round(event.pageX) - (triggerPointerDownPosRef.current?.x ?? 0)),
+          y: Math.abs(Math.round(event.pageY) - (triggerPointerDownPosRef.current?.y ?? 0)),
+        };
+      };
+      const handlePointerUp = (event: PointerEvent) => {
+        // If the pointer hasn't moved by a certain threshold then we prevent selecting item on `pointerup`.
+        if (pointerMoveDelta.x <= 10 && pointerMoveDelta.y <= 10) {
+          event.preventDefault();
+        } else {
+          // otherwise, if the event was outside the content, close.
+          if (!content.contains(event.target as HTMLElement)) {
+            onOpenChange(false);
+          }
+        }
+        document.removeEventListener('pointermove', handlePointerMove);
+        triggerPointerDownPosRef.current = null;
+      };
+
+      if (triggerPointerDownPosRef.current !== null) {
+        document.addEventListener('pointermove', handlePointerMove);
+        document.addEventListener('pointerup', handlePointerUp, { capture: true, once: true });
+      }
+
+      return () => {
+        document.removeEventListener('pointermove', handlePointerMove);
+        document.removeEventListener('pointerup', handlePointerUp, { capture: true });
+      };
+    }
+  }, [content, onOpenChange, triggerPointerDownPosRef]);
+
+  React.useEffect(() => {
+    const close = () => onOpenChange(false);
+    window.addEventListener('blur', close);
+    window.addEventListener('resize', close);
+    return () => {
+      window.removeEventListener('blur', close);
+      window.removeEventListener('resize', close);
+    };
+  }, [onOpenChange]);
+
+  const [searchRef, handleTypeaheadSearch] = useTypeaheadSearch((search) => {
+    const enabledItems = getItems().filter((item) => !item.disabled);
+    const currentItem = enabledItems.find((item) => item.ref.current === document.activeElement);
+    const nextItem = findNextItem(enabledItems, search, currentItem);
+    if (nextItem) {
+      /**
+       * Imperative focus during keydown is risky so we prevent React's batching updates
+       * to avoid potential bugs. See: https://github.com/facebook/react/issues/20332
+       */
+      setTimeout(() => (nextItem.ref.current as HTMLElement).focus());
+    }
+  });
+
+  const itemRefCallback = React.useCallback(
+    (node: SelectItemElement | null, value: string, disabled: boolean) => {
+      const isFirstValidItem = !firstValidItemFoundRef.current && !disabled;
+      const isSelectedItem = context.value !== undefined && context.value === value;
+      if (isSelectedItem || isFirstValidItem) {
+        setSelectedItem(node);
+        if (isFirstValidItem) firstValidItemFoundRef.current = true;
+      }
+    },
+    [context.value]
+  );
+  const handleItemLeave = React.useCallback(() => content?.focus(), [content]);
+  const itemTextRefCallback = React.useCallback(
+    (node: SelectItemTextElement | null, value: string, disabled: boolean) => {
+      const isFirstValidItem = !firstValidItemFoundRef.current && !disabled;
+      const isSelectedItem = context.value !== undefined && context.value === value;
+      if (isSelectedItem || isFirstValidItem) {
+        setSelectedItemText(node);
+      }
+    },
+    [context.value]
+  );
+
+  return {
+    content,
+    context,
+    setContent,
+    viewport,
+    setViewport,
+    selectedItem,
+    setSelectedItem,
+    selectedItemText,
+    setSelectedItemText,
+    getItems,
+    focusFirst,
+    isPositioned,
+    setIsPositioned,
+    searchRef,
+    handleTypeaheadSearch,
+    itemRefCallback,
+    handleItemLeave,
+    itemTextRefCallback,
+    focusSelectedItem,
+  };
+};
+
+type SelectContentComposedProps = ScopedProps<SelectContentImplProps> & {
+  focusFirst: (candidates: Array<HTMLElement | null>) => void;
+  getItems: () => ({ ref: React.RefObject<HTMLDivElement> } & ItemData)[];
+  handleTypeaheadSearch: (key: string) => void;
+  setContent: React.Dispatch<any>;
+  setSelectedItem: React.Dispatch<React.SetStateAction<HTMLDivElement | null>>;
+  setSelectedItemText: React.Dispatch<React.SetStateAction<HTMLSpanElement | null>>;
+  setIsPositioned: (isPositioned: boolean) => void;
+};
+
+const SelectContentModal = React.forwardRef<SelectContentImplElement, SelectContentComposedProps>(
+  (props: SelectContentComposedProps, forwardedRef) => {
+    // aria-hide everything except the content (better supported equivalent to setting aria-modal)
+    const contentRef = React.useRef<HTMLDivElement>(null);
+    React.useEffect(() => {
+      const content = contentRef.current;
+      if (content) return hideOthers(content);
+    }, []);
+    const composedRefs = useComposedRefs(forwardedRef, (node) => props.setContent(node));
+
+    return (
+      <RemoveScroll as={Slot} allowPinchZoom>
+        <SelectContentNonModal {...props} ref={composedRefs} />
+      </RemoveScroll>
+    );
+  }
+);
+
+const SelectContentNonModal = React.forwardRef<
+  SelectContentImplElement,
+  SelectContentComposedProps
+>((props: SelectContentComposedProps, forwardedRef) => {
+  const {
+    __scopeSelect,
+    position = 'item-aligned',
+    onCloseAutoFocus,
+    onEscapeKeyDown,
+    onPointerDownOutside,
+    //
+    // Hooks methods
+    focusFirst,
+    getItems,
+    handleTypeaheadSearch,
+    setContent,
+    setSelectedItem,
+    setSelectedItemText,
+    setIsPositioned,
+    //
+    // PopperContent props
+    side,
+    sideOffset,
+    align,
+    alignOffset,
+    arrowPadding,
+    collisionBoundary,
+    collisionPadding,
+    sticky,
+    hideWhenDetached,
+    avoidCollisions,
+    //
+    ...contentProps
+  } = props;
+  const context = useSelectContext(CONTENT_NAME, __scopeSelect);
+  const composedRefs = useComposedRefs(forwardedRef, (node) => setContent(node));
+  const hasInteractedOutsideRef = React.useRef(false);
+
+  const SelectPosition = position === 'popper' ? SelectPopperPosition : SelectItemAlignedPosition;
+
+  // Silently ignore props that are not supported by `SelectItemAlignedPosition`
+  const popperContentProps =
+    SelectPosition === SelectPopperPosition
+      ? {
+          side,
+          sideOffset,
+          align,
+          alignOffset,
+          arrowPadding,
+          collisionBoundary,
+          collisionPadding,
+          sticky,
+          hideWhenDetached,
+          avoidCollisions,
+        }
+      : {};
+
+  return (
+    <FocusScope
+      asChild
+      // we make sure we're not trapping once it's been closed
+      // (closed !== unmounted when animating out)
+      trapped={context.open}
+      onMountAutoFocus={(event) => {
+        // we prevent open autofocus because we manually focus the selected item
+        event.preventDefault();
+      }}
+      onUnmountAutoFocus={composeEventHandlers(onCloseAutoFocus, (event) => {
+        if (!hasInteractedOutsideRef.current) context.trigger?.focus({ preventScroll: true });
+        hasInteractedOutsideRef.current = false;
+        // Always prevent auto focus because we either focus manually or want user agent focus
+        event.preventDefault();
+      })}
+    >
+      <DismissableLayer
+        asChild
+        disableOutsidePointerEvents={context.modal}
+        onEscapeKeyDown={onEscapeKeyDown}
+        onPointerDownOutside={composeEventHandlers(onPointerDownOutside, (event) => {
+          const originalEvent = event.detail.originalEvent as PointerEvent;
+          const ctrlLeftClick = originalEvent.button === 0 && originalEvent.ctrlKey === true;
+          const isRightClick = originalEvent.button === 2 || ctrlLeftClick;
+          if (!context.modal || isRightClick) hasInteractedOutsideRef.current = true;
+        })}
+        // When focus is trapped, a focusout event may still happen.
+        // We make sure we don't trigger our `onDismiss` in such case.
+        onFocusOutside={(event) => event.preventDefault()}
+        onDismiss={() => context.onOpenChange(false)}
+      >
+        <SelectPosition
+          role="listbox"
+          id={context.contentId}
+          data-state={context.open ? 'open' : 'closed'}
+          dir={context.dir}
+          onContextMenu={(event) => event.preventDefault()}
+          {...contentProps}
+          {...popperContentProps}
+          onPlaced={() => setIsPositioned(true)}
+          ref={composedRefs}
+          style={{
+            // flex layout so we can place the scroll buttons properly
+            display: 'flex',
+            flexDirection: 'column',
+            // reset the outline by default as the content MAY get focused
+            outline: 'none',
+            ...contentProps.style,
+          }}
+          onKeyDown={composeEventHandlers(contentProps.onKeyDown, (event) => {
+            const isModifierKey = event.ctrlKey || event.altKey || event.metaKey;
+
+            // select should not be navigated using tab key so we prevent it
+            if (event.key === 'Tab') event.preventDefault();
+
+            if (!isModifierKey && event.key.length === 1) handleTypeaheadSearch(event.key);
+
+            if (['ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) {
+              const items = getItems().filter((item) => !item.disabled);
+              let candidateNodes = items.map((item) => item.ref.current!);
+
+              if (['ArrowUp', 'End'].includes(event.key)) {
+                candidateNodes = candidateNodes.slice().reverse();
+              }
+              if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
+                const currentElement = event.target as SelectItemElement;
+                const currentIndex = candidateNodes.indexOf(currentElement);
+                candidateNodes = candidateNodes.slice(currentIndex + 1);
+              }
+
+              /**
+               * Imperative focus during keydown is risky so we prevent React's batching updates
+               * to avoid potential bugs. See: https://github.com/facebook/react/issues/20332
+               */
+              setTimeout(() => focusFirst(candidateNodes));
+
+              event.preventDefault();
+            }
+          })}
+        />
+      </DismissableLayer>
+    </FocusScope>
+  );
+});
 
 SelectContentImpl.displayName = CONTENT_IMPL_NAME;
 
