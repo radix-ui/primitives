@@ -115,10 +115,17 @@ function mergeProps(slotProps: AnyProps, childProps: AnyProps) {
       }
     }
     // if it's `style`, we merge them
-    else if (propName === 'style') {
-      overrideProps[propName] = { ...slotPropValue, ...childPropValue };
-    } else if (propName === 'className') {
-      overrideProps[propName] = [slotPropValue, childPropValue].filter(Boolean).join(' ');
+    else {
+      switch (propName) {
+        case 'style':
+          overrideProps[propName] = { ...slotPropValue, ...childPropValue };
+          break;
+
+        case 'className':
+        case 'aria-describedby':
+          overrideProps[propName] = [slotPropValue, childPropValue].filter(Boolean).join(' ');
+          break;
+      }
     }
   }
 
