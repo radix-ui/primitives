@@ -144,13 +144,13 @@ function useImageLoadingStatus(src?: string, options?: UseImageLoadingStatusOpti
     setLoadingStatus('loading');
     image.onload = updateStatus('loaded');
     image.onerror = updateStatus('error');
-    image.src = src;
     if (options?.referrerPolicy) {
       image.referrerPolicy = options.referrerPolicy;
     }
     if (options?.crossOrigin) {
       image.crossOrigin = options.crossOrigin;
     }
+    image.src = src;
 
     return () => {
       isMounted = false;
