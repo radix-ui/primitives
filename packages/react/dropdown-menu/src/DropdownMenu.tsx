@@ -195,6 +195,7 @@ const DropdownMenuContent = React.forwardRef<DropdownMenuContentElement, Dropdow
           if (!context.modal || isRightClick) hasInteractedOutsideRef.current = true;
         })}
         style={{
+          ...contentProps.style,
           ...props.style,
           // re-namespace exposed content custom properties
           ...{
@@ -481,16 +482,18 @@ const DropdownMenuSubContent = React.memo(
           {...subContentProps}
           ref={forwardedRef}
           style={{
-            // Default styles for the subcontent
-            '--radix-dropdown-menu-content-transform-origin':
-              'var(--radix-popper-transform-origin)',
-            '--radix-dropdown-menu-content-available-width': 'var(--radix-popper-available-width)',
-            '--radix-dropdown-menu-content-available-height':
-              'var(--radix-popper-available-height)',
-            '--radix-dropdown-menu-trigger-width': 'var(--radix-popper-anchor-width)',
-            '--radix-dropdown-menu-trigger-height': 'var(--radix-popper-anchor-height)',
-            // Allow user-defined styles to override defaults
-            ...style,
+            ...props.style,
+            // re-namespace exposed content custom properties
+            ...{
+              '--radix-dropdown-menu-content-transform-origin':
+                'var(--radix-popper-transform-origin)',
+              '--radix-dropdown-menu-content-available-width':
+                'var(--radix-popper-available-width)',
+              '--radix-dropdown-menu-content-available-height':
+                'var(--radix-popper-available-height)',
+              '--radix-dropdown-menu-trigger-width': 'var(--radix-popper-anchor-width)',
+              '--radix-dropdown-menu-trigger-height': 'var(--radix-popper-anchor-height)',
+            },
           }}
         />
       );
@@ -574,3 +577,9 @@ export type {
   DropdownMenuSubTriggerProps,
   DropdownMenuSubContentProps,
 };
+function useEffect(
+  arg0: () => () => void,
+  arg1: React.Dispatch<React.SetStateAction<boolean | undefined>>[]
+) {
+  throw new Error('Function not implemented.');
+}
