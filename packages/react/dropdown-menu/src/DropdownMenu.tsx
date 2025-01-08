@@ -421,6 +421,16 @@ const DropdownMenuSub: React.FC<DropdownMenuSubProps> = (
     onChange: onOpenChange,
   });
 
+  useEffect(() => {
+    // Close submenu on window focus
+    const handleWindowFocus = () => setOpen(false);
+
+    window.addEventListener('focus', handleWindowFocus);
+    return () => {
+      window.removeEventListener('focus', handleWindowFocus);
+    };
+  }, [setOpen]);
+
   return (
     <MenuPrimitive.Sub {...menuScope} open={open} onOpenChange={setOpen}>
       {children}
@@ -455,36 +465,38 @@ DropdownMenuSubTrigger.displayName = SUB_TRIGGER_NAME;
 
 const SUB_CONTENT_NAME = 'DropdownMenuSubContent';
 
-type DropdownMenuSubContentElement = React.ElementRef<typeof MenuPrimitive.Content>;
+type DropdownMenuSubContentElement = React.ElementRef<typeof MenuPrimitive.SubContent>;
 type MenuSubContentProps = React.ComponentPropsWithoutRef<typeof MenuPrimitive.SubContent>;
 interface DropdownMenuSubContentProps extends MenuSubContentProps {}
 
-const DropdownMenuSubContent = React.forwardRef<
-  DropdownMenuSubContentElement,
-  DropdownMenuSubContentProps
->((props: ScopedProps<DropdownMenuSubContentProps>, forwardedRef) => {
-  const { __scopeDropdownMenu, ...subContentProps } = props;
-  const menuScope = useMenuScope(__scopeDropdownMenu);
+const DropdownMenuSubContent = React.memo(
+  React.forwardRef<DropdownMenuSubContentElement, DropdownMenuSubContentProps>(
+    (props: ScopedProps<DropdownMenuSubContentProps>, forwardedRef) => {
+      const { __scopeDropdownMenu, style, ...subContentProps } = props;
+      const menuScope = useMenuScope(__scopeDropdownMenu);
 
-  return (
-    <MenuPrimitive.SubContent
-      {...menuScope}
-      {...subContentProps}
-      ref={forwardedRef}
-      style={{
-        ...props.style,
-        // re-namespace exposed content custom properties
-        ...{
-          '--radix-dropdown-menu-content-transform-origin': 'var(--radix-popper-transform-origin)',
-          '--radix-dropdown-menu-content-available-width': 'var(--radix-popper-available-width)',
-          '--radix-dropdown-menu-content-available-height': 'var(--radix-popper-available-height)',
-          '--radix-dropdown-menu-trigger-width': 'var(--radix-popper-anchor-width)',
-          '--radix-dropdown-menu-trigger-height': 'var(--radix-popper-anchor-height)',
-        },
-      }}
-    />
-  );
-});
+      return (
+        <MenuPrimitive.SubContent
+          {...menuScope}
+          {...subContentProps}
+          ref={forwardedRef}
+          style={{
+            // Default styles for the subcontent
+            '--radix-dropdown-menu-content-transform-origin':
+              'var(--radix-popper-transform-origin)',
+            '--radix-dropdown-menu-content-available-width': 'var(--radix-popper-available-width)',
+            '--radix-dropdown-menu-content-available-height':
+              'var(--radix-popper-available-height)',
+            '--radix-dropdown-menu-trigger-width': 'var(--radix-popper-anchor-width)',
+            '--radix-dropdown-menu-trigger-height': 'var(--radix-popper-anchor-height)',
+            // Allow user-defined styles to override defaults
+            ...style,
+          }}
+        />
+      );
+    }
+  )
+);
 
 DropdownMenuSubContent.displayName = SUB_CONTENT_NAME;
 
