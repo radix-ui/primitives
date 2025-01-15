@@ -1955,6 +1955,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@radix-ui/colors@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@radix-ui/colors@npm:3.0.0"
+  checksum: 10/bc9ffb01b3964f16482dc278cf6d86d85b73eae7cb94a77018fbd53b103b3d5ec1ecf77882cfbf8892f28c2c6057db8e19bf4d66234ed330a430373b092c5cfe
+  languageName: node
+  linkType: hard
+
 "@radix-ui/number@workspace:*, @radix-ui/number@workspace:packages/core/number":
   version: 0.0.0-use.local
   resolution: "@radix-ui/number@workspace:packages/core/number"
@@ -3310,13 +3317,6 @@ __metadata:
   dependencies:
     "@sinonjs/commons": "npm:^3.0.0"
   checksum: 10/78155c7bd866a85df85e22028e046b8d46cf3e840f72260954f5e3ed5bd97d66c595524305a6841ffb3f681a08f6e5cef572a2cce5442a8a232dc29fb409b83e
-  languageName: node
-  linkType: hard
-
-"@stitches/core@npm:^1.2.8":
-  version: 1.2.8
-  resolution: "@stitches/core@npm:1.2.8"
-  checksum: 10/bdee1772f033b20bfb1081a3bb8c3e85f2a44f381379d4c2ae21408336025e2d2578f79eec74db26824b852ebcc72de3edfc8c51418608f189aa5ffc26df667a
   languageName: node
   linkType: hard
 
@@ -11678,7 +11678,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "primitives@workspace:."
   dependencies:
-    "@stitches/core": "npm:^1.2.8"
+    "@radix-ui/colors": "npm:^3.0.0"
     "@storybook/addon-essentials": "npm:^8.4.7"
     "@storybook/addon-storysource": "npm:^8.4.7"
     "@storybook/addon-webpack5-compiler-swc": "npm:^1.0.5"

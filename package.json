@@ -32,7 +32,7 @@
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
-    "@stitches/core": "^1.2.8",
+    "@radix-ui/colors": "^3.0.0",
     "@storybook/addon-essentials": "^8.4.7",
     "@storybook/addon-storysource": "^8.4.7",
     "@storybook/addon-webpack5-compiler-swc": "^1.0.5",

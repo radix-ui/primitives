@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { css, keyframes } from '../../../../stitches.config';
 import { Portal } from '@radix-ui/react-portal';
 import * as Popper from '@radix-ui/react-popper';
+import styles from './Popper.stories.module.css';
 
 export default { title: 'Utilities/Popper' };
 
@@ -10,14 +10,14 @@ export const Styled = () => {
   return (
     <Scrollable>
       <Popper.Root>
-        <Popper.Anchor className={anchorClass()} onClick={() => setOpen(true)}>
+        <Popper.Anchor className={styles.anchor} onClick={() => setOpen(true)}>
           open
         </Popper.Anchor>
 
         {open && (
-          <Popper.Content className={contentClass()} sideOffset={5}>
+          <Popper.Content className={styles.content} sideOffset={5}>
             <button onClick={() => setOpen(false)}>close</button>
-            <Popper.Arrow className={arrowClass()} width={20} height={10} />
+            <Popper.Arrow className={styles.arrow} width={20} height={10} />
           </Popper.Content>
         )}
       </Popper.Root>
@@ -30,12 +30,12 @@ export const WithCustomArrow = () => {
   return (
     <Scrollable>
       <Popper.Root>
-        <Popper.Anchor className={anchorClass()} onClick={() => setOpen(true)}>
+        <Popper.Anchor className={styles.anchor} onClick={() => setOpen(true)}>
           open
         </Popper.Anchor>
 
         {open && (
-          <Popper.Content className={contentClass()} side="right" sideOffset={5}>
+          <Popper.Content className={styles.content} side="right" sideOffset={5}>
             <button onClick={() => setOpen(false)}>close</button>
             <Popper.Arrow asChild offset={20}>
               <CustomArrow width={20} height={10} />
@@ -53,15 +53,18 @@ export const Animated = () => {
   return (
     <Scrollable>
       <Popper.Root>
-        <Popper.Anchor className={anchorClass()} onClick={() => setOpen(true)}>
+        <Popper.Anchor className={styles.anchor} onClick={() => setOpen(true)}>
           open
         </Popper.Anchor>
 
         {open && (
           <Portal asChild>
-            <Popper.Content className={animatedContentClass()} sideOffset={5}>
+            <Popper.Content
+              className={[styles.content, styles.animatedContent].join(' ')}
+              sideOffset={5}
+            >
               <button onClick={() => setOpen(false)}>close</button>
-              <Popper.Arrow className={arrowClass()} width={20} height={10} offset={25} />
+              <Popper.Arrow className={styles.arrow} width={20} height={10} offset={25} />
             </Popper.Content>
           </Portal>
         )}
@@ -75,15 +78,15 @@ export const WithPortal = () => {
   return (
     <Scrollable>
       <Popper.Root>
-        <Popper.Anchor className={anchorClass()} onClick={() => setOpen(true)}>
+        <Popper.Anchor className={styles.anchor} onClick={() => setOpen(true)}>
           open
         </Popper.Anchor>
 
         {open && (
           <Portal asChild>
-            <Popper.Content className={contentClass()} sideOffset={5}>
+            <Popper.Content className={styles.content} sideOffset={5}>
               <button onClick={() => setOpen(false)}>close</button>
-              <Popper.Arrow className={arrowClass()} width={20} height={10} />
+              <Popper.Arrow className={styles.arrow} width={20} height={10} />
             </Popper.Content>
           </Portal>
         )}
@@ -105,7 +108,7 @@ export const WithUpdatePositionStrategyAlways = () => {
     <Scrollable>
       <Popper.Root>
         <Popper.Anchor
-          className={anchorClass()}
+          className={styles.anchor}
           onClick={() => setOpen(true)}
           style={{ marginLeft: left }}
         >
@@ -115,12 +118,12 @@ export const WithUpdatePositionStrategyAlways = () => {
         {open && (
           <Portal asChild>
             <Popper.Content
-              className={contentClass()}
+              className={styles.content}
               sideOffset={5}
               updatePositionStrategy="always"
             >
               <button onClick={() => setOpen(false)}>close</button>
-              <Popper.Arrow className={arrowClass()} width={20} height={10} />
+              <Popper.Arrow className={styles.arrow} width={20} height={10} />
             </Popper.Content>
           </Portal>
         )}
@@ -155,7 +158,7 @@ export const Chromatic = () => {
         <Popper.Root>
           <Popper.Anchor className={anchorClass({ size: 'small' })}>1</Popper.Anchor>
           <Popper.Content className={contentClass({ size: 'small' })} sideOffset={5}>
-            <Popper.Arrow className={arrowClass()} width={10} height={5} />1
+            <Popper.Arrow className={styles.arrow} width={10} height={5} />1
           </Popper.Content>
         </Popper.Root>
 
@@ -163,7 +166,7 @@ export const Chromatic = () => {
           <Popper.Anchor className={anchorClass({ size: 'small' })}>2</Popper.Anchor>
           <Portal asChild>
             <Popper.Content className={contentClass({ size: 'small' })} sideOffset={5}>
-              <Popper.Arrow className={arrowClass()} width={10} height={5} />2 (portalled)
+              <Popper.Arrow className={styles.arrow} width={10} height={5} />2 (portalled)
             </Popper.Content>
           </Portal>
         </Popper.Root>
@@ -183,7 +186,7 @@ export const Chromatic = () => {
         <Popper.Root>
           <Popper.Anchor className={anchorClass({ size: 'small' })}>3</Popper.Anchor>
           <Popper.Content className={contentClass({ size: 'small' })} sideOffset={5}>
-            <Popper.Arrow className={arrowClass()} width={10} height={5} />3
+            <Popper.Arrow className={styles.arrow} width={10} height={5} />3
           </Popper.Content>
         </Popper.Root>
 
@@ -191,7 +194,7 @@ export const Chromatic = () => {
           <Popper.Anchor className={anchorClass({ size: 'small' })}>4</Popper.Anchor>
           <Portal asChild>
             <Popper.Content className={contentClass({ size: 'small' })} sideOffset={5}>
-              <Popper.Arrow className={arrowClass()} width={10} height={5} />4 (portalled)
+              <Popper.Arrow className={styles.arrow} width={10} height={5} />4 (portalled)
             </Popper.Content>
           </Portal>
         </Popper.Root>
@@ -212,7 +215,7 @@ export const Chromatic = () => {
         <Popper.Root>
           <Popper.Anchor className={anchorClass({ size: 'small' })}>5</Popper.Anchor>
           <Popper.Content className={contentClass({ size: 'small' })} sideOffset={5}>
-            <Popper.Arrow className={arrowClass()} width={10} height={5} />5
+            <Popper.Arrow className={styles.arrow} width={10} height={5} />5
           </Popper.Content>
         </Popper.Root>
 
@@ -220,7 +223,7 @@ export const Chromatic = () => {
           <Popper.Anchor className={anchorClass({ size: 'small' })}>6</Popper.Anchor>
           <Portal asChild>
             <Popper.Content className={contentClass({ size: 'small' })} sideOffset={5}>
-              <Popper.Arrow className={arrowClass()} width={10} height={5} />6 (portalled)
+              <Popper.Arrow className={styles.arrow} width={10} height={5} />6 (portalled)
             </Popper.Content>
           </Portal>
         </Popper.Root>
@@ -241,7 +244,7 @@ export const Chromatic = () => {
         <Popper.Root>
           <Popper.Anchor className={anchorClass({ size: 'small' })}>7</Popper.Anchor>
           <Popper.Content className={contentClass({ size: 'small' })} sideOffset={5}>
-            <Popper.Arrow className={arrowClass()} width={10} height={5} />7
+            <Popper.Arrow className={styles.arrow} width={10} height={5} />7
           </Popper.Content>
         </Popper.Root>
 
@@ -249,7 +252,7 @@ export const Chromatic = () => {
           <Popper.Anchor className={anchorClass({ size: 'small' })}>8</Popper.Anchor>
           <Portal asChild>
             <Popper.Content className={contentClass({ size: 'small' })} sideOffset={5}>
-              <Popper.Arrow className={arrowClass()} width={10} height={5} />8 (portalled)
+              <Popper.Arrow className={styles.arrow} width={10} height={5} />8 (portalled)
             </Popper.Content>
           </Portal>
         </Popper.Root>
@@ -284,7 +287,7 @@ export const Chromatic = () => {
                       hideWhenDetached
                       collisionBoundary={scrollContainer1}
                     >
-                      <Popper.Arrow className={arrowClass()} width={10} height={5} />
+                      <Popper.Arrow className={styles.arrow} width={10} height={5} />
                       9.{i + 1}
                     </Popper.Content>
                   </Popper.Root>
@@ -300,7 +303,7 @@ export const Chromatic = () => {
                         hideWhenDetached
                         collisionBoundary={scrollContainer1}
                       >
-                        <Popper.Arrow className={arrowClass()} width={10} height={5} />
+                        <Popper.Arrow className={styles.arrow} width={10} height={5} />
                         10.{i + 1} (portalled)
                       </Popper.Content>
                     </Portal>
@@ -341,7 +344,7 @@ export const Chromatic = () => {
                       hideWhenDetached
                       collisionBoundary={scrollContainer2}
                     >
-                      <Popper.Arrow className={arrowClass()} width={10} height={5} />
+                      <Popper.Arrow className={styles.arrow} width={10} height={5} />
                       9.{i + 1}
                     </Popper.Content>
                   </Popper.Root>
@@ -357,7 +360,7 @@ export const Chromatic = () => {
                         hideWhenDetached
                         collisionBoundary={scrollContainer2}
                       >
-                        <Popper.Arrow className={arrowClass()} width={10} height={5} />
+                        <Popper.Arrow className={styles.arrow} width={10} height={5} />
                         10.{i + 1} (portalled)
                       </Popper.Content>
                     </Portal>
@@ -382,7 +385,7 @@ export const Chromatic = () => {
         <Popper.Root>
           <Popper.Anchor className={anchorClass({ size: 'small' })}>11</Popper.Anchor>
           <Popper.Content align="start" className={contentClass({ size: 'small' })} sideOffset={5}>
-            <Popper.Arrow className={arrowClass()} width={10} height={5} />
+            <Popper.Arrow className={styles.arrow} width={10} height={5} />
             11
           </Popper.Content>
         </Popper.Root>
@@ -395,7 +398,7 @@ export const Chromatic = () => {
               className={contentClass({ size: 'small' })}
               sideOffset={5}
             >
-              <Popper.Arrow className={arrowClass()} width={10} height={5} />
+              <Popper.Arrow className={styles.arrow} width={10} height={5} />
               12 (portalled)
             </Popper.Content>
           </Portal>
@@ -420,7 +423,7 @@ export const Chromatic = () => {
             sideOffset={5}
             dir="rtl"
           >
-            <Popper.Arrow className={arrowClass()} width={10} height={5} />
+            <Popper.Arrow className={styles.arrow} width={10} height={5} />
             13
           </Popper.Content>
         </Popper.Root>
@@ -434,7 +437,7 @@ export const Chromatic = () => {
               sideOffset={5}
               dir="rtl"
             >
-              <Popper.Arrow className={arrowClass()} width={10} height={5} />
+              <Popper.Arrow className={styles.arrow} width={10} height={5} />
               14 (portalled)
             </Popper.Content>
           </Portal>
@@ -466,51 +469,22 @@ const CustomArrow = (props: any) => (
   />
 );
 
-const RECOMMENDED_CSS__POPPER__CONTENT = {
-  transformOrigin: 'var(--radix-popper-transform-origin)',
-};
+function anchorClass(props: { size: 'small' | 'large' }) {
+  return [
+    styles.anchor,
+    props.size === 'small' && styles.anchorSmall,
+    props.size === 'large' && styles.anchorLarge,
+  ]
+    .filter(Boolean)
+    .join(' ');
+}
 
-const contentClass = css({
-  ...RECOMMENDED_CSS__POPPER__CONTENT,
-  backgroundColor: '$gray100',
-  padding: 10,
-  borderRadius: 10,
-
-  variants: {
-    size: {
-      small: { width: 100, height: 50 },
-      large: { width: 300, height: 150 },
-    },
-  },
-  defaultVariants: {
-    size: 'large',
-  },
-});
-const anchorClass = css({
-  backgroundColor: 'hotpink',
-
-  variants: {
-    size: {
-      small: { width: 50, height: 50 },
-      large: { width: 100, height: 100 },
-    },
-  },
-  defaultVariants: {
-    size: 'large',
-  },
-});
-
-const arrowClass = css({
-  fill: '$gray100',
-});
-
-const rotateIn = keyframes({
-  '0%': { transform: 'scale(0) rotateZ(calc(var(--direction, 0) * 45deg))' },
-  '100%': { transform: 'scale(1)' },
-});
-
-const animatedContentClass = css(contentClass, {
-  '&[data-side="top"]': { '--direction': '1' },
-  '&[data-side="bottom"]': { '--direction': '-1' },
-  animation: `${rotateIn} 0.6s cubic-bezier(0.16, 1, 0.3, 1)`,
-});
+function contentClass(props: { size: 'small' | 'large' }) {
+  return [
+    styles.content,
+    props.size === 'small' && styles.contentSmall,
+    props.size === 'large' && styles.contentLarge,
+  ]
+    .filter(Boolean)
+    .join(' ');
+}

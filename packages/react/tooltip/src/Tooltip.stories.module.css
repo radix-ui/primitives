@@ -1,0 +1,98 @@
+.positionButton {
+  margin: 5px;
+  border: 1px solid black;
+  background: transparent;
+}
+
+.trigger {
+}
+
+.content {
+  transform-origin: var(--radix-tooltip-content-transform-origin);
+  /* ensures content isn't selectable */
+  /* this is a detterent to people putting interactive content inside a `Tooltip.Root` */
+  user-select: none;
+  /* ---- */
+  background-color: var(--color-black);
+  color: var(--color-white);
+  font-size: 12px;
+  border-radius: 5px;
+  padding: 10px;
+  max-width: 300px;
+}
+
+.arrow {
+  fill: black;
+}
+
+.animatedContent {
+  &[data-state='delayed-open'] {
+    animation: tooltip-scaleIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  &[data-state='instant-open'] {
+    animation: tooltip-fadeIn 0.2s ease-out;
+  }
+  &[data-state='closed'] {
+    animation: tooltip-fadeOut 0.2s ease-out;
+  }
+}
+
+.grid {
+  display: inline-grid;
+  grid-template-columns: repeat(3, 50px);
+  column-gap: 150px;
+  row-gap: 100px;
+  padding: 100px;
+  border: 1px solid black;
+}
+
+.chromaticTrigger {
+  width: 30px;
+  height: 30px;
+  background-color: tomato;
+  border: 1px solid rgb(0 0 0 / 0.3);
+}
+
+.chromaticContent {
+  display: grid;
+  place-content: center;
+  width: 60px;
+  height: 60px;
+  background-color: royalblue;
+  color: white;
+  font-size: 10px;
+  border: 1px solid rgb(0 0 0 / 0.3);
+}
+
+.chromaticArrow {
+  fill: black;
+}
+
+@keyframes tooltip-scaleIn {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes tooltip-fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes tooltip-fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}

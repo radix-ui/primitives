@@ -1,5 +1,5 @@
-import { css } from '../../../../stitches.config';
 import * as Avatar from '@radix-ui/react-avatar';
+import styles from './Avatar.stories.module.css';
 
 export default { title: 'Components/Avatar' };
 
@@ -9,27 +9,27 @@ const srcBroken = 'https://broken.link.com/broken-pic.jpg';
 export const Styled = () => (
   <>
     <h1>Without image & with fallback</h1>
-    <Avatar.Root className={rootClass()}>
-      <Avatar.Fallback className={fallbackClass()}>JS</Avatar.Fallback>
+    <Avatar.Root className={styles.root}>
+      <Avatar.Fallback className={styles.fallback}>JS</Avatar.Fallback>
     </Avatar.Root>
 
     <h1>With image & with fallback</h1>
-    <Avatar.Root className={rootClass()}>
-      <Avatar.Image className={imageClass()} alt="John Smith" src={src} />
-      <Avatar.Fallback delayMs={300} className={fallbackClass()}>
+    <Avatar.Root className={styles.root}>
+      <Avatar.Image className={styles.image} alt="John Smith" src={src} />
+      <Avatar.Fallback delayMs={300} className={styles.fallback}>
         JS
       </Avatar.Fallback>
     </Avatar.Root>
 
     <h1>With image & with fallback (but broken src)</h1>
-    <Avatar.Root className={rootClass()}>
+    <Avatar.Root className={styles.root}>
       <Avatar.Image
-        className={imageClass()}
+        className={styles.image}
         alt="John Smith"
         src={srcBroken}
         onLoadingStatusChange={console.log}
       />
-      <Avatar.Fallback className={fallbackClass()}>
+      <Avatar.Fallback className={styles.fallback}>
         <AvatarIcon />
       </Avatar.Fallback>
     </Avatar.Root>
@@ -39,71 +39,28 @@ export const Styled = () => (
 export const Chromatic = () => (
   <>
     <h1>Without image & with fallback</h1>
-    <Avatar.Root className={rootClass()}>
-      <Avatar.Fallback className={fallbackClass()}>JS</Avatar.Fallback>
+    <Avatar.Root className={styles.root}>
+      <Avatar.Fallback className={styles.fallback}>JS</Avatar.Fallback>
     </Avatar.Root>
 
     <h1>With image & with fallback</h1>
-    <Avatar.Root className={rootClass()}>
-      <Avatar.Image className={imageClass()} alt="John Smith" src={src} />
-      <Avatar.Fallback delayMs={300} className={fallbackClass()}>
+    <Avatar.Root className={styles.root}>
+      <Avatar.Image className={styles.image} alt="John Smith" src={src} />
+      <Avatar.Fallback delayMs={300} className={styles.fallback}>
         JS
       </Avatar.Fallback>
     </Avatar.Root>
 
     <h1>With image & with fallback (but broken src)</h1>
-    <Avatar.Root className={rootClass()}>
-      <Avatar.Image className={imageClass()} alt="John Smith" src={srcBroken} />
-      <Avatar.Fallback className={fallbackClass()}>
+    <Avatar.Root className={styles.root}>
+      <Avatar.Image className={styles.image} alt="John Smith" src={srcBroken} />
+      <Avatar.Fallback className={styles.fallback}>
         <AvatarIcon />
       </Avatar.Fallback>
     </Avatar.Root>
   </>
 );
 Chromatic.parameters = { chromatic: { disable: false, delay: 1000 } };
-
-const RECOMMENDED_CSS__AVATAR__ROOT: any = {
-  // ensures image/fallback is centered
-  display: 'inline-flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  verticalAlign: 'middle',
-  // ensures image doesn't bleed out
-  overflow: 'hidden',
-  // ensures no selection is possible
-  userSelect: 'none',
-};
-
-const rootClass = css({
-  ...RECOMMENDED_CSS__AVATAR__ROOT,
-  borderRadius: 9999,
-  width: 48,
-  height: 48,
-});
-
-const RECOMMENDED_CSS__AVATAR__IMAGE: any = {
-  // ensures image is full size and not distorted
-  width: '100%',
-  height: '100%',
-  objectFit: 'cover',
-};
-
-const imageClass = css(RECOMMENDED_CSS__AVATAR__IMAGE);
-
-const RECOMMENDED_CSS__AVATAR__FALLBACK: any = {
-  // ensures content inside the fallback is centered
-  width: '100%',
-  height: '100%',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-};
-
-const fallbackClass = css({
-  ...RECOMMENDED_CSS__AVATAR__FALLBACK,
-  backgroundColor: '$black',
-  color: '$white',
-});
 
 const AvatarIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="42" height="42">

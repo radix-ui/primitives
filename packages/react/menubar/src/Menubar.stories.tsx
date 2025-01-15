@@ -1,10 +1,9 @@
 import * as React from 'react';
 import * as Menubar from '@radix-ui/react-menubar';
-import { css } from '../../../../stitches.config';
-import { classes, TickIcon } from '../../menu/src/Menu.stories';
 import { foodGroups } from '../../../../test-data/foods';
+import styles from './Menubar.stories.module.css';
 
-const { contentClass, itemClass, separatorClass, labelClass, subTriggerClass } = classes;
+const subTriggerClass = [styles.item, styles.subTrigger].join(' ');
 
 export default { title: 'Components/Menubar' };
 
@@ -53,83 +52,83 @@ export const Styled = () => {
       </div>
 
       <div dir={dir}>
-        <Menubar.Root className={rootClass()} loop={loop} dir={dir}>
+        <Menubar.Root className={styles.root} loop={loop} dir={dir}>
           <Menubar.Menu>
-            <Menubar.Trigger className={triggerClass()}>File</Menubar.Trigger>
+            <Menubar.Trigger className={styles.trigger}>File</Menubar.Trigger>
             <Menubar.Portal>
-              <Menubar.Content className={contentClass()} sideOffset={2}>
-                <Menubar.Item className={itemClass()}>New Tab</Menubar.Item>
-                <Menubar.Item className={itemClass()}>New Window</Menubar.Item>
-                <Menubar.Item className={itemClass()}>New Incognito Window</Menubar.Item>
-                <Menubar.Separator className={separatorClass()} />
+              <Menubar.Content className={styles.content} sideOffset={2}>
+                <Menubar.Item className={styles.item}>New Tab</Menubar.Item>
+                <Menubar.Item className={styles.item}>New Window</Menubar.Item>
+                <Menubar.Item className={styles.item}>New Incognito Window</Menubar.Item>
+                <Menubar.Separator className={styles.separator} />
                 <Menubar.Sub>
-                  <Menubar.SubTrigger className={subTriggerClass()}>
+                  <Menubar.SubTrigger className={subTriggerClass}>
                     Share <span>→</span>
                   </Menubar.SubTrigger>
                   <Menubar.Portal>
-                    <Menubar.SubContent className={contentClass()} alignOffset={-6}>
-                      <Menubar.Item className={itemClass()}>Email Link</Menubar.Item>
-                      <Menubar.Item className={itemClass()}>Messages</Menubar.Item>
-                      <Menubar.Item className={itemClass()}>Airdrop</Menubar.Item>
+                    <Menubar.SubContent className={styles.content} alignOffset={-6}>
+                      <Menubar.Item className={styles.item}>Email Link</Menubar.Item>
+                      <Menubar.Item className={styles.item}>Messages</Menubar.Item>
+                      <Menubar.Item className={styles.item}>Airdrop</Menubar.Item>
                     </Menubar.SubContent>
                   </Menubar.Portal>
                 </Menubar.Sub>
-                <Menubar.Separator className={separatorClass()} />
-                <Menubar.Item className={itemClass()}>Print…</Menubar.Item>
+                <Menubar.Separator className={styles.separator} />
+                <Menubar.Item className={styles.item}>Print…</Menubar.Item>
               </Menubar.Content>
             </Menubar.Portal>
           </Menubar.Menu>
 
           <Menubar.Menu>
-            <Menubar.Trigger className={triggerClass()}>Edit</Menubar.Trigger>
+            <Menubar.Trigger className={styles.trigger}>Edit</Menubar.Trigger>
             <Menubar.Portal>
-              <Menubar.Content className={contentClass()} sideOffset={2}>
-                <Menubar.Item className={itemClass()}>Undo</Menubar.Item>
-                <Menubar.Item className={itemClass()}>Redo</Menubar.Item>
-                <Menubar.Separator className={separatorClass()} />
+              <Menubar.Content className={styles.content} sideOffset={2}>
+                <Menubar.Item className={styles.item}>Undo</Menubar.Item>
+                <Menubar.Item className={styles.item}>Redo</Menubar.Item>
+                <Menubar.Separator className={styles.separator} />
                 <Menubar.Sub>
-                  <Menubar.SubTrigger className={subTriggerClass()}>
+                  <Menubar.SubTrigger className={subTriggerClass}>
                     Find <span>→</span>
                   </Menubar.SubTrigger>
 
                   <Menubar.Portal>
-                    <Menubar.SubContent className={contentClass()} alignOffset={-6}>
-                      <Menubar.Item className={itemClass()}>Search the web…</Menubar.Item>
-                      <Menubar.Separator className={separatorClass()} />
-                      <Menubar.Item className={itemClass()}>Find…</Menubar.Item>
-                      <Menubar.Item className={itemClass()}>Find Next</Menubar.Item>
-                      <Menubar.Item className={itemClass()}>Find Previous</Menubar.Item>
+                    <Menubar.SubContent className={styles.content} alignOffset={-6}>
+                      <Menubar.Item className={styles.item}>Search the web…</Menubar.Item>
+                      <Menubar.Separator className={styles.separator} />
+                      <Menubar.Item className={styles.item}>Find…</Menubar.Item>
+                      <Menubar.Item className={styles.item}>Find Next</Menubar.Item>
+                      <Menubar.Item className={styles.item}>Find Previous</Menubar.Item>
                       <Menubar.Sub>
-                        <Menubar.SubTrigger className={subTriggerClass()}>
+                        <Menubar.SubTrigger className={subTriggerClass}>
                           Advanced <span>→</span>
                         </Menubar.SubTrigger>
 
                         <Menubar.Portal>
-                          <Menubar.SubContent className={contentClass()} alignOffset={-6}>
-                            <Menubar.Item className={itemClass()}>Regex</Menubar.Item>
-                            <Menubar.Item className={itemClass()}>Replace</Menubar.Item>
+                          <Menubar.SubContent className={styles.content} alignOffset={-6}>
+                            <Menubar.Item className={styles.item}>Regex</Menubar.Item>
+                            <Menubar.Item className={styles.item}>Replace</Menubar.Item>
                           </Menubar.SubContent>
                         </Menubar.Portal>
                       </Menubar.Sub>
                     </Menubar.SubContent>
                   </Menubar.Portal>
                 </Menubar.Sub>
-                <Menubar.Separator className={separatorClass()} />
-                <Menubar.Item className={itemClass()}>Cut</Menubar.Item>
-                <Menubar.Item className={itemClass()}>Copy</Menubar.Item>
-                <Menubar.Item className={itemClass()}>Paste</Menubar.Item>
+                <Menubar.Separator className={styles.separator} />
+                <Menubar.Item className={styles.item}>Cut</Menubar.Item>
+                <Menubar.Item className={styles.item}>Copy</Menubar.Item>
+                <Menubar.Item className={styles.item}>Paste</Menubar.Item>
               </Menubar.Content>
             </Menubar.Portal>
           </Menubar.Menu>
 
           <Menubar.Menu>
-            <Menubar.Trigger className={triggerClass()}>View</Menubar.Trigger>
+            <Menubar.Trigger className={styles.trigger}>View</Menubar.Trigger>
             <Menubar.Portal>
-              <Menubar.Content className={contentClass()} sideOffset={2}>
+              <Menubar.Content className={styles.content} sideOffset={2}>
                 {checkOptions.map((option) => (
                   <Menubar.CheckboxItem
                     key={option}
-                    className={itemClass()}
+                    className={styles.item}
                     checked={checkedSelection.includes(option)}
                     onCheckedChange={() =>
                       setCheckedSelection((current) =>
@@ -145,24 +144,24 @@ export const Styled = () => {
                     </Menubar.ItemIndicator>
                   </Menubar.CheckboxItem>
                 ))}
-                <Menubar.Separator className={separatorClass()} />
-                <Menubar.Item className={itemClass()}>Reload</Menubar.Item>
-                <Menubar.Item className={itemClass()}>Force Reload</Menubar.Item>
-                <Menubar.Separator className={separatorClass()} />
-                <Menubar.Item className={itemClass()}>Toggle Fullscreen</Menubar.Item>
-                <Menubar.Separator className={separatorClass()} />
-                <Menubar.Item className={itemClass()}>Hide Sidebar</Menubar.Item>
+                <Menubar.Separator className={styles.separator} />
+                <Menubar.Item className={styles.item}>Reload</Menubar.Item>
+                <Menubar.Item className={styles.item}>Force Reload</Menubar.Item>
+                <Menubar.Separator className={styles.separator} />
+                <Menubar.Item className={styles.item}>Toggle Fullscreen</Menubar.Item>
+                <Menubar.Separator className={styles.separator} />
+                <Menubar.Item className={styles.item}>Hide Sidebar</Menubar.Item>
               </Menubar.Content>
             </Menubar.Portal>
           </Menubar.Menu>
 
           <Menubar.Menu>
-            <Menubar.Trigger className={triggerClass()}>Profiles</Menubar.Trigger>
+            <Menubar.Trigger className={styles.trigger}>Profiles</Menubar.Trigger>
             <Menubar.Portal>
-              <Menubar.Content className={contentClass()} sideOffset={2}>
+              <Menubar.Content className={styles.content} sideOffset={2}>
                 <Menubar.RadioGroup value={radioSelection} onValueChange={setRadioSelection}>
                   {radioOptions.map((option) => (
-                    <Menubar.RadioItem key={option} className={itemClass()} value={option}>
+                    <Menubar.RadioItem key={option} className={styles.item} value={option}>
                       {option}
                       <Menubar.ItemIndicator style={{ marginLeft: 10 }}>
                         <TickIcon />
@@ -175,17 +174,17 @@ export const Styled = () => {
           </Menubar.Menu>
 
           <Menubar.Menu>
-            <Menubar.Trigger className={triggerClass()}>History</Menubar.Trigger>
+            <Menubar.Trigger className={styles.trigger}>History</Menubar.Trigger>
             <Menubar.Portal>
-              <Menubar.Content className={contentClass()} sideOffset={2}>
-                <Menubar.Label className={labelClass()}>Work</Menubar.Label>
-                <Menubar.Item className={itemClass()}>Radix</Menubar.Item>
-                <Menubar.Item className={itemClass()}>Github</Menubar.Item>
-                <Menubar.Item className={itemClass()}>WorkOS</Menubar.Item>
-                <Menubar.Label className={labelClass()}>Community</Menubar.Label>
-                <Menubar.Item className={itemClass()}>Twitter</Menubar.Item>
-                <Menubar.Item className={itemClass()}>Discord</Menubar.Item>
-                <Menubar.Item className={itemClass()}>Slack</Menubar.Item>
+              <Menubar.Content className={styles.content} sideOffset={2}>
+                <Menubar.Label className={styles.label}>Work</Menubar.Label>
+                <Menubar.Item className={styles.item}>Radix</Menubar.Item>
+                <Menubar.Item className={styles.item}>Github</Menubar.Item>
+                <Menubar.Item className={styles.item}>WorkOS</Menubar.Item>
+                <Menubar.Label className={styles.label}>Community</Menubar.Label>
+                <Menubar.Item className={styles.item}>Twitter</Menubar.Item>
+                <Menubar.Item className={styles.item}>Discord</Menubar.Item>
+                <Menubar.Item className={styles.item}>Slack</Menubar.Item>
               </Menubar.Content>
             </Menubar.Portal>
           </Menubar.Menu>
@@ -242,60 +241,60 @@ export const Cypress = () => {
         </label>
       </div>
       <div dir={dir}>
-        <Menubar.Root className={rootClass()} loop={loop} dir={dir}>
+        <Menubar.Root className={styles.root} loop={loop} dir={dir}>
           <Menubar.Menu>
-            <Menubar.Trigger className={triggerClass()}>File</Menubar.Trigger>
+            <Menubar.Trigger className={styles.trigger}>File</Menubar.Trigger>
             <Portal>
-              <Menubar.Content className={contentClass()} sideOffset={2}>
-                <Menubar.Item className={itemClass()}>New Tab</Menubar.Item>
-                <Menubar.Item className={itemClass()}>New Window</Menubar.Item>
-                <Menubar.Item className={itemClass()}>New Incognito Window</Menubar.Item>
-                <Menubar.Separator className={separatorClass()} />
+              <Menubar.Content className={styles.content} sideOffset={2}>
+                <Menubar.Item className={styles.item}>New Tab</Menubar.Item>
+                <Menubar.Item className={styles.item}>New Window</Menubar.Item>
+                <Menubar.Item className={styles.item}>New Incognito Window</Menubar.Item>
+                <Menubar.Separator className={styles.separator} />
                 <Menubar.Sub>
-                  <Menubar.SubTrigger className={subTriggerClass()}>
+                  <Menubar.SubTrigger className={subTriggerClass}>
                     Share <span>→</span>
                   </Menubar.SubTrigger>
-                  <Menubar.SubContent className={contentClass()} alignOffset={-6}>
-                    <Menubar.Item className={itemClass()}>Email Link</Menubar.Item>
-                    <Menubar.Item className={itemClass()}>Messages</Menubar.Item>
-                    <Menubar.Item className={itemClass()}>Airdrop</Menubar.Item>
+                  <Menubar.SubContent className={styles.content} alignOffset={-6}>
+                    <Menubar.Item className={styles.item}>Email Link</Menubar.Item>
+                    <Menubar.Item className={styles.item}>Messages</Menubar.Item>
+                    <Menubar.Item className={styles.item}>Airdrop</Menubar.Item>
                   </Menubar.SubContent>
                 </Menubar.Sub>
-                <Menubar.Separator className={separatorClass()} />
-                <Menubar.Item className={itemClass()}>Print…</Menubar.Item>
+                <Menubar.Separator className={styles.separator} />
+                <Menubar.Item className={styles.item}>Print…</Menubar.Item>
               </Menubar.Content>
             </Portal>
           </Menubar.Menu>
 
           <Menubar.Menu>
-            <Menubar.Trigger className={triggerClass()}>Edit</Menubar.Trigger>
+            <Menubar.Trigger className={styles.trigger}>Edit</Menubar.Trigger>
             <Portal>
-              <Menubar.Content className={contentClass()} sideOffset={2}>
-                <Menubar.Item className={itemClass()} disabled>
+              <Menubar.Content className={styles.content} sideOffset={2}>
+                <Menubar.Item className={styles.item} disabled>
                   Undo
                 </Menubar.Item>
-                <Menubar.Item className={itemClass()}>Redo</Menubar.Item>
-                <Menubar.Separator className={separatorClass()} />
+                <Menubar.Item className={styles.item}>Redo</Menubar.Item>
+                <Menubar.Separator className={styles.separator} />
                 <Menubar.Sub>
-                  <Menubar.SubTrigger className={subTriggerClass()}>
+                  <Menubar.SubTrigger className={subTriggerClass}>
                     Find <span>→</span>
                   </Menubar.SubTrigger>
                   <Portal>
-                    <Menubar.SubContent className={contentClass()} alignOffset={-6}>
-                      <Menubar.Item className={itemClass()}>Search the web…</Menubar.Item>
-                      <Menubar.Separator className={separatorClass()} />
-                      <Menubar.Item className={itemClass()}>Find…</Menubar.Item>
-                      <Menubar.Item className={itemClass()}>Find Next</Menubar.Item>
-                      <Menubar.Item className={itemClass()}>Find Previous</Menubar.Item>
+                    <Menubar.SubContent className={styles.content} alignOffset={-6}>
+                      <Menubar.Item className={styles.item}>Search the web…</Menubar.Item>
+                      <Menubar.Separator className={styles.separator} />
+                      <Menubar.Item className={styles.item}>Find…</Menubar.Item>
+                      <Menubar.Item className={styles.item}>Find Next</Menubar.Item>
+                      <Menubar.Item className={styles.item}>Find Previous</Menubar.Item>
                       <Menubar.Sub>
-                        <Menubar.SubTrigger className={subTriggerClass()}>
+                        <Menubar.SubTrigger className={subTriggerClass}>
                           Advanced <span>→</span>
                         </Menubar.SubTrigger>
 
                         <Portal>
-                          <Menubar.SubContent className={contentClass()} alignOffset={-6}>
-                            <Menubar.Item className={itemClass()}>Regex</Menubar.Item>
-                            <Menubar.Item className={itemClass()}>Replace</Menubar.Item>
+                          <Menubar.SubContent className={styles.content} alignOffset={-6}>
+                            <Menubar.Item className={styles.item}>Regex</Menubar.Item>
+                            <Menubar.Item className={styles.item}>Replace</Menubar.Item>
                           </Menubar.SubContent>
                         </Portal>
                       </Menubar.Sub>
@@ -304,43 +303,43 @@ export const Cypress = () => {
                 </Menubar.Sub>
 
                 <Menubar.Sub>
-                  <Menubar.SubTrigger className={subTriggerClass()} disabled>
+                  <Menubar.SubTrigger className={subTriggerClass} disabled>
                     Speech <span>→</span>
                   </Menubar.SubTrigger>
                   <Portal>
-                    <Menubar.SubContent className={contentClass()} alignOffset={-6}>
-                      <Menubar.Item className={itemClass()}>Start Speaking</Menubar.Item>
-                      <Menubar.Item className={itemClass()}>Stop Speaking</Menubar.Item>
+                    <Menubar.SubContent className={styles.content} alignOffset={-6}>
+                      <Menubar.Item className={styles.item}>Start Speaking</Menubar.Item>
+                      <Menubar.Item className={styles.item}>Stop Speaking</Menubar.Item>
                     </Menubar.SubContent>
                   </Portal>
                 </Menubar.Sub>
 
                 <Menubar.Sub>
-                  <Menubar.SubTrigger className={subTriggerClass()}>
+                  <Menubar.SubTrigger className={subTriggerClass}>
                     Substitutions <span>→</span>
                   </Menubar.SubTrigger>
                   <Portal>
-                    <Menubar.SubContent className={contentClass()} alignOffset={-6}>
-                      <Menubar.Item className={itemClass()}>Smart Quotes</Menubar.Item>
-                      <Menubar.Item className={itemClass()}>Smart Dashes</Menubar.Item>
+                    <Menubar.SubContent className={styles.content} alignOffset={-6}>
+                      <Menubar.Item className={styles.item}>Smart Quotes</Menubar.Item>
+                      <Menubar.Item className={styles.item}>Smart Dashes</Menubar.Item>
                     </Menubar.SubContent>
                   </Portal>
                 </Menubar.Sub>
-                <Menubar.Separator className={separatorClass()} />
-                <Menubar.Item className={itemClass()}>Cut</Menubar.Item>
-                <Menubar.Item className={itemClass()}>Copy</Menubar.Item>
-                <Menubar.Item className={itemClass()}>Paste</Menubar.Item>
+                <Menubar.Separator className={styles.separator} />
+                <Menubar.Item className={styles.item}>Cut</Menubar.Item>
+                <Menubar.Item className={styles.item}>Copy</Menubar.Item>
+                <Menubar.Item className={styles.item}>Paste</Menubar.Item>
               </Menubar.Content>
             </Portal>
           </Menubar.Menu>
 
           <Menubar.Menu>
-            <Menubar.Trigger className={triggerClass()}>History</Menubar.Trigger>
+            <Menubar.Trigger className={styles.trigger}>History</Menubar.Trigger>
             <Portal>
-              <Menubar.Content className={contentClass()} sideOffset={2}>
-                <Menubar.Item className={itemClass()}>Radix</Menubar.Item>
-                <Menubar.Item className={itemClass()}>Github</Menubar.Item>
-                <Menubar.Item className={itemClass()}>WorkOS</Menubar.Item>
+              <Menubar.Content className={styles.content} sideOffset={2}>
+                <Menubar.Item className={styles.item}>Radix</Menubar.Item>
+                <Menubar.Item className={styles.item}>Github</Menubar.Item>
+                <Menubar.Item className={styles.item}>WorkOS</Menubar.Item>
               </Menubar.Content>
             </Portal>
           </Menubar.Menu>
@@ -364,71 +363,71 @@ export const Chromatic = () => {
     <div style={{ padding: 200, paddingTop: 50, paddingBottom: 800 }}>
       <h1>Uncontrolled</h1>
       <h2>Closed</h2>
-      <Menubar.Root className={rootClass()}>
+      <Menubar.Root className={styles.root}>
         <Menubar.Menu>
-          <Menubar.Trigger className={triggerClass()}>File</Menubar.Trigger>
+          <Menubar.Trigger className={styles.trigger}>File</Menubar.Trigger>
           <Menubar.Portal>
-            <Menubar.Content className={contentClass()} avoidCollisions={false} sideOffset={2}>
-              <Menubar.Item className={itemClass()}>New Tab</Menubar.Item>
-              <Menubar.Item className={itemClass()}>New Window</Menubar.Item>
-              <Menubar.Item className={itemClass()}>New Incognito Window</Menubar.Item>
-              <Menubar.Separator className={separatorClass()} />
+            <Menubar.Content className={styles.content} avoidCollisions={false} sideOffset={2}>
+              <Menubar.Item className={styles.item}>New Tab</Menubar.Item>
+              <Menubar.Item className={styles.item}>New Window</Menubar.Item>
+              <Menubar.Item className={styles.item}>New Incognito Window</Menubar.Item>
+              <Menubar.Separator className={styles.separator} />
 
-              <Menubar.Item className={itemClass()}>Print…</Menubar.Item>
+              <Menubar.Item className={styles.item}>Print…</Menubar.Item>
             </Menubar.Content>
           </Menubar.Portal>
         </Menubar.Menu>
 
         <Menubar.Menu>
-          <Menubar.Trigger className={triggerClass()}>Edit</Menubar.Trigger>
+          <Menubar.Trigger className={styles.trigger}>Edit</Menubar.Trigger>
           <Menubar.Portal>
-            <Menubar.Content className={contentClass()} avoidCollisions={false} sideOffset={2}>
-              <Menubar.Item className={itemClass()} disabled>
+            <Menubar.Content className={styles.content} avoidCollisions={false} sideOffset={2}>
+              <Menubar.Item className={styles.item} disabled>
                 Undo
               </Menubar.Item>
-              <Menubar.Item className={itemClass()}>Redo</Menubar.Item>
-              <Menubar.Separator className={separatorClass()} />
-              <Menubar.Item className={itemClass()}>Cut</Menubar.Item>
-              <Menubar.Item className={itemClass()}>Copy</Menubar.Item>
-              <Menubar.Item className={itemClass()}>Paste</Menubar.Item>
+              <Menubar.Item className={styles.item}>Redo</Menubar.Item>
+              <Menubar.Separator className={styles.separator} />
+              <Menubar.Item className={styles.item}>Cut</Menubar.Item>
+              <Menubar.Item className={styles.item}>Copy</Menubar.Item>
+              <Menubar.Item className={styles.item}>Paste</Menubar.Item>
             </Menubar.Content>
           </Menubar.Portal>
         </Menubar.Menu>
       </Menubar.Root>
 
       <h2>Open</h2>
-      <Menubar.Root defaultValue="file" className={rootClass()}>
+      <Menubar.Root defaultValue="file" className={styles.root}>
         <Menubar.Menu value="file">
-          <Menubar.Trigger className={triggerClass()}>File</Menubar.Trigger>
+          <Menubar.Trigger className={styles.trigger}>File</Menubar.Trigger>
           <Menubar.Portal>
             <Menubar.Content
-              className={contentClass()}
+              className={styles.content}
               onFocusOutside={(event) => event.preventDefault()}
               avoidCollisions={false}
               sideOffset={2}
             >
-              <Menubar.Item className={itemClass()}>New Tab</Menubar.Item>
-              <Menubar.Item className={itemClass()}>New Window</Menubar.Item>
-              <Menubar.Item className={itemClass()}>New Incognito Window</Menubar.Item>
-              <Menubar.Separator className={separatorClass()} />
+              <Menubar.Item className={styles.item}>New Tab</Menubar.Item>
+              <Menubar.Item className={styles.item}>New Window</Menubar.Item>
+              <Menubar.Item className={styles.item}>New Incognito Window</Menubar.Item>
+              <Menubar.Separator className={styles.separator} />
 
-              <Menubar.Item className={itemClass()}>Print…</Menubar.Item>
+              <Menubar.Item className={styles.item}>Print…</Menubar.Item>
             </Menubar.Content>
           </Menubar.Portal>
         </Menubar.Menu>
 
         <Menubar.Menu value="edit">
-          <Menubar.Trigger className={triggerClass()}>Edit</Menubar.Trigger>
+          <Menubar.Trigger className={styles.trigger}>Edit</Menubar.Trigger>
           <Menubar.Portal>
-            <Menubar.Content className={contentClass()} avoidCollisions={false} sideOffset={2}>
-              <Menubar.Item className={itemClass()} disabled>
+            <Menubar.Content className={styles.content} avoidCollisions={false} sideOffset={2}>
+              <Menubar.Item className={styles.item} disabled>
                 Undo
               </Menubar.Item>
-              <Menubar.Item className={itemClass()}>Redo</Menubar.Item>
-              <Menubar.Separator className={separatorClass()} />
-              <Menubar.Item className={itemClass()}>Cut</Menubar.Item>
-              <Menubar.Item className={itemClass()}>Copy</Menubar.Item>
-              <Menubar.Item className={itemClass()}>Paste</Menubar.Item>
+              <Menubar.Item className={styles.item}>Redo</Menubar.Item>
+              <Menubar.Separator className={styles.separator} />
+              <Menubar.Item className={styles.item}>Cut</Menubar.Item>
+              <Menubar.Item className={styles.item}>Copy</Menubar.Item>
+              <Menubar.Item className={styles.item}>Paste</Menubar.Item>
             </Menubar.Content>
           </Menubar.Portal>
         </Menubar.Menu>
@@ -436,126 +435,126 @@ export const Chromatic = () => {
 
       <h1 style={{ marginTop: 180 }}>Controlled</h1>
       <h2>Closed</h2>
-      <Menubar.Root value="" className={rootClass()}>
+      <Menubar.Root value="" className={styles.root}>
         <Menubar.Menu value="file">
-          <Menubar.Trigger className={triggerClass()}>File</Menubar.Trigger>
+          <Menubar.Trigger className={styles.trigger}>File</Menubar.Trigger>
           <Menubar.Portal>
-            <Menubar.Content className={contentClass()} avoidCollisions={false} sideOffset={2}>
-              <Menubar.Item className={itemClass()}>New Tab</Menubar.Item>
-              <Menubar.Item className={itemClass()}>New Window</Menubar.Item>
-              <Menubar.Item className={itemClass()}>New Incognito Window</Menubar.Item>
-              <Menubar.Separator className={separatorClass()} />
+            <Menubar.Content className={styles.content} avoidCollisions={false} sideOffset={2}>
+              <Menubar.Item className={styles.item}>New Tab</Menubar.Item>
+              <Menubar.Item className={styles.item}>New Window</Menubar.Item>
+              <Menubar.Item className={styles.item}>New Incognito Window</Menubar.Item>
+              <Menubar.Separator className={styles.separator} />
 
-              <Menubar.Item className={itemClass()}>Print…</Menubar.Item>
+              <Menubar.Item className={styles.item}>Print…</Menubar.Item>
             </Menubar.Content>
           </Menubar.Portal>
         </Menubar.Menu>
 
         <Menubar.Menu value="edit">
-          <Menubar.Trigger className={triggerClass()}>Edit</Menubar.Trigger>
+          <Menubar.Trigger className={styles.trigger}>Edit</Menubar.Trigger>
           <Menubar.Portal>
-            <Menubar.Content className={contentClass()} avoidCollisions={false} sideOffset={2}>
-              <Menubar.Item className={itemClass()} disabled>
+            <Menubar.Content className={styles.content} avoidCollisions={false} sideOffset={2}>
+              <Menubar.Item className={styles.item} disabled>
                 Undo
               </Menubar.Item>
-              <Menubar.Item className={itemClass()}>Redo</Menubar.Item>
-              <Menubar.Separator className={separatorClass()} />
-              <Menubar.Item className={itemClass()}>Cut</Menubar.Item>
-              <Menubar.Item className={itemClass()}>Copy</Menubar.Item>
-              <Menubar.Item className={itemClass()}>Paste</Menubar.Item>
+              <Menubar.Item className={styles.item}>Redo</Menubar.Item>
+              <Menubar.Separator className={styles.separator} />
+              <Menubar.Item className={styles.item}>Cut</Menubar.Item>
+              <Menubar.Item className={styles.item}>Copy</Menubar.Item>
+              <Menubar.Item className={styles.item}>Paste</Menubar.Item>
             </Menubar.Content>
           </Menubar.Portal>
         </Menubar.Menu>
       </Menubar.Root>
 
       <h2>Open</h2>
-      <Menubar.Root value="file" className={rootClass()}>
+      <Menubar.Root value="file" className={styles.root}>
         <Menubar.Menu value="file">
-          <Menubar.Trigger className={triggerClass()}>File</Menubar.Trigger>
+          <Menubar.Trigger className={styles.trigger}>File</Menubar.Trigger>
           <Menubar.Portal>
-            <Menubar.Content className={contentClass()} avoidCollisions={false} sideOffset={2}>
-              <Menubar.Item className={itemClass()}>New Tab</Menubar.Item>
-              <Menubar.Item className={itemClass()}>New Window</Menubar.Item>
-              <Menubar.Item className={itemClass()}>New Incognito Window</Menubar.Item>
-              <Menubar.Separator className={separatorClass()} />
+            <Menubar.Content className={styles.content} avoidCollisions={false} sideOffset={2}>
+              <Menubar.Item className={styles.item}>New Tab</Menubar.Item>
+              <Menubar.Item className={styles.item}>New Window</Menubar.Item>
+              <Menubar.Item className={styles.item}>New Incognito Window</Menubar.Item>
+              <Menubar.Separator className={styles.separator} />
 
-              <Menubar.Item className={itemClass()}>Print…</Menubar.Item>
+              <Menubar.Item className={styles.item}>Print…</Menubar.Item>
             </Menubar.Content>
           </Menubar.Portal>
         </Menubar.Menu>
 
         <Menubar.Menu value="edit">
-          <Menubar.Trigger className={triggerClass()}>Edit</Menubar.Trigger>
+          <Menubar.Trigger className={styles.trigger}>Edit</Menubar.Trigger>
           <Menubar.Portal>
-            <Menubar.Content className={contentClass()} avoidCollisions={false} sideOffset={2}>
-              <Menubar.Item className={itemClass()} disabled>
+            <Menubar.Content className={styles.content} avoidCollisions={false} sideOffset={2}>
+              <Menubar.Item className={styles.item} disabled>
                 Undo
               </Menubar.Item>
-              <Menubar.Item className={itemClass()}>Redo</Menubar.Item>
-              <Menubar.Separator className={separatorClass()} />
-              <Menubar.Item className={itemClass()}>Cut</Menubar.Item>
-              <Menubar.Item className={itemClass()}>Copy</Menubar.Item>
-              <Menubar.Item className={itemClass()}>Paste</Menubar.Item>
+              <Menubar.Item className={styles.item}>Redo</Menubar.Item>
+              <Menubar.Separator className={styles.separator} />
+              <Menubar.Item className={styles.item}>Cut</Menubar.Item>
+              <Menubar.Item className={styles.item}>Copy</Menubar.Item>
+              <Menubar.Item className={styles.item}>Paste</Menubar.Item>
             </Menubar.Content>
           </Menubar.Portal>
         </Menubar.Menu>
       </Menubar.Root>
 
       <h1 style={{ marginTop: 200 }}>Submenus</h1>
-      <Menubar.Root value="edit" className={rootClass()}>
+      <Menubar.Root value="edit" className={styles.root}>
         <Menubar.Menu value="file">
-          <Menubar.Trigger className={triggerClass()}>File</Menubar.Trigger>
+          <Menubar.Trigger className={styles.trigger}>File</Menubar.Trigger>
           <Menubar.Portal>
-            <Menubar.Content className={contentClass()} avoidCollisions={false} sideOffset={2}>
-              <Menubar.Item className={itemClass()}>New Tab</Menubar.Item>
-              <Menubar.Item className={itemClass()}>New Window</Menubar.Item>
-              <Menubar.Item className={itemClass()}>New Incognito Window</Menubar.Item>
-              <Menubar.Separator className={separatorClass()} />
+            <Menubar.Content className={styles.content} avoidCollisions={false} sideOffset={2}>
+              <Menubar.Item className={styles.item}>New Tab</Menubar.Item>
+              <Menubar.Item className={styles.item}>New Window</Menubar.Item>
+              <Menubar.Item className={styles.item}>New Incognito Window</Menubar.Item>
+              <Menubar.Separator className={styles.separator} />
 
-              <Menubar.Item className={itemClass()}>Print…</Menubar.Item>
+              <Menubar.Item className={styles.item}>Print…</Menubar.Item>
             </Menubar.Content>
           </Menubar.Portal>
         </Menubar.Menu>
 
         <Menubar.Menu value="edit">
-          <Menubar.Trigger className={triggerClass()}>Edit</Menubar.Trigger>
+          <Menubar.Trigger className={styles.trigger}>Edit</Menubar.Trigger>
           <Menubar.Portal>
-            <Menubar.Content className={contentClass()} avoidCollisions={false} sideOffset={2}>
-              <Menubar.Item className={itemClass()} disabled>
+            <Menubar.Content className={styles.content} avoidCollisions={false} sideOffset={2}>
+              <Menubar.Item className={styles.item} disabled>
                 Undo
               </Menubar.Item>
-              <Menubar.Item className={itemClass()}>Redo</Menubar.Item>
-              <Menubar.Separator className={separatorClass()} />
+              <Menubar.Item className={styles.item}>Redo</Menubar.Item>
+              <Menubar.Separator className={styles.separator} />
               <Menubar.Sub open>
-                <Menubar.SubTrigger className={subTriggerClass()}>
+                <Menubar.SubTrigger className={subTriggerClass}>
                   Find <span>→</span>
                 </Menubar.SubTrigger>
                 <Menubar.Portal>
                   <Menubar.SubContent
-                    className={contentClass()}
+                    className={styles.content}
                     sideOffset={10}
                     alignOffset={-6}
                     avoidCollisions={false}
                   >
-                    <Menubar.Item className={itemClass()}>Search the web…</Menubar.Item>
-                    <Menubar.Separator className={separatorClass()} />
-                    <Menubar.Item className={itemClass()}>Find…</Menubar.Item>
-                    <Menubar.Item className={itemClass()}>Find Next</Menubar.Item>
-                    <Menubar.Item className={itemClass()}>Find Previous</Menubar.Item>
+                    <Menubar.Item className={styles.item}>Search the web…</Menubar.Item>
+                    <Menubar.Separator className={styles.separator} />
+                    <Menubar.Item className={styles.item}>Find…</Menubar.Item>
+                    <Menubar.Item className={styles.item}>Find Next</Menubar.Item>
+                    <Menubar.Item className={styles.item}>Find Previous</Menubar.Item>
                     <Menubar.Sub open>
-                      <Menubar.SubTrigger className={subTriggerClass()}>
+                      <Menubar.SubTrigger className={subTriggerClass}>
                         Advanced <span>→</span>
                       </Menubar.SubTrigger>
 
                       <Menubar.Portal>
                         <Menubar.SubContent
-                          className={contentClass()}
+                          className={styles.content}
                           sideOffset={10}
                           alignOffset={-6}
                           avoidCollisions={false}
                         >
-                          <Menubar.Item className={itemClass()}>Regex</Menubar.Item>
-                          <Menubar.Item className={itemClass()}>Replace</Menubar.Item>
+                          <Menubar.Item className={styles.item}>Regex</Menubar.Item>
+                          <Menubar.Item className={styles.item}>Replace</Menubar.Item>
                           <Menubar.Arrow />
                         </Menubar.SubContent>
                       </Menubar.Portal>
@@ -565,10 +564,10 @@ export const Chromatic = () => {
                 </Menubar.Portal>
               </Menubar.Sub>
 
-              <Menubar.Separator className={separatorClass()} />
-              <Menubar.Item className={itemClass()}>Cut</Menubar.Item>
-              <Menubar.Item className={itemClass()}>Copy</Menubar.Item>
-              <Menubar.Item className={itemClass()}>Paste</Menubar.Item>
+              <Menubar.Separator className={styles.separator} />
+              <Menubar.Item className={styles.item}>Cut</Menubar.Item>
+              <Menubar.Item className={styles.item}>Copy</Menubar.Item>
+              <Menubar.Item className={styles.item}>Paste</Menubar.Item>
             </Menubar.Content>
           </Menubar.Portal>
         </Menubar.Menu>
@@ -576,60 +575,60 @@ export const Chromatic = () => {
 
       <h2 style={{ marginTop: 250 }}>RTL</h2>
       <div dir="rtl">
-        <Menubar.Root value="edit" className={rootClass()} dir="rtl">
+        <Menubar.Root value="edit" className={styles.root} dir="rtl">
           <Menubar.Menu value="file">
-            <Menubar.Trigger className={triggerClass()}>File</Menubar.Trigger>
+            <Menubar.Trigger className={styles.trigger}>File</Menubar.Trigger>
             <Menubar.Portal>
-              <Menubar.Content className={contentClass()} avoidCollisions={false} sideOffset={2}>
-                <Menubar.Item className={itemClass()}>New Tab</Menubar.Item>
-                <Menubar.Item className={itemClass()}>New Window</Menubar.Item>
-                <Menubar.Item className={itemClass()}>New Incognito Window</Menubar.Item>
-                <Menubar.Separator className={separatorClass()} />
+              <Menubar.Content className={styles.content} avoidCollisions={false} sideOffset={2}>
+                <Menubar.Item className={styles.item}>New Tab</Menubar.Item>
+                <Menubar.Item className={styles.item}>New Window</Menubar.Item>
+                <Menubar.Item className={styles.item}>New Incognito Window</Menubar.Item>
+                <Menubar.Separator className={styles.separator} />
 
-                <Menubar.Item className={itemClass()}>Print…</Menubar.Item>
+                <Menubar.Item className={styles.item}>Print…</Menubar.Item>
               </Menubar.Content>
             </Menubar.Portal>
           </Menubar.Menu>
 
           <Menubar.Menu value="edit">
-            <Menubar.Trigger className={triggerClass()}>Edit</Menubar.Trigger>
+            <Menubar.Trigger className={styles.trigger}>Edit</Menubar.Trigger>
             <Menubar.Portal>
-              <Menubar.Content className={contentClass()} avoidCollisions={false} sideOffset={2}>
-                <Menubar.Item className={itemClass()} disabled>
+              <Menubar.Content className={styles.content} avoidCollisions={false} sideOffset={2}>
+                <Menubar.Item className={styles.item} disabled>
                   Undo
                 </Menubar.Item>
-                <Menubar.Item className={itemClass()}>Redo</Menubar.Item>
-                <Menubar.Separator className={separatorClass()} />
+                <Menubar.Item className={styles.item}>Redo</Menubar.Item>
+                <Menubar.Separator className={styles.separator} />
                 <Menubar.Sub open>
-                  <Menubar.SubTrigger className={subTriggerClass()}>
+                  <Menubar.SubTrigger className={subTriggerClass}>
                     Find <span>→</span>
                   </Menubar.SubTrigger>
                   <Menubar.Portal>
                     <Menubar.SubContent
-                      className={contentClass()}
+                      className={styles.content}
                       sideOffset={10}
                       alignOffset={-6}
                       avoidCollisions={false}
                     >
-                      <Menubar.Item className={itemClass()}>Search the web…</Menubar.Item>
-                      <Menubar.Separator className={separatorClass()} />
-                      <Menubar.Item className={itemClass()}>Find…</Menubar.Item>
-                      <Menubar.Item className={itemClass()}>Find Next</Menubar.Item>
-                      <Menubar.Item className={itemClass()}>Find Previous</Menubar.Item>
+                      <Menubar.Item className={styles.item}>Search the web…</Menubar.Item>
+                      <Menubar.Separator className={styles.separator} />
+                      <Menubar.Item className={styles.item}>Find…</Menubar.Item>
+                      <Menubar.Item className={styles.item}>Find Next</Menubar.Item>
+                      <Menubar.Item className={styles.item}>Find Previous</Menubar.Item>
                       <Menubar.Sub open>
-                        <Menubar.SubTrigger className={subTriggerClass()}>
+                        <Menubar.SubTrigger className={subTriggerClass}>
                           Advanced <span>→</span>
                         </Menubar.SubTrigger>
 
                         <Menubar.Portal>
                           <Menubar.SubContent
-                            className={contentClass()}
+                            className={styles.content}
                             sideOffset={10}
                             alignOffset={-6}
                             avoidCollisions={false}
                           >
-                            <Menubar.Item className={itemClass()}>Regex</Menubar.Item>
-                            <Menubar.Item className={itemClass()}>Replace</Menubar.Item>
+                            <Menubar.Item className={styles.item}>Regex</Menubar.Item>
+                            <Menubar.Item className={styles.item}>Replace</Menubar.Item>
                             <Menubar.Arrow />
                           </Menubar.SubContent>
                         </Menubar.Portal>
@@ -639,10 +638,10 @@ export const Chromatic = () => {
                   </Menubar.Portal>
                 </Menubar.Sub>
 
-                <Menubar.Separator className={separatorClass()} />
-                <Menubar.Item className={itemClass()}>Cut</Menubar.Item>
-                <Menubar.Item className={itemClass()}>Copy</Menubar.Item>
-                <Menubar.Item className={itemClass()}>Paste</Menubar.Item>
+                <Menubar.Separator className={styles.separator} />
+                <Menubar.Item className={styles.item}>Cut</Menubar.Item>
+                <Menubar.Item className={styles.item}>Copy</Menubar.Item>
+                <Menubar.Item className={styles.item}>Paste</Menubar.Item>
               </Menubar.Content>
             </Menubar.Portal>
           </Menubar.Menu>
@@ -650,22 +649,22 @@ export const Chromatic = () => {
       </div>
 
       <h2 style={{ marginTop: 250 }}>With labels</h2>
-      <Menubar.Root value="food" className={rootClass()}>
+      <Menubar.Root value="food" className={styles.root}>
         <Menubar.Menu value="food">
-          <Menubar.Trigger className={triggerClass()}>Food</Menubar.Trigger>
+          <Menubar.Trigger className={styles.trigger}>Food</Menubar.Trigger>
           <Menubar.Portal>
-            <Menubar.Content className={contentClass()} avoidCollisions={false} sideOffset={2}>
+            <Menubar.Content className={styles.content} avoidCollisions={false} sideOffset={2}>
               {foodGroups.map((foodGroup, index) => (
                 <Menubar.Group key={index}>
                   {foodGroup.label && (
-                    <Menubar.Label className={labelClass()} key={foodGroup.label}>
+                    <Menubar.Label className={styles.label} key={foodGroup.label}>
                       {foodGroup.label}
                     </Menubar.Label>
                   )}
                   {foodGroup.foods.map((food) => (
                     <Menubar.Item
                       key={food.value}
-                      className={itemClass()}
+                      className={styles.item}
                       disabled={food.disabled}
                       onSelect={() => console.log(food.label)}
                     >
@@ -673,7 +672,7 @@ export const Chromatic = () => {
                     </Menubar.Item>
                   ))}
                   {index < foodGroups.length - 1 && (
-                    <Menubar.Separator className={separatorClass()} />
+                    <Menubar.Separator className={styles.separator} />
                   )}
                 </Menubar.Group>
               ))}
@@ -682,42 +681,42 @@ export const Chromatic = () => {
         </Menubar.Menu>
 
         <Menubar.Menu value="edit">
-          <Menubar.Trigger className={triggerClass()}>Edit</Menubar.Trigger>
+          <Menubar.Trigger className={styles.trigger}>Edit</Menubar.Trigger>
           <Menubar.Portal>
-            <Menubar.Content className={contentClass()} avoidCollisions={false} sideOffset={2}>
-              <Menubar.Item className={itemClass()} disabled>
+            <Menubar.Content className={styles.content} avoidCollisions={false} sideOffset={2}>
+              <Menubar.Item className={styles.item} disabled>
                 Undo
               </Menubar.Item>
-              <Menubar.Item className={itemClass()}>Redo</Menubar.Item>
-              <Menubar.Separator className={separatorClass()} />
-              <Menubar.Item className={itemClass()}>Cut</Menubar.Item>
-              <Menubar.Item className={itemClass()}>Copy</Menubar.Item>
-              <Menubar.Item className={itemClass()}>Paste</Menubar.Item>
+              <Menubar.Item className={styles.item}>Redo</Menubar.Item>
+              <Menubar.Separator className={styles.separator} />
+              <Menubar.Item className={styles.item}>Cut</Menubar.Item>
+              <Menubar.Item className={styles.item}>Copy</Menubar.Item>
+              <Menubar.Item className={styles.item}>Paste</Menubar.Item>
             </Menubar.Content>
           </Menubar.Portal>
         </Menubar.Menu>
       </Menubar.Root>
 
       <h2 style={{ marginTop: 600 }}>With checkbox and radio items</h2>
-      <Menubar.Root value="items" className={rootClass()}>
+      <Menubar.Root value="items" className={styles.root}>
         <Menubar.Menu value="items">
-          <Menubar.Trigger className={triggerClass()}>Items</Menubar.Trigger>
+          <Menubar.Trigger className={styles.trigger}>Items</Menubar.Trigger>
           <Menubar.Portal>
-            <Menubar.Content className={contentClass()} avoidCollisions={false} sideOffset={2}>
-              <Menubar.Item className={itemClass()} onSelect={() => console.log('show')}>
+            <Menubar.Content className={styles.content} avoidCollisions={false} sideOffset={2}>
+              <Menubar.Item className={styles.item} onSelect={() => console.log('show')}>
                 Show fonts
               </Menubar.Item>
-              <Menubar.Item className={itemClass()} onSelect={() => console.log('bigger')}>
+              <Menubar.Item className={styles.item} onSelect={() => console.log('bigger')}>
                 Bigger
               </Menubar.Item>
-              <Menubar.Item className={itemClass()} onSelect={() => console.log('smaller')}>
+              <Menubar.Item className={styles.item} onSelect={() => console.log('smaller')}>
                 Smaller
               </Menubar.Item>
-              <Menubar.Separator className={separatorClass()} />
+              <Menubar.Separator className={styles.separator} />
               {checkboxItems.map(({ label, state: [checked, setChecked], disabled }) => (
                 <Menubar.CheckboxItem
                   key={label}
-                  className={itemClass()}
+                  className={styles.item}
                   checked={checked}
                   onCheckedChange={setChecked}
                   disabled={disabled}
@@ -728,10 +727,10 @@ export const Chromatic = () => {
                   </Menubar.ItemIndicator>
                 </Menubar.CheckboxItem>
               ))}
-              <Menubar.Separator className={separatorClass()} />
+              <Menubar.Separator className={styles.separator} />
               <Menubar.RadioGroup value={file} onValueChange={setFile}>
                 {files.map((file) => (
-                  <Menubar.RadioItem key={file} className={itemClass()} value={file}>
+                  <Menubar.RadioItem key={file} className={styles.item} value={file}>
                     {file}
                     <Menubar.ItemIndicator>
                       <TickIcon />
@@ -744,17 +743,17 @@ export const Chromatic = () => {
         </Menubar.Menu>
 
         <Menubar.Menu value="edit">
-          <Menubar.Trigger className={triggerClass()}>Edit</Menubar.Trigger>
+          <Menubar.Trigger className={styles.trigger}>Edit</Menubar.Trigger>
           <Menubar.Portal>
-            <Menubar.Content className={contentClass()} avoidCollisions={false} sideOffset={2}>
-              <Menubar.Item className={itemClass()} disabled>
+            <Menubar.Content className={styles.content} avoidCollisions={false} sideOffset={2}>
+              <Menubar.Item className={styles.item} disabled>
                 Undo
               </Menubar.Item>
-              <Menubar.Item className={itemClass()}>Redo</Menubar.Item>
-              <Menubar.Separator className={separatorClass()} />
-              <Menubar.Item className={itemClass()}>Cut</Menubar.Item>
-              <Menubar.Item className={itemClass()}>Copy</Menubar.Item>
-              <Menubar.Item className={itemClass()}>Paste</Menubar.Item>
+              <Menubar.Item className={styles.item}>Redo</Menubar.Item>
+              <Menubar.Separator className={styles.separator} />
+              <Menubar.Item className={styles.item}>Cut</Menubar.Item>
+              <Menubar.Item className={styles.item}>Copy</Menubar.Item>
+              <Menubar.Item className={styles.item}>Paste</Menubar.Item>
             </Menubar.Content>
           </Menubar.Portal>
         </Menubar.Menu>
@@ -764,22 +763,18 @@ export const Chromatic = () => {
 };
 Chromatic.parameters = { chromatic: { disable: false } };
 
-const rootClass = css({
-  border: '1px solid $gray100',
-  borderRadius: 6,
-  padding: 2,
-});
-
-const triggerClass = css({
-  padding: '6px 16px',
-  border: 0,
-  backgroundColor: 'transparent',
-  fontFamily: 'apple-system, BlinkMacSystemFont, helvetica, arial, sans-serif',
-  fontSize: 13,
-  borderRadius: 4,
-  outline: 'none',
-  '&[data-highlighted]': {
-    backgroundColor: '$gray100',
-  },
-  '&[data-state="open"]': { backgroundColor: '$black', color: 'white' },
-});
+const TickIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 32 32"
+    width="12"
+    height="12"
+    fill="none"
+    stroke="currentcolor"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    strokeWidth="3"
+  >
+    <path d="M2 20 L12 28 30 4" />
+  </svg>
+);

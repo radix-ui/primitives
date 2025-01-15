@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import * as React from 'react';
-import { css, keyframes } from '../../../../stitches.config';
 import * as Accordion from '@radix-ui/react-accordion';
+import styles from './Accordion.stories.module.css';
 
 export default { title: 'Components/Accordion' };
 
@@ -11,40 +11,40 @@ export const Single = () => {
   return (
     <>
       <h1>Uncontrolled</h1>
-      <Accordion.Root type="single" className={rootClass()}>
-        <Accordion.Item className={itemClass()} value="one">
-          <Accordion.Header className={headerClass()}>
-            <Accordion.Trigger className={triggerClass()}>One</Accordion.Trigger>
+      <Accordion.Root type="single" className={styles.root}>
+        <Accordion.Item className={styles.item} value="one">
+          <Accordion.Header className={styles.header}>
+            <Accordion.Trigger className={styles.trigger}>One</Accordion.Trigger>
           </Accordion.Header>
-          <Accordion.Content className={contentClass()}>
+          <Accordion.Content className={styles.content}>
             Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate viverra
             integer ullamcorper congue curabitur sociis, nisi malesuada scelerisque quam suscipit
             habitant sed.
           </Accordion.Content>
         </Accordion.Item>
-        <Accordion.Item className={itemClass()} value="two">
-          <Accordion.Header className={headerClass()}>
-            <Accordion.Trigger className={triggerClass()}>Two</Accordion.Trigger>
+        <Accordion.Item className={styles.item} value="two">
+          <Accordion.Header className={styles.header}>
+            <Accordion.Trigger className={styles.trigger}>Two</Accordion.Trigger>
           </Accordion.Header>
-          <Accordion.Content className={contentClass()}>
+          <Accordion.Content className={styles.content}>
             Cursus sed mattis commodo fermentum conubia ipsum pulvinar sagittis, diam eget bibendum
             porta nascetur ac dictum, leo tellus dis integer platea ultrices mi.
           </Accordion.Content>
         </Accordion.Item>
-        <Accordion.Item className={itemClass()} value="three" disabled>
-          <Accordion.Header className={headerClass()}>
-            <Accordion.Trigger className={triggerClass()}>Three (disabled)</Accordion.Trigger>
+        <Accordion.Item className={styles.item} value="three" disabled>
+          <Accordion.Header className={styles.header}>
+            <Accordion.Trigger className={styles.trigger}>Three (disabled)</Accordion.Trigger>
           </Accordion.Header>
-          <Accordion.Content className={contentClass()}>
+          <Accordion.Content className={styles.content}>
             Sociis hac sapien turpis conubia sagittis justo dui, inceptos penatibus feugiat
             himenaeos euismod magna, nec tempor pulvinar eu etiam mattis.
           </Accordion.Content>
         </Accordion.Item>
-        <Accordion.Item className={itemClass()} value="four">
-          <Accordion.Header className={headerClass()}>
-            <Accordion.Trigger className={triggerClass()}>Four</Accordion.Trigger>
+        <Accordion.Item className={styles.item} value="four">
+          <Accordion.Header className={styles.header}>
+            <Accordion.Trigger className={styles.trigger}>Four</Accordion.Trigger>
           </Accordion.Header>
-          <Accordion.Content className={contentClass()}>
+          <Accordion.Content className={styles.content}>
             Odio placerat <a href="#">quisque</a> sapien sagittis non sociis ligula penatibus
             dignissim vitae, enim vulputate nullam semper potenti etiam volutpat libero.
             <button>Cool</button>
@@ -57,41 +57,41 @@ export const Single = () => {
         type="single"
         value={valueOne}
         onValueChange={setValueOne}
-        className={rootClass()}
+        className={styles.root}
       >
-        <Accordion.Item className={itemClass()} value="one">
-          <Accordion.Header className={headerClass()}>
-            <Accordion.Trigger className={triggerClass()}>One</Accordion.Trigger>
+        <Accordion.Item className={styles.item} value="one">
+          <Accordion.Header className={styles.header}>
+            <Accordion.Trigger className={styles.trigger}>One</Accordion.Trigger>
           </Accordion.Header>
-          <Accordion.Content className={contentClass()}>
+          <Accordion.Content className={styles.content}>
             Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate viverra
             integer ullamcorper congue curabitur sociis, nisi malesuada scelerisque quam suscipit
             habitant sed.
           </Accordion.Content>
         </Accordion.Item>
-        <Accordion.Item className={itemClass()} value="two">
-          <Accordion.Header className={headerClass()}>
-            <Accordion.Trigger className={triggerClass()}>Two</Accordion.Trigger>
+        <Accordion.Item className={styles.item} value="two">
+          <Accordion.Header className={styles.header}>
+            <Accordion.Trigger className={styles.trigger}>Two</Accordion.Trigger>
           </Accordion.Header>
-          <Accordion.Content className={contentClass()}>
+          <Accordion.Content className={styles.content}>
             Cursus sed mattis commodo fermentum conubia ipsum pulvinar sagittis, diam eget bibendum
             porta nascetur ac dictum, leo tellus dis integer platea ultrices mi.
           </Accordion.Content>
         </Accordion.Item>
-        <Accordion.Item className={itemClass()} value="three" disabled>
-          <Accordion.Header className={headerClass()}>
-            <Accordion.Trigger className={triggerClass()}>Three (disabled)</Accordion.Trigger>
+        <Accordion.Item className={styles.item} value="three" disabled>
+          <Accordion.Header className={styles.header}>
+            <Accordion.Trigger className={styles.trigger}>Three (disabled)</Accordion.Trigger>
           </Accordion.Header>
-          <Accordion.Content className={contentClass()}>
+          <Accordion.Content className={styles.content}>
             Sociis hac sapien turpis conubia sagittis justo dui, inceptos penatibus feugiat
             himenaeos euismod magna, nec tempor pulvinar eu etiam mattis.
           </Accordion.Content>
         </Accordion.Item>
-        <Accordion.Item className={itemClass()} value="four">
-          <Accordion.Header className={headerClass()}>
-            <Accordion.Trigger className={triggerClass()}>Four</Accordion.Trigger>
+        <Accordion.Item className={styles.item} value="four">
+          <Accordion.Header className={styles.header}>
+            <Accordion.Trigger className={styles.trigger}>Four</Accordion.Trigger>
           </Accordion.Header>
-          <Accordion.Content className={contentClass()}>
+          <Accordion.Content className={styles.content}>
             Odio placerat <a href="#">quisque</a> sapien sagittis non sociis ligula penatibus
             dignissim vitae, enim vulputate nullam semper potenti etiam volutpat libero.
             <button>Cool</button>
@@ -100,40 +100,40 @@ export const Single = () => {
       </Accordion.Root>
 
       <h1>Collapsible</h1>
-      <Accordion.Root type="single" className={rootClass()} defaultValue="one" collapsible>
-        <Accordion.Item className={itemClass()} value="one">
-          <Accordion.Header className={headerClass()}>
-            <Accordion.Trigger className={triggerClass()}>One</Accordion.Trigger>
+      <Accordion.Root type="single" className={styles.root} defaultValue="one" collapsible>
+        <Accordion.Item className={styles.item} value="one">
+          <Accordion.Header className={styles.header}>
+            <Accordion.Trigger className={styles.trigger}>One</Accordion.Trigger>
           </Accordion.Header>
-          <Accordion.Content className={contentClass()}>
+          <Accordion.Content className={styles.content}>
             Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate viverra
             integer ullamcorper congue curabitur sociis, nisi malesuada scelerisque quam suscipit
             habitant sed.
           </Accordion.Content>
         </Accordion.Item>
-        <Accordion.Item className={itemClass()} value="two">
-          <Accordion.Header className={headerClass()}>
-            <Accordion.Trigger className={triggerClass()}>Two</Accordion.Trigger>
+        <Accordion.Item className={styles.item} value="two">
+          <Accordion.Header className={styles.header}>
+            <Accordion.Trigger className={styles.trigger}>Two</Accordion.Trigger>
           </Accordion.Header>
-          <Accordion.Content className={contentClass()}>
+          <Accordion.Content className={styles.content}>
             Cursus sed mattis commodo fermentum conubia ipsum pulvinar sagittis, diam eget bibendum
             porta nascetur ac dictum, leo tellus dis integer platea ultrices mi.
           </Accordion.Content>
         </Accordion.Item>
-        <Accordion.Item className={itemClass()} value="three" disabled>
-          <Accordion.Header className={headerClass()}>
-            <Accordion.Trigger className={triggerClass()}>Three (disabled)</Accordion.Trigger>
+        <Accordion.Item className={styles.item} value="three" disabled>
+          <Accordion.Header className={styles.header}>
+            <Accordion.Trigger className={styles.trigger}>Three (disabled)</Accordion.Trigger>
           </Accordion.Header>
-          <Accordion.Content className={contentClass()}>
+          <Accordion.Content className={styles.content}>
             Sociis hac sapien turpis conubia sagittis justo dui, inceptos penatibus feugiat
             himenaeos euismod magna, nec tempor pulvinar eu etiam mattis.
           </Accordion.Content>
         </Accordion.Item>
-        <Accordion.Item className={itemClass()} value="four">
-          <Accordion.Header className={headerClass()}>
-            <Accordion.Trigger className={triggerClass()}>Four</Accordion.Trigger>
+        <Accordion.Item className={styles.item} value="four">
+          <Accordion.Header className={styles.header}>
+            <Accordion.Trigger className={styles.trigger}>Four</Accordion.Trigger>
           </Accordion.Header>
-          <Accordion.Content className={contentClass()}>
+          <Accordion.Content className={styles.content}>
             Odio placerat <a href="#">quisque</a> sapien sagittis non sociis ligula penatibus
             dignissim vitae, enim vulputate nullam semper potenti etiam volutpat libero.
             <button>Cool</button>
@@ -150,40 +150,40 @@ export const Multiple = () => {
   return (
     <>
       <h1>Uncontrolled</h1>
-      <Accordion.Root type="multiple" className={rootClass()}>
-        <Accordion.Item className={itemClass()} value="one">
-          <Accordion.Header className={headerClass()}>
-            <Accordion.Trigger className={triggerClass()}>One</Accordion.Trigger>
+      <Accordion.Root type="multiple" className={styles.root}>
+        <Accordion.Item className={styles.item} value="one">
+          <Accordion.Header className={styles.header}>
+            <Accordion.Trigger className={styles.trigger}>One</Accordion.Trigger>
           </Accordion.Header>
-          <Accordion.Content className={contentClass()}>
+          <Accordion.Content className={styles.content}>
             Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate viverra
             integer ullamcorper congue curabitur sociis, nisi malesuada scelerisque quam suscipit
             habitant sed.
           </Accordion.Content>
         </Accordion.Item>
-        <Accordion.Item className={itemClass()} value="two">
-          <Accordion.Header className={headerClass()}>
-            <Accordion.Trigger className={triggerClass()}>Two</Accordion.Trigger>
+        <Accordion.Item className={styles.item} value="two">
+          <Accordion.Header className={styles.header}>
+            <Accordion.Trigger className={styles.trigger}>Two</Accordion.Trigger>
           </Accordion.Header>
-          <Accordion.Content className={contentClass()}>
+          <Accordion.Content className={styles.content}>
             Cursus sed mattis commodo fermentum conubia ipsum pulvinar sagittis, diam eget bibendum
             porta nascetur ac dictum, leo tellus dis integer platea ultrices mi.
           </Accordion.Content>
         </Accordion.Item>
-        <Accordion.Item className={itemClass()} value="three" disabled>
-          <Accordion.Header className={headerClass()}>
-            <Accordion.Trigger className={triggerClass()}>Three (disabled)</Accordion.Trigger>
+        <Accordion.Item className={styles.item} value="three" disabled>
+          <Accordion.Header className={styles.header}>
+            <Accordion.Trigger className={styles.trigger}>Three (disabled)</Accordion.Trigger>
           </Accordion.Header>
-          <Accordion.Content className={contentClass()}>
+          <Accordion.Content className={styles.content}>
             Sociis hac sapien turpis conubia sagittis justo dui, inceptos penatibus feugiat
             himenaeos euismod magna, nec tempor pulvinar eu etiam mattis.
           </Accordion.Content>
         </Accordion.Item>
-        <Accordion.Item className={itemClass()} value="four">
-          <Accordion.Header className={headerClass()}>
-            <Accordion.Trigger className={triggerClass()}>Four</Accordion.Trigger>
+        <Accordion.Item className={styles.item} value="four">
+          <Accordion.Header className={styles.header}>
+            <Accordion.Trigger className={styles.trigger}>Four</Accordion.Trigger>
           </Accordion.Header>
-          <Accordion.Content className={contentClass()}>
+          <Accordion.Content className={styles.content}>
             Odio placerat <a href="#">quisque</a> sapien sagittis non sociis ligula penatibus
             dignissim vitae, enim vulputate nullam semper potenti etiam volutpat libero.
             <button>Cool</button>
@@ -196,41 +196,41 @@ export const Multiple = () => {
         type="multiple"
         value={value}
         onValueChange={setValue}
-        className={rootClass()}
+        className={styles.root}
       >
-        <Accordion.Item className={itemClass()} value="one">
-          <Accordion.Header className={headerClass()}>
-            <Accordion.Trigger className={triggerClass()}>One</Accordion.Trigger>
+        <Accordion.Item className={styles.item} value="one">
+          <Accordion.Header className={styles.header}>
+            <Accordion.Trigger className={styles.trigger}>One</Accordion.Trigger>
           </Accordion.Header>
-          <Accordion.Content className={contentClass()}>
+          <Accordion.Content className={styles.content}>
             Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate viverra
             integer ullamcorper congue curabitur sociis, nisi malesuada scelerisque quam suscipit
             habitant sed.
           </Accordion.Content>
         </Accordion.Item>
-        <Accordion.Item className={itemClass()} value="two">
-          <Accordion.Header className={headerClass()}>
-            <Accordion.Trigger className={triggerClass()}>Two</Accordion.Trigger>
+        <Accordion.Item className={styles.item} value="two">
+          <Accordion.Header className={styles.header}>
+            <Accordion.Trigger className={styles.trigger}>Two</Accordion.Trigger>
           </Accordion.Header>
-          <Accordion.Content className={contentClass()}>
+          <Accordion.Content className={styles.content}>
             Cursus sed mattis commodo fermentum conubia ipsum pulvinar sagittis, diam eget bibendum
             porta nascetur ac dictum, leo tellus dis integer platea ultrices mi.
           </Accordion.Content>
         </Accordion.Item>
-        <Accordion.Item className={itemClass()} value="three" disabled>
-          <Accordion.Header className={headerClass()}>
-            <Accordion.Trigger className={triggerClass()}>Three (disabled)</Accordion.Trigger>
+        <Accordion.Item className={styles.item} value="three" disabled>
+          <Accordion.Header className={styles.header}>
+            <Accordion.Trigger className={styles.trigger}>Three (disabled)</Accordion.Trigger>
           </Accordion.Header>
-          <Accordion.Content className={contentClass()}>
+          <Accordion.Content className={styles.content}>
             Sociis hac sapien turpis conubia sagittis justo dui, inceptos penatibus feugiat
             himenaeos euismod magna, nec tempor pulvinar eu etiam mattis.
           </Accordion.Content>
         </Accordion.Item>
-        <Accordion.Item className={itemClass()} value="four">
-          <Accordion.Header className={headerClass()}>
-            <Accordion.Trigger className={triggerClass()}>Four</Accordion.Trigger>
+        <Accordion.Item className={styles.item} value="four">
+          <Accordion.Header className={styles.header}>
+            <Accordion.Trigger className={styles.trigger}>Four</Accordion.Trigger>
           </Accordion.Header>
-          <Accordion.Content className={contentClass()}>
+          <Accordion.Content className={styles.content}>
             Odio placerat <a href="#">quisque</a> sapien sagittis non sociis ligula penatibus
             dignissim vitae, enim vulputate nullam semper potenti etiam volutpat libero.
             <button>Cool</button>
@@ -279,13 +279,13 @@ export const Animated = () => {
       <br />
       <br />
       <h1>Closed by default</h1>
-      <Accordion.Root type="single" className={rootClass()}>
+      <Accordion.Root type="single" className={styles.root}>
         {values.map((value) => (
-          <Accordion.Item key={value} value={value} className={itemClass()}>
-            <Accordion.Header className={headerClass()}>
-              <Accordion.Trigger className={triggerClass()}>{value}</Accordion.Trigger>
+          <Accordion.Item key={value} value={value} className={styles.item}>
+            <Accordion.Header className={styles.header}>
+              <Accordion.Trigger className={styles.trigger}>{value}</Accordion.Trigger>
             </Accordion.Header>
-            <Accordion.Content className={animatedContentClass()}>
+            <Accordion.Content className={styles.animatedContent}>
               {[...Array(count)].map((_, index) => (
                 <div style={{ padding: 10 }} key={index}>
                   Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate
@@ -299,13 +299,13 @@ export const Animated = () => {
       </Accordion.Root>
 
       <h1>Open by default</h1>
-      <Accordion.Root type="single" className={rootClass()} defaultValue="One">
+      <Accordion.Root type="single" className={styles.root} defaultValue="One">
         {values.map((value) => (
-          <Accordion.Item key={value} value={value} className={itemClass()}>
-            <Accordion.Header className={headerClass()}>
-              <Accordion.Trigger className={triggerClass()}>{value}</Accordion.Trigger>
+          <Accordion.Item key={value} value={value} className={styles.item}>
+            <Accordion.Header className={styles.header}>
+              <Accordion.Trigger className={styles.trigger}>{value}</Accordion.Trigger>
             </Accordion.Header>
-            <Accordion.Content className={animatedContentClass()}>
+            <Accordion.Content className={styles.animatedContent}>
               {[...Array(count)].map((_, index) => (
                 <div style={{ padding: 10 }} key={index}>
                   Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate
@@ -326,13 +326,13 @@ export const Animated2D = () => {
 
   return (
     <>
-      <Accordion.Root type="single" className={rootClass()}>
+      <Accordion.Root type="single" className={styles.root}>
         {values.map((value) => (
-          <Accordion.Item key={value} value={value} className={itemClass()}>
-            <Accordion.Header className={headerClass()}>
-              <Accordion.Trigger className={triggerClass()}>{value}</Accordion.Trigger>
+          <Accordion.Item key={value} value={value} className={styles.item}>
+            <Accordion.Header className={styles.header}>
+              <Accordion.Trigger className={styles.trigger}>{value}</Accordion.Trigger>
             </Accordion.Header>
-            <Accordion.Content className={animated2DContentClass()}>
+            <Accordion.Content className={styles.animated2DContent}>
               <div style={{ padding: 10, background: 'whitesmoke', overflow: 'hidden' }}>
                 <div style={{ width: 'calc(20em - 20px)', height: 100 }}>
                   Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate
@@ -351,40 +351,40 @@ export const Animated2D = () => {
 export const AnimatedControlled = () => {
   const [value, setValue] = React.useState(['one', 'two', 'three', 'four']);
   return (
-    <Accordion.Root type="multiple" value={value} onValueChange={setValue} className={rootClass()}>
-      <Accordion.Item className={itemClass()} value="one">
-        <Accordion.Header className={headerClass()}>
-          <Accordion.Trigger className={triggerClass()}>One</Accordion.Trigger>
+    <Accordion.Root type="multiple" value={value} onValueChange={setValue} className={styles.root}>
+      <Accordion.Item className={styles.item} value="one">
+        <Accordion.Header className={styles.header}>
+          <Accordion.Trigger className={styles.trigger}>One</Accordion.Trigger>
         </Accordion.Header>
-        <Accordion.Content className={animatedContentClass()}>
+        <Accordion.Content className={styles.animatedContent}>
           Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate viverra
           integer ullamcorper congue curabitur sociis, nisi malesuada scelerisque quam suscipit
           habitant sed.
         </Accordion.Content>
       </Accordion.Item>
-      <Accordion.Item className={itemClass()} value="two">
-        <Accordion.Header className={headerClass()}>
-          <Accordion.Trigger className={triggerClass()}>Two</Accordion.Trigger>
+      <Accordion.Item className={styles.item} value="two">
+        <Accordion.Header className={styles.header}>
+          <Accordion.Trigger className={styles.trigger}>Two</Accordion.Trigger>
         </Accordion.Header>
-        <Accordion.Content className={animatedContentClass()}>
+        <Accordion.Content className={styles.animatedContent}>
           Cursus sed mattis commodo fermentum conubia ipsum pulvinar sagittis, diam eget bibendum
           porta nascetur ac dictum, leo tellus dis integer platea ultrices mi.
         </Accordion.Content>
       </Accordion.Item>
-      <Accordion.Item className={itemClass()} value="three">
-        <Accordion.Header className={headerClass()}>
-          <Accordion.Trigger className={triggerClass()}>Three</Accordion.Trigger>
+      <Accordion.Item className={styles.item} value="three">
+        <Accordion.Header className={styles.header}>
+          <Accordion.Trigger className={styles.trigger}>Three</Accordion.Trigger>
         </Accordion.Header>
-        <Accordion.Content className={animatedContentClass()}>
+        <Accordion.Content className={styles.animatedContent}>
           Sociis hac sapien turpis conubia sagittis justo dui, inceptos penatibus feugiat himenaeos
           euismod magna, nec tempor pulvinar eu etiam mattis.
         </Accordion.Content>
       </Accordion.Item>
-      <Accordion.Item className={itemClass()} value="four">
-        <Accordion.Header className={headerClass()}>
-          <Accordion.Trigger className={triggerClass()}>Four</Accordion.Trigger>
+      <Accordion.Item className={styles.item} value="four">
+        <Accordion.Header className={styles.header}>
+          <Accordion.Trigger className={styles.trigger}>Four</Accordion.Trigger>
         </Accordion.Header>
-        <Accordion.Content className={animatedContentClass()}>
+        <Accordion.Content className={styles.animatedContent}>
           Odio placerat <a href="#">quisque</a> sapien sagittis non sociis ligula penatibus
           dignissim vitae, enim vulputate nullam semper potenti etiam volutpat libero.
           <button>Cool</button>
@@ -402,40 +402,40 @@ export const OutsideViewport = () => (
       When accordion buttons are focused and the user is navigating via keyboard, the page should
       not scroll unless the next tab is entering the viewport.
     </p>
-    <Accordion.Root type="single" className={rootClass()}>
-      <Accordion.Item className={itemClass()} value="one">
-        <Accordion.Header className={headerClass()}>
-          <Accordion.Trigger className={triggerClass()}>One</Accordion.Trigger>
+    <Accordion.Root type="single" className={styles.root}>
+      <Accordion.Item className={styles.item} value="one">
+        <Accordion.Header className={styles.header}>
+          <Accordion.Trigger className={styles.trigger}>One</Accordion.Trigger>
         </Accordion.Header>
-        <Accordion.Content className={contentClass()}>
+        <Accordion.Content className={styles.content}>
           Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate viverra
           integer ullamcorper congue curabitur sociis, nisi malesuada scelerisque quam suscipit
           habitant sed.
         </Accordion.Content>
       </Accordion.Item>
-      <Accordion.Item className={itemClass()} value="two">
-        <Accordion.Header className={headerClass()}>
-          <Accordion.Trigger className={triggerClass()}>Two</Accordion.Trigger>
+      <Accordion.Item className={styles.item} value="two">
+        <Accordion.Header className={styles.header}>
+          <Accordion.Trigger className={styles.trigger}>Two</Accordion.Trigger>
         </Accordion.Header>
-        <Accordion.Content className={contentClass()}>
+        <Accordion.Content className={styles.content}>
           Cursus sed mattis commodo fermentum conubia ipsum pulvinar sagittis, diam eget bibendum
           porta nascetur ac dictum, leo tellus dis integer platea ultrices mi.
         </Accordion.Content>
       </Accordion.Item>
-      <Accordion.Item className={itemClass()} value="three" disabled>
-        <Accordion.Header className={headerClass()}>
-          <Accordion.Trigger className={triggerClass()}>Three (disabled)</Accordion.Trigger>
+      <Accordion.Item className={styles.item} value="three" disabled>
+        <Accordion.Header className={styles.header}>
+          <Accordion.Trigger className={styles.trigger}>Three (disabled)</Accordion.Trigger>
         </Accordion.Header>
-        <Accordion.Content className={contentClass()}>
+        <Accordion.Content className={styles.content}>
           Sociis hac sapien turpis conubia sagittis justo dui, inceptos penatibus feugiat himenaeos
           euismod magna, nec tempor pulvinar eu etiam mattis.
         </Accordion.Content>
       </Accordion.Item>
-      <Accordion.Item className={itemClass()} value="four">
-        <Accordion.Header className={headerClass()}>
-          <Accordion.Trigger className={triggerClass()}>Four</Accordion.Trigger>
+      <Accordion.Item className={styles.item} value="four">
+        <Accordion.Header className={styles.header}>
+          <Accordion.Trigger className={styles.trigger}>Four</Accordion.Trigger>
         </Accordion.Header>
-        <Accordion.Content className={contentClass()}>
+        <Accordion.Content className={styles.content}>
           Odio placerat <a href="#">quisque</a> sapien sagittis non sociis ligula penatibus
           dignissim vitae, enim vulputate nullam semper potenti etiam volutpat libero.
           <button>Cool</button>
@@ -449,40 +449,40 @@ export const OutsideViewport = () => (
 export const Horizontal = () => (
   <>
     <h1>Horizontal Orientation</h1>
-    <Accordion.Root type="single" className={rootClass()} orientation="horizontal">
-      <Accordion.Item className={itemClass()} value="one">
-        <Accordion.Header className={headerClass()}>
-          <Accordion.Trigger className={triggerClass()}>One</Accordion.Trigger>
+    <Accordion.Root type="single" className={styles.root} orientation="horizontal">
+      <Accordion.Item className={styles.item} value="one">
+        <Accordion.Header className={styles.header}>
+          <Accordion.Trigger className={styles.trigger}>One</Accordion.Trigger>
         </Accordion.Header>
-        <Accordion.Content className={contentClass()}>
+        <Accordion.Content className={styles.content}>
           Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate viverra
           integer ullamcorper congue curabitur sociis, nisi malesuada scelerisque quam suscipit
           habitant sed.
         </Accordion.Content>
       </Accordion.Item>
-      <Accordion.Item className={itemClass()} value="two">
-        <Accordion.Header className={headerClass()}>
-          <Accordion.Trigger className={triggerClass()}>Two</Accordion.Trigger>
+      <Accordion.Item className={styles.item} value="two">
+        <Accordion.Header className={styles.header}>
+          <Accordion.Trigger className={styles.trigger}>Two</Accordion.Trigger>
         </Accordion.Header>
-        <Accordion.Content className={contentClass()}>
+        <Accordion.Content className={styles.content}>
           Cursus sed mattis commodo fermentum conubia ipsum pulvinar sagittis, diam eget bibendum
           porta nascetur ac dictum, leo tellus dis integer platea ultrices mi.
         </Accordion.Content>
       </Accordion.Item>
-      <Accordion.Item className={itemClass()} value="three" disabled>
-        <Accordion.Header className={headerClass()}>
-          <Accordion.Trigger className={triggerClass()}>Three (disabled)</Accordion.Trigger>
+      <Accordion.Item className={styles.item} value="three" disabled>
+        <Accordion.Header className={styles.header}>
+          <Accordion.Trigger className={styles.trigger}>Three (disabled)</Accordion.Trigger>
         </Accordion.Header>
-        <Accordion.Content className={contentClass()}>
+        <Accordion.Content className={styles.content}>
           Sociis hac sapien turpis conubia sagittis justo dui, inceptos penatibus feugiat himenaeos
           euismod magna, nec tempor pulvinar eu etiam mattis.
         </Accordion.Content>
       </Accordion.Item>
-      <Accordion.Item className={itemClass()} value="four">
-        <Accordion.Header className={headerClass()}>
-          <Accordion.Trigger className={triggerClass()}>Four</Accordion.Trigger>
+      <Accordion.Item className={styles.item} value="four">
+        <Accordion.Header className={styles.header}>
+          <Accordion.Trigger className={styles.trigger}>Four</Accordion.Trigger>
         </Accordion.Header>
-        <Accordion.Content className={contentClass()}>
+        <Accordion.Content className={styles.content}>
           Odio placerat <a href="#">quisque</a> sapien sagittis non sociis ligula penatibus
           dignissim vitae, enim vulputate nullam semper potenti etiam volutpat libero.
           <button>Cool</button>
@@ -498,13 +498,13 @@ export const Chromatic = () => {
     <>
       <h1>Uncontrolled</h1>
       <h2>Single closed</h2>
-      <Accordion.Root type="single" className={rootClass()}>
+      <Accordion.Root type="single" className={styles.root}>
         {items.map((item) => (
-          <Accordion.Item key={item} className={itemClass()} value={item}>
-            <Accordion.Header className={headerClass()}>
-              <Accordion.Trigger className={triggerClass()}>{item}</Accordion.Trigger>
+          <Accordion.Item key={item} className={styles.item} value={item}>
+            <Accordion.Header className={styles.header}>
+              <Accordion.Trigger className={styles.trigger}>{item}</Accordion.Trigger>
             </Accordion.Header>
-            <Accordion.Content className={contentClass()}>
+            <Accordion.Content className={styles.content}>
               {item}: Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate
               viverra integer ullamcorper congue curabitur sociis, nisi malesuada scelerisque quam
               suscipit habitant sed.
@@ -514,13 +514,13 @@ export const Chromatic = () => {
       </Accordion.Root>
 
       <h2>Single open</h2>
-      <Accordion.Root type="single" className={rootClass()} defaultValue="Two">
+      <Accordion.Root type="single" className={styles.root} defaultValue="Two">
         {items.map((item) => (
-          <Accordion.Item key={item} className={itemClass()} value={item}>
-            <Accordion.Header className={headerClass()}>
-              <Accordion.Trigger className={triggerClass()}>{item}</Accordion.Trigger>
+          <Accordion.Item key={item} className={styles.item} value={item}>
+            <Accordion.Header className={styles.header}>
+              <Accordion.Trigger className={styles.trigger}>{item}</Accordion.Trigger>
             </Accordion.Header>
-            <Accordion.Content className={contentClass()}>
+            <Accordion.Content className={styles.content}>
               {item}: Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate
               viverra integer ullamcorper congue curabitur sociis, nisi malesuada scelerisque quam
               suscipit habitant sed.
@@ -530,13 +530,13 @@ export const Chromatic = () => {
       </Accordion.Root>
 
       <h2>Multiple closed</h2>
-      <Accordion.Root type="multiple" className={rootClass()}>
+      <Accordion.Root type="multiple" className={styles.root}>
         {items.map((item) => (
-          <Accordion.Item key={item} className={itemClass()} value={item}>
-            <Accordion.Header className={headerClass()}>
-              <Accordion.Trigger className={triggerClass()}>{item}</Accordion.Trigger>
+          <Accordion.Item key={item} className={styles.item} value={item}>
+            <Accordion.Header className={styles.header}>
+              <Accordion.Trigger className={styles.trigger}>{item}</Accordion.Trigger>
             </Accordion.Header>
-            <Accordion.Content className={contentClass()}>
+            <Accordion.Content className={styles.content}>
               {item}: Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate
               viverra integer ullamcorper congue curabitur sociis, nisi malesuada scelerisque quam
               suscipit habitant sed.
@@ -546,13 +546,13 @@ export const Chromatic = () => {
       </Accordion.Root>
 
       <h2>Multiple open</h2>
-      <Accordion.Root type="multiple" className={rootClass()} defaultValue={['One', 'Two']}>
+      <Accordion.Root type="multiple" className={styles.root} defaultValue={['One', 'Two']}>
         {items.map((item) => (
-          <Accordion.Item key={item} className={itemClass()} value={item}>
-            <Accordion.Header className={headerClass()}>
-              <Accordion.Trigger className={triggerClass()}>{item}</Accordion.Trigger>
+          <Accordion.Item key={item} className={styles.item} value={item}>
+            <Accordion.Header className={styles.header}>
+              <Accordion.Trigger className={styles.trigger}>{item}</Accordion.Trigger>
             </Accordion.Header>
-            <Accordion.Content className={contentClass()}>
+            <Accordion.Content className={styles.content}>
               {item}: Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate
               viverra integer ullamcorper congue curabitur sociis, nisi malesuada scelerisque quam
               suscipit habitant sed.
@@ -563,13 +563,13 @@ export const Chromatic = () => {
 
       <h1>Controlled</h1>
       <h2>Single open</h2>
-      <Accordion.Root type="single" className={rootClass()} value="Three">
+      <Accordion.Root type="single" className={styles.root} value="Three">
         {items.map((item) => (
-          <Accordion.Item key={item} className={itemClass()} value={item}>
-            <Accordion.Header className={headerClass()}>
-              <Accordion.Trigger className={triggerClass()}>{item}</Accordion.Trigger>
+          <Accordion.Item key={item} className={styles.item} value={item}>
+            <Accordion.Header className={styles.header}>
+              <Accordion.Trigger className={styles.trigger}>{item}</Accordion.Trigger>
             </Accordion.Header>
-            <Accordion.Content className={contentClass()}>
+            <Accordion.Content className={styles.content}>
               {item}: Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate
               viverra integer ullamcorper congue curabitur sociis, nisi malesuada scelerisque quam
               suscipit habitant sed.
@@ -579,13 +579,13 @@ export const Chromatic = () => {
       </Accordion.Root>
 
       <h2>Multiple open</h2>
-      <Accordion.Root type="multiple" className={rootClass()} value={['Two', 'Three']}>
+      <Accordion.Root type="multiple" className={styles.root} value={['Two', 'Three']}>
         {items.map((item) => (
-          <Accordion.Item key={item} className={itemClass()} value={item}>
-            <Accordion.Header className={headerClass()}>
-              <Accordion.Trigger className={triggerClass()}>{item}</Accordion.Trigger>
+          <Accordion.Item key={item} className={styles.item} value={item}>
+            <Accordion.Header className={styles.header}>
+              <Accordion.Trigger className={styles.trigger}>{item}</Accordion.Trigger>
             </Accordion.Header>
-            <Accordion.Content className={contentClass()}>
+            <Accordion.Content className={styles.content}>
               {item}: Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate
               viverra integer ullamcorper congue curabitur sociis, nisi malesuada scelerisque quam
               suscipit habitant sed.
@@ -595,13 +595,13 @@ export const Chromatic = () => {
       </Accordion.Root>
 
       <h1>Disabled (whole)</h1>
-      <Accordion.Root type="single" className={rootClass()} disabled>
+      <Accordion.Root type="single" className={styles.root} disabled>
         {items.map((item) => (
-          <Accordion.Item key={item} className={itemClass()} value={item}>
-            <Accordion.Header className={headerClass()}>
-              <Accordion.Trigger className={triggerClass()}>{item}</Accordion.Trigger>
+          <Accordion.Item key={item} className={styles.item} value={item}>
+            <Accordion.Header className={styles.header}>
+              <Accordion.Trigger className={styles.trigger}>{item}</Accordion.Trigger>
             </Accordion.Header>
-            <Accordion.Content className={contentClass()}>
+            <Accordion.Content className={styles.content}>
               {item}: Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate
               viverra integer ullamcorper congue curabitur sociis, nisi malesuada scelerisque quam
               suscipit habitant sed.
@@ -612,13 +612,13 @@ export const Chromatic = () => {
 
       <h1>Disabled (item)</h1>
       <h2>Just item</h2>
-      <Accordion.Root type="single" className={rootClass()}>
+      <Accordion.Root type="single" className={styles.root}>
         {items.map((item) => (
-          <Accordion.Item key={item} className={itemClass()} value={item} disabled={item === 'Two'}>
-            <Accordion.Header className={headerClass()}>
-              <Accordion.Trigger className={triggerClass()}>{item}</Accordion.Trigger>
+          <Accordion.Item key={item} className={styles.item} value={item} disabled={item === 'Two'}>
+            <Accordion.Header className={styles.header}>
+              <Accordion.Trigger className={styles.trigger}>{item}</Accordion.Trigger>
             </Accordion.Header>
-            <Accordion.Content className={contentClass()}>
+            <Accordion.Content className={styles.content}>
               {item}: Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate
               viverra integer ullamcorper congue curabitur sociis, nisi malesuada scelerisque quam
               suscipit habitant sed.
@@ -628,13 +628,13 @@ export const Chromatic = () => {
       </Accordion.Root>
 
       <h2>with `disabled=false` on top-level</h2>
-      <Accordion.Root type="single" className={rootClass()} disabled={false}>
+      <Accordion.Root type="single" className={styles.root} disabled={false}>
         {items.map((item) => (
-          <Accordion.Item key={item} className={itemClass()} value={item} disabled={item === 'Two'}>
-            <Accordion.Header className={headerClass()}>
-              <Accordion.Trigger className={triggerClass()}>{item}</Accordion.Trigger>
+          <Accordion.Item key={item} className={styles.item} value={item} disabled={item === 'Two'}>
+            <Accordion.Header className={styles.header}>
+              <Accordion.Trigger className={styles.trigger}>{item}</Accordion.Trigger>
             </Accordion.Header>
-            <Accordion.Content className={contentClass()}>
+            <Accordion.Content className={styles.content}>
               {item}: Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate
               viverra integer ullamcorper congue curabitur sociis, nisi malesuada scelerisque quam
               suscipit habitant sed.
@@ -644,13 +644,13 @@ export const Chromatic = () => {
       </Accordion.Root>
 
       <h1>Force mounted contents</h1>
-      <Accordion.Root type="single" className={rootClass()}>
+      <Accordion.Root type="single" className={styles.root}>
         {items.map((item) => (
-          <Accordion.Item key={item} className={itemClass()} value={item}>
-            <Accordion.Header className={headerClass()}>
-              <Accordion.Trigger className={triggerClass()}>{item}</Accordion.Trigger>
+          <Accordion.Item key={item} className={styles.item} value={item}>
+            <Accordion.Header className={styles.header}>
+              <Accordion.Trigger className={styles.trigger}>{item}</Accordion.Trigger>
             </Accordion.Header>
-            <Accordion.Content className={contentClass()} forceMount>
+            <Accordion.Content className={styles.content} forceMount>
               {item}: Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate
               viverra integer ullamcorper congue curabitur sociis, nisi malesuada scelerisque quam
               suscipit habitant sed.
@@ -661,13 +661,13 @@ export const Chromatic = () => {
 
       <h1>State attributes</h1>
       <h2>Accordion disabled</h2>
-      <Accordion.Root type="single" className={rootAttrClass()} defaultValue="Two" disabled>
+      <Accordion.Root type="single" className={styles.rootAttr} defaultValue="Two" disabled>
         {items.map((item) => (
-          <Accordion.Item key={item} className={itemAttrClass()} value={item}>
-            <Accordion.Header className={headerAttrClass()}>
-              <Accordion.Trigger className={triggerAttrClass()}>{item}</Accordion.Trigger>
+          <Accordion.Item key={item} className={styles.itemAttr} value={item}>
+            <Accordion.Header className={styles.headerAttr}>
+              <Accordion.Trigger className={styles.triggerAttr}>{item}</Accordion.Trigger>
             </Accordion.Header>
-            <Accordion.Content className={contentAttrClass()}>
+            <Accordion.Content className={styles.contentAttr}>
               {item}: Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate
               viverra integer ullamcorper congue curabitur sociis, nisi malesuada scelerisque quam
               suscipit habitant sed.
@@ -677,18 +677,18 @@ export const Chromatic = () => {
       </Accordion.Root>
 
       <h2>Accordion enabled with item override</h2>
-      <Accordion.Root type="single" className={rootAttrClass()} defaultValue="Two" disabled={false}>
+      <Accordion.Root type="single" className={styles.rootAttr} defaultValue="Two" disabled={false}>
         {items.map((item) => (
           <Accordion.Item
             key={item}
-            className={itemAttrClass()}
+            className={styles.itemAttr}
             value={item}
             disabled={['Two', 'Four'].includes(item)}
           >
-            <Accordion.Header className={headerAttrClass()}>
-              <Accordion.Trigger className={triggerAttrClass()}>{item}</Accordion.Trigger>
+            <Accordion.Header className={styles.headerAttr}>
+              <Accordion.Trigger className={styles.triggerAttr}>{item}</Accordion.Trigger>
             </Accordion.Header>
-            <Accordion.Content className={contentAttrClass()}>
+            <Accordion.Content className={styles.contentAttr}>
               {item}: Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate
               viverra integer ullamcorper congue curabitur sociis, nisi malesuada scelerisque quam
               suscipit habitant sed.
@@ -698,18 +698,18 @@ export const Chromatic = () => {
       </Accordion.Root>
 
       <h2>Accordion disabled with item override</h2>
-      <Accordion.Root type="single" className={rootAttrClass()} defaultValue="Two" disabled={true}>
+      <Accordion.Root type="single" className={styles.rootAttr} defaultValue="Two" disabled={true}>
         {items.map((item) => (
           <Accordion.Item
             key={item}
-            className={itemAttrClass()}
+            className={styles.itemAttr}
             value={item}
             disabled={['Two', 'Four'].includes(item) ? false : undefined}
           >
-            <Accordion.Header className={headerAttrClass()}>
-              <Accordion.Trigger className={triggerAttrClass()}>{item}</Accordion.Trigger>
+            <Accordion.Header className={styles.headerAttr}>
+              <Accordion.Trigger className={styles.triggerAttr}>{item}</Accordion.Trigger>
             </Accordion.Header>
-            <Accordion.Content className={contentAttrClass()}>
+            <Accordion.Content className={styles.contentAttr}>
               {item}: Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate
               viverra integer ullamcorper congue curabitur sociis, nisi malesuada scelerisque quam
               suscipit habitant sed.
@@ -721,156 +721,3 @@ export const Chromatic = () => {
   );
 };
 Chromatic.parameters = { chromatic: { disable: false } };
-
-const rootClass = css({
-  '&[data-orientation="horizontal"]': {
-    display: 'flex',
-    maxWidth: '40em',
-    height: '50vh',
-  },
-  '&[data-orientation="vertical"]': {
-    maxWidth: '20em',
-  },
-  fontFamily: 'sans-serif',
-});
-
-const itemClass = css({
-  '&[data-orientation="horizontal"]': {
-    display: 'flex',
-    borderRight: '1px solid white',
-  },
-
-  '&[data-orientation="vertical"]': {
-    borderBottom: '1px solid white',
-  },
-});
-
-const headerClass = css({
-  '&[data-orientation="horizontal"]': {
-    height: '100%',
-  },
-  margin: 0,
-});
-
-const RECOMMENDED_CSS__ACCORDION__TRIGGER: any = {
-  // because it's a button, we want to stretch it
-  '&[data-orientation="horizontal"]': {
-    height: '100%',
-  },
-  '&[data-orientation="vertical"]': {
-    width: '100%',
-  },
-  // and remove center text alignment in favour of inheriting
-  textAlign: 'inherit',
-};
-
-const triggerClass = css({
-  ...RECOMMENDED_CSS__ACCORDION__TRIGGER,
-  boxSizing: 'border-box',
-  appearance: 'none',
-  border: 'none',
-  padding: 10,
-  backgroundColor: '$black',
-  color: 'white',
-  fontFamily: 'inherit',
-  fontSize: '1.2em',
-
-  '--shadow-color': 'crimson',
-
-  '&:focus': {
-    outline: 'none',
-    boxShadow: 'inset 0 -5px 0 0 var(--shadow-color)',
-    color: '$red',
-  },
-
-  '&[data-disabled]': {
-    color: '$gray300',
-  },
-
-  '&[data-state="open"]': {
-    backgroundColor: '$red',
-    color: '$white',
-
-    '&:focus': {
-      '--shadow-color': '#111',
-      color: '$black',
-    },
-  },
-});
-
-const contentClass = css({
-  padding: 10,
-  lineHeight: 1.5,
-});
-
-const slideDown = keyframes({
-  from: { height: 0 },
-  to: { height: 'var(--radix-accordion-content-height)' },
-});
-
-const slideUp = keyframes({
-  from: { height: 'var(--radix-accordion-content-height)' },
-  to: { height: 0 },
-});
-
-const open2D = keyframes({
-  from: {
-    width: 0,
-    height: 0,
-  },
-  to: {
-    width: 'var(--radix-accordion-content-width)',
-    height: 'var(--radix-accordion-content-height)',
-  },
-});
-
-const close2D = keyframes({
-  from: {
-    width: 'var(--radix-accordion-content-width)',
-    height: 'var(--radix-accordion-content-height)',
-  },
-  to: {
-    width: 0,
-    height: 0,
-  },
-});
-
-const animatedContentClass = css({
-  overflow: 'hidden',
-  '&[data-state="open"]': {
-    animation: `${slideDown} 300ms ease-out`,
-  },
-  '&[data-state="closed"]': {
-    animation: `${slideUp} 300ms ease-out`,
-  },
-});
-
-const animated2DContentClass = css({
-  overflow: 'hidden',
-  '&[data-state="open"]': {
-    animation: `${open2D} 1000ms ease-out`,
-  },
-  '&[data-state="closed"]': {
-    animation: `${close2D} 1000ms ease-out`,
-  },
-});
-
-const styles = {
-  backgroundColor: 'rgba(0, 0, 255, 0.3)',
-  border: '2px solid blue',
-  padding: 10,
-
-  '&[data-state="closed"]': { borderColor: 'red' },
-  '&[data-state="open"]': { borderColor: 'green' },
-  '&[data-disabled]': { borderStyle: 'dashed' },
-  '&:disabled': { opacity: 0.5 },
-};
-const rootAttrClass = css(styles);
-const itemAttrClass = css(styles);
-const headerAttrClass = css(styles);
-const triggerAttrClass = css(styles);
-const contentAttrClass = css({
-  // ensure we can see the content (because it has `hidden` attribute)
-  display: 'block',
-  ...styles,
-});
