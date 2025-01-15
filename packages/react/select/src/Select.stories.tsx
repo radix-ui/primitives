@@ -1081,6 +1081,68 @@ const ChromaticStoryBottomLast = ({ paddedElement }: { paddedElement: PaddedElem
   </div>
 );
 
+export const ItemsAddedOnLater = () => {
+  const [items, setItems] = React.useState<string[]>([
+    '1',
+    '2',
+    '3',
+    '4',
+    '5',
+    '6',
+    '7',
+    '8',
+    '9',
+    '10',
+    '11',
+    '12',
+    '13',
+    '14',
+    '15',
+  ]);
+
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      setItems((i) => [...i, (i.length + 1).toString()]);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div style={{ display: 'flex', gap: 20, padding: 50 }}>
+      {POSITIONS.map((position) => (
+        <Label key={position}>
+          Choose a number:
+          <Select.Root defaultValue="1">
+            <Select.Trigger className={triggerClass()}>
+              <Select.Value />
+              <Select.Icon />
+            </Select.Trigger>
+            <Select.Portal>
+              <Select.Content className={contentClass()} position={position} sideOffset={5}>
+                <Select.Viewport className={viewportClass()}>
+                  {items.map((i) => (
+                    <Select.Item className={itemClass()} value={i} key={i}>
+                      <Select.ItemText>
+                        {i}
+                        <span aria-hidden> 👍</span>
+                      </Select.ItemText>
+                      <Select.ItemIndicator className={indicatorClass()}>
+                        <TickIcon />
+                      </Select.ItemIndicator>
+                    </Select.Item>
+                  ))}
+                </Select.Viewport>
+                <Select.Arrow />
+              </Select.Content>
+            </Select.Portal>
+          </Select.Root>
+        </Label>
+      ))}
+    </div>
+  );
+};
+
 const triggerClass = css({
   display: 'flex',
   alignItems: 'center',
