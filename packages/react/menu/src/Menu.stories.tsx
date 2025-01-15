@@ -30,6 +30,27 @@ export const Styled = () => (
   </MenuWithAnchor>
 );
 
+export const Horizontal = () => (
+  <MenuWithAnchor orientation="horizontal">
+    <Menu.Item className={itemClass()} onSelect={() => window.alert('undo')}>
+      Undo
+    </Menu.Item>
+    <Menu.Item className={itemClass()} onSelect={() => window.alert('redo')}>
+      Redo
+    </Menu.Item>
+    <Menu.Separator className={separatorClass()} />
+    <Menu.Item className={itemClass()} disabled onSelect={() => window.alert('cut')}>
+      Cut
+    </Menu.Item>
+    <Menu.Item className={itemClass()} onSelect={() => window.alert('copy')}>
+      Copy
+    </Menu.Item>
+    <Menu.Item className={itemClass()} onSelect={() => window.alert('paste')}>
+      Paste
+    </Menu.Item>
+  </MenuWithAnchor>
+);
+
 export const Submenus = () => {
   const [open1, setOpen1] = React.useState(false);
   const [open2, setOpen2] = React.useState(false);
@@ -366,9 +387,9 @@ type MenuProps = Omit<
 >;
 
 const MenuWithAnchor: React.FC<MenuProps> = (props) => {
-  const { open = true, children, ...contentProps } = props;
+  const { open = true, children, orientation, ...contentProps } = props;
   return (
-    <Menu.Root open={open} onOpenChange={() => {}} modal={false}>
+    <Menu.Root open={open} orientation={orientation} onOpenChange={() => {}} modal={false}>
       {/* inline-block allows anchor to move when rtl changes on document */}
       <Menu.Anchor style={{ display: 'inline-block' }} />
       <Menu.Portal>
@@ -427,6 +448,9 @@ const contentClass = css({
   fontSize: 13,
   '&:focus-within': {
     borderColor: '$black',
+  },
+  '&[aria-orientation="horizontal"]': {
+    display: 'flex',
   },
 });
 
