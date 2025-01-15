@@ -37,7 +37,7 @@ const config: StorybookConfig = {
     resolve: {
       ...config.resolve,
       alias: {
-        ...config.resolve.alias,
+        ...config.resolve?.alias,
         ...convertTsConfigPathsToWebpackAliases(),
       },
     },
