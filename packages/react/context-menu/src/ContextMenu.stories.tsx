@@ -298,6 +298,12 @@ export const Submenus = () => {
                         >
                           <ContextMenu.Item
                             className={styles.item}
+                            onSelect={() => console.log('stitches')}
+                          >
+                            Stitches
+                          </ContextMenu.Item>
+                          <ContextMenu.Item
+                            className={styles.item}
                             onSelect={() => console.log('composer')}
                           >
                             Composer

@@ -248,6 +248,12 @@ export const Submenus = () => {
                         >
                           <DropdownMenu.Item
                             className={styles.item}
+                            onSelect={() => console.log('stitches')}
+                          >
+                            Stitches
+                          </DropdownMenu.Item>
+                          <DropdownMenu.Item
+                            className={styles.item}
                             onSelect={() => console.log('composer')}
                           >
                             Composer
