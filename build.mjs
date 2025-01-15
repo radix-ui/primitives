@@ -1,10 +1,19 @@
+import path from 'node:path';
 import { globSync } from 'glob';
 import * as esbuild from 'esbuild';
 import * as tsup from 'tsup';
+import { execa } from 'execa';
 
-async function build(path) {
-  const file = `${path}/src/index.ts`;
-  const dist = `${path}/dist`;
+async function build(relativePath) {
+  const pkg = relativePath.split(path.sep).slice(2)[0];
+  if (pkg === 'radix-ui') {
+    // TODO: This package will be built using tsc directly to preserve separate
+    // entry points for better code splitting. Skipping for now.
+    return;
+  }
+
+  const file = `${relativePath}/src/index.ts`;
+  const dist = `${relativePath}/dist`;
 
   const esbuildConfig = {
     entryPoints: [file],
@@ -18,14 +27,14 @@ async function build(path) {
   };
 
   await esbuild.build(esbuildConfig);
-  console.log(`Built ${path}/dist/index.js`);
+  console.log(`Built ${relativePath}/dist/index.js`);
 
   await esbuild.build({
     ...esbuildConfig,
     format: 'esm',
     outExtension: { '.js': '.mjs' },
   });
-  console.log(`Built ${path}/dist/index.mjs`);
+  console.log(`Built ${relativePath}/dist/index.mjs`);
 
   // tsup is used to emit d.ts files only (esbuild can't do that).
   //
@@ -42,7 +51,7 @@ async function build(path) {
     silent: true,
     external: [/@radix-ui\/.+/],
   });
-  console.log(`Built ${path}/dist/index.d.ts`);
+  console.log(`Built ${relativePath}/dist/index.d.ts`);
 }
 
 globSync('packages/*/*').forEach(build);
