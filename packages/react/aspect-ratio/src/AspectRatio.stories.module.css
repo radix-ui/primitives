@@ -1,0 +1,7 @@
+.root {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--red-9);
+  color: var(--gray-1);
+}

@@ -1,8 +1,7 @@
 import * as React from 'react';
-import { css, keyframes } from '../../../../stitches.config';
 import { Label as LabelPrimitive } from '@radix-ui/react-label';
-import { RECOMMENDED_CSS__LABEL__ROOT } from '../../label/src/Label.stories';
 import * as Checkbox from '@radix-ui/react-checkbox';
+import styles from './Checkbox.stories.module.css';
 
 export default { title: 'Components/Checkbox' };
 
@@ -13,8 +12,8 @@ export const Styled = () => (
     <h1>Custom label</h1>
     <Label>
       Label{' '}
-      <Checkbox.Root className={rootClass()}>
-        <Checkbox.Indicator className={indicatorClass()} />
+      <Checkbox.Root className={styles.root}>
+        <Checkbox.Indicator className={styles.indicator} />
       </Checkbox.Root>
     </Label>
 
@@ -24,8 +23,8 @@ export const Styled = () => (
     <h1>Native label</h1>
     <label>
       Label{' '}
-      <Checkbox.Root className={rootClass()}>
-        <Checkbox.Indicator className={indicatorClass()} />
+      <Checkbox.Root className={styles.root}>
+        <Checkbox.Indicator className={styles.indicator} />
       </Checkbox.Root>
     </label>
 
@@ -36,8 +35,8 @@ export const Styled = () => (
 
     <h1>Custom label + htmlFor</h1>
     <Label htmlFor="one">Label</Label>
-    <Checkbox.Root className={rootClass()} id="one">
-      <Checkbox.Indicator className={indicatorClass()} />
+    <Checkbox.Root className={styles.root} id="one">
+      <Checkbox.Indicator className={styles.indicator} />
     </Checkbox.Root>
 
     <br />
@@ -45,8 +44,8 @@ export const Styled = () => (
 
     <h1>Native label + htmlFor</h1>
     <label htmlFor="two">Label</label>
-    <Checkbox.Root className={rootClass()} id="two">
-      <Checkbox.Indicator className={indicatorClass()} />
+    <Checkbox.Root className={styles.root} id="two">
+      <Checkbox.Indicator className={styles.indicator} />
     </Checkbox.Root>
 
     <h1>Native label + native checkbox</h1>
@@ -63,12 +62,12 @@ export const Controlled = () => {
       <p>This checkbox is placed adjacent to its label. The state is controlled.</p>
       <Label htmlFor="randBox">Label</Label>{' '}
       <Checkbox.Root
-        className={rootClass()}
+        className={styles.root}
         checked={checked}
         onCheckedChange={setChecked}
         id="randBox"
       >
-        <Checkbox.Indicator className={indicatorClass()} />
+        <Checkbox.Indicator className={styles.indicator} />
       </Checkbox.Root>
     </>
   );
@@ -80,8 +79,8 @@ export const Indeterminate = () => {
   return (
     <>
       <p>
-        <Checkbox.Root className={rootClass()} checked={checked} onCheckedChange={setChecked}>
-          <Checkbox.Indicator className={indicatorClass()} />
+        <Checkbox.Root className={styles.root} checked={checked} onCheckedChange={setChecked}>
+          <Checkbox.Indicator className={styles.indicator} />
         </Checkbox.Root>
       </p>
 
@@ -115,12 +114,12 @@ export const WithinForm = () => {
         <legend>optional checked: {String(data.optional)}</legend>
         <label>
           <Checkbox.Root
-            className={rootClass()}
+            className={styles.root}
             name="optional"
             checked={checked}
             onCheckedChange={setChecked}
           >
-            <Checkbox.Indicator className={indicatorClass()} />
+            <Checkbox.Indicator className={styles.indicator} />
           </Checkbox.Root>{' '}
           with label
         </label>
@@ -144,8 +143,8 @@ export const WithinForm = () => {
 
       <fieldset>
         <legend>required checked: {String(data.required)}</legend>
-        <Checkbox.Root className={rootClass()} name="required" required>
-          <Checkbox.Indicator className={indicatorClass()} />
+        <Checkbox.Root className={styles.root} name="required" required>
+          <Checkbox.Indicator className={styles.indicator} />
         </Checkbox.Root>
       </fieldset>
 
@@ -155,11 +154,11 @@ export const WithinForm = () => {
       <fieldset>
         <legend>stop propagation checked: {String(data.stopprop)}</legend>
         <Checkbox.Root
-          className={rootClass()}
+          className={styles.root}
           name="stopprop"
           onClick={(event) => event.stopPropagation()}
         >
-          <Checkbox.Indicator className={indicatorClass()} />
+          <Checkbox.Indicator className={styles.indicator} />
         </Checkbox.Root>
       </fieldset>
 
@@ -178,8 +177,8 @@ export const Animated = () => {
   return (
     <>
       <p>
-        <Checkbox.Root className={rootClass()} checked={checked} onCheckedChange={setChecked}>
-          <Checkbox.Indicator className={animatedIndicatorClass()} />
+        <Checkbox.Root className={styles.root} checked={checked} onCheckedChange={setChecked}>
+          <Checkbox.Indicator className={[styles.indicator, styles.animatedIndicator].join(' ')} />
         </Checkbox.Root>
       </p>
 
@@ -201,137 +200,68 @@ export const Chromatic = () => (
   <>
     <h1>Uncontrolled</h1>
     <h2>Unchecked</h2>
-    <Checkbox.Root className={rootClass()}>
-      <Checkbox.Indicator className={indicatorClass()} />
+    <Checkbox.Root className={styles.root}>
+      <Checkbox.Indicator className={styles.indicator} />
     </Checkbox.Root>
 
     <h2>Checked</h2>
-    <Checkbox.Root className={rootClass()} defaultChecked>
-      <Checkbox.Indicator className={indicatorClass()} />
+    <Checkbox.Root className={styles.root} defaultChecked>
+      <Checkbox.Indicator className={styles.indicator} />
     </Checkbox.Root>
 
     <h1>Controlled</h1>
     <h2>Unchecked</h2>
-    <Checkbox.Root className={rootClass()} checked={false}>
-      <Checkbox.Indicator className={indicatorClass()} />
+    <Checkbox.Root className={styles.root} checked={false}>
+      <Checkbox.Indicator className={styles.indicator} />
     </Checkbox.Root>
 
     <h2>Checked</h2>
-    <Checkbox.Root className={rootClass()} checked>
-      <Checkbox.Indicator className={indicatorClass()} />
+    <Checkbox.Root className={styles.root} checked>
+      <Checkbox.Indicator className={styles.indicator} />
     </Checkbox.Root>
 
     <h1>Indeterminate</h1>
-    <Checkbox.Root className={rootClass()} checked="indeterminate">
-      <Checkbox.Indicator className={indicatorClass()} />
+    <Checkbox.Root className={styles.root} checked="indeterminate">
+      <Checkbox.Indicator className={styles.indicator} />
     </Checkbox.Root>
 
     <h1>Disabled</h1>
-    <Checkbox.Root className={rootClass()} defaultChecked disabled>
-      <Checkbox.Indicator className={indicatorClass()} />
+    <Checkbox.Root className={styles.root} defaultChecked disabled>
+      <Checkbox.Indicator className={styles.indicator} />
     </Checkbox.Root>
 
     <h1>Force mounted indicator</h1>
-    <Checkbox.Root className={rootClass()}>
-      <Checkbox.Indicator className={indicatorClass()} forceMount style={{ height: 20 }} />
+    <Checkbox.Root className={styles.root}>
+      <Checkbox.Indicator className={styles.indicator} forceMount style={{ height: 20 }} />
     </Checkbox.Root>
 
     <h1>State attributes</h1>
     <h2>Unchecked</h2>
-    <Checkbox.Root className={rootAttrClass()}>
-      <Checkbox.Indicator className={indicatorAttrClass()} />
+    <Checkbox.Root className={styles.rootAttr}>
+      <Checkbox.Indicator className={styles.indicatorAttr} />
     </Checkbox.Root>
 
     <h2>Checked</h2>
-    <Checkbox.Root className={rootAttrClass()} defaultChecked>
-      <Checkbox.Indicator className={indicatorAttrClass()} />
+    <Checkbox.Root className={styles.rootAttr} defaultChecked>
+      <Checkbox.Indicator className={styles.indicatorAttr} />
     </Checkbox.Root>
 
     <h2>Indeterminate</h2>
-    <Checkbox.Root className={rootAttrClass()} checked="indeterminate">
-      <Checkbox.Indicator className={indicatorAttrClass()} />
+    <Checkbox.Root className={styles.rootAttr} checked="indeterminate">
+      <Checkbox.Indicator className={styles.indicatorAttr} />
     </Checkbox.Root>
 
     <h2>Disabled</h2>
-    <Checkbox.Root className={rootAttrClass()} defaultChecked disabled>
-      <Checkbox.Indicator className={indicatorAttrClass()} />
+    <Checkbox.Root className={styles.rootAttr} defaultChecked disabled>
+      <Checkbox.Indicator className={styles.indicatorAttr} />
     </Checkbox.Root>
 
     <h2>Force mounted indicator</h2>
-    <Checkbox.Root className={rootAttrClass()}>
-      <Checkbox.Indicator className={indicatorAttrClass()} forceMount style={{ height: 20 }} />
+    <Checkbox.Root className={styles.rootAttr}>
+      <Checkbox.Indicator className={styles.indicatorAttr} forceMount style={{ height: 20 }} />
     </Checkbox.Root>
   </>
 );
 Chromatic.parameters = { chromatic: { disable: false } };
 
-const Label = (props: any) => <LabelPrimitive {...props} style={RECOMMENDED_CSS__LABEL__ROOT} />;
-
-const RECOMMENDED_CSS__CHECKBOX__ROOT = {
-  // better default alignment
-  verticalAlign: 'middle',
-};
-
-const rootClass = css({
-  ...RECOMMENDED_CSS__CHECKBOX__ROOT,
-  border: '1px solid $gray300',
-  width: 30,
-  height: 30,
-  padding: 4,
-
-  '&:focus': {
-    outline: 'none',
-    borderColor: '$red',
-    boxShadow: '0 0 0 1px $colors$red',
-  },
-
-  '&[data-disabled]': {
-    opacity: 0.3,
-  },
-});
-
-const indicatorClass = css({
-  backgroundColor: '$red',
-  display: 'block',
-  width: 20,
-  height: 4,
-
-  '&[data-state="checked"], &[data-state="unchecked"]': {
-    height: 20,
-  },
-});
-
-const fadeIn = keyframes({
-  from: { opacity: 0 },
-  to: { opacity: 1 },
-});
-
-const fadeOut = keyframes({
-  from: { opacity: 1 },
-  to: { opacity: 0 },
-});
-
-const animatedIndicatorClass = css(indicatorClass, {
-  transition: 'height 300ms',
-
-  '&[data-state="checked"]': {
-    animation: `${fadeIn} 1000ms ease-out`,
-  },
-  '&[data-state="unchecked"]': {
-    animation: `${fadeOut} 1000ms ease-in`,
-  },
-});
-
-const styles = {
-  backgroundColor: 'rgba(0, 0, 255, 0.3)',
-  border: '2px solid blue',
-  padding: 10,
-
-  '&[data-state="unchecked"]': { borderColor: 'red' },
-  '&[data-state="checked"]': { borderColor: 'green' },
-  '&[data-state="indeterminate"]': { borderColor: 'purple' },
-  '&[data-disabled]': { borderStyle: 'dashed' },
-  '&:disabled': { opacity: 0.5 },
-};
-const rootAttrClass = css(styles);
-const indicatorAttrClass = css(styles);
+const Label = (props: any) => <LabelPrimitive {...props} className={styles.label} />;

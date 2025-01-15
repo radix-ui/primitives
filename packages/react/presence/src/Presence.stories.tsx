@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { css, keyframes } from '../../../../stitches.config';
 import { Presence } from '@radix-ui/react-presence';
+import styles from './Presence.stories.module.css';
 
 export default { title: 'Utilities/Presence' };
 
@@ -18,16 +18,16 @@ export const Basic = () => {
   );
 };
 
-export const WithMountAnimation = () => <Animation className={mountAnimationClass()} />;
-export const WithUnmountAnimation = () => <Animation className={unmountAnimationClass()} />;
+export const WithMountAnimation = () => <Animation className={styles.mountAnimation} />;
+export const WithUnmountAnimation = () => <Animation className={styles.unmountAnimation} />;
 export const WithMultipleMountAnimations = () => (
-  <Animation className={multipleMountAnimationsClass()} />
+  <Animation className={styles.multipleMountAnimations} />
 );
 export const WithOpenAndCloseAnimation = () => (
-  <Animation className={openAndCloseAnimationClass()} />
+  <Animation className={styles.openAndCloseAnimation} />
 );
 export const WithMultipleOpenAndCloseAnimations = () => (
-  <Animation className={multipleOpenAndCloseAnimationsClass()} />
+  <Animation className={styles.multipleOpenAndCloseAnimations} />
 );
 
 export const WithDeferredMountAnimation = () => {
@@ -53,7 +53,7 @@ export const WithDeferredMountAnimation = () => {
       </p>
       <Toggles nodeRef={ref} open={open} onOpenChange={setOpen} />
       <Presence present={open}>
-        <div className={animate ? mountAnimationClass() : undefined} ref={ref}>
+        <div className={animate ? styles.mountAnimation : undefined} ref={ref}>
           Content
         </div>
       </Presence>
@@ -106,55 +106,3 @@ function Toggles({ open, onOpenChange, nodeRef }: any) {
     </form>
   );
 }
-
-const fadeIn = keyframes({
-  from: { opacity: 0 },
-  to: { opacity: 1 },
-});
-
-const fadeOut = keyframes({
-  from: { opacity: 1 },
-  to: { opacity: 0 },
-});
-
-const slideUp = keyframes({
-  from: { transform: 'translateY(30px)' },
-  to: { transform: 'translateY(0)' },
-});
-
-const slideDown = keyframes({
-  from: { transform: 'translateY(0)' },
-  to: { transform: 'translateY(30px)' },
-});
-
-const mountAnimationClass = css({
-  animation: `${fadeIn} 3s ease-out`,
-});
-
-const unmountAnimationClass = css({
-  '&[data-state="closed"]': {
-    animation: `${fadeOut} 3s ease-in`,
-  },
-});
-
-const multipleMountAnimationsClass = css({
-  animation: `${fadeIn} 6s cubic-bezier(0.22, 1, 0.36, 1), ${slideUp} 6s cubic-bezier(0.22, 1, 0.36, 1)`,
-});
-
-const openAndCloseAnimationClass = css({
-  '&[data-state="open"]': {
-    animation: `${fadeIn} 3s ease-out`,
-  },
-  '&[data-state="closed"]': {
-    animation: `${fadeOut} 3s ease-in`,
-  },
-});
-
-const multipleOpenAndCloseAnimationsClass = css({
-  '&[data-state="open"]': {
-    animation: `${fadeIn} 3s cubic-bezier(0.22, 1, 0.36, 1), ${slideUp} 1s cubic-bezier(0.22, 1, 0.36, 1)`,
-  },
-  '&[data-state="closed"]': {
-    animation: `${fadeOut} 3s cubic-bezier(0.22, 1, 0.36, 1), ${slideDown} 1s cubic-bezier(0.22, 1, 0.36, 1)`,
-  },
-});

@@ -1,18 +1,18 @@
 import * as React from 'react';
-import { css, keyframes } from '../../../../stitches.config';
 import * as Dialog from '@radix-ui/react-dialog';
+import styles from './Dialog.stories.module.css';
 
 export default { title: 'Components/Dialog' };
 
 export const Styled = () => (
   <Dialog.Root>
-    <Dialog.Trigger className={triggerClass()}>open</Dialog.Trigger>
+    <Dialog.Trigger className={styles.trigger}>open</Dialog.Trigger>
     <Dialog.Portal>
-      <Dialog.Overlay className={overlayClass()} />
-      <Dialog.Content className={contentDefaultClass()}>
+      <Dialog.Overlay className={styles.overlay} />
+      <Dialog.Content className={styles.contentDefault}>
         <Dialog.Title>Booking info</Dialog.Title>
         <Dialog.Description>Please enter the info for your booking below.</Dialog.Description>
-        <Dialog.Close className={closeClass()}>close</Dialog.Close>
+        <Dialog.Close className={styles.close}>close</Dialog.Close>
       </Dialog.Content>
     </Dialog.Portal>
   </Dialog.Root>
@@ -21,16 +21,16 @@ export const Styled = () => (
 export const NonModal = () => (
   <>
     <Dialog.Root modal={false}>
-      <Dialog.Trigger className={triggerClass()}>open (non-modal)</Dialog.Trigger>
+      <Dialog.Trigger className={styles.trigger}>open (non-modal)</Dialog.Trigger>
       <Dialog.Portal>
-        <Dialog.Overlay className={overlayClass()} />
+        <Dialog.Overlay className={styles.overlay} />
         <Dialog.Content
-          className={contentSheetClass()}
+          className={[styles.contentDefault, styles.contentSheet].join(' ')}
           onInteractOutside={(event) => event.preventDefault()}
         >
           <Dialog.Title>Booking info</Dialog.Title>
           <Dialog.Description>Description</Dialog.Description>
-          <Dialog.Close className={closeClass()}>close</Dialog.Close>
+          <Dialog.Close className={styles.close}>close</Dialog.Close>
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>
@@ -52,8 +52,8 @@ export const Controlled = () => {
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Trigger>{open ? 'close' : 'open'}</Dialog.Trigger>
       <Dialog.Portal>
-        <Dialog.Overlay className={overlayClass()} />
-        <Dialog.Content className={contentDefaultClass()}>
+        <Dialog.Overlay className={styles.overlay} />
+        <Dialog.Content className={styles.contentDefault}>
           <Dialog.Title>Title</Dialog.Title>
           <Dialog.Description>Description</Dialog.Description>
           <Dialog.Close>close</Dialog.Close>
@@ -68,8 +68,8 @@ export const FocusTrap = () => (
     <Dialog.Root>
       <Dialog.Trigger>open</Dialog.Trigger>
       <Dialog.Portal>
-        <Dialog.Overlay className={overlayClass()} />
-        <Dialog.Content className={contentDefaultClass()}>
+        <Dialog.Overlay className={styles.overlay} />
+        <Dialog.Content className={styles.contentDefault}>
           <Dialog.Close>close</Dialog.Close>
           <Dialog.Title>Title</Dialog.Title>
           <Dialog.Description>Description</Dialog.Description>
@@ -100,9 +100,9 @@ export const CustomFocus = () => {
       <Dialog.Root>
         <Dialog.Trigger>open</Dialog.Trigger>
         <Dialog.Portal>
-          <Dialog.Overlay className={overlayClass()} />
+          <Dialog.Overlay className={styles.overlay} />
           <Dialog.Content
-            className={contentDefaultClass()}
+            className={styles.contentDefault}
             onOpenAutoFocus={(event) => {
               event.preventDefault();
               firstNameRef.current?.focus();
@@ -143,9 +143,9 @@ export const NoEscapeDismiss = () => (
   <Dialog.Root>
     <Dialog.Trigger>open</Dialog.Trigger>
     <Dialog.Portal>
-      <Dialog.Overlay className={overlayClass()} />
+      <Dialog.Overlay className={styles.overlay} />
       <Dialog.Content
-        className={contentDefaultClass()}
+        className={styles.contentDefault}
         onEscapeKeyDown={(event) => event.preventDefault()}
       >
         <Dialog.Title>Title</Dialog.Title>
@@ -162,9 +162,9 @@ export const NoPointerDownOutsideDismiss = () => (
   <Dialog.Root>
     <Dialog.Trigger>open</Dialog.Trigger>
     <Dialog.Portal>
-      <Dialog.Overlay className={overlayClass()} />
+      <Dialog.Overlay className={styles.overlay} />
       <Dialog.Content
-        className={contentDefaultClass()}
+        className={styles.contentDefault}
         onPointerDownOutside={(event) => event.preventDefault()}
       >
         <Dialog.Title>Title</Dialog.Title>
@@ -182,8 +182,8 @@ export const WithPortalContainer = () => {
       <Dialog.Root>
         <Dialog.Trigger>open</Dialog.Trigger>
         <Dialog.Portal container={portalContainer}>
-          <Dialog.Overlay className={overlayClass()} />
-          <Dialog.Content className={contentDefaultClass()}>
+          <Dialog.Overlay className={styles.overlay} />
+          <Dialog.Content className={styles.contentDefault}>
             <Dialog.Title>Title</Dialog.Title>
             <Dialog.Description>Description</Dialog.Description>
             <Dialog.Close>close</Dialog.Close>
@@ -199,8 +199,8 @@ export const Animated = () => (
   <Dialog.Root>
     <Dialog.Trigger>open</Dialog.Trigger>
     <Dialog.Portal>
-      <Dialog.Overlay className={animatedOverlayClass()} />
-      <Dialog.Content className={animatedContentClass()}>
+      <Dialog.Overlay className={[styles.overlay, styles.animatedOverlay].join(' ')} />
+      <Dialog.Content className={[styles.contentDefault, styles.animatedContent].join(' ')}>
         <Dialog.Title>Title</Dialog.Title>
         <Dialog.Description>Description</Dialog.Description>
         <Dialog.Close>close</Dialog.Close>
@@ -213,8 +213,8 @@ export const ForcedMount = () => (
   <Dialog.Root>
     <Dialog.Trigger>open</Dialog.Trigger>
     <Dialog.Portal forceMount>
-      <Dialog.Overlay className={overlayClass()} />
-      <Dialog.Content className={contentDefaultClass()}>
+      <Dialog.Overlay className={styles.overlay} />
+      <Dialog.Content className={styles.contentDefault}>
         <Dialog.Title>Title</Dialog.Title>
         <Dialog.Description>Description</Dialog.Description>
         <Dialog.Close>close</Dialog.Close>
@@ -225,14 +225,14 @@ export const ForcedMount = () => (
 
 export const InnerScrollable = () => (
   <Dialog.Root>
-    <Dialog.Trigger className={triggerClass()}>open</Dialog.Trigger>
+    <Dialog.Trigger className={styles.trigger}>open</Dialog.Trigger>
     <Dialog.Portal>
-      <Dialog.Overlay className={overlayClass()} />
-      <Dialog.Content className={contentScrollableClass()}>
+      <Dialog.Overlay className={styles.overlay} />
+      <Dialog.Content className={[styles.contentDefault, styles.contentScrollable].join(' ')}>
         <Dialog.Title>Booking info</Dialog.Title>
         <Dialog.Description>Please enter the info for your booking below.</Dialog.Description>
         <div style={{ backgroundColor: '#eee', height: 500 }} />
-        <Dialog.Close className={closeClass()}>close</Dialog.Close>
+        <Dialog.Close className={styles.close}>close</Dialog.Close>
       </Dialog.Content>
     </Dialog.Portal>
   </Dialog.Root>
@@ -240,15 +240,17 @@ export const InnerScrollable = () => (
 
 export const OuterScrollable = () => (
   <Dialog.Root>
-    <Dialog.Trigger className={triggerClass()}>open</Dialog.Trigger>
+    <Dialog.Trigger className={styles.trigger}>open</Dialog.Trigger>
     <div style={{ backgroundColor: '#eee', width: 300, height: 1000 }} />
     <Dialog.Portal>
-      <Dialog.Overlay className={scrollableOverlayClass()}>
-        <Dialog.Content className={contentInScrollableOverlayClass()}>
+      <Dialog.Overlay className={[styles.overlay, styles.scrollableOverlay].join(' ')}>
+        <Dialog.Content
+          className={[styles.contentDefault, styles.contentInScrollableOverlay].join(' ')}
+        >
           <Dialog.Title>Booking info</Dialog.Title>
           <Dialog.Description>Please enter the info for your booking below.</Dialog.Description>
           <div style={{ backgroundColor: '#eee', height: 500 }} />
-          <Dialog.Close className={closeClass()}>close</Dialog.Close>
+          <Dialog.Close className={styles.close}>close</Dialog.Close>
         </Dialog.Content>
       </Dialog.Overlay>
     </Dialog.Portal>
@@ -268,29 +270,29 @@ export const Chromatic = () => (
         <h1>Uncontrolled</h1>
         <h2>Closed</h2>
         <Dialog.Root>
-          <Dialog.Trigger className={triggerClass()}>open</Dialog.Trigger>
+          <Dialog.Trigger className={styles.trigger}>open</Dialog.Trigger>
           <Dialog.Portal>
-            <Dialog.Overlay className={overlayClass()} />
-            <Dialog.Content className={chromaticContentClass()}>
+            <Dialog.Overlay className={styles.overlay} />
+            <Dialog.Content className={[styles.contentDefault, styles.chromaticContent].join(' ')}>
               <Dialog.Title>Title</Dialog.Title>
               <Dialog.Description>Description</Dialog.Description>
-              <Dialog.Close className={closeClass()}>close</Dialog.Close>
+              <Dialog.Close className={styles.close}>close</Dialog.Close>
             </Dialog.Content>
           </Dialog.Portal>
         </Dialog.Root>
 
         <h2>Open</h2>
         <Dialog.Root defaultOpen>
-          <Dialog.Trigger className={triggerClass()}>open</Dialog.Trigger>
+          <Dialog.Trigger className={styles.trigger}>open</Dialog.Trigger>
           <Dialog.Portal>
             <Dialog.Overlay
-              className={overlayClass()}
+              className={styles.overlay}
               style={{ left: 0, bottom: '50%', width: '25%' }}
             />
-            <Dialog.Content className={chromaticContentClass()} style={{ top: '25%', left: '12%' }}>
+            <Dialog.Content className={styles.chromaticContent} style={{ top: '25%', left: '12%' }}>
               <Dialog.Title>Title</Dialog.Title>
               <Dialog.Description>Description</Dialog.Description>
-              <Dialog.Close className={closeClass()}>close</Dialog.Close>
+              <Dialog.Close className={styles.close}>close</Dialog.Close>
             </Dialog.Content>
           </Dialog.Portal>
         </Dialog.Root>
@@ -301,30 +303,30 @@ export const Chromatic = () => (
         <h2>Closed</h2>
         <Dialog.Root>
           <Dialog.Portal>
-            <Dialog.Overlay className={overlayClass()} />
-            <Dialog.Content className={chromaticContentClass()}>
+            <Dialog.Overlay className={styles.overlay} />
+            <Dialog.Content className={styles.chromaticContent}>
               <Dialog.Title>Title</Dialog.Title>
               <Dialog.Description>Description</Dialog.Description>
-              <Dialog.Close className={closeClass()}>close</Dialog.Close>
+              <Dialog.Close className={styles.close}>close</Dialog.Close>
             </Dialog.Content>
           </Dialog.Portal>
-          <Dialog.Trigger className={triggerClass()}>open</Dialog.Trigger>
+          <Dialog.Trigger className={styles.trigger}>open</Dialog.Trigger>
         </Dialog.Root>
 
         <h2>Open</h2>
         <Dialog.Root defaultOpen>
           <Dialog.Portal>
             <Dialog.Overlay
-              className={overlayClass()}
+              className={styles.overlay}
               style={{ left: '25%', bottom: '50%', width: '25%' }}
             />
-            <Dialog.Content className={chromaticContentClass()} style={{ top: '25%', left: '37%' }}>
+            <Dialog.Content className={styles.chromaticContent} style={{ top: '25%', left: '37%' }}>
               <Dialog.Title>Title</Dialog.Title>
               <Dialog.Description>Description</Dialog.Description>
-              <Dialog.Close className={closeClass()}>close</Dialog.Close>
+              <Dialog.Close className={styles.close}>close</Dialog.Close>
             </Dialog.Content>
           </Dialog.Portal>
-          <Dialog.Trigger className={triggerClass()}>open</Dialog.Trigger>
+          <Dialog.Trigger className={styles.trigger}>open</Dialog.Trigger>
         </Dialog.Root>
       </div>
 
@@ -332,29 +334,29 @@ export const Chromatic = () => (
         <h1>Controlled</h1>
         <h2>Closed</h2>
         <Dialog.Root open={false}>
-          <Dialog.Trigger className={triggerClass()}>open</Dialog.Trigger>
+          <Dialog.Trigger className={styles.trigger}>open</Dialog.Trigger>
           <Dialog.Portal>
-            <Dialog.Overlay className={overlayClass()} />
-            <Dialog.Content className={chromaticContentClass()}>
+            <Dialog.Overlay className={styles.overlay} />
+            <Dialog.Content className={styles.chromaticContent}>
               <Dialog.Title>Title</Dialog.Title>
               <Dialog.Description>Description</Dialog.Description>
-              <Dialog.Close className={closeClass()}>close</Dialog.Close>
+              <Dialog.Close className={styles.close}>close</Dialog.Close>
             </Dialog.Content>
           </Dialog.Portal>
         </Dialog.Root>
 
         <h2>Open</h2>
         <Dialog.Root open>
-          <Dialog.Trigger className={triggerClass()}>open</Dialog.Trigger>
+          <Dialog.Trigger className={styles.trigger}>open</Dialog.Trigger>
           <Dialog.Portal>
             <Dialog.Overlay
-              className={overlayClass()}
+              className={styles.overlay}
               style={{ left: '50%', bottom: '50%', width: '25%' }}
             />
-            <Dialog.Content className={chromaticContentClass()} style={{ top: '25%', left: '62%' }}>
+            <Dialog.Content className={styles.chromaticContent} style={{ top: '25%', left: '62%' }}>
               <Dialog.Title>Title</Dialog.Title>
               <Dialog.Description>Description</Dialog.Description>
-              <Dialog.Close className={closeClass()}>close</Dialog.Close>
+              <Dialog.Close className={styles.close}>close</Dialog.Close>
             </Dialog.Content>
           </Dialog.Portal>
         </Dialog.Root>
@@ -365,30 +367,30 @@ export const Chromatic = () => (
         <h2>Closed</h2>
         <Dialog.Root open={false}>
           <Dialog.Portal>
-            <Dialog.Overlay className={overlayClass()} />
-            <Dialog.Content className={chromaticContentClass()}>
+            <Dialog.Overlay className={styles.overlay} />
+            <Dialog.Content className={styles.chromaticContent}>
               <Dialog.Title>Title</Dialog.Title>
               <Dialog.Description>Description</Dialog.Description>
-              <Dialog.Close className={closeClass()}>close</Dialog.Close>
+              <Dialog.Close className={styles.close}>close</Dialog.Close>
             </Dialog.Content>
           </Dialog.Portal>
-          <Dialog.Trigger className={triggerClass()}>open</Dialog.Trigger>
+          <Dialog.Trigger className={styles.trigger}>open</Dialog.Trigger>
         </Dialog.Root>
 
         <h2>Open</h2>
         <Dialog.Root open>
           <Dialog.Portal>
             <Dialog.Overlay
-              className={overlayClass()}
+              className={styles.overlay}
               style={{ left: '75%', bottom: '50%', width: '25%' }}
             />
-            <Dialog.Content className={chromaticContentClass()} style={{ top: '25%', left: '88%' }}>
+            <Dialog.Content className={styles.chromaticContent} style={{ top: '25%', left: '88%' }}>
               <Dialog.Title>Title</Dialog.Title>
               <Dialog.Description>Description</Dialog.Description>
-              <Dialog.Close className={closeClass()}>close</Dialog.Close>
+              <Dialog.Close className={styles.close}>close</Dialog.Close>
             </Dialog.Content>
           </Dialog.Portal>
-          <Dialog.Trigger className={triggerClass()}>open</Dialog.Trigger>
+          <Dialog.Trigger className={styles.trigger}>open</Dialog.Trigger>
         </Dialog.Root>
       </div>
     </div>
@@ -403,19 +405,19 @@ export const Chromatic = () => (
       <div>
         <h1>Forced mount</h1>
         <Dialog.Root>
-          <Dialog.Trigger className={triggerClass()}>open</Dialog.Trigger>
+          <Dialog.Trigger className={styles.trigger}>open</Dialog.Trigger>
           <Dialog.Portal forceMount>
             <Dialog.Overlay
-              className={overlayClass()}
+              className={styles.overlay}
               style={{
                 top: '50%',
                 backgroundColor: 'rgba(0, 0, 0, 0.3)',
               }}
             />
-            <Dialog.Content className={chromaticContentClass()} style={{ left: '25%', top: '75%' }}>
+            <Dialog.Content className={styles.chromaticContent} style={{ left: '25%', top: '75%' }}>
               <Dialog.Title>Title</Dialog.Title>
               <Dialog.Description>Description</Dialog.Description>
-              <Dialog.Close className={closeClass()}>close</Dialog.Close>
+              <Dialog.Close className={styles.close}>close</Dialog.Close>
             </Dialog.Content>
           </Dialog.Portal>
         </Dialog.Root>
@@ -425,26 +427,32 @@ export const Chromatic = () => (
         <h1>State attributes</h1>
         <h2>Closed</h2>
         <Dialog.Root>
-          <Dialog.Trigger className={triggerAttrClass()}>open</Dialog.Trigger>
+          <Dialog.Trigger className={styles.triggerAttr}>open</Dialog.Trigger>
           <Dialog.Portal>
-            <Dialog.Overlay className={overlayAttrClass()} />
-            <Dialog.Content className={contentAttrClass()}>
+            <Dialog.Overlay className={styles.overlayAttr} />
+            <Dialog.Content className={[styles.chromaticContent, styles.contentAttr].join(' ')}>
               <Dialog.Title>Title</Dialog.Title>
               <Dialog.Description>Description</Dialog.Description>
-              <Dialog.Close className={closeAttrClass()}>close</Dialog.Close>
+              <Dialog.Close className={styles.closeAttr}>close</Dialog.Close>
             </Dialog.Content>
           </Dialog.Portal>
         </Dialog.Root>
 
         <h2>Open</h2>
         <Dialog.Root defaultOpen>
-          <Dialog.Trigger className={triggerAttrClass()}>open</Dialog.Trigger>
+          <Dialog.Trigger className={styles.triggerAttr}>open</Dialog.Trigger>
           <Dialog.Portal>
-            <Dialog.Overlay className={overlayAttrClass()} style={{ left: '50%', top: '50%' }} />
-            <Dialog.Content className={contentAttrClass()} style={{ left: '75%', top: '75%' }}>
+            <Dialog.Overlay
+              className={[styles.overlay, styles.overlayAttr].join(' ')}
+              style={{ left: '50%', top: '50%' }}
+            />
+            <Dialog.Content
+              className={[styles.chromaticContent, styles.contentAttr].join(' ')}
+              style={{ left: '75%', top: '75%' }}
+            >
               <Dialog.Title>Title</Dialog.Title>
               <Dialog.Description>Description</Dialog.Description>
-              <Dialog.Close className={closeAttrClass()}>close</Dialog.Close>
+              <Dialog.Close className={styles.closeAttr}>close</Dialog.Close>
             </Dialog.Content>
           </Dialog.Portal>
         </Dialog.Root>
@@ -463,18 +471,20 @@ export const Cypress = () => {
   return (
     <>
       <Dialog.Root modal={modal}>
-        <Dialog.Trigger className={triggerClass()}>open</Dialog.Trigger>
+        <Dialog.Trigger className={styles.trigger}>open</Dialog.Trigger>
         <Dialog.Portal>
           <Dialog.Content
-            className={
-              animated
-                ? animatedContentClass({ css: { animationDuration: '50ms !important' } })
-                : contentDefaultClass()
-            }
+            className={[
+              styles.contentDefault,
+              animated && styles.animatedContent,
+              animated && styles.duration50,
+            ]
+              .filter(Boolean)
+              .join(' ')}
           >
             <Dialog.Title>title</Dialog.Title>
             <Dialog.Description>description</Dialog.Description>
-            <Dialog.Close className={closeClass()}>close</Dialog.Close>
+            <Dialog.Close className={styles.close}>close</Dialog.Close>
             {hasDestroyButton && (
               <div>
                 <button type="button" onClick={() => setHasDestroyButton(false)}>
@@ -526,123 +536,3 @@ export const Cypress = () => {
     </>
   );
 };
-
-const triggerClass = css({});
-
-const RECOMMENDED_CSS__DIALOG__OVERLAY: any = {
-  // ensures overlay is positioned correctly
-  position: 'fixed',
-  top: 0,
-  right: 0,
-  bottom: 0,
-  left: 0,
-};
-
-const overlayClass = css({
-  ...RECOMMENDED_CSS__DIALOG__OVERLAY,
-  backgroundColor: 'rgba(0,0,0,0.2)',
-});
-
-const scrollableOverlayClass = css(overlayClass, {
-  overflow: 'auto',
-  display: 'flex',
-  alignItems: 'flex-start',
-  justifyContent: 'center',
-});
-
-const RECOMMENDED_CSS__DIALOG__CONTENT: any = {
-  // ensures good default position for content
-  position: 'fixed',
-  top: 0,
-  left: 0,
-};
-
-const contentStyles = css({
-  minWidth: 300,
-  minHeight: 150,
-  padding: 50,
-  borderRadius: 10,
-  backgroundColor: 'white',
-  boxShadow: '0 2px 10px rgba(0, 0, 0, 0.12)',
-});
-
-const contentDefaultClass = css(contentStyles, {
-  ...RECOMMENDED_CSS__DIALOG__CONTENT,
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-});
-
-const contentScrollableClass = css(contentDefaultClass, {
-  overflow: 'auto',
-  maxHeight: 300,
-});
-
-const contentInScrollableOverlayClass = css(contentStyles, {
-  marginTop: 50,
-  marginBottom: 50,
-});
-
-const contentSheetClass = css(contentStyles, {
-  ...RECOMMENDED_CSS__DIALOG__CONTENT,
-  left: undefined,
-  right: 0,
-  minWidth: 300,
-  minHeight: '100vh',
-  borderTopRightRadius: 0,
-  borderBottomRightRadius: 0,
-});
-
-const closeClass = css({});
-
-const fadeIn = keyframes({
-  from: { opacity: 0 },
-  to: { opacity: 1 },
-});
-
-const fadeOut = keyframes({
-  from: { opacity: 1 },
-  to: { opacity: 0 },
-});
-
-const scaleIn = keyframes({
-  from: { transform: 'translate(-50%, -50%) scale(0.75)' },
-  to: { transform: 'translate(-50%, -50%) scale(1)' },
-});
-
-const animatedOverlayClass = css(overlayClass, {
-  '&[data-state="open"]': {
-    animation: `${fadeIn} 300ms ease-out`,
-  },
-  '&[data-state="closed"]': {
-    animation: `${fadeOut} 300ms ease-in`,
-  },
-});
-
-const animatedContentClass = css(contentDefaultClass, {
-  '&[data-state="open"]': {
-    animation: `${fadeIn} 150ms ease-out, ${scaleIn} 200ms ease-out`,
-  },
-  '&[data-state="closed"]': {
-    animation: `${fadeOut} 300ms ease-in`,
-  },
-});
-
-const chromaticContentClass = css(contentDefaultClass, {
-  padding: 10,
-  minWidth: 'auto',
-  minHeight: 'auto',
-});
-
-const styles = {
-  backgroundColor: 'rgba(0, 0, 255, 0.3)',
-  border: '2px solid blue',
-  padding: 10,
-
-  '&[data-state="closed"]': { borderColor: 'red' },
-  '&[data-state="open"]': { borderColor: 'green' },
-};
-const triggerAttrClass = css(styles);
-const overlayAttrClass = css(overlayClass, styles);
-const contentAttrClass = css(chromaticContentClass, styles);
-const closeAttrClass = css(styles);

@@ -1,0 +1,89 @@
+.content {
+  transform-origin: var(--radix-hover-card-content-transform-origin);
+  /* ----- */
+  background-color: var(--color-gray300);
+  padding: 20px;
+  border-radius: 5px;
+}
+
+.arrow {
+  fill: var(--color-gray300);
+}
+
+@keyframes hoverCard-fadeIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes hoverCard-fadeOut {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+}
+
+.animatedContent {
+  &[data-state='open'] {
+    animation: hoverCard-fadeIn 250ms ease;
+  }
+  &[data-state='closed'] {
+    animation: hoverCard-fadeOut 250ms ease;
+  }
+}
+
+.grid {
+  display: inline-grid;
+  grid-template-columns: repeat(3, 50px);
+  column-gap: 150px;
+  row-gap: 100px;
+  padding: 100px;
+  border: 1px solid black;
+}
+
+.contentAttr,
+.arrowAttr,
+.triggerAttr {
+  background-color: rgb(0 0 255 / 0.3);
+  border: 2px solid blue;
+  padding: 10px;
+
+  &[data-state='closed'] {
+    border-color: red;
+  }
+  &[data-state='open'] {
+    border-color: green;
+  }
+}
+
+.chromaticArrow {
+  fill: black;
+}
+
+.chromaticContent,
+.contentAttr {
+  display: grid;
+  place-content: center;
+  width: 60px;
+  height: 60px;
+  background-color: royalblue;
+  color: white;
+  font-size: 10px;
+  border: 1px solid rgb(0 0 0 / 0.3);
+}
+
+.chromaticTrigger {
+  width: 30px;
+  height: 30px;
+  background-color: tomato;
+  border: 1px solid rgb(0 0 0 / 0.3);
+}

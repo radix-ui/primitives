@@ -1,0 +1,92 @@
+.trigger {
+}
+
+.content {
+  transform-origin: var(--radix-popover-content-transform-origin);
+  background-color: var(--color-gray300);
+  padding: 20px;
+  border-radius: 5px;
+}
+
+.close {
+}
+
+.arrow {
+  fill: var(--color-gray300);
+}
+
+@keyframes popover-fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes popover-fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.animatedContent {
+  &[data-state='open'] {
+    animation: popover-fadeIn 300ms ease-out;
+  }
+  &[data-state='closed'] {
+    animation: popover-fadeOut 300ms ease-in;
+  }
+}
+
+.grid {
+  display: inline-grid;
+  grid-template-columns: repeat(3, 50px);
+  column-gap: 150px;
+  row-gap: 100px;
+  padding: 100px;
+  border: 1px solid black;
+}
+
+.chromaticTrigger {
+  box-sizing: border-box;
+  width: 30px;
+  height: 30px;
+  background-color: tomato;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+}
+
+.contentAttr,
+.chromaticContent {
+  box-sizing: border-box;
+  display: grid;
+  place-content: center;
+  width: 60px;
+  height: 60px;
+  background-color: royalblue;
+  color: white;
+  font-size: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+}
+
+.chromaticArrow {
+  fill: black;
+}
+
+.triggerAttr,
+.contentAttr,
+.arrowAttr,
+.closeAttr {
+  background-color: rgba(0, 0, 255, 0.3);
+  border: 2px solid blue;
+  padding: 10px;
+  &[data-state='closed'] {
+    border-color: red;
+  }
+  &[data-state='open'] {
+    border-color: green;
+  }
+}

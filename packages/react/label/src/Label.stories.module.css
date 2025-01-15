@@ -1,0 +1,23 @@
+.root {
+  /* ensures it can receive vertical margins */
+  display: inline-block;
+  /* better default alignment */
+  vertical-align: middle;
+  /* mimics default `label` tag (as we render a `span`) */
+  cursor: default;
+  display: inline-block;
+  border: 1px solid var(--gray-5);
+  padding: 10px;
+}
+
+.control {
+  display: inline-flex;
+  border: 1px solid var(--gray-5);
+  padding: 10px;
+  vertical-align: middle;
+  margin: 0 10px;
+
+  &:hover {
+    background-color: var(--red-9);
+  }
+}
