@@ -1,14 +1,14 @@
 import * as React from 'react';
 import { DirectionProvider } from '@radix-ui/react-direction';
-import { css, keyframes } from '../../../../stitches.config';
 import * as ScrollArea from '@radix-ui/react-scroll-area';
+import styles from './ScrollArea.stories.module.css';
 
 export default { title: 'Components/ScrollArea' };
 
 export const Basic = () => {
   const [props, setProps] = React.useState({} as any);
   return (
-    <>
+    <div className={styles.root}>
       <div style={{ margin: '20px auto', width: 'max-content', textAlign: 'center' }}>
         <form
           onChange={(event) => {
@@ -52,12 +52,13 @@ export const Basic = () => {
           <Copy key={index} />
         ))}
       </ScrollAreaStory>
-    </>
+    </div>
   );
 };
 
 export const Resizable = () => (
   <div
+    className={styles.root}
     style={{
       width: 800,
       height: 800,
@@ -79,7 +80,7 @@ export const ContentChange = () => {
   const [verticalCount, setVerticalCount] = React.useState(1);
   const [horizontalCount, setHorizontalCount] = React.useState(1);
   return (
-    <>
+    <div className={styles.root}>
       <button onClick={() => setVerticalCount((count) => count + 1)}>Add vertical content</button>
       <button onClick={() => setHorizontalCount((count) => count + 1)}>
         Increase horizontal size
@@ -89,22 +90,24 @@ export const ContentChange = () => {
           <Copy key={index} style={{ width: 300 * horizontalCount + 'px' }} />
         ))}
       </ScrollAreaStory>
-    </>
+    </div>
   );
 };
 
 export const Animated = () => {
   return (
-    <ScrollAreaStory animated style={{ width: 800, height: 800 }}>
-      {Array.from({ length: 30 }).map((_, index) => (
-        <Copy key={index} />
-      ))}
-    </ScrollAreaStory>
+    <div className={styles.root}>
+      <ScrollAreaStory animated style={{ width: 800, height: 800 }}>
+        {Array.from({ length: 30 }).map((_, index) => (
+          <Copy key={index} />
+        ))}
+      </ScrollAreaStory>
+    </div>
   );
 };
 
 export const Chromatic = () => (
-  <>
+  <div className={styles.root}>
     <h1>Vertical</h1>
     <h2>Auto with overflow</h2>
     <ScrollAreaStory type="auto" vertical horizontal={false}>
@@ -303,7 +306,7 @@ export const Chromatic = () => (
         ))}
       </ScrollAreaStory>
     </DirectionProvider>
-  </>
+  </div>
 );
 Chromatic.parameters = { chromatic: { disable: false } };
 
@@ -319,7 +322,7 @@ export const ChromaticDynamicContentBeforeLoaded = () => {
   }, []);
 
   return (
-    <>
+    <div className={styles.root}>
       <h1>Always</h1>
       <ScrollAreaStory type="always" style={{ width: 500, height: 250 }}>
         {showContent ? (
@@ -355,7 +358,7 @@ export const ChromaticDynamicContentBeforeLoaded = () => {
           <h1>Loading...</h1>
         )}
       </ScrollAreaStory>
-    </>
+    </div>
   );
 };
 ChromaticDynamicContentBeforeLoaded.parameters = { chromatic: { disable: false } };
@@ -374,21 +377,25 @@ const ScrollAreaStory = ({
 }: any) => (
   <ScrollArea.Root
     {...props}
-    className={scrollAreaClass()}
+    className={styles.scrollArea}
     style={{ width: 200, height: 200, ...props.style }}
   >
-    <ScrollArea.Viewport className={scrollAreaViewportClass()}>{children}</ScrollArea.Viewport>
+    <ScrollArea.Viewport className={styles.scrollAreaViewport}>{children}</ScrollArea.Viewport>
     {vertical && (
-      <ScrollArea.Scrollbar className={scrollbarClass()} orientation="vertical">
-        <ScrollArea.Thumb className={animated ? animatedThumbClass() : thumbClass()} />
+      <ScrollArea.Scrollbar className={styles.scrollbar} orientation="vertical">
+        <ScrollArea.Thumb
+          className={[animated && styles.animatedThumb, styles.thumb].filter(Boolean).join(' ')}
+        />
       </ScrollArea.Scrollbar>
     )}
     {horizontal && (
-      <ScrollArea.Scrollbar className={scrollbarClass()} orientation="horizontal">
-        <ScrollArea.Thumb className={animated ? animatedThumbClass() : thumbClass()} />
+      <ScrollArea.Scrollbar className={styles.scrollbar} orientation="horizontal">
+        <ScrollArea.Thumb
+          className={[animated && styles.animatedThumb, styles.thumb].filter(Boolean).join(' ')}
+        />
       </ScrollArea.Scrollbar>
     )}
-    <ScrollArea.Corner className={cornerClass()} />
+    <ScrollArea.Corner className={styles.corner} />
   </ScrollArea.Root>
 );
 
@@ -411,107 +418,3 @@ const Copy = (props: any) => (
     maximus felis, quis ullamcorper quam luctus et.
   </p>
 );
-
-const SCROLLBAR_SIZE = 8;
-
-const RECOMMENDED_CSS__SCROLLAREA__ROOT: any = {
-  width: '100%',
-  height: '100%',
-};
-
-const scrollAreaClass = css({
-  ...RECOMMENDED_CSS__SCROLLAREA__ROOT,
-  border: '1px solid black',
-});
-
-const RECOMMENDED_CSS__SCROLLAREA__VIEWPORT: any = {
-  width: '100%',
-  height: '100%',
-};
-
-const scrollAreaViewportClass = css({
-  ...RECOMMENDED_CSS__SCROLLAREA__VIEWPORT,
-});
-
-const RECOMMENDED_CSS__SCROLLBAR__ROOT: any = {
-  display: 'flex',
-  // ensures no selection
-  userSelect: 'none',
-  // disable browser handling of all panning and zooming gestures on touch devices
-  touchAction: 'none',
-};
-
-const scrollbarClass = css({
-  ...RECOMMENDED_CSS__SCROLLBAR__ROOT,
-  transition: 'background 160ms ease-out',
-  padding: 2,
-  background: 'rgba(0, 0, 0, 0.3)',
-  '&:hover': {
-    background: 'rgba(0, 0, 0, 0.5)',
-  },
-  '&[data-orientation="vertical"]': {
-    width: SCROLLBAR_SIZE,
-  },
-  '&[data-orientation="horizontal"]': {
-    flexDirection: 'column',
-    height: SCROLLBAR_SIZE,
-  },
-});
-
-const RECOMMENDED_CSS__SCROLLBAR__THUMB: any = {
-  flex: 1,
-  // increase target size for touch devices https://www.w3.org/WAI/WCAG21/Understanding/target-size.html
-  position: 'relative',
-  '&::before': {
-    content: '""',
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: '100%',
-    height: '100%',
-    minWidth: 44,
-    minHeight: 44,
-  },
-};
-
-const thumbClass = css({
-  ...RECOMMENDED_CSS__SCROLLBAR__THUMB,
-  background: 'black',
-  borderRadius: SCROLLBAR_SIZE,
-});
-
-const cornerClass = css({
-  background: 'rgba(0, 0, 0, 0.3)',
-  position: 'relative',
-  '&::after': {
-    content: '""',
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    background: 'black',
-    width: SCROLLBAR_SIZE,
-    height: SCROLLBAR_SIZE,
-    borderRadius: SCROLLBAR_SIZE,
-  },
-});
-
-const fadeIn = keyframes({
-  from: { transform: 'scale(0.2)', opacity: 0 },
-  to: { transform: 'scale(1)', opacity: 1 },
-});
-
-const fadeOut = keyframes({
-  from: { transform: 'scale(1)', opacity: 1 },
-  to: { transform: 'scale(0.2)', opacity: 0 },
-});
-
-const animatedThumbClass = css(thumbClass, {
-  '&[data-state="visible"]': {
-    animation: `${fadeIn} 300ms ease`,
-  },
-  '&[data-state="hidden"]': {
-    animation: `${fadeOut} 300ms ease`,
-  },
-});

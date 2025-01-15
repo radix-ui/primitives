@@ -1,5 +1,5 @@
-import { css } from '../../../../stitches.config';
 import { AspectRatio } from '@radix-ui/react-aspect-ratio';
+import styles from './AspectRatio.stories.module.css';
 
 export default { title: 'Components/AspectRatio' };
 
@@ -13,7 +13,7 @@ const image = (
 
 export const Styled = () => (
   <div style={{ width: 500 }}>
-    <AspectRatio className={rootClass()}>
+    <AspectRatio className={styles.root}>
       <h1>Default ratio (1/1)</h1>
     </AspectRatio>
   </div>
@@ -42,7 +42,7 @@ export const Chromatic = () => (
   <>
     <h1>Default ratio</h1>
     <div style={{ width: 300 }}>
-      <AspectRatio className={rootClass()}>
+      <AspectRatio className={styles.root}>
         <p>Default ratio (1/1)</p>
       </AspectRatio>
     </div>
@@ -65,11 +65,3 @@ export const Chromatic = () => (
   </>
 );
 Chromatic.parameters = { chromatic: { disable: false } };
-
-const rootClass = css({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  backgroundColor: '$red',
-  color: 'white',
-});

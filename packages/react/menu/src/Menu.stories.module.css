@@ -1,0 +1,100 @@
+.content {
+  display: inline-block;
+  box-sizing: border-box;
+  min-width: 130px;
+  background-color: var(--color-white);
+  border: 1px solid var(--color-gray100);
+  border-radius: 6px;
+  padding: 5px;
+  box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.1);
+  font-family: apple-system, BlinkMacSystemFont, helvetica, arial, sans-serif;
+  font-size: 13px;
+  &:focus-within {
+    border-color: var(--color-black);
+  }
+}
+
+.label,
+.item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  line-height: 1;
+  cursor: default;
+  user-select: none;
+  white-space: nowrap;
+  height: 25px;
+  padding: 0 10px;
+  color: var(--color-black);
+  border-radius: 3px;
+}
+
+.label {
+  color: var(--color-gray100);
+}
+
+.item {
+  outline: none;
+
+  &[data-highlighted] {
+    background-color: var(--color-black);
+    color: var(--color-white);
+  }
+
+  &[data-disabled] {
+    color: var(--color-gray100);
+  }
+}
+
+.subTrigger {
+  &:not([data-highlighted])[data-state='open'] {
+    background-color: var(--color-gray100);
+    color: var(--color-black);
+  }
+}
+
+.separator {
+  height: 1;
+  margin: 5px 10px;
+  background-color: var(--color-gray100);
+}
+
+@keyframes menu-animateIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes menu-animateOut {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+}
+
+.animatedContent {
+  &[data-state='open'] {
+    animation: menu-animateIn 300ms ease;
+  }
+  &[data-state='closed'] {
+    animation: menu-animateOut 300ms ease;
+  }
+}
+
+.animatedItemIndicator {
+  &[data-state='checked'] {
+    animation: menu-animateIn 300ms ease;
+  }
+  &[data-state='unchecked'] {
+    animation: menu-animateOut 300ms ease;
+  }
+}

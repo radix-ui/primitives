@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { css } from '../../../../stitches.config';
 import * as Form from '@radix-ui/react-form';
+import styles from './Form.stories.module.css';
 
 export default { title: 'Components/Form' };
 
@@ -13,7 +13,7 @@ export const Basic = () => {
   return (
     <>
       <Form.Root
-        className={formClass()}
+        className={styles.form}
         onClearServerErrors={() => setServerErrors({})}
         onSubmit={async (event) => {
           const form = event.currentTarget;
@@ -86,7 +86,7 @@ export const Cypress = () => {
   return (
     <>
       <Form.Root
-        className={formClass()}
+        className={styles.form}
         onClearServerErrors={() => setServerErrors({})}
         onSubmit={async (event) => {
           event.preventDefault();
@@ -184,8 +184,3 @@ export const Cypress = () => {
 async function wait(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
-
-const formClass = css({
-  '& *[data-invalid]': { color: 'red', outlineColor: 'CurrentColor' },
-  '& *[data-valid]': { color: 'green', outlineColor: 'CurrentColor' },
-});

@@ -1,0 +1,10 @@
+.form {
+  & [data-invalid] {
+    color: var(--red-9);
+    outline-color: currentColor;
+  }
+  & [data-valid] {
+    color: var(--green-9);
+    outline-color: currentColor;
+  }
+}
