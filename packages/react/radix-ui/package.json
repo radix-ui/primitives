@@ -1,0 +1,114 @@
+{
+  "name": "radix-ui",
+  "version": "1.2.0-rc.0",
+  "license": "MIT",
+  "source": "./src/index.ts",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    },
+    "./*": {
+      "require": {
+        "types": "./dist/cjs/*.d.ts",
+        "default": "./dist/cjs/*.js"
+      },
+      "import": {
+        "types": "./dist/esm/*.d.ts",
+        "default": "./dist/esm/*.js"
+      }
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "clean": "rm -rf dist",
+    "version": "yarn version",
+    "build": "tsc ."
+  },
+  "dependencies": {
+    "@radix-ui/react-accessible-icon": "workspace:*",
+    "@radix-ui/react-accordion": "workspace:*",
+    "@radix-ui/react-alert-dialog": "workspace:*",
+    "@radix-ui/react-aspect-ratio": "workspace:*",
+    "@radix-ui/react-avatar": "workspace:*",
+    "@radix-ui/react-checkbox": "workspace:*",
+    "@radix-ui/react-collapsible": "workspace:*",
+    "@radix-ui/react-collection": "workspace:*",
+    "@radix-ui/react-compose-refs": "workspace:*",
+    "@radix-ui/react-context": "workspace:*",
+    "@radix-ui/react-context-menu": "workspace:*",
+    "@radix-ui/react-dialog": "workspace:*",
+    "@radix-ui/react-direction": "workspace:*",
+    "@radix-ui/react-dismissable-layer": "workspace:*",
+    "@radix-ui/react-dropdown-menu": "workspace:*",
+    "@radix-ui/react-focus-guards": "workspace:*",
+    "@radix-ui/react-focus-scope": "workspace:*",
+    "@radix-ui/react-form": "workspace:*",
+    "@radix-ui/react-hover-card": "workspace:*",
+    "@radix-ui/react-label": "workspace:*",
+    "@radix-ui/react-menu": "workspace:*",
+    "@radix-ui/react-menubar": "workspace:*",
+    "@radix-ui/react-navigation-menu": "workspace:*",
+    "@radix-ui/react-popover": "workspace:*",
+    "@radix-ui/react-popper": "workspace:*",
+    "@radix-ui/react-portal": "workspace:*",
+    "@radix-ui/react-presence": "workspace:*",
+    "@radix-ui/react-primitive": "workspace:*",
+    "@radix-ui/react-progress": "workspace:*",
+    "@radix-ui/react-radio-group": "workspace:*",
+    "@radix-ui/react-roving-focus": "workspace:*",
+    "@radix-ui/react-scroll-area": "workspace:*",
+    "@radix-ui/react-select": "workspace:*",
+    "@radix-ui/react-separator": "workspace:*",
+    "@radix-ui/react-slider": "workspace:*",
+    "@radix-ui/react-slot": "workspace:*",
+    "@radix-ui/react-switch": "workspace:*",
+    "@radix-ui/react-tabs": "workspace:*",
+    "@radix-ui/react-toast": "workspace:*",
+    "@radix-ui/react-toggle": "workspace:*",
+    "@radix-ui/react-toggle-group": "workspace:*",
+    "@radix-ui/react-toolbar": "workspace:*",
+    "@radix-ui/react-tooltip": "workspace:*",
+    "@radix-ui/react-use-callback-ref": "workspace:*",
+    "@radix-ui/react-use-controllable-state": "workspace:*",
+    "@radix-ui/react-use-escape-keydown": "workspace:*",
+    "@radix-ui/react-use-layout-effect": "workspace:*",
+    "@radix-ui/react-use-size": "workspace:*",
+    "@radix-ui/react-visually-hidden": "workspace:*"
+  },
+  "peerDependencies": {
+    "@types/react": "*",
+    "@types/react-dom": "*",
+    "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc",
+    "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    },
+    "@types/react-dom": {
+      "optional": true
+    }
+  },
+  "homepage": "https://radix-ui.com/primitives",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/radix-ui/primitives.git"
+  },
+  "bugs": {
+    "url": "https://github.com/radix-ui/primitives/issues"
+  }
+}

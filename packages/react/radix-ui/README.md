@@ -1,4 +1,4 @@
-[![Radix Primitives Logo](primitives.png)](https://radix-ui.com/primitives)
+[![Radix Primitives Logo](https://raw.githubusercontent.com/radix-ui/primitives/main/primitives.png)](https://radix-ui.com/primitives)
 
 # Radix Primitives
 
@@ -15,10 +15,6 @@ For full documentation, visit [radix-ui.com/docs/primitives](https://radix-ui.co
 ## Releases
 
 For changelog, visit [radix-ui.com/docs/primitives/overview/releases](https://radix-ui.com/docs/primitives/overview/releases).
-
-## Contributing
-
-Please follow our [contributing guidelines](./.github/CONTRIBUTING.md).
 
 ---
 
