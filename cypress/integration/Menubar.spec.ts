@@ -112,7 +112,8 @@ describe('Menubar', () => {
       cy.findByText('File').should('be.focused');
 
       // End of list (should not loop)
-      cy.findByText('File').trigger('keydown', { key: nextKey }).should('be.focused');
+      cy.findByText('File').trigger('keydown', { key: nextKey });
+      cy.findByText('File').should('be.focused');
 
       // Open menu
       cy.findByText('File').click();
@@ -191,7 +192,8 @@ describe('Menubar', () => {
 
       cy.findByText('Find').type('{enter}');
       cy.findByText('Advanced').type('{enter}');
-      cy.findByText('Regex').type('{leftarrow}').should('not.exist');
+      cy.findByText('Regex').type('{leftarrow}');
+      cy.findByText('Regex').should('not.exist');
       cy.findByText('Advanced').should('be.visible');
       cy.findByText('Redo').should('be.visible');
     });
@@ -209,12 +211,14 @@ describe('Menubar', () => {
       cy.findByText('Edit').click();
 
       // Test close on root menu
-      cy.findByText('Redo').type('{esc}').should('not.exist');
+      cy.findByText('Redo').type('{esc}');
+      cy.findByText('Redo').should('not.exist');
 
       // Reopen menu and test keys from within the submenu
       cy.findByText('Edit').click();
       cy.findByText('Find').type('{enter}');
-      cy.findByText('Search the web…').type('{esc}').should('not.exist');
+      cy.findByText('Search the web…').type('{esc}');
+      cy.findByText('Search the web…').should('not.exist');
       cy.findByText('Redo').should('not.exist');
     });
 
@@ -224,7 +228,8 @@ describe('Menubar', () => {
       // Matching items outside of the active menu should not become focused
       pointerOver('Find');
       pointerOver('Advanced');
-      cy.findByText('Regex').focus().type('Find');
+      cy.findByText('Regex').focus();
+      cy.findByText('Regex').type('Find');
       cy.findByText('Find').should('not.have.focus');
 
       // Matching items inside of active menu should become focused
@@ -250,10 +255,9 @@ describe('Menubar', () => {
       it('should open submenu and focus first item when pressing left arrow key but close when pressing right arrow key', () => {
         cy.findByText('Edit').click();
         cy.findByText('Find').trigger('keydown', { key: 'ArrowLeft' });
-        cy.findByText('Search the web…')
-          .should('be.focused')
-          .trigger('keydown', { key: 'ArrowRight' })
-          .and('not.exist');
+        cy.findByText('Search the web…').should('be.focused');
+        cy.findByText('Search the web…').trigger('keydown', { key: 'ArrowRight' });
+        cy.findByText('Search the web…').should('not.exist');
 
         // Root level menu should remain open
         cy.findByText('Redo').should('be.visible');
