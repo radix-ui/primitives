@@ -8,20 +8,19 @@ on:
       - '**/package.json'
       - '.yarn/versions/**'
 
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
 jobs:
   publish-snapshot:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - name: Read Node version
-        id: node_version
-        run: echo "NVMRC=$(cat .nvmrc)" >> $GITHUB_OUTPUT
-      - name: Set Node version
-        uses: actions/setup-node@v2
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          node-version: '${{ steps.node_version.outputs.NVMRC }}'
+          node-version-file: '.nvmrc'
           registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
@@ -29,6 +28,9 @@ jobs:
 
       - name: Build packages
         run: yarn build
+
+      - name: Write .npmrc
+        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTOMATION_FROM_CHANCE }}" > .npmrc
 
       - name: Update snapshot version
         run: yarn changeset version --snapshot
