@@ -45,13 +45,15 @@ describe('Form', () => {
       cy.findByText(/missing/).as('message');
       checkControlMessageAssociation();
 
-      cy.get('@control').focus().realType('John');
+      cy.get('@control').focus();
+      cy.get('@control').realType('John');
       cy.realPress('Tab');
       cy.findByText(/missing/).should('not.exist');
     });
 
     it('should handle `valid` validity', () => {
-      cy.findByLabelText(/name/i).as('control').focus().realType('John');
+      cy.findByLabelText(/name/i).as('control').focus();
+      cy.get('@control').realType('John');
       cy.realPress('Tab');
       cy.findByText('valid!').as('message');
       checkControlMessageAssociation();
@@ -61,45 +63,56 @@ describe('Form', () => {
     });
 
     it('should handle `rangeOverflow` validity', () => {
-      cy.findByLabelText(/age/i).as('control').focus().realType('200');
+      cy.findByLabelText(/age/i).as('control').focus();
+      cy.get('@control').realType('200');
       cy.realPress('Tab');
       cy.findByText(/too large/).as('message');
       checkControlMessageAssociation();
 
-      cy.get('@control').focus().clear().realType('50');
+      cy.get('@control').focus();
+      cy.get('@control').clear();
+      cy.get('@control').realType('50');
       cy.realPress('Tab');
       cy.findByText(/does not match the required step/).should('not.exist');
     });
 
     it('should handle `rangeUnderflow` validity', () => {
-      cy.findByLabelText(/age/i).as('control').focus().realType('-50');
+      cy.findByLabelText(/age/i).as('control').focus();
+      cy.get('@control').realType('-50');
       cy.realPress('Tab');
       cy.findByText(/too small/).as('message');
       checkControlMessageAssociation();
 
-      cy.get('@control').focus().clear().realType('50');
+      cy.get('@control').focus();
+      cy.get('@control').clear();
+      cy.get('@control').realType('50');
       cy.realPress('Tab');
       cy.findByText(/does not match the required step/).should('not.exist');
     });
 
     it('should handle `stepMismatch` validity', () => {
-      cy.findByLabelText(/age/i).as('control').focus().realType('10.5');
+      cy.findByLabelText(/age/i).as('control').focus();
+      cy.get('@control').realType('10.5');
       cy.realPress('Tab');
       cy.findByText(/does not match the required step/).as('message');
       checkControlMessageAssociation();
 
-      cy.get('@control').focus().clear().realType('50');
+      cy.get('@control').focus();
+      cy.get('@control').clear();
+      cy.get('@control').realType('50');
       cy.realPress('Tab');
       cy.findByText(/does not match the required step/).should('not.exist');
     });
 
     it('should handle `typeMismatch` validity', () => {
-      cy.findByLabelText(/email/i).as('control').focus().realType('john.doe');
+      cy.findByLabelText(/email/i).as('control').focus();
+      cy.get('@control').realType('john.doe');
       cy.realPress('Tab');
       cy.findByText(/does not match the required type/).as('message');
       checkControlMessageAssociation();
 
-      cy.get('@control').focus().realType('@gmail.com');
+      cy.get('@control').focus();
+      cy.get('@control').realType('@gmail.com');
       cy.realPress('Tab');
       cy.findByText(/does not match the required type/).should('not.exist');
     });
@@ -107,13 +120,15 @@ describe('Form', () => {
     it('should handle `tooShort` validity', () => {
       cy.findByLabelText(/password/i)
         .as('control')
-        .focus()
-        .realType('pass');
+        .focus();
+      cy.get('@control').realType('pass');
       cy.realPress('Tab');
       cy.findByText(/too short/).as('message');
       checkControlMessageAssociation();
 
-      cy.get('@control').focus().clear().realType('password');
+      cy.get('@control').focus();
+      cy.get('@control').clear();
+      cy.get('@control').realType('password');
       cy.realPress('Tab');
       cy.findByText(/too short/).should('not.exist');
     });
@@ -122,20 +137,23 @@ describe('Form', () => {
     it.skip('should handle `tooLong` validity', () => {
       cy.findByLabelText(/password/i)
         .as('control')
-        .focus()
-        .realType('password is way too long');
+        .focus();
+      cy.get('@control').realType('password is way too long');
       cy.realPress('Tab');
       cy.findByText(/too long/).as('message');
       checkControlMessageAssociation();
     });
 
     it('should handle `patternMismatch` validity', () => {
-      cy.findByLabelText(/pin/i).as('control').focus().realType('pin');
+      cy.findByLabelText(/pin/i).as('control').focus();
+      cy.get('@control').realType('pin');
       cy.realPress('Tab');
       cy.findByText(/does not match the required pattern/).as('message');
       checkControlMessageAssociation();
 
-      cy.get('@control').focus().clear().realType('1234');
+      cy.get('@control').focus();
+      cy.get('@control').clear();
+      cy.get('@control').realType('1234');
       cy.realPress('Tab');
       cy.findByText(/does not match the required pattern/).should('not.exist');
     });
@@ -143,13 +161,15 @@ describe('Form', () => {
     it('should handle custom validity (sync custom validator)', () => {
       cy.findByLabelText(/secret 1/i)
         .as('control')
-        .focus()
-        .realType('secret');
+        .focus();
+      cy.get('@control').realType('secret');
       cy.realPress('Tab');
       cy.findByText(/not valid/).as('message');
       checkControlMessageAssociation();
 
-      cy.get('@control').focus().clear().realType('shush');
+      cy.get('@control').focus();
+      cy.get('@control').clear();
+      cy.get('@control').realType('shush');
       cy.realPress('Tab');
       cy.findByText(/not valid/).should('not.exist');
     });
@@ -157,13 +177,15 @@ describe('Form', () => {
     it('should handle custom validity (async custom validator)', () => {
       cy.findByLabelText(/secret 2/i)
         .as('control')
-        .focus()
-        .realType('secret');
+        .focus();
+      cy.get('@control').realType('secret');
       cy.realPress('Tab');
       cy.findByText(/not valid/).as('message');
       checkControlMessageAssociation();
 
-      cy.get('@control').focus().clear().realType('shush');
+      cy.get('@control').focus();
+      cy.get('@control').clear();
+      cy.get('@control').realType('shush');
       cy.realPress('Tab');
       cy.findByText(/not valid/).should('not.exist');
     });
@@ -171,8 +193,8 @@ describe('Form', () => {
     it('should allow custom error messages', () => {
       cy.findByLabelText(/country/i)
         .as('control')
-        .focus()
-        .realType('Portugal');
+        .focus();
+      cy.get('@control').realType('Portugal');
       cy.realPress('Tab');
       cy.findByText(/country should be "france" or "spain"/i).as('message');
       checkControlMessageAssociation();
@@ -185,7 +207,8 @@ describe('Form', () => {
     });
 
     beforeEach(() => {
-      cy.findByLabelText(/name/i).focus().realType('John');
+      cy.findByLabelText(/name/i).focus();
+      cy.findByLabelText(/name/i).realType('John');
       cy.findByText(/submit/i).click();
     });
 
@@ -206,8 +229,9 @@ describe('Form', () => {
     });
 
     it('allows re-submitting the form with server errors', () => {
-      cy.findByLabelText(/email/i).focus().realType('john.doe@gmail.com').realPress('Enter');
-      cy.findByLabelText(/email/i).as('control').should('be.focused');
+      cy.findByLabelText(/email/i).focus();
+      cy.findByLabelText(/email/i).realType('john.doe@gmail.com').realPress('Enter');
+      cy.findByLabelText(/email/i).should('be.focused');
     });
   });
 });

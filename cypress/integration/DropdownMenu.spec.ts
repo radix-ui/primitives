@@ -127,7 +127,8 @@ describe('DropdownMenu', () => {
       it('should close only the focused submenu when pressing left arrow key', () => {
         cy.findByText('Bookmarks →').type('{enter}');
         cy.findByText('WorkOS →').type('{enter}');
-        cy.findByText('Stitches').type('{leftarrow}').should('not.exist');
+        cy.findByText('Stitches').type('{leftarrow}');
+        cy.findByText('Stitches').should('not.exist');
         cy.findByText('WorkOS →').should('be.visible');
         cy.findByText('New Window').should('be.visible');
       });
@@ -141,12 +142,14 @@ describe('DropdownMenu', () => {
 
       it('should close all menus when pressing escape, enter or space key on any item', () => {
         // Test close on root menu
-        cy.findByText('New Window').type('{esc}').should('not.exist');
+        cy.findByText('New Window').type('{esc}');
+        cy.findByText('New Window').should('not.exist');
 
         // Reopen menu and test keys from within the submenu
         cy.findByText('Open').click();
         cy.findByText('Bookmarks →').type('{enter}');
-        cy.findByText('Inbox').type('{esc}').should('not.exist');
+        cy.findByText('Inbox').type('{esc}');
+        cy.findByText('Inbox').should('not.exist');
         cy.findByText('New Window').should('not.exist');
       });
 
@@ -154,7 +157,8 @@ describe('DropdownMenu', () => {
         // Matching items outside of the active menu should not become focused
         pointerOver('Bookmarks →');
         pointerOver('WorkOS →');
-        cy.findByText('Stitches').focus().type('Inbox');
+        cy.findByText('Stitches').focus();
+        cy.findByText('Stitches').type('Inbox');
         cy.findByText('Inbox').should('not.have.focus');
 
         // Matching items inside of active menu should become focused
@@ -211,10 +215,9 @@ describe('DropdownMenu', () => {
 
       it('should open submenu and focus first item when pressing left arrow key but close when pressing right arrow key', () => {
         cy.findByText('Bookmarks →').trigger('keydown', { key: 'ArrowLeft' });
-        cy.findByText('Inbox')
-          .should('be.focused')
-          .trigger('keydown', { key: 'ArrowRight' })
-          .and('not.exist');
+        cy.findByText('Inbox').should('be.focused');
+        cy.findByText('Inbox').trigger('keydown', { key: 'ArrowRight' });
+        cy.findByText('Inbox').should('not.exist');
 
         // Root level menu should remain open
         cy.findByText('New Tab').should('be.visible');
