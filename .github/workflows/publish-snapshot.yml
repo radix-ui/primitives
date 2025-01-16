@@ -36,6 +36,6 @@ jobs:
         run: yarn changeset version --snapshot
 
       - name: Publish snapshot
-        run: yarn changeset publish --no-git-tag --snapshot --tag next
+        run: yarn workspaces foreach -pvW --exclude primitives --exclude ssr-testing --exclude radix-ui npm publish --tolerate-republish --access public --tag next
         env:
           YARN_NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTOMATION_FROM_CHANCE }}
