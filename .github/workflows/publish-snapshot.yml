@@ -27,6 +27,9 @@ jobs:
       - name: Install dependencies
         run: yarn
 
+      - name: Build packages
+        run: yarn build
+
       - name: Update snapshot version
         run: yarn changeset version --snapshot
 

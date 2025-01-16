@@ -7,5 +7,5 @@
   "linked": [],
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": ["ssr-testing"]
+  "ignore": ["ssr-testing", "radix-ui"]
 }
