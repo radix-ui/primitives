@@ -1,0 +1,36 @@
+name: 'Publish Snapshot Release'
+
+on:
+  push:
+    branches:
+      - chance/changesets # TODO: Update to `main` before merge
+    paths-ignore:
+      - '**/package.json'
+      - '.yarn/versions/**'
+
+jobs:
+  publish-snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Read Node version
+        id: node_version
+        run: echo "NVMRC=$(cat .nvmrc)" >> $GITHUB_OUTPUT
+      - name: Set Node version
+        uses: actions/setup-node@v2
+        with:
+          node-version: '${{ steps.node_version.outputs.NVMRC }}'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: yarn
+
+      - name: Update snapshot version
+        run: yarn changeset version --snapshot
+
+      - name: Publish snapshot
+        run: yarn changeset publish --no-git-tag --snapshot
+        env:
+          YARN_NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTOMATION_FROM_CHANCE }}
