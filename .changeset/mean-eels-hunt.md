@@ -31,7 +31,6 @@
 '@radix-ui/react-checkbox': patch
 '@radix-ui/react-presence': patch
 '@radix-ui/react-progress': patch
-'radix-ui': patch
 '@radix-ui/react-use-rect': patch
 '@radix-ui/react-use-size': patch
 '@radix-ui/react-context': patch
