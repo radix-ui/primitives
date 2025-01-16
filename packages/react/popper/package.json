@@ -24,8 +24,7 @@
   ],
   "sideEffects": false,
   "scripts": {
-    "clean": "rm -rf dist",
-    "version": "yarn version"
+    "clean": "rm -rf dist"
   },
   "dependencies": {
     "@floating-ui/react-dom": "^2.0.0",
