@@ -5,18 +5,18 @@ import * as tsup from 'tsup';
 import { execa } from 'execa';
 
 async function build(relativePath) {
+  const tasks = [];
   const pkg = relativePath.split(path.sep).slice(2)[0];
+  const files = ['index.ts'];
   if (pkg === 'radix-ui') {
-    // TODO: This package will be built using tsc directly to preserve separate
-    // entry points for better code splitting. Skipping for now.
-    return;
+    files.push('internal.ts');
   }
 
-  const file = `${relativePath}/src/index.ts`;
+  const entryPoints = files.map((file) => `${relativePath}/src/${file}`);
   const dist = `${relativePath}/dist`;
 
   const esbuildConfig = {
-    entryPoints: [file],
+    entryPoints: entryPoints,
     external: ['@radix-ui/*'],
     packages: 'external',
     bundle: true,
@@ -26,15 +26,16 @@ async function build(relativePath) {
     outdir: dist,
   };
 
-  await esbuild.build(esbuildConfig);
-  console.log(`Built ${relativePath}/dist/index.js`);
-
-  await esbuild.build({
-    ...esbuildConfig,
-    format: 'esm',
-    outExtension: { '.js': '.mjs' },
-  });
-  console.log(`Built ${relativePath}/dist/index.mjs`);
+  tasks.push(esbuild.build(esbuildConfig).then(() => console.log(`CJS: Built ${relativePath}`)));
+  tasks.push(
+    esbuild
+      .build({
+        ...esbuildConfig,
+        format: 'esm',
+        outExtension: { '.js': '.mjs' },
+      })
+      .then(() => console.log(`ESM: Built ${relativePath}`))
+  );
 
   // tsup is used to emit d.ts files only (esbuild can't do that).
   //
@@ -43,15 +44,22 @@ async function build(relativePath) {
   // 2. It could have fully replaced esbuild (as it uses that internally),
   //    but at the moment its esbuild version is somewhat outdated.
   //    It’s also harder to configure and esbuild docs are more thorough.
-  await tsup.build({
-    entry: [file],
-    format: ['cjs', 'esm'],
-    dts: { only: true },
-    outDir: dist,
-    silent: true,
-    external: [/@radix-ui\/.+/],
-  });
-  console.log(`Built ${relativePath}/dist/index.d.ts`);
+  tasks.push(
+    tsup
+      .build({
+        entry: entryPoints,
+        format: ['cjs', 'esm'],
+        dts: { only: true },
+        outDir: dist,
+        silent: true,
+        external: [/@radix-ui\/.+/],
+      })
+      .then(() => console.log(`TSC: Built ${relativePath}`))
+  );
+
+  await Promise.all(tasks);
 }
 
 globSync('packages/*/*').forEach(build);
+
+function done() {}
