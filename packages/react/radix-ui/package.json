@@ -18,13 +18,13 @@
       }
     },
     "./*": {
-      "require": {
-        "types": "./dist/cjs/*.d.ts",
-        "default": "./dist/cjs/*.js"
-      },
       "import": {
-        "types": "./dist/esm/*.d.ts",
-        "default": "./dist/esm/*.js"
+        "types": "./dist/*.d.mts",
+        "default": "./dist/*.mjs"
+      },
+      "require": {
+        "types": "./dist/*.d.ts",
+        "default": "./dist/*.js"
       }
     }
   },
