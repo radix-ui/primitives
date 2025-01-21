@@ -5,6 +5,7 @@ on:
     branches:
       - main
     paths-ignore:
+      - '.github/**'
       - '**/package.json'
       - '.yarn/versions/**'
 
