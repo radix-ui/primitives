@@ -9,6 +9,10 @@ on:
       - '**/package.json'
       - '.yarn/versions/**'
 
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
 jobs:
   publish-rc:
     runs-on: ubuntu-latest
