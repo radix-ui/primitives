@@ -861,7 +861,7 @@ function getAnnounceTextContent(container: HTMLElement) {
 
 function handleAndDispatchCustomEvent<
   E extends CustomEvent,
-  ReactEvent extends React.SyntheticEvent
+  ReactEvent extends React.SyntheticEvent,
 >(
   name: string,
   handler: ((event: E) => void) | undefined,

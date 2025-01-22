@@ -689,8 +689,8 @@ export const CheckboxItems = () => {
                   selection.length === options.length
                     ? true
                     : selection.length
-                    ? 'indeterminate'
-                    : false
+                      ? 'indeterminate'
+                      : false
                 }
                 onSelect={(e) => e.preventDefault()}
                 onCheckedChange={handleSelectAll}
@@ -1383,14 +1383,14 @@ export const Chromatic = () => {
                   (align === 'start'
                     ? { bottom: 10 }
                     : align === 'center'
-                    ? { top: 'calc(50% - 15px)' }
-                    : { top: 10 })),
+                      ? { top: 'calc(50% - 15px)' }
+                      : { top: 10 })),
                 ...((side === 'top' || side === 'bottom') &&
                   (align === 'start'
                     ? { right: 10 }
                     : align === 'center'
-                    ? { left: 'calc(50% - 15px)' }
-                    : { left: 10 })),
+                      ? { left: 'calc(50% - 15px)' }
+                      : { left: 10 })),
               }}
             />
             <DropdownMenu.Portal>
