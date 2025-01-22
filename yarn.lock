@@ -5620,7 +5620,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axe-core@npm:^4.10.0, axe-core@npm:^4.7.2":
+"axe-core@npm:^4.10.0, axe-core@npm:^4.10.2":
   version: 4.10.2
   resolution: "axe-core@npm:4.10.2"
   checksum: 10/a69423b2ff16c15922c4ea7cf9cc5112728a2817bbe0f2cc212248d648885ffd1ba554e3a341dfc289cd9e67fc0d06f333b5c6837c5c38ca6652507381216fc1
@@ -5968,7 +5968,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chalk@npm:^5.3.0":
+"chalk@npm:^5.4.1":
   version: 5.4.1
   resolution: "chalk@npm:5.4.1"
   checksum: 10/29df3ffcdf25656fed6e95962e2ef86d14dfe03cd50e7074b06bad9ffbbf6089adbb40f75c00744d843685c8d008adaf3aed31476780312553caf07fa86e5bc7
@@ -11351,7 +11351,7 @@ __metadata:
     vite: "npm:^6.0.7"
     vite-tsconfig-paths: "npm:^5.1.4"
     vitest: "npm:^3.0.2"
-    vitest-axe: "npm:^1.0.0-pre.3"
+    vitest-axe: "npm:^1.0.0-pre.4"
   languageName: unknown
   linkType: soft
 
@@ -13833,16 +13833,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vitest-axe@npm:^1.0.0-pre.3":
-  version: 1.0.0-pre.3
-  resolution: "vitest-axe@npm:1.0.0-pre.3"
+"vitest-axe@npm:^1.0.0-pre.4":
+  version: 1.0.0-pre.4
+  resolution: "vitest-axe@npm:1.0.0-pre.4"
   dependencies:
-    axe-core: "npm:^4.7.2"
-    chalk: "npm:^5.3.0"
+    "@vitest/pretty-format": "npm:^3.0.3"
+    axe-core: "npm:^4.10.2"
+    chalk: "npm:^5.4.1"
     lodash-es: "npm:^4.17.21"
   peerDependencies:
-    vitest: ">=0.31.0"
-  checksum: 10/1571ea9f24bb4bfdc44d1c8bb2dbde266be1096ff39bc55e5f0afdd014a7272a5e0267773510a0ff5b8bb61475fc70442794c9b04e503e5b2ebe1c0894fcdba9
+    vitest: ">=2"
+  checksum: 10/a15aa9ed4c11980001bc000cb962bb1405b94bb010973407f32dfff8d4df67d1af3f6341471aaa5185e9bfe3ffbf503a0606e6e6800382f8013ab1083dbcdc12
   languageName: node
   linkType: hard
 
