@@ -8,6 +8,10 @@ on:
   # https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#example-using-multiple-events-with-activity-types-or-configuration
   pull_request:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   chromatic-deployment:
     runs-on: ubuntu-latest
