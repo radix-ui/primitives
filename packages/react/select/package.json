@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-select",
-  "version": "2.1.4",
+  "version": "2.1.5-rc.1",
   "license": "MIT",
   "exports": {
     ".": {
@@ -80,5 +80,6 @@
   },
   "bugs": {
     "url": "https://github.com/radix-ui/primitives/issues"
-  }
+  },
+  "stableVersion": "2.1.4"
 }
