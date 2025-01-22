@@ -2,12 +2,14 @@
 import * as react from '@chance/eslint/react';
 import * as js from '@chance/eslint';
 import * as typescript from '@chance/eslint/typescript';
+import storybook from 'eslint-plugin-storybook';
 
 /** @type {import("eslint").Linter.Config[]} */
 export default [
   js.config,
   typescript.config,
   react.config,
+  ...storybook.configs['flat/recommended'],
   {
     rules: {
       'react/jsx-pascal-case': ['warn', { allowNamespace: true }],
