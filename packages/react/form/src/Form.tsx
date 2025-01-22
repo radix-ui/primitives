@@ -407,7 +407,7 @@ const FormControl = React.forwardRef<FormControlElement, FormControlProps>(
           const control = event.currentTarget;
           updateControlValidity(control);
         })}
-        onChange={composeEventHandlers(props.onChange, (event) => {
+        onChange={composeEventHandlers(props.onChange, (_event) => {
           // reset validity when user changes value
           resetControlValidity();
         })}
@@ -422,7 +422,7 @@ FormControl.displayName = CONTROL_NAME;
  * FormMessage
  * -----------------------------------------------------------------------------------------------*/
 
-const validityMatchers = [
+const _validityMatchers = [
   'badInput',
   'patternMismatch',
   'rangeOverflow',
@@ -434,7 +434,7 @@ const validityMatchers = [
   'valid',
   'valueMissing',
 ] as const;
-type ValidityMatcher = (typeof validityMatchers)[number];
+type ValidityMatcher = (typeof _validityMatchers)[number];
 
 const DEFAULT_INVALID_MESSAGE = 'This value is not valid';
 const DEFAULT_BUILT_IN_MESSAGES: Record<ValidityMatcher, string | undefined> = {
@@ -489,7 +489,7 @@ interface FormBuiltInMessageProps extends FormMessageImplProps {
 }
 
 const FormBuiltInMessage = React.forwardRef<FormBuiltInMessageElement, FormBuiltInMessageProps>(
-  (props: ScopedProps<FormBuiltInMessageProps>, forwardedRef) => {
+  function FormBuiltInMessage(props: ScopedProps<FormBuiltInMessageProps>, forwardedRef) {
     const { match, forceMatch = false, name, children, ...messageProps } = props;
     const validationContext = useValidationContext(MESSAGE_NAME, messageProps.__scopeForm);
     const validity = validationContext.getFieldValidity(name);
@@ -515,7 +515,7 @@ interface FormCustomMessageProps extends React.ComponentPropsWithoutRef<typeof F
 }
 
 const FormCustomMessage = React.forwardRef<FormCustomMessageElement, FormCustomMessageProps>(
-  (props: ScopedProps<FormCustomMessageProps>, forwardedRef) => {
+  function FormCustomMessage(props: ScopedProps<FormCustomMessageProps>, forwardedRef) {
     const { match, forceMatch = false, name, id: idProp, children, ...messageProps } = props;
     const validationContext = useValidationContext(MESSAGE_NAME, messageProps.__scopeForm);
     const ref = React.useRef<FormCustomMessageElement>(null);
@@ -555,7 +555,7 @@ interface FormMessageImplProps extends PrimitiveSpanProps {
 }
 
 const FormMessageImpl = React.forwardRef<FormMessageImplElement, FormMessageImplProps>(
-  (props: ScopedProps<FormMessageImplProps>, forwardedRef) => {
+  function FormMessageImpl(props: ScopedProps<FormMessageImplProps>, forwardedRef) {
     const { __scopeForm, id: idProp, name, ...messageProps } = props;
     const ariaDescriptionContext = useAriaDescriptionContext(MESSAGE_NAME, __scopeForm);
     const _id = useId();

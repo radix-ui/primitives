@@ -242,7 +242,10 @@ interface ScrollAreaScrollbarHoverProps extends ScrollAreaScrollbarAutoProps {
 const ScrollAreaScrollbarHover = React.forwardRef<
   ScrollAreaScrollbarHoverElement,
   ScrollAreaScrollbarHoverProps
->((props: ScopedProps<ScrollAreaScrollbarHoverProps>, forwardedRef) => {
+>(function ScrollAreaScrollbarHover(
+  props: ScopedProps<ScrollAreaScrollbarHoverProps>,
+  forwardedRef
+) {
   const { forceMount, ...scrollbarProps } = props;
   const context = useScrollAreaContext(SCROLLBAR_NAME, props.__scopeScrollArea);
   const [visible, setVisible] = React.useState(false);
@@ -287,7 +290,10 @@ interface ScrollAreaScrollbarScrollProps extends ScrollAreaScrollbarVisibleProps
 const ScrollAreaScrollbarScroll = React.forwardRef<
   ScrollAreaScrollbarScrollElement,
   ScrollAreaScrollbarScrollProps
->((props: ScopedProps<ScrollAreaScrollbarScrollProps>, forwardedRef) => {
+>(function ScrollAreaScrollbarScroll(
+  props: ScopedProps<ScrollAreaScrollbarScrollProps>,
+  forwardedRef
+) {
   const { forceMount, ...scrollbarProps } = props;
   const context = useScrollAreaContext(SCROLLBAR_NAME, props.__scopeScrollArea);
   const isHorizontal = props.orientation === 'horizontal';
@@ -359,7 +365,7 @@ interface ScrollAreaScrollbarAutoProps extends ScrollAreaScrollbarVisibleProps {
 const ScrollAreaScrollbarAuto = React.forwardRef<
   ScrollAreaScrollbarAutoElement,
   ScrollAreaScrollbarAutoProps
->((props: ScopedProps<ScrollAreaScrollbarAutoProps>, forwardedRef) => {
+>(function ScrollAreaScrollbarAuto(props: ScopedProps<ScrollAreaScrollbarAutoProps>, forwardedRef) {
   const context = useScrollAreaContext(SCROLLBAR_NAME, props.__scopeScrollArea);
   const { forceMount, ...scrollbarProps } = props;
   const [visible, setVisible] = React.useState(false);
@@ -397,7 +403,10 @@ interface ScrollAreaScrollbarVisibleProps
 const ScrollAreaScrollbarVisible = React.forwardRef<
   ScrollAreaScrollbarVisibleElement,
   ScrollAreaScrollbarVisibleProps
->((props: ScopedProps<ScrollAreaScrollbarVisibleProps>, forwardedRef) => {
+>(function ScrollAreaScrollbarVisible(
+  props: ScopedProps<ScrollAreaScrollbarVisibleProps>,
+  forwardedRef
+) {
   const { orientation = 'vertical', ...scrollbarProps } = props;
   const context = useScrollAreaContext(SCROLLBAR_NAME, props.__scopeScrollArea);
   const thumbRef = React.useRef<ScrollAreaThumbElement | null>(null);
@@ -495,7 +504,7 @@ interface ScrollAreaScrollbarAxisProps
 const ScrollAreaScrollbarX = React.forwardRef<
   ScrollAreaScrollbarAxisElement,
   ScrollAreaScrollbarAxisProps
->((props: ScopedProps<ScrollAreaScrollbarAxisProps>, forwardedRef) => {
+>(function ScrollAreaScrollbarX(props: ScopedProps<ScrollAreaScrollbarAxisProps>, forwardedRef) {
   const { sizes, onSizesChange, ...scrollbarProps } = props;
   const context = useScrollAreaContext(SCROLLBAR_NAME, props.__scopeScrollArea);
   const [computedStyle, setComputedStyle] = React.useState<CSSStyleDeclaration>();
@@ -551,7 +560,7 @@ const ScrollAreaScrollbarX = React.forwardRef<
 const ScrollAreaScrollbarY = React.forwardRef<
   ScrollAreaScrollbarAxisElement,
   ScrollAreaScrollbarAxisProps
->((props: ScopedProps<ScrollAreaScrollbarAxisProps>, forwardedRef) => {
+>(function ScrollAreaScrollbarY(props: ScopedProps<ScrollAreaScrollbarAxisProps>, forwardedRef) {
   const { sizes, onSizesChange, ...scrollbarProps } = props;
   const context = useScrollAreaContext(SCROLLBAR_NAME, props.__scopeScrollArea);
   const [computedStyle, setComputedStyle] = React.useState<CSSStyleDeclaration>();
@@ -638,7 +647,7 @@ interface ScrollAreaScrollbarImplProps
 const ScrollAreaScrollbarImpl = React.forwardRef<
   ScrollAreaScrollbarImplElement,
   ScrollAreaScrollbarImplProps
->((props: ScopedProps<ScrollAreaScrollbarImplProps>, forwardedRef) => {
+>(function ScrollAreaScrollbarImpl(props: ScopedProps<ScrollAreaScrollbarImplProps>, forwardedRef) {
   const {
     __scopeScrollArea,
     sizes,
@@ -767,7 +776,7 @@ type ScrollAreaThumbImplElement = React.ElementRef<typeof Primitive.div>;
 interface ScrollAreaThumbImplProps extends PrimitiveDivProps {}
 
 const ScrollAreaThumbImpl = React.forwardRef<ScrollAreaThumbImplElement, ScrollAreaThumbImplProps>(
-  (props: ScopedProps<ScrollAreaThumbImplProps>, forwardedRef) => {
+  function ScrollAreaThumbImpl(props: ScopedProps<ScrollAreaThumbImplProps>, forwardedRef) {
     const { __scopeScrollArea, style, ...thumbProps } = props;
     const scrollAreaContext = useScrollAreaContext(THUMB_NAME, __scopeScrollArea);
     const scrollbarContext = useScrollbarContext(THUMB_NAME, __scopeScrollArea);
@@ -860,7 +869,7 @@ interface ScrollAreaCornerImplProps extends PrimitiveDivProps {}
 const ScrollAreaCornerImpl = React.forwardRef<
   ScrollAreaCornerImplElement,
   ScrollAreaCornerImplProps
->((props: ScopedProps<ScrollAreaCornerImplProps>, forwardedRef) => {
+>(function ScrollAreaCornerImpl(props: ScopedProps<ScrollAreaCornerImplProps>, forwardedRef) {
   const { __scopeScrollArea, ...cornerProps } = props;
   const context = useScrollAreaContext(CORNER_NAME, __scopeScrollArea);
   const [width, setWidth] = React.useState(0);

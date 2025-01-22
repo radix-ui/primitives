@@ -934,59 +934,64 @@ interface ChromaticSelectProps extends React.ComponentProps<typeof Select.Trigge
 const ChromaticSelect = React.forwardRef<
   React.ElementRef<typeof Select.Trigger>,
   ChromaticSelectProps
->(({ count = 5, paddedElement = 'content', selected, ...props }, forwardedRef) => (
-  <Select.Root defaultValue={String(selected)} open>
-    <Select.Trigger className={styles.trigger} ref={forwardedRef} {...props}>
-      <Select.Value />
-      <Select.Icon />
-    </Select.Trigger>
-    <Select.Portal>
-      <Select.Content
-        className={[paddedElement === 'content' && styles.contentWithPadding, styles.contentClass]
-          .filter(Boolean)
-          .join(' ')}
-        style={{ opacity: 0.7 }}
-      >
-        <Select.ScrollUpButton
-          className={scrollUpButtonClass}
-          style={paddedElement === 'content' ? { marginTop: -5 } : undefined}
+>(function ChromaticSelect(
+  { count = 5, paddedElement = 'content', selected, ...props },
+  forwardedRef
+) {
+  return (
+    <Select.Root defaultValue={String(selected)} open>
+      <Select.Trigger className={styles.trigger} ref={forwardedRef} {...props}>
+        <Select.Value />
+        <Select.Icon />
+      </Select.Trigger>
+      <Select.Portal>
+        <Select.Content
+          className={[paddedElement === 'content' && styles.contentWithPadding, styles.contentClass]
+            .filter(Boolean)
+            .join(' ')}
+          style={{ opacity: 0.7 }}
         >
-          ▲
-        </Select.ScrollUpButton>
-        <Select.Viewport className={paddedElement === 'viewport' ? styles.viewport : undefined}>
-          {Array.from({ length: count }, (_, i) => (
-            <Select.Item key={i} className={styles.item} value={String(i)}>
-              <Select.ItemText>{String(i)}</Select.ItemText>
-              <Select.ItemIndicator className={styles.indicator}>
-                <TickIcon />
-              </Select.ItemIndicator>
-            </Select.Item>
-          ))}
-        </Select.Viewport>
-        <Select.ScrollDownButton
-          className={scrollDownButtonClass}
-          style={paddedElement === 'content' ? { marginBottom: -5 } : undefined}
-        >
-          ▼
-        </Select.ScrollDownButton>
-      </Select.Content>
-    </Select.Portal>
-  </Select.Root>
-));
+          <Select.ScrollUpButton
+            className={scrollUpButtonClass}
+            style={paddedElement === 'content' ? { marginTop: -5 } : undefined}
+          >
+            ▲
+          </Select.ScrollUpButton>
+          <Select.Viewport className={paddedElement === 'viewport' ? styles.viewport : undefined}>
+            {Array.from({ length: count }, (_, i) => (
+              <Select.Item key={i} className={styles.item} value={String(i)}>
+                <Select.ItemText>{String(i)}</Select.ItemText>
+                <Select.ItemIndicator className={styles.indicator}>
+                  <TickIcon />
+                </Select.ItemIndicator>
+              </Select.Item>
+            ))}
+          </Select.Viewport>
+          <Select.ScrollDownButton
+            className={scrollDownButtonClass}
+            style={paddedElement === 'content' ? { marginBottom: -5 } : undefined}
+          >
+            ▼
+          </Select.ScrollDownButton>
+        </Select.Content>
+      </Select.Portal>
+    </Select.Root>
+  );
+});
 
 const SelectShort = React.forwardRef<
   React.ElementRef<typeof ChromaticSelect>,
   React.ComponentProps<typeof ChromaticSelect>
->(({ count = 9, ...props }, forwardedRef) => (
-  <ChromaticSelect count={count} {...props} ref={forwardedRef} />
-));
+>(function SelectShort({ count = 9, ...props }, forwardedRef) {
+  return <ChromaticSelect count={count} {...props} ref={forwardedRef} />;
+});
 
 const SelectLong = React.forwardRef<
   React.ElementRef<typeof ChromaticSelect>,
   React.ComponentProps<typeof ChromaticSelect>
->(({ count = 50, ...props }, forwardedRef) => (
-  <ChromaticSelect count={count} {...props} ref={forwardedRef} />
-));
+>(function SelectLong({ count = 50, ...props }, forwardedRef) {
+  return <ChromaticSelect count={count} {...props} ref={forwardedRef} />;
+});
 
 const ChromaticStoryShortOptions = ({ paddedElement }: { paddedElement: PaddedElement }) => (
   <div

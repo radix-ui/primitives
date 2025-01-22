@@ -256,7 +256,7 @@ interface HoverCardContentImplProps extends Omit<PopperContentProps, 'onPlaced'>
 const HoverCardContentImpl = React.forwardRef<
   HoverCardContentImplElement,
   HoverCardContentImplProps
->((props: ScopedProps<HoverCardContentImplProps>, forwardedRef) => {
+>(function HoverCardContentImpl(props: ScopedProps<HoverCardContentImplProps>, forwardedRef) {
   const {
     __scopeHoverCard,
     onEscapeKeyDown,

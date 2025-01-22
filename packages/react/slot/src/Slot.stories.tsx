@@ -270,7 +270,9 @@ class ErrorBoundary extends React.Component<any, { hasError: boolean }> {
 const SlotWithoutSlottable = React.forwardRef<
   HTMLDivElement,
   React.ComponentPropsWithoutRef<'div'>
->((props, forwardedRef) => <Slot {...props} className="test" ref={forwardedRef} />);
+>(function SlotWithoutSlottable(props, forwardedRef) {
+  return <Slot {...props} className="test" ref={forwardedRef} />;
+});
 
 const SlotWithSlottable = ({ children, ...props }: any) => (
   <Slot {...props}>
@@ -316,7 +318,7 @@ const Button = React.forwardRef<
     iconLeft?: React.ReactNode;
     iconRight?: React.ReactNode;
   }
->(({ children, asChild = false, iconLeft, iconRight, ...props }, forwardedRef) => {
+>(function Button({ children, asChild = false, iconLeft, iconRight, ...props }, forwardedRef) {
   const Comp = asChild ? Slot : 'button';
   return (
     <Comp
@@ -343,22 +345,24 @@ const Button = React.forwardRef<
 });
 
 const MockIcon = React.forwardRef<React.ElementRef<'span'>, React.ComponentProps<'span'>>(
-  ({ color = 'tomato', ...props }, forwardedRef) => (
-    <span
-      ref={forwardedRef}
-      {...props}
-      style={{
-        display: 'inline-block',
-        width: 10,
-        height: 10,
-        backgroundColor: color,
-        ...props.style,
-      }}
-    />
-  )
+  function MockIcon({ color = 'tomato', ...props }, forwardedRef) {
+    return (
+      <span
+        ref={forwardedRef}
+        {...props}
+        style={{
+          display: 'inline-block',
+          width: 10,
+          height: 10,
+          backgroundColor: color,
+          ...props.style,
+        }}
+      />
+    );
+  }
 );
 
-const MockTag = React.forwardRef(({ onDelete, ...props }: any, ref) => {
+const MockTag = React.forwardRef(function MockTag({ onDelete, ...props }: any, ref) {
   return (
     <div {...props} ref={ref}>
       {props.children} {onDelete ? <button onClick={onDelete}>delete</button> : null}

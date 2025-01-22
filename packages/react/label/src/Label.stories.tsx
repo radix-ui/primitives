@@ -20,7 +20,7 @@ export const WithControl = () => {
   );
 };
 
-export const WithInputNumber = (props: any) => {
+export const WithInputNumber = (_props: any) => {
   return (
     <Label>
       <span>Name:</span>

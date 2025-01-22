@@ -194,7 +194,6 @@ export const Animated = () => {
       >
         Open
       </button>
-      {/* eslint-disable-next-line jsx-a11y/no-onchange */}
       <select
         value={swipeDirection}
         onChange={(event) => {

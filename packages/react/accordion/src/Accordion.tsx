@@ -97,7 +97,7 @@ interface AccordionImplSingleProps extends AccordionImplProps {
 }
 
 const AccordionImplSingle = React.forwardRef<AccordionImplSingleElement, AccordionImplSingleProps>(
-  (props: ScopedProps<AccordionImplSingleProps>, forwardedRef) => {
+  function AccordionImplSingle(props: ScopedProps<AccordionImplSingleProps>, forwardedRef) {
     const {
       value: valueProp,
       defaultValue,
@@ -149,7 +149,7 @@ interface AccordionImplMultipleProps extends AccordionImplProps {
 const AccordionImplMultiple = React.forwardRef<
   AccordionImplMultipleElement,
   AccordionImplMultipleProps
->((props: ScopedProps<AccordionImplMultipleProps>, forwardedRef) => {
+>(function AccordionImplMultiple(props: ScopedProps<AccordionImplMultipleProps>, forwardedRef) {
   const {
     value: valueProp,
     defaultValue,
@@ -220,7 +220,7 @@ interface AccordionImplProps extends PrimitiveDivProps {
 }
 
 const AccordionImpl = React.forwardRef<AccordionImplElement, AccordionImplProps>(
-  (props: ScopedProps<AccordionImplProps>, forwardedRef) => {
+  function AccordionImpl(props: ScopedProps<AccordionImplProps>, forwardedRef) {
     const { __scopeAccordion, disabled, dir, orientation = 'vertical', ...accordionProps } = props;
     const accordionRef = React.useRef<AccordionImplElement>(null);
     const composedRefs = useComposedRefs(accordionRef, forwardedRef);

@@ -402,7 +402,7 @@ interface TooltipContentHoverableProps extends TooltipContentImplProps {}
 const TooltipContentHoverable = React.forwardRef<
   TooltipContentHoverableElement,
   TooltipContentHoverableProps
->((props: ScopedProps<TooltipContentHoverableProps>, forwardedRef) => {
+>(function TooltipContentHoverable(props: ScopedProps<TooltipContentHoverableProps>, forwardedRef) {
   const context = useTooltipContext(CONTENT_NAME, props.__scopeTooltip);
   const providerContext = useTooltipProviderContext(CONTENT_NAME, props.__scopeTooltip);
   const ref = React.useRef<TooltipContentHoverableElement>(null);
@@ -499,7 +499,7 @@ interface TooltipContentImplProps extends Omit<PopperContentProps, 'onPlaced'> {
 }
 
 const TooltipContentImpl = React.forwardRef<TooltipContentImplElement, TooltipContentImplProps>(
-  (props: ScopedProps<TooltipContentImplProps>, forwardedRef) => {
+  function TooltipContentImpl(props: ScopedProps<TooltipContentImplProps>, forwardedRef) {
     const {
       __scopeTooltip,
       children,

@@ -82,7 +82,7 @@ interface ToggleGroupImplSingleProps extends ToggleGroupImplProps {
 const ToggleGroupImplSingle = React.forwardRef<
   ToggleGroupImplSingleElement,
   ToggleGroupImplSingleProps
->((props: ScopedProps<ToggleGroupImplSingleProps>, forwardedRef) => {
+>(function ToggleGroupImplSingle(props: ScopedProps<ToggleGroupImplSingleProps>, forwardedRef) {
   const {
     value: valueProp,
     defaultValue,
@@ -129,7 +129,7 @@ interface ToggleGroupImplMultipleProps extends ToggleGroupImplProps {
 const ToggleGroupImplMultiple = React.forwardRef<
   ToggleGroupImplMultipleElement,
   ToggleGroupImplMultipleProps
->((props: ScopedProps<ToggleGroupImplMultipleProps>, forwardedRef) => {
+>(function ToggleGroupImplMultiple(props: ScopedProps<ToggleGroupImplMultipleProps>, forwardedRef) {
   const {
     value: valueProp,
     defaultValue,
@@ -196,7 +196,7 @@ interface ToggleGroupImplProps extends PrimitiveDivProps {
 }
 
 const ToggleGroupImpl = React.forwardRef<ToggleGroupImplElement, ToggleGroupImplProps>(
-  (props: ScopedProps<ToggleGroupImplProps>, forwardedRef) => {
+  function ToggleGroupImpl(props: ScopedProps<ToggleGroupImplProps>, forwardedRef) {
     const {
       __scopeToggleGroup,
       disabled = false,
@@ -277,7 +277,7 @@ interface ToggleGroupItemImplProps extends Omit<ToggleProps, 'defaultPressed' | 
 }
 
 const ToggleGroupItemImpl = React.forwardRef<ToggleGroupItemImplElement, ToggleGroupItemImplProps>(
-  (props: ScopedProps<ToggleGroupItemImplProps>, forwardedRef) => {
+  function ToggleGroupItemImpl(props: ScopedProps<ToggleGroupItemImplProps>, forwardedRef) {
     const { __scopeToggleGroup, value, ...itemProps } = props;
     const valueContext = useToggleGroupValueContext(ITEM_NAME, __scopeToggleGroup);
     const singleProps = { role: 'radio', 'aria-checked': props.pressed, 'aria-pressed': undefined };
