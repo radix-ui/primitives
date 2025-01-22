@@ -3408,6 +3408,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@repo/typescript-config@workspace:internal/typescript-config":
+  version: 0.0.0-use.local
+  resolution: "@repo/typescript-config@workspace:internal/typescript-config"
+  languageName: unknown
+  linkType: soft
+
 "@rollup/rollup-android-arm-eabi@npm:4.18.0":
   version: 4.18.0
   resolution: "@rollup/rollup-android-arm-eabi@npm:4.18.0"

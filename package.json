@@ -5,6 +5,7 @@
   "license": "MIT",
   "workspaces": [
     "ssr-testing",
+    "internal/*",
     "packages/*/*"
   ],
   "scripts": {
