@@ -1,5 +1,5 @@
 import React from 'react';
-import { axe } from 'jest-axe';
+import { axe } from 'vitest-axe';
 import type { RenderResult } from '@testing-library/react';
 import { render } from '@testing-library/react';
 import { AccessibleIcon } from '@radix-ui/react-accessible-icon';
@@ -56,7 +56,7 @@ describe('given an AccessibleIcon without children', () => {
   it('should error', () => {
     // Even though the error is caught, it still gets printed to the console
     // so we mock that out to avoid the wall of red text.
-    const spy = jest.spyOn(console, 'error');
+    const spy = vi.spyOn(console, 'error');
     spy.mockImplementation(() => {});
 
     expect(() => render(<AccessibleIconTest />)).toThrowError();

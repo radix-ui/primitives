@@ -1,4 +1,4 @@
-import { axe } from 'jest-axe';
+import { axe } from 'vitest-axe';
 import type { RenderResult } from '@testing-library/react';
 import { render, waitFor } from '@testing-library/react';
 import * as Avatar from '@radix-ui/react-avatar';
