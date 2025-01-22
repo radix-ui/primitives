@@ -45,7 +45,8 @@
 }
 
 .multipleMountAnimations {
-  animation: presence-fadeIn 6s cubic-bezier(0.22, 1, 0.36, 1),
+  animation:
+    presence-fadeIn 6s cubic-bezier(0.22, 1, 0.36, 1),
     presence-slideUp 6s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -60,11 +61,13 @@
 
 .multipleOpenAndCloseAnimations {
   &[data-state='open'] {
-    animation: presence-fadeIn 3s cubic-bezier(0.22, 1, 0.36, 1),
+    animation:
+      presence-fadeIn 3s cubic-bezier(0.22, 1, 0.36, 1),
       presence-slideUp 1s cubic-bezier(0.22, 1, 0.36, 1);
   }
   &[data-state='closed'] {
-    animation: presence-fadeOut 3s cubic-bezier(0.22, 1, 0.36, 1),
+    animation:
+      presence-fadeOut 3s cubic-bezier(0.22, 1, 0.36, 1),
       presence-slideDown 1s cubic-bezier(0.22, 1, 0.36, 1);
   }
 }

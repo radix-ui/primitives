@@ -97,7 +97,9 @@
 
 .animatedContent {
   &[data-state='open'] {
-    animation: dialog-fadeIn 150ms ease-out, dialog-scaleIn 200ms ease-out;
+    animation:
+      dialog-fadeIn 150ms ease-out,
+      dialog-scaleIn 200ms ease-out;
   }
   &[data-state='closed'] {
     animation: dialog-fadeOut 300ms ease-in;

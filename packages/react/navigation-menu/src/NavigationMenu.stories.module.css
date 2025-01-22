@@ -159,7 +159,9 @@
   background-color: white;
   padding: 20px;
   transform-origin: top left;
-  box-shadow: 0 10px 100px -20px rgba(50, 50, 93, 0.25), 0 30px 60px -30px rgba(0, 0, 0, 0.3);
+  box-shadow:
+    0 10px 100px -20px rgba(50, 50, 93, 0.25),
+    0 30px 60px -30px rgba(0, 0, 0, 0.3);
   z-index: 1;
 
   [dir='rtl'] & {
@@ -184,7 +186,10 @@
   height: 10px;
   bottom: -30px;
   z-index: 1;
-  transition: transform, width, 250ms ease;
+  transition:
+    transform,
+    width,
+    250ms ease;
   overflow: hidden;
 
   &[data-state='visible'] {
@@ -208,14 +213,19 @@
 .viewportViewport {
   position: relative;
   background-color: white;
-  transition: width, height, 300ms ease;
+  transition:
+    width,
+    height,
+    300ms ease;
   width: var(--radix-navigation-menu-viewport-width);
   height: var(--radix-navigation-menu-viewport-height);
   transform-origin: top center;
   overflow: hidden;
   margin-top: 15px;
   border-radius: 8px;
-  box-shadow: 0 50px 100px -20px rgba(50, 50, 93, 0.25), 0 30px 60px -30px rgba(0, 0, 0, 0.3);
+  box-shadow:
+    0 50px 100px -20px rgba(50, 50, 93, 0.25),
+    0 30px 60px -30px rgba(0, 0, 0, 0.3);
   &[data-state='open'] {
     animation: navigationMenu-scaleIn 300ms ease;
   }
@@ -275,7 +285,9 @@
   height: var(--radix-navigation-menu-viewport-height);
   transition: height 300ms ease;
   overflow: hidden;
-  box-shadow: 0 50px 100px -20px rgba(50, 50, 93, 0.1), 0 30px 60px -30px rgba(0, 0, 0, 0.2);
+  box-shadow:
+    0 50px 100px -20px rgba(50, 50, 93, 0.1),
+    0 30px 60px -30px rgba(0, 0, 0, 0.2);
 
   &[data-state='open'] {
     animation: navigationMenu-fadeIn 250ms ease;
@@ -338,7 +350,10 @@
 
   &[data-orientation='vertical'] {
     width: 3px;
-    transition: transform, height, 250ms ease;
+    transition:
+      transform,
+      height,
+      250ms ease;
     [dir='ltr'] & {
       right: 0;
     }
@@ -350,6 +365,9 @@
   &[data-orientation='horizontal'] {
     height: 3px;
     bottom: 0;
-    transition: transform, width, 250ms ease;
+    transition:
+      transform,
+      width,
+      250ms ease;
   }
 }

@@ -26,9 +26,12 @@ export function StatusChange() {
   const interval = React.useRef<number | null>(null);
 
   React.useEffect(() => {
-    interval.current = window.setInterval(() => {
-      setFriendIsOnline((s) => !s);
-    }, getRandomInt(6000, 10000));
+    interval.current = window.setInterval(
+      () => {
+        setFriendIsOnline((s) => !s);
+      },
+      getRandomInt(6000, 10000)
+    );
     return () => window.clearInterval(interval.current!);
   }, []);
 
