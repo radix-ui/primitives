@@ -4,7 +4,7 @@ import { Slot, Slottable } from '@radix-ui/react-slot';
 
 describe('given a slotted Trigger', () => {
   describe('with onClick on itself', () => {
-    const handleClick = jest.fn();
+    const handleClick = vi.fn();
 
     beforeEach(() => {
       handleClick.mockReset();
@@ -22,7 +22,7 @@ describe('given a slotted Trigger', () => {
   });
 
   describe('with onClick on the child', () => {
-    const handleClick = jest.fn();
+    const handleClick = vi.fn();
 
     beforeEach(() => {
       handleClick.mockReset();
@@ -42,8 +42,8 @@ describe('given a slotted Trigger', () => {
   });
 
   describe('with onClick on itself AND the child', () => {
-    const handleTriggerClick = jest.fn();
-    const handleChildClick = jest.fn();
+    const handleTriggerClick = vi.fn();
+    const handleChildClick = vi.fn();
 
     beforeEach(() => {
       handleTriggerClick.mockReset();
@@ -68,7 +68,7 @@ describe('given a slotted Trigger', () => {
   });
 
   describe('with onClick on itself AND undefined onClick on the child', () => {
-    const handleTriggerClick = jest.fn();
+    const handleTriggerClick = vi.fn();
 
     beforeEach(() => {
       handleTriggerClick.mockReset();
@@ -88,7 +88,7 @@ describe('given a slotted Trigger', () => {
   });
 
   describe('with undefined onClick on itself AND onClick on the child', () => {
-    const handleChildClick = jest.fn();
+    const handleChildClick = vi.fn();
 
     beforeEach(() => {
       handleChildClick.mockReset();

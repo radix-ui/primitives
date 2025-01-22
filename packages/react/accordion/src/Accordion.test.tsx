@@ -1,18 +1,19 @@
 import * as React from 'react';
-import { axe } from 'jest-axe';
+import { axe } from 'vitest-axe';
 import type { RenderResult } from '@testing-library/react';
 import { render, fireEvent } from '@testing-library/react';
 import * as Accordion from '@radix-ui/react-accordion';
+import type { Mock } from 'vitest';
 
 const ITEMS = ['One', 'Two', 'Three'];
 
 describe('given a single Accordion', () => {
-  let handleValueChange: jest.Mock;
+  let handleValueChange: Mock;
   let rendered: RenderResult;
 
   describe('with default orientation=vertical', () => {
     beforeEach(() => {
-      handleValueChange = jest.fn();
+      handleValueChange = vi.fn();
       rendered = render(<AccordionTest type="single" onValueChange={handleValueChange} />);
     });
 
@@ -132,7 +133,7 @@ describe('given a single Accordion', () => {
   describe('with orientation=horizontal', () => {
     describe('and default dir="ltr"', () => {
       beforeEach(() => {
-        handleValueChange = jest.fn();
+        handleValueChange = vi.fn();
         rendered = render(
           <AccordionTest type="single" orientation="horizontal" onValueChange={handleValueChange} />
         );
@@ -206,7 +207,7 @@ describe('given a single Accordion', () => {
 
     describe('and dir="rtl"', () => {
       beforeEach(() => {
-        handleValueChange = jest.fn();
+        handleValueChange = vi.fn();
         rendered = render(
           <AccordionTest
             type="single"
@@ -284,11 +285,11 @@ describe('given a single Accordion', () => {
 });
 
 describe('given a multiple Accordion', () => {
-  let handleValueChange: jest.Mock;
+  let handleValueChange: Mock;
   let rendered: RenderResult;
 
   beforeEach(() => {
-    handleValueChange = jest.fn();
+    handleValueChange = vi.fn();
     rendered = render(<AccordionTest type="multiple" onValueChange={handleValueChange} />);
   });
 

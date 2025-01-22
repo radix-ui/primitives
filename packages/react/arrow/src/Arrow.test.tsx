@@ -1,4 +1,4 @@
-import { axe } from 'jest-axe';
+import { axe } from 'vitest-axe';
 import type { RenderResult } from '@testing-library/react';
 import { render } from '@testing-library/react';
 import { Arrow } from '@radix-ui/react-arrow';

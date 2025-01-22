@@ -11,8 +11,8 @@
   "scripts": {
     "lint": "eslint packages",
     "types:check": "tsc --skipLibCheck --noEmit",
-    "test": "jest",
-    "test:ci": "yarn types:check && jest --ci && yarn cypress:ci",
+    "test": "vitest",
+    "test:ci": "yarn types:check && vitest run && yarn cypress:ci",
     "storybook": "BROWSER=none storybook dev -p 9009",
     "cypress:ci": "start-server-and-test storybook http://localhost:9009 cypress:run",
     "cypress:run": "cypress run",
@@ -46,8 +46,6 @@
     "@testing-library/react": "^16.2.0",
     "@testing-library/user-event": "^14.6.1",
     "@types/fs-extra": "^11",
-    "@types/jest": "^29.5.14",
-    "@types/jest-axe": "^3.5.9",
     "@types/react": "^19.0.7",
     "@types/react-dom": "^19.0.3",
     "@types/react-test-renderer": "^19.0.0",
@@ -61,10 +59,7 @@
     "fs-extra": "^11.1.1",
     "glob": "^10.2.2",
     "husky": "^4.3.6",
-    "jest": "^29.7.0",
-    "jest-axe": "^6.0.0",
-    "jest-environment-jsdom": "^29.7.0",
-    "jest-watch-typeahead": "^2.2.2",
+    "jsdom": "^26.0.0",
     "lint-staged": "^10.5.3",
     "prettier": "^2.0.5",
     "pretty-quick": "^2.0.1",
@@ -74,9 +69,12 @@
     "replace-in-files": "^3.0.0",
     "start-server-and-test": "2.0.3",
     "storybook": "^8.5.0",
-    "ts-jest": "^29.2.5",
     "tsup": "8.0.2",
-    "typescript": "^5.7.3"
+    "typescript": "^5.7.3",
+    "vite": "^6.0.7",
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^3.0.2",
+    "vitest-axe": "^1.0.0-pre.3"
   },
   "resolutions": {
     "chokidar": "3.4.3"
@@ -84,30 +82,6 @@
   "engines": {
     "node": ">=12",
     "yarn": ">=2"
-  },
-  "jest": {
-    "testEnvironment": "jsdom",
-    "roots": [
-      "<rootDir>/packages"
-    ],
-    "testMatch": [
-      "**/?(*.)+(test).+(ts|tsx|js)"
-    ],
-    "transform": {
-      "^.+\\.(ts|tsx)$": "ts-jest"
-    },
-    "moduleNameMapper": {
-      "@radix-ui/react-(.+)$": "<rootDir>/packages/react/$1/src",
-      "@radix-ui/(.+)$": "<rootDir>packages/core/$1/src"
-    },
-    "watchPlugins": [
-      "jest-watch-typeahead/filename",
-      "jest-watch-typeahead/testname"
-    ],
-    "setupFilesAfterEnv": [
-      "<rootDir>/scripts/setup-tests.ts",
-      "jest-axe/extend-expect"
-    ]
   },
   "prettier": {
     "printWidth": 100,
