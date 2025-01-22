@@ -31,7 +31,9 @@
     "@radix-ui/react-slot": "workspace:*"
   },
   "devDependencies": {
-    "@testing-library/react": "^10.4.8"
+    "@repo/typescript-config": "workspace:*",
+    "@testing-library/react": "^10.4.8",
+    "typescript": "^5.7.3"
   },
   "peerDependencies": {
     "@types/react": "*",

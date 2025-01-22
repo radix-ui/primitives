@@ -37,6 +37,10 @@
     "@radix-ui/react-use-previous": "workspace:*",
     "@radix-ui/react-use-size": "workspace:*"
   },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "typescript": "^5.7.3"
+  },
   "peerDependencies": {
     "@types/react": "*",
     "@types/react-dom": "*",
