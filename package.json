@@ -28,10 +28,6 @@
     "bump:next": "yarn version apply --all --prerelease",
     "bump:check": "yarn version check"
   },
-  "dependencies": {
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0"
-  },
   "devDependencies": {
     "@changesets/cli": "^2.27.11",
     "@radix-ui/colors": "^3.0.0",
@@ -52,9 +48,9 @@
     "@types/fs-extra": "^11",
     "@types/jest": "^29.5.14",
     "@types/jest-axe": "^3.5.3",
-    "@types/react": "^19.0.1",
-    "@types/react-dom": "^19.0.2",
-    "@types/react-test-renderer": "^18.0.0",
+    "@types/react": "^19.0.7",
+    "@types/react-dom": "^19.0.3",
+    "@types/react-test-renderer": "^19.0.0",
     "@typescript-eslint/eslint-plugin": "^5.19.0",
     "@typescript-eslint/parser": "^5.19.0",
     "babel-eslint": "^10.1.0",
@@ -81,7 +77,9 @@
     "lint-staged": "^10.5.3",
     "prettier": "^2.0.5",
     "pretty-quick": "^2.0.1",
-    "react-test-renderer": "^18.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-test-renderer": "^19.0.0",
     "replace-in-files": "^3.0.0",
     "start-server-and-test": "2.0.3",
     "storybook": "^8.4.7",
