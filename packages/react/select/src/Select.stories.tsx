@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as Select from '@radix-ui/react-select';
 import { Label } from '@radix-ui/react-label';
 import * as Dialog from '@radix-ui/react-dialog';
-import { foodGroups } from '../../../../test-data/foods';
+import { foodGroups } from '@repo/test-data/foods';
 import styles from './Select.stories.module.css';
 
 export default { title: 'Components/Select' };
