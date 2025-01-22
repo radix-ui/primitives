@@ -194,7 +194,6 @@ export const Animated = () => {
       >
         Open
       </button>
-      {}
       <select
         value={swipeDirection}
         onChange={(event) => {
