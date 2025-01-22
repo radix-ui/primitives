@@ -7,6 +7,6 @@ import * as React from 'react';
  *
  * See: https://reactjs.org/docs/hooks-reference.html#uselayouteffect
  */
-const useLayoutEffect = Boolean(globalThis?.document) ? React.useLayoutEffect : () => {};
+const useLayoutEffect = globalThis?.document ? React.useLayoutEffect : () => {};
 
 export { useLayoutEffect };
