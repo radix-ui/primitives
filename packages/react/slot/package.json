@@ -30,6 +30,10 @@
   "dependencies": {
     "@radix-ui/react-compose-refs": "workspace:*"
   },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "typescript": "^5.7.3"
+  },
   "peerDependencies": {
     "@types/react": "*",
     "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"

@@ -41,8 +41,10 @@
     "@radix-ui/react-use-size": "workspace:*"
   },
   "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
     "@types/form-serialize": "^0",
-    "form-serialize": "^0.7.2"
+    "form-serialize": "^0.7.2",
+    "typescript": "^5.7.3"
   },
   "peerDependencies": {
     "@types/react": "*",

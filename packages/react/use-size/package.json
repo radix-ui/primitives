@@ -40,7 +40,9 @@
     }
   },
   "devDependencies": {
-    "@types/resize-observer-browser": "^0.1.4"
+    "@repo/typescript-config": "workspace:*",
+    "@types/resize-observer-browser": "^0.1.4",
+    "typescript": "^5.7.3"
   },
   "homepage": "https://radix-ui.com/primitives",
   "repository": {

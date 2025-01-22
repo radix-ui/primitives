@@ -35,7 +35,9 @@
     "@radix-ui/react-use-escape-keydown": "workspace:*"
   },
   "devDependencies": {
-    "react-remove-scroll": "^2.6.1"
+    "@repo/typescript-config": "workspace:*",
+    "react-remove-scroll": "^2.6.1",
+    "typescript": "^5.7.3"
   },
   "peerDependencies": {
     "@types/react": "*",

@@ -35,6 +35,10 @@
     "@radix-ui/react-use-callback-ref": "workspace:*",
     "@radix-ui/react-use-controllable-state": "workspace:*"
   },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "typescript": "^5.7.3"
+  },
   "peerDependencies": {
     "@types/react": "*",
     "@types/react-dom": "*",
