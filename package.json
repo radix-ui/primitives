@@ -75,7 +75,7 @@
     "vite": "^6.0.7",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.0.2",
-    "vitest-axe": "^1.0.0-pre.4"
+    "vitest-axe": "^1.0.0-pre.5"
   },
   "resolutions": {
     "chokidar": "3.4.3"
