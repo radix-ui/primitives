@@ -32,7 +32,6 @@
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
-    "@testing-library/react": "^10.4.8",
     "@types/react": "^19.0.7",
     "@types/react-dom": "^19.0.3",
     "react": "^19.0.0",
