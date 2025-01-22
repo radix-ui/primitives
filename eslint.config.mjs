@@ -2,16 +2,18 @@
 import * as react from '@chance/eslint/react';
 import * as js from '@chance/eslint';
 import * as typescript from '@chance/eslint/typescript';
+import { globals } from '@chance/eslint/globals';
 import storybook from 'eslint-plugin-storybook';
+import pluginCypress from 'eslint-plugin-cypress/flat';
 
 /** @type {import("eslint").Linter.Config[]} */
 export default [
-  js.config,
+  { ...js.getConfig({ ...globals.node, ...globals.browser }) },
   typescript.config,
-  react.config,
-  ...storybook.configs['flat/recommended'],
   {
+    ...react.config,
     rules: {
+      ...react.rules,
       'react/jsx-pascal-case': ['warn', { allowNamespace: true }],
       // TODO: enable this and fix all the errors
       'react/display-name': 'off',
@@ -25,8 +27,12 @@ export default [
       ],
     },
   },
+  ...storybook.configs['flat/recommended'],
+  { ...pluginCypress.configs.recommended, files: ['cypress/**/*.cy.ts'] },
   {
-    files: ['**/*.js', '**/*.mjs', '**/*.ts', '**/*.tsx'],
-    ignores: ['dist/**'],
+    ignores: ['dist/**', '.next/**'],
+    rules: {
+      'prefer-const': ['warn', { destructuring: 'all' }],
+    },
   },
 ];
