@@ -1498,7 +1498,7 @@ interface SelectScrollButtonImplProps extends PrimitiveDivProps {
 const SelectScrollButtonImpl = React.forwardRef<
   SelectScrollButtonImplElement,
   SelectScrollButtonImplProps
->(function SelectScrollButtonImpl(props: ScopedProps<SelectScrollButtonImplProps>, forwardedRef) {
+>((props: ScopedProps<SelectScrollButtonImplProps>, forwardedRef) => {
   const { __scopeSelect, onAutoScroll, ...scrollIndicatorProps } = props;
   const contentContext = useSelectContentContext('SelectScrollButton', __scopeSelect);
   const autoScrollTimerRef = React.useRef<number | null>(null);

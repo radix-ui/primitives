@@ -97,7 +97,7 @@ interface RovingFocusGroupImplProps
 const RovingFocusGroupImpl = React.forwardRef<
   RovingFocusGroupImplElement,
   RovingFocusGroupImplProps
->(function RovingFocusGroupImpl(props: ScopedProps<RovingFocusGroupImplProps>, forwardedRef) {
+>((props: ScopedProps<RovingFocusGroupImplProps>, forwardedRef) => {
   const {
     __scopeRovingFocusGroup,
     orientation,

@@ -147,7 +147,7 @@ const Button = React.forwardRef<
     iconLeft?: React.ReactNode;
     iconRight?: React.ReactNode;
   }
->(function Button({ children, asChild = false, iconLeft, iconRight, ...props }, forwardedRef) {
+>(({ children, asChild = false, iconLeft, iconRight, ...props }, forwardedRef) => {
   const Comp = asChild ? Slot : 'button';
   return (
     <Comp {...props} ref={forwardedRef}>

@@ -194,7 +194,7 @@ type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface DialogOverlayImplProps extends PrimitiveDivProps {}
 
 const DialogOverlayImpl = React.forwardRef<DialogOverlayImplElement, DialogOverlayImplProps>(
-  function DialogOverlayImpl(props: ScopedProps<DialogOverlayImplProps>, forwardedRef) {
+  (props: ScopedProps<DialogOverlayImplProps>, forwardedRef) => {
     const { __scopeDialog, ...overlayProps } = props;
     const context = useDialogContext(OVERLAY_NAME, __scopeDialog);
     return (
@@ -254,7 +254,7 @@ interface DialogContentTypeProps
   extends Omit<DialogContentImplProps, 'trapFocus' | 'disableOutsidePointerEvents'> {}
 
 const DialogContentModal = React.forwardRef<DialogContentTypeElement, DialogContentTypeProps>(
-  function DialogContentModal(props: ScopedProps<DialogContentTypeProps>, forwardedRef) {
+  (props: ScopedProps<DialogContentTypeProps>, forwardedRef) => {
     const context = useDialogContext(CONTENT_NAME, props.__scopeDialog);
     const contentRef = React.useRef<HTMLDivElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, context.contentRef, contentRef);
@@ -299,7 +299,7 @@ const DialogContentModal = React.forwardRef<DialogContentTypeElement, DialogCont
 /* -----------------------------------------------------------------------------------------------*/
 
 const DialogContentNonModal = React.forwardRef<DialogContentTypeElement, DialogContentTypeProps>(
-  function DialogContentNonModal(props: ScopedProps<DialogContentTypeProps>, forwardedRef) {
+  (props: ScopedProps<DialogContentTypeProps>, forwardedRef) => {
     const context = useDialogContext(CONTENT_NAME, props.__scopeDialog);
     const hasInteractedOutsideRef = React.useRef(false);
     const hasPointerDownOutsideRef = React.useRef(false);
@@ -379,7 +379,7 @@ interface DialogContentImplProps extends Omit<DismissableLayerProps, 'onDismiss'
 }
 
 const DialogContentImpl = React.forwardRef<DialogContentImplElement, DialogContentImplProps>(
-  function DialogContentImpl(props: ScopedProps<DialogContentImplProps>, forwardedRef) {
+  (props: ScopedProps<DialogContentImplProps>, forwardedRef) => {
     const { __scopeDialog, trapFocus, onOpenAutoFocus, onCloseAutoFocus, ...contentProps } = props;
     const context = useDialogContext(CONTENT_NAME, __scopeDialog);
     const contentRef = React.useRef<HTMLDivElement>(null);

@@ -256,7 +256,7 @@ interface MenuRootContentTypeProps
   extends Omit<MenuContentImplProps, keyof MenuContentImplPrivateProps> {}
 
 const MenuRootContentModal = React.forwardRef<MenuRootContentTypeElement, MenuRootContentTypeProps>(
-  function MenuRootContentModal(props: ScopedProps<MenuRootContentTypeProps>, forwardedRef) {
+  (props: ScopedProps<MenuRootContentTypeProps>, forwardedRef) => {
     const context = useMenuContext(CONTENT_NAME, props.__scopeMenu);
     const ref = React.useRef<MenuRootContentTypeElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, ref);
@@ -294,7 +294,7 @@ const MenuRootContentModal = React.forwardRef<MenuRootContentTypeElement, MenuRo
 const MenuRootContentNonModal = React.forwardRef<
   MenuRootContentTypeElement,
   MenuRootContentTypeProps
->(function MenuRootContentNonModal(props: ScopedProps<MenuRootContentTypeProps>, forwardedRef) {
+>((props: ScopedProps<MenuRootContentTypeProps>, forwardedRef) => {
   const context = useMenuContext(CONTENT_NAME, props.__scopeMenu);
   return (
     <MenuContentImpl
@@ -355,7 +355,7 @@ interface MenuContentImplProps
 }
 
 const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImplProps>(
-  function MenuContentImpl(props: ScopedProps<MenuContentImplProps>, forwardedRef) {
+  (props: ScopedProps<MenuContentImplProps>, forwardedRef) => {
     const {
       __scopeMenu,
       loop = false,
@@ -677,76 +677,75 @@ interface MenuItemImplProps extends PrimitiveDivProps {
   textValue?: string;
 }
 
-const MenuItemImpl = React.forwardRef<MenuItemImplElement, MenuItemImplProps>(function MenuItemImpl(
-  props: ScopedProps<MenuItemImplProps>,
-  forwardedRef
-) {
-  const { __scopeMenu, disabled = false, textValue, ...itemProps } = props;
-  const contentContext = useMenuContentContext(ITEM_NAME, __scopeMenu);
-  const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeMenu);
-  const ref = React.useRef<HTMLDivElement>(null);
-  const composedRefs = useComposedRefs(forwardedRef, ref);
-  const [isFocused, setIsFocused] = React.useState(false);
+const MenuItemImpl = React.forwardRef<MenuItemImplElement, MenuItemImplProps>(
+  (props: ScopedProps<MenuItemImplProps>, forwardedRef) => {
+    const { __scopeMenu, disabled = false, textValue, ...itemProps } = props;
+    const contentContext = useMenuContentContext(ITEM_NAME, __scopeMenu);
+    const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeMenu);
+    const ref = React.useRef<HTMLDivElement>(null);
+    const composedRefs = useComposedRefs(forwardedRef, ref);
+    const [isFocused, setIsFocused] = React.useState(false);
 
-  // get the item's `.textContent` as default strategy for typeahead `textValue`
-  const [textContent, setTextContent] = React.useState('');
-  React.useEffect(() => {
-    const menuItem = ref.current;
-    if (menuItem) {
-      setTextContent((menuItem.textContent ?? '').trim());
-    }
-  }, [itemProps.children]);
+    // get the item's `.textContent` as default strategy for typeahead `textValue`
+    const [textContent, setTextContent] = React.useState('');
+    React.useEffect(() => {
+      const menuItem = ref.current;
+      if (menuItem) {
+        setTextContent((menuItem.textContent ?? '').trim());
+      }
+    }, [itemProps.children]);
 
-  return (
-    <Collection.ItemSlot
-      scope={__scopeMenu}
-      disabled={disabled}
-      textValue={textValue ?? textContent}
-    >
-      <RovingFocusGroup.Item asChild {...rovingFocusGroupScope} focusable={!disabled}>
-        <Primitive.div
-          role="menuitem"
-          data-highlighted={isFocused ? '' : undefined}
-          aria-disabled={disabled || undefined}
-          data-disabled={disabled ? '' : undefined}
-          {...itemProps}
-          ref={composedRefs}
-          /**
-           * We focus items on `pointerMove` to achieve the following:
-           *
-           * - Mouse over an item (it focuses)
-           * - Leave mouse where it is and use keyboard to focus a different item
-           * - Wiggle mouse without it leaving previously focused item
-           * - Previously focused item should re-focus
-           *
-           * If we used `mouseOver`/`mouseEnter` it would not re-focus when the mouse
-           * wiggles. This is to match native menu implementation.
-           */
-          onPointerMove={composeEventHandlers(
-            props.onPointerMove,
-            whenMouse((event) => {
-              if (disabled) {
-                contentContext.onItemLeave(event);
-              } else {
-                contentContext.onItemEnter(event);
-                if (!event.defaultPrevented) {
-                  const item = event.currentTarget;
-                  item.focus({ preventScroll: true });
+    return (
+      <Collection.ItemSlot
+        scope={__scopeMenu}
+        disabled={disabled}
+        textValue={textValue ?? textContent}
+      >
+        <RovingFocusGroup.Item asChild {...rovingFocusGroupScope} focusable={!disabled}>
+          <Primitive.div
+            role="menuitem"
+            data-highlighted={isFocused ? '' : undefined}
+            aria-disabled={disabled || undefined}
+            data-disabled={disabled ? '' : undefined}
+            {...itemProps}
+            ref={composedRefs}
+            /**
+             * We focus items on `pointerMove` to achieve the following:
+             *
+             * - Mouse over an item (it focuses)
+             * - Leave mouse where it is and use keyboard to focus a different item
+             * - Wiggle mouse without it leaving previously focused item
+             * - Previously focused item should re-focus
+             *
+             * If we used `mouseOver`/`mouseEnter` it would not re-focus when the mouse
+             * wiggles. This is to match native menu implementation.
+             */
+            onPointerMove={composeEventHandlers(
+              props.onPointerMove,
+              whenMouse((event) => {
+                if (disabled) {
+                  contentContext.onItemLeave(event);
+                } else {
+                  contentContext.onItemEnter(event);
+                  if (!event.defaultPrevented) {
+                    const item = event.currentTarget;
+                    item.focus({ preventScroll: true });
+                  }
                 }
-              }
-            })
-          )}
-          onPointerLeave={composeEventHandlers(
-            props.onPointerLeave,
-            whenMouse((event) => contentContext.onItemLeave(event))
-          )}
-          onFocus={composeEventHandlers(props.onFocus, () => setIsFocused(true))}
-          onBlur={composeEventHandlers(props.onBlur, () => setIsFocused(false))}
-        />
-      </RovingFocusGroup.Item>
-    </Collection.ItemSlot>
-  );
-});
+              })
+            )}
+            onPointerLeave={composeEventHandlers(
+              props.onPointerLeave,
+              whenMouse((event) => contentContext.onItemLeave(event))
+            )}
+            onFocus={composeEventHandlers(props.onFocus, () => setIsFocused(true))}
+            onBlur={composeEventHandlers(props.onBlur, () => setIsFocused(false))}
+          />
+        </RovingFocusGroup.Item>
+      </Collection.ItemSlot>
+    );
+  }
+);
 
 /* -------------------------------------------------------------------------------------------------
  * MenuCheckboxItem

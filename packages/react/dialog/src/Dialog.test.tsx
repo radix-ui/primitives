@@ -1,7 +1,6 @@
 import React from 'react';
 import { axe } from 'jest-axe';
-import type { RenderResult } from '@testing-library/react';
-import { render, fireEvent, cleanup } from '@testing-library/react';
+import { render, fireEvent, RenderResult, cleanup } from '@testing-library/react';
 import * as Dialog from '@radix-ui/react-dialog';
 
 const OPEN_TEXT = 'Open';

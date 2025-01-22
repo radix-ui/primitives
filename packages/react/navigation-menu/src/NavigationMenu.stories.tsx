@@ -428,7 +428,7 @@ const StoryFrame: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 const DurationNavigation = React.forwardRef<
   React.ElementRef<typeof NavigationMenu.Root>,
   React.ComponentProps<typeof NavigationMenu.Root>
->(function DurationNavigation(props, forwardedRef) {
+>((props, forwardedRef) => {
   return (
     <NavigationMenu.Root
       {...props}

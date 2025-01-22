@@ -236,7 +236,7 @@ interface SliderHorizontalProps extends SliderOrientationProps {
 }
 
 const SliderHorizontal = React.forwardRef<SliderHorizontalElement, SliderHorizontalProps>(
-  function SliderHorizontal(props: ScopedProps<SliderHorizontalProps>, forwardedRef) {
+  (props: ScopedProps<SliderHorizontalProps>, forwardedRef) => {
     const {
       min,
       max,
@@ -313,7 +313,7 @@ type SliderVerticalElement = SliderImplElement;
 interface SliderVerticalProps extends SliderOrientationProps {}
 
 const SliderVertical = React.forwardRef<SliderVerticalElement, SliderVerticalProps>(
-  function SliderVertical(props: ScopedProps<SliderVerticalProps>, forwardedRef) {
+  (props: ScopedProps<SliderVerticalProps>, forwardedRef) => {
     const {
       min,
       max,
@@ -394,68 +394,67 @@ type SliderImplPrivateProps = {
 };
 interface SliderImplProps extends PrimitiveDivProps, SliderImplPrivateProps {}
 
-const SliderImpl = React.forwardRef<SliderImplElement, SliderImplProps>(function SliderImpl(
-  props: ScopedProps<SliderImplProps>,
-  forwardedRef
-) {
-  const {
-    __scopeSlider,
-    onSlideStart,
-    onSlideMove,
-    onSlideEnd,
-    onHomeKeyDown,
-    onEndKeyDown,
-    onStepKeyDown,
-    ...sliderProps
-  } = props;
-  const context = useSliderContext(SLIDER_NAME, __scopeSlider);
+const SliderImpl = React.forwardRef<SliderImplElement, SliderImplProps>(
+  (props: ScopedProps<SliderImplProps>, forwardedRef) => {
+    const {
+      __scopeSlider,
+      onSlideStart,
+      onSlideMove,
+      onSlideEnd,
+      onHomeKeyDown,
+      onEndKeyDown,
+      onStepKeyDown,
+      ...sliderProps
+    } = props;
+    const context = useSliderContext(SLIDER_NAME, __scopeSlider);
 
-  return (
-    <Primitive.span
-      {...sliderProps}
-      ref={forwardedRef}
-      onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
-        if (event.key === 'Home') {
-          onHomeKeyDown(event);
-          // Prevent scrolling to page start
+    return (
+      <Primitive.span
+        {...sliderProps}
+        ref={forwardedRef}
+        onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
+          if (event.key === 'Home') {
+            onHomeKeyDown(event);
+            // Prevent scrolling to page start
+            event.preventDefault();
+          } else if (event.key === 'End') {
+            onEndKeyDown(event);
+            // Prevent scrolling to page end
+            event.preventDefault();
+          } else if (PAGE_KEYS.concat(ARROW_KEYS).includes(event.key)) {
+            onStepKeyDown(event);
+            // Prevent scrolling for directional key presses
+            event.preventDefault();
+          }
+        })}
+        onPointerDown={composeEventHandlers(props.onPointerDown, (event) => {
+          const target = event.target as HTMLElement;
+          target.setPointerCapture(event.pointerId);
+          // Prevent browser focus behaviour because we focus a thumb manually when values change.
           event.preventDefault();
-        } else if (event.key === 'End') {
-          onEndKeyDown(event);
-          // Prevent scrolling to page end
-          event.preventDefault();
-        } else if (PAGE_KEYS.concat(ARROW_KEYS).includes(event.key)) {
-          onStepKeyDown(event);
-          // Prevent scrolling for directional key presses
-          event.preventDefault();
-        }
-      })}
-      onPointerDown={composeEventHandlers(props.onPointerDown, (event) => {
-        const target = event.target as HTMLElement;
-        target.setPointerCapture(event.pointerId);
-        // Prevent browser focus behaviour because we focus a thumb manually when values change.
-        event.preventDefault();
-        // Touch devices have a delay before focusing so won't focus if touch immediately moves
-        // away from target (sliding). We want thumb to focus regardless.
-        if (context.thumbs.has(target)) {
-          target.focus();
-        } else {
-          onSlideStart(event);
-        }
-      })}
-      onPointerMove={composeEventHandlers(props.onPointerMove, (event) => {
-        const target = event.target as HTMLElement;
-        if (target.hasPointerCapture(event.pointerId)) onSlideMove(event);
-      })}
-      onPointerUp={composeEventHandlers(props.onPointerUp, (event) => {
-        const target = event.target as HTMLElement;
-        if (target.hasPointerCapture(event.pointerId)) {
-          target.releasePointerCapture(event.pointerId);
-          onSlideEnd(event);
-        }
-      })}
-    />
-  );
-});
+          // Touch devices have a delay before focusing so won't focus if touch immediately moves
+          // away from target (sliding). We want thumb to focus regardless.
+          if (context.thumbs.has(target)) {
+            target.focus();
+          } else {
+            onSlideStart(event);
+          }
+        })}
+        onPointerMove={composeEventHandlers(props.onPointerMove, (event) => {
+          const target = event.target as HTMLElement;
+          if (target.hasPointerCapture(event.pointerId)) onSlideMove(event);
+        })}
+        onPointerUp={composeEventHandlers(props.onPointerUp, (event) => {
+          const target = event.target as HTMLElement;
+          if (target.hasPointerCapture(event.pointerId)) {
+            target.releasePointerCapture(event.pointerId);
+            onSlideEnd(event);
+          }
+        })}
+      />
+    );
+  }
+);
 
 /* -------------------------------------------------------------------------------------------------
  * SliderTrack
@@ -554,7 +553,7 @@ interface SliderThumbImplProps extends PrimitiveSpanProps {
 }
 
 const SliderThumbImpl = React.forwardRef<SliderThumbImplElement, SliderThumbImplProps>(
-  function SliderThumbImpl(props: ScopedProps<SliderThumbImplProps>, forwardedRef) {
+  (props: ScopedProps<SliderThumbImplProps>, forwardedRef) => {
     const { __scopeSlider, index, name, ...thumbProps } = props;
     const context = useSliderContext(THUMB_NAME, __scopeSlider);
     const orientation = useSliderOrientationContext(THUMB_NAME, __scopeSlider);

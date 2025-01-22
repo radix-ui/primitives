@@ -149,7 +149,7 @@ interface CollapsibleContentImplProps extends PrimitiveDivProps {
 const CollapsibleContentImpl = React.forwardRef<
   CollapsibleContentImplElement,
   CollapsibleContentImplProps
->(function CollapsibleContentImpl(props: ScopedProps<CollapsibleContentImplProps>, forwardedRef) {
+>((props: ScopedProps<CollapsibleContentImplProps>, forwardedRef) => {
   const { __scopeCollapsible, present, children, ...contentProps } = props;
   const context = useCollapsibleContext(CONTENT_NAME, __scopeCollapsible);
   const [isPresent, setIsPresent] = React.useState(present);

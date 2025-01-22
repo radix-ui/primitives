@@ -244,7 +244,7 @@ interface PopoverContentTypeProps
   extends Omit<PopoverContentImplProps, 'trapFocus' | 'disableOutsidePointerEvents'> {}
 
 const PopoverContentModal = React.forwardRef<PopoverContentTypeElement, PopoverContentTypeProps>(
-  function PopoverContentModal(props: ScopedProps<PopoverContentTypeProps>, forwardedRef) {
+  (props: ScopedProps<PopoverContentTypeProps>, forwardedRef) => {
     const context = usePopoverContext(CONTENT_NAME, props.__scopePopover);
     const contentRef = React.useRef<HTMLDivElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, contentRef);
@@ -294,7 +294,7 @@ const PopoverContentModal = React.forwardRef<PopoverContentTypeElement, PopoverC
 );
 
 const PopoverContentNonModal = React.forwardRef<PopoverContentTypeElement, PopoverContentTypeProps>(
-  function PopoverContentNonModal(props: ScopedProps<PopoverContentTypeProps>, forwardedRef) {
+  (props: ScopedProps<PopoverContentTypeProps>, forwardedRef) => {
     const context = usePopoverContext(CONTENT_NAME, props.__scopePopover);
     const hasInteractedOutsideRef = React.useRef(false);
     const hasPointerDownOutsideRef = React.useRef(false);
@@ -376,7 +376,7 @@ interface PopoverContentImplProps
 }
 
 const PopoverContentImpl = React.forwardRef<PopoverContentImplElement, PopoverContentImplProps>(
-  function PopoverContentImpl(props: ScopedProps<PopoverContentImplProps>, forwardedRef) {
+  (props: ScopedProps<PopoverContentImplProps>, forwardedRef) => {
     const {
       __scopePopover,
       trapFocus,

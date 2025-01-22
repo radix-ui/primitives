@@ -98,7 +98,7 @@ const Menubar = React.forwardRef<MenubarElement, MenubarProps>(
         onMenuClose={React.useCallback(() => setValue(''), [setValue])}
         onMenuToggle={React.useCallback(
           (value) => {
-            setValue((prevValue) => (prevValue ? '' : value));
+            setValue((prevValue) => (Boolean(prevValue) ? '' : value));
             // `openMenuOpen` and `onMenuToggle` are called exclusively so we
             // need to update the id in either case.
             setCurrentTabStopId(value);

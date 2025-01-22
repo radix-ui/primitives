@@ -670,10 +670,7 @@ interface NavigationMenuIndicatorImplProps extends PrimitiveDivProps {}
 const NavigationMenuIndicatorImpl = React.forwardRef<
   NavigationMenuIndicatorImplElement,
   NavigationMenuIndicatorImplProps
->(function NavigationMenuIndicatorImpl(
-  props: ScopedProps<NavigationMenuIndicatorImplProps>,
-  forwardedRef
-) {
+>((props: ScopedProps<NavigationMenuIndicatorImplProps>, forwardedRef) => {
   const { __scopeNavigationMenu, ...indicatorProps } = props;
   const context = useNavigationMenuContext(INDICATOR_NAME, __scopeNavigationMenu);
   const getItems = useCollection(__scopeNavigationMenu);
@@ -807,7 +804,7 @@ interface ViewportContentMounterProps extends NavigationMenuContentImplProps {
 const ViewportContentMounter = React.forwardRef<
   ViewportContentMounterElement,
   ViewportContentMounterProps
->(function ViewportContentMounter(props: ScopedProps<ViewportContentMounterProps>, forwardedRef) {
+>((props: ScopedProps<ViewportContentMounterProps>, forwardedRef) => {
   const context = useNavigationMenuContext(CONTENT_NAME, props.__scopeNavigationMenu);
   const { onViewportContentChange, onViewportContentRemove } = context;
 
@@ -849,10 +846,7 @@ interface NavigationMenuContentImplProps
 const NavigationMenuContentImpl = React.forwardRef<
   NavigationMenuContentImplElement,
   NavigationMenuContentImplProps
->(function NavigationMenuContentImpl(
-  props: ScopedProps<NavigationMenuContentImplProps>,
-  forwardedRef
-) {
+>((props: ScopedProps<NavigationMenuContentImplProps>, forwardedRef) => {
   const {
     __scopeNavigationMenu,
     value,
@@ -970,7 +964,7 @@ const NavigationMenuContentImpl = React.forwardRef<
             }
           }
         })}
-        onEscapeKeyDown={composeEventHandlers(props.onEscapeKeyDown, (_event) => {
+        onEscapeKeyDown={composeEventHandlers(props.onEscapeKeyDown, (event) => {
           // prevent the dropdown from reopening
           // after the escape key has been pressed
           wasEscapeCloseRef.current = true;
@@ -1021,10 +1015,7 @@ interface NavigationMenuViewportImplProps extends PrimitiveDivProps {}
 const NavigationMenuViewportImpl = React.forwardRef<
   NavigationMenuViewportImplElement,
   NavigationMenuViewportImplProps
->(function NavigationMenuViewportImpl(
-  props: ScopedProps<NavigationMenuViewportImplProps>,
-  forwardedRef
-) {
+>((props: ScopedProps<NavigationMenuViewportImplProps>, forwardedRef) => {
   const { __scopeNavigationMenu, children, ...viewportImplProps } = props;
   const context = useNavigationMenuContext(VIEWPORT_NAME, __scopeNavigationMenu);
   const composedRefs = useComposedRefs(forwardedRef, context.onViewportChange);
@@ -1094,21 +1085,20 @@ const FOCUS_GROUP_NAME = 'FocusGroup';
 type FocusGroupElement = React.ElementRef<typeof Primitive.div>;
 interface FocusGroupProps extends PrimitiveDivProps {}
 
-const FocusGroup = React.forwardRef<FocusGroupElement, FocusGroupProps>(function FocusGroup(
-  props: ScopedProps<FocusGroupProps>,
-  forwardedRef
-) {
-  const { __scopeNavigationMenu, ...groupProps } = props;
-  const context = useNavigationMenuContext(FOCUS_GROUP_NAME, __scopeNavigationMenu);
+const FocusGroup = React.forwardRef<FocusGroupElement, FocusGroupProps>(
+  (props: ScopedProps<FocusGroupProps>, forwardedRef) => {
+    const { __scopeNavigationMenu, ...groupProps } = props;
+    const context = useNavigationMenuContext(FOCUS_GROUP_NAME, __scopeNavigationMenu);
 
-  return (
-    <FocusGroupCollection.Provider scope={__scopeNavigationMenu}>
-      <FocusGroupCollection.Slot scope={__scopeNavigationMenu}>
-        <Primitive.div dir={context.dir} {...groupProps} ref={forwardedRef} />
-      </FocusGroupCollection.Slot>
-    </FocusGroupCollection.Provider>
-  );
-});
+    return (
+      <FocusGroupCollection.Provider scope={__scopeNavigationMenu}>
+        <FocusGroupCollection.Slot scope={__scopeNavigationMenu}>
+          <Primitive.div dir={context.dir} {...groupProps} ref={forwardedRef} />
+        </FocusGroupCollection.Slot>
+      </FocusGroupCollection.Provider>
+    );
+  }
+);
 
 /* -----------------------------------------------------------------------------------------------*/
 
@@ -1119,7 +1109,7 @@ type FocusGroupItemElement = React.ElementRef<typeof Primitive.button>;
 interface FocusGroupItemProps extends PrimitiveButtonProps {}
 
 const FocusGroupItem = React.forwardRef<FocusGroupItemElement, FocusGroupItemProps>(
-  function FocusGroupItem(props: ScopedProps<FocusGroupItemProps>, forwardedRef) {
+  (props: ScopedProps<FocusGroupItemProps>, forwardedRef) => {
     const { __scopeNavigationMenu, ...groupProps } = props;
     const getItems = useFocusGroupCollection(__scopeNavigationMenu);
     const context = useNavigationMenuContext(FOCUS_GROUP_ITEM_NAME, __scopeNavigationMenu);
