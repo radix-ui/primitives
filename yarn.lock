@@ -2255,6 +2255,10 @@ __metadata:
   dependencies:
     "@radix-ui/react-visually-hidden": "workspace:*"
     "@repo/typescript-config": "workspace:*"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
     typescript: "npm:^5.7.3"
   peerDependencies:
     "@types/react": "*"
@@ -2283,6 +2287,10 @@ __metadata:
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
     "@repo/typescript-config": "workspace:*"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
     typescript: "npm:^5.7.3"
   peerDependencies:
     "@types/react": "*"
@@ -2308,6 +2316,10 @@ __metadata:
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-slot": "workspace:*"
     "@repo/typescript-config": "workspace:*"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
     typescript: "npm:^5.7.3"
   peerDependencies:
     "@types/react": "*"
@@ -2330,6 +2342,10 @@ __metadata:
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-use-layout-effect": "workspace:*"
     "@repo/typescript-config": "workspace:*"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
     typescript: "npm:^5.7.3"
   peerDependencies:
     "@types/react": "*"
@@ -2350,6 +2366,10 @@ __metadata:
   dependencies:
     "@radix-ui/react-primitive": "workspace:*"
     "@repo/typescript-config": "workspace:*"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
     typescript: "npm:^5.7.3"
   peerDependencies:
     "@types/react": "*"
@@ -2370,6 +2390,10 @@ __metadata:
   dependencies:
     "@radix-ui/react-primitive": "workspace:*"
     "@repo/typescript-config": "workspace:*"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
     typescript: "npm:^5.7.3"
   peerDependencies:
     "@types/react": "*"
@@ -2393,6 +2417,10 @@ __metadata:
     "@radix-ui/react-use-callback-ref": "workspace:*"
     "@radix-ui/react-use-layout-effect": "workspace:*"
     "@repo/typescript-config": "workspace:*"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
     typescript: "npm:^5.7.3"
   peerDependencies:
     "@types/react": "*"
@@ -2420,6 +2448,10 @@ __metadata:
     "@radix-ui/react-use-previous": "workspace:*"
     "@radix-ui/react-use-size": "workspace:*"
     "@repo/typescript-config": "workspace:*"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
     typescript: "npm:^5.7.3"
   peerDependencies:
     "@types/react": "*"
@@ -2447,6 +2479,10 @@ __metadata:
     "@radix-ui/react-use-controllable-state": "workspace:*"
     "@radix-ui/react-use-layout-effect": "workspace:*"
     "@repo/typescript-config": "workspace:*"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
     typescript: "npm:^5.7.3"
   peerDependencies:
     "@types/react": "*"
@@ -2470,6 +2506,10 @@ __metadata:
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-slot": "workspace:*"
     "@repo/typescript-config": "workspace:*"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
     typescript: "npm:^5.7.3"
   peerDependencies:
     "@types/react": "*"
@@ -2489,6 +2529,10 @@ __metadata:
   resolution: "@radix-ui/react-compose-refs@workspace:packages/react/compose-refs"
   dependencies:
     "@repo/typescript-config": "workspace:*"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
     typescript: "npm:^5.7.3"
   peerDependencies:
     "@types/react": "*"
@@ -2510,6 +2554,10 @@ __metadata:
     "@radix-ui/react-use-callback-ref": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
     "@repo/typescript-config": "workspace:*"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
     typescript: "npm:^5.7.3"
   peerDependencies:
     "@types/react": "*"
@@ -2529,6 +2577,10 @@ __metadata:
   resolution: "@radix-ui/react-context@workspace:packages/react/context"
   dependencies:
     "@repo/typescript-config": "workspace:*"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
     typescript: "npm:^5.7.3"
   peerDependencies:
     "@types/react": "*"
@@ -2556,7 +2608,11 @@ __metadata:
     "@radix-ui/react-slot": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
     "@repo/typescript-config": "workspace:*"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
     aria-hidden: "npm:^1.1.1"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
     react-remove-scroll: "npm:^2.6.1"
     typescript: "npm:^5.7.3"
   peerDependencies:
@@ -2577,6 +2633,10 @@ __metadata:
   resolution: "@radix-ui/react-direction@workspace:packages/react/direction"
   dependencies:
     "@repo/typescript-config": "workspace:*"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
     typescript: "npm:^5.7.3"
   peerDependencies:
     "@types/react": "*"
@@ -2597,6 +2657,10 @@ __metadata:
     "@radix-ui/react-use-callback-ref": "workspace:*"
     "@radix-ui/react-use-escape-keydown": "workspace:*"
     "@repo/typescript-config": "workspace:*"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
     react-remove-scroll: "npm:^2.6.1"
     typescript: "npm:^5.7.3"
   peerDependencies:
@@ -2624,6 +2688,10 @@ __metadata:
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
     "@repo/typescript-config": "workspace:*"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
     typescript: "npm:^5.7.3"
   peerDependencies:
     "@types/react": "*"
@@ -2643,6 +2711,10 @@ __metadata:
   resolution: "@radix-ui/react-focus-guards@workspace:packages/react/focus-guards"
   dependencies:
     "@repo/typescript-config": "workspace:*"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
     typescript: "npm:^5.7.3"
   peerDependencies:
     "@types/react": "*"
@@ -2661,6 +2733,10 @@ __metadata:
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-use-callback-ref": "workspace:*"
     "@repo/typescript-config": "workspace:*"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
     typescript: "npm:^5.7.3"
   peerDependencies:
     "@types/react": "*"
@@ -2686,6 +2762,10 @@ __metadata:
     "@radix-ui/react-label": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
     "@repo/typescript-config": "workspace:*"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
     typescript: "npm:^5.7.3"
   peerDependencies:
     "@types/react": "*"
@@ -2714,6 +2794,10 @@ __metadata:
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
     "@repo/typescript-config": "workspace:*"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
     typescript: "npm:^5.7.3"
   peerDependencies:
     "@types/react": "*"
@@ -2734,6 +2818,10 @@ __metadata:
   dependencies:
     "@radix-ui/react-use-layout-effect": "workspace:*"
     "@repo/typescript-config": "workspace:*"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
     typescript: "npm:^5.7.3"
   peerDependencies:
     "@types/react": "*"
@@ -2750,6 +2838,10 @@ __metadata:
   dependencies:
     "@radix-ui/react-primitive": "workspace:*"
     "@repo/typescript-config": "workspace:*"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
     typescript: "npm:^5.7.3"
   peerDependencies:
     "@types/react": "*"
@@ -2785,7 +2877,11 @@ __metadata:
     "@radix-ui/react-slot": "workspace:*"
     "@radix-ui/react-use-callback-ref": "workspace:*"
     "@repo/typescript-config": "workspace:*"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
     aria-hidden: "npm:^1.1.1"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
     react-remove-scroll: "npm:^2.6.1"
     typescript: "npm:^5.7.3"
   peerDependencies:
@@ -2816,6 +2912,10 @@ __metadata:
     "@radix-ui/react-roving-focus": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
     "@repo/typescript-config": "workspace:*"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
     typescript: "npm:^5.7.3"
   peerDependencies:
     "@types/react": "*"
@@ -2849,6 +2949,10 @@ __metadata:
     "@radix-ui/react-use-previous": "workspace:*"
     "@radix-ui/react-visually-hidden": "workspace:*"
     "@repo/typescript-config": "workspace:*"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
     typescript: "npm:^5.7.3"
   peerDependencies:
     "@types/react": "*"
@@ -2881,7 +2985,11 @@ __metadata:
     "@radix-ui/react-slot": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
     "@repo/typescript-config": "workspace:*"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
     aria-hidden: "npm:^1.1.1"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
     react-remove-scroll: "npm:^2.6.1"
     typescript: "npm:^5.7.3"
   peerDependencies:
@@ -2912,6 +3020,10 @@ __metadata:
     "@radix-ui/react-use-size": "workspace:*"
     "@radix-ui/rect": "workspace:*"
     "@repo/typescript-config": "workspace:*"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
     typescript: "npm:^5.7.3"
   peerDependencies:
     "@types/react": "*"
@@ -2933,6 +3045,10 @@ __metadata:
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-use-layout-effect": "workspace:*"
     "@repo/typescript-config": "workspace:*"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
     typescript: "npm:^5.7.3"
   peerDependencies:
     "@types/react": "*"
@@ -2954,6 +3070,10 @@ __metadata:
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-use-layout-effect": "workspace:*"
     "@repo/typescript-config": "workspace:*"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
     typescript: "npm:^5.7.3"
   peerDependencies:
     "@types/react": "*"
@@ -2975,6 +3095,10 @@ __metadata:
     "@radix-ui/react-slot": "workspace:*"
     "@repo/typescript-config": "workspace:*"
     "@testing-library/react": "npm:^10.4.8"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
     typescript: "npm:^5.7.3"
   peerDependencies:
     "@types/react": "*"
@@ -2996,6 +3120,10 @@ __metadata:
     "@radix-ui/react-context": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
     "@repo/typescript-config": "workspace:*"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
     typescript: "npm:^5.7.3"
   peerDependencies:
     "@types/react": "*"
@@ -3025,6 +3153,10 @@ __metadata:
     "@radix-ui/react-use-previous": "workspace:*"
     "@radix-ui/react-use-size": "workspace:*"
     "@repo/typescript-config": "workspace:*"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
     typescript: "npm:^5.7.3"
   peerDependencies:
     "@types/react": "*"
@@ -3053,6 +3185,10 @@ __metadata:
     "@radix-ui/react-use-callback-ref": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
     "@repo/typescript-config": "workspace:*"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
     typescript: "npm:^5.7.3"
   peerDependencies:
     "@types/react": "*"
@@ -3081,7 +3217,11 @@ __metadata:
     "@radix-ui/react-use-callback-ref": "workspace:*"
     "@radix-ui/react-use-layout-effect": "workspace:*"
     "@repo/typescript-config": "workspace:*"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
     "@types/resize-observer-browser": "npm:^0.1.4"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
     typescript: "npm:^5.7.3"
   peerDependencies:
     "@types/react": "*"
@@ -3120,7 +3260,11 @@ __metadata:
     "@radix-ui/react-use-previous": "workspace:*"
     "@radix-ui/react-visually-hidden": "workspace:*"
     "@repo/typescript-config": "workspace:*"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
     aria-hidden: "npm:^1.1.1"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
     react-remove-scroll: "npm:^2.6.1"
     typescript: "npm:^5.7.3"
   peerDependencies:
@@ -3142,6 +3286,10 @@ __metadata:
   dependencies:
     "@radix-ui/react-primitive": "workspace:*"
     "@repo/typescript-config": "workspace:*"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
     typescript: "npm:^5.7.3"
   peerDependencies:
     "@types/react": "*"
@@ -3173,7 +3321,11 @@ __metadata:
     "@radix-ui/react-use-size": "workspace:*"
     "@repo/typescript-config": "workspace:*"
     "@types/form-serialize": "npm:^0"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
     form-serialize: "npm:^0.7.2"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
     typescript: "npm:^5.7.3"
   peerDependencies:
     "@types/react": "*"
@@ -3194,6 +3346,10 @@ __metadata:
   dependencies:
     "@radix-ui/react-compose-refs": "workspace:*"
     "@repo/typescript-config": "workspace:*"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
     typescript: "npm:^5.7.3"
   peerDependencies:
     "@types/react": "*"
@@ -3216,6 +3372,10 @@ __metadata:
     "@radix-ui/react-use-previous": "workspace:*"
     "@radix-ui/react-use-size": "workspace:*"
     "@repo/typescript-config": "workspace:*"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
     typescript: "npm:^5.7.3"
   peerDependencies:
     "@types/react": "*"
@@ -3243,6 +3403,10 @@ __metadata:
     "@radix-ui/react-roving-focus": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
     "@repo/typescript-config": "workspace:*"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
     typescript: "npm:^5.7.3"
   peerDependencies:
     "@types/react": "*"
@@ -3274,6 +3438,10 @@ __metadata:
     "@radix-ui/react-use-layout-effect": "workspace:*"
     "@radix-ui/react-visually-hidden": "workspace:*"
     "@repo/typescript-config": "workspace:*"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
     typescript: "npm:^5.7.3"
   peerDependencies:
     "@types/react": "*"
@@ -3300,6 +3468,10 @@ __metadata:
     "@radix-ui/react-toggle": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
     "@repo/typescript-config": "workspace:*"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
     typescript: "npm:^5.7.3"
   peerDependencies:
     "@types/react": "*"
@@ -3322,6 +3494,10 @@ __metadata:
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
     "@repo/typescript-config": "workspace:*"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
     typescript: "npm:^5.7.3"
   peerDependencies:
     "@types/react": "*"
@@ -3348,6 +3524,10 @@ __metadata:
     "@radix-ui/react-separator": "workspace:*"
     "@radix-ui/react-toggle-group": "workspace:*"
     "@repo/typescript-config": "workspace:*"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
     typescript: "npm:^5.7.3"
   peerDependencies:
     "@types/react": "*"
@@ -3379,6 +3559,10 @@ __metadata:
     "@radix-ui/react-use-controllable-state": "workspace:*"
     "@radix-ui/react-visually-hidden": "workspace:*"
     "@repo/typescript-config": "workspace:*"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
     typescript: "npm:^5.7.3"
   peerDependencies:
     "@types/react": "*"
@@ -3398,6 +3582,10 @@ __metadata:
   resolution: "@radix-ui/react-use-callback-ref@workspace:packages/react/use-callback-ref"
   dependencies:
     "@repo/typescript-config": "workspace:*"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
     typescript: "npm:^5.7.3"
   peerDependencies:
     "@types/react": "*"
@@ -3414,6 +3602,10 @@ __metadata:
   dependencies:
     "@radix-ui/react-use-callback-ref": "workspace:*"
     "@repo/typescript-config": "workspace:*"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
     typescript: "npm:^5.7.3"
   peerDependencies:
     "@types/react": "*"
@@ -3430,6 +3622,10 @@ __metadata:
   dependencies:
     "@radix-ui/react-use-callback-ref": "workspace:*"
     "@repo/typescript-config": "workspace:*"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
     typescript: "npm:^5.7.3"
   peerDependencies:
     "@types/react": "*"
@@ -3445,6 +3641,10 @@ __metadata:
   resolution: "@radix-ui/react-use-layout-effect@workspace:packages/react/use-layout-effect"
   dependencies:
     "@repo/typescript-config": "workspace:*"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
     typescript: "npm:^5.7.3"
   peerDependencies:
     "@types/react": "*"
@@ -3460,6 +3660,10 @@ __metadata:
   resolution: "@radix-ui/react-use-previous@workspace:packages/react/use-previous"
   dependencies:
     "@repo/typescript-config": "workspace:*"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
     typescript: "npm:^5.7.3"
   peerDependencies:
     "@types/react": "*"
@@ -3476,6 +3680,10 @@ __metadata:
   dependencies:
     "@radix-ui/rect": "workspace:*"
     "@repo/typescript-config": "workspace:*"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
     typescript: "npm:^5.7.3"
   peerDependencies:
     "@types/react": "*"
@@ -3492,7 +3700,11 @@ __metadata:
   dependencies:
     "@radix-ui/react-use-layout-effect": "workspace:*"
     "@repo/typescript-config": "workspace:*"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
     "@types/resize-observer-browser": "npm:^0.1.4"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
     typescript: "npm:^5.7.3"
   peerDependencies:
     "@types/react": "*"
@@ -4764,21 +4976,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:^19.0.2":
-  version: 19.0.2
-  resolution: "@types/react-dom@npm:19.0.2"
+"@types/react-dom@npm:^19.0.3":
+  version: 19.0.3
+  resolution: "@types/react-dom@npm:19.0.3"
   peerDependencies:
     "@types/react": ^19.0.0
-  checksum: 10/d2ae81ec0b8eee7a4bf31918796fdaa34e8db68f69682163bc212d759de76783e6ffcc02c02722dcf508429067148841e6da81414cc730ca2a28c9c2b350c880
+  checksum: 10/815907f7adaa078acbf1d1ae7b6bf69cebe86bd301b8b9744e392bc0f16feb31bfb9fe0bfa2681d7d86678c83d52dedba5ed9bc7776736d4050cdd426b8b2d2b
   languageName: node
   linkType: hard
 
-"@types/react-test-renderer@npm:^18.0.0":
-  version: 18.3.0
-  resolution: "@types/react-test-renderer@npm:18.3.0"
+"@types/react-test-renderer@npm:^19.0.0":
+  version: 19.0.0
+  resolution: "@types/react-test-renderer@npm:19.0.0"
   dependencies:
     "@types/react": "npm:*"
-  checksum: 10/c53683990bd194cb68e3987bda79c78eff41517f7a747e92f3e54217c2ce3addd031b8a45bf631982c909cc2caeeb905372f322758e05bb76c03754a3f24426e
+  checksum: 10/a22c4401e3af216a8c2cded22702bb6f928e22af7fbcaca7e0cc28447ec34bea5a94c6d6de7ed5734c527a1b53868393e67b7b4815623802e29abb1d8d378d61
   languageName: node
   linkType: hard
 
@@ -4792,12 +5004,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:^19.0.1":
-  version: 19.0.1
-  resolution: "@types/react@npm:19.0.1"
+"@types/react@npm:^19.0.7":
+  version: 19.0.7
+  resolution: "@types/react@npm:19.0.7"
   dependencies:
     csstype: "npm:^3.0.2"
-  checksum: 10/930dd4904047059c48ae64a90fc5e8078b5bac0a14c9d927917e5a07e88e4e5073ddc944cbde90a955f9f815c23b7112caea63e407bc423913073bedecb097aa
+  checksum: 10/09522132bde715888e57c61fc89a87db06699872535450296f1c975c5014a7953ff08c3bff6b37d4a4515ceeb65b09cc5f841513cc8fede65fec788790b21154
   languageName: node
   linkType: hard
 
@@ -12280,9 +12492,9 @@ __metadata:
     "@types/fs-extra": "npm:^11"
     "@types/jest": "npm:^29.5.14"
     "@types/jest-axe": "npm:^3.5.3"
-    "@types/react": "npm:^19.0.1"
-    "@types/react-dom": "npm:^19.0.2"
-    "@types/react-test-renderer": "npm:^18.0.0"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
+    "@types/react-test-renderer": "npm:^19.0.0"
     "@typescript-eslint/eslint-plugin": "npm:^5.19.0"
     "@typescript-eslint/parser": "npm:^5.19.0"
     babel-eslint: "npm:^10.1.0"
@@ -12311,7 +12523,7 @@ __metadata:
     pretty-quick: "npm:^2.0.1"
     react: "npm:^19.0.0"
     react-dom: "npm:^19.0.0"
-    react-test-renderer: "npm:^18.0.0"
+    react-test-renderer: "npm:^19.0.0"
     replace-in-files: "npm:^3.0.0"
     start-server-and-test: "npm:2.0.3"
     storybook: "npm:^8.4.7"
@@ -12529,6 +12741,10 @@ __metadata:
     "@radix-ui/react-use-size": "workspace:*"
     "@radix-ui/react-visually-hidden": "workspace:*"
     "@repo/typescript-config": "workspace:*"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
     typescript: "npm:^5.7.3"
   peerDependencies:
     "@types/react": "*"
@@ -12616,13 +12832,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-is@npm:^16.12.0 || ^17.0.0 || ^18.0.0, react-is@npm:^18.0.0, react-is@npm:^18.3.1":
-  version: 18.3.1
-  resolution: "react-is@npm:18.3.1"
-  checksum: 10/d5f60c87d285af24b1e1e7eaeb123ec256c3c8bdea7061ab3932e3e14685708221bf234ec50b21e10dd07f008f1b966a2730a0ce4ff67905b3872ff2042aec22
-  languageName: node
-  linkType: hard
-
 "react-is@npm:^16.13.1":
   version: 16.13.1
   resolution: "react-is@npm:16.13.1"
@@ -12634,6 +12843,20 @@ __metadata:
   version: 17.0.2
   resolution: "react-is@npm:17.0.2"
   checksum: 10/73b36281e58eeb27c9cc6031301b6ae19ecdc9f18ae2d518bdb39b0ac564e65c5779405d623f1df9abf378a13858b79442480244bd579968afc1faf9a2ce5e05
+  languageName: node
+  linkType: hard
+
+"react-is@npm:^18.0.0":
+  version: 18.3.1
+  resolution: "react-is@npm:18.3.1"
+  checksum: 10/d5f60c87d285af24b1e1e7eaeb123ec256c3c8bdea7061ab3932e3e14685708221bf234ec50b21e10dd07f008f1b966a2730a0ce4ff67905b3872ff2042aec22
+  languageName: node
+  linkType: hard
+
+"react-is@npm:^19.0.0":
+  version: 19.0.0
+  resolution: "react-is@npm:19.0.0"
+  checksum: 10/6cd3695c462ec3f0d4db98583f0c1b9a439248d60214f6c42c2b0e2951a1066339d0eefa74707f03484042e043fca87750282a35b652492c035f5f3da0d6498a
   languageName: node
   linkType: hard
 
@@ -12672,18 +12895,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-shallow-renderer@npm:^16.15.0":
-  version: 16.15.0
-  resolution: "react-shallow-renderer@npm:16.15.0"
-  dependencies:
-    object-assign: "npm:^4.1.1"
-    react-is: "npm:^16.12.0 || ^17.0.0 || ^18.0.0"
-  peerDependencies:
-    react: ^16.0.0 || ^17.0.0 || ^18.0.0
-  checksum: 10/06457fe5bcaa44aeca998905b6849304742ea1cc2d3841e4a0964c745ff392bc4dec07f8c779f317faacce3a0bf6f84e15020ac0fa81adb931067dbb0baf707b
-  languageName: node
-  linkType: hard
-
 "react-style-singleton@npm:^2.2.1":
   version: 2.2.1
   resolution: "react-style-singleton@npm:2.2.1"
@@ -12717,16 +12928,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-test-renderer@npm:^18.0.0":
-  version: 18.3.1
-  resolution: "react-test-renderer@npm:18.3.1"
+"react-test-renderer@npm:^19.0.0":
+  version: 19.0.0
+  resolution: "react-test-renderer@npm:19.0.0"
   dependencies:
-    react-is: "npm:^18.3.1"
-    react-shallow-renderer: "npm:^16.15.0"
-    scheduler: "npm:^0.23.2"
+    react-is: "npm:^19.0.0"
+    scheduler: "npm:^0.25.0"
   peerDependencies:
-    react: ^18.3.1
-  checksum: 10/d53137315c677bdfba702a7179a69828233fc7635ae1e0c03b203923d643400ace72b343cb3dd3dafba8911c20bef53f55bff7aa2e4ddff3ccc423fdd9deeee2
+    react: ^19.0.0
+  checksum: 10/b95a90331e1dedeff2bbdcdc57b9cd1cd8d7cd620f9b29a4efd31a961c8e5b660fe55129ffc72f2bbf0c21fec34e6a498b9f07b6c65c22bf10ae87b68e124f91
   languageName: node
   linkType: hard
 
@@ -13560,8 +13770,8 @@ __metadata:
   resolution: "ssr-testing@workspace:ssr-testing"
   dependencies:
     "@repo/typescript-config": "workspace:*"
-    "@types/react": "npm:^19.0.1"
-    "@types/react-dom": "npm:^19.0.2"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
     next: "npm:15.1.0"
     react: "npm:19.0.0"
     react-dom: "npm:19.0.0"
