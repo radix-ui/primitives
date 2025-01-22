@@ -1,9 +1,8 @@
-/**
- * We cannot configure `jest-dom` in `package.json` because:
- * > Note: If you're using TypeScript, make sure your setup file is a .ts and not a .js to include the necessary types.
- * > https://github.com/testing-library/jest-dom#usage
- */
-import '@testing-library/jest-dom';
+import '@testing-library/jest-dom/vitest';
+import * as axeMatchers from 'vitest-axe/matchers';
+import { expect } from 'vitest';
+
+expect.extend(axeMatchers);
 
 global.ResizeObserver = class ResizeObserver {
   cb: any;

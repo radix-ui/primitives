@@ -1,5 +1,5 @@
 import React from 'react';
-import { axe } from 'jest-axe';
+import { axe } from 'vitest-axe';
 import type { RenderResult } from '@testing-library/react';
 import { render, fireEvent } from '@testing-library/react';
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@radix-ui/react-collapsible';
@@ -53,7 +53,7 @@ describe('given a default Collapsible', () => {
 describe('given an open uncontrolled Collapsible', () => {
   let rendered: RenderResult;
   let content: HTMLElement | null;
-  const onOpenChange = jest.fn();
+  const onOpenChange = vi.fn();
 
   beforeEach(() => {
     rendered = render(<CollapsibleTest defaultOpen onOpenChange={onOpenChange} />);
@@ -79,7 +79,7 @@ describe('given an open uncontrolled Collapsible', () => {
 describe('given an open controlled Collapsible', () => {
   let rendered: RenderResult;
   let content: HTMLElement;
-  const onOpenChange = jest.fn();
+  const onOpenChange = vi.fn();
 
   beforeEach(() => {
     rendered = render(<CollapsibleTest open onOpenChange={onOpenChange} />);

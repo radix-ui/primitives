@@ -15,7 +15,7 @@ const component = (props: any) => {
 
 describe('given a default Toolbar', () => {
   it('Click event should be called just once', async () => {
-    const spy = jest.fn();
+    const spy = vi.fn();
 
     const rendered = component({
       onClick: spy,

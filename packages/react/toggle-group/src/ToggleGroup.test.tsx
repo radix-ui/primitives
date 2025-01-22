@@ -1,17 +1,18 @@
 import * as React from 'react';
-import { axe } from 'jest-axe';
+import { axe } from 'vitest-axe';
 import type { RenderResult } from '@testing-library/react';
 import { render, fireEvent } from '@testing-library/react';
 import * as ToggleGroup from '@radix-ui/react-toggle-group';
+import type { Mock } from 'vitest';
 
 describe('given a single ToggleGroup', () => {
-  let handleValueChange: jest.Mock;
+  let handleValueChange: Mock;
   let rendered: RenderResult;
   let one: HTMLElement;
   let two: HTMLElement;
 
   beforeEach(() => {
-    handleValueChange = jest.fn();
+    handleValueChange = vi.fn();
     rendered = render(<ToggleGroupTest type="single" onValueChange={handleValueChange} />);
     one = rendered.getByText('One');
     two = rendered.getByText('Two');
@@ -57,13 +58,13 @@ describe('given a single ToggleGroup', () => {
 });
 
 describe('given a multiple ToggleGroup', () => {
-  let handleValueChange: jest.Mock;
+  let handleValueChange: Mock;
   let rendered: RenderResult;
   let one: HTMLElement;
   let two: HTMLElement;
 
   beforeEach(() => {
-    handleValueChange = jest.fn();
+    handleValueChange = vi.fn();
     rendered = render(<ToggleGroupTest type="multiple" onValueChange={handleValueChange} />);
     one = rendered.getByText('One');
     two = rendered.getByText('Two');

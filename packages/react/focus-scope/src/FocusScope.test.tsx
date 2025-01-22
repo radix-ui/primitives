@@ -90,7 +90,7 @@ describe('FocusScope', () => {
   });
 
   describe('given a FocusScope with internal focus handlers', () => {
-    const handleLastFocusableElementBlur = jest.fn();
+    const handleLastFocusableElementBlur = vi.fn();
     let rendered: RenderResult;
     let tabbableFirst: HTMLInputElement;
     beforeEach(() => {

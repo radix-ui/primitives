@@ -1,7 +1,7 @@
 import type { RenderResult } from '@testing-library/react';
 import { fireEvent, render } from '@testing-library/react';
 import * as Toggle from '@radix-ui/react-toggle';
-import { axe } from 'jest-axe';
+import { axe } from 'vitest-axe';
 
 const TEXT_CHILD = 'Like';
 
@@ -98,7 +98,7 @@ describe('given a Toggle with text and disabled="true"', () => {
 
 describe('given a controlled Toggle (with pressed and onPressedChange)', () => {
   let rendered: RenderResult;
-  const onPressedChangeMock = jest.fn();
+  const onPressedChangeMock = vi.fn();
 
   beforeEach(() => {
     rendered = render(

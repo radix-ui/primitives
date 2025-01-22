@@ -32,8 +32,8 @@
     "strictPropertyInitialization": true,
     "stripInternal": true,
     "target": "ES2022",
-    "types": ["node"],
-    "typeRoots": ["./node_modules/@types", "./types"],
+    "types": ["node", "vitest/globals", "@testing-library/react", "vitest-axe/extend-expect"],
+    "typeRoots": ["./node_modules/@types", "./types", "./node_modules"],
     "paths": {
       "@radix-ui/number": ["./packages/core/number/src"],
       "@radix-ui/primitive": ["./packages/core/primitive/src"],
