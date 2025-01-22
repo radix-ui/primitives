@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-toast",
-  "version": "1.2.5-rc.9",
+  "version": "1.2.5",
   "license": "MIT",
   "exports": {
     ".": {
@@ -70,6 +70,5 @@
   },
   "bugs": {
     "url": "https://github.com/radix-ui/primitives/issues"
-  },
-  "stableVersion": "1.2.4"
+  }
 }

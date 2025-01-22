@@ -1,6 +1,0 @@
-declined:
-  - primitives
-  - "@radix-ui/react-dialog"
-  - "@radix-ui/react-navigation-menu"
-  - "@radix-ui/react-presence"
-  - "@radix-ui/react-toast"
