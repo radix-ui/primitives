@@ -5,6 +5,7 @@ export default defineConfig({
   viewportHeight: 768,
   fixturesFolder: false,
   e2e: {
+    testIsolation: false,
     setupNodeEvents(on, config) {},
     baseUrl: 'http://localhost:9009',
   },
