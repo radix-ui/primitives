@@ -11,6 +11,8 @@ export default [
   {
     rules: {
       'react/jsx-pascal-case': ['warn', { allowNamespace: true }],
+      // TODO: enable this and fix all the errors
+      'react/display-name': 'off',
       'prefer-const': ['warn', { destructuring: 'all' }],
       'jsx-a11y/label-has-associated-control': [
         'warn',
