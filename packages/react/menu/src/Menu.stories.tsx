@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as Menu from '@radix-ui/react-menu';
-import { foodGroups } from '../../../../test-data/foods';
+import { foodGroups } from '@repo/test-data/foods';
 import { DirectionProvider } from '@radix-ui/react-direction';
 import styles from './Menu.stories.module.css';
 

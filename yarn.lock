@@ -2651,6 +2651,7 @@ __metadata:
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-use-callback-ref": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
+    "@repo/test-data": "workspace:*"
     "@repo/typescript-config": "workspace:*"
     "@types/react": "npm:^19.0.7"
     "@types/react-dom": "npm:^19.0.3"
@@ -2785,6 +2786,7 @@ __metadata:
     "@radix-ui/react-menu": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
+    "@repo/test-data": "workspace:*"
     "@repo/typescript-config": "workspace:*"
     "@types/react": "npm:^19.0.7"
     "@types/react-dom": "npm:^19.0.3"
@@ -2974,6 +2976,7 @@ __metadata:
     "@radix-ui/react-roving-focus": "workspace:*"
     "@radix-ui/react-slot": "workspace:*"
     "@radix-ui/react-use-callback-ref": "workspace:*"
+    "@repo/test-data": "workspace:*"
     "@repo/typescript-config": "workspace:*"
     "@types/react": "npm:^19.0.7"
     "@types/react-dom": "npm:^19.0.3"
@@ -3009,6 +3012,7 @@ __metadata:
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-roving-focus": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
+    "@repo/test-data": "workspace:*"
     "@repo/typescript-config": "workspace:*"
     "@types/react": "npm:^19.0.7"
     "@types/react-dom": "npm:^19.0.3"
@@ -3357,6 +3361,7 @@ __metadata:
     "@radix-ui/react-use-layout-effect": "workspace:*"
     "@radix-ui/react-use-previous": "workspace:*"
     "@radix-ui/react-visually-hidden": "workspace:*"
+    "@repo/test-data": "workspace:*"
     "@repo/typescript-config": "workspace:*"
     "@types/react": "npm:^19.0.7"
     "@types/react-dom": "npm:^19.0.3"
@@ -3834,6 +3839,15 @@ __metadata:
 "@radix-ui/rect@workspace:*, @radix-ui/rect@workspace:packages/core/rect":
   version: 0.0.0-use.local
   resolution: "@radix-ui/rect@workspace:packages/core/rect"
+  dependencies:
+    "@repo/typescript-config": "workspace:*"
+    typescript: "npm:^5.7.3"
+  languageName: unknown
+  linkType: soft
+
+"@repo/test-data@workspace:*, @repo/test-data@workspace:internal/test-data":
+  version: 0.0.0-use.local
+  resolution: "@repo/test-data@workspace:internal/test-data"
   dependencies:
     "@repo/typescript-config": "workspace:*"
     typescript: "npm:^5.7.3"

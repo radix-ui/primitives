@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as Menubar from '@radix-ui/react-menubar';
-import { foodGroups } from '../../../../test-data/foods';
+import { foodGroups } from '@repo/test-data/foods';
 import styles from './Menubar.stories.module.css';
 
 const subTriggerClass = [styles.item, styles.subTrigger].join(' ');
