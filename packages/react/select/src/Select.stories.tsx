@@ -73,10 +73,10 @@ export const Controlled = () => {
                   value === 'fr'
                     ? 'France'
                     : value === 'uk'
-                    ? 'United Kingdom'
-                    : value === 'es'
-                    ? 'Spain'
-                    : undefined
+                      ? 'United Kingdom'
+                      : value === 'es'
+                        ? 'Spain'
+                        : undefined
                 }
               >
                 {value === 'fr' ? '🇫🇷' : value === 'uk' ? '🇬🇧' : value === 'es' ? '🇪🇸' : null}
