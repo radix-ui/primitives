@@ -47,8 +47,8 @@
     "@radix-ui/react-use-layout-effect": "workspace:*",
     "@radix-ui/react-use-previous": "workspace:*",
     "@radix-ui/react-visually-hidden": "workspace:*",
-    "aria-hidden": "^1.1.1",
-    "react-remove-scroll": "^2.6.1"
+    "aria-hidden": "^1.2.4",
+    "react-remove-scroll": "^2.6.2"
   },
   "devDependencies": {
     "@repo/test-data": "workspace:*",
