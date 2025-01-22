@@ -19,9 +19,12 @@ const config: StorybookConfig = {
     },
   },
 
-  swc: () => ({
+  swc: (config) => ({
+    ...config,
     jsc: {
+      ...config?.jsc,
       transform: {
+        ...config?.jsc?.transform,
         react: {
           // Do not require importing React into scope to use JSX
           runtime: 'automatic',
