@@ -10,7 +10,15 @@ export default [
   react.config,
   {
     rules: {
-      'react/jsx-pascal-case': 'off',
+      'react/jsx-pascal-case': ['warn', { allowNamespace: true }],
+      'prefer-const': ['warn', { destructuring: 'all' }],
+      'jsx-a11y/label-has-associated-control': [
+        'warn',
+        {
+          controlComponents: ['Checkbox'],
+          depth: 3,
+        },
+      ],
     },
   },
   {
