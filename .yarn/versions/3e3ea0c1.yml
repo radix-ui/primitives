@@ -1,0 +1,8 @@
+declined:
+  - primitives
+  - "@repo/test-data"
+  - "@radix-ui/react-context-menu"
+  - "@radix-ui/react-dropdown-menu"
+  - "@radix-ui/react-menu"
+  - "@radix-ui/react-menubar"
+  - "@radix-ui/react-select"

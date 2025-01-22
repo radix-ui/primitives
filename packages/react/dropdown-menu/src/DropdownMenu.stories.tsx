@@ -4,7 +4,7 @@ import * as Tooltip from '@radix-ui/react-tooltip';
 import * as Dialog from '@radix-ui/react-dialog';
 import { SIDE_OPTIONS, ALIGN_OPTIONS } from '@radix-ui/react-popper';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
-import { foodGroups } from '../../../../test-data/foods';
+import { foodGroups } from '@repo/test-data/foods';
 import styles from './DropdownMenu.stories.module.css';
 
 export default { title: 'Components/DropdownMenu' };

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as ContextMenu from '@radix-ui/react-context-menu';
-import { foodGroups } from '../../../../test-data/foods';
+import { foodGroups } from '@repo/test-data/foods';
 import styles from './ContextMenu.stories.module.css';
 
 export default { title: 'Components/ContextMenu' };
