@@ -11351,7 +11351,7 @@ __metadata:
     vite: "npm:^6.0.7"
     vite-tsconfig-paths: "npm:^5.1.4"
     vitest: "npm:^3.0.2"
-    vitest-axe: "npm:^1.0.0-pre.4"
+    vitest-axe: "npm:^1.0.0-pre.5"
   languageName: unknown
   linkType: soft
 
@@ -13833,17 +13833,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vitest-axe@npm:^1.0.0-pre.4":
-  version: 1.0.0-pre.4
-  resolution: "vitest-axe@npm:1.0.0-pre.4"
+"vitest-axe@npm:^1.0.0-pre.5":
+  version: 1.0.0-pre.5
+  resolution: "vitest-axe@npm:1.0.0-pre.5"
   dependencies:
     "@vitest/pretty-format": "npm:^3.0.3"
     axe-core: "npm:^4.10.2"
     chalk: "npm:^5.4.1"
     lodash-es: "npm:^4.17.21"
   peerDependencies:
-    vitest: ">=2"
-  checksum: 10/a15aa9ed4c11980001bc000cb962bb1405b94bb010973407f32dfff8d4df67d1af3f6341471aaa5185e9bfe3ffbf503a0606e6e6800382f8013ab1083dbcdc12
+    vitest: ">=1"
+  checksum: 10/e541f9a0ba037db8ac0a0f4ab42a025488bd614611e497093eb3f1f9b5beeca790c0c1788dd5cd0b13769429982cecb62c13c4a11ec53f47b79080e75e3f5034
   languageName: node
   linkType: hard
 
