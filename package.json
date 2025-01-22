@@ -9,7 +9,7 @@
     "packages/*/*"
   ],
   "scripts": {
-    "lint": "eslint packages --ext .js,.ts,.tsx",
+    "lint": "eslint packages",
     "types:check": "tsc --skipLibCheck --noEmit",
     "test": "jest",
     "test:ci": "yarn types:check && jest --ci && yarn cypress:ci",
@@ -29,6 +29,7 @@
     "bump:check": "yarn version check"
   },
   "devDependencies": {
+    "@chance/eslint": "^1.0.0-beta.7",
     "@changesets/cli": "^2.27.11",
     "@radix-ui/colors": "^3.0.0",
     "@storybook/addon-essentials": "^8.4.7",
@@ -44,28 +45,18 @@
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^16.0.0",
     "@testing-library/user-event": "^14.1.0",
-    "@types/eslint": "^7.28.0",
     "@types/fs-extra": "^11",
     "@types/jest": "^29.5.14",
     "@types/jest-axe": "^3.5.3",
     "@types/react": "^19.0.7",
     "@types/react-dom": "^19.0.3",
     "@types/react-test-renderer": "^19.0.0",
-    "@typescript-eslint/eslint-plugin": "^5.19.0",
-    "@typescript-eslint/parser": "^5.19.0",
-    "babel-eslint": "^10.1.0",
     "cypress": "^8.0.0",
     "cypress-real-events": "^1.5.0",
     "esbuild": "0.21.4",
-    "eslint": "^7.32.0",
-    "eslint-config-react-app": "^6.0.0",
-    "eslint-plugin-cypress": "^2.11.3",
-    "eslint-plugin-flowtype": "4.x",
-    "eslint-plugin-import": "^2.22.0",
-    "eslint-plugin-jsx-a11y": "^6.3.1",
-    "eslint-plugin-react": "^7.24.0",
-    "eslint-plugin-react-hooks": "^4.2.0",
-    "eslint-plugin-storybook": "^0.8.0",
+    "eslint": "^9.18.0",
+    "eslint-plugin-cypress": "^4.1.0",
+    "eslint-plugin-storybook": "^0.11.2",
     "execa": "^9.5.2",
     "fs-extra": "^11.1.1",
     "glob": "^10.2.2",
@@ -122,56 +113,6 @@
     "printWidth": 100,
     "singleQuote": true
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "plugin:jsx-a11y/recommended",
-      "plugin:storybook/recommended"
-    ],
-    "plugins": [
-      "jsx-a11y"
-    ],
-    "settings": {
-      "react": {
-        "version": "detect"
-      }
-    },
-    "rules": {
-      "import/no-anonymous-default-export": [
-        1,
-        {
-          "allowObject": true
-        }
-      ],
-      "react/jsx-pascal-case": [
-        2,
-        {
-          "allowNamespace": true
-        }
-      ],
-      "no-unused-vars": "off",
-      "@typescript-eslint/no-unused-vars": "off",
-      "prefer-const": [
-        1,
-        {
-          "destructuring": "all"
-        }
-      ],
-      "jsx-a11y/label-has-associated-control": [
-        2,
-        {
-          "controlComponents": [
-            "Checkbox"
-          ],
-          "depth": 3
-        }
-      ]
-    }
-  },
-  "eslintIgnore": [
-    "node_modules",
-    "dist"
-  ],
   "husky": {
     "hooks": {
       "pre-commit": "pretty-quick --staged && lint-staged",

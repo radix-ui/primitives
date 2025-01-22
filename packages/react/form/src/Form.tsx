@@ -407,7 +407,7 @@ const FormControl = React.forwardRef<FormControlElement, FormControlProps>(
           const control = event.currentTarget;
           updateControlValidity(control);
         })}
-        onChange={composeEventHandlers(props.onChange, (event) => {
+        onChange={composeEventHandlers(props.onChange, (_event) => {
           // reset validity when user changes value
           resetControlValidity();
         })}
@@ -422,7 +422,7 @@ FormControl.displayName = CONTROL_NAME;
  * FormMessage
  * -----------------------------------------------------------------------------------------------*/
 
-const validityMatchers = [
+const _validityMatchers = [
   'badInput',
   'patternMismatch',
   'rangeOverflow',
@@ -434,7 +434,7 @@ const validityMatchers = [
   'valid',
   'valueMissing',
 ] as const;
-type ValidityMatcher = (typeof validityMatchers)[number];
+type ValidityMatcher = (typeof _validityMatchers)[number];
 
 const DEFAULT_INVALID_MESSAGE = 'This value is not valid';
 const DEFAULT_BUILT_IN_MESSAGES: Record<ValidityMatcher, string | undefined> = {
