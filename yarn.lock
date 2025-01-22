@@ -282,9 +282,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@chance/eslint@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "@chance/eslint@npm:1.0.0"
+"@chance/eslint@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "@chance/eslint@npm:1.1.0"
   dependencies:
     "@eslint/compat": "npm:^1.2.3"
     "@typescript-eslint/eslint-plugin": "npm:^8.16.0"
@@ -298,7 +298,7 @@ __metadata:
     globals: "npm:^15.12.0"
   peerDependencies:
     eslint: ^9.0.0
-  checksum: 10/b3359a41637986e8643abb5af089739ee49ee7d1c6d343613ec0756c02f0a5afb96a422a1f9f60d655cbffcc5e1d1f65ab4c3984482e5a4d819f0f3c9ffa75f6
+  checksum: 10/e454af30e88ce0f118d79d73df53b8f97bf5093d86f253e1fc375bfcea3d251b9f828687a60c1b1b989cad6945a54ce0f3e23518157816f72b124a6d4b6064ad
   languageName: node
   linkType: hard
 
@@ -11320,7 +11320,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "primitives@workspace:."
   dependencies:
-    "@chance/eslint": "npm:^1.0.0"
+    "@chance/eslint": "npm:^1.1.0"
     "@changesets/cli": "npm:^2.27.11"
     "@radix-ui/colors": "npm:^3.0.0"
     "@storybook/addon-essentials": "npm:^8.5.0"
