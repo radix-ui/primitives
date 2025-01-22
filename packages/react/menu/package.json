@@ -44,8 +44,8 @@
     "@radix-ui/react-roving-focus": "workspace:*",
     "@radix-ui/react-slot": "workspace:*",
     "@radix-ui/react-use-callback-ref": "workspace:*",
-    "aria-hidden": "^1.1.1",
-    "react-remove-scroll": "^2.6.1"
+    "aria-hidden": "^1.2.4",
+    "react-remove-scroll": "^2.6.2"
   },
   "devDependencies": {
     "@repo/test-data": "workspace:*",
