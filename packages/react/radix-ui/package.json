@@ -36,7 +36,6 @@
   "sideEffects": false,
   "scripts": {
     "clean": "rm -rf dist",
-    "version": "yarn version",
     "build": "tsc ."
   },
   "dependencies": {

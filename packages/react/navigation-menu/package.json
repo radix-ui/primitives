@@ -24,8 +24,7 @@
   ],
   "sideEffects": false,
   "scripts": {
-    "clean": "rm -rf dist",
-    "version": "yarn version"
+    "clean": "rm -rf dist"
   },
   "dependencies": {
     "@radix-ui/primitive": "workspace:*",

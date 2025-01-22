@@ -1,10 +1,11 @@
 {
   "$schema": "https://unpkg.com/@changesets/config@3.0.5/schema.json",
+  "access": "public",
   "changelog": "@changesets/cli/changelog",
   "commit": false,
   "fixed": [],
   "linked": [],
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": ["ssr-testing"]
+  "ignore": ["ssr-testing", "radix-ui"]
 }
