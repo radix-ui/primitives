@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "workspaces": [
-    "ssr-testing",
+    "apps/*",
     "internal/*",
     "packages/*/*"
   ],
@@ -18,6 +18,7 @@
     "cypress:run": "cypress run",
     "cypress:dev": "cypress open",
     "dev": "yarn storybook",
+    "dev:ssr": "yarn workspace @repo/ssr-testing dev",
     "build-storybook": "storybook build",
     "build": "node build.mjs",
     "publish:stable": "yarn bump:stable && yarn clean && yarn build && yarn workspaces foreach -pvW --include @radix-ui/\\* --include radix-ui npm publish --tolerate-republish --access public",

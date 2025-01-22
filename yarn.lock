@@ -3420,6 +3420,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@repo/ssr-testing@workspace:apps/ssr-testing":
+  version: 0.0.0-use.local
+  resolution: "@repo/ssr-testing@workspace:apps/ssr-testing"
+  dependencies:
+    "@repo/typescript-config": "workspace:*"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
+    next: "npm:15.1.0"
+    react: "npm:19.0.0"
+    react-dom: "npm:19.0.0"
+    typescript: "npm:^5.7.3"
+  languageName: unknown
+  linkType: soft
+
 "@repo/test-data@workspace:*, @repo/test-data@workspace:internal/test-data":
   version: 0.0.0-use.local
   resolution: "@repo/test-data@workspace:internal/test-data"
@@ -12650,20 +12664,6 @@ __metadata:
   checksum: 10/858339d43e3c6b6a848772a66f69442ce74f1a37655d9f35ba9d1f85329499ff0000af9f8ab83dbb39ad24c0c370edabe0be1e39863f70c6cded9924b8458c34
   languageName: node
   linkType: hard
-
-"ssr-testing@workspace:ssr-testing":
-  version: 0.0.0-use.local
-  resolution: "ssr-testing@workspace:ssr-testing"
-  dependencies:
-    "@repo/typescript-config": "workspace:*"
-    "@types/react": "npm:^19.0.7"
-    "@types/react-dom": "npm:^19.0.3"
-    next: "npm:15.1.0"
-    react: "npm:19.0.0"
-    react-dom: "npm:19.0.0"
-    typescript: "npm:^5.7.3"
-  languageName: unknown
-  linkType: soft
 
 "ssri@npm:^10.0.0":
   version: 10.0.6

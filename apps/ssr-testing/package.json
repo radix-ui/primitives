@@ -1,5 +1,5 @@
 {
-  "name": "ssr-testing",
+  "name": "@repo/ssr-testing",
   "version": "0.0.0",
   "private": true,
   "scripts": {
