@@ -6,5 +6,5 @@
   "linked": [],
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": ["ssr-testing"]
+  "ignore": ["@repo/ssr-testing"]
 }
