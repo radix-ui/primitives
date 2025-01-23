@@ -1,5 +1,0 @@
-releases:
-  radix-ui: patch
-
-declined:
-  - primitives
