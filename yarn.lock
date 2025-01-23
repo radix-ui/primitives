@@ -11489,6 +11489,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "radix-ui@workspace:packages/react/radix-ui"
   dependencies:
+    "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-accessible-icon": "workspace:*"
     "@radix-ui/react-accordion": "workspace:*"
     "@radix-ui/react-alert-dialog": "workspace:*"

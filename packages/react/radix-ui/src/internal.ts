@@ -16,6 +16,7 @@ export { useControllableState } from '@radix-ui/react-use-controllable-state';
 export { useEscapeKeydown } from '@radix-ui/react-use-escape-keydown';
 export { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 export { useSize } from '@radix-ui/react-use-size';
+export { composeEventHandlers } from '@radix-ui/primitive';
 
 const Primitive = BasePrimitive as typeof BasePrimitive & {
   Root: typeof BasePrimitive;

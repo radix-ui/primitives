@@ -40,6 +40,7 @@
     "build": "tsc ."
   },
   "dependencies": {
+    "@radix-ui/primitive": "workspace:*",
     "@radix-ui/react-accessible-icon": "workspace:*",
     "@radix-ui/react-accordion": "workspace:*",
     "@radix-ui/react-alert-dialog": "workspace:*",
