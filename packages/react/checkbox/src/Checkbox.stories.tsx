@@ -55,7 +55,7 @@ export const Styled = () => (
 );
 
 export const Controlled = () => {
-  const [checked, setChecked] = React.useState<boolean | 'indeterminate'>(true);
+  const [checked, setChecked] = React.useState<boolean | 'indeterminate' | undefined>(true);
 
   return (
     <>
@@ -74,7 +74,9 @@ export const Controlled = () => {
 };
 
 export const Indeterminate = () => {
-  const [checked, setChecked] = React.useState<boolean | 'indeterminate'>('indeterminate');
+  const [checked, setChecked] = React.useState<boolean | 'indeterminate' | undefined>(
+    'indeterminate'
+  );
 
   return (
     <>
@@ -100,7 +102,9 @@ export const Indeterminate = () => {
 
 export const WithinForm = () => {
   const [data, setData] = React.useState({ optional: false, required: false, stopprop: false });
-  const [checked, setChecked] = React.useState<boolean | 'indeterminate'>('indeterminate');
+  const [checked, setChecked] = React.useState<boolean | 'indeterminate' | undefined>(
+    'indeterminate'
+  );
 
   return (
     <form
@@ -172,7 +176,9 @@ export const WithinForm = () => {
 };
 
 export const Animated = () => {
-  const [checked, setChecked] = React.useState<boolean | 'indeterminate'>('indeterminate');
+  const [checked, setChecked] = React.useState<boolean | 'indeterminate' | undefined>(
+    'indeterminate'
+  );
 
   return (
     <>
