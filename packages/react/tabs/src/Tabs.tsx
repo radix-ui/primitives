@@ -172,7 +172,7 @@ const TabsTrigger = React.forwardRef<TabsTriggerElement, TabsTriggerProps>(
           role="tab"
           aria-selected={isSelected}
           aria-controls={contentId}
-          data-state={isSelected ? 'active' : 'inactive'}
+          data-tab-state={isSelected ? 'active' : 'inactive'}
           data-disabled={disabled ? '' : undefined}
           disabled={disabled}
           id={triggerId}
@@ -243,6 +243,7 @@ const TabsContent = React.forwardRef<TabsContentElement, TabsContentProps>(
         {({ present }) => (
           <Primitive.div
             data-state={isSelected ? 'active' : 'inactive'}
+            data-tab-state={isSelected ? 'active' : 'inactive'}
             data-orientation={context.orientation}
             role="tabpanel"
             aria-labelledby={triggerId}

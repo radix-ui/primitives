@@ -259,6 +259,7 @@ const SelectTrigger = React.forwardRef<SelectTriggerElement, SelectTriggerProps>
           aria-autocomplete="none"
           dir={context.dir}
           data-state={context.open ? 'open' : 'closed'}
+          data-select-state={context.open ? 'open' : 'closed'}
           disabled={isDisabled}
           data-disabled={isDisabled ? '' : undefined}
           data-placeholder={shouldShowPlaceholder(context.value) ? '' : undefined}
@@ -722,6 +723,7 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
                 role="listbox"
                 id={context.contentId}
                 data-state={context.open ? 'open' : 'closed'}
+                data-select-state={context.open ? 'open' : 'closed'}
                 dir={context.dir}
                 onContextMenu={(event) => event.preventDefault()}
                 {...contentProps}
@@ -1265,6 +1267,7 @@ const SelectItem = React.forwardRef<SelectItemElement, SelectItemProps>(
             // `isFocused` caveat fixes stuttering in VoiceOver
             aria-selected={isSelected && isFocused}
             data-state={isSelected ? 'checked' : 'unchecked'}
+            data-select-state={isSelected ? 'checked' : 'unchecked'}
             aria-disabled={disabled || undefined}
             data-disabled={disabled ? '' : undefined}
             tabIndex={disabled ? undefined : -1}

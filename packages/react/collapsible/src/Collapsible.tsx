@@ -65,6 +65,7 @@ const Collapsible = React.forwardRef<CollapsibleElement, CollapsibleProps>(
       >
         <Primitive.div
           data-state={getState(open)}
+          data-collapsible-state={getState(open)}
           data-disabled={disabled ? '' : undefined}
           {...collapsibleProps}
           ref={forwardedRef}
@@ -96,6 +97,7 @@ const CollapsibleTrigger = React.forwardRef<CollapsibleTriggerElement, Collapsib
         aria-controls={context.contentId}
         aria-expanded={context.open || false}
         data-state={getState(context.open)}
+        data-collapsible-state={getState(context.open)}
         data-disabled={context.disabled ? '' : undefined}
         disabled={context.disabled}
         {...triggerProps}
@@ -205,6 +207,7 @@ const CollapsibleContentImpl = React.forwardRef<
   return (
     <Primitive.div
       data-state={getState(context.open)}
+      data-collapsible-state={getState(context.open)}
       data-disabled={context.disabled ? '' : undefined}
       id={context.contentId}
       hidden={!isOpen}

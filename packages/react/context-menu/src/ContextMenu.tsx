@@ -115,6 +115,7 @@ const ContextMenuTrigger = React.forwardRef<ContextMenuTriggerElement, ContextMe
         <MenuPrimitive.Anchor {...menuScope} virtualRef={virtualRef} />
         <Primitive.span
           data-state={context.open ? 'open' : 'closed'}
+          data-context-menu-state={context.open ? 'open' : 'closed'}
           data-disabled={disabled ? '' : undefined}
           {...triggerProps}
           ref={forwardedRef}

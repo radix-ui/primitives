@@ -272,6 +272,7 @@ const ScrollAreaScrollbarHover = React.forwardRef<
     <Presence present={forceMount || visible}>
       <ScrollAreaScrollbarAuto
         data-state={visible ? 'visible' : 'hidden'}
+        data-scroll-area-state={visible ? 'visible' : 'hidden'}
         {...scrollbarProps}
         ref={forwardedRef}
       />
@@ -342,6 +343,7 @@ const ScrollAreaScrollbarScroll = React.forwardRef<
     <Presence present={forceMount || state !== 'hidden'}>
       <ScrollAreaScrollbarVisible
         data-state={state === 'hidden' ? 'hidden' : 'visible'}
+        data-scroll-area-state={state === 'hidden' ? 'hidden' : 'visible'}
         {...scrollbarProps}
         ref={forwardedRef}
         onPointerEnter={composeEventHandlers(props.onPointerEnter, () => send('POINTER_ENTER'))}
@@ -379,6 +381,7 @@ const ScrollAreaScrollbarAuto = React.forwardRef<
     <Presence present={forceMount || visible}>
       <ScrollAreaScrollbarVisible
         data-state={visible ? 'visible' : 'hidden'}
+        data-scroll-area-state={visible ? 'visible' : 'hidden'}
         {...scrollbarProps}
         ref={forwardedRef}
       />
@@ -810,6 +813,7 @@ const ScrollAreaThumbImpl = React.forwardRef<ScrollAreaThumbImplElement, ScrollA
     return (
       <Primitive.div
         data-state={scrollbarContext.hasThumb ? 'visible' : 'hidden'}
+        data-scroll-area-state={scrollbarContext.hasThumb ? 'visible' : 'hidden'}
         {...thumbProps}
         ref={composedRef}
         style={{

@@ -63,6 +63,7 @@ const Switch = React.forwardRef<SwitchElement, SwitchProps>(
           aria-checked={checked}
           aria-required={required}
           data-state={getState(checked)}
+          data-switch-state={getState(checked)}
           data-disabled={disabled ? '' : undefined}
           disabled={disabled}
           value={value}
@@ -119,6 +120,7 @@ const SwitchThumb = React.forwardRef<SwitchThumbElement, SwitchThumbProps>(
     return (
       <Primitive.span
         data-state={getState(context.checked)}
+        data-switch-state={getState(context.checked)}
         data-disabled={context.disabled ? '' : undefined}
         {...thumbProps}
         ref={forwardedRef}

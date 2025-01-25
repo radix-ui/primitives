@@ -42,6 +42,7 @@ const Toggle = React.forwardRef<ToggleElement, ToggleProps>((props, forwardedRef
       type="button"
       aria-pressed={pressed}
       data-state={pressed ? 'on' : 'off'}
+      data-toast-state={pressed ? 'on' : 'off'}
       data-disabled={props.disabled ? '' : undefined}
       {...buttonProps}
       ref={forwardedRef}
