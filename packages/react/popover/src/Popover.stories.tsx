@@ -283,6 +283,25 @@ export const WithSlottedTrigger = () => {
   );
 };
 
+export const TriggerDoesntToggleClose = () => {
+  return (
+    <div
+      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh' }}
+    >
+      <Popover.Root toggleOpen={false}>
+        <Popover.Trigger className={triggerClass()}>open</Popover.Trigger>
+        <Popover.Portal>
+          <Popover.Content className={contentClass()} sideOffset={5}>
+            <Popover.Close className={closeClass()}>close</Popover.Close>
+            <Popover.Arrow className={arrowClass()} width={20} height={10} />
+          </Popover.Content>
+        </Popover.Portal>
+      </Popover.Root>
+      <input />
+    </div>
+  );
+};
+
 // change order slightly for more pleasing visual
 const SIDES = [...SIDE_OPTIONS.filter((side) => side !== 'bottom'), 'bottom' as const];
 
