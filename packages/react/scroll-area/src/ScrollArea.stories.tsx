@@ -40,6 +40,9 @@ export const Basic = () => {
           <label>
             scrollHideDelay: <input type="number" name="scrollHideDelay" />
           </label>
+          <label>
+            <input type="checkbox" name="draggable" /> draggable items
+          </label>
         </form>
       </div>
 
@@ -49,7 +52,11 @@ export const Basic = () => {
         style={{ width: 800, height: 800, margin: '30px auto' }}
       >
         {Array.from({ length: 30 }).map((_, index) => (
-          <Copy key={index} />
+          <Copy
+            key={index}
+            style={{ cursor: props.draggable === 'on' ? 'move' : 'unset' }}
+            isDraggable={props.draggable === 'on'}
+          />
         ))}
       </ScrollAreaStory>
     </div>
@@ -400,7 +407,7 @@ const ScrollAreaStory = ({
 );
 
 const Copy = (props: any) => (
-  <p style={{ width: 4000, marginTop: 0, ...props.style }}>
+  <p style={{ width: 4000, marginTop: 0, ...props.style }} draggable={props.isDraggable}>
     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce sit amet eros iaculis, bibendum
     tellus ac, lobortis odio. Aliquam bibendum elit est, in iaculis est commodo id. Donec pulvinar
     est libero. Proin consectetur pellentesque molestie. Fusce mi ante, ullamcorper eu ante finibus,
