@@ -121,7 +121,9 @@ interface PopperContentProps extends PrimitiveDivProps {
   collisionPadding?: number | Partial<Record<Side, number>>;
   sticky?: 'partial' | 'always';
   hideWhenDetached?: boolean;
+  disablePositionUpdate?: boolean;
   updatePositionStrategy?: 'optimized' | 'always';
+  positionStrategy?: 'fixed' | 'absolute';
   onPlaced?: () => void;
 }
 
@@ -139,6 +141,9 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
       collisionPadding: collisionPaddingProp = 0,
       sticky = 'partial',
       hideWhenDetached = false,
+      // default to `fixed` strategy to avoid focus scroll issues
+      positionStrategy = 'fixed',
+      disablePositionUpdate = false,
       updatePositionStrategy = 'optimized',
       onPlaced,
       ...contentProps
@@ -172,15 +177,16 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
     };
 
     const { refs, floatingStyles, placement, isPositioned, middlewareData } = useFloating({
-      // default to `fixed` strategy so users don't have to pick and we also avoid focus scroll issues
-      strategy: 'fixed',
+      strategy: positionStrategy,
       placement: desiredPlacement,
-      whileElementsMounted: (...args) => {
-        const cleanup = autoUpdate(...args, {
-          animationFrame: updatePositionStrategy === 'always',
-        });
-        return cleanup;
-      },
+      whileElementsMounted: disablePositionUpdate
+        ? undefined
+        : (...args) => {
+            const cleanup = autoUpdate(...args, {
+              animationFrame: updatePositionStrategy === 'always',
+            });
+            return cleanup;
+          },
       elements: {
         reference: context.anchor,
       },
