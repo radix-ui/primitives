@@ -22,6 +22,7 @@ import { usePrevious } from '@radix-ui/react-use-previous';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { hideOthers } from 'aria-hidden';
 import { RemoveScroll } from 'react-remove-scroll';
+import { Presence } from '@radix-ui/react-presence';
 
 import type { Scope } from '@radix-ui/react-context';
 
@@ -418,21 +419,28 @@ const SelectContent = React.forwardRef<SelectContentElement, SelectContentProps>
       setFragment(new DocumentFragment());
     }, []);
 
-    if (!context.open) {
-      const frag = fragment as Element | undefined;
-      return frag
-        ? ReactDOM.createPortal(
-            <SelectContentProvider scope={props.__scopeSelect}>
-              <Collection.Slot scope={props.__scopeSelect}>
-                <div>{props.children}</div>
-              </Collection.Slot>
-            </SelectContentProvider>,
-            frag
+    return (
+      <Presence present={context.open}>
+        {({ present }) =>
+          present ? (
+            <SelectContentImpl {...props} ref={forwardedRef} />
+          ) : (
+            <>
+              {fragment
+                ? ReactDOM.createPortal(
+                    <SelectContentProvider scope={props.__scopeSelect}>
+                      <Collection.Slot scope={props.__scopeSelect}>
+                        <div>{props.children}</div>
+                      </Collection.Slot>
+                    </SelectContentProvider>,
+                    fragment as unknown as Element
+                  )
+                : null}
+            </>
           )
-        : null;
-    }
-
-    return <SelectContentImpl {...props} ref={forwardedRef} />;
+        }
+      </Presence>
+    );
   }
 );
 
@@ -1580,9 +1588,8 @@ const SelectArrow = React.forwardRef<SelectArrowElement, SelectArrowProps>(
   (props: ScopedProps<SelectArrowProps>, forwardedRef) => {
     const { __scopeSelect, ...arrowProps } = props;
     const popperScope = usePopperScope(__scopeSelect);
-    const context = useSelectContext(ARROW_NAME, __scopeSelect);
     const contentContext = useSelectContentContext(ARROW_NAME, __scopeSelect);
-    return context.open && contentContext.position === 'popper' ? (
+    return contentContext.position === 'popper' ? (
       <PopperPrimitive.Arrow {...popperScope} {...arrowProps} ref={forwardedRef} />
     ) : null;
   }
