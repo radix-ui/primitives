@@ -788,6 +788,60 @@ export const DisableHoverableContent = () => (
   </>
 );
 
+export const IgnoreNonKeyboardFocus = () => {
+  return (
+    <>
+      <h1>Without ignoring non-keyboard focus</h1>
+      <p>Try clicking on the button and switch browser tabs.</p>
+      <div style={{ display: 'flex', gap: 50 }}>
+        <Tooltip.Provider>
+          <Tooltip.Root>
+            <Tooltip.Trigger className={triggerClass()}>Focus me</Tooltip.Trigger>
+            <Tooltip.Portal>
+              <Tooltip.Content className={contentClass()} sideOffset={5}>
+                Nicely done!
+                <Tooltip.Arrow className={arrowClass()} offset={10} />
+              </Tooltip.Content>
+            </Tooltip.Portal>
+          </Tooltip.Root>
+        </Tooltip.Provider>
+      </div>
+
+      <h1>Ignore non-keyboard focus</h1>
+      <p>Focus event is ignored if it didn't come from keyboard - try switching tabs again</p>
+      <h2>Inherited from provider</h2>
+      <div style={{ display: 'flex', gap: 50 }}>
+        <Tooltip.Provider ignoreNonKeyboardFocus>
+          <Tooltip.Root>
+            <Tooltip.Trigger className={triggerClass()}>Focus me</Tooltip.Trigger>
+            <Tooltip.Portal>
+              <Tooltip.Content className={contentClass()} sideOffset={5}>
+                Nicely done!
+                <Tooltip.Arrow className={arrowClass()} offset={10} />
+              </Tooltip.Content>
+            </Tooltip.Portal>
+          </Tooltip.Root>
+        </Tooltip.Provider>
+      </div>
+
+      <h2>Can be overriden by the prop on tooltip</h2>
+      <div style={{ display: 'flex', gap: 50 }}>
+        <Tooltip.Provider ignoreNonKeyboardFocus>
+          <Tooltip.Root ignoreNonKeyboardFocus={false}>
+            <Tooltip.Trigger className={triggerClass()}>Focus me</Tooltip.Trigger>
+            <Tooltip.Portal>
+              <Tooltip.Content className={contentClass()} sideOffset={5}>
+                Nicely done!
+                <Tooltip.Arrow className={arrowClass()} offset={10} />
+              </Tooltip.Content>
+            </Tooltip.Portal>
+          </Tooltip.Root>
+        </Tooltip.Provider>
+      </div>
+    </>
+  );
+};
+
 // change order slightly for more pleasing visual
 const SIDES = [...SIDE_OPTIONS.filter((side) => side !== 'bottom'), 'bottom' as const];
 
