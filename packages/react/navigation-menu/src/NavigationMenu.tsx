@@ -717,11 +717,13 @@ const NavigationMenuIndicatorImpl = React.forwardRef<
               left: 0,
               width: position.size + 'px',
               transform: `translateX(${position.offset}px)`,
+              '--radix-navigation-menu-indicator-translate-x': `${position.offset}px`,
             }
           : {
               top: 0,
               height: position.size + 'px',
               transform: `translateY(${position.offset}px)`,
+              '--radix-navigation-menu-indicator-translate-y': `${position.offset}px`,
             }),
         ...indicatorProps.style,
       }}
