@@ -1,6 +1,6 @@
 {
-  "name": "@radix-ui/react-dismissable-layer",
-  "version": "1.1.6-rc.4",
+  "name": "@radix-ui/react-document-context",
+  "version": "1.0.0",
   "license": "MIT",
   "exports": {
     ".": {
@@ -24,40 +24,24 @@
   ],
   "sideEffects": false,
   "scripts": {
-    "lint": "eslint --max-warnings 0 src",
     "clean": "rm -rf dist",
     "version": "yarn version"
   },
   "dependencies": {
-    "@radix-ui/primitive": "workspace:*",
-    "@radix-ui/react-compose-refs": "workspace:*",
-    "@radix-ui/react-document-context": "workspace:*",
-    "@radix-ui/react-primitive": "workspace:*",
-    "@radix-ui/react-use-callback-ref": "workspace:*",
-    "@radix-ui/react-use-escape-keydown": "workspace:*"
+    "@radix-ui/react-primitive": "workspace:*"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/react": "^19.0.7",
-    "@types/react-dom": "^19.0.3",
-    "eslint": "^9.18.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "react-remove-scroll": "^2.6.3",
     "typescript": "^5.7.3"
   },
   "peerDependencies": {
     "@types/react": "*",
-    "@types/react-dom": "*",
-    "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc",
-    "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
+    "react": "^16.8 || ^17.0 || ^18.0 || ^19.0"
   },
   "peerDependenciesMeta": {
     "@types/react": {
-      "optional": true
-    },
-    "@types/react-dom": {
       "optional": true
     }
   },
@@ -68,6 +52,5 @@
   },
   "bugs": {
     "url": "https://github.com/radix-ui/primitives/issues"
-  },
-  "stableVersion": "1.1.5"
+  }
 }
