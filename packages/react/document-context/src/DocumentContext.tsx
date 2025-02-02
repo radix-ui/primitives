@@ -10,7 +10,7 @@ interface DocumentProviderProps {
 
 export function DocumentProvider({ document: doc, children }: DocumentProviderProps) {
   const value = React.useMemo(
-    () => doc ?? (typeof document !== 'undefined' ? document : null),
+    () => doc ?? (typeof document !== 'undefined' ? globalThis?.document : null),
     [doc]
   );
   return <DocumentContext.Provider value={value}>{children}</DocumentContext.Provider>;
@@ -19,7 +19,7 @@ export function DocumentProvider({ document: doc, children }: DocumentProviderPr
 export function useDocument() {
   const doc = React.useContext(DocumentContext);
   // Return default document if available and no context value
-  return doc ?? (typeof document !== 'undefined' ? document : null);
+  return doc ?? (typeof document !== 'undefined' ? globalThis?.document : null);
 }
 
 // For components that absolutely need a document

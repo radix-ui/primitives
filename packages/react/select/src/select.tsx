@@ -24,6 +24,7 @@ import { hideOthers } from 'aria-hidden';
 import { RemoveScroll } from 'react-remove-scroll';
 
 import type { Scope } from '@radix-ui/react-context';
+import { useDocument } from '@radix-ui/react-document-context';
 
 type Direction = 'ltr' | 'rtl';
 
@@ -568,6 +569,7 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
     const getItems = useCollection(__scopeSelect);
     const [isPositioned, setIsPositioned] = React.useState(false);
     const firstValidItemFoundRef = React.useRef(false);
+    const providedDocument = useDocument();
 
     // aria-hide everything except the content (better supported equivalent to setting aria-modal)
     React.useEffect(() => {
@@ -580,10 +582,11 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
 
     const focusFirst = React.useCallback(
       (candidates: Array<HTMLElement | null>) => {
+        if (!providedDocument) return;
         const [firstItem, ...restItems] = getItems().map((item) => item.ref.current);
         const [lastItem] = restItems.slice(-1);
 
-        const PREVIOUSLY_FOCUSED_ELEMENT = document.activeElement;
+        const PREVIOUSLY_FOCUSED_ELEMENT = providedDocument.activeElement;
         for (const candidate of candidates) {
           // if focus is already where we want to go, we don't want to keep going through the candidates
           if (candidate === PREVIOUSLY_FOCUSED_ELEMENT) return;
@@ -592,10 +595,10 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
           if (candidate === firstItem && viewport) viewport.scrollTop = 0;
           if (candidate === lastItem && viewport) viewport.scrollTop = viewport.scrollHeight;
           candidate?.focus();
-          if (document.activeElement !== PREVIOUSLY_FOCUSED_ELEMENT) return;
+          if (providedDocument.activeElement !== PREVIOUSLY_FOCUSED_ELEMENT) return;
         }
       },
-      [getItems, viewport]
+      [getItems, viewport, providedDocument]
     );
 
     const focusSelectedItem = React.useCallback(
@@ -615,7 +618,7 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
     // and close on `pointerup` outside.
     const { onOpenChange, triggerPointerDownPosRef } = context;
     React.useEffect(() => {
-      if (content) {
+      if (content && providedDocument) {
         let pointerMoveDelta = { x: 0, y: 0 };
 
         const handlePointerMove = (event: PointerEvent) => {
@@ -634,21 +637,24 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
               onOpenChange(false);
             }
           }
-          document.removeEventListener('pointermove', handlePointerMove);
+          providedDocument.removeEventListener('pointermove', handlePointerMove);
           triggerPointerDownPosRef.current = null;
         };
 
         if (triggerPointerDownPosRef.current !== null) {
-          document.addEventListener('pointermove', handlePointerMove);
-          document.addEventListener('pointerup', handlePointerUp, { capture: true, once: true });
+          providedDocument.addEventListener('pointermove', handlePointerMove);
+          providedDocument.addEventListener('pointerup', handlePointerUp, {
+            capture: true,
+            once: true,
+          });
         }
 
         return () => {
-          document.removeEventListener('pointermove', handlePointerMove);
-          document.removeEventListener('pointerup', handlePointerUp, { capture: true });
+          providedDocument.removeEventListener('pointermove', handlePointerMove);
+          providedDocument.removeEventListener('pointerup', handlePointerUp, { capture: true });
         };
       }
-    }, [content, onOpenChange, triggerPointerDownPosRef]);
+    }, [content, onOpenChange, triggerPointerDownPosRef, providedDocument]);
 
     React.useEffect(() => {
       const close = () => onOpenChange(false);
@@ -662,7 +668,9 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
 
     const [searchRef, handleTypeaheadSearch] = useTypeaheadSearch((search) => {
       const enabledItems = getItems().filter((item) => !item.disabled);
-      const currentItem = enabledItems.find((item) => item.ref.current === document.activeElement);
+      const currentItem = enabledItems.find(
+        (item) => item.ref.current === providedDocument?.activeElement
+      );
       const nextItem = findNextItem(enabledItems, search, currentItem);
       if (nextItem) {
         /**
@@ -1266,6 +1274,7 @@ const SelectItem = React.forwardRef<SelectItemElement, SelectItemProps>(
     );
     const textId = useId();
     const pointerTypeRef = React.useRef<React.PointerEvent['pointerType']>('touch');
+    const providedDocument = useDocument();
 
     const handleSelect = () => {
       if (!disabled) {
@@ -1335,7 +1344,7 @@ const SelectItem = React.forwardRef<SelectItemElement, SelectItemProps>(
               }
             })}
             onPointerLeave={composeEventHandlers(itemProps.onPointerLeave, (event) => {
-              if (event.currentTarget === document.activeElement) {
+              if (providedDocument && event.currentTarget === providedDocument.activeElement) {
                 contentContext.onItemLeave?.();
               }
             })}
@@ -1542,7 +1551,7 @@ const SelectScrollButtonImpl = React.forwardRef<
   const contentContext = useSelectContentContext('SelectScrollButton', __scopeSelect);
   const autoScrollTimerRef = React.useRef<number | null>(null);
   const getItems = useCollection(__scopeSelect);
-
+  const providedDocument = useDocument();
   const clearAutoScrollTimer = React.useCallback(() => {
     if (autoScrollTimerRef.current !== null) {
       window.clearInterval(autoScrollTimerRef.current);
@@ -1559,9 +1568,11 @@ const SelectScrollButtonImpl = React.forwardRef<
   // the viewport, potentially causing the active item to now be partially out of view.
   // We re-run the `scrollIntoView` logic to make sure it stays within the viewport.
   useLayoutEffect(() => {
-    const activeItem = getItems().find((item) => item.ref.current === document.activeElement);
+    const activeItem = getItems().find(
+      (item) => item.ref.current === providedDocument?.activeElement
+    );
     activeItem?.ref.current?.scrollIntoView({ block: 'nearest' });
-  }, [getItems]);
+  }, [getItems, providedDocument]);
 
   return (
     <Primitive.div

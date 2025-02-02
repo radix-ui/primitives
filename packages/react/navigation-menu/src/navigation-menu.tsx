@@ -16,6 +16,7 @@ import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import * as VisuallyHiddenPrimitive from '@radix-ui/react-visually-hidden';
 
 import type { Scope } from '@radix-ui/react-context';
+import { useDocument } from '@radix-ui/react-document-context';
 
 type Orientation = 'vertical' | 'horizontal';
 type Direction = 'ltr' | 'rtl';
@@ -426,21 +427,26 @@ const NavigationMenuItem = React.forwardRef<NavigationMenuItemElement, Navigatio
     const focusProxyRef = React.useRef<FocusProxyElement>(null);
     const restoreContentTabOrderRef = React.useRef(() => {});
     const wasEscapeCloseRef = React.useRef(false);
+    const providedDocument = useDocument();
 
-    const handleContentEntry = React.useCallback((side = 'start') => {
-      if (contentRef.current) {
-        restoreContentTabOrderRef.current();
-        const candidates = getTabbableCandidates(contentRef.current);
-        if (candidates.length) focusFirst(side === 'start' ? candidates : candidates.reverse());
-      }
-    }, []);
+    const handleContentEntry = React.useCallback(
+      (side = 'start') => {
+        if (contentRef.current && providedDocument) {
+          restoreContentTabOrderRef.current();
+          const candidates = getTabbableCandidates(contentRef.current, providedDocument);
+          if (candidates.length)
+            focusFirst(side === 'start' ? candidates : candidates.reverse(), providedDocument);
+        }
+      },
+      [providedDocument]
+    );
 
     const handleContentExit = React.useCallback(() => {
-      if (contentRef.current) {
-        const candidates = getTabbableCandidates(contentRef.current);
+      if (contentRef.current && providedDocument) {
+        const candidates = getTabbableCandidates(contentRef.current, providedDocument);
         if (candidates.length) restoreContentTabOrderRef.current = removeFromTabOrder(candidates);
       }
-    }, []);
+    }, [providedDocument]);
 
     return (
       <NavigationMenuItemContextProvider
@@ -864,6 +870,7 @@ const NavigationMenuContentImpl = React.forwardRef<
   const contentId = makeContentId(context.baseId, value);
   const getItems = useCollection(__scopeNavigationMenu);
   const prevMotionAttributeRef = React.useRef<MotionAttribute | null>(null);
+  const providedDocument = useDocument();
 
   const { onItemDismiss } = context;
 
@@ -875,12 +882,21 @@ const NavigationMenuContentImpl = React.forwardRef<
       const handleClose = () => {
         onItemDismiss();
         onRootContentClose();
-        if (content.contains(document.activeElement)) triggerRef.current?.focus();
+
+        if (providedDocument && content.contains(providedDocument.activeElement))
+          triggerRef.current?.focus();
       };
       content.addEventListener(ROOT_CONTENT_DISMISS, handleClose);
       return () => content.removeEventListener(ROOT_CONTENT_DISMISS, handleClose);
     }
-  }, [context.isRootMenu, props.value, triggerRef, onItemDismiss, onRootContentClose]);
+  }, [
+    context.isRootMenu,
+    props.value,
+    triggerRef,
+    onItemDismiss,
+    onRootContentClose,
+    providedDocument,
+  ]);
 
   const motionAttribute = React.useMemo(() => {
     const items = getItems();
@@ -942,18 +958,19 @@ const NavigationMenuContentImpl = React.forwardRef<
           if (isTrigger || isRootViewport || !context.isRootMenu) event.preventDefault();
         })}
         onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
+          if (!providedDocument) return;
           const isMetaKey = event.altKey || event.ctrlKey || event.metaKey;
           const isTabKey = event.key === 'Tab' && !isMetaKey;
           if (isTabKey) {
-            const candidates = getTabbableCandidates(event.currentTarget);
-            const focusedElement = document.activeElement;
+            const candidates = getTabbableCandidates(event.currentTarget, providedDocument);
+            const focusedElement = providedDocument?.activeElement;
             const index = candidates.findIndex((candidate) => candidate === focusedElement);
             const isMovingBackwards = event.shiftKey;
             const nextCandidates = isMovingBackwards
               ? candidates.slice(0, index).reverse()
               : candidates.slice(index + 1, candidates.length);
 
-            if (focusFirst(nextCandidates)) {
+            if (focusFirst(nextCandidates, providedDocument)) {
               // prevent browser tab keydown because we've handled focus
               event.preventDefault();
             } else {
@@ -1113,6 +1130,7 @@ const FocusGroupItem = React.forwardRef<FocusGroupItemElement, FocusGroupItemPro
     const { __scopeNavigationMenu, ...groupProps } = props;
     const getItems = useFocusGroupCollection(__scopeNavigationMenu);
     const context = useNavigationMenuContext(FOCUS_GROUP_ITEM_NAME, __scopeNavigationMenu);
+    const providedDocument = useDocument();
 
     return (
       <FocusGroupCollection.ItemSlot scope={__scopeNavigationMenu}>
@@ -1134,7 +1152,11 @@ const FocusGroupItem = React.forwardRef<FocusGroupItemElement, FocusGroupItemPro
                * Imperative focus during keydown is risky so we prevent React's batching updates
                * to avoid potential bugs. See: https://github.com/facebook/react/issues/20332
                */
-              setTimeout(() => focusFirst(candidateNodes));
+              setTimeout(() => {
+                if (providedDocument) {
+                  focusFirst(candidateNodes, providedDocument);
+                }
+              });
 
               // Prevent page scroll while navigating
               event.preventDefault();
@@ -1156,9 +1178,9 @@ const FocusGroupItem = React.forwardRef<FocusGroupItemElement, FocusGroupItemPro
  * See: https://developer.mozilla.org/en-US/docs/Web/API/TreeWalker
  * Credit: https://github.com/discord/focus-layers/blob/master/src/util/wrapFocus.tsx#L1
  */
-function getTabbableCandidates(container: HTMLElement) {
+function getTabbableCandidates(container: HTMLElement, providedDocument: Document) {
   const nodes: HTMLElement[] = [];
-  const walker = document.createTreeWalker(container, NodeFilter.SHOW_ELEMENT, {
+  const walker = providedDocument.createTreeWalker(container, NodeFilter.SHOW_ELEMENT, {
     acceptNode: (node: any) => {
       const isHiddenInput = node.tagName === 'INPUT' && node.type === 'hidden';
       if (node.disabled || node.hidden || isHiddenInput) return NodeFilter.FILTER_SKIP;
@@ -1174,13 +1196,13 @@ function getTabbableCandidates(container: HTMLElement) {
   return nodes;
 }
 
-function focusFirst(candidates: HTMLElement[]) {
-  const previouslyFocusedElement = document.activeElement;
+function focusFirst(candidates: HTMLElement[], providedDocument: Document) {
+  const previouslyFocusedElement = providedDocument.activeElement;
   return candidates.some((candidate) => {
     // if focus is already where we want to go, we don't want to keep going through the candidates
     if (candidate === previouslyFocusedElement) return true;
     candidate.focus();
-    return document.activeElement !== previouslyFocusedElement;
+    return providedDocument.activeElement !== previouslyFocusedElement;
   });
 }
 
