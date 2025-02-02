@@ -1,0 +1,64 @@
+.trigger {
+  border: 1px solid black;
+  border-radius: 6px;
+  background-color: transparent;
+  padding: 5px 10px;
+  font-family: apple-system, BlinkMacSystemFont, helvetica, arial, sans-serif;
+  font-size: 13px;
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgb(0 0 0 / 0.5);
+  }
+}
+
+.content {
+  display: inline-block;
+  box-sizing: border-box;
+  min-width: 130px;
+  background-color: var(--color-white);
+  border: 1px solid var(--color-gray100);
+  border-radius: 6px;
+  padding: 5px;
+  box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.1);
+  font-family: apple-system, BlinkMacSystemFont, helvetica, arial, sans-serif;
+  font-size: 13px;
+  &:focus-within {
+    border-color: var(--color-black);
+  }
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  line-height: 1;
+  cursor: default;
+  user-select: none;
+  white-space: nowrap;
+  height: 25px;
+  padding: 0 10px;
+  color: var(--color-black);
+  border-radius: 3px;
+
+  outline: none;
+
+  &[data-highlighted] {
+    background-color: var(--color-black);
+    color: var(--color-white);
+  }
+
+  &[data-disabled] {
+    color: var(--color-gray100);
+  }
+}
+
+.dialog {
+  position: fixed;
+  background: white;
+  border: 1px solid black;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 30px;
+}
