@@ -14,6 +14,7 @@ import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 
 import type { Scope } from '@radix-ui/react-context';
+import { useDocument } from '@radix-ui/react-document-context';
 
 /* -------------------------------------------------------------------------------------------------
  * ToastProvider
@@ -145,6 +146,7 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
       label = 'Notifications ({hotkey})',
       ...viewportProps
     } = props;
+    const providedDocument = useDocument();
     const context = useToastProviderContext(VIEWPORT_NAME, __scopeToast);
     const getItems = useCollection(__scopeToast);
     const wrapperRef = React.useRef<HTMLDivElement>(null);
@@ -156,6 +158,7 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
     const hasToasts = context.toastCount > 0;
 
     React.useEffect(() => {
+      if (!providedDocument) return;
       const handleKeyDown = (event: KeyboardEvent) => {
         // we use `event.code` as it is consistent regardless of meta keys that were pressed.
         // for example, `event.key` for `Control+Alt+t` is `†` and `t !== †`
@@ -163,9 +166,9 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
           hotkey.length !== 0 && hotkey.every((key) => (event as any)[key] || event.code === key);
         if (isHotkeyPressed) ref.current?.focus();
       };
-      document.addEventListener('keydown', handleKeyDown);
-      return () => document.removeEventListener('keydown', handleKeyDown);
-    }, [hotkey]);
+      providedDocument.addEventListener('keydown', handleKeyDown);
+      return () => providedDocument.removeEventListener('keydown', handleKeyDown);
+    }, [hotkey, providedDocument]);
 
     React.useEffect(() => {
       const wrapper = wrapperRef.current;
@@ -193,7 +196,8 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
         };
 
         const handlePointerLeaveResume = () => {
-          const isFocusInside = wrapper.contains(document.activeElement);
+          if (!providedDocument) return;
+          const isFocusInside = wrapper.contains(providedDocument.activeElement);
           if (!isFocusInside) handleResume();
         };
 
@@ -213,14 +217,17 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
           window.removeEventListener('focus', handleResume);
         };
       }
-    }, [hasToasts, context.isClosePausedRef]);
+    }, [hasToasts, context.isClosePausedRef, providedDocument]);
 
     const getSortedTabbableCandidates = React.useCallback(
       ({ tabbingDirection }: { tabbingDirection: 'forwards' | 'backwards' }) => {
         const toastItems = getItems();
         const tabbableCandidates = toastItems.map((toastItem) => {
           const toastNode = toastItem.ref.current!;
-          const toastTabbableCandidates = [toastNode, ...getTabbableCandidates(toastNode)];
+          const toastTabbableCandidates = [
+            toastNode,
+            ...getTabbableCandidates(toastNode, providedDocument ?? globalThis.document),
+          ];
           return tabbingDirection === 'forwards'
             ? toastTabbableCandidates
             : toastTabbableCandidates.reverse();
@@ -229,7 +236,7 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
           tabbingDirection === 'forwards' ? tabbableCandidates.reverse() : tabbableCandidates
         ).flat();
       },
-      [getItems]
+      [getItems, providedDocument]
     );
 
     React.useEffect(() => {
@@ -243,7 +250,7 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
           const isTabKey = event.key === 'Tab' && !isMetaKey;
 
           if (isTabKey) {
-            const focusedElement = document.activeElement;
+            const focusedElement = providedDocument?.activeElement;
             const isTabbingBackwards = event.shiftKey;
             const targetIsViewport = event.target === viewport;
 
@@ -257,7 +264,9 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
             const tabbingDirection = isTabbingBackwards ? 'backwards' : 'forwards';
             const sortedCandidates = getSortedTabbableCandidates({ tabbingDirection });
             const index = sortedCandidates.findIndex((candidate) => candidate === focusedElement);
-            if (focusFirst(sortedCandidates.slice(index + 1))) {
+            if (
+              focusFirst(sortedCandidates.slice(index + 1), providedDocument ?? globalThis.document)
+            ) {
               event.preventDefault();
             } else {
               // If we can't focus that means we're at the edges so we
@@ -274,7 +283,7 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
         viewport.addEventListener('keydown', handleKeyDown);
         return () => viewport.removeEventListener('keydown', handleKeyDown);
       }
-    }, [getItems, getSortedTabbableCandidates]);
+    }, [getItems, getSortedTabbableCandidates, providedDocument]);
 
     return (
       <DismissableLayer.Branch
@@ -294,7 +303,7 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
               const tabbableCandidates = getSortedTabbableCandidates({
                 tabbingDirection: 'forwards',
               });
-              focusFirst(tabbableCandidates);
+              focusFirst(tabbableCandidates, providedDocument ?? globalThis.document);
             }}
           />
         )}
@@ -312,7 +321,7 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
               const tabbableCandidates = getSortedTabbableCandidates({
                 tabbingDirection: 'backwards',
               });
-              focusFirst(tabbableCandidates);
+              focusFirst(tabbableCandidates, providedDocument ?? globalThis.document);
             }}
           />
         )}
@@ -489,10 +498,13 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
     const closeTimerRemainingTimeRef = React.useRef(duration);
     const closeTimerRef = React.useRef(0);
     const { onToastAdd, onToastRemove } = context;
+    const providedDocument = useDocument();
+
     const handleClose = useCallbackRef(() => {
       // focus viewport if focus is within toast to read the remaining toast
       // count to SR users and ensure focus isn't lost
-      const isFocusInToast = node?.contains(document.activeElement);
+      if (!providedDocument) return;
+      const isFocusInToast = node?.contains(providedDocument.activeElement);
       if (isFocusInToast) context.viewport?.focus();
       onClose();
     });
@@ -922,9 +934,9 @@ function isHTMLElement(node: any): node is HTMLElement {
  * See: https://developer.mozilla.org/en-US/docs/Web/API/TreeWalker
  * Credit: https://github.com/discord/focus-layers/blob/master/src/util/wrapFocus.tsx#L1
  */
-function getTabbableCandidates(container: HTMLElement) {
+function getTabbableCandidates(container: HTMLElement, providedDocument: Document) {
   const nodes: HTMLElement[] = [];
-  const walker = document.createTreeWalker(container, NodeFilter.SHOW_ELEMENT, {
+  const walker = providedDocument.createTreeWalker(container, NodeFilter.SHOW_ELEMENT, {
     acceptNode: (node: any) => {
       const isHiddenInput = node.tagName === 'INPUT' && node.type === 'hidden';
       if (node.disabled || node.hidden || isHiddenInput) return NodeFilter.FILTER_SKIP;
@@ -940,13 +952,13 @@ function getTabbableCandidates(container: HTMLElement) {
   return nodes;
 }
 
-function focusFirst(candidates: HTMLElement[]) {
-  const previouslyFocusedElement = document.activeElement;
+function focusFirst(candidates: HTMLElement[], providedDocument: Document) {
+  const previouslyFocusedElement = providedDocument.activeElement;
   return candidates.some((candidate) => {
     // if focus is already where we want to go, we don't want to keep going through the candidates
     if (candidate === previouslyFocusedElement) return true;
     candidate.focus();
-    return document.activeElement !== previouslyFocusedElement;
+    return providedDocument.activeElement !== previouslyFocusedElement;
   });
 }
 

@@ -11,6 +11,7 @@ import { Primitive } from '@radix-ui/react-primitive';
 import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
 
 import type { Scope } from '@radix-ui/react-context';
+import { useDocument } from '@radix-ui/react-document-context';
 
 /* -------------------------------------------------------------------------------------------------
  * HoverCard
@@ -271,10 +272,12 @@ const HoverCardContentImpl = React.forwardRef<
   const ref = React.useRef<HoverCardContentImplElement>(null);
   const composedRefs = useComposedRefs(forwardedRef, ref);
   const [containSelection, setContainSelection] = React.useState(false);
+  const providedDocument = useDocument();
 
   React.useEffect(() => {
+    if (!providedDocument) return;
     if (containSelection) {
-      const body = document.body;
+      const body = providedDocument.body;
 
       // Safari requires prefix
       originalBodyUserSelect = body.style.userSelect || body.style.webkitUserSelect;
@@ -286,9 +289,10 @@ const HoverCardContentImpl = React.forwardRef<
         body.style.webkitUserSelect = originalBodyUserSelect;
       };
     }
-  }, [containSelection]);
+  }, [containSelection, providedDocument]);
 
   React.useEffect(() => {
+    if (!providedDocument) return;
     if (ref.current) {
       const handlePointerUp = () => {
         setContainSelection(false);
@@ -296,26 +300,27 @@ const HoverCardContentImpl = React.forwardRef<
 
         // Delay a frame to ensure we always access the latest selection
         setTimeout(() => {
-          const hasSelection = document.getSelection()?.toString() !== '';
+          const hasSelection = providedDocument.getSelection()?.toString() !== '';
           if (hasSelection) context.hasSelectionRef.current = true;
         });
       };
 
-      document.addEventListener('pointerup', handlePointerUp);
+      providedDocument.addEventListener('pointerup', handlePointerUp);
       return () => {
-        document.removeEventListener('pointerup', handlePointerUp);
+        providedDocument.removeEventListener('pointerup', handlePointerUp);
         context.hasSelectionRef.current = false;
         context.isPointerDownOnContentRef.current = false;
       };
     }
-  }, [context.isPointerDownOnContentRef, context.hasSelectionRef]);
+  }, [context.isPointerDownOnContentRef, context.hasSelectionRef, providedDocument]);
 
   React.useEffect(() => {
+    if (!providedDocument) return;
     if (ref.current) {
-      const tabbables = getTabbableNodes(ref.current);
+      const tabbables = getTabbableNodes(ref.current, providedDocument);
       tabbables.forEach((tabbable) => tabbable.setAttribute('tabindex', '-1'));
     }
-  });
+  }, [providedDocument]);
 
   return (
     <DismissableLayer
@@ -391,9 +396,9 @@ function excludeTouch<E>(eventHandler: () => void) {
  * Returns a list of nodes that can be in the tab sequence.
  * @see: https://developer.mozilla.org/en-US/docs/Web/API/TreeWalker
  */
-function getTabbableNodes(container: HTMLElement) {
+function getTabbableNodes(container: HTMLElement, providedDocument: Document) {
   const nodes: HTMLElement[] = [];
-  const walker = document.createTreeWalker(container, NodeFilter.SHOW_ELEMENT, {
+  const walker = providedDocument.createTreeWalker(container, NodeFilter.SHOW_ELEMENT, {
     acceptNode: (node: any) => {
       // `.tabIndex` is not the same as the `tabindex` attribute. It works on the
       // runtime's understanding of tabbability, so this automatically accounts

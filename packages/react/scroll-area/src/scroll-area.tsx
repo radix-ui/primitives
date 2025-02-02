@@ -11,6 +11,7 @@ import { composeEventHandlers } from '@radix-ui/primitive';
 import { useStateMachine } from './use-state-machine';
 
 import type { Scope } from '@radix-ui/react-context';
+import { useDocument } from '@radix-ui/react-document-context';
 
 type Direction = 'ltr' | 'rtl';
 type Sizes = {
@@ -660,6 +661,7 @@ const ScrollAreaScrollbarImpl = React.forwardRef<
   const handleWheelScroll = useCallbackRef(onWheelScroll);
   const handleThumbPositionChange = useCallbackRef(onThumbPositionChange);
   const handleResize = useDebounceCallback(onResize, 10);
+  const providedDocument = useDocument();
 
   function handleDragScroll(event: React.PointerEvent<HTMLElement>) {
     if (rectRef.current) {
@@ -674,14 +676,16 @@ const ScrollAreaScrollbarImpl = React.forwardRef<
    * mode for document wheel event to allow it to be prevented
    */
   React.useEffect(() => {
+    if (!providedDocument) return;
     const handleWheel = (event: WheelEvent) => {
       const element = event.target as HTMLElement;
       const isScrollbarWheel = scrollbar?.contains(element);
       if (isScrollbarWheel) handleWheelScroll(event, maxScrollPos);
     };
-    document.addEventListener('wheel', handleWheel, { passive: false });
-    return () => document.removeEventListener('wheel', handleWheel, { passive: false } as any);
-  }, [viewport, scrollbar, maxScrollPos, handleWheelScroll]);
+    providedDocument.addEventListener('wheel', handleWheel, { passive: false });
+    return () =>
+      providedDocument.removeEventListener('wheel', handleWheel, { passive: false } as any);
+  }, [viewport, scrollbar, maxScrollPos, handleWheelScroll, providedDocument]);
 
   /**
    * Update thumb position on sizes change
@@ -713,8 +717,10 @@ const ScrollAreaScrollbarImpl = React.forwardRef<
             rectRef.current = scrollbar!.getBoundingClientRect();
             // pointer capture doesn't prevent text selection in Safari
             // so we remove text selection manually when scrolling
-            prevWebkitUserSelectRef.current = document.body.style.webkitUserSelect;
-            document.body.style.webkitUserSelect = 'none';
+            if (providedDocument) {
+              prevWebkitUserSelectRef.current = providedDocument.body.style.webkitUserSelect;
+              providedDocument.body.style.webkitUserSelect = 'none';
+            }
             if (context.viewport) context.viewport.style.scrollBehavior = 'auto';
             handleDragScroll(event);
           }
@@ -725,7 +731,9 @@ const ScrollAreaScrollbarImpl = React.forwardRef<
           if (element.hasPointerCapture(event.pointerId)) {
             element.releasePointerCapture(event.pointerId);
           }
-          document.body.style.webkitUserSelect = prevWebkitUserSelectRef.current;
+          if (providedDocument) {
+            providedDocument.body.style.webkitUserSelect = prevWebkitUserSelectRef.current;
+          }
           if (context.viewport) context.viewport.style.scrollBehavior = '';
           rectRef.current = null;
         })}

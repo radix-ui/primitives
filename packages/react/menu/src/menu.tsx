@@ -21,6 +21,7 @@ import { hideOthers } from 'aria-hidden';
 import { RemoveScroll } from 'react-remove-scroll';
 
 import type { Scope } from '@radix-ui/react-context';
+import { useDocument } from '@radix-ui/react-document-context';
 
 type Direction = 'ltr' | 'rtl';
 
@@ -91,23 +92,31 @@ const Menu: React.FC<MenuProps> = (props: ScopedProps<MenuProps>) => {
   const isUsingKeyboardRef = React.useRef(false);
   const handleOpenChange = useCallbackRef(onOpenChange);
   const direction = useDirection(dir);
+  const providedDocument = useDocument();
 
   React.useEffect(() => {
+    if (!providedDocument) return;
     // Capture phase ensures we set the boolean before any side effects execute
     // in response to the key or pointer event as they might depend on this value.
     const handleKeyDown = () => {
       isUsingKeyboardRef.current = true;
-      document.addEventListener('pointerdown', handlePointer, { capture: true, once: true });
-      document.addEventListener('pointermove', handlePointer, { capture: true, once: true });
+      providedDocument.addEventListener('pointerdown', handlePointer, {
+        capture: true,
+        once: true,
+      });
+      providedDocument.addEventListener('pointermove', handlePointer, {
+        capture: true,
+        once: true,
+      });
     };
     const handlePointer = () => (isUsingKeyboardRef.current = false);
-    document.addEventListener('keydown', handleKeyDown, { capture: true });
+    providedDocument.addEventListener('keydown', handleKeyDown, { capture: true });
     return () => {
-      document.removeEventListener('keydown', handleKeyDown, { capture: true });
-      document.removeEventListener('pointerdown', handlePointer, { capture: true });
-      document.removeEventListener('pointermove', handlePointer, { capture: true });
+      providedDocument.removeEventListener('keydown', handleKeyDown, { capture: true });
+      providedDocument.removeEventListener('pointerdown', handlePointer, { capture: true });
+      providedDocument.removeEventListener('pointermove', handlePointer, { capture: true });
     };
-  }, []);
+  }, [providedDocument]);
 
   return (
     <PopperPrimitive.Root {...popperScope}>
@@ -388,7 +397,7 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
     const pointerGraceIntentRef = React.useRef<GraceIntent | null>(null);
     const pointerDirRef = React.useRef<Side>('right');
     const lastPointerXRef = React.useRef(0);
-
+    const providedDocument = useDocument();
     const ScrollLockWrapper = disableOutsideScroll ? RemoveScroll : React.Fragment;
     const scrollLockWrapperProps = disableOutsideScroll
       ? { as: Slot, allowPinchZoom: true }
@@ -397,7 +406,7 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
     const handleTypeaheadSearch = (key: string) => {
       const search = searchRef.current + key;
       const items = getItems().filter((item) => !item.disabled);
-      const currentItem = document.activeElement;
+      const currentItem = providedDocument?.activeElement;
       const currentMatch = items.find((item) => item.ref.current === currentItem)?.textValue;
       const values = items.map((item) => item.textValue);
       const nextMatch = getNextMatch(values, search, currentMatch);
@@ -526,7 +535,9 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
                     const items = getItems().filter((item) => !item.disabled);
                     const candidateNodes = items.map((item) => item.ref.current!);
                     if (LAST_KEYS.includes(event.key)) candidateNodes.reverse();
-                    focusFirst(candidateNodes);
+                    if (providedDocument) {
+                      focusFirst(candidateNodes, providedDocument);
+                    }
                   })}
                   onBlur={composeEventHandlers(props.onBlur, (event) => {
                     // clear search buffer when leaving the menu
@@ -1237,13 +1248,13 @@ function getCheckedState(checked: CheckedState) {
   return isIndeterminate(checked) ? 'indeterminate' : checked ? 'checked' : 'unchecked';
 }
 
-function focusFirst(candidates: HTMLElement[]) {
-  const PREVIOUSLY_FOCUSED_ELEMENT = document.activeElement;
+function focusFirst(candidates: HTMLElement[], providedDocument: Document) {
+  const PREVIOUSLY_FOCUSED_ELEMENT = providedDocument.activeElement;
   for (const candidate of candidates) {
     // if focus is already where we want to go, we don't want to keep going through the candidates
     if (candidate === PREVIOUSLY_FOCUSED_ELEMENT) return;
     candidate.focus();
-    if (document.activeElement !== PREVIOUSLY_FOCUSED_ELEMENT) return;
+    if (providedDocument.activeElement !== PREVIOUSLY_FOCUSED_ELEMENT) return;
   }
 }
 
