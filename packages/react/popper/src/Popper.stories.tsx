@@ -132,6 +132,37 @@ export const WithUpdatePositionStrategyAlways = () => {
   );
 };
 
+export const WithoutLayoutShift = () => {
+  const [open, setOpen] = React.useState(false);
+  const [showElement, setShowElement] = React.useState(false);
+
+  return (
+    <Scrollable>
+      <Popper.Root>
+        {showElement && <div>element</div>}
+        &nbsp;
+        <Popper.Anchor className={styles.anchor} onClick={() => setOpen(true)}>
+          open
+        </Popper.Anchor>
+        {open && (
+          <Portal asChild>
+            <Popper.Content
+              className={styles.content}
+              sideOffset={5}
+              updatePositionOnLayoutShift={false}
+            >
+              <button onClick={() => setShowElement(!showElement)}>Toggle element</button>
+              &nbsp;
+              <button onClick={() => setOpen(false)}>close</button>
+              <Popper.Arrow className={styles.arrow} width={20} height={10} />
+            </Popper.Content>
+          </Portal>
+        )}
+      </Popper.Root>
+    </Scrollable>
+  );
+};
+
 export const Chromatic = () => {
   const [scrollContainer1, setScrollContainer1] = React.useState<HTMLDivElement | null>(null);
   const [scrollContainer2, setScrollContainer2] = React.useState<HTMLDivElement | null>(null);
