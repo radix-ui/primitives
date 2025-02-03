@@ -40,8 +40,8 @@ export function withDocument<P extends PropsWithDocument, R = unknown>(
   Component: React.ComponentType<P>
 ) {
   const WithDocument = React.forwardRef<R, Omit<P, 'document'>>((props, ref) => {
-    const document = useDocument();
-    return <Component {...(props as any)} ref={ref} document={document || undefined} />;
+    const providedDocument = useDocument();
+    return <Component {...(props as any)} ref={ref} document={providedDocument || undefined} />;
   });
 
   WithDocument.displayName = `WithDocument(${Component.displayName || Component.name || 'Component'})`;
