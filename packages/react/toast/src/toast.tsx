@@ -171,6 +171,9 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
     }, [hotkey, providedDocument]);
 
     React.useEffect(() => {
+      const documentWindow = providedDocument?.defaultView;
+      if (!documentWindow) return;
+
       const wrapper = wrapperRef.current;
       const viewport = ref.current;
       if (hasToasts && wrapper && viewport) {
@@ -196,7 +199,6 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
         };
 
         const handlePointerLeaveResume = () => {
-          if (!providedDocument) return;
           const isFocusInside = wrapper.contains(providedDocument.activeElement);
           if (!isFocusInside) handleResume();
         };
@@ -206,15 +208,15 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
         wrapper.addEventListener('focusout', handleFocusOutResume);
         wrapper.addEventListener('pointermove', handlePause);
         wrapper.addEventListener('pointerleave', handlePointerLeaveResume);
-        window.addEventListener('blur', handlePause);
-        window.addEventListener('focus', handleResume);
+        documentWindow.addEventListener('blur', handlePause);
+        documentWindow.addEventListener('focus', handleResume);
         return () => {
           wrapper.removeEventListener('focusin', handlePause);
           wrapper.removeEventListener('focusout', handleFocusOutResume);
           wrapper.removeEventListener('pointermove', handlePause);
           wrapper.removeEventListener('pointerleave', handlePointerLeaveResume);
-          window.removeEventListener('blur', handlePause);
-          window.removeEventListener('focus', handleResume);
+          documentWindow.removeEventListener('blur', handlePause);
+          documentWindow.removeEventListener('focus', handleResume);
         };
       }
     }, [hasToasts, context.isClosePausedRef, providedDocument]);
@@ -498,7 +500,7 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
     const closeTimerRef = React.useRef(0);
     const { onToastAdd, onToastRemove } = context;
     const providedDocument = useDocument();
-
+    const documentWindow = providedDocument?.defaultView;
     const handleClose = useCallbackRef(() => {
       // focus viewport if focus is within toast to read the remaining toast
       // count to SR users and ensure focus isn't lost
@@ -510,12 +512,12 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
 
     const startTimer = React.useCallback(
       (duration: number) => {
-        if (!duration || duration === Infinity) return;
-        window.clearTimeout(closeTimerRef.current);
+        if (!duration || duration === Infinity || !documentWindow) return;
+        documentWindow.clearTimeout(closeTimerRef.current);
         closeTimerStartTimeRef.current = new Date().getTime();
-        closeTimerRef.current = window.setTimeout(handleClose, duration);
+        closeTimerRef.current = documentWindow.setTimeout(handleClose, duration);
       },
-      [handleClose]
+      [handleClose, documentWindow]
     );
 
     React.useEffect(() => {
@@ -528,7 +530,7 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
         const handlePause = () => {
           const elapsedTime = new Date().getTime() - closeTimerStartTimeRef.current;
           closeTimerRemainingTimeRef.current = closeTimerRemainingTimeRef.current - elapsedTime;
-          window.clearTimeout(closeTimerRef.current);
+          documentWindow?.clearTimeout(closeTimerRef.current);
           onPause?.();
         };
         viewport.addEventListener(VIEWPORT_PAUSE, handlePause);
@@ -538,7 +540,7 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
           viewport.removeEventListener(VIEWPORT_RESUME, handleResume);
         };
       }
-    }, [context.viewport, duration, onPause, onResume, startTimer]);
+    }, [context.viewport, duration, onPause, onResume, startTimer, documentWindow]);
 
     // start timer when toast opens or duration changes.
     // we include `open` in deps because closed !== unmounted when animating
@@ -696,11 +698,13 @@ const ToastAnnounce: React.FC<ToastAnnounceProps> = (props: ScopedProps<ToastAnn
   // render text content in the next frame to ensure toast is announced in NVDA
   useNextFrame(() => setRenderAnnounceText(true));
 
+  const documentWindow = useDocument()?.defaultView;
   // cleanup after announcing
   React.useEffect(() => {
-    const timer = window.setTimeout(() => setIsAnnounced(true), 1000);
-    return () => window.clearTimeout(timer);
-  }, []);
+    if (!documentWindow) return;
+    const timer = documentWindow.setTimeout(() => setIsAnnounced(true), 1000);
+    return () => documentWindow.clearTimeout(timer);
+  }, [documentWindow]);
 
   return isAnnounced ? null : (
     <Portal asChild>
@@ -907,16 +911,20 @@ const isDeltaInDirection = (
 };
 
 function useNextFrame(callback = () => {}) {
+  const documentWindow = useDocument()?.defaultView;
   const fn = useCallbackRef(callback);
   useLayoutEffect(() => {
+    if (!documentWindow) return;
     let raf1 = 0;
     let raf2 = 0;
-    raf1 = window.requestAnimationFrame(() => (raf2 = window.requestAnimationFrame(fn)));
+    raf1 = documentWindow.requestAnimationFrame(
+      () => (raf2 = documentWindow.requestAnimationFrame(fn))
+    );
     return () => {
-      window.cancelAnimationFrame(raf1);
-      window.cancelAnimationFrame(raf2);
+      documentWindow.cancelAnimationFrame(raf1);
+      documentWindow.cancelAnimationFrame(raf2);
     };
-  }, [fn]);
+  }, [fn, documentWindow]);
 }
 
 function isHTMLElement(node: any): node is HTMLElement {

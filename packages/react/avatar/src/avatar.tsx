@@ -5,6 +5,7 @@ import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { Primitive } from '@radix-ui/react-primitive';
 
 import type { Scope } from '@radix-ui/react-context';
+import { useDocument } from '@radix-ui/react-document-context';
 
 /* -------------------------------------------------------------------------------------------------
  * Avatar
@@ -98,13 +99,16 @@ const AvatarFallback = React.forwardRef<AvatarFallbackElement, AvatarFallbackPro
     const { __scopeAvatar, delayMs, ...fallbackProps } = props;
     const context = useAvatarContext(FALLBACK_NAME, __scopeAvatar);
     const [canRender, setCanRender] = React.useState(delayMs === undefined);
+    const providedDocument = useDocument();
+    const documentWindow = providedDocument?.defaultView;
 
     React.useEffect(() => {
+      if (!documentWindow) return;
       if (delayMs !== undefined) {
-        const timerId = window.setTimeout(() => setCanRender(true), delayMs);
-        return () => window.clearTimeout(timerId);
+        const timerId = documentWindow.setTimeout(() => setCanRender(true), delayMs);
+        return () => documentWindow.clearTimeout(timerId);
       }
-    }, [delayMs]);
+    }, [delayMs, documentWindow]);
 
     return canRender && context.imageLoadingStatus !== 'loaded' ? (
       <Primitive.span {...fallbackProps} ref={forwardedRef} />
@@ -121,15 +125,17 @@ function useImageLoadingStatus(
   { referrerPolicy, crossOrigin }: AvatarImageProps
 ) {
   const [loadingStatus, setLoadingStatus] = React.useState<ImageLoadingStatus>('idle');
-
+  const providedDocument = useDocument();
+  const documentWindow = providedDocument?.defaultView;
   useLayoutEffect(() => {
+    if (!documentWindow) return;
     if (!src) {
       setLoadingStatus('error');
       return;
     }
 
     let isMounted = true;
-    const image = new window.Image();
+    const image = new documentWindow.Image();
 
     const updateStatus = (status: ImageLoadingStatus) => () => {
       if (!isMounted) return;
@@ -149,7 +155,7 @@ function useImageLoadingStatus(
     return () => {
       isMounted = false;
     };
-  }, [src, referrerPolicy, crossOrigin]);
+  }, [src, referrerPolicy, documentWindow, crossOrigin]);
 
   return loadingStatus;
 }
