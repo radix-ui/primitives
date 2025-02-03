@@ -1022,6 +1022,9 @@ importers:
       '@radix-ui/react-compose-refs':
         specifier: workspace:*
         version: link:../compose-refs
+      '@radix-ui/react-document-context':
+        specifier: workspace:*
+        version: link:../document-context
       '@radix-ui/react-primitive':
         specifier: workspace:*
         version: link:../primitive
@@ -1059,6 +1062,25 @@ importers:
       react-remove-scroll:
         specifier: ^2.6.3
         version: 2.6.3(@types/react@19.1.0)(react@19.1.0)
+      typescript:
+        specifier: ^5.7.3
+        version: 5.8.3
+
+  packages/react/document-context:
+    dependencies:
+      '@radix-ui/react-primitive':
+        specifier: workspace:*
+        version: link:../primitive
+    devDependencies:
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../../../internal/typescript-config
+      '@types/react':
+        specifier: ^19.0.7
+        version: 19.1.0
+      react:
+        specifier: ^19.0.0
+        version: 19.1.0
       typescript:
         specifier: ^5.7.3
         version: 5.8.3
@@ -1849,6 +1871,9 @@ importers:
 
   packages/react/portal:
     dependencies:
+      '@radix-ui/react-document-context':
+        specifier: workspace:*
+        version: link:../document-context
       '@radix-ui/react-primitive':
         specifier: workspace:*
         version: link:../primitive
@@ -2103,6 +2128,9 @@ importers:
       '@radix-ui/react-dismissable-layer':
         specifier: workspace:*
         version: link:../dismissable-layer
+      '@radix-ui/react-document-context':
+        specifier: workspace:*
+        version: link:../document-context
       '@radix-ui/react-dropdown-menu':
         specifier: workspace:*
         version: link:../dropdown-menu

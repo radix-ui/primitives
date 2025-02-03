@@ -64,6 +64,7 @@ const HoverCard: React.FC<HoverCardProps> = (props: ScopedProps<HoverCardProps>)
   const closeTimerRef = React.useRef(0);
   const hasSelectionRef = React.useRef(false);
   const isPointerDownOnContentRef = React.useRef(false);
+  const documentWindow = useDocument()?.defaultView;
 
   const [open, setOpen] = useControllableState({
     prop: openProp,
@@ -74,15 +75,17 @@ const HoverCard: React.FC<HoverCardProps> = (props: ScopedProps<HoverCardProps>)
 
   const handleOpen = React.useCallback(() => {
     clearTimeout(closeTimerRef.current);
-    openTimerRef.current = window.setTimeout(() => setOpen(true), openDelay);
-  }, [openDelay, setOpen]);
+    if (!documentWindow) return;
+    openTimerRef.current = documentWindow.setTimeout(() => setOpen(true), openDelay);
+  }, [openDelay, setOpen, documentWindow]);
 
   const handleClose = React.useCallback(() => {
     clearTimeout(openTimerRef.current);
+    if (!documentWindow) return;
     if (!hasSelectionRef.current && !isPointerDownOnContentRef.current) {
-      closeTimerRef.current = window.setTimeout(() => setOpen(false), closeDelay);
+      closeTimerRef.current = documentWindow.setTimeout(() => setOpen(false), closeDelay);
     }
-  }, [closeDelay, setOpen]);
+  }, [closeDelay, setOpen, documentWindow]);
 
   const handleDismiss = React.useCallback(() => setOpen(false), [setOpen]);
 

@@ -228,7 +228,8 @@ function usePointerDownOutside(onPointerDownOutside?: (event: PointerDownOutside
 
   React.useEffect(() => {
     // Only add listeners if document exists
-    if (!providedDocument) return;
+    const documentWindow = providedDocument?.defaultView;
+    if (!documentWindow) return;
 
     const handlePointerDown = (event: PointerEvent) => {
       if (event.target && !isPointerInsideReactTreeRef.current) {
@@ -282,12 +283,12 @@ function usePointerDownOutside(onPointerDownOutside?: (event: PointerDownOutside
      *   })
      * });
      */
-    const timerId = window.setTimeout(() => {
+    const timerId = documentWindow.setTimeout(() => {
       providedDocument.addEventListener('pointerdown', handlePointerDown);
     }, 0);
 
     return () => {
-      window.clearTimeout(timerId);
+      documentWindow.clearTimeout(timerId);
       providedDocument?.removeEventListener('pointerdown', handlePointerDown);
       providedDocument?.removeEventListener('click', handleClickRef.current);
     };
