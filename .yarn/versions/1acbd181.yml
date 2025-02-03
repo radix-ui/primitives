@@ -8,6 +8,7 @@ releases:
   "@radix-ui/react-popper": patch
   "@radix-ui/react-select": patch
   "@radix-ui/react-tooltip": patch
+  radix-ui: patch
 
 declined:
   - primitives
