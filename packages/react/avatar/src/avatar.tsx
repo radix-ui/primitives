@@ -6,6 +6,7 @@ import { Primitive } from '@radix-ui/react-primitive';
 import { useIsHydrated } from '@radix-ui/react-use-is-hydrated';
 
 import type { Scope } from '@radix-ui/react-context';
+import { useDocument } from '@radix-ui/react-document-context';
 
 /* -------------------------------------------------------------------------------------------------
  * Avatar
@@ -99,13 +100,16 @@ const AvatarFallback = React.forwardRef<AvatarFallbackElement, AvatarFallbackPro
     const { __scopeAvatar, delayMs, ...fallbackProps } = props;
     const context = useAvatarContext(FALLBACK_NAME, __scopeAvatar);
     const [canRender, setCanRender] = React.useState(delayMs === undefined);
+    const providedDocument = useDocument();
+    const documentWindow = providedDocument?.defaultView;
 
     React.useEffect(() => {
+      if (!documentWindow) return;
       if (delayMs !== undefined) {
-        const timerId = window.setTimeout(() => setCanRender(true), delayMs);
-        return () => window.clearTimeout(timerId);
+        const timerId = documentWindow.setTimeout(() => setCanRender(true), delayMs);
+        return () => documentWindow.clearTimeout(timerId);
       }
-    }, [delayMs]);
+    }, [delayMs, documentWindow]);
 
     return canRender && context.imageLoadingStatus !== 'loaded' ? (
       <Primitive.span {...fallbackProps} ref={forwardedRef} />
@@ -136,10 +140,12 @@ function useImageLoadingStatus(
 ) {
   const isHydrated = useIsHydrated();
   const imageRef = React.useRef<HTMLImageElement | null>(null);
+  const providedDocument = useDocument();
+  const documentWindow = providedDocument?.defaultView;
   const image = (() => {
     if (!isHydrated) return null;
     if (!imageRef.current) {
-      imageRef.current = new window.Image();
+      imageRef.current = new (documentWindow || globalThis.window).Image();
     }
     return imageRef.current;
   })();
