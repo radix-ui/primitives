@@ -21,29 +21,3 @@ export function useDocument() {
   // Return default document if available and no context value
   return doc ?? (typeof document !== 'undefined' ? globalThis?.document : null);
 }
-
-// For components that absolutely need a document
-export function useDocumentStrict() {
-  const doc = useDocument();
-  if (!doc) {
-    throw new Error(
-      '`useDocumentStrict` must be used within a `DocumentProvider` or in a browser environment'
-    );
-  }
-  return doc;
-}
-
-type PropsWithDocument = { document?: Document };
-
-// Fixed HOC with proper type handling
-export function withDocument<P extends PropsWithDocument, R = unknown>(
-  Component: React.ComponentType<P>
-) {
-  const WithDocument = React.forwardRef<R, Omit<P, 'document'>>((props, ref) => {
-    const providedDocument = useDocument();
-    return <Component {...(props as any)} ref={ref} document={providedDocument || undefined} />;
-  });
-
-  WithDocument.displayName = `WithDocument(${Component.displayName || Component.name || 'Component'})`;
-  return WithDocument;
-}
