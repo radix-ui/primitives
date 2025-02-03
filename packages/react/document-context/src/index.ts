@@ -1,3 +1,3 @@
 'use client';
 
-export { DocumentProvider, useDocument, withDocument } from './DocumentContext';
+export { DocumentProvider, useDocument } from './DocumentContext';
