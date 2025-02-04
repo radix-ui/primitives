@@ -195,7 +195,6 @@ const DropdownMenuContent = React.forwardRef<DropdownMenuContentElement, Dropdow
           if (!context.modal || isRightClick) hasInteractedOutsideRef.current = true;
         })}
         style={{
-          ...props.style,
           // re-namespace exposed content custom properties
           ...{
             '--radix-dropdown-menu-content-transform-origin':
@@ -206,6 +205,7 @@ const DropdownMenuContent = React.forwardRef<DropdownMenuContentElement, Dropdow
             '--radix-dropdown-menu-trigger-width': 'var(--radix-popper-anchor-width)',
             '--radix-dropdown-menu-trigger-height': 'var(--radix-popper-anchor-height)',
           },
+          ...props.style,
         }}
       />
     );
@@ -472,7 +472,6 @@ const DropdownMenuSubContent = React.forwardRef<
       {...subContentProps}
       ref={forwardedRef}
       style={{
-        ...props.style,
         // re-namespace exposed content custom properties
         ...{
           '--radix-dropdown-menu-content-transform-origin': 'var(--radix-popper-transform-origin)',
@@ -481,6 +480,7 @@ const DropdownMenuSubContent = React.forwardRef<
           '--radix-dropdown-menu-trigger-width': 'var(--radix-popper-anchor-width)',
           '--radix-dropdown-menu-trigger-height': 'var(--radix-popper-anchor-height)',
         },
+        ...props.style,
       }}
     />
   );

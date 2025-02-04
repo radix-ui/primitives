@@ -380,7 +380,6 @@ const MenubarContent = React.forwardRef<MenubarContentElement, MenubarContentPro
           { checkForDefaultPrevented: false }
         )}
         style={{
-          ...props.style,
           // re-namespace exposed content custom properties
           ...{
             '--radix-menubar-content-transform-origin': 'var(--radix-popper-transform-origin)',
@@ -389,6 +388,7 @@ const MenubarContent = React.forwardRef<MenubarContentElement, MenubarContentPro
             '--radix-menubar-trigger-width': 'var(--radix-popper-anchor-width)',
             '--radix-menubar-trigger-height': 'var(--radix-popper-anchor-height)',
           },
+          ...props.style,
         }}
       />
     );
@@ -658,7 +658,6 @@ const MenubarSubContent = React.forwardRef<MenubarSubContentElement, MenubarSubC
         {...subContentProps}
         ref={forwardedRef}
         style={{
-          ...props.style,
           // re-namespace exposed content custom properties
           ...{
             '--radix-menubar-content-transform-origin': 'var(--radix-popper-transform-origin)',
@@ -667,6 +666,7 @@ const MenubarSubContent = React.forwardRef<MenubarSubContentElement, MenubarSubC
             '--radix-menubar-trigger-width': 'var(--radix-popper-anchor-width)',
             '--radix-menubar-trigger-height': 'var(--radix-popper-anchor-height)',
           },
+          ...props.style,
         }}
       />
     );

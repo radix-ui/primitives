@@ -1,0 +1,4 @@
+releases:
+  "@radix-ui/react-context-menu": patch
+  "@radix-ui/react-dropdown-menu": patch
+  "@radix-ui/react-menubar": patch
