@@ -1,11 +1,4 @@
-import * as js from '@chance/eslint';
-import * as typescript from '@chance/eslint/typescript';
+// @ts-check
+import { configs } from '@repo/eslint-config';
 
-/** @type {import("eslint").Linter.Config[]} */
-const config = [
-  //
-  js.getConfig(),
-  typescript.config,
-];
-
-export default config;
+export default configs;

@@ -24,6 +24,7 @@
   ],
   "sideEffects": false,
   "scripts": {
+    "lint": "eslint src",
     "clean": "rm -rf dist",
     "version": "yarn version"
   },

@@ -9,7 +9,7 @@
     "packages/*/*"
   ],
   "scripts": {
-    "lint": "eslint packages",
+    "lint": "yarn workspaces foreach -pvW --exclude primitives run lint",
     "types:check": "tsc --skipLibCheck --noEmit",
     "test": "vitest",
     "test:ci": "yarn types:check && vitest run && yarn cypress:ci",
