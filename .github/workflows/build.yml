@@ -29,6 +29,8 @@ jobs:
       - name: Install dependencies
         if: steps.yarn-cache-dir-path.outputs.cache-hit != 'true'
         run: yarn
+      - name: Lint
+        run: yarn lint
       - name: Run build
         run: yarn build
       - name: Run tests
