@@ -716,6 +716,71 @@ export const WithVeryLongSelectItems = () => (
   </div>
 );
 
+export const WithCustomAutoScrollInterval = () => (
+  <div
+    style={{
+      padding: 20,
+      display: 'flex',
+      gap: 20,
+      alignItems: 'center',
+      justifyContent: 'center',
+    }}
+  >
+    {[
+      { speed: 'slower', interval: 80 },
+      { speed: 'default', interval: undefined },
+      { speed: 'faster', interval: 25 },
+    ].map(({ speed, interval }) => (
+      <Label>
+        {`(${speed} auto-scroll speed)`}
+        <br />
+        Choose an item:
+        <Select.Root defaultValue="item-25">
+          <Select.Trigger className={triggerClass()}>
+            <Select.Value />
+            <Select.Icon />
+          </Select.Trigger>
+          <Select.Portal>
+            <Select.Content className={contentClass()} sideOffset={5}>
+              <Select.ScrollUpButton
+                autoScrollInterval={interval}
+                className={scrollUpButtonClass()}
+              >
+                ▲
+              </Select.ScrollUpButton>
+              <Select.Viewport className={viewportClass()}>
+                {Array.from({ length: 50 }, (_, i) => {
+                  const value = `item-${i + 1}`;
+                  return (
+                    <Select.Item
+                      key={value}
+                      className={itemClass()}
+                      value={value}
+                      disabled={i > 5 && i < 9}
+                    >
+                      <Select.ItemText>item {i + 1}</Select.ItemText>
+                      <Select.ItemIndicator className={indicatorClass()}>
+                        <TickIcon />
+                      </Select.ItemIndicator>
+                    </Select.Item>
+                  );
+                })}
+              </Select.Viewport>
+              <Select.ScrollDownButton
+                autoScrollInterval={interval}
+                className={scrollDownButtonClass()}
+              >
+                ▼
+              </Select.ScrollDownButton>
+              <Select.Arrow />
+            </Select.Content>
+          </Select.Portal>
+        </Select.Root>
+      </Label>
+    ))}
+  </div>
+);
+
 export const ChromaticShortOptionsPaddedContent = () => (
   <ChromaticStoryShortOptions paddedElement="content" />
 );
