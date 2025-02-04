@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-announce",
-  "version": "0.2.1",
+  "version": "0.2.2-rc.1",
   "license": "MIT",
   "exports": {
     ".": {
@@ -61,5 +61,6 @@
   },
   "bugs": {
     "url": "https://github.com/radix-ui/primitives/issues"
-  }
+  },
+  "stableVersion": "0.2.1"
 }
