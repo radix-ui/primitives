@@ -62,11 +62,12 @@ const SlotClone = React.forwardRef<any, SlotCloneProps>((props, forwardedRef) =>
 
   if (React.isValidElement(children)) {
     const childrenRef = getElementRef(children);
-    return React.cloneElement(children, {
-      ...mergeProps(slotProps, children.props as AnyProps),
-      // @ts-ignore
-      ref: forwardedRef ? composeRefs(forwardedRef, childrenRef) : childrenRef,
-    });
+    const props = mergeProps(slotProps, children.props as AnyProps);
+    // do not pass ref to React.Fragment for React 19 compatibility
+    if (children.type !== React.Fragment) {
+      props.ref = forwardedRef ? composeRefs(forwardedRef, childrenRef) : childrenRef;
+    }
+    return React.cloneElement(children, props);
   }
 
   return React.Children.count(children) > 1 ? React.Children.only(null) : null;
@@ -87,7 +88,7 @@ const Slottable = ({ children }: { children: React.ReactNode }) => {
 type AnyProps = Record<string, any>;
 
 function isSlottable(
-  child: React.ReactNode
+  child: React.ReactNode,
 ): child is React.ReactElement<React.ComponentProps<typeof Slottable>, typeof Slottable> {
   return React.isValidElement(child) && child.type === Slottable;
 }
