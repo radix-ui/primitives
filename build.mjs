@@ -1,10 +1,15 @@
 import path from 'node:path';
+import fs from 'node:fs';
 import { globSync } from 'glob';
 import * as esbuild from 'esbuild';
 import * as tsup from 'tsup';
-import { execa } from 'execa';
 
 async function build(relativePath) {
+  const packageJson = path.resolve(relativePath, 'package.json');
+  if (!fs.existsSync(packageJson)) {
+    return;
+  }
+
   const tasks = [];
   const pkg = relativePath.split(path.sep).slice(2)[0];
   const files = ['index.ts'];
@@ -61,5 +66,3 @@ async function build(relativePath) {
 }
 
 globSync('packages/*/*').forEach(build);
-
-function done() {}
