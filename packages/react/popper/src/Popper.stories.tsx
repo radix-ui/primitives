@@ -448,6 +448,52 @@ export const Chromatic = () => {
 };
 Chromatic.parameters = { chromatic: { disable: false } };
 
+export const CollisionStrategy = () => {
+  const [flipOpen, setFlipOpen] = React.useState(false);
+  const [shiftOpen, setShiftOpen] = React.useState(false);
+
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-around',
+        gap: '16px',
+        height: '200vh',
+      }}
+    >
+      <Popper.Root>
+        <Popper.Anchor className={anchorClass()} onClick={() => setFlipOpen(true)}>
+          open (flip)
+        </Popper.Anchor>
+
+        {flipOpen && (
+          <Portal asChild>
+            <Popper.Content className={contentClass()} sideOffset={5}>
+              <button onClick={() => setFlipOpen(false)}>close</button>
+              <Popper.Arrow className={arrowClass()} width={20} height={10} offset={25} />
+            </Popper.Content>
+          </Portal>
+        )}
+      </Popper.Root>
+      <Popper.Root>
+        <Popper.Anchor className={anchorClass()} onClick={() => setShiftOpen(true)}>
+          open (shift)
+        </Popper.Anchor>
+
+        {shiftOpen && (
+          <Portal asChild>
+            <Popper.Content className={contentClass()} sideOffset={5} collisionStrategy="shift">
+              <button onClick={() => setShiftOpen(false)}>close</button>
+              <Popper.Arrow className={arrowClass()} width={20} height={10} offset={25} />
+            </Popper.Content>
+          </Portal>
+        )}
+      </Popper.Root>
+    </div>
+  );
+};
+
 const Scrollable = (props: any) => (
   <div
     style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '200vh' }}
