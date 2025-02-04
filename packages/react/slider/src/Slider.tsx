@@ -133,7 +133,7 @@ const Slider = React.forwardRef<SliderElement, SliderProps>(
       setValues((prevValues = []) => {
         const nextValues = getNextSortedValues(prevValues, nextValue, atIndex);
         if (hasMinStepsBetweenValues(nextValues, minStepsBetweenThumbs * step)) {
-          valueIndexToChangeRef.current = nextValues.indexOf(nextValue);
+          valueIndexToChangeRef.current = atIndex;
           const hasChanged = String(nextValues) !== String(prevValues);
           if (hasChanged && commit) onValueCommit(nextValues);
           return hasChanged ? nextValues : prevValues;
