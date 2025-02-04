@@ -1272,9 +1272,12 @@ const SelectItem = React.forwardRef<SelectItemElement, SelectItemProps>(
             ref={composedRefs}
             onFocus={composeEventHandlers(itemProps.onFocus, () => setIsFocused(true))}
             onBlur={composeEventHandlers(itemProps.onBlur, () => setIsFocused(false))}
-            onClick={composeEventHandlers(itemProps.onClick, () => {
+            onClick={composeEventHandlers(itemProps.onClick, (event) => {
               // Open on click when using a touch or pen device
-              if (pointerTypeRef.current !== 'mouse') handleSelect();
+              if (pointerTypeRef.current !== 'mouse') {
+                event.stopPropagation();
+                handleSelect();
+              }
             })}
             onPointerUp={composeEventHandlers(itemProps.onPointerUp, () => {
               // Using a mouse you should be able to do pointer down, move through
