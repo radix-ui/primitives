@@ -10,7 +10,7 @@
     "./react-package": "./react-package.js"
   },
   "scripts": {
-    "lint": "eslint ."
+    "lint": "eslint --max-warnings 0 ."
   },
   "dependencies": {
     "@chance/eslint": "^1.1.0",
