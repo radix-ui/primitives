@@ -122,6 +122,7 @@ interface PopperContentProps extends PrimitiveDivProps {
   sticky?: 'partial' | 'always';
   hideWhenDetached?: boolean;
   updatePositionStrategy?: 'optimized' | 'always';
+  updatePositionOnLayoutShift?: boolean;
   onPlaced?: () => void;
 }
 
@@ -140,6 +141,7 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
       sticky = 'partial',
       hideWhenDetached = false,
       updatePositionStrategy = 'optimized',
+      updatePositionOnLayoutShift = true,
       onPlaced,
       ...contentProps
     } = props;
@@ -178,6 +180,7 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
       whileElementsMounted: (...args) => {
         const cleanup = autoUpdate(...args, {
           animationFrame: updatePositionStrategy === 'always',
+          layoutShift: updatePositionOnLayoutShift,
         });
         return cleanup;
       },
