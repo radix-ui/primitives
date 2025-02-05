@@ -1,4 +1,5 @@
 declined:
+  - primitives
   - "@radix-ui/rect"
   - "@radix-ui/react-accessible-icon"
   - "@radix-ui/react-accordion"
