@@ -24,6 +24,7 @@
   ],
   "sideEffects": false,
   "scripts": {
+    "lint": "eslint --max-warnings 0 src",
     "clean": "rm -rf dist",
     "version": "yarn version"
   },
@@ -48,10 +49,12 @@
     "react-remove-scroll": "^2.6.3"
   },
   "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
     "@repo/test-data": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/react": "^19.0.7",
     "@types/react-dom": "^19.0.3",
+    "eslint": "^9.18.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "typescript": "^5.7.3"
