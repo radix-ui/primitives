@@ -4,4 +4,4 @@ export {
   Provider,
   //
   DirectionProvider,
-} from './Direction';
+} from './direction';

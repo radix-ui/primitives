@@ -5,4 +5,4 @@ export {
   Root,
   //
   useFocusGuards,
-} from './FocusGuards';
+} from './focus-guards';

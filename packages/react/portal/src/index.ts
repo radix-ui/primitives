@@ -3,5 +3,5 @@ export {
   Portal,
   //
   Root,
-} from './Portal';
-export type { PortalProps } from './Portal';
+} from './portal';
+export type { PortalProps } from './portal';

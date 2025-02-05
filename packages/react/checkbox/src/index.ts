@@ -7,5 +7,5 @@ export {
   //
   Root,
   Indicator,
-} from './Checkbox';
-export type { CheckboxProps, CheckboxIndicatorProps, CheckedState } from './Checkbox';
+} from './checkbox';
+export type { CheckboxProps, CheckboxIndicatorProps, CheckedState } from './checkbox';

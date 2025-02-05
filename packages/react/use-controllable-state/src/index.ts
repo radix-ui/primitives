@@ -1,1 +1,1 @@
-export { useControllableState } from './useControllableState';
+export { useControllableState } from './use-controllable-state';

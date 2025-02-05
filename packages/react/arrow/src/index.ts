@@ -2,5 +2,5 @@ export {
   Arrow,
   //
   Root,
-} from './Arrow';
-export type { ArrowProps } from './Arrow';
+} from './arrow';
+export type { ArrowProps } from './arrow';

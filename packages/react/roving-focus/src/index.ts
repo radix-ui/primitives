@@ -7,5 +7,5 @@ export {
   //
   Root,
   Item,
-} from './RovingFocusGroup';
-export type { RovingFocusGroupProps, RovingFocusItemProps } from './RovingFocusGroup';
+} from './roving-focus-group';
+export type { RovingFocusGroupProps, RovingFocusItemProps } from './roving-focus-group';
