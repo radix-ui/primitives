@@ -4,7 +4,18 @@ import styles from './Avatar.stories.module.css';
 export default { title: 'Components/Avatar' };
 
 const src = 'https://picsum.photos/id/1005/400/400';
+const otherSrc = 'https://picsum.photos/id/1006/400/400';
 const srcBroken = 'https://broken.link.com/broken-pic.jpg';
+
+const FakeFrameworkImage = (props: any) => {
+  console.log(props);
+
+  return (
+    <div>
+      <img {...props} alt="framework test" data-testid="framework-image-component" />
+    </div>
+  );
+};
 
 export const Styled = () => (
   <>
@@ -33,6 +44,36 @@ export const Styled = () => (
         <AvatarIcon />
       </Avatar.Fallback>
     </Avatar.Root>
+
+    <h1>With image framework component</h1>
+    <Avatar.Root className={rootClass()}>
+      <Avatar.Image
+        className={imageClass()}
+        alt="John Smith"
+        onLoadingStatusChange={console.log}
+        asChild
+      >
+        <FakeFrameworkImage src={otherSrc} />
+      </Avatar.Image>
+      <Avatar.Fallback className={fallbackClass()}>
+        <AvatarIcon />
+      </Avatar.Fallback>
+    </Avatar.Root>
+
+    <h1>With image framework component & with fallback (but broken src)</h1>
+    <Avatar.Root className={rootClass()}>
+      <Avatar.Image
+        className={imageClass()}
+        alt="John Smith"
+        onLoadingStatusChange={console.log}
+        asChild
+      >
+        <FakeFrameworkImage src={srcBroken} />
+      </Avatar.Image>
+      <Avatar.Fallback className={fallbackClass()}>
+        <AvatarIcon />
+      </Avatar.Fallback>
+    </Avatar.Root>
   </>
 );
 
@@ -55,6 +96,36 @@ export const Chromatic = () => (
     <Avatar.Root className={styles.root}>
       <Avatar.Image className={styles.image} alt="John Smith" src={srcBroken} />
       <Avatar.Fallback className={styles.fallback}>
+        <AvatarIcon />
+      </Avatar.Fallback>
+    </Avatar.Root>
+
+    <h1>With image framework component</h1>
+    <Avatar.Root className={rootClass()}>
+      <Avatar.Image
+        className={imageClass()}
+        alt="John Smith"
+        onLoadingStatusChange={console.log}
+        asChild
+      >
+        <FakeFrameworkImage src={otherSrc} />
+      </Avatar.Image>
+      <Avatar.Fallback className={fallbackClass()}>
+        <AvatarIcon />
+      </Avatar.Fallback>
+    </Avatar.Root>
+
+    <h1>With image framework component & with fallback (but broken src)</h1>
+    <Avatar.Root className={rootClass()}>
+      <Avatar.Image
+        className={imageClass()}
+        alt="John Smith"
+        onLoadingStatusChange={console.log}
+        asChild
+      >
+        <FakeFrameworkImage src={srcBroken} />
+      </Avatar.Image>
+      <Avatar.Fallback className={fallbackClass()}>
         <AvatarIcon />
       </Avatar.Fallback>
     </Avatar.Root>

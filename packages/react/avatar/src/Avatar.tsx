@@ -62,8 +62,13 @@ const AvatarImage = React.forwardRef<AvatarImageElement, AvatarImageProps>(
   (props: ScopedProps<AvatarImageProps>, forwardedRef) => {
     const { __scopeAvatar, src, onLoadingStatusChange = () => {}, ...imageProps } = props;
     const context = useAvatarContext(IMAGE_NAME, __scopeAvatar);
-    const imageLoadingStatus = useImageLoadingStatus(src, imageProps.referrerPolicy);
+    const { loadingStatus: imageLoadingStatus, setLoadingStatus } = useImageLoadingStatus(
+      src,
+      props.asChild,
+      imageProps.referrerPolicy
+    );
     const handleLoadingStatusChange = useCallbackRef((status: ImageLoadingStatus) => {
+      setLoadingStatus(status);
       onLoadingStatusChange(status);
       context.onImageLoadingStatusChange(status);
     });
@@ -73,6 +78,35 @@ const AvatarImage = React.forwardRef<AvatarImageElement, AvatarImageProps>(
         handleLoadingStatusChange(imageLoadingStatus);
       }
     }, [imageLoadingStatus, handleLoadingStatusChange]);
+
+    if (props.asChild && props.children) {
+      if (imageLoadingStatus === 'error') {
+        return null;
+      }
+
+      // Ensure children is a valid React element
+      const child = React.Children.only(props.children) as React.ReactElement;
+
+      const { asChild, children, ...restProps } = props;
+
+      const childProps = child.props;
+
+      // Clone the child to add onLoad and onError event listeners
+      return React.cloneElement(child, {
+        ...restProps,
+        ...child.props,
+        onError: (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
+          console.log('error');
+          handleLoadingStatusChange('error');
+          if (childProps.onError) childProps.onError(event);
+        },
+        onLoad: (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
+          console.log('loaded');
+          handleLoadingStatusChange('loaded');
+          if (childProps.onLoad) childProps.onLoad(event);
+        },
+      });
+    }
 
     return imageLoadingStatus === 'loaded' ? (
       <Primitive.img {...imageProps} ref={forwardedRef} src={src} />
@@ -89,6 +123,7 @@ AvatarImage.displayName = IMAGE_NAME;
 const FALLBACK_NAME = 'AvatarFallback';
 
 type AvatarFallbackElement = React.ElementRef<typeof Primitive.span>;
+
 interface AvatarFallbackProps extends PrimitiveSpanProps {
   delayMs?: number;
 }
@@ -116,10 +151,18 @@ AvatarFallback.displayName = FALLBACK_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
-function useImageLoadingStatus(src?: string, referrerPolicy?: React.HTMLAttributeReferrerPolicy) {
+function useImageLoadingStatus(
+  src?: string,
+  bypass?: boolean,
+  referrerPolicy?: React.HTMLAttributeReferrerPolicy
+) {
   const [loadingStatus, setLoadingStatus] = React.useState<ImageLoadingStatus>('idle');
 
   useLayoutEffect(() => {
+    if (bypass) {
+      setLoadingStatus('idle');
+      return;
+    }
     if (!src) {
       setLoadingStatus('error');
       return;
@@ -144,9 +187,9 @@ function useImageLoadingStatus(src?: string, referrerPolicy?: React.HTMLAttribut
     return () => {
       isMounted = false;
     };
-  }, [src, referrerPolicy]);
+  }, [src, bypass, referrerPolicy]);
 
-  return loadingStatus;
+  return { loadingStatus, setLoadingStatus };
 }
 const Root = Avatar;
 const Image = AvatarImage;
