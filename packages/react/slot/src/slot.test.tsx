@@ -117,7 +117,22 @@ describe('given a Button with Slottable', () => {
         </Button>
       );
 
-      expect(tree.container).toMatchSnapshot();
+      expect(tree.container).toMatchInlineSnapshot(`
+        <div>
+          <button>
+            <span>
+              left
+            </span>
+            Button 
+            <em>
+              text
+            </em>
+            <span>
+              right
+            </span>
+          </button>
+        </div>
+      `);
     });
   });
 
@@ -131,7 +146,24 @@ describe('given a Button with Slottable', () => {
         </Button>
       );
 
-      expect(tree.container).toMatchSnapshot();
+      expect(tree.container).toMatchInlineSnapshot(`
+        <div>
+          <a
+            href="https://radix-ui.com"
+          >
+            <span>
+              left
+            </span>
+            Button 
+            <em>
+              text
+            </em>
+            <span>
+              right
+            </span>
+          </a>
+        </div>
+      `);
     });
   });
 });
