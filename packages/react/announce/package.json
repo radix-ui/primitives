@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-announce",
-  "version": "0.2.2-rc.3",
+  "version": "0.2.2-rc.4",
   "license": "MIT",
   "exports": {
     ".": {
