@@ -31,8 +31,8 @@
   "dependencies": {
     "@radix-ui/react-compose-refs": "workspace:*",
     "@radix-ui/react-context": "workspace:*",
-    "@radix-ui/react-use-controllable-state": "workspace:*",
-    "@radix-ui/react-primitive": "workspace:*"
+    "@radix-ui/react-primitive": "workspace:*",
+    "@radix-ui/react-use-controllable-state": "workspace:*"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
