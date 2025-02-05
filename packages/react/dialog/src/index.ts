@@ -21,7 +21,7 @@ export {
   Close,
   //
   WarningProvider,
-} from './Dialog';
+} from './dialog';
 export type {
   DialogProps,
   DialogTriggerProps,
@@ -31,4 +31,4 @@ export type {
   DialogTitleProps,
   DialogDescriptionProps,
   DialogCloseProps,
-} from './Dialog';
+} from './dialog';

@@ -1,2 +1,2 @@
-export { createContext, createContextScope } from './createContext';
-export type { CreateScope, Scope } from './createContext';
+export { createContext, createContextScope } from './create-context';
+export type { CreateScope, Scope } from './create-context';

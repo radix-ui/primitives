@@ -2,5 +2,5 @@ export {
   AspectRatio,
   //
   Root,
-} from './AspectRatio';
-export type { AspectRatioProps } from './AspectRatio';
+} from './aspect-ratio';
+export type { AspectRatioProps } from './aspect-ratio';

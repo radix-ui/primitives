@@ -2,5 +2,5 @@ export {
   VisuallyHidden,
   //
   Root,
-} from './VisuallyHidden';
-export type { VisuallyHiddenProps } from './VisuallyHidden';
+} from './visually-hidden';
+export type { VisuallyHiddenProps } from './visually-hidden';

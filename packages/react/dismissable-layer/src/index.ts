@@ -5,5 +5,5 @@ export {
   //
   Root,
   Branch,
-} from './DismissableLayer';
-export type { DismissableLayerProps } from './DismissableLayer';
+} from './dismissable-layer';
+export type { DismissableLayerProps } from './dismissable-layer';

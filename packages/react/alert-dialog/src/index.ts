@@ -21,7 +21,7 @@ export {
   Cancel,
   Title,
   Description,
-} from './AlertDialog';
+} from './alert-dialog';
 export type {
   AlertDialogProps,
   AlertDialogTriggerProps,
@@ -32,4 +32,4 @@ export type {
   AlertDialogCancelProps,
   AlertDialogTitleProps,
   AlertDialogDescriptionProps,
-} from './AlertDialog';
+} from './alert-dialog';

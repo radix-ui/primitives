@@ -3,5 +3,5 @@ export {
   FocusScope,
   //
   Root,
-} from './FocusScope';
-export type { FocusScopeProps } from './FocusScope';
+} from './focus-scope';
+export type { FocusScopeProps } from './focus-scope';
