@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-checkbox",
-  "version": "1.1.4-rc.4",
+  "version": "1.1.4",
   "license": "MIT",
   "exports": {
     ".": {
@@ -69,6 +69,5 @@
   },
   "bugs": {
     "url": "https://github.com/radix-ui/primitives/issues"
-  },
-  "stableVersion": "1.1.3"
+  }
 }

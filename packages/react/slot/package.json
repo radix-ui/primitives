@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-slot",
-  "version": "1.1.2-rc.4",
+  "version": "1.1.2",
   "license": "MIT",
   "exports": {
     ".": {
@@ -57,6 +57,5 @@
   },
   "bugs": {
     "url": "https://github.com/radix-ui/primitives/issues"
-  },
-  "stableVersion": "1.1.1"
+  }
 }
