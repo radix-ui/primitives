@@ -66,12 +66,18 @@ function createContextScope(scopeName: string, createContextScopeDeps: CreateSco
 
     Provider.displayName = rootComponentName + 'Provider';
 
-    function useContext(consumerName: string, scope: Scope<ContextValueType | undefined>) {
-      const Context = scope?.[scopeName]?.[index] || BaseContext;
+    function useContext(
+      consumerName: string,
+      scope: Scope<ContextValueType | undefined>,
+      options: { isOptional?: boolean } = {}
+    ) {
+      const Context = scope?.[scopeName][index] || BaseContext;
       const context = React.useContext(Context);
+      const { isOptional } = options;
+      if (isOptional) return {} as ContextValueType;
       if (context) return context;
       if (defaultContext !== undefined) return defaultContext;
-      // if a defaultContext wasn't specified, it's a required context.
+      // if a defaultContext wasn't specified and isOptional is false, it's a required context.
       throw new Error(`\`${consumerName}\` must be used within \`${rootComponentName}\``);
     }
 

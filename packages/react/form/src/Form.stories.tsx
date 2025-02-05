@@ -107,10 +107,11 @@ export const Cypress = () => {
         <Form.Field name="name">
           <Form.Label>Name (required)</Form.Label>
           <Form.Control type="text" required />
-          <Form.Message match="valueMissing" />
           <Form.Message match="valid">valid!</Form.Message>
         </Form.Field>
 
+        {/* This Form.Message is used out of the Form.Field context */}
+        <Form.Message match="valueMissing" name="name" />
         <Form.Field name="age">
           <Form.Label>Age (0-99)</Form.Label>
           <Form.Control type="number" min="0" max="99" step="1" />
