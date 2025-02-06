@@ -6,7 +6,7 @@ import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { createPortal } from 'react-dom';
 import * as DocumentContext from '@radix-ui/react-document-context';
 
-import styles from './DocumentContext.stories.module.css';
+import styles from './document-context.stories.module.css';
 export default { title: 'Utilities/DocumentContext' };
 
 export const Default = () => {
