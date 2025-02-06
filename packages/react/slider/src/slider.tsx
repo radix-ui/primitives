@@ -550,17 +550,22 @@ type SliderThumbImplElement = React.ElementRef<typeof Primitive.span>;
 interface SliderThumbImplProps extends PrimitiveSpanProps {
   index: number;
   name?: string;
+  disableNativeInput?: boolean;
 }
 
 const SliderThumbImpl = React.forwardRef<SliderThumbImplElement, SliderThumbImplProps>(
   (props: ScopedProps<SliderThumbImplProps>, forwardedRef) => {
-    const { __scopeSlider, index, name, ...thumbProps } = props;
+    const { __scopeSlider, index, name, disableNativeInput, ...thumbProps } = props;
     const context = useSliderContext(THUMB_NAME, __scopeSlider);
     const orientation = useSliderOrientationContext(THUMB_NAME, __scopeSlider);
     const [thumb, setThumb] = React.useState<HTMLSpanElement | null>(null);
     const composedRefs = useComposedRefs(forwardedRef, (node) => setThumb(node));
     // We set this to true by default so that events bubble to forms without JS (SSR)
-    const isFormControl = thumb ? context.form || !!thumb.closest('form') : true;
+    const isFormControl = disableNativeInput
+      ? false
+      : thumb
+        ? context.form || !!thumb.closest('form')
+        : true;
     const size = useSize(thumb);
     // We cast because index could be `-1` which would return undefined
     const value = context.values[index] as number | undefined;
