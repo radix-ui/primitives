@@ -2383,6 +2383,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-password-strength@workspace:packages/react/password-strength"
   dependencies:
+    "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
