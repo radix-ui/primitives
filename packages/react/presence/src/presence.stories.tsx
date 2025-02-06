@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Presence } from '@radix-ui/react-presence';
 
-import styles from './Presence.stories.module.css';
+import styles from './presence.stories.module.css';
 import { useDocument } from '@radix-ui/react-document-context';
 
 export default { title: 'Utilities/Presence' };
