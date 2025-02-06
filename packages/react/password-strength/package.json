@@ -29,6 +29,7 @@
     "version": "yarn version"
   },
   "dependencies": {
+    "@radix-ui/primitive": "workspace:*",
     "@radix-ui/react-compose-refs": "workspace:*",
     "@radix-ui/react-context": "workspace:*",
     "@radix-ui/react-primitive": "workspace:*",
