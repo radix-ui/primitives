@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-form",
-  "version": "0.1.2",
+  "version": "0.1.3-rc.1",
   "license": "MIT",
   "exports": {
     ".": {
@@ -67,5 +67,6 @@
   },
   "bugs": {
     "url": "https://github.com/radix-ui/primitives/issues"
-  }
+  },
+  "stableVersion": "0.1.2"
 }
