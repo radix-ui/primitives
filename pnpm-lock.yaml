@@ -1584,6 +1584,9 @@ importers:
 
   packages/react/password-strength:
     dependencies:
+      '@radix-ui/primitive':
+        specifier: workspace:*
+        version: link:../../core/primitive
       '@radix-ui/react-compose-refs':
         specifier: workspace:*
         version: link:../compose-refs
