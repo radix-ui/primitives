@@ -17,8 +17,8 @@ export {
   Arrow,
 } from './tooltip';
 export type {
-  TooltipProviderProps,
   TooltipProps,
+  TooltipProviderProps,
   TooltipTriggerProps,
   TooltipPortalProps,
   TooltipContentProps,
