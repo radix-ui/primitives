@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-use-controllable-state",
-  "version": "1.1.1-rc.3",
+  "version": "1.1.1-rc.4",
   "license": "MIT",
   "exports": {
     ".": {
