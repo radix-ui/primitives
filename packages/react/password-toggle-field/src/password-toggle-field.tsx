@@ -30,7 +30,7 @@ type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface PasswordToggleFieldProps extends PrimitiveDivProps {
   visible?: boolean;
   defaultVisible?: boolean;
-  onVisiblityChange?(visible: boolean): void;
+  onVisiblityChange?: (visible: boolean) => void;
 }
 
 const PasswordToggleField = React.forwardRef<HTMLDivElement, PasswordToggleFieldProps>(
