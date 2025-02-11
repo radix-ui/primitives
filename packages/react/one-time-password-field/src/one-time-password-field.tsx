@@ -331,6 +331,8 @@ const OneTimePasswordFieldInput = React.forwardRef<
       pattern="\d{1}"
       readOnly={context.readOnly}
       value={char}
+      data-radix-otp-input=""
+      data-radix-index={index}
       onChange={composeEventHandlers(onChange, (event) => {
         // Only update the value if it matches the input pattern (number only)
         if (event.target.validity.valid) {
@@ -375,11 +377,20 @@ function useOneTimePasswordFieldContext() {
 }
 
 function focusSibling(input: HTMLInputElement, { back = false } = {}) {
-  // TODO: update
-  const siblingInput = back ? input.previousSibling : input.nextSibling;
-  if (siblingInput && siblingInput instanceof HTMLInputElement && siblingInput.type !== 'hidden') {
+  const parent = input.parentElement;
+  const index = input.dataset.index ? Number.parseInt(input.dataset.index) : Number.NaN;
+  if (Number.isNaN(index)) {
+    return;
+  }
+
+  const siblingInput = parent?.querySelector<HTMLElement>(
+    `[data-radix-otp-input][data-radix-index="${index + (back ? -1 : 1)}"]`
+  );
+  if (siblingInput) {
     siblingInput.focus();
-    siblingInput.select();
+    if (siblingInput instanceof HTMLInputElement) {
+      siblingInput.select();
+    }
   }
 }
 
