@@ -10,14 +10,14 @@ export {
   PasswordStrength,
   PasswordStrengthProgress,
   PasswordStrengthInput,
-  PasswordStrengthBar,
+  PasswordStrengthIndicator,
   PasswordStrengthRules,
   PasswordStrengthAnnounce,
   //
   Root,
   Progress,
   Input,
-  Bar,
+  Indicator,
   Rules,
   Announce,
 } from './password-strength';

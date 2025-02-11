@@ -82,8 +82,8 @@ const PasswordStrength: React.FC<PasswordStrengthProps> = function PasswordStren
 };
 
 interface PasswordStrengthProgressContextValue {
-  bars: any[];
-  setBars: React.Dispatch<React.SetStateAction<any[]>>;
+  indicators: any[];
+  setIndicators: React.Dispatch<React.SetStateAction<any[]>>;
 }
 
 const PasswordStrengthProgressContext =
@@ -111,7 +111,7 @@ const PasswordStrengthProgress = React.forwardRef<HTMLDivElement, PasswordStreng
     forwardedRef
   ) {
     const { rules, progress, validatedRuleCount } = usePasswordStrengthContext();
-    const [bars, setBars] = React.useState<any[]>([]);
+    const [indicators, setIndicators] = React.useState<any[]>([]);
     const totalRuleCount = rules.length;
 
     let ariaValueText: string | undefined;
@@ -130,7 +130,7 @@ const PasswordStrengthProgress = React.forwardRef<HTMLDivElement, PasswordStreng
     }
 
     return (
-      <PasswordStrengthProgressContext.Provider value={{ bars, setBars }}>
+      <PasswordStrengthProgressContext.Provider value={{ indicators, setIndicators }}>
         <Primitive.div
           ref={forwardedRef}
           role="progressbar"
@@ -192,28 +192,29 @@ const PasswordStrengthInput = React.forwardRef<HTMLInputElement, PasswordStrengt
   }
 );
 
-interface PasswordStrengthBarProps extends React.ComponentPropsWithoutRef<typeof Primitive.div> {}
+interface PasswordStrengthIndicatorProps
+  extends React.ComponentPropsWithoutRef<typeof Primitive.div> {}
 
-const PasswordStrengthBar = React.forwardRef<HTMLDivElement, PasswordStrengthBarProps>(
-  function PasswordStrengthBar({ style, ...props }, forwardedRef) {
+const PasswordStrengthIndicator = React.forwardRef<HTMLDivElement, PasswordStrengthIndicatorProps>(
+  function PasswordStrengthIndicator({ style, ...props }, forwardedRef) {
     const { progress, rules } = usePasswordStrengthContext();
-    const { bars, setBars } = usePasswordStrengthProgressContext();
+    const { indicators, setIndicators } = usePasswordStrengthProgressContext();
     const [instance] = React.useState(() => Object.create(null));
-    const index = bars.findIndex((bar) => bar === instance);
+    const index = indicators.findIndex((i) => i === instance);
     const ownScore = index === -1 ? 0 : calculateElementProgress(progress, index, rules.length);
     React.useEffect(() => {
-      setBars((bars) => [...bars, instance]);
+      setIndicators((indicators) => [...indicators, instance]);
       return () => {
-        setBars((bars) => bars.filter((bar) => bar !== instance));
+        setIndicators((indicators) => indicators.filter((i) => i !== instance));
       };
-    }, [instance, setBars]);
+    }, [instance, setIndicators]);
 
     return (
       <Primitive.div
         style={
           {
             ...style,
-            '--radix-password-strength-bar-progress': ownScore,
+            '--radix-password-strength-indicator-progress': ownScore,
           } as React.CSSProperties
         }
         aria-hidden
@@ -312,7 +313,7 @@ interface ValidatedRule {
 const Root = PasswordStrength;
 const Progress = PasswordStrengthProgress;
 const Input = PasswordStrengthInput;
-const Bar = PasswordStrengthBar;
+const Indicator = PasswordStrengthIndicator;
 const Rules = PasswordStrengthRules;
 const Announce = PasswordStrengthAnnounce;
 
@@ -320,14 +321,14 @@ export {
   PasswordStrength,
   PasswordStrengthProgress,
   PasswordStrengthInput,
-  PasswordStrengthBar,
+  PasswordStrengthIndicator,
   PasswordStrengthRules,
   PasswordStrengthAnnounce,
   //
   Root,
   Progress,
   Input,
-  Bar,
+  Indicator,
   Rules,
   Announce,
 };
