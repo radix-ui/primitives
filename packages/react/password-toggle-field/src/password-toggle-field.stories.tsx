@@ -3,7 +3,7 @@ import * as PasswordToggleField from '@radix-ui/react-password-toggle-field';
 import styles from './password-toggle-field.stories.module.css';
 
 export default {
-  title: 'Components/PasswordToggle',
+  title: 'Components/PasswordToggleField',
 };
 
 export const Styled = () => {
@@ -15,6 +15,28 @@ export const Styled = () => {
           {({ visible }) => (visible ? <EyeOpenIcon /> : <EyeClosedIcon />)}
         </PasswordToggleField.Toggle>
       </PasswordToggleField.Root>
+    </div>
+  );
+};
+
+export const Controlled = () => {
+  const [visible, setVisible] = React.useState(false);
+  return (
+    <div className={styles.viewport}>
+      <PasswordToggleField.Root
+        className={styles.field}
+        visible={visible}
+        onVisiblityChange={setVisible}
+      >
+        <PasswordToggleField.Input className={styles.input} />
+        <PasswordToggleField.Toggle className={styles.toggle}>
+          {({ visible }) => (visible ? <EyeOpenIcon /> : <EyeClosedIcon />)}
+        </PasswordToggleField.Toggle>
+      </PasswordToggleField.Root>
+      <hr />
+      <button type="button" onClick={() => setVisible((v) => !v)}>
+        Outside Toggle
+      </button>
     </div>
   );
 };
