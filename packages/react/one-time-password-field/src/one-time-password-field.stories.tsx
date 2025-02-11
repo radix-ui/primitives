@@ -54,15 +54,16 @@ export const Styled = () => {
             ref={rootRef}
             onValueChange={(value) => setCode(value)}
             value={code}
+            length={6}
           >
-            <OneTimePasswordField.Input />
-            <OneTimePasswordField.Input />
-            <OneTimePasswordField.Input />
-            <OneTimePasswordField.Input />
-            <OneTimePasswordField.Input />
-            <OneTimePasswordField.Input />
-
-            <OneTimePasswordField.HiddenInput />
+            {({ inputs }) => (
+              <>
+                {inputs.map((input) => (
+                  <OneTimePasswordField.Input key={input.index} index={input.index} />
+                ))}
+                <OneTimePasswordField.HiddenInput />
+              </>
+            )}
           </OneTimePasswordField.Root>
           {error && <ErrorMessage>{error}</ErrorMessage>}
         </div>
