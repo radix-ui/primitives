@@ -84,29 +84,19 @@ const PasswordStrength: React.FC<PasswordStrengthProps> = function PasswordStren
   );
 };
 
-interface PasswordStrengthProgressContextValue {
-  indicators: any[];
-  setIndicators: React.Dispatch<React.SetStateAction<any[]>>;
-}
-
-const PasswordStrengthProgressContext =
-  React.createContext<PasswordStrengthProgressContextValue | null>(null);
-PasswordStrengthProgressContext.displayName = 'PasswordStrengthProgressContext';
-
-function usePasswordStrengthProgressContext() {
-  const context = React.useContext(PasswordStrengthProgressContext);
-  if (!context) {
-    throw Error('usePasswordStrengthProgressContext must be called in PasswordStrength.Meter');
-  }
-  return context;
-}
-
-interface PasswordStrengthProgressProps
-  extends Omit<React.ComponentPropsWithoutRef<typeof Primitive.div>, 'aria-valuetext'> {
+interface PasswordStrengthProgressOwnProps {
+  children?: ((args: { rules: Array<ValidatedRule> }) => React.ReactNode) | React.ReactNode;
   'aria-valuetext'?:
     | string
     | ((props: { rules: ValidatedRule[]; total: number; validated: number }) => string);
 }
+
+interface PasswordStrengthProgressProps
+  extends Omit<
+      React.ComponentPropsWithoutRef<typeof Primitive.div>,
+      keyof PasswordStrengthProgressOwnProps
+    >,
+    PasswordStrengthProgressOwnProps {}
 
 const PasswordStrengthProgress = React.forwardRef<HTMLDivElement, PasswordStrengthProgressProps>(
   function PasswordStrengthProgress(
@@ -114,7 +104,6 @@ const PasswordStrengthProgress = React.forwardRef<HTMLDivElement, PasswordStreng
     forwardedRef
   ) {
     const { rules, progress, validatedRuleCount } = usePasswordStrengthContext();
-    const [indicators, setIndicators] = React.useState<any[]>([]);
     const totalRuleCount = rules.length;
 
     let ariaValueText: string | undefined;
@@ -133,28 +122,26 @@ const PasswordStrengthProgress = React.forwardRef<HTMLDivElement, PasswordStreng
     }
 
     return (
-      <PasswordStrengthProgressContext.Provider value={{ indicators, setIndicators }}>
-        <Primitive.div
-          ref={forwardedRef}
-          role="progressbar"
-          aria-label="Password strength"
-          aria-valuemin={0}
-          aria-valuemax={1}
-          aria-valuetext={ariaValueText}
-          aria-valuenow={progress}
-          style={
-            {
-              '--radix-password-strength-progress': progress,
-              '--radix-password-strength-rule-count': totalRuleCount,
-              '--radix-password-strength-step': Math.ceil(progress * totalRuleCount),
-            } as React.CSSProperties
-          }
-          data-step={Math.ceil(progress * totalRuleCount)}
-          {...props}
-        >
-          {children}
-        </Primitive.div>
-      </PasswordStrengthProgressContext.Provider>
+      <Primitive.div
+        ref={forwardedRef}
+        role="progressbar"
+        aria-label="Password strength"
+        aria-valuemin={0}
+        aria-valuemax={1}
+        aria-valuetext={ariaValueText}
+        aria-valuenow={progress}
+        style={
+          {
+            '--radix-password-strength-progress': progress,
+            '--radix-password-strength-rule-count': totalRuleCount,
+            '--radix-password-strength-step': Math.ceil(progress * totalRuleCount),
+          } as React.CSSProperties
+        }
+        data-step={Math.ceil(progress * totalRuleCount)}
+        {...props}
+      >
+        {typeof children === 'function' ? children({ rules }) : children}
+      </Primitive.div>
     );
   }
 );
@@ -196,22 +183,14 @@ const PasswordStrengthInput = React.forwardRef<HTMLInputElement, PasswordStrengt
 );
 
 interface PasswordStrengthIndicatorProps
-  extends React.ComponentPropsWithoutRef<typeof Primitive.div> {}
+  extends React.ComponentPropsWithoutRef<typeof Primitive.div> {
+  index: number;
+}
 
 const PasswordStrengthIndicator = React.forwardRef<HTMLDivElement, PasswordStrengthIndicatorProps>(
-  function PasswordStrengthIndicator({ style, ...props }, forwardedRef) {
+  function PasswordStrengthIndicator({ style, index, ...props }, forwardedRef) {
     const { progress, rules } = usePasswordStrengthContext();
-    const { indicators, setIndicators } = usePasswordStrengthProgressContext();
-    const [instance] = React.useState(() => Object.create(null));
-    const index = indicators.findIndex((i) => i === instance);
-    const ownScore = index === -1 ? 0 : calculateElementProgress(progress, index, rules.length);
-    React.useEffect(() => {
-      setIndicators((indicators) => [...indicators, instance]);
-      return () => {
-        setIndicators((indicators) => indicators.filter((i) => i !== instance));
-      };
-    }, [instance, setIndicators]);
-
+    const ownScore = calculateElementProgress(progress, index, rules.length);
     return (
       <Primitive.div
         style={
@@ -221,6 +200,7 @@ const PasswordStrengthIndicator = React.forwardRef<HTMLDivElement, PasswordStren
           } as React.CSSProperties
         }
         aria-hidden
+        data-progress={ownScore}
         data-active={ownScore > 0}
         data-index={index}
         ref={forwardedRef}
@@ -297,10 +277,13 @@ const PasswordStrengthAnnounce = React.forwardRef<HTMLDivElement, PasswordStreng
   }
 );
 
-function calculateElementProgress(t: number, index: number, total: number): number {
-  if (total <= 1) return t;
-  const progress = t * total - index;
-  return Math.min(1, Math.max(0, progress));
+function calculateElementProgress(progress: number, index: number, ruleCount: number): number {
+  if (ruleCount <= 1) {
+    return progress;
+  }
+  const elementProgress = progress * ruleCount - index;
+  console.log(elementProgress);
+  return Math.min(1, Math.max(0, elementProgress));
 }
 
 interface PasswordStrengthRule {
