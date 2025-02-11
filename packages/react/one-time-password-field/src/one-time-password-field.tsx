@@ -1,17 +1,34 @@
 import { Primitive } from '@radix-ui/react-primitive';
-import { composeRefs, useComposedRefs } from '@radix-ui/react-compose-refs';
+import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { composeEventHandlers } from '@radix-ui/primitive';
+import { useIsHydrated } from '@radix-ui/react-use-is-hydrated';
 import * as React from 'react';
+
+type FieldState = 'valid' | 'invalid';
+type InputType = 'password' | 'text';
+type AutoComplete = 'off' | 'one-time-code';
 
 interface OneTimePasswordFieldContextValue {
   value: string[];
-  readOnly?: boolean;
-  state?: 'valid' | 'invalid';
+  setValue: React.Dispatch<React.SetStateAction<string[] | undefined>>;
+  state?: FieldState;
   onEnterPressed: () => void;
   onChildAdd: (input: HTMLInputElement) => void;
   onCharChange: (char: string, index: number) => void;
   allChildrenAdded: boolean;
+  hiddenInputRef: React.RefObject<HTMLInputElement | null>;
+  childrenRefs: React.RefObject<HTMLInputElement[]>;
+  //
+  disabled?: boolean;
+  readOnly?: boolean;
+  autoComplete: AutoComplete;
+  autoFocus?: boolean;
+  form?: string | undefined;
+  name?: string | undefined;
+  placeholder?: string | undefined;
+  required?: boolean;
+  type?: InputType;
 }
 
 const OneTimePasswordFieldContext = React.createContext<OneTimePasswordFieldContextValue | null>(
@@ -19,29 +36,53 @@ const OneTimePasswordFieldContext = React.createContext<OneTimePasswordFieldCont
 );
 OneTimePasswordFieldContext.displayName = 'OneTimePasswordFieldContext';
 
-type OneTimePasswordFieldProps = React.ComponentPropsWithoutRef<typeof Primitive.div> & {
+interface OneTimePasswordFieldOwnProps {
   onValueChange?: (value: string) => void;
   id?: string;
-  name?: string;
-  readOnly?: boolean;
-  state?: 'valid' | 'invalid';
+  state?: FieldState;
   value?: string;
   defaultValue?: string;
   autoSubmit?: boolean;
-};
+  //
+  disabled?: boolean;
+  readOnly?: boolean;
+  autoComplete?: AutoComplete;
+  autoFocus?: boolean;
+  form?: string | undefined;
+  name?: string | undefined;
+  placeholder?: string | undefined;
+  required?: boolean;
+  type?: InputType;
+}
+
+interface OneTimePasswordFieldProps
+  extends OneTimePasswordFieldOwnProps,
+    Omit<
+      React.ComponentPropsWithoutRef<typeof Primitive.div>,
+      keyof OneTimePasswordFieldOwnProps
+    > {}
 
 const OneTimePasswordField = React.forwardRef<HTMLDivElement, OneTimePasswordFieldProps>(
   function OneTimePasswordField(
     {
-      name,
       id,
       defaultValue,
       value: valueProp,
       onValueChange,
       autoSubmit,
       children,
-      readOnly,
       state,
+      onPaste,
+      //
+      disabled = false,
+      readOnly = false,
+      autoComplete = 'one-time-code',
+      autoFocus = false,
+      form,
+      name,
+      placeholder,
+      required = false,
+      type = 'password',
       ...domProps
     },
     forwardedRef
@@ -67,6 +108,7 @@ const OneTimePasswordField = React.forwardRef<HTMLDivElement, OneTimePasswordFie
           value.every((char) => char !== '') &&
           (enterPressed || lastCharIndex + 1 === childCount)
         ) {
+          // TODO: use `form` prop if provided
           hiddenInputRef.current?.form?.requestSubmit();
         }
       },
@@ -107,25 +149,45 @@ const OneTimePasswordField = React.forwardRef<HTMLDivElement, OneTimePasswordFie
       [childCount, setValue]
     );
 
-    const otpContext = React.useMemo(
+    const otpContext = React.useMemo<OneTimePasswordFieldContextValue>(
       () => ({
         value: value ?? createEmptyArray(childCount),
-        readOnly,
         state,
         allChildrenAdded,
         onEnterPressed: handleEnterPressed,
         onChildAdd: handleChildAdd,
         onCharChange: handleCharChange,
+        disabled,
+        readOnly,
+        autoComplete,
+        autoFocus,
+        form,
+        name,
+        placeholder,
+        required,
+        type,
+        hiddenInputRef,
+        setValue,
+        childrenRefs,
       }),
       [
         value,
         allChildrenAdded,
-        readOnly,
         state,
         childCount,
         handleEnterPressed,
         handleChildAdd,
         handleCharChange,
+        disabled,
+        readOnly,
+        autoComplete,
+        autoFocus,
+        form,
+        name,
+        placeholder,
+        required,
+        type,
+        setValue,
       ]
     );
 
@@ -135,7 +197,9 @@ const OneTimePasswordField = React.forwardRef<HTMLDivElement, OneTimePasswordFie
       <OneTimePasswordFieldContext.Provider value={otpContext}>
         <Primitive.div
           {...domProps}
-          onPaste={(event: React.ClipboardEvent<HTMLDivElement>) => {
+          ref={forwardedRef}
+          data-state={state}
+          onPaste={composeEventHandlers(onPaste, (event: React.ClipboardEvent<HTMLDivElement>) => {
             event.preventDefault();
             const pastedValue = event.clipboardData.getData('Text');
             const sanitizedValue = pastedValue.replace(/[^\d]/g, '').slice(0, childCount);
@@ -149,24 +213,54 @@ const OneTimePasswordField = React.forwardRef<HTMLDivElement, OneTimePasswordFie
 
             const index = Math.min(sanitizedValue.length, childCount - 1);
             childrenRefs.current?.[index]?.focus();
-          }}
+          })}
         >
           {children}
-          <input
-            ref={composeRefs(forwardedRef, hiddenInputRef)}
-            defaultValue={value?.join('')}
-            minLength={childCount}
-            name={name}
-            type="hidden"
-          />
         </Primitive.div>
       </OneTimePasswordFieldContext.Provider>
     );
   }
 );
 
+interface OneTimePasswordFieldHiddenInputProps
+  extends Omit<
+    React.ComponentProps<'input'>,
+    | keyof 'value'
+    | 'defaultValue'
+    | 'type'
+    | 'onChange'
+    | 'readOnly'
+    | 'disabled'
+    | 'autoComplete'
+    | 'autoFocus'
+  > {}
+
+const OneTimePasswordFieldHiddenInput = React.forwardRef<
+  HTMLInputElement,
+  OneTimePasswordFieldHiddenInputProps
+>(function OneTimePasswordFieldHiddenInput(props, forwardedRef) {
+  const { value, hiddenInputRef } = useOneTimePasswordFieldContext();
+  const ref = useComposedRefs(hiddenInputRef, forwardedRef);
+  return (
+    <input
+      ref={ref}
+      {...props}
+      type="hidden"
+      readOnly
+      value={value}
+      autoComplete="off"
+      autoFocus={false}
+      autoCapitalize="off"
+      autoCorrect="off"
+      autoSave="off"
+      spellCheck={false}
+    />
+  );
+});
+
 interface OneTimePasswordFieldInputOwnProps {
   autoComplete?: 'one-time-code' | 'off';
+  index?: number;
 }
 
 interface OneTimePasswordFieldInputProps
@@ -177,32 +271,49 @@ const OneTimePasswordFieldInput = React.forwardRef<
   HTMLInputElement,
   OneTimePasswordFieldInputProps
 >(function OneTimePasswordFieldInput(
-  { readOnly, autoComplete = 'off', onChange, onKeyDown, ...props },
+  { onChange, onKeyDown, index: indexProp, ...props },
   forwardedRef
 ) {
-  const otpContext = useOneTimePasswordFieldContext();
-  const inputRef = React.useRef<HTMLInputElement>(null);
-  const composedInputRef = useComposedRefs(forwardedRef, inputRef, otpContext.onChildAdd);
+  // TODO: warn if these values are passed
+  const {
+    value: _value,
+    defaultValue: _defaultValue,
+    disabled: _disabled,
+    readOnly: _readOnly,
+    autoComplete: _autoComplete,
+    autoFocus: _autoFocus,
+    form: _form,
+    name: _name,
+    placeholder: _placeholder,
+    required: _required,
+    type: _type,
+    ...domProps
+  } = props as any;
 
-  const index = Number(inputRef.current?.dataset.index ?? -1);
-  const char = otpContext.value[index] ?? '';
+  const context = useOneTimePasswordFieldContext();
+  const inputRef = React.useRef<HTMLInputElement>(null);
+  const composedInputRef = useComposedRefs(forwardedRef, inputRef, context.onChildAdd);
+  const isHydrated = useIsHydrated();
+
+  const index =
+    indexProp != null ? indexProp : isHydrated ? Number(inputRef.current?.dataset.index ?? -1) : -1;
+  const char = context.value[index] ?? '';
 
   return (
     <Primitive.input
       ref={composedInputRef}
-      autoComplete={index === 0 ? autoComplete : 'off'}
-      color={otpContext.state === 'invalid' ? 'red' : undefined}
+      autoComplete={index === 0 ? context.autoComplete : 'off'}
       inputMode="numeric"
       maxLength={1}
       pattern="\d{1}"
-      readOnly={readOnly ?? otpContext.readOnly}
+      readOnly={context.readOnly}
       value={char}
       onChange={composeEventHandlers(onChange, (event) => {
         // Only update the value if it matches the input pattern (number only)
         if (event.target.validity.valid) {
           const char = event.target.value;
           const index = Number(event.target.dataset.index ?? -1);
-          otpContext.onCharChange(char, index);
+          context.onCharChange(char, index);
           if (char !== '') {
             focusSibling(event.currentTarget, { back: char === '' });
           }
@@ -215,13 +326,19 @@ const OneTimePasswordFieldInput = React.forwardRef<
         } else if (event.key === 'ArrowRight') {
           focusSibling(event.currentTarget);
           event.preventDefault();
-        } else if (event.key === 'Backspace' && char === '') {
-          focusSibling(event.currentTarget, { back: true });
+        } else if (event.key === 'Backspace') {
+          if (event.metaKey || event.ctrlKey) {
+            context.setValue([]);
+            // focus first input
+            context.childrenRefs.current?.[0]?.focus();
+          } else {
+            focusSibling(event.currentTarget, { back: true });
+          }
         } else if (event.key === 'Enter' && char !== '') {
-          otpContext.onEnterPressed();
+          context.onEnterPressed();
         }
       })}
-      {...props}
+      {...domProps}
     />
   );
 });
@@ -235,11 +352,11 @@ function useOneTimePasswordFieldContext() {
 }
 
 function focusSibling(input: HTMLInputElement, { back = false } = {}) {
-  const sibling = back ? input.parentElement?.previousSibling : input.parentElement?.nextSibling;
-  const siblingInput = sibling?.firstChild;
-  if (siblingInput && siblingInput instanceof HTMLInputElement) {
-    siblingInput?.focus();
-    siblingInput?.select();
+  // TODO: update
+  const siblingInput = back ? input.previousSibling : input.nextSibling;
+  if (siblingInput && siblingInput instanceof HTMLInputElement && siblingInput.type !== 'hidden') {
+    siblingInput.focus();
+    siblingInput.select();
   }
 }
 
@@ -257,12 +374,19 @@ function createEmptyArray(length: number): string[] {
 
 const Root = OneTimePasswordField;
 const Input = OneTimePasswordFieldInput;
+const HiddenInput = OneTimePasswordFieldHiddenInput;
 
 export {
   OneTimePasswordField,
   OneTimePasswordFieldInput,
+  OneTimePasswordFieldHiddenInput,
   //
   Root,
   Input,
+  HiddenInput,
 };
-export type { OneTimePasswordFieldProps, OneTimePasswordFieldInputProps };
+export type {
+  OneTimePasswordFieldProps,
+  OneTimePasswordFieldInputProps,
+  OneTimePasswordFieldHiddenInputProps,
+};

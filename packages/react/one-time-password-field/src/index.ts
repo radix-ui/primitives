@@ -1,3 +1,15 @@
 'use client';
-export type {} from './one-time-password-field';
-export {} from './one-time-password-field';
+export type {
+  OneTimePasswordFieldProps,
+  OneTimePasswordFieldInputProps,
+  OneTimePasswordFieldHiddenInputProps,
+} from './one-time-password-field';
+export {
+  OneTimePasswordField,
+  OneTimePasswordFieldInput,
+  OneTimePasswordFieldHiddenInput,
+  //
+  Root,
+  Input,
+  HiddenInput,
+} from './one-time-password-field';
