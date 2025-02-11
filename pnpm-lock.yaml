@@ -1671,6 +1671,49 @@ importers:
         specifier: ^5.7.3
         version: 5.8.3
 
+  packages/react/password-toggle-field:
+    dependencies:
+      '@radix-ui/primitive':
+        specifier: workspace:*
+        version: link:../../core/primitive
+      '@radix-ui/react-compose-refs':
+        specifier: workspace:*
+        version: link:../compose-refs
+      '@radix-ui/react-context':
+        specifier: workspace:*
+        version: link:../context
+      '@radix-ui/react-primitive':
+        specifier: workspace:*
+        version: link:../primitive
+      '@radix-ui/react-use-controllable-state':
+        specifier: workspace:*
+        version: link:../use-controllable-state
+    devDependencies:
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../../../internal/eslint-config
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../../../internal/typescript-config
+      '@types/react':
+        specifier: ^19.0.7
+        version: 19.1.0
+      '@types/react-dom':
+        specifier: ^19.0.3
+        version: 19.1.1(@types/react@19.1.0)
+      eslint:
+        specifier: ^9.18.0
+        version: 9.24.0
+      react:
+        specifier: ^19.0.0
+        version: 19.0.0
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.0.0(react@19.0.0)
+      typescript:
+        specifier: ^5.7.3
+        version: 5.8.3
+
   packages/react/popover:
     dependencies:
       '@radix-ui/primitive':
