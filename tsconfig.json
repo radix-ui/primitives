@@ -66,6 +66,7 @@
       "@radix-ui/react-navigation-menu": ["./packages/react/navigation-menu/src"],
       "@radix-ui/react-one-time-password-field": ["./packages/react/one-time-password-field/src"],
       "@radix-ui/react-password-strength": ["./packages/react/password-strength/src"],
+      "@radix-ui/react-password-toggle-field": ["./packages/react/password-toggle-field/src"],
       "@radix-ui/react-popover": ["./packages/react/popover/src"],
       "@radix-ui/react-popper": ["./packages/react/popper/src"],
       "@radix-ui/react-portal": ["./packages/react/portal/src"],
