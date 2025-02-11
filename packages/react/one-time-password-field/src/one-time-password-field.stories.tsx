@@ -1,5 +1,6 @@
 import * as React from 'react';
 import * as OneTimePasswordField from '@radix-ui/react-one-time-password-field';
+import * as Separator from '@radix-ui/react-separator';
 import styles from './one-time-password-field.stories.module.css';
 
 export default {
@@ -57,12 +58,22 @@ export const Styled = () => {
             length={6}
           >
             {({ inputs }) => (
-              <>
-                {inputs.map((input) => (
-                  <OneTimePasswordField.Input key={input.index} index={input.index} />
-                ))}
+              <React.Fragment>
+                {inputs.map((input, index) => {
+                  const isLastInput = index === inputs.length - 1;
+                  if (isLastInput) {
+                    return <OneTimePasswordField.Input key={input.index} index={input.index} />;
+                  } else {
+                    return (
+                      <React.Fragment key={input.index}>
+                        <OneTimePasswordField.Input key={input.index} index={input.index} />
+                        <Separator.Root orientation="vertical" className={styles.separator} />
+                      </React.Fragment>
+                    );
+                  }
+                })}
                 <OneTimePasswordField.HiddenInput />
-              </>
+              </React.Fragment>
             )}
           </OneTimePasswordField.Root>
           {error && <ErrorMessage>{error}</ErrorMessage>}
