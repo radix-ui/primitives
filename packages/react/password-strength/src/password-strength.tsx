@@ -52,12 +52,15 @@ const PasswordStrength: React.FC<PasswordStrengthProps> = function PasswordStren
   });
   const { validatedRules, validatedRuleCount, progress } = React.useMemo(() => {
     let validatedRuleCount = 0;
-    const progress = validatedRuleCount / rules.length;
-    const validatedRules = rules.map<ValidatedRule>((rule) => {
+    const validatedRules: ValidatedRule[] = [];
+    for (const rule of rules) {
       const isValid = rule.validate(value ?? '');
-      if (isValid) validatedRuleCount++;
-      return { label: rule.label, isValid };
-    });
+      if (isValid) {
+        validatedRuleCount++;
+      }
+      validatedRules.push({ label: rule.label, isValid });
+    }
+    const progress = validatedRuleCount / rules.length;
     return { validatedRuleCount, validatedRules, progress };
   }, [rules, value]);
 
