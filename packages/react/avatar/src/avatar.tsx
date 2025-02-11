@@ -62,7 +62,7 @@ const AvatarImage = React.forwardRef<AvatarImageElement, AvatarImageProps>(
   (props: ScopedProps<AvatarImageProps>, forwardedRef) => {
     const { __scopeAvatar, src, onLoadingStatusChange = () => {}, ...imageProps } = props;
     const context = useAvatarContext(IMAGE_NAME, __scopeAvatar);
-    const imageLoadingStatus = useImageLoadingStatus(src, imageProps.referrerPolicy);
+    const imageLoadingStatus = useImageLoadingStatus(src, imageProps);
     const handleLoadingStatusChange = useCallbackRef((status: ImageLoadingStatus) => {
       onLoadingStatusChange(status);
       context.onImageLoadingStatusChange(status);
@@ -116,7 +116,10 @@ AvatarFallback.displayName = FALLBACK_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
-function useImageLoadingStatus(src?: string, referrerPolicy?: React.HTMLAttributeReferrerPolicy) {
+function useImageLoadingStatus(
+  src: string | undefined,
+  { referrerPolicy, crossOrigin }: AvatarImageProps
+) {
   const [loadingStatus, setLoadingStatus] = React.useState<ImageLoadingStatus>('idle');
 
   useLayoutEffect(() => {
@@ -140,11 +143,13 @@ function useImageLoadingStatus(src?: string, referrerPolicy?: React.HTMLAttribut
     if (referrerPolicy) {
       image.referrerPolicy = referrerPolicy;
     }
-
+    if (typeof crossOrigin === 'string') {
+      image.crossOrigin = crossOrigin;
+    }
     return () => {
       isMounted = false;
     };
-  }, [src, referrerPolicy]);
+  }, [src, referrerPolicy, crossOrigin]);
 
   return loadingStatus;
 }
