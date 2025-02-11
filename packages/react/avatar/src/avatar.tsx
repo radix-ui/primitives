@@ -139,13 +139,13 @@ function useImageLoadingStatus(
     setLoadingStatus('loading');
     image.onload = updateStatus('loaded');
     image.onerror = updateStatus('error');
-    image.src = src;
     if (referrerPolicy) {
       image.referrerPolicy = referrerPolicy;
     }
     if (typeof crossOrigin === 'string') {
       image.crossOrigin = crossOrigin;
     }
+    image.src = src;
     return () => {
       isMounted = false;
     };
