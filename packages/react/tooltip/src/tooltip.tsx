@@ -42,7 +42,7 @@ type TooltipProviderContextValue = {
 const [TooltipProviderContextProvider, useTooltipProviderContext] =
   createTooltipContext<TooltipProviderContextValue>(PROVIDER_NAME);
 
-export interface TooltipProviderProps {
+interface TooltipProviderProps {
   children: React.ReactNode;
   /**
    * The duration from when the pointer enters the trigger until the tooltip gets opened.
