@@ -89,6 +89,7 @@
       "@radix-ui/react-tooltip": ["./packages/react/tooltip/src"],
       "@radix-ui/react-use-callback-ref": ["./packages/react/use-callback-ref/src"],
       "@radix-ui/react-use-controllable-state": ["./packages/react/use-controllable-state/src"],
+      "@radix-ui/react-use-effect-event": ["./packages/react/use-effect-event/src"],
       "@radix-ui/react-use-escape-keydown": ["./packages/react/use-escape-keydown/src"],
       "@radix-ui/react-use-is-hydrated": ["./packages/react/use-is-hydrated/src"],
       "@radix-ui/react-use-layout-effect": ["./packages/react/use-layout-effect/src"],

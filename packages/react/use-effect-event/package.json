@@ -1,6 +1,6 @@
 {
-  "name": "@radix-ui/react-use-is-hydrated",
-  "version": "1.1.0",
+  "name": "@radix-ui/react-use-effect-event",
+  "version": "0.0.0",
   "license": "MIT",
   "exports": {
     ".": {
@@ -28,9 +28,6 @@
     "lint": "eslint --max-warnings 0 src",
     "clean": "rm -rf dist",
     "version": "yarn version"
-  },
-  "dependencies": {
-    "use-sync-external-store": "^1.4.0"
   },
   "peerDependencies": {
     "@types/react": "*",
