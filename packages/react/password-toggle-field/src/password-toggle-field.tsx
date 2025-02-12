@@ -4,11 +4,15 @@ import { composeEventHandlers } from '@radix-ui/primitive';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { Primitive } from '@radix-ui/react-primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
+import { useId } from '@radix-ui/react-id';
+import { useIsHydrated } from '@radix-ui/react-use-is-hydrated';
 
 interface PasswordToggleFieldContextValue {
+  inputId: string;
   inputRef: React.RefObject<HTMLInputElement | null>;
   visible: boolean;
   setVisible: React.Dispatch<React.SetStateAction<boolean | undefined>>;
+  syncInputId: (providedId: string | number | undefined) => void;
 }
 
 const PasswordToggleFieldContext = React.createContext<null | PasswordToggleFieldContextValue>(
@@ -35,6 +39,16 @@ interface PasswordToggleFieldProps extends PrimitiveDivProps {
 
 const PasswordToggleField = React.forwardRef<HTMLDivElement, PasswordToggleFieldProps>(
   function PasswordToggleField(props, forwardedRef) {
+    const baseId = useId(props.id);
+    const defaultInputId = `${baseId}-input`;
+    const [inputIdState, setInputIdState] = React.useState<null | string>(defaultInputId);
+    const inputId = inputIdState ?? defaultInputId;
+    const syncInputId = React.useCallback(
+      (providedId: string | number | undefined) =>
+        setInputIdState(providedId != null ? String(providedId) : null),
+      []
+    );
+
     const { visible: visibleProp, defaultVisible, onVisiblityChange, ...fieldProps } = props;
     const [visible = false, setVisible] = useControllableState({
       prop: visibleProp,
@@ -45,7 +59,15 @@ const PasswordToggleField = React.forwardRef<HTMLDivElement, PasswordToggleField
     const inputRef = React.useRef<HTMLInputElement | null>(null);
 
     return (
-      <PasswordToggleFieldContext.Provider value={{ visible, setVisible, inputRef }}>
+      <PasswordToggleFieldContext.Provider
+        value={{
+          inputId,
+          inputRef,
+          setVisible,
+          syncInputId,
+          visible,
+        }}
+      >
         <Primitive.div
           data-password-visible={visible || undefined}
           {...fieldProps}
@@ -56,16 +78,37 @@ const PasswordToggleField = React.forwardRef<HTMLDivElement, PasswordToggleField
   }
 );
 
-type PrimitiveInputProps = Omit<React.ComponentPropsWithoutRef<typeof Primitive.input>, 'type'>;
-interface PasswordToggleFieldInputProps extends PrimitiveInputProps {}
+type PrimitiveInputProps = Omit<
+  React.ComponentPropsWithoutRef<typeof Primitive.input>,
+  'type' | 'autoComplete'
+>;
+interface PasswordToggleFieldInputProps extends PrimitiveInputProps {
+  autoComplete?: 'current-password' | 'new-password';
+}
 
 const PasswordToggleFieldInput = React.forwardRef<HTMLInputElement, PasswordToggleFieldInputProps>(
-  function PasswordToggleFieldInput(props, forwardedRef) {
-    const { visible, inputRef } = usePasswordToggleFieldContext();
+  function PasswordToggleFieldInput(
+    {
+      autoComplete = 'current-password',
+      autoCapitalize = 'off',
+      spellCheck = false,
+      id: idProp,
+      ...props
+    },
+    forwardedRef
+  ) {
+    const { visible, inputRef, inputId, syncInputId } = usePasswordToggleFieldContext();
+    React.useEffect(() => {
+      syncInputId(idProp);
+    }, [idProp, syncInputId]);
     return (
       <Primitive.input
         {...props}
+        id={idProp ?? inputId}
+        autoCapitalize={autoCapitalize}
+        autoComplete={autoComplete}
         ref={useComposedRefs(forwardedRef, inputRef)}
+        spellCheck={spellCheck}
         type={visible ? 'text' : 'password'}
       />
     );
@@ -91,14 +134,19 @@ const PasswordToggleFieldToggle = React.forwardRef<
     onFocus,
     children,
     'aria-label': ariaLabelProp,
+    'aria-controls': ariaControls,
+    'aria-hidden': ariaHidden,
+    tabIndex,
     ...props
   },
   forwardedRef
 ) {
-  const { setVisible, visible, inputRef } = usePasswordToggleFieldContext();
+  const { setVisible, visible, inputRef, inputId } = usePasswordToggleFieldContext();
   const [internalAriaLabel, setInternalAriaLabel] = React.useState<string | undefined>(undefined);
   const elementRef = React.useRef<HTMLButtonElement>(null);
   const ref = useComposedRefs(forwardedRef, elementRef);
+  const isHydrated = useIsHydrated();
+
   React.useEffect(() => {
     const element = elementRef.current;
     if (!element || ariaLabelProp) {
@@ -134,6 +182,18 @@ const PasswordToggleFieldToggle = React.forwardRef<
   }, [visible, ariaLabelProp]);
 
   const ariaLabel = ariaLabelProp || internalAriaLabel;
+
+  // Before hydration the button will not work, but we want to render it
+  // regardless to prevent potential layout shift. Hide it from assistive tech
+  // by default. Post-hydration it will be visible, focusable and associated
+  // with the input via aria-controls.
+  if (!isHydrated) {
+    ariaHidden ??= true;
+    tabIndex ??= -1;
+  } else {
+    ariaControls ??= inputId;
+  }
+
   const clickTriggeredFocus = React.useRef(false);
 
   React.useEffect(() => {
@@ -150,9 +210,11 @@ const PasswordToggleFieldToggle = React.forwardRef<
 
   return (
     <Primitive.button
+      aria-controls={ariaControls}
+      aria-hidden={ariaHidden}
       aria-label={ariaLabel}
       ref={ref}
-      {...props}
+      id={inputId}
       onPointerDown={composeEventHandlers(onPointerDown, () => {
         clickTriggeredFocus.current = true;
       })}
@@ -164,16 +226,15 @@ const PasswordToggleFieldToggle = React.forwardRef<
         clickTriggeredFocus.current = false;
       }}
       onClick={composeEventHandlers(onClick, () => {
-        console.log({ ref: clickTriggeredFocus.current });
         flushSync(() => {
           setVisible((s) => !s);
         });
-        console.log({ ref: clickTriggeredFocus.current });
         if (clickTriggeredFocus.current) {
           clickTriggeredFocus.current = false;
           inputRef.current?.focus();
         }
       })}
+      {...props}
       type="button"
     >
       {typeof children === 'function' ? children({ visible }) : children}
@@ -220,3 +281,5 @@ function requestIdleCallback(
     window.clearTimeout(id);
   };
 }
+
+type Booleanish = boolean | 'true' | 'false';
