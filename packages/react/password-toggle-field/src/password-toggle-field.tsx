@@ -6,6 +6,7 @@ import { Primitive } from '@radix-ui/react-primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { useId } from '@radix-ui/react-id';
 import { useIsHydrated } from '@radix-ui/react-use-is-hydrated';
+import { useEffectEvent } from '@radix-ui/react-use-effect-event';
 
 interface PasswordToggleFieldContextValue {
   inputId: string;
@@ -97,10 +98,52 @@ const PasswordToggleFieldInput = React.forwardRef<HTMLInputElement, PasswordTogg
     },
     forwardedRef
   ) {
-    const { visible, inputRef, inputId, syncInputId } = usePasswordToggleFieldContext();
+    const { visible, inputRef, inputId, syncInputId, setVisible } = usePasswordToggleFieldContext();
     React.useEffect(() => {
       syncInputId(idProp);
     }, [idProp, syncInputId]);
+
+    // We want to reset the visibility to `false` to revert the input to
+    // `type="password"` when:
+    // - The form is reset (for consistency with other form controls)
+    // - The form is submitted (to prevent the browser from remembering the
+    //   input's value.
+    //
+    // See "Keeping things secure":
+    //   https://technology.blog.gov.uk/2021/04/19/simple-things-are-complicated-making-a-show-password-option/)
+    const _setVisible = useEffectEvent(setVisible);
+    React.useEffect(() => {
+      const inputElement = inputRef.current;
+      const form = inputElement?.form;
+      if (!form) {
+        return;
+      }
+
+      const controller = new AbortController();
+      form.addEventListener(
+        'reset',
+        (event) => {
+          if (!event.defaultPrevented) {
+            _setVisible(false);
+          }
+        },
+        { signal: controller.signal }
+      );
+      form.addEventListener(
+        'submit',
+        () => {
+          // always reset the visibility on submit regardless of whether the
+          // default action is prevented. This ensures consistent behavior between
+          // server-side and client-side form submissions.
+          _setVisible(false);
+        },
+        { signal: controller.signal }
+      );
+      return () => {
+        controller.abort();
+      };
+    }, [inputRef, _setVisible]);
+
     return (
       <Primitive.input
         {...props}
@@ -281,5 +324,3 @@ function requestIdleCallback(
     window.clearTimeout(id);
   };
 }
-
-type Booleanish = boolean | 'true' | 'false';
