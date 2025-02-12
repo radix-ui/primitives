@@ -8,16 +8,6 @@ function TestComponent() {
 }
 
 describe('DocumentContext', () => {
-  it('provides default document when no custom document is provided', () => {
-    render(
-      <DocumentProvider>
-        <TestComponent />
-      </DocumentProvider>
-    );
-
-    expect(screen.getByText('Has document: true')).toBeInTheDocument();
-  });
-
   it('provides custom document when specified', () => {
     const mockDocument = {} as Document;
 
@@ -59,18 +49,20 @@ describe('DocumentContext', () => {
     expect(screen.getByText('Document ID: 2')).toBeInTheDocument();
   });
 
-  it('provides global document when no value is passed to provider', () => {
+  it('useDocument returns global document when no value is passed to provider', () => {
     function TestDocumentConsumer() {
       const doc = useDocument();
       return <div>{doc === globalThis.document ? 'global document' : 'other document'}</div>;
     }
 
-    render(
-      <DocumentProvider>
-        <TestDocumentConsumer />
-      </DocumentProvider>
-    );
+    render(<TestDocumentConsumer />);
 
     expect(screen.getByText('global document')).toBeInTheDocument();
+  });
+
+  it('useDocument returns default document when custom document is not provided', () => {
+    render(<TestComponent />);
+
+    expect(screen.getByText('Has document: true')).toBeInTheDocument();
   });
 });
