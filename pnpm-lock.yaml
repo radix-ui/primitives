@@ -1682,12 +1682,18 @@ importers:
       '@radix-ui/react-context':
         specifier: workspace:*
         version: link:../context
+      '@radix-ui/react-id':
+        specifier: workspace:*
+        version: link:../id
       '@radix-ui/react-primitive':
         specifier: workspace:*
         version: link:../primitive
       '@radix-ui/react-use-controllable-state':
         specifier: workspace:*
         version: link:../use-controllable-state
+      '@radix-ui/react-use-is-hydrated':
+        specifier: workspace:*
+        version: link:../use-is-hydrated
     devDependencies:
       '@repo/eslint-config':
         specifier: workspace:*
