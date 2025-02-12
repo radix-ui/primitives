@@ -1,23 +1,25 @@
 import * as React from 'react';
-
+import { useSyncExternalStore } from 'use-sync-external-store/shim';
 // Use null as initial value to handle SSR safely
 const DocumentContext = React.createContext<Document | null>(null);
 
 interface DocumentProviderProps {
-  document?: Document;
+  document: Document;
   children: React.ReactNode;
 }
 
-export function DocumentProvider({ document: doc, children }: DocumentProviderProps) {
-  const value = React.useMemo(
-    () => doc ?? (typeof document !== 'undefined' ? globalThis?.document : null),
-    [doc]
-  );
-  return <DocumentContext.Provider value={value}>{children}</DocumentContext.Provider>;
+export function DocumentProvider({ document, children }: DocumentProviderProps) {
+  return <DocumentContext.Provider value={document}>{children}</DocumentContext.Provider>;
 }
+
+const subscribe = () => () => {};
 
 export function useDocument() {
   const doc = React.useContext(DocumentContext);
-  // Return default document if available and no context value
-  return doc ?? (typeof document !== 'undefined' ? globalThis?.document : null);
+  const isHydrated = useSyncExternalStore(
+    subscribe,
+    () => true,
+    () => false
+  );
+  return doc ?? (isHydrated ? document : null);
 }
