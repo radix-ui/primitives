@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-use-is-hydrated",
-  "version": "1.1.0",
+  "version": "0.0.0",
   "license": "MIT",
   "exports": {
     ".": {
