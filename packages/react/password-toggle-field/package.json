@@ -35,6 +35,7 @@
     "@radix-ui/react-id": "workspace:*",
     "@radix-ui/react-primitive": "workspace:*",
     "@radix-ui/react-use-controllable-state": "workspace:*",
+    "@radix-ui/react-use-effect-event": "workspace:*",
     "@radix-ui/react-use-is-hydrated": "workspace:*"
   },
   "devDependencies": {

@@ -2450,6 +2450,7 @@ __metadata:
     "@radix-ui/react-id": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
+    "@radix-ui/react-use-effect-event": "workspace:*"
     "@radix-ui/react-use-is-hydrated": "workspace:*"
     "@repo/eslint-config": "workspace:*"
     "@repo/typescript-config": "workspace:*"
@@ -3165,7 +3166,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@radix-ui/react-use-effect-event@workspace:packages/react/use-effect-event":
+"@radix-ui/react-use-effect-event@workspace:*, @radix-ui/react-use-effect-event@workspace:packages/react/use-effect-event":
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-use-effect-event@workspace:packages/react/use-effect-event"
   dependencies:
