@@ -28,11 +28,13 @@
     "version": "yarn version"
   },
   "dependencies": {
-    "@radix-ui/react-primitive": "workspace:*"
+    "@radix-ui/react-primitive": "workspace:*",
+    "use-sync-external-store": "^1.4.0"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
     "@types/react": "^19.0.7",
+    "@types/use-sync-external-store": "^0.0.6",
     "react": "^19.0.0",
     "typescript": "^5.7.3"
   },
