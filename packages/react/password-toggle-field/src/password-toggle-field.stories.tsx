@@ -41,6 +41,71 @@ export const Controlled = () => {
   );
 };
 
+export const InsideForm = () => {
+  const [visible, setVisible] = React.useState(false);
+  const [submissionType, setSubmissionType] = React.useState<'server' | 'client'>('server');
+  const inputRef = React.useRef<HTMLInputElement>(null);
+  return (
+    <div className={styles.viewport}>
+      <form
+        onSubmit={(event) => {
+          if (submissionType === 'client') {
+            event.preventDefault();
+            window.alert(`Submitted! Field is ${visible ? 'visible' : 'hidden'}`);
+            event.currentTarget.reset();
+            console.log(inputRef.current);
+            inputRef.current?.focus();
+          }
+        }}
+      >
+        <PasswordToggleField.Root
+          className={styles.field}
+          visible={visible}
+          onVisiblityChange={setVisible}
+        >
+          <PasswordToggleField.Input ref={inputRef} className={styles.input} />
+          <PasswordToggleField.Toggle className={styles.toggle}>
+            {({ visible }) => (visible ? <EyeOpenIcon /> : <EyeClosedIcon />)}
+          </PasswordToggleField.Toggle>
+        </PasswordToggleField.Root>
+        <button>Submit ({submissionType})</button>
+      </form>
+      <hr />
+
+      <fieldset
+        onChange={(event) => {
+          const target = event.target as HTMLInputElement;
+          if (target.value === 'server') {
+            setSubmissionType('server');
+          } else if (target.value === 'client') {
+            setSubmissionType('client');
+          }
+        }}
+      >
+        <legend>Submission Type</legend>
+        <label>
+          <input
+            type="radio"
+            name="submissionType"
+            value="server"
+            checked={submissionType === 'server'}
+          />{' '}
+          Server
+        </label>
+        <label>
+          <input
+            type="radio"
+            name="submissionType"
+            value="client"
+            checked={submissionType === 'client'}
+          />{' '}
+          Client
+        </label>
+      </fieldset>
+    </div>
+  );
+};
+
 const EyeClosedIcon = () => (
   <svg
     width="15"
