@@ -35,6 +35,7 @@ interface CheckboxProps extends Omit<PrimitiveButtonProps, 'checked' | 'defaultC
   checked?: CheckedState;
   defaultChecked?: CheckedState;
   required?: boolean;
+  disableNativeInput?: boolean;
   onCheckedChange?(checked: CheckedState): void;
 }
 
@@ -50,13 +51,18 @@ const Checkbox = React.forwardRef<CheckboxElement, CheckboxProps>(
       value = 'on',
       onCheckedChange,
       form,
+      disableNativeInput,
       ...checkboxProps
     } = props;
     const [button, setButton] = React.useState<HTMLButtonElement | null>(null);
     const composedRefs = useComposedRefs(forwardedRef, (node) => setButton(node));
     const hasConsumerStoppedPropagationRef = React.useRef(false);
-    // We set this to true by default so that events bubble to forms without JS (SSR)
-    const isFormControl = button ? form || !!button.closest('form') : true;
+    // We set this to true by default so that events bubble to forms without JS (SSR).
+    const isFormControl = disableNativeInput
+      ? false
+      : button
+        ? form || !!button.closest('form')
+        : true;
     const [checked = false, setChecked] = useControllableState({
       prop: checkedProp,
       defaultProp: defaultChecked,
