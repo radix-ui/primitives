@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "primitives",
-  "version": "0.0.0",
+  "version": "0.1.0-rc.1",
   "license": "MIT",
   "workspaces": [
     "apps/*",
@@ -99,5 +99,6 @@
   "lint-staged": {
     "*.{js,ts,tsx}": "eslint --quiet --fix --cache"
   },
-  "packageManager": "yarn@4.6.0"
+  "packageManager": "yarn@4.6.0",
+  "stableVersion": "0.0.0"
 }
