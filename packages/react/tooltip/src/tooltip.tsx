@@ -303,6 +303,9 @@ const TooltipTrigger = React.forwardRef<TooltipTriggerElement, TooltipTriggerPro
             hasPointerMoveOpenedRef.current = false;
           })}
           onPointerDown={composeEventHandlers(props.onPointerDown, () => {
+            if (context.open) {
+              context.onClose();
+            }
             isPointerDownRef.current = true;
             document.addEventListener('pointerup', handlePointerUp, { once: true });
           })}
