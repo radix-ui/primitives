@@ -21,6 +21,7 @@ import { hideOthers } from 'aria-hidden';
 import { RemoveScroll } from 'react-remove-scroll';
 
 import type { Scope } from '@radix-ui/react-context';
+import { useDocument } from '@radix-ui/react-document-context';
 
 type Direction = 'ltr' | 'rtl';
 
@@ -91,23 +92,31 @@ const Menu: React.FC<MenuProps> = (props: ScopedProps<MenuProps>) => {
   const isUsingKeyboardRef = React.useRef(false);
   const handleOpenChange = useCallbackRef(onOpenChange);
   const direction = useDirection(dir);
+  const providedDocument = useDocument();
 
   React.useEffect(() => {
+    if (!providedDocument) return;
     // Capture phase ensures we set the boolean before any side effects execute
     // in response to the key or pointer event as they might depend on this value.
     const handleKeyDown = () => {
       isUsingKeyboardRef.current = true;
-      document.addEventListener('pointerdown', handlePointer, { capture: true, once: true });
-      document.addEventListener('pointermove', handlePointer, { capture: true, once: true });
+      providedDocument.addEventListener('pointerdown', handlePointer, {
+        capture: true,
+        once: true,
+      });
+      providedDocument.addEventListener('pointermove', handlePointer, {
+        capture: true,
+        once: true,
+      });
     };
     const handlePointer = () => (isUsingKeyboardRef.current = false);
-    document.addEventListener('keydown', handleKeyDown, { capture: true });
+    providedDocument.addEventListener('keydown', handleKeyDown, { capture: true });
     return () => {
-      document.removeEventListener('keydown', handleKeyDown, { capture: true });
-      document.removeEventListener('pointerdown', handlePointer, { capture: true });
-      document.removeEventListener('pointermove', handlePointer, { capture: true });
+      providedDocument.removeEventListener('keydown', handleKeyDown, { capture: true });
+      providedDocument.removeEventListener('pointerdown', handlePointer, { capture: true });
+      providedDocument.removeEventListener('pointermove', handlePointer, { capture: true });
     };
-  }, []);
+  }, [providedDocument]);
 
   return (
     <PopperPrimitive.Root {...popperScope}>
@@ -386,16 +395,18 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
     const pointerGraceIntentRef = React.useRef<GraceIntent | null>(null);
     const pointerDirRef = React.useRef<Side>('right');
     const lastPointerXRef = React.useRef(0);
-
+    const providedDocument = useDocument();
     const ScrollLockWrapper = disableOutsideScroll ? RemoveScroll : React.Fragment;
     const scrollLockWrapperProps = disableOutsideScroll
       ? { as: Slot, allowPinchZoom: true }
       : undefined;
 
+    const documentWindow = providedDocument?.defaultView;
+
     const handleTypeaheadSearch = (key: string) => {
       const search = searchRef.current + key;
       const items = getItems().filter((item) => !item.disabled);
-      const currentItem = document.activeElement;
+      const currentItem = providedDocument?.activeElement;
       const currentMatch = items.find((item) => item.ref.current === currentItem)?.textValue;
       const values = items.map((item) => item.textValue);
       const nextMatch = getNextMatch(values, search, currentMatch);
@@ -404,8 +415,10 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
       // Reset `searchRef` 1 second after it was last updated
       (function updateSearch(value: string) {
         searchRef.current = value;
-        window.clearTimeout(timerRef.current);
-        if (value !== '') timerRef.current = window.setTimeout(() => updateSearch(''), 1000);
+        if (!documentWindow) return;
+        documentWindow.clearTimeout(timerRef.current);
+        if (value !== '')
+          timerRef.current = documentWindow.setTimeout(() => updateSearch(''), 1000);
       })(search);
 
       if (newItem) {
@@ -418,8 +431,8 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
     };
 
     React.useEffect(() => {
-      return () => window.clearTimeout(timerRef.current);
-    }, []);
+      return () => documentWindow?.clearTimeout(timerRef.current);
+    }, [documentWindow]);
 
     // Make sure the whole tree has focus guards as our `MenuContent` may be
     // the last element in the DOM (because of the `Portal`)
@@ -524,12 +537,14 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
                     const items = getItems().filter((item) => !item.disabled);
                     const candidateNodes = items.map((item) => item.ref.current!);
                     if (LAST_KEYS.includes(event.key)) candidateNodes.reverse();
-                    focusFirst(candidateNodes);
+                    if (providedDocument) {
+                      focusFirst(candidateNodes, providedDocument);
+                    }
                   })}
                   onBlur={composeEventHandlers(props.onBlur, (event) => {
                     // clear search buffer when leaving the menu
                     if (!event.currentTarget.contains(event.target)) {
-                      window.clearTimeout(timerRef.current);
+                      documentWindow?.clearTimeout(timerRef.current);
                       searchRef.current = '';
                     }
                   })}
@@ -1025,21 +1040,21 @@ const MenuSubTrigger = React.forwardRef<MenuSubTriggerElement, MenuSubTriggerPro
     const openTimerRef = React.useRef<number | null>(null);
     const { pointerGraceTimerRef, onPointerGraceIntentChange } = contentContext;
     const scope = { __scopeMenu: props.__scopeMenu };
-
+    const documentWindow = useDocument()?.defaultView;
     const clearOpenTimer = React.useCallback(() => {
-      if (openTimerRef.current) window.clearTimeout(openTimerRef.current);
+      if (openTimerRef.current) documentWindow?.clearTimeout(openTimerRef.current);
       openTimerRef.current = null;
-    }, []);
+    }, [documentWindow]);
 
     React.useEffect(() => clearOpenTimer, [clearOpenTimer]);
 
     React.useEffect(() => {
       const pointerGraceTimer = pointerGraceTimerRef.current;
       return () => {
-        window.clearTimeout(pointerGraceTimer);
+        documentWindow?.clearTimeout(pointerGraceTimer);
         onPointerGraceIntentChange(null);
       };
-    }, [pointerGraceTimerRef, onPointerGraceIntentChange]);
+    }, [pointerGraceTimerRef, onPointerGraceIntentChange, documentWindow]);
 
     return (
       <MenuAnchor asChild {...scope}>
@@ -1071,7 +1086,8 @@ const MenuSubTrigger = React.forwardRef<MenuSubTriggerElement, MenuSubTriggerPro
               if (event.defaultPrevented) return;
               if (!props.disabled && !context.open && !openTimerRef.current) {
                 contentContext.onPointerGraceIntentChange(null);
-                openTimerRef.current = window.setTimeout(() => {
+                if (!documentWindow) return;
+                openTimerRef.current = documentWindow.setTimeout(() => {
                   context.onOpenChange(true);
                   clearOpenTimer();
                 }, 100);
@@ -1105,8 +1121,9 @@ const MenuSubTrigger = React.forwardRef<MenuSubTriggerElement, MenuSubTriggerPro
                   side,
                 });
 
-                window.clearTimeout(pointerGraceTimerRef.current);
-                pointerGraceTimerRef.current = window.setTimeout(
+                if (!documentWindow) return;
+                documentWindow.clearTimeout(pointerGraceTimerRef.current);
+                pointerGraceTimerRef.current = documentWindow.setTimeout(
                   () => contentContext.onPointerGraceIntentChange(null),
                   300
                 );
@@ -1235,13 +1252,13 @@ function getCheckedState(checked: CheckedState) {
   return isIndeterminate(checked) ? 'indeterminate' : checked ? 'checked' : 'unchecked';
 }
 
-function focusFirst(candidates: HTMLElement[]) {
-  const PREVIOUSLY_FOCUSED_ELEMENT = document.activeElement;
+function focusFirst(candidates: HTMLElement[], providedDocument: Document) {
+  const PREVIOUSLY_FOCUSED_ELEMENT = providedDocument.activeElement;
   for (const candidate of candidates) {
     // if focus is already where we want to go, we don't want to keep going through the candidates
     if (candidate === PREVIOUSLY_FOCUSED_ELEMENT) return;
     candidate.focus();
-    if (document.activeElement !== PREVIOUSLY_FOCUSED_ELEMENT) return;
+    if (providedDocument.activeElement !== PREVIOUSLY_FOCUSED_ELEMENT) return;
   }
 }
 

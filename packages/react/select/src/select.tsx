@@ -24,6 +24,7 @@ import { hideOthers } from 'aria-hidden';
 import { RemoveScroll } from 'react-remove-scroll';
 
 import type { Scope } from '@radix-ui/react-context';
+import { useDocument } from '@radix-ui/react-document-context';
 
 type Direction = 'ltr' | 'rtl';
 
@@ -530,6 +531,7 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
     const getItems = useCollection(__scopeSelect);
     const [isPositioned, setIsPositioned] = React.useState(false);
     const firstValidItemFoundRef = React.useRef(false);
+    const providedDocument = useDocument();
 
     // aria-hide everything except the content (better supported equivalent to setting aria-modal)
     React.useEffect(() => {
@@ -542,10 +544,11 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
 
     const focusFirst = React.useCallback(
       (candidates: Array<HTMLElement | null>) => {
+        if (!providedDocument) return;
         const [firstItem, ...restItems] = getItems().map((item) => item.ref.current);
         const [lastItem] = restItems.slice(-1);
 
-        const PREVIOUSLY_FOCUSED_ELEMENT = document.activeElement;
+        const PREVIOUSLY_FOCUSED_ELEMENT = providedDocument.activeElement;
         for (const candidate of candidates) {
           // if focus is already where we want to go, we don't want to keep going through the candidates
           if (candidate === PREVIOUSLY_FOCUSED_ELEMENT) return;
@@ -554,10 +557,10 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
           if (candidate === firstItem && viewport) viewport.scrollTop = 0;
           if (candidate === lastItem && viewport) viewport.scrollTop = viewport.scrollHeight;
           candidate?.focus();
-          if (document.activeElement !== PREVIOUSLY_FOCUSED_ELEMENT) return;
+          if (providedDocument.activeElement !== PREVIOUSLY_FOCUSED_ELEMENT) return;
         }
       },
-      [getItems, viewport]
+      [getItems, viewport, providedDocument]
     );
 
     const focusSelectedItem = React.useCallback(
@@ -577,7 +580,7 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
     // and close on `pointerup` outside.
     const { onOpenChange, triggerPointerDownPosRef } = context;
     React.useEffect(() => {
-      if (content) {
+      if (content && providedDocument) {
         let pointerMoveDelta = { x: 0, y: 0 };
 
         const handlePointerMove = (event: PointerEvent) => {
@@ -596,35 +599,42 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
               onOpenChange(false);
             }
           }
-          document.removeEventListener('pointermove', handlePointerMove);
+          providedDocument.removeEventListener('pointermove', handlePointerMove);
           triggerPointerDownPosRef.current = null;
         };
 
         if (triggerPointerDownPosRef.current !== null) {
-          document.addEventListener('pointermove', handlePointerMove);
-          document.addEventListener('pointerup', handlePointerUp, { capture: true, once: true });
+          providedDocument.addEventListener('pointermove', handlePointerMove);
+          providedDocument.addEventListener('pointerup', handlePointerUp, {
+            capture: true,
+            once: true,
+          });
         }
 
         return () => {
-          document.removeEventListener('pointermove', handlePointerMove);
-          document.removeEventListener('pointerup', handlePointerUp, { capture: true });
+          providedDocument.removeEventListener('pointermove', handlePointerMove);
+          providedDocument.removeEventListener('pointerup', handlePointerUp, { capture: true });
         };
       }
-    }, [content, onOpenChange, triggerPointerDownPosRef]);
+    }, [content, onOpenChange, triggerPointerDownPosRef, providedDocument]);
 
     React.useEffect(() => {
+      const documentWindow = providedDocument?.defaultView;
+      if (!documentWindow) return;
       const close = () => onOpenChange(false);
-      window.addEventListener('blur', close);
-      window.addEventListener('resize', close);
+      documentWindow.addEventListener('blur', close);
+      documentWindow.addEventListener('resize', close);
       return () => {
-        window.removeEventListener('blur', close);
-        window.removeEventListener('resize', close);
+        documentWindow.removeEventListener('blur', close);
+        documentWindow.removeEventListener('resize', close);
       };
-    }, [onOpenChange]);
+    }, [onOpenChange, providedDocument]);
 
     const [searchRef, handleTypeaheadSearch] = useTypeaheadSearch((search) => {
       const enabledItems = getItems().filter((item) => !item.disabled);
-      const currentItem = enabledItems.find((item) => item.ref.current === document.activeElement);
+      const currentItem = enabledItems.find(
+        (item) => item.ref.current === providedDocument?.activeElement
+      );
       const nextItem = findNextItem(enabledItems, search, currentItem);
       if (nextItem) {
         /**
@@ -799,7 +809,7 @@ const SelectItemAlignedPosition = React.forwardRef<
   const getItems = useCollection(__scopeSelect);
   const shouldExpandOnScrollRef = React.useRef(false);
   const shouldRepositionRef = React.useRef(true);
-
+  const documentWindow = useDocument()?.defaultView;
   const { viewport, selectedItem, selectedItemText, focusSelectedItem } = contentContext;
   const position = React.useCallback(() => {
     if (
@@ -809,7 +819,8 @@ const SelectItemAlignedPosition = React.forwardRef<
       content &&
       viewport &&
       selectedItem &&
-      selectedItemText
+      selectedItemText &&
+      documentWindow
     ) {
       const triggerRect = context.trigger.getBoundingClientRect();
 
@@ -826,7 +837,7 @@ const SelectItemAlignedPosition = React.forwardRef<
         const leftDelta = triggerRect.left - left;
         const minContentWidth = triggerRect.width + leftDelta;
         const contentWidth = Math.max(minContentWidth, contentRect.width);
-        const rightEdge = window.innerWidth - CONTENT_MARGIN;
+        const rightEdge = documentWindow.innerWidth - CONTENT_MARGIN;
         const clampedLeft = clamp(left, [
           CONTENT_MARGIN,
           // Prevents the content from going off the starting edge of the
@@ -841,11 +852,11 @@ const SelectItemAlignedPosition = React.forwardRef<
         contentWrapper.style.left = clampedLeft + 'px';
       } else {
         const itemTextOffset = contentRect.right - itemTextRect.right;
-        const right = window.innerWidth - valueNodeRect.right - itemTextOffset;
-        const rightDelta = window.innerWidth - triggerRect.right - right;
+        const right = documentWindow.innerWidth - valueNodeRect.right - itemTextOffset;
+        const rightDelta = documentWindow.innerWidth - triggerRect.right - right;
         const minContentWidth = triggerRect.width + rightDelta;
         const contentWidth = Math.max(minContentWidth, contentRect.width);
-        const leftEdge = window.innerWidth - CONTENT_MARGIN;
+        const leftEdge = documentWindow.innerWidth - CONTENT_MARGIN;
         const clampedRight = clamp(right, [
           CONTENT_MARGIN,
           Math.max(CONTENT_MARGIN, leftEdge - contentWidth),
@@ -859,10 +870,10 @@ const SelectItemAlignedPosition = React.forwardRef<
       // Vertical positioning
       // -----------------------------------------------------------------------------------------
       const items = getItems();
-      const availableHeight = window.innerHeight - CONTENT_MARGIN * 2;
+      const availableHeight = documentWindow.innerHeight - CONTENT_MARGIN * 2;
       const itemsHeight = viewport.scrollHeight;
 
-      const contentStyles = window.getComputedStyle(content);
+      const contentStyles = documentWindow.getComputedStyle(content);
       const contentBorderTopWidth = parseInt(contentStyles.borderTopWidth, 10);
       const contentPaddingTop = parseInt(contentStyles.paddingTop, 10);
       const contentBorderBottomWidth = parseInt(contentStyles.borderBottomWidth, 10);
@@ -870,7 +881,7 @@ const SelectItemAlignedPosition = React.forwardRef<
       const fullContentHeight = contentBorderTopWidth + contentPaddingTop + itemsHeight + contentPaddingBottom + contentBorderBottomWidth; // prettier-ignore
       const minContentHeight = Math.min(selectedItem.offsetHeight * 5, fullContentHeight);
 
-      const viewportStyles = window.getComputedStyle(viewport);
+      const viewportStyles = documentWindow.getComputedStyle(viewport);
       const viewportPaddingTop = parseInt(viewportStyles.paddingTop, 10);
       const viewportPaddingBottom = parseInt(viewportStyles.paddingBottom, 10);
 
@@ -937,6 +948,7 @@ const SelectItemAlignedPosition = React.forwardRef<
     selectedItemText,
     context.dir,
     onPlaced,
+    documentWindow,
   ]);
 
   useLayoutEffect(() => position(), [position]);
@@ -944,8 +956,9 @@ const SelectItemAlignedPosition = React.forwardRef<
   // copy z-index from content to wrapper
   const [contentZIndex, setContentZIndex] = React.useState<string>();
   useLayoutEffect(() => {
-    if (content) setContentZIndex(window.getComputedStyle(content).zIndex);
-  }, [content]);
+    if (content && documentWindow)
+      setContentZIndex(documentWindow.getComputedStyle(content).zIndex);
+  }, [content, documentWindow]);
 
   // When the viewport becomes scrollable at the top, the scroll up button will mount.
   // Because it is part of the normal flow, it will push down the viewport, thus throwing our
@@ -1073,6 +1086,7 @@ const SelectViewport = React.forwardRef<SelectViewportElement, SelectViewportPro
     const viewportContext = useSelectViewportContext(VIEWPORT_NAME, __scopeSelect);
     const composedRefs = useComposedRefs(forwardedRef, contentContext.onViewportChange);
     const prevScrollTopRef = React.useRef(0);
+    const documentWindow = useDocument()?.defaultView;
     return (
       <>
         {/* Hide scrollbars cross-browser and enable momentum scroll for touch devices */}
@@ -1102,12 +1116,13 @@ const SelectViewport = React.forwardRef<SelectViewportElement, SelectViewportPro
               ...viewportProps.style,
             }}
             onScroll={composeEventHandlers(viewportProps.onScroll, (event) => {
+              if (!documentWindow) return;
               const viewport = event.currentTarget;
               const { contentWrapper, shouldExpandOnScrollRef } = viewportContext;
               if (shouldExpandOnScrollRef?.current && contentWrapper) {
                 const scrolledBy = Math.abs(prevScrollTopRef.current - viewport.scrollTop);
                 if (scrolledBy > 0) {
-                  const availableHeight = window.innerHeight - CONTENT_MARGIN * 2;
+                  const availableHeight = documentWindow.innerHeight - CONTENT_MARGIN * 2;
                   const cssMinHeight = parseFloat(contentWrapper.style.minHeight);
                   const cssHeight = parseFloat(contentWrapper.style.height);
                   const prevHeight = Math.max(cssMinHeight, cssHeight);
@@ -1227,6 +1242,7 @@ const SelectItem = React.forwardRef<SelectItemElement, SelectItemProps>(
     );
     const textId = useId();
     const pointerTypeRef = React.useRef<React.PointerEvent['pointerType']>('touch');
+    const providedDocument = useDocument();
 
     const handleSelect = () => {
       if (!disabled) {
@@ -1296,7 +1312,7 @@ const SelectItem = React.forwardRef<SelectItemElement, SelectItemProps>(
               }
             })}
             onPointerLeave={composeEventHandlers(itemProps.onPointerLeave, (event) => {
-              if (event.currentTarget === document.activeElement) {
+              if (providedDocument && event.currentTarget === providedDocument.activeElement) {
                 contentContext.onItemLeave?.();
               }
             })}
@@ -1503,13 +1519,16 @@ const SelectScrollButtonImpl = React.forwardRef<
   const contentContext = useSelectContentContext('SelectScrollButton', __scopeSelect);
   const autoScrollTimerRef = React.useRef<number | null>(null);
   const getItems = useCollection(__scopeSelect);
+  const providedDocument = useDocument();
+  const documentWindow = providedDocument?.defaultView;
 
   const clearAutoScrollTimer = React.useCallback(() => {
     if (autoScrollTimerRef.current !== null) {
-      window.clearInterval(autoScrollTimerRef.current);
+      if (!documentWindow) return;
+      documentWindow.clearInterval(autoScrollTimerRef.current);
       autoScrollTimerRef.current = null;
     }
-  }, []);
+  }, [documentWindow]);
 
   React.useEffect(() => {
     return () => clearAutoScrollTimer();
@@ -1520,9 +1539,11 @@ const SelectScrollButtonImpl = React.forwardRef<
   // the viewport, potentially causing the active item to now be partially out of view.
   // We re-run the `scrollIntoView` logic to make sure it stays within the viewport.
   useLayoutEffect(() => {
-    const activeItem = getItems().find((item) => item.ref.current === document.activeElement);
+    const activeItem = getItems().find(
+      (item) => item.ref.current === providedDocument?.activeElement
+    );
     activeItem?.ref.current?.scrollIntoView({ block: 'nearest' });
-  }, [getItems]);
+  }, [getItems, providedDocument]);
 
   return (
     <Primitive.div
@@ -1531,14 +1552,14 @@ const SelectScrollButtonImpl = React.forwardRef<
       ref={forwardedRef}
       style={{ flexShrink: 0, ...scrollIndicatorProps.style }}
       onPointerDown={composeEventHandlers(scrollIndicatorProps.onPointerDown, () => {
-        if (autoScrollTimerRef.current === null) {
-          autoScrollTimerRef.current = window.setInterval(onAutoScroll, 50);
+        if (autoScrollTimerRef.current === null && documentWindow) {
+          autoScrollTimerRef.current = documentWindow.setInterval(onAutoScroll, 50);
         }
       })}
       onPointerMove={composeEventHandlers(scrollIndicatorProps.onPointerMove, () => {
         contentContext.onItemLeave?.();
-        if (autoScrollTimerRef.current === null) {
-          autoScrollTimerRef.current = window.setInterval(onAutoScroll, 50);
+        if (autoScrollTimerRef.current === null && documentWindow) {
+          autoScrollTimerRef.current = documentWindow.setInterval(onAutoScroll, 50);
         }
       })}
       onPointerLeave={composeEventHandlers(scrollIndicatorProps.onPointerLeave, () => {
@@ -1645,6 +1666,7 @@ function useTypeaheadSearch(onSearchChange: (search: string) => void) {
   const handleSearchChange = useCallbackRef(onSearchChange);
   const searchRef = React.useRef('');
   const timerRef = React.useRef(0);
+  const documentWindow = useDocument()?.defaultView;
 
   const handleTypeaheadSearch = React.useCallback(
     (key: string) => {
@@ -1653,22 +1675,24 @@ function useTypeaheadSearch(onSearchChange: (search: string) => void) {
 
       (function updateSearch(value: string) {
         searchRef.current = value;
-        window.clearTimeout(timerRef.current);
+        if (!documentWindow) return;
+        documentWindow.clearTimeout(timerRef.current);
         // Reset `searchRef` 1 second after it was last updated
-        if (value !== '') timerRef.current = window.setTimeout(() => updateSearch(''), 1000);
+        if (value !== '')
+          timerRef.current = documentWindow.setTimeout(() => updateSearch(''), 1000);
       })(search);
     },
-    [handleSearchChange]
+    [handleSearchChange, documentWindow]
   );
 
   const resetTypeahead = React.useCallback(() => {
     searchRef.current = '';
-    window.clearTimeout(timerRef.current);
-  }, []);
+    documentWindow?.clearTimeout(timerRef.current);
+  }, [documentWindow]);
 
   React.useEffect(() => {
-    return () => window.clearTimeout(timerRef.current);
-  }, []);
+    return () => documentWindow?.clearTimeout(timerRef.current);
+  }, [documentWindow]);
 
   return [searchRef, handleTypeaheadSearch, resetTypeahead] as const;
 }

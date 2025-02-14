@@ -1,3 +1,4 @@
+import { useDocument } from '@radix-ui/react-document-context';
 import * as React from 'react';
 
 /** Number of components which have requested interest to have focus guards */
@@ -13,23 +14,33 @@ function FocusGuards(props: any) {
  * to ensure `focusin` & `focusout` events can be caught consistently.
  */
 function useFocusGuards() {
+  const providedDocument = useDocument();
   React.useEffect(() => {
-    const edgeGuards = document.querySelectorAll('[data-radix-focus-guard]');
-    document.body.insertAdjacentElement('afterbegin', edgeGuards[0] ?? createFocusGuard());
-    document.body.insertAdjacentElement('beforeend', edgeGuards[1] ?? createFocusGuard());
+    if (!providedDocument) return;
+    const edgeGuards = providedDocument.querySelectorAll('[data-radix-focus-guard]');
+    providedDocument.body.insertAdjacentElement(
+      'afterbegin',
+      edgeGuards[0] ?? createFocusGuard(providedDocument)
+    );
+    providedDocument.body.insertAdjacentElement(
+      'beforeend',
+      edgeGuards[1] ?? createFocusGuard(providedDocument)
+    );
     count++;
 
     return () => {
       if (count === 1) {
-        document.querySelectorAll('[data-radix-focus-guard]').forEach((node) => node.remove());
+        providedDocument
+          .querySelectorAll('[data-radix-focus-guard]')
+          .forEach((node) => node.remove());
       }
       count--;
     };
-  }, []);
+  }, [providedDocument]);
 }
 
-function createFocusGuard() {
-  const element = document.createElement('span');
+function createFocusGuard(providedDocument: Document) {
+  const element = providedDocument.createElement('span');
   element.setAttribute('data-radix-focus-guard', '');
   element.tabIndex = 0;
   element.style.outline = 'none';
