@@ -1,0 +1,10 @@
+.item {
+  &[aria-selected] {
+    background-color: green;
+  }
+  &[role='group'] {
+    &[aria-selected] {
+      background-color: lime;
+    }
+  }
+}
