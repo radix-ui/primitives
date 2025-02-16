@@ -411,7 +411,7 @@ const DialogContentImpl = React.forwardRef<DialogContentImplElement, DialogConte
         </FocusScope>
         {process.env.NODE_ENV !== 'production' && (
           <>
-            <TitleWarning titleId={context.titleId} />
+            <TitleWarning titleId={context.titleId} contentRef={contentRef} />
             <DescriptionWarning contentRef={contentRef} descriptionId={context.descriptionId} />
           </>
         )}
@@ -500,9 +500,12 @@ const [WarningProvider, useWarningContext] = createContext(TITLE_WARNING_NAME, {
   docsSlug: 'dialog',
 });
 
-type TitleWarningProps = { titleId?: string };
+type TitleWarningProps = {
+  contentRef: React.RefObject<DialogContentElement | null>;
+  titleId?: string;
+};
 
-const TitleWarning: React.FC<TitleWarningProps> = ({ titleId }) => {
+const TitleWarning: React.FC<TitleWarningProps> = ({ contentRef, titleId }) => {
   const titleWarningContext = useWarningContext(TITLE_WARNING_NAME);
 
   const MESSAGE = `\`${titleWarningContext.contentName}\` requires a \`${titleWarningContext.titleName}\` for the component to be accessible for screen reader users.
@@ -513,7 +516,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
 
   React.useEffect(() => {
     if (titleId) {
-      const hasTitle = document.getElementById(titleId);
+      const hasTitle = contentRef.current?.querySelector(`[id="${titleId}"]`);
       if (!hasTitle) console.error(MESSAGE);
     }
   }, [MESSAGE, titleId]);
@@ -536,7 +539,7 @@ const DescriptionWarning: React.FC<DescriptionWarningProps> = ({ contentRef, des
     const describedById = contentRef.current?.getAttribute('aria-describedby');
     // if we have an id and the user hasn't set aria-describedby={undefined}
     if (descriptionId && describedById) {
-      const hasDescription = document.getElementById(descriptionId);
+      const hasDescription = contentRef.current?.querySelector(`[id="${descriptionId}"]`);
       if (!hasDescription) console.warn(MESSAGE);
     }
   }, [MESSAGE, contentRef, descriptionId]);
