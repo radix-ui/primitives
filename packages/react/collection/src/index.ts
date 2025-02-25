@@ -1,3 +1,3 @@
 'use client';
-export { createCollection } from './Collection';
-export type { CollectionProps } from './Collection';
+export { createCollection } from './collection';
+export type { CollectionProps } from './collection';

@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-select",
-  "version": "2.1.2",
+  "version": "2.1.7-rc.5",
   "license": "MIT",
   "exports": {
     ".": {
@@ -24,6 +24,7 @@
   ],
   "sideEffects": false,
   "scripts": {
+    "lint": "eslint --max-warnings 0 src",
     "clean": "rm -rf dist",
     "version": "yarn version"
   },
@@ -47,8 +48,19 @@
     "@radix-ui/react-use-layout-effect": "workspace:*",
     "@radix-ui/react-use-previous": "workspace:*",
     "@radix-ui/react-visually-hidden": "workspace:*",
-    "aria-hidden": "^1.1.1",
-    "react-remove-scroll": "2.6.0"
+    "aria-hidden": "^1.2.4",
+    "react-remove-scroll": "^2.6.3"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/test-data": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@types/react": "^19.0.7",
+    "@types/react-dom": "^19.0.3",
+    "eslint": "^9.18.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "typescript": "^5.7.3"
   },
   "peerDependencies": {
     "@types/react": "*",
@@ -71,5 +83,6 @@
   },
   "bugs": {
     "url": "https://github.com/radix-ui/primitives/issues"
-  }
+  },
+  "stableVersion": "2.1.6"
 }

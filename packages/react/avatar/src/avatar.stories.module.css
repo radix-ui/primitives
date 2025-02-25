@@ -1,0 +1,34 @@
+.root {
+  /* ensures image/fallback is centered */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  /* ensures image doesn't bleed out */
+  overflow: hidden;
+  /* ensures no selection is possible */
+  user-select: none;
+  /* -------- */
+  border-radius: 9999px;
+  width: 48px;
+  height: 48px;
+}
+
+.image {
+  /* ensures image is full size and not distorted */
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.fallback {
+  /* ensures content inside the fallback is centered */
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* -------- */
+  background-color: var(--gray-12);
+  color: var(--gray-1);
+}

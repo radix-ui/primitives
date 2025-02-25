@@ -1,0 +1,85 @@
+.root,
+:global(:root) {
+  --_switch-width: 50px;
+  --_switch-thumb-width: 20px;
+  --_switch-gap: 4px;
+}
+
+.root {
+  /* better default alignment */
+  vertical-align: middle;
+  /* ensures thumb is not horizontally centered (default in `button`) */
+  text-align: left;
+  /* ------ */
+  outline: none;
+  border: none;
+  width: var(--_switch-width);
+  padding: var(--_switch-gap);
+  border-radius: 9999px;
+  background-color: var(--color-gray300);
+  transition: background-color 166ms ease-out;
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--color-black);
+  }
+
+  &[data-state='checked'] {
+    background-color: var(--color-red);
+    border-color: var(--color-red);
+  }
+
+  &[data-disabled] {
+    opacity: 0.5;
+  }
+}
+
+.thumb {
+  /* ensures thumb is sizeable/can receive vertical margins */
+  display: inline-block;
+  /* ensures thumb is vertically centered */
+  vertical-align: middle;
+  /* ------ */
+  width: var(--_switch-thumb-width);
+  height: var(--_switch-thumb-width);
+  background-color: var(--color-white);
+  border-radius: 9999px;
+  transition: transform 166ms ease-out;
+  &[data-state='checked'] {
+    transform: translateX(
+      calc(var(--_switch-width) - var(--_switch-gap) * 2 - var(--_switch-thumb-width))
+    );
+  }
+}
+
+.rootAttr,
+.thumbAttr {
+  background-color: rgba(0, 0, 255, 0.3);
+  border: 2px solid blue;
+  padding: 10px;
+  &[data-state='unchecked'] {
+    border-color: red;
+  }
+  &[data-state='checked'] {
+    border-color: green;
+  }
+  &[data-state='indeterminate'] {
+    border-color: purple;
+  }
+  &[data-disabled] {
+    border-style: dashed;
+  }
+  &:disabled {
+    opacity: 0.5;
+  }
+}
+
+.label {
+  /* ensures it can receive vertical margins */
+  display: inline-block;
+  /* better default alignment */
+  vertical-align: middle;
+  /* mimics default `label` tag (as we render a `span`) */
+  cursor: default;
+  display: inline-block;
+}

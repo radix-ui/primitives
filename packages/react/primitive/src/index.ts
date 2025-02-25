@@ -4,5 +4,5 @@ export {
   Root,
   //
   dispatchDiscreteCustomEvent,
-} from './Primitive';
-export type { PrimitivePropsWithRef } from './Primitive';
+} from './primitive';
+export type { PrimitivePropsWithRef } from './primitive';

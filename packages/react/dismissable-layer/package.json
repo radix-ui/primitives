@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-dismissable-layer",
-  "version": "1.1.1",
+  "version": "1.1.6-rc.5",
   "license": "MIT",
   "exports": {
     ".": {
@@ -24,6 +24,7 @@
   ],
   "sideEffects": false,
   "scripts": {
+    "lint": "eslint --max-warnings 0 src",
     "clean": "rm -rf dist",
     "version": "yarn version"
   },
@@ -35,7 +36,15 @@
     "@radix-ui/react-use-escape-keydown": "workspace:*"
   },
   "devDependencies": {
-    "react-remove-scroll": "2.6.0"
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@types/react": "^19.0.7",
+    "@types/react-dom": "^19.0.3",
+    "eslint": "^9.18.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-remove-scroll": "^2.6.3",
+    "typescript": "^5.7.3"
   },
   "peerDependencies": {
     "@types/react": "*",
@@ -58,5 +67,6 @@
   },
   "bugs": {
     "url": "https://github.com/radix-ui/primitives/issues"
-  }
+  },
+  "stableVersion": "1.1.5"
 }

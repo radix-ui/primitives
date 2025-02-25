@@ -35,7 +35,7 @@ export {
   Sub,
   SubTrigger,
   SubContent,
-} from './DropdownMenu';
+} from './dropdown-menu';
 export type {
   DropdownMenuProps,
   DropdownMenuTriggerProps,
@@ -53,4 +53,4 @@ export type {
   DropdownMenuSubProps,
   DropdownMenuSubTriggerProps,
   DropdownMenuSubContentProps,
-} from './DropdownMenu';
+} from './dropdown-menu';

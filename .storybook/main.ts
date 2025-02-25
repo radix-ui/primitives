@@ -3,23 +3,28 @@ import path from 'path';
 
 const config: StorybookConfig = {
   stories: ['../packages/core/**/*.stories.tsx', '../packages/react/**/*.stories.tsx'],
+
   addons: [
     getAbsolutePath('@storybook/addon-essentials'),
     getAbsolutePath('@storybook/addon-storysource'),
+    getAbsolutePath('@storybook/addon-webpack5-compiler-swc'),
   ],
+
   framework: {
     name: getAbsolutePath('@storybook/react-webpack5'),
     options: {
-      builder: {
-        useSWC: true,
-      },
+      builder: {},
       // enable React strict mode
       strictMode: true,
     },
   },
-  swc: () => ({
+
+  swc: (config) => ({
+    ...config,
     jsc: {
+      ...config?.jsc,
       transform: {
+        ...config?.jsc?.transform,
         react: {
           // Do not require importing React into scope to use JSX
           runtime: 'automatic',
@@ -35,7 +40,7 @@ const config: StorybookConfig = {
     resolve: {
       ...config.resolve,
       alias: {
-        ...config.resolve.alias,
+        ...config.resolve?.alias,
         ...convertTsConfigPathsToWebpackAliases(),
       },
     },

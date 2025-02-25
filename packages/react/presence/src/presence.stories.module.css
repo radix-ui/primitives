@@ -1,0 +1,73 @@
+@keyframes presence-fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes presence-fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes presence-slideUp {
+  from {
+    transform: translateY(30px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes presence-slideDown {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(30px);
+  }
+}
+
+.mountAnimation {
+  animation: presence-fadeIn 3s ease-out;
+}
+
+.unmountAnimation {
+  &[data-state='closed'] {
+    animation: presence-fadeOut 3s ease-in;
+  }
+}
+
+.multipleMountAnimations {
+  animation:
+    presence-fadeIn 6s cubic-bezier(0.22, 1, 0.36, 1),
+    presence-slideUp 6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.openAndCloseAnimation {
+  &[data-state='open'] {
+    animation: presence-fadeIn 3s ease-out;
+  }
+  &[data-state='closed'] {
+    animation: presence-fadeOut 3s ease-in;
+  }
+}
+
+.multipleOpenAndCloseAnimations {
+  &[data-state='open'] {
+    animation:
+      presence-fadeIn 3s cubic-bezier(0.22, 1, 0.36, 1),
+      presence-slideUp 1s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  &[data-state='closed'] {
+    animation:
+      presence-fadeOut 3s cubic-bezier(0.22, 1, 0.36, 1),
+      presence-slideDown 1s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}

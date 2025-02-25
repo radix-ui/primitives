@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-primitive",
-  "version": "2.0.0",
+  "version": "2.0.3-rc.5",
   "license": "MIT",
   "exports": {
     ".": {
@@ -24,6 +24,7 @@
   ],
   "sideEffects": false,
   "scripts": {
+    "lint": "eslint --max-warnings 0 src",
     "clean": "rm -rf dist",
     "version": "yarn version"
   },
@@ -31,7 +32,14 @@
     "@radix-ui/react-slot": "workspace:*"
   },
   "devDependencies": {
-    "@testing-library/react": "^10.4.8"
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@types/react": "^19.0.7",
+    "@types/react-dom": "^19.0.3",
+    "eslint": "^9.18.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "typescript": "^5.7.3"
   },
   "peerDependencies": {
     "@types/react": "*",
@@ -54,5 +62,6 @@
   },
   "bugs": {
     "url": "https://github.com/radix-ui/primitives/issues"
-  }
+  },
+  "stableVersion": "2.0.2"
 }

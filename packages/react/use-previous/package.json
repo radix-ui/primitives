@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-use-previous",
-  "version": "1.1.0",
+  "version": "1.1.1-rc.5",
   "license": "MIT",
   "exports": {
     ".": {
@@ -24,8 +24,19 @@
   ],
   "sideEffects": false,
   "scripts": {
+    "lint": "eslint --max-warnings 0 src",
     "clean": "rm -rf dist",
     "version": "yarn version"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@types/react": "^19.0.7",
+    "@types/react-dom": "^19.0.3",
+    "eslint": "^9.18.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "typescript": "^5.7.3"
   },
   "peerDependencies": {
     "@types/react": "*",
@@ -43,5 +54,6 @@
   },
   "bugs": {
     "url": "https://github.com/radix-ui/primitives/issues"
-  }
+  },
+  "stableVersion": "1.1.0"
 }

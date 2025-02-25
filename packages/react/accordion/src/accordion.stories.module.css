@@ -1,0 +1,159 @@
+.root {
+  font-family: sans-serif;
+  &[data-orientation='horizontal'] {
+    display: flex;
+    max-width: 40em;
+    height: 50vh;
+  }
+  &[data-orientation='vertical'] {
+    max-width: 20em;
+  }
+}
+
+.item {
+  &[data-orientation='horizontal'] {
+    display: flex;
+    border-right: 1px solid var(--gray-1);
+  }
+
+  &[data-orientation='vertical'] {
+    border-bottom: 1px solid var(--gray-1);
+  }
+}
+
+.header {
+  margin: 0;
+  &[data-orientation='horizontal'] {
+    height: 100%;
+  }
+}
+
+.trigger {
+  /* because it's a button, we want to stretch it */
+  &[data-orientation='horizontal'] {
+    height: 100%;
+  }
+  &[data-orientation='vertical'] {
+    width: 100%;
+  }
+  text-align: inherit;
+  box-sizing: border-box;
+  appearance: none;
+  border: none;
+  padding: 10px;
+  background-color: black;
+  color: var(--gray-1);
+  font-family: inherit;
+  font-size: 1.2em;
+
+  &:focus {
+    outline: 2px solid var(--red-8);
+    color: var(--red-9);
+  }
+
+  &[data-disabled] {
+    color: var(--gray-9);
+  }
+
+  &[data-state='open'] {
+    background-color: var(--red-9);
+    color: var(--gray-1);
+
+    &:focus {
+      color: var(--gray-12);
+    }
+  }
+}
+
+.content {
+  padding: 10px;
+  line-height: 1.5;
+}
+
+.animatedContent {
+  overflow: hidden;
+  &[data-state='open'] {
+    animation: accordion-slideDown 300ms ease-out;
+  }
+  &[data-state='closed'] {
+    animation: accordion-slideUp 300ms ease-out;
+  }
+}
+
+.animated2DContent {
+  overflow: hidden;
+  &[data-state='open'] {
+    animation: accordion-open2D 1000ms ease-out;
+  }
+  &[data-state='closed'] {
+    animation: accordion-close2D 1000ms ease-out;
+  }
+}
+
+.rootAttr,
+.itemAttr,
+.headerAttr,
+.triggerAttr,
+.contentAttr {
+  background-color: var(--blue-a12);
+  border: 2px solid var(--blue-9);
+  padding: 10px;
+
+  &[data-state='closed'] {
+    border-color: var(--red-9);
+  }
+  &[data-state='open'] {
+    border-color: var(--green-9);
+  }
+  &[data-disabled] {
+    border-style: dashed;
+  }
+  &:disabled {
+    opacity: 0.5;
+  }
+}
+
+.contentAttr {
+  /* ensure we can see the content (because it has `hidden` attribute) */
+  display: block;
+}
+
+@keyframes accordion-slideDown {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+  }
+}
+
+@keyframes accordion-slideUp {
+  from {
+    height: var(--radix-accordion-content-height);
+  }
+  to {
+    height: 0;
+  }
+}
+
+@keyframes accordion-open2D {
+  from {
+    width: 0;
+    height: 0;
+  }
+  to {
+    width: var(--radix-accordion-content-width);
+    height: var(--radix-accordion-content-height);
+  }
+}
+
+@keyframes accordion-close2D {
+  from {
+    width: var(--radix-accordion-content-width);
+    height: var(--radix-accordion-content-height);
+  }
+  to {
+    width: 0;
+    height: 0;
+  }
+}

@@ -1,0 +1,6 @@
+releases:
+  "@radix-ui/react-avatar": patch
+  radix-ui: patch
+
+declined:
+  - primitives

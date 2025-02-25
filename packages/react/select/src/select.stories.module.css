@@ -1,0 +1,132 @@
+.trigger {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid var(--color-black);
+  border-radius: 6px;
+  background-color: transparent;
+  height: 50px;
+  padding: 5px 15px;
+  font-family: -apple-system, BlinkMacSystemFont, helvetica, arial, sans-serif;
+  font-size: 13px;
+  line-height: 1;
+  overflow: hidden;
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.5);
+  }
+}
+
+.content {
+  background-color: var(--color-white);
+  border: 1px solid var(--color-gray100);
+  border-radius: 6px;
+  box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.1);
+  position: relative;
+  &:focus-within {
+    border-color: var(--color-black);
+  }
+  min-width: var(--radix-select-trigger-width);
+  max-height: var(--radix-select-content-available-height);
+}
+
+.contentWithPadding {
+  padding: 5px;
+}
+
+.viewport {
+  padding: 5px;
+}
+
+.group {
+}
+
+.label,
+.item {
+  display: flex;
+  align-items: center;
+  line-height: 1;
+  cursor: default;
+  user-select: none;
+  white-space: nowrap;
+  height: 25px;
+  padding: 0 25px;
+  font-family: -apple-system, BlinkMacSystemFont, helvetica, arial, sans-serif;
+  font-size: 13px;
+  color: var(--color-black);
+  border-radius: 3px;
+}
+
+.label {
+  color: var(--color-gray300);
+  font-weight: 500;
+}
+
+.item {
+  position: relative;
+  outline: none;
+  &:active {
+    background-color: var(--color-gray100);
+  }
+
+  &[data-highlighted] {
+    background-color: var(--color-black);
+    color: white;
+  }
+
+  &[data-disabled] {
+    color: var(--color-gray100);
+  }
+  [dir='rtl'] & {
+    font-size: 16px;
+    font-weight: bold;
+  }
+}
+
+.itemInGroup {
+  padding-left: 35px;
+}
+
+.indicator {
+  position: absolute;
+  left: 6px;
+  top: 6px;
+  & :global(svg) {
+    display: block;
+  }
+  [dir='rtl'] & {
+    left: auto;
+    right: 6px;
+  }
+}
+
+.scrollButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  height: 25px;
+  background-color: var(--color-white);
+  color: var(--color-black);
+  cursor: default;
+  user-select: none;
+}
+
+.scrollUpButton {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+}
+
+.scrollDownButton {
+  border-top: 1px solid rgba(0, 0, 0, 0.2);
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
+}
+
+.separator {
+  height: 1px;
+  margin: 5px -5px;
+  background-color: var(--color-gray100);
+}

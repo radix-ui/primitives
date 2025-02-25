@@ -15,7 +15,7 @@ export {
   Link,
   ToggleGroup,
   ToggleItem,
-} from './Toolbar';
+} from './toolbar';
 export type {
   ToolbarProps,
   ToolbarSeparatorProps,
@@ -24,4 +24,4 @@ export type {
   ToolbarToggleGroupSingleProps,
   ToolbarToggleGroupMultipleProps,
   ToolbarToggleItemProps,
-} from './Toolbar';
+} from './toolbar';
