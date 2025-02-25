@@ -106,6 +106,23 @@ export const Animated = () => {
   );
 };
 
+export const Truncate = () => {
+  return (
+    <div className={styles.root}>
+      <ScrollAreaStory style={{ width: 800, height: 800 }} vertical={true} horizontal={false}>
+        <Copy
+          style={{
+            width: 'unset',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+          }}
+        />
+      </ScrollAreaStory>
+    </div>
+  );
+};
+
 export const Chromatic = () => (
   <div className={styles.root}>
     <h1>Vertical</h1>
