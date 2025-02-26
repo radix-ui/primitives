@@ -9,11 +9,17 @@ export default {
 export const Styled = () => {
   return (
     <div className={styles.viewport}>
-      <PasswordToggleField.Root className={styles.field}>
-        <PasswordToggleField.Input className={styles.input} />
-        <PasswordToggleField.Toggle className={styles.toggle}>
-          {({ visible }) => (visible ? <EyeOpenIcon /> : <EyeClosedIcon />)}
-        </PasswordToggleField.Toggle>
+      <PasswordToggleField.Root>
+        <div className={styles.field}>
+          <PasswordToggleField.Input className={styles.input} />
+          <PasswordToggleField.Toggle className={styles.toggle}>
+            <PasswordToggleField.Icon
+              className={styles.toggleIcon}
+              visible={<EyeOpenIcon />}
+              hidden={<EyeClosedIcon />}
+            />
+          </PasswordToggleField.Toggle>
+        </div>
       </PasswordToggleField.Root>
     </div>
   );
@@ -23,15 +29,17 @@ export const Controlled = () => {
   const [visible, setVisible] = React.useState(false);
   return (
     <div className={styles.viewport}>
-      <PasswordToggleField.Root
-        className={styles.field}
-        visible={visible}
-        onVisiblityChange={setVisible}
-      >
-        <PasswordToggleField.Input className={styles.input} />
-        <PasswordToggleField.Toggle className={styles.toggle}>
-          {({ visible }) => (visible ? <EyeOpenIcon /> : <EyeClosedIcon />)}
-        </PasswordToggleField.Toggle>
+      <PasswordToggleField.Root visible={visible} onVisiblityChange={setVisible}>
+        <div className={styles.field}>
+          <PasswordToggleField.Input className={styles.input} />
+          <PasswordToggleField.Toggle className={styles.toggle}>
+            <PasswordToggleField.Icon
+              className={styles.toggleIcon}
+              visible={<EyeOpenIcon />}
+              hidden={<EyeClosedIcon />}
+            />
+          </PasswordToggleField.Toggle>
+        </div>
       </PasswordToggleField.Root>
       <hr />
       <button type="button" onClick={() => setVisible((v) => !v)}>
@@ -58,15 +66,17 @@ export const InsideForm = () => {
           }
         }}
       >
-        <PasswordToggleField.Root
-          className={styles.field}
-          visible={visible}
-          onVisiblityChange={setVisible}
-        >
-          <PasswordToggleField.Input ref={inputRef} className={styles.input} />
-          <PasswordToggleField.Toggle className={styles.toggle}>
-            {({ visible }) => (visible ? <EyeOpenIcon /> : <EyeClosedIcon />)}
-          </PasswordToggleField.Toggle>
+        <PasswordToggleField.Root visible={visible} onVisiblityChange={setVisible}>
+          <div className={styles.field}>
+            <PasswordToggleField.Input ref={inputRef} className={styles.input} />
+            <PasswordToggleField.Toggle className={styles.toggle}>
+              <PasswordToggleField.Icon
+                className={styles.toggleIcon}
+                visible={<EyeOpenIcon />}
+                hidden={<EyeClosedIcon />}
+              />
+            </PasswordToggleField.Toggle>
+          </div>
         </PasswordToggleField.Root>
         <button>Submit ({submissionType})</button>
       </form>

@@ -31,53 +31,48 @@ function usePasswordToggleFieldContext() {
   return context;
 }
 
-type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
-interface PasswordToggleFieldProps extends PrimitiveDivProps {
+interface PasswordToggleFieldProps {
+  id?: string;
   visible?: boolean;
   defaultVisible?: boolean;
   onVisiblityChange?: (visible: boolean) => void;
+  children?: React.ReactNode;
 }
 
-const PasswordToggleField = React.forwardRef<HTMLDivElement, PasswordToggleFieldProps>(
-  function PasswordToggleField(props, forwardedRef) {
-    const baseId = useId(props.id);
-    const defaultInputId = `${baseId}-input`;
-    const [inputIdState, setInputIdState] = React.useState<null | string>(defaultInputId);
-    const inputId = inputIdState ?? defaultInputId;
-    const syncInputId = React.useCallback(
-      (providedId: string | number | undefined) =>
-        setInputIdState(providedId != null ? String(providedId) : null),
-      []
-    );
+function PasswordToggleField(props: PasswordToggleFieldProps) {
+  const baseId = useId(props.id);
+  const defaultInputId = `${baseId}-input`;
+  const [inputIdState, setInputIdState] = React.useState<null | string>(defaultInputId);
+  const inputId = inputIdState ?? defaultInputId;
+  const syncInputId = React.useCallback(
+    (providedId: string | number | undefined) =>
+      setInputIdState(providedId != null ? String(providedId) : null),
+    []
+  );
 
-    const { visible: visibleProp, defaultVisible, onVisiblityChange, ...fieldProps } = props;
-    const [visible = false, setVisible] = useControllableState({
-      prop: visibleProp,
-      defaultProp: defaultVisible,
-      onChange: onVisiblityChange,
-    });
+  const { visible: visibleProp, defaultVisible, onVisiblityChange, children } = props;
+  const [visible = false, setVisible] = useControllableState({
+    prop: visibleProp,
+    defaultProp: defaultVisible,
+    onChange: onVisiblityChange,
+  });
 
-    const inputRef = React.useRef<HTMLInputElement | null>(null);
+  const inputRef = React.useRef<HTMLInputElement | null>(null);
 
-    return (
-      <PasswordToggleFieldContext.Provider
-        value={{
-          inputId,
-          inputRef,
-          setVisible,
-          syncInputId,
-          visible,
-        }}
-      >
-        <Primitive.div
-          data-password-visible={visible || undefined}
-          {...fieldProps}
-          ref={forwardedRef}
-        />
-      </PasswordToggleFieldContext.Provider>
-    );
-  }
-);
+  return (
+    <PasswordToggleFieldContext.Provider
+      value={{
+        inputId,
+        inputRef,
+        setVisible,
+        syncInputId,
+        visible,
+      }}
+    >
+      {children}
+    </PasswordToggleFieldContext.Provider>
+  );
+}
 
 type PrimitiveInputProps = Omit<
   React.ComponentPropsWithoutRef<typeof Primitive.input>,
@@ -158,13 +153,8 @@ const PasswordToggleFieldInput = React.forwardRef<HTMLInputElement, PasswordTogg
   }
 );
 
-type PrimitiveButtonProps = Omit<
-  React.ComponentPropsWithoutRef<typeof Primitive.button>,
-  'type' | 'children'
->;
-interface PasswordToggleFieldToggleProps extends PrimitiveButtonProps {
-  children?: React.ReactNode | ((args: { visible: boolean }) => React.ReactNode);
-}
+type PrimitiveButtonProps = Omit<React.ComponentPropsWithoutRef<typeof Primitive.button>, 'type'>;
+interface PasswordToggleFieldToggleProps extends PrimitiveButtonProps {}
 
 const PasswordToggleFieldToggle = React.forwardRef<
   HTMLButtonElement,
@@ -280,28 +270,99 @@ const PasswordToggleFieldToggle = React.forwardRef<
       {...props}
       type="button"
     >
-      {typeof children === 'function' ? children({ visible }) : children}
+      {children}
     </Primitive.button>
   );
 });
 
+interface PasswordToggleFieldSlotDeclarativeProps {
+  visible: React.ReactElement;
+  hidden: React.ReactElement;
+}
+
+interface PasswordToggleFieldSlotRenderProps {
+  render: (args: { visible: boolean }) => React.ReactElement;
+}
+
+type PasswordToggleFieldSlotProps =
+  | PasswordToggleFieldSlotDeclarativeProps
+  | PasswordToggleFieldSlotRenderProps;
+
+const PasswordToggleFieldSlot: React.FC<PasswordToggleFieldSlotProps> = (props) => {
+  const { visible } = usePasswordToggleFieldContext();
+  if ('render' in props) {
+    return props.render({ visible });
+  }
+
+  return visible ? props.visible : props.hidden;
+};
+
+type PrimitiveSvgProps = Omit<React.ComponentPropsWithoutRef<typeof Primitive.svg>, 'children'>;
+
+interface PasswordToggleFieldIconDeclarativeProps
+  extends PasswordToggleFieldSlotDeclarativeProps,
+    PrimitiveSvgProps {}
+
+interface PasswordToggleFieldIconRenderProps
+  extends PasswordToggleFieldSlotRenderProps,
+    PrimitiveSvgProps {}
+
+type PasswordToggleFieldIconProps =
+  | PasswordToggleFieldIconDeclarativeProps
+  | PasswordToggleFieldIconRenderProps;
+
+const PasswordToggleFieldIcon = React.forwardRef<SVGSVGElement, PasswordToggleFieldIconProps>(
+  function PasswordToggleFieldIcon(
+    {
+      // @ts-expect-error
+      children,
+      ...props
+    },
+    forwardedRef
+  ) {
+    const { visible } = usePasswordToggleFieldContext();
+    if ('render' in props) {
+      return (
+        <Primitive.svg {...props} ref={forwardedRef} aria-hidden asChild>
+          {props.render({ visible })}
+        </Primitive.svg>
+      );
+    }
+
+    const { visible: visibleIcon, hidden: hiddenIcon, ...domProps } = props;
+    return (
+      <Primitive.svg {...domProps} ref={forwardedRef} aria-hidden asChild>
+        {props.visible ? visibleIcon : hiddenIcon}
+      </Primitive.svg>
+    );
+  }
+);
+
 const Root = PasswordToggleField;
 const Input = PasswordToggleFieldInput;
 const Toggle = PasswordToggleFieldToggle;
+const Slot = PasswordToggleFieldSlot;
+const Icon = PasswordToggleFieldIcon;
 
 export {
   PasswordToggleField,
   PasswordToggleFieldInput,
   PasswordToggleFieldToggle,
+  PasswordToggleFieldSlot,
+  PasswordToggleFieldIcon,
   //
   Root,
   Input,
   Toggle,
+  Slot,
+  Icon,
 };
 export type {
   PasswordToggleFieldProps,
   PasswordToggleFieldInputProps,
   PasswordToggleFieldToggleProps,
+  PasswordToggleFieldIconProps,
+  PasswordToggleFieldSlotProps,
 };
 
 function requestIdleCallback(
