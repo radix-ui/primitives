@@ -29,6 +29,8 @@ const VisuallyHidden = React.forwardRef<VisuallyHiddenElement, VisuallyHiddenPro
           clip: 'rect(0, 0, 0, 0)',
           whiteSpace: 'nowrap',
           wordWrap: 'normal',
+          top: 0,
+          left:0,
           ...props.style,
         }}
       />
