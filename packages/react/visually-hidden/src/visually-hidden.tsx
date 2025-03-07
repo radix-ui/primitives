@@ -20,6 +20,8 @@ const VisuallyHidden = React.forwardRef<VisuallyHiddenElement, VisuallyHiddenPro
         style={{
           // See: https://github.com/twbs/bootstrap/blob/main/scss/mixins/_visually-hidden.scss
           position: 'absolute',
+          top:0,
+          left:0,
           border: 0,
           width: 1,
           height: 1,
