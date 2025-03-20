@@ -127,6 +127,7 @@ const DismissableLayer = React.forwardRef<DismissableLayerElement, DismissableLa
         ) {
           ownerDocument.body.style.pointerEvents = originalBodyPointerEvents;
         }
+        context.layersWithOutsidePointerEventsDisabled.delete(node);
       };
     }, [node, ownerDocument, disableOutsidePointerEvents, context]);
 
@@ -140,7 +141,6 @@ const DismissableLayer = React.forwardRef<DismissableLayerElement, DismissableLa
       return () => {
         if (!node) return;
         context.layers.delete(node);
-        context.layersWithOutsidePointerEventsDisabled.delete(node);
         dispatchUpdate();
       };
     }, [node, context]);
