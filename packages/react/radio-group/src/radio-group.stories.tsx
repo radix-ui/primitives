@@ -188,7 +188,7 @@ export const Animated = () => {
 };
 
 export const Chromatic = () => {
-  const manualFocusRef = React.useRef<React.ElementRef<typeof RadioGroup.Item>>(null);
+  const manualFocusRef = React.useRef<React.ComponentRef<typeof RadioGroup.Item>>(null);
 
   React.useEffect(() => {
     manualFocusRef.current?.focus();

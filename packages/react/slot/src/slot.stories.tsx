@@ -310,7 +310,7 @@ const SlotWithoutPreventableEvent = (props: any) => (
 );
 
 const Button = React.forwardRef<
-  React.ElementRef<'button'>,
+  React.ComponentRef<'button'>,
   React.ComponentProps<'button'> & {
     asChild?: boolean;
     iconLeft?: React.ReactNode;
@@ -342,7 +342,7 @@ const Button = React.forwardRef<
   );
 });
 
-const MockIcon = React.forwardRef<React.ElementRef<'span'>, React.ComponentProps<'span'>>(
+const MockIcon = React.forwardRef<React.ComponentRef<'span'>, React.ComponentProps<'span'>>(
   ({ color = 'tomato', ...props }, forwardedRef) => (
     <span
       ref={forwardedRef}

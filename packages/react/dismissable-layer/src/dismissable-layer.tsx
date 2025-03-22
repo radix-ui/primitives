@@ -22,7 +22,7 @@ const DismissableLayerContext = React.createContext({
   branches: new Set<DismissableLayerBranchElement>(),
 });
 
-type DismissableLayerElement = React.ElementRef<typeof Primitive.div>;
+type DismissableLayerElement = React.ComponentRef<typeof Primitive.div>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface DismissableLayerProps extends PrimitiveDivProps {
   /**
@@ -182,7 +182,7 @@ DismissableLayer.displayName = DISMISSABLE_LAYER_NAME;
 
 const BRANCH_NAME = 'DismissableLayerBranch';
 
-type DismissableLayerBranchElement = React.ElementRef<typeof Primitive.div>;
+type DismissableLayerBranchElement = React.ComponentRef<typeof Primitive.div>;
 interface DismissableLayerBranchProps extends PrimitiveDivProps {}
 
 const DismissableLayerBranch = React.forwardRef<

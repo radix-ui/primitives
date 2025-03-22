@@ -29,7 +29,7 @@ type CheckboxContextValue = {
 const [CheckboxProvider, useCheckboxContext] =
   createCheckboxContext<CheckboxContextValue>(CHECKBOX_NAME);
 
-type CheckboxElement = React.ElementRef<typeof Primitive.button>;
+type CheckboxElement = React.ComponentRef<typeof Primitive.button>;
 type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
 interface CheckboxProps extends Omit<PrimitiveButtonProps, 'checked' | 'defaultChecked'> {
   checked?: CheckedState;
@@ -130,7 +130,7 @@ Checkbox.displayName = CHECKBOX_NAME;
 
 const INDICATOR_NAME = 'CheckboxIndicator';
 
-type CheckboxIndicatorElement = React.ElementRef<typeof Primitive.span>;
+type CheckboxIndicatorElement = React.ComponentRef<typeof Primitive.span>;
 type PrimitiveSpanProps = React.ComponentPropsWithoutRef<typeof Primitive.span>;
 interface CheckboxIndicatorProps extends PrimitiveSpanProps {
   /**

@@ -125,7 +125,7 @@ export const Nested = () => (
 
 type ItemData = { disabled: boolean };
 
-const [Collection, useCollection] = createCollection<React.ElementRef<typeof Item>, ItemData>(
+const [Collection, useCollection] = createCollection<React.ComponentRef<typeof Item>, ItemData>(
   'List'
 );
 

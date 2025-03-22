@@ -24,7 +24,7 @@ type AvatarContextValue = {
 
 const [AvatarProvider, useAvatarContext] = createAvatarContext<AvatarContextValue>(AVATAR_NAME);
 
-type AvatarElement = React.ElementRef<typeof Primitive.span>;
+type AvatarElement = React.ComponentRef<typeof Primitive.span>;
 type PrimitiveSpanProps = React.ComponentPropsWithoutRef<typeof Primitive.span>;
 interface AvatarProps extends PrimitiveSpanProps {}
 
@@ -52,7 +52,7 @@ Avatar.displayName = AVATAR_NAME;
 
 const IMAGE_NAME = 'AvatarImage';
 
-type AvatarImageElement = React.ElementRef<typeof Primitive.img>;
+type AvatarImageElement = React.ComponentRef<typeof Primitive.img>;
 type PrimitiveImageProps = React.ComponentPropsWithoutRef<typeof Primitive.img>;
 interface AvatarImageProps extends PrimitiveImageProps {
   onLoadingStatusChange?: (status: ImageLoadingStatus) => void;
@@ -88,7 +88,7 @@ AvatarImage.displayName = IMAGE_NAME;
 
 const FALLBACK_NAME = 'AvatarFallback';
 
-type AvatarFallbackElement = React.ElementRef<typeof Primitive.span>;
+type AvatarFallbackElement = React.ComponentRef<typeof Primitive.span>;
 interface AvatarFallbackProps extends PrimitiveSpanProps {
   delayMs?: number;
 }
