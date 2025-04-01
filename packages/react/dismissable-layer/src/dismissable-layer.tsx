@@ -37,6 +37,15 @@ interface DismissableLayerProps extends PrimitiveDivProps {
    */
   onEscapeKeyDown?: (event: KeyboardEvent) => void;
   /**
+   * If escape key event handler should avoid capturing the event before it is dispatched
+   * to the EventTarget.
+   *
+   * See: https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#capture
+   *
+   * @default false (i.e., capture the event).
+   */
+  ignoreEscapeKeyCapture?: boolean;
+  /**
    * Event handler called when the a `pointerdown` event happens outside of the `DismissableLayer`.
    * Can be prevented.
    */
@@ -62,6 +71,7 @@ const DismissableLayer = React.forwardRef<DismissableLayerElement, DismissableLa
   (props, forwardedRef) => {
     const {
       disableOutsidePointerEvents = false,
+      ignoreEscapeKeyCapture,
       onEscapeKeyDown,
       onPointerDownOutside,
       onFocusOutside,
@@ -99,15 +109,19 @@ const DismissableLayer = React.forwardRef<DismissableLayerElement, DismissableLa
       if (!event.defaultPrevented) onDismiss?.();
     }, ownerDocument);
 
-    useEscapeKeydown((event) => {
-      const isHighestLayer = index === context.layers.size - 1;
-      if (!isHighestLayer) return;
-      onEscapeKeyDown?.(event);
-      if (!event.defaultPrevented && onDismiss) {
-        event.preventDefault();
-        onDismiss();
-      }
-    }, ownerDocument);
+    useEscapeKeydown(
+      (event) => {
+        const isHighestLayer = index === context.layers.size - 1;
+        if (!isHighestLayer) return;
+        onEscapeKeyDown?.(event);
+        if (!event.defaultPrevented && onDismiss) {
+          event.preventDefault();
+          onDismiss();
+        }
+      },
+      ownerDocument,
+      ignoreEscapeKeyCapture
+    );
 
     React.useEffect(() => {
       if (!node) return;
