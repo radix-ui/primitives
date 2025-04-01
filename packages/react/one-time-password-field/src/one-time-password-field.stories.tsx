@@ -2,12 +2,17 @@ import * as React from 'react';
 import * as OneTimePasswordField from '@radix-ui/react-one-time-password-field';
 import * as Separator from '@radix-ui/react-separator';
 import styles from './one-time-password-field.stories.module.css';
+import type { Meta, StoryObj } from '@storybook/react';
+import { userEvent, within, expect } from '@storybook/test';
 
 export default {
   title: 'Components/OneTimePasswordField',
-};
+  component: OneTimePasswordField.Root,
+} satisfies Meta<typeof OneTimePasswordField.Root>;
 
-export const Styled = () => {
+type Story = StoryObj<typeof OneTimePasswordField.Root>;
+
+const Styled = () => {
   const [error, setError] = React.useState<string | null>(null);
   const [code, setCode] = React.useState('');
   const rootRef = React.useRef<HTMLDivElement | null>(null);
@@ -82,6 +87,59 @@ export const Styled = () => {
       </form>
     </div>
   );
+};
+
+function getInputValues(inputs: HTMLInputElement[]) {
+  return inputs.map((input) => input.value).join(',');
+}
+
+export const Controlled: Story = {
+  render: () => <Styled />,
+};
+
+export const FilledThenDeleted: Story = {
+  render: () => <Styled />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const inputs = canvas.getAllByRole<HTMLInputElement>('textbox', {
+      hidden: false,
+    });
+
+    const firstInput = inputs[0];
+    expect(firstInput).toBeInTheDocument();
+    await userEvent.click(firstInput);
+    await userEvent.keyboard('123123');
+    expect(getInputValues(inputs)).toBe('1,2,3,1,2,3');
+    await userEvent.keyboard('{backspace}{backspace}{backspace}{backspace}{backspace}');
+    // what's weird is when typing manually, I get 3,,,,,
+    expect(getInputValues(inputs)).toBe('1,,,,,');
+    // await new Promise((resolve) => setTimeout(resolve, 1000));
+    await userEvent.keyboard('{backspace}');
+    expect(getInputValues(inputs)).toBe(',,,,,');
+  },
+};
+
+export const PastedAndDeleted: Story = {
+  render: () => <Styled />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const inputs = canvas.getAllByRole<HTMLInputElement>('textbox', {
+      hidden: false,
+    });
+
+    const firstInput = inputs[0];
+    expect(firstInput).toBeInTheDocument();
+    await userEvent.click(firstInput);
+    await userEvent.paste('123123');
+    expect(getInputValues(inputs)).toBe('1,2,3,1,2,3');
+    await userEvent.keyboard('{backspace}{backspace}{backspace}{backspace}{backspace}');
+    expect(getInputValues(inputs)).toBe('1,,,,,');
+    await userEvent.keyboard('{backspace}');
+    // With the current bug, the actual behavior is 1,2,3,1,2,3
+    expect(getInputValues(inputs)).toBe(',,,,,');
+
+    // if we keep deleting while the first input is focused, we eventually get ,2,3,1,2,3
+  },
 };
 
 function ErrorMessage({ children }: { children: string }) {
