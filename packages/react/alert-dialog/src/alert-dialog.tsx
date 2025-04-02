@@ -4,7 +4,7 @@ import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { createDialogScope } from '@radix-ui/react-dialog';
 import { composeEventHandlers } from '@radix-ui/primitive';
-import { Slottable } from '@radix-ui/react-slot';
+import { createSlottable } from '@radix-ui/react-slot';
 
 import type { Scope } from '@radix-ui/react-context';
 
@@ -106,6 +106,8 @@ type AlertDialogContentElement = React.ElementRef<typeof DialogPrimitive.Content
 type DialogContentProps = React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>;
 interface AlertDialogContentProps
   extends Omit<DialogContentProps, 'onPointerDownOutside' | 'onInteractOutside'> {}
+
+const Slottable = createSlottable('AlertDialogContent');
 
 const AlertDialogContent = React.forwardRef<AlertDialogContentElement, AlertDialogContentProps>(
   (props: ScopedProps<AlertDialogContentProps>, forwardedRef) => {
