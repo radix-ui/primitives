@@ -117,7 +117,10 @@ function isSlottable(
   child: React.ReactNode
 ): child is React.ReactElement<SlottableProps, typeof Slottable> {
   return (
-    React.isValidElement(child) && '__radixId' in child && child.__radixId === SLOTTABLE_IDENTIFIER
+    React.isValidElement(child) &&
+    typeof child.type === 'function' &&
+    '__radixId' in child.type &&
+    child.type.__radixId === SLOTTABLE_IDENTIFIER
   );
 }
 
