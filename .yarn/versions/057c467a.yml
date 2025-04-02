@@ -1,0 +1,13 @@
+releases:
+  "@radix-ui/react-alert-dialog": patch
+  "@radix-ui/react-collection": patch
+  "@radix-ui/react-dialog": patch
+  "@radix-ui/react-menu": patch
+  "@radix-ui/react-popover": patch
+  "@radix-ui/react-primitive": patch
+  "@radix-ui/react-select": patch
+  "@radix-ui/react-slot": minor
+  "@radix-ui/react-tooltip": patch
+
+declined:
+  - primitives
