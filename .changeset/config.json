@@ -1,5 +1,5 @@
 {
-  "$schema": "https://unpkg.com/@changesets/config@3.0.5/schema.json",
+  "$schema": "https://unpkg.com/@changesets/config@3.1.1/schema.json",
   "access": "public",
   "changelog": false,
   "commit": false,
@@ -7,5 +7,9 @@
   "linked": [],
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
+  "snapshot": {
+    "useCalculatedVersion": true,
+    "prereleaseTemplate": "rc.{timestamp}"
+  },
   "ignore": []
 }
