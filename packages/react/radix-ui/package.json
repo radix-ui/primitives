@@ -45,7 +45,6 @@
   "scripts": {
     "lint": "eslint --max-warnings 0 src",
     "clean": "rm -rf dist",
-    "version": "yarn version",
     "build": "tsc ."
   },
   "dependencies": {
