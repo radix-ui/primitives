@@ -58,7 +58,7 @@ type ScrollAreaContextValue = {
 const [ScrollAreaProvider, useScrollAreaContext] =
   createScrollAreaContext<ScrollAreaContextValue>(SCROLL_AREA_NAME);
 
-type ScrollAreaElement = React.ElementRef<typeof Primitive.div>;
+type ScrollAreaElement = React.ComponentRef<typeof Primitive.div>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface ScrollAreaProps extends PrimitiveDivProps {
   type?: ScrollAreaContextValue['type'];
@@ -134,7 +134,7 @@ ScrollArea.displayName = SCROLL_AREA_NAME;
 
 const VIEWPORT_NAME = 'ScrollAreaViewport';
 
-type ScrollAreaViewportElement = React.ElementRef<typeof Primitive.div>;
+type ScrollAreaViewportElement = React.ComponentRef<typeof Primitive.div>;
 interface ScrollAreaViewportProps extends PrimitiveDivProps {
   nonce?: string;
 }
@@ -619,7 +619,7 @@ type ScrollbarContext = {
 const [ScrollbarProvider, useScrollbarContext] =
   createScrollAreaContext<ScrollbarContext>(SCROLLBAR_NAME);
 
-type ScrollAreaScrollbarImplElement = React.ElementRef<typeof Primitive.div>;
+type ScrollAreaScrollbarImplElement = React.ComponentRef<typeof Primitive.div>;
 type ScrollAreaScrollbarImplPrivateProps = {
   sizes: Sizes;
   hasThumb: boolean;
@@ -763,7 +763,7 @@ const ScrollAreaThumb = React.forwardRef<ScrollAreaThumbElement, ScrollAreaThumb
   }
 );
 
-type ScrollAreaThumbImplElement = React.ElementRef<typeof Primitive.div>;
+type ScrollAreaThumbImplElement = React.ComponentRef<typeof Primitive.div>;
 interface ScrollAreaThumbImplProps extends PrimitiveDivProps {}
 
 const ScrollAreaThumbImpl = React.forwardRef<ScrollAreaThumbImplElement, ScrollAreaThumbImplProps>(
@@ -854,7 +854,7 @@ ScrollAreaCorner.displayName = CORNER_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
-type ScrollAreaCornerImplElement = React.ElementRef<typeof Primitive.div>;
+type ScrollAreaCornerImplElement = React.ComponentRef<typeof Primitive.div>;
 interface ScrollAreaCornerImplProps extends PrimitiveDivProps {}
 
 const ScrollAreaCornerImpl = React.forwardRef<

@@ -15,7 +15,7 @@ type FocusableTarget = HTMLElement | { focus(): void };
 
 const FOCUS_SCOPE_NAME = 'FocusScope';
 
-type FocusScopeElement = React.ElementRef<typeof Primitive.div>;
+type FocusScopeElement = React.ComponentRef<typeof Primitive.div>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface FocusScopeProps extends PrimitiveDivProps {
   /**

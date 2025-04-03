@@ -64,7 +64,7 @@ Popper.displayName = POPPER_NAME;
 
 const ANCHOR_NAME = 'PopperAnchor';
 
-type PopperAnchorElement = React.ElementRef<typeof Primitive.div>;
+type PopperAnchorElement = React.ComponentRef<typeof Primitive.div>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface PopperAnchorProps extends PrimitiveDivProps {
   virtualRef?: React.RefObject<Measurable>;
@@ -109,7 +109,7 @@ const [PopperContentProvider, useContentContext] =
 
 type Boundary = Element | null;
 
-type PopperContentElement = React.ElementRef<typeof Primitive.div>;
+type PopperContentElement = React.ComponentRef<typeof Primitive.div>;
 interface PopperContentProps extends PrimitiveDivProps {
   side?: Side;
   sideOffset?: number;
@@ -297,7 +297,7 @@ const OPPOSITE_SIDE: Record<Side, Side> = {
   left: 'right',
 };
 
-type PopperArrowElement = React.ElementRef<typeof ArrowPrimitive.Root>;
+type PopperArrowElement = React.ComponentRef<typeof ArrowPrimitive.Root>;
 type ArrowProps = React.ComponentPropsWithoutRef<typeof ArrowPrimitive.Root>;
 interface PopperArrowProps extends ArrowProps {}
 

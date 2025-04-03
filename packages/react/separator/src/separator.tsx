@@ -10,7 +10,7 @@ const DEFAULT_ORIENTATION = 'horizontal';
 const ORIENTATIONS = ['horizontal', 'vertical'] as const;
 
 type Orientation = (typeof ORIENTATIONS)[number];
-type SeparatorElement = React.ElementRef<typeof Primitive.div>;
+type SeparatorElement = React.ComponentRef<typeof Primitive.div>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface SeparatorProps extends PrimitiveDivProps {
   /**

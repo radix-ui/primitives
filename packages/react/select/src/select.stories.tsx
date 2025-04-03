@@ -932,7 +932,7 @@ interface ChromaticSelectProps extends React.ComponentProps<typeof Select.Trigge
 }
 
 const ChromaticSelect = React.forwardRef<
-  React.ElementRef<typeof Select.Trigger>,
+  React.ComponentRef<typeof Select.Trigger>,
   ChromaticSelectProps
 >(({ count = 5, paddedElement = 'content', selected, ...props }, forwardedRef) => (
   <Select.Root defaultValue={String(selected)} open>
@@ -975,14 +975,14 @@ const ChromaticSelect = React.forwardRef<
 ));
 
 const SelectShort = React.forwardRef<
-  React.ElementRef<typeof ChromaticSelect>,
+  React.ComponentRef<typeof ChromaticSelect>,
   React.ComponentProps<typeof ChromaticSelect>
 >(({ count = 9, ...props }, forwardedRef) => (
   <ChromaticSelect count={count} {...props} ref={forwardedRef} />
 ));
 
 const SelectLong = React.forwardRef<
-  React.ElementRef<typeof ChromaticSelect>,
+  React.ComponentRef<typeof ChromaticSelect>,
   React.ComponentProps<typeof ChromaticSelect>
 >(({ count = 50, ...props }, forwardedRef) => (
   <ChromaticSelect count={count} {...props} ref={forwardedRef} />

@@ -9,7 +9,7 @@ import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 
 const PORTAL_NAME = 'Portal';
 
-type PortalElement = React.ElementRef<typeof Primitive.div>;
+type PortalElement = React.ComponentRef<typeof Primitive.div>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface PortalProps extends PrimitiveDivProps {
   /**
