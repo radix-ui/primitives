@@ -1,4 +1,4 @@
-function composeEventHandlers<E>(
+function composeEventHandlers<E extends { defaultPrevented: boolean }>(
   originalEventHandler?: (event: E) => void,
   ourEventHandler?: (event: E) => void,
   { checkForDefaultPrevented = true } = {}
@@ -6,7 +6,7 @@ function composeEventHandlers<E>(
   return function handleEvent(event: E) {
     originalEventHandler?.(event);
 
-    if (checkForDefaultPrevented === false || !(event as unknown as Event).defaultPrevented) {
+    if (checkForDefaultPrevented === false || !event.defaultPrevented) {
       return ourEventHandler?.(event);
     }
   };
