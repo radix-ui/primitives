@@ -13,6 +13,7 @@ import { composeEventHandlers } from '@radix-ui/primitive';
 import { useStateMachine } from './use-state-machine';
 
 import type { Scope } from '@radix-ui/react-context';
+import { useDocument } from '@radix-ui/react-document-context';
 
 type Direction = 'ltr' | 'rtl';
 type Sizes = {
@@ -246,27 +247,28 @@ const ScrollAreaScrollbarHover = React.forwardRef<
   const { forceMount, ...scrollbarProps } = props;
   const context = useScrollAreaContext(SCROLLBAR_NAME, props.__scopeScrollArea);
   const [visible, setVisible] = React.useState(false);
+  const documentWindow = useDocument()?.defaultView;
 
   React.useEffect(() => {
     const scrollArea = context.scrollArea;
     let hideTimer = 0;
-    if (scrollArea) {
+    if (scrollArea && documentWindow) {
       const handlePointerEnter = () => {
-        window.clearTimeout(hideTimer);
+        documentWindow.clearTimeout(hideTimer);
         setVisible(true);
       };
       const handlePointerLeave = () => {
-        hideTimer = window.setTimeout(() => setVisible(false), context.scrollHideDelay);
+        hideTimer = documentWindow.setTimeout(() => setVisible(false), context.scrollHideDelay);
       };
       scrollArea.addEventListener('pointerenter', handlePointerEnter);
       scrollArea.addEventListener('pointerleave', handlePointerLeave);
       return () => {
-        window.clearTimeout(hideTimer);
+        documentWindow.clearTimeout(hideTimer);
         scrollArea.removeEventListener('pointerenter', handlePointerEnter);
         scrollArea.removeEventListener('pointerleave', handlePointerLeave);
       };
     }
-  }, [context.scrollArea, context.scrollHideDelay]);
+  }, [context.scrollArea, context.scrollHideDelay, documentWindow]);
 
   return (
     <Presence present={forceMount || visible}>
@@ -310,13 +312,14 @@ const ScrollAreaScrollbarScroll = React.forwardRef<
       POINTER_ENTER: 'interacting',
     },
   });
+  const documentWindow = useDocument()?.defaultView;
 
   React.useEffect(() => {
-    if (state === 'idle') {
-      const hideTimer = window.setTimeout(() => send('HIDE'), context.scrollHideDelay);
-      return () => window.clearTimeout(hideTimer);
+    if (state === 'idle' && documentWindow) {
+      const hideTimer = documentWindow.setTimeout(() => send('HIDE'), context.scrollHideDelay);
+      return () => documentWindow.clearTimeout(hideTimer);
     }
-  }, [state, context.scrollHideDelay, send]);
+  }, [state, context.scrollHideDelay, send, documentWindow]);
 
   React.useEffect(() => {
     const viewport = context.viewport;
@@ -662,6 +665,7 @@ const ScrollAreaScrollbarImpl = React.forwardRef<
   const handleWheelScroll = useCallbackRef(onWheelScroll);
   const handleThumbPositionChange = useCallbackRef(onThumbPositionChange);
   const handleResize = useDebounceCallback(onResize, 10);
+  const providedDocument = useDocument();
 
   function handleDragScroll(event: React.PointerEvent<HTMLElement>) {
     if (rectRef.current) {
@@ -676,14 +680,16 @@ const ScrollAreaScrollbarImpl = React.forwardRef<
    * mode for document wheel event to allow it to be prevented
    */
   React.useEffect(() => {
+    if (!providedDocument) return;
     const handleWheel = (event: WheelEvent) => {
       const element = event.target as HTMLElement;
       const isScrollbarWheel = scrollbar?.contains(element);
       if (isScrollbarWheel) handleWheelScroll(event, maxScrollPos);
     };
-    document.addEventListener('wheel', handleWheel, { passive: false });
-    return () => document.removeEventListener('wheel', handleWheel, { passive: false } as any);
-  }, [viewport, scrollbar, maxScrollPos, handleWheelScroll]);
+    providedDocument.addEventListener('wheel', handleWheel, { passive: false });
+    return () =>
+      providedDocument.removeEventListener('wheel', handleWheel, { passive: false } as any);
+  }, [viewport, scrollbar, maxScrollPos, handleWheelScroll, providedDocument]);
 
   /**
    * Update thumb position on sizes change
@@ -715,8 +721,10 @@ const ScrollAreaScrollbarImpl = React.forwardRef<
             rectRef.current = scrollbar!.getBoundingClientRect();
             // pointer capture doesn't prevent text selection in Safari
             // so we remove text selection manually when scrolling
-            prevWebkitUserSelectRef.current = document.body.style.webkitUserSelect;
-            document.body.style.webkitUserSelect = 'none';
+            if (providedDocument) {
+              prevWebkitUserSelectRef.current = providedDocument.body.style.webkitUserSelect;
+              providedDocument.body.style.webkitUserSelect = 'none';
+            }
             if (context.viewport) context.viewport.style.scrollBehavior = 'auto';
             handleDragScroll(event);
           }
@@ -727,7 +735,9 @@ const ScrollAreaScrollbarImpl = React.forwardRef<
           if (element.hasPointerCapture(event.pointerId)) {
             element.releasePointerCapture(event.pointerId);
           }
-          document.body.style.webkitUserSelect = prevWebkitUserSelectRef.current;
+          if (providedDocument) {
+            providedDocument.body.style.webkitUserSelect = prevWebkitUserSelectRef.current;
+          }
           if (context.viewport) context.viewport.style.scrollBehavior = '';
           rectRef.current = null;
         })}
@@ -961,6 +971,7 @@ function isScrollingWithinScrollbarBounds(scrollPos: number, maxScrollPos: numbe
 // Custom scroll handler to avoid scroll-linked effects
 // https://developer.mozilla.org/en-US/docs/Mozilla/Performance/Scroll-linked_effects
 const addUnlinkedScrollListener = (node: HTMLElement, handler = () => {}) => {
+  const documentWindow = node.ownerDocument?.defaultView;
   let prevPosition = { left: node.scrollLeft, top: node.scrollTop };
   let rAF = 0;
   (function loop() {
@@ -969,24 +980,31 @@ const addUnlinkedScrollListener = (node: HTMLElement, handler = () => {}) => {
     const isVerticalScroll = prevPosition.top !== position.top;
     if (isHorizontalScroll || isVerticalScroll) handler();
     prevPosition = position;
-    rAF = window.requestAnimationFrame(loop);
+    rAF = documentWindow?.requestAnimationFrame(loop) ?? 0;
   })();
-  return () => window.cancelAnimationFrame(rAF);
+  return () => documentWindow?.cancelAnimationFrame(rAF);
 };
 
 function useDebounceCallback(callback: () => void, delay: number) {
+  const documentWindow = useDocument()?.defaultView;
   const handleCallback = useCallbackRef(callback);
   const debounceTimerRef = React.useRef(0);
-  React.useEffect(() => () => window.clearTimeout(debounceTimerRef.current), []);
+  React.useEffect(
+    () => () => documentWindow?.clearTimeout(debounceTimerRef.current),
+    [documentWindow]
+  );
   return React.useCallback(() => {
-    window.clearTimeout(debounceTimerRef.current);
-    debounceTimerRef.current = window.setTimeout(handleCallback, delay);
-  }, [handleCallback, delay]);
+    if (!documentWindow) return;
+    documentWindow.clearTimeout(debounceTimerRef.current);
+    debounceTimerRef.current = documentWindow.setTimeout(handleCallback, delay);
+  }, [handleCallback, delay, documentWindow]);
 }
 
 function useResizeObserver(element: HTMLElement | null, onResize: () => void) {
+  const documentWindow = useDocument()?.defaultView;
   const handleResize = useCallbackRef(onResize);
   useLayoutEffect(() => {
+    if (!documentWindow) return;
     let rAF = 0;
     if (element) {
       /**
@@ -998,15 +1016,15 @@ function useResizeObserver(element: HTMLElement | null, onResize: () => void) {
        */
       const resizeObserver = new ResizeObserver(() => {
         cancelAnimationFrame(rAF);
-        rAF = window.requestAnimationFrame(handleResize);
+        rAF = documentWindow.requestAnimationFrame(handleResize);
       });
       resizeObserver.observe(element);
       return () => {
-        window.cancelAnimationFrame(rAF);
+        documentWindow.cancelAnimationFrame(rAF);
         resizeObserver.unobserve(element);
       };
     }
-  }, [element, handleResize]);
+  }, [element, handleResize, documentWindow]);
 }
 
 /* -----------------------------------------------------------------------------------------------*/
