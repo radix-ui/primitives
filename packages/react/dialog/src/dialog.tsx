@@ -12,7 +12,7 @@ import { Primitive } from '@radix-ui/react-primitive';
 import { useFocusGuards } from '@radix-ui/react-focus-guards';
 import { RemoveScroll } from 'react-remove-scroll';
 import { hideOthers } from 'aria-hidden';
-import { Slot } from '@radix-ui/react-slot';
+import { createSlot } from '@radix-ui/react-slot';
 
 import type { Scope } from '@radix-ui/react-context';
 import { useDocument } from '@radix-ui/react-document-context';
@@ -193,6 +193,8 @@ DialogOverlay.displayName = OVERLAY_NAME;
 type DialogOverlayImplElement = React.ElementRef<typeof Primitive.div>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface DialogOverlayImplProps extends PrimitiveDivProps {}
+
+const Slot = createSlot('DialogOverlay.RemoveScroll');
 
 const DialogOverlayImpl = React.forwardRef<DialogOverlayImplElement, DialogOverlayImplProps>(
   (props: ScopedProps<DialogOverlayImplProps>, forwardedRef) => {
