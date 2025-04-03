@@ -9,7 +9,7 @@ import { createPopperScope } from '@radix-ui/react-popper';
 import { Portal as PortalPrimitive } from '@radix-ui/react-portal';
 import { Presence } from '@radix-ui/react-presence';
 import { Primitive } from '@radix-ui/react-primitive';
-import { Slottable } from '@radix-ui/react-slot';
+import { createSlottable } from '@radix-ui/react-slot';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import * as VisuallyHiddenPrimitive from '@radix-ui/react-visually-hidden';
 
@@ -500,6 +500,8 @@ interface TooltipContentImplProps extends Omit<PopperContentProps, 'onPlaced'> {
    */
   onPointerDownOutside?: DismissableLayerProps['onPointerDownOutside'];
 }
+
+const Slottable = createSlottable('TooltipContent');
 
 const TooltipContentImpl = React.forwardRef<TooltipContentImplElement, TooltipContentImplProps>(
   (props: ScopedProps<TooltipContentImplProps>, forwardedRef) => {

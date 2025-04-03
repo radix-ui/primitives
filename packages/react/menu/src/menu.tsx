@@ -15,7 +15,7 @@ import { Presence } from '@radix-ui/react-presence';
 import { Primitive, dispatchDiscreteCustomEvent } from '@radix-ui/react-primitive';
 import * as RovingFocusGroup from '@radix-ui/react-roving-focus';
 import { createRovingFocusGroupScope } from '@radix-ui/react-roving-focus';
-import { Slot } from '@radix-ui/react-slot';
+import { createSlot } from '@radix-ui/react-slot';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { hideOthers } from 'aria-hidden';
 import { RemoveScroll } from 'react-remove-scroll';
@@ -353,6 +353,8 @@ interface MenuContentImplProps
   onFocusOutside?: DismissableLayerProps['onFocusOutside'];
   onInteractOutside?: DismissableLayerProps['onInteractOutside'];
 }
+
+const Slot = createSlot('MenuContent.ScrollLock');
 
 const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImplProps>(
   (props: ScopedProps<MenuContentImplProps>, forwardedRef) => {

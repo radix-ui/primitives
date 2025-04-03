@@ -11,7 +11,7 @@ import { createPopperScope } from '@radix-ui/react-popper';
 import { Portal as PortalPrimitive } from '@radix-ui/react-portal';
 import { Presence } from '@radix-ui/react-presence';
 import { Primitive } from '@radix-ui/react-primitive';
-import { Slot } from '@radix-ui/react-slot';
+import { createSlot } from '@radix-ui/react-slot';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { hideOthers } from 'aria-hidden';
 import { RemoveScroll } from 'react-remove-scroll';
@@ -238,6 +238,8 @@ const PopoverContent = React.forwardRef<PopoverContentTypeElement, PopoverConten
 PopoverContent.displayName = CONTENT_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
+
+const Slot = createSlot('PopoverContent.RemoveScroll');
 
 type PopoverContentTypeElement = PopoverContentImplElement;
 interface PopoverContentTypeProps

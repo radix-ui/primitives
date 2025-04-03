@@ -14,7 +14,7 @@ import * as PopperPrimitive from '@radix-ui/react-popper';
 import { createPopperScope } from '@radix-ui/react-popper';
 import { Portal as PortalPrimitive } from '@radix-ui/react-portal';
 import { Primitive } from '@radix-ui/react-primitive';
-import { Slot } from '@radix-ui/react-slot';
+import { createSlot } from '@radix-ui/react-slot';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
@@ -495,6 +495,8 @@ interface SelectContentImplProps
 
   position?: 'item-aligned' | 'popper';
 }
+
+const Slot = createSlot('SelectContent.RemoveScroll');
 
 const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectContentImplProps>(
   (props: ScopedProps<SelectContentImplProps>, forwardedRef) => {
