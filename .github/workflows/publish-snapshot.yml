@@ -36,6 +36,7 @@ jobs:
         run: yarn changeset version --snapshot
 
       - name: Publish snapshot
-        run: yarn workspaces foreach -pvW --include @radix-ui/\\* --include radix-ui npm publish --tolerate-republish --access public --tag next --dry-run
+        run: yarn workspaces foreach -pvW --include @radix-ui/\\* --include radix-ui pack --dry-run
+        # run: yarn workspaces foreach -pvW --include @radix-ui/\\* --include radix-ui npm publish --tolerate-republish --access public --tag next
         env:
           YARN_NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTOMATION_FROM_CHANCE }}
