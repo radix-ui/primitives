@@ -5,6 +5,7 @@ on:
     branches:
       - chance/changesets # TODO: Update to `main` before merge
     paths-ignore:
+      # - '.github/**' # uncomment before merge
       - '**/package.json'
       - '.yarn/versions/**'
 
