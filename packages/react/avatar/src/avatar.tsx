@@ -179,7 +179,7 @@ function useImageLoadingStatus(
       image.removeEventListener('load', handleLoad);
       image.removeEventListener('error', handleError);
     };
-  }, [crossOrigin, image, referrerPolicy]);
+  }, [image, crossOrigin, referrerPolicy]);
 
   return loadingStatus;
 }
