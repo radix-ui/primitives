@@ -1,9 +1,11 @@
 import * as Avatar from '@radix-ui/react-avatar';
 import styles from './avatar.stories.module.css';
+import React from 'react';
 
 export default { title: 'Components/Avatar' };
 
 const src = 'https://picsum.photos/id/1005/400/400';
+const srcAlternative = 'https://picsum.photos/id/1006/400/400';
 const srcBroken = 'https://broken.link.com/broken-pic.jpg';
 
 export const Styled = () => (
@@ -33,6 +35,18 @@ export const Styled = () => (
         <AvatarIcon />
       </Avatar.Fallback>
     </Avatar.Root>
+
+    <h1>Changing image src</h1>
+    <SourceChanger sources={[src, srcAlternative, srcBroken]}>
+      {(src) => (
+        <Avatar.Root className={styles.root}>
+          <Avatar.Image className={styles.image} alt="John Smith" src={src} />
+          <Avatar.Fallback delayMs={300} className={styles.fallback}>
+            JS
+          </Avatar.Fallback>
+        </Avatar.Root>
+      )}
+    </SourceChanger>
   </>
 );
 
@@ -58,6 +72,18 @@ export const Chromatic = () => (
         <AvatarIcon />
       </Avatar.Fallback>
     </Avatar.Root>
+
+    <h1>Changing image src</h1>
+    <SourceChanger sources={[src, srcAlternative, srcBroken]}>
+      {(src) => (
+        <Avatar.Root className={styles.root}>
+          <Avatar.Image className={styles.image} alt="John Smith" src={src} />
+          <Avatar.Fallback delayMs={300} className={styles.fallback}>
+            JS
+          </Avatar.Fallback>
+        </Avatar.Root>
+      )}
+    </SourceChanger>
   </>
 );
 Chromatic.parameters = { chromatic: { disable: false, delay: 1000 } };
@@ -70,3 +96,21 @@ const AvatarIcon = () => (
     />
   </svg>
 );
+
+function SourceChanger({
+  sources,
+  children,
+}: {
+  sources: string[];
+  children: (src: string) => React.ReactElement;
+}) {
+  const [src, setSrc] = React.useState(sources[0]);
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      const nextIndex = (sources.indexOf(src) + 1) % sources.length;
+      setSrc(sources[nextIndex]);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [sources, src]);
+  return children(src);
+}
