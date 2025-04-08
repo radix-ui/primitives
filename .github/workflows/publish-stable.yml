@@ -33,6 +33,7 @@ jobs:
         with:
           title: New release
           commit: New release
+          version: yarn changeset version --snapshot # TODO: remove --snapshot once we're confident in the release process
           publish: yarn workspaces foreach -pvW --include @radix-ui/\\* --include radix-ui npm publish --tolerate-republish --access public --tag latest
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
