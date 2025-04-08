@@ -3,11 +3,10 @@ name: 'Publish Snapshot Release'
 on:
   push:
     branches:
-      - chance/changesets # TODO: Update to `main` before merge
+      - main
     paths-ignore:
-      # - '.github/**' # uncomment before merge
+      # - '.github/**'
       - '**/package.json'
-      - '.yarn/versions/**'
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
@@ -37,7 +36,6 @@ jobs:
         run: yarn changeset version --snapshot
 
       - name: Publish snapshot
-        run: yarn workspaces foreach -pvW --include @radix-ui/\\* --include radix-ui pack --dry-run
-        # run: yarn workspaces foreach -pvW --include @radix-ui/\\* --include radix-ui npm publish --tolerate-republish --access public --tag next
+        run: yarn workspaces foreach -pvW --include @radix-ui/\\* --include radix-ui npm publish --tolerate-republish --access public --tag next
         env:
           YARN_NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTOMATION_FROM_CHANCE }}
