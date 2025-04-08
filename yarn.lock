@@ -302,7 +302,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@changesets/apply-release-plan@npm:^7.0.10":
+"@changesets/apply-release-plan@npm:7.0.10":
   version: 7.0.10
   resolution: "@changesets/apply-release-plan@npm:7.0.10"
   dependencies:
@@ -320,6 +320,27 @@ __metadata:
     resolve-from: "npm:^5.0.0"
     semver: "npm:^7.5.3"
   checksum: 10/8d37aa245dd0879fbb90a65cbeafd6b32b0076dcec5f49a6663812cb58eec6e7e9195c16e2050a34e0400741d573d85fc4a807d1ae1f427fb88df914f9a4e182
+  languageName: node
+  linkType: hard
+
+"@changesets/apply-release-plan@patch:@changesets/apply-release-plan@npm%3A7.0.10#~/.yarn/patches/@changesets-apply-release-plan-npm-7.0.10-e2570993de.patch":
+  version: 7.0.10
+  resolution: "@changesets/apply-release-plan@patch:@changesets/apply-release-plan@npm%3A7.0.10#~/.yarn/patches/@changesets-apply-release-plan-npm-7.0.10-e2570993de.patch::version=7.0.10&hash=fab189"
+  dependencies:
+    "@changesets/config": "npm:^3.1.1"
+    "@changesets/get-version-range-type": "npm:^0.4.0"
+    "@changesets/git": "npm:^3.0.2"
+    "@changesets/should-skip-package": "npm:^0.1.2"
+    "@changesets/types": "npm:^6.1.0"
+    "@manypkg/get-packages": "npm:^1.1.3"
+    detect-indent: "npm:^6.0.0"
+    fs-extra: "npm:^7.0.1"
+    lodash.startcase: "npm:^4.4.0"
+    outdent: "npm:^0.5.0"
+    prettier: "npm:^2.7.1"
+    resolve-from: "npm:^5.0.0"
+    semver: "npm:^7.5.3"
+  checksum: 10/db2fd900946715f71e7dcb4a22751e9323cd1739709c9998483ee43adaba9f728f4577472c8ddac394484ec5931850836ecba0787dc7cab9a7501da32644856e
   languageName: node
   linkType: hard
 
