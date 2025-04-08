@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-tooltip",
-  "version": "1.2.0-rc.5",
+  "version": "1.2.0",
   "license": "MIT",
   "source": "./src/index.ts",
   "main": "./src/index.ts",
@@ -77,6 +77,5 @@
   },
   "bugs": {
     "url": "https://github.com/radix-ui/primitives/issues"
-  },
-  "stableVersion": "1.1.8"
+  }
 }
