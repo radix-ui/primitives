@@ -12,6 +12,7 @@ storybook-static
 # Yarn 2 build artifacts
 # https://yarnpkg.com/advanced/qa#which-files-should-be-gitignored
 .yarn/*
+!.yarn/patches
 !.yarn/releases
 !.yarn/plugins
 !.yarn/sdks
