@@ -173,7 +173,7 @@ function useImageLoadingStatus(
       image.removeEventListener('load', handleLoad);
       image.removeEventListener('error', handleError);
     };
-  }, [image, referrerPolicy]);
+  }, [image, crossOrigin, referrerPolicy]);
 
   return loadingStatus;
 }
