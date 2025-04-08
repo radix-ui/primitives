@@ -29,8 +29,7 @@
   "sideEffects": false,
   "scripts": {
     "lint": "eslint --max-warnings 0 src",
-    "clean": "rm -rf dist",
-    "version": "yarn version"
+    "clean": "rm -rf dist"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",

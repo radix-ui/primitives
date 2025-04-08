@@ -1,0 +1,43 @@
+name: 'Publish Snapshot Release'
+
+on:
+  push:
+    branches:
+      - chance/changesets # TODO: Update to `main` before merge
+    paths-ignore:
+      # - '.github/**' # uncomment before merge
+      - '**/package.json'
+      - '.yarn/versions/**'
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  publish-snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: yarn
+
+      - name: Build packages
+        run: yarn build
+
+      - name: Write .npmrc
+        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTOMATION_FROM_CHANCE }}" > .npmrc
+
+      - name: Update snapshot version
+        run: yarn changeset version --snapshot
+
+      - name: Publish snapshot
+        run: yarn workspaces foreach -pvW --include @radix-ui/\\* --include radix-ui pack --dry-run
+        # run: yarn workspaces foreach -pvW --include @radix-ui/\\* --include radix-ui npm publish --tolerate-republish --access public --tag next
+        env:
+          YARN_NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTOMATION_FROM_CHANCE }}

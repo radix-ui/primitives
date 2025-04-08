@@ -12,18 +12,18 @@ We track versions during the pull request process. As features are added, modifi
 
 ### Tracking version changes
 
-The easiest way to track changes before raising a PR is to run `yarn version check --interactive`, this will prompt you to update the semver based on files that have been modified and will store an update file in `.yarn/versions/`, this is later consumed when publishing new versions. Be sure to check-in these files along with your code changes.
+Run `yarn changeset` to mark the appropriate type of change for those packages. This is later consumed when publishing new versions. Be sure to check-in these files along with your code changes.
 
 ### Publishing a stable release
 
-1. Checkout latest `main`
-2. Run `yarn npm login` and supply your credentials (ensure you have access to the org scope for publishing)
-3. Run `yarn publish:stable`
-4. Commit the resulting changes directly to `main` (you'll need to temporarily disable branch protection)
+1. Checkout the `stable` branch and pull the latest changes from `main`
+2. Push the changes to `stable`. This will trigger the Changeset action, which will create a new release PR.
+3. Review the release PR, ensure all tests pass and make any necessary changes.
+4. Merge the PR. This will trigger the Changeset action to publish the new version to npm.
 
 ### Release candidates
 
-Release candidates are automatically published when new changes are merged into `main`. If you want to publish a candidate manually you can do so by following the stable release process but substituting `yarn publish:stable` for `yarn publish:next`.
+Release candidates are automatically published when new changes are merged into `main`.
 
 ## Updating documentation
 
