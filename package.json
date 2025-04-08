@@ -79,7 +79,8 @@
     "vitest-axe": "^1.0.0-pre.5"
   },
   "resolutions": {
-    "chokidar": "3.4.3"
+    "chokidar": "3.4.3",
+    "@changesets/apply-release-plan@npm:^7.0.10": "patch:@changesets/apply-release-plan@npm%3A7.0.10#~/.yarn/patches/@changesets-apply-release-plan-npm-7.0.10-e2570993de.patch"
   },
   "engines": {
     "node": ">=12",
