@@ -106,6 +106,6 @@ yarn dev
 
 Make your changes and check that they resolve the problem with an example in Storybook. We also suggest adding tests to support your change, and then run `yarn test` to make sure nothing is broken.
 
-You also need to inform Yarn workspaces that a particular package has changed for proper versioning. Run `yarn version check -i` to mark the appropriate type of change for those packages.
+You also need to inform Changesets that a particular package has changed for proper versioning. Run `yarn changeset` to mark the appropriate type of change for those packages, then commit the resulting Changeset files.
 
 Lastly, run `yarn build` to ensure that the build runs successfully before submitting the pull request.
