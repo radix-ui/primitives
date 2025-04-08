@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-portal",
-  "version": "1.1.5-rc.9",
+  "version": "1.1.5",
   "license": "MIT",
   "source": "./src/index.ts",
   "main": "./src/index.ts",
@@ -67,6 +67,5 @@
   },
   "bugs": {
     "url": "https://github.com/radix-ui/primitives/issues"
-  },
-  "stableVersion": "1.1.4"
+  }
 }
