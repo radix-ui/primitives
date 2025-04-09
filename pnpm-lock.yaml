@@ -8,6 +8,11 @@ overrides:
   chokidar: 3.4.3
   '@changesets/apply-release-plan@npm:^7.0.10': patch:@changesets/apply-release-plan@npm%3A7.0.10#~/.yarn/patches/@changesets-apply-release-plan-npm-7.0.10-e2570993de.patch
 
+patchedDependencies:
+  '@changesets/apply-release-plan':
+    hash: 399787ec1c6014117f9421a96735a7b7c8728145b949949e7c8c8273a5e693eb
+    path: patches/@changesets__apply-release-plan.patch
+
 importers:
 
   .:
@@ -7719,7 +7724,7 @@ snapshots:
       - typescript
       - vitest
 
-  '@changesets/apply-release-plan@7.0.10':
+  '@changesets/apply-release-plan@7.0.10(patch_hash=399787ec1c6014117f9421a96735a7b7c8728145b949949e7c8c8273a5e693eb)':
     dependencies:
       '@changesets/config': 3.1.1
       '@changesets/get-version-range-type': 0.4.0
@@ -7750,7 +7755,7 @@ snapshots:
 
   '@changesets/cli@2.28.1':
     dependencies:
-      '@changesets/apply-release-plan': 7.0.10
+      '@changesets/apply-release-plan': 7.0.10(patch_hash=399787ec1c6014117f9421a96735a7b7c8728145b949949e7c8c8273a5e693eb)
       '@changesets/assemble-release-plan': 6.0.6
       '@changesets/changelog-git': 0.2.1
       '@changesets/config': 3.1.1

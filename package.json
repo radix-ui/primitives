@@ -87,5 +87,10 @@
   "lint-staged": {
     "*.{js,ts,tsx}": "eslint --quiet --fix --cache"
   },
-  "packageManager": "pnpm@10.2.0"
+  "packageManager": "pnpm@10.2.0",
+  "pnpm": {
+    "patchedDependencies": {
+      "@changesets/apply-release-plan": "patches/@changesets__apply-release-plan.patch"
+    }
+  }
 }
