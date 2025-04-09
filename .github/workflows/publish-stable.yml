@@ -15,17 +15,23 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
           registry-url: 'https://registry.npmjs.org'
+          cache: 'pnpm'
 
       - name: Install dependencies
-        run: yarn
+        run: pnpm install --frozen-lockfile
 
       - name: Build packages
-        run: yarn build
+        run: pnpm build
 
       - name: Create Release Pull Request or Publish to npm
         id: changesets
@@ -33,8 +39,8 @@ jobs:
         with:
           title: New release
           commit: New release
-          version: yarn changeset version --snapshot # TODO: remove --snapshot once we're confident in the release process
-          publish: yarn workspaces foreach -pvW --include @radix-ui/\\* --include radix-ui npm publish --tolerate-republish --access public --tag latest
+          version: pnpm run bump:next # TODO: remove :next for :stable once we're confident in the release process
+          publish: pnpm run release:next # TODO: remove :next for :stable once we're confident in the release process
           createGithubReleases: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -46,7 +46,7 @@
     "lint": "eslint --max-warnings 0 src",
     "clean": "rm -rf dist",
     "typecheck": "tsc --noEmit",
-    "build": "tsc ."
+    "build": "tsc"
   },
   "dependencies": {
     "@radix-ui/primitive": "workspace:*",

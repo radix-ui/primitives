@@ -1,10 +1,13 @@
+// @ts-check
 import path from 'node:path';
 import fs from 'node:fs';
-import { globSync } from 'glob';
 import * as esbuild from 'esbuild';
 import * as tsup from 'tsup';
 
-async function build(relativePath) {
+/**
+ * @param {string} relativePath
+ */
+export async function build(relativePath) {
   const packageJson = path.resolve(relativePath, 'package.json');
   if (!fs.existsSync(packageJson)) {
     return;
@@ -17,9 +20,10 @@ async function build(relativePath) {
     files.push('internal.ts');
   }
 
-  const entryPoints = files.map((file) => `${relativePath}/src/${file}`);
-  const dist = `${relativePath}/dist`;
+  const entryPoints = files.map((file) => `${relativePath || '.'}/src/${file}`);
+  const dist = `${relativePath || '.'}/dist`;
 
+  /** @type {esbuild.BuildOptions} */
   const esbuildConfig = {
     entryPoints: entryPoints,
     external: ['@radix-ui/*'],
@@ -64,5 +68,3 @@ async function build(relativePath) {
 
   await Promise.all(tasks);
 }
-
-globSync('packages/*/*').forEach(build);

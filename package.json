@@ -3,51 +3,50 @@
   "name": "primitives",
   "version": "0.1.0",
   "license": "MIT",
-  "workspaces": [
-    "apps/*",
-    "internal/*",
-    "packages/*/*"
-  ],
   "scripts": {
-    "lint": "yarn workspaces foreach -pvW --exclude primitives run lint",
-    "types:check": "yarn workspaces foreach -pvW --exclude primitives run typecheck",
+    "lint": "pnpm -r run lint",
+    "lint:staged": "lint-staged",
+    "types:check": "pnpm -r --parallel run typecheck",
     "test": "vitest",
-    "test:ci": "yarn types:check && vitest run && yarn cypress:ci",
+    "test:ci": "vitest run && pnpm cypress:ci",
     "storybook": "BROWSER=none storybook dev -p 9009",
-    "cypress:ci": "start-server-and-test storybook http://localhost:9009 cypress:run",
+    "cypress:ci": "start-server-and-test 'pnpm dev' http://localhost:9009 'pnpm cypress:install && pnpm cypress:run'",
+    "cypress:install": "cypress install",
     "cypress:run": "cypress run",
     "cypress:dev": "cypress open",
-    "dev": "yarn storybook",
-    "dev:ssr": "yarn workspace @repo/ssr-testing dev",
+    "dev": "pnpm run storybook",
+    "dev:ssr": "pnpm --filter=@repo/ssr-testing dev",
     "build-storybook": "storybook build",
-    "build": "node build.mjs",
-    "publish:stable": "yarn bump:stable && yarn clean && yarn build && yarn workspaces foreach -pvW --include @radix-ui/\\* --include radix-ui npm publish --tolerate-republish --access public",
-    "publish:next": "yarn bump:next && yarn clean && yarn build && yarn workspaces foreach -pvW --include @radix-ui/\\* --include radix-ui npm publish --tolerate-republish --access public --tag next",
-    "clean": "yarn workspaces foreach -pvW --include @radix-ui/\\* --include radix-ui run clean",
-    "reset": "yarn clean && rm -rf node_modules .yarn/cache",
+    "build": "pnpm -r --parallel --filter \"./packages/**/*\" run build",
+    "clean": "pnpm -r run clean",
+    "reset": "pnpm run clean && rm -rf node_modules",
     "bump:stable": "changeset version",
     "bump:next": "changeset version --snapshot",
     "bump:check": "changeset status --since=main",
-    "format": "prettier --write ."
+    "release:stable": "pnpm publish -r --access public",
+    "release:next": "pnpm publish -r --access public --tag next",
+    "format": "prettier --write .",
+    "format:staged": "pretty-quick --staged"
   },
   "devDependencies": {
     "@chance/eslint": "^1.1.0",
     "@changesets/cli": "^2.28.1",
     "@radix-ui/colors": "^3.0.0",
-    "@storybook/addon-essentials": "^8.5.0",
-    "@storybook/addon-storysource": "^8.5.0",
+    "@storybook/addon-essentials": "^8.6.12",
+    "@storybook/addon-storysource": "^8.6.12",
     "@storybook/addon-webpack5-compiler-swc": "^2.0.0",
-    "@storybook/manager-api": "^8.5.0",
-    "@storybook/react": "^8.5.0",
-    "@storybook/react-webpack5": "^8.5.0",
-    "@storybook/test": "^8.5.0",
-    "@storybook/theming": "^8.5.0",
+    "@storybook/manager-api": "^8.6.12",
+    "@storybook/react": "^8.6.12",
+    "@storybook/react-webpack5": "^8.6.12",
+    "@storybook/test": "^8.6.12",
+    "@storybook/theming": "^8.6.12",
     "@testing-library/cypress": "^10.0.3",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.2.0",
     "@testing-library/user-event": "^14.6.1",
     "@types/fs-extra": "^11",
+    "@types/node": "^22",
     "@types/react": "^19.0.7",
     "@types/react-dom": "^19.0.3",
     "@types/react-test-renderer": "^19.0.0",
@@ -60,7 +59,6 @@
     "execa": "^9.5.2",
     "fs-extra": "^11.1.1",
     "glob": "^10.2.2",
-    "husky": "^4.3.6",
     "jsdom": "^26.0.0",
     "lint-staged": "^10.5.3",
     "prettier": "^3.4.2",
@@ -70,7 +68,7 @@
     "react-test-renderer": "^19.0.0",
     "replace-in-files": "^3.0.0",
     "start-server-and-test": "2.0.3",
-    "storybook": "^8.5.0",
+    "storybook": "^8.6.12",
     "tsup": "^8.3.6",
     "typescript": "^5.7.3",
     "vite": "^6.0.7",
@@ -82,21 +80,20 @@
     "@changesets/apply-release-plan@npm:^7.0.10": "patch:@changesets/apply-release-plan@npm%3A7.0.10#~/.yarn/patches/@changesets-apply-release-plan-npm-7.0.10-e2570993de.patch"
   },
   "engines": {
-    "node": ">=12",
-    "yarn": ">=2"
+    "node": ">=18"
   },
   "prettier": {
     "trailingComma": "es5",
     "printWidth": 100,
     "singleQuote": true
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "pretty-quick --staged && lint-staged"
-    }
-  },
   "lint-staged": {
     "*.{js,ts,tsx}": "eslint --quiet --fix --cache"
   },
-  "packageManager": "yarn@4.6.0"
+  "packageManager": "pnpm@10.2.0",
+  "pnpm": {
+    "patchedDependencies": {
+      "@changesets/apply-release-plan": "patches/@changesets__apply-release-plan.patch"
+    }
+  }
 }

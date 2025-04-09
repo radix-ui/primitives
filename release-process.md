@@ -12,7 +12,7 @@ We track versions during the pull request process. As features are added, modifi
 
 ### Tracking version changes
 
-Run `yarn changeset` to mark the appropriate type of change for those packages. This is later consumed when publishing new versions. Be sure to check-in these files along with your code changes.
+Run `pnpm changeset` to mark the appropriate type of change for those packages. This is later consumed when publishing new versions. Be sure to check-in these files along with your code changes.
 
 ### Publishing a stable release
 
