@@ -1,14 +1,17 @@
 import * as React from 'react';
 import userEvent from '@testing-library/user-event';
-import { render, waitFor } from '@testing-library/react';
+import { cleanup, render, waitFor } from '@testing-library/react';
 import { FocusScope } from '@radix-ui/react-focus-scope';
 import type { RenderResult } from '@testing-library/react';
+import { afterEach, describe, it, beforeEach, vi, expect } from 'vitest';
 
 const INNER_NAME_INPUT_LABEL = 'Name';
 const INNER_EMAIL_INPUT_LABEL = 'Email';
 const INNER_SUBMIT_LABEL = 'Submit';
 
 describe('FocusScope', () => {
+  afterEach(cleanup);
+
   describe('given a default FocusScope', () => {
     let rendered: RenderResult;
     let tabbableFirst: HTMLInputElement;

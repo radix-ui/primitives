@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { axe } from 'vitest-axe';
 import type { RenderResult } from '@testing-library/react';
-import { render, fireEvent } from '@testing-library/react';
+import { cleanup, render, fireEvent } from '@testing-library/react';
 import { Checkbox, CheckboxIndicator } from '@radix-ui/react-checkbox';
+import { afterEach, describe, it, beforeEach, vi, expect } from 'vitest';
 
 const CHECKBOX_ROLE = 'checkbox';
 const INDICATOR_TEST_ID = 'checkbox-indicator';
@@ -29,6 +30,8 @@ describe('given a default Checkbox', () => {
     checkbox = rendered.getByRole(CHECKBOX_ROLE);
     indicator = rendered.queryByTestId(INDICATOR_TEST_ID);
   });
+
+  afterEach(cleanup);
 
   it('should have no accessibility violations', async () => {
     expect(await axe(rendered.container)).toHaveNoViolations();
@@ -63,6 +66,8 @@ describe('given a disabled Checkbox', () => {
     rendered = render(<CheckboxTest disabled />);
   });
 
+  afterEach(cleanup);
+
   it('should have no accessibility violations', async () => {
     expect(await axe(rendered.container)).toHaveNoViolations();
   });
@@ -79,6 +84,8 @@ describe('given an uncontrolled `checked` Checkbox', () => {
     checkbox = rendered.getByRole(CHECKBOX_ROLE);
     indicator = rendered.queryByTestId(INDICATOR_TEST_ID);
   });
+
+  afterEach(cleanup);
 
   it('should have no accessibility violations', async () => {
     expect(await axe(rendered.container)).toHaveNoViolations();
@@ -109,6 +116,8 @@ describe('given a controlled `checked` Checkbox', () => {
     checkbox = rendered.getByRole(CHECKBOX_ROLE);
   });
 
+  afterEach(cleanup);
+
   describe('when clicking the checkbox', () => {
     beforeEach(() => {
       fireEvent.click(checkbox);
@@ -121,6 +130,8 @@ describe('given a controlled `checked` Checkbox', () => {
 });
 
 describe('given an uncontrolled Checkbox in form', () => {
+  afterEach(cleanup);
+
   describe('when clicking the checkbox', () => {
     it('should receive change event with target `defaultChecked` same as the `defaultChecked` prop of Checkbox', () =>
       new Promise((done) => {
@@ -153,6 +164,8 @@ describe('given an uncontrolled Checkbox in form', () => {
 });
 
 describe('given a controlled Checkbox in a form', () => {
+  afterEach(cleanup);
+
   describe('when clicking the checkbox', () => {
     it('should receive change event with target `defaultChecked` same as initial value of `checked` of Checkbox', () =>
       new Promise((done) => {
