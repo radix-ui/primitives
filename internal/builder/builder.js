@@ -23,8 +23,6 @@ export async function build(relativePath) {
   const entryPoints = files.map((file) => `${relativePath || '.'}/src/${file}`);
   const dist = `${relativePath || '.'}/dist`;
 
-  console.log({ entryPoints, dist });
-
   /** @type {esbuild.BuildOptions} */
   const esbuildConfig = {
     entryPoints: entryPoints,

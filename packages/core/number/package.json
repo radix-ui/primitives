@@ -30,9 +30,11 @@
   "scripts": {
     "lint": "eslint --max-warnings 0 src",
     "clean": "rm -rf dist",
-    "typecheckz": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "build": "radix-build"
   },
   "devDependencies": {
+    "@repo/builder": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "eslint": "^9.18.0",

@@ -30,7 +30,8 @@
   "scripts": {
     "lint": "eslint --max-warnings 0 src",
     "clean": "rm -rf dist",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "build": "radix-build"
   },
   "dependencies": {
     "@radix-ui/primitive": "workspace:*",
@@ -45,6 +46,7 @@
   },
   "devDependencies": {
     "@radix-ui/react-roving-focus": "workspace:*",
+    "@repo/builder": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/react": "^19.0.7",

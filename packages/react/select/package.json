@@ -30,7 +30,8 @@
   "scripts": {
     "lint": "eslint --max-warnings 0 src",
     "clean": "rm -rf dist",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "build": "radix-build"
   },
   "dependencies": {
     "@radix-ui/number": "workspace:*",
@@ -59,6 +60,7 @@
     "@radix-ui/react-dialog": "workspace:*",
     "@radix-ui/react-label": "workspace:*",
     "@radix-ui/react-select": "workspace:*",
+    "@repo/builder": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/test-data": "workspace:*",
     "@repo/typescript-config": "workspace:*",

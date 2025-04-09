@@ -6,7 +6,7 @@
   "scripts": {
     "lint": "pnpm -r run lint",
     "lint:staged": "lint-staged",
-    "types:check": "pnpm -r run typecheck",
+    "types:check": "pnpm -r --parallel run typecheck",
     "test": "vitest",
     "test:ci": "pnpm types:check && vitest run && pnpm cypress:ci",
     "storybook": "BROWSER=none storybook dev -p 9009",
@@ -16,7 +16,7 @@
     "dev": "storybook",
     "dev:ssr": "pnpm --filter=@repo/ssr-testing dev",
     "build-storybook": "storybook build",
-    "build": "node build.mjs",
+    "build": "pnpm -r --parallel --filter \"./packages/**/*\" run build",
     "clean": "pnpm -r run clean",
     "reset": "pnpm run clean && rm -rf node_modules",
     "bump:stable": "changeset version",

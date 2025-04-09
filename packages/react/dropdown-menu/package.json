@@ -30,7 +30,8 @@
   "scripts": {
     "lint": "eslint --max-warnings 0 src",
     "clean": "rm -rf dist",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "build": "radix-build"
   },
   "dependencies": {
     "@radix-ui/primitive": "workspace:*",
@@ -46,6 +47,7 @@
     "@radix-ui/react-dropdown-menu": "workspace:*",
     "@radix-ui/react-popper": "workspace:*",
     "@radix-ui/react-tooltip": "workspace:*",
+    "@repo/builder": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/test-data": "workspace:*",
     "@repo/typescript-config": "workspace:*",

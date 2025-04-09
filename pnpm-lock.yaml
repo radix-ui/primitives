@@ -184,6 +184,25 @@ importers:
         specifier: ^5.7.3
         version: 5.8.3
 
+  internal/builder:
+    dependencies:
+      esbuild:
+        specifier: 0.24.2
+        version: 0.24.2
+      tsup:
+        specifier: ^8.3.6
+        version: 8.4.0(@swc/core@1.11.18(@swc/helpers@0.5.15))(postcss@8.5.3)(typescript@5.8.3)
+    devDependencies:
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      eslint:
+        specifier: ^9.18.0
+        version: 9.24.0
+
   internal/eslint-config:
     dependencies:
       '@chance/eslint':
@@ -219,6 +238,9 @@ importers:
 
   packages/core/number:
     devDependencies:
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -234,6 +256,9 @@ importers:
 
   packages/core/primitive:
     devDependencies:
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -249,6 +274,9 @@ importers:
 
   packages/core/rect:
     devDependencies:
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -271,6 +299,9 @@ importers:
       '@radix-ui/react-accessible-icon':
         specifier: workspace:*
         version: 'link:'
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -329,6 +360,9 @@ importers:
       '@radix-ui/react-accordion':
         specifier: workspace:*
         version: 'link:'
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -378,6 +412,9 @@ importers:
       '@radix-ui/react-alert-dialog':
         specifier: workspace:*
         version: 'link:'
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -421,6 +458,9 @@ importers:
       '@radix-ui/react-visually-hidden':
         specifier: workspace:*
         version: link:../visually-hidden
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -458,6 +498,9 @@ importers:
       '@radix-ui/react-visually-hidden':
         specifier: workspace:*
         version: link:../visually-hidden
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -492,6 +535,9 @@ importers:
       '@radix-ui/react-aspect-ratio':
         specifier: workspace:*
         version: 'link:'
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -535,6 +581,9 @@ importers:
       '@radix-ui/react-avatar':
         specifier: workspace:*
         version: 'link:'
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -593,6 +642,9 @@ importers:
       '@radix-ui/react-label':
         specifier: workspace:*
         version: link:../label
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -648,6 +700,9 @@ importers:
       '@radix-ui/react-collapsible':
         specifier: workspace:*
         version: 'link:'
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -691,6 +746,9 @@ importers:
       '@radix-ui/react-collection':
         specifier: workspace:*
         version: 'link:'
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -721,6 +779,9 @@ importers:
       '@radix-ui/react-compose-refs':
         specifier: workspace:*
         version: 'link:'
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -751,6 +812,9 @@ importers:
       '@radix-ui/react-context':
         specifier: workspace:*
         version: 'link:'
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -800,6 +864,9 @@ importers:
       '@radix-ui/react-context-menu':
         specifier: workspace:*
         version: 'link:'
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -876,6 +943,9 @@ importers:
       '@radix-ui/react-dialog':
         specifier: workspace:*
         version: 'link:'
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -906,6 +976,9 @@ importers:
       '@radix-ui/react-direction':
         specifier: workspace:*
         version: 'link:'
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -967,6 +1040,9 @@ importers:
       '@radix-ui/react-slot':
         specifier: workspace:*
         version: link:../slot
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -1031,6 +1107,9 @@ importers:
       '@radix-ui/react-tooltip':
         specifier: workspace:*
         version: link:../tooltip
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -1064,6 +1143,9 @@ importers:
       '@radix-ui/react-focus-guards':
         specifier: workspace:*
         version: 'link:'
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -1104,6 +1186,9 @@ importers:
       '@radix-ui/react-focus-scope':
         specifier: workspace:*
         version: 'link:'
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -1153,6 +1238,9 @@ importers:
       '@radix-ui/react-form':
         specifier: workspace:*
         version: 'link:'
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -1214,6 +1302,9 @@ importers:
       '@radix-ui/react-hover-card':
         specifier: workspace:*
         version: 'link:'
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -1248,6 +1339,9 @@ importers:
       '@radix-ui/react-id':
         specifier: workspace:*
         version: 'link:'
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -1282,6 +1376,9 @@ importers:
       '@radix-ui/react-label':
         specifier: workspace:*
         version: 'link:'
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -1367,6 +1464,9 @@ importers:
       '@radix-ui/react-menu':
         specifier: workspace:*
         version: 'link:'
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -1431,6 +1531,9 @@ importers:
       '@radix-ui/react-menubar':
         specifier: workspace:*
         version: 'link:'
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -1507,6 +1610,9 @@ importers:
       '@radix-ui/react-navigation-menu':
         specifier: workspace:*
         version: 'link:'
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -1583,6 +1689,9 @@ importers:
       '@radix-ui/react-popover':
         specifier: workspace:*
         version: 'link:'
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -1647,6 +1756,9 @@ importers:
       '@radix-ui/react-portal':
         specifier: workspace:*
         version: link:../portal
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -1684,6 +1796,9 @@ importers:
       '@radix-ui/react-portal':
         specifier: workspace:*
         version: 'link:'
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -1721,6 +1836,9 @@ importers:
       '@radix-ui/react-presence':
         specifier: workspace:*
         version: 'link:'
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -1755,6 +1873,9 @@ importers:
       '@radix-ui/react-primitive':
         specifier: workspace:*
         version: 'link:'
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -1792,6 +1913,9 @@ importers:
       '@radix-ui/react-progress':
         specifier: workspace:*
         version: 'link:'
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -1856,6 +1980,9 @@ importers:
       '@radix-ui/react-radio-group':
         specifier: workspace:*
         version: 'link:'
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -2095,6 +2222,9 @@ importers:
       '@radix-ui/react-roving-focus':
         specifier: workspace:*
         version: 'link:'
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -2153,6 +2283,9 @@ importers:
       '@radix-ui/react-scroll-area':
         specifier: workspace:*
         version: 'link:'
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -2253,6 +2386,9 @@ importers:
       '@radix-ui/react-select':
         specifier: workspace:*
         version: 'link:'
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -2290,6 +2426,9 @@ importers:
       '@radix-ui/react-separator':
         specifier: workspace:*
         version: 'link:'
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -2354,6 +2493,9 @@ importers:
       '@radix-ui/react-slider':
         specifier: workspace:*
         version: 'link:'
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -2394,6 +2536,9 @@ importers:
       '@radix-ui/react-slot':
         specifier: workspace:*
         version: 'link:'
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -2449,6 +2594,9 @@ importers:
       '@radix-ui/react-switch':
         specifier: workspace:*
         version: 'link:'
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -2504,6 +2652,9 @@ importers:
       '@radix-ui/react-tabs':
         specifier: workspace:*
         version: 'link:'
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -2574,6 +2725,9 @@ importers:
       '@radix-ui/react-toast':
         specifier: workspace:*
         version: 'link:'
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -2614,6 +2768,9 @@ importers:
       '@radix-ui/react-toggle':
         specifier: workspace:*
         version: 'link:'
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -2666,6 +2823,9 @@ importers:
       '@radix-ui/react-toggle-group':
         specifier: workspace:*
         version: 'link:'
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -2724,6 +2884,9 @@ importers:
       '@radix-ui/react-toolbar':
         specifier: workspace:*
         version: 'link:'
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -2794,6 +2957,9 @@ importers:
       '@radix-ui/react-tooltip':
         specifier: workspace:*
         version: 'link:'
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -2824,6 +2990,9 @@ importers:
       '@radix-ui/react-use-callback-ref':
         specifier: workspace:*
         version: 'link:'
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -2858,6 +3027,9 @@ importers:
       '@radix-ui/react-use-controllable-state':
         specifier: workspace:*
         version: 'link:'
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -2892,6 +3064,9 @@ importers:
       '@radix-ui/react-use-escape-keydown':
         specifier: workspace:*
         version: 'link:'
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -2922,6 +3097,9 @@ importers:
       '@radix-ui/react-use-layout-effect':
         specifier: workspace:*
         version: 'link:'
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -2952,6 +3130,9 @@ importers:
       '@radix-ui/react-use-previous':
         specifier: workspace:*
         version: 'link:'
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -2986,6 +3167,9 @@ importers:
       '@radix-ui/react-use-rect':
         specifier: workspace:*
         version: 'link:'
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -3020,6 +3204,9 @@ importers:
       '@radix-ui/react-use-size':
         specifier: workspace:*
         version: 'link:'
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -3054,6 +3241,9 @@ importers:
       '@radix-ui/react-visually-hidden':
         specifier: workspace:*
         version: 'link:'
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
