@@ -42,7 +42,8 @@
 }
 
 .label,
-.item {
+.item,
+.subTrigger {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -60,7 +61,8 @@
   color: var(--color-gray100);
 }
 
-.item {
+.item,
+.subTrigger {
   outline: none;
 
   &[data-highlighted] {
