@@ -3,32 +3,27 @@
   "name": "primitives",
   "version": "0.1.0",
   "license": "MIT",
-  "workspaces": [
-    "apps/*",
-    "internal/*",
-    "packages/*/*"
-  ],
   "scripts": {
-    "lint": "yarn workspaces foreach -pvW --exclude primitives run lint",
-    "types:check": "yarn workspaces foreach -pvW --exclude primitives run typecheck",
+    "lint": "pnpm -r run lint",
+    "lint:staged": "lint-staged",
+    "types:check": "pnpm -r run typecheck",
     "test": "vitest",
-    "test:ci": "yarn types:check && vitest run && yarn cypress:ci",
+    "test:ci": "pnpm types:check && vitest run && pnpm cypress:ci",
     "storybook": "BROWSER=none storybook dev -p 9009",
     "cypress:ci": "start-server-and-test storybook http://localhost:9009 cypress:run",
     "cypress:run": "cypress run",
     "cypress:dev": "cypress open",
-    "dev": "yarn storybook",
-    "dev:ssr": "yarn workspace @repo/ssr-testing dev",
+    "dev": "storybook",
+    "dev:ssr": "pnpm --filter=@repo/ssr-testing dev",
     "build-storybook": "storybook build",
     "build": "node build.mjs",
-    "publish:stable": "yarn bump:stable && yarn clean && yarn build && yarn workspaces foreach -pvW --include @radix-ui/\\* --include radix-ui npm publish --tolerate-republish --access public",
-    "publish:next": "yarn bump:next && yarn clean && yarn build && yarn workspaces foreach -pvW --include @radix-ui/\\* --include radix-ui npm publish --tolerate-republish --access public --tag next",
-    "clean": "yarn workspaces foreach -pvW --include @radix-ui/\\* --include radix-ui run clean",
-    "reset": "yarn clean && rm -rf node_modules .yarn/cache",
+    "clean": "pnpm -r run clean",
+    "reset": "pnpm run clean && rm -rf node_modules",
     "bump:stable": "changeset version",
     "bump:next": "changeset version --snapshot",
     "bump:check": "changeset status --since=main",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "format:staged": "pretty-quick --staged"
   },
   "devDependencies": {
     "@chance/eslint": "^1.1.0",
@@ -48,6 +43,7 @@
     "@testing-library/react": "^16.2.0",
     "@testing-library/user-event": "^14.6.1",
     "@types/fs-extra": "^11",
+    "@types/node": "^22",
     "@types/react": "^19.0.7",
     "@types/react-dom": "^19.0.3",
     "@types/react-test-renderer": "^19.0.0",
@@ -82,8 +78,7 @@
     "@changesets/apply-release-plan@npm:^7.0.10": "patch:@changesets/apply-release-plan@npm%3A7.0.10#~/.yarn/patches/@changesets-apply-release-plan-npm-7.0.10-e2570993de.patch"
   },
   "engines": {
-    "node": ">=12",
-    "yarn": ">=2"
+    "node": ">=18"
   },
   "prettier": {
     "trailingComma": "es5",
@@ -92,11 +87,11 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "pretty-quick --staged && lint-staged"
+      "pre-commit": "pnpm run format:staged && pnpm run lint:staged"
     }
   },
   "lint-staged": {
     "*.{js,ts,tsx}": "eslint --quiet --fix --cache"
   },
-  "packageManager": "yarn@4.6.0"
+  "packageManager": "pnpm@10.2.0"
 }
