@@ -56,7 +56,6 @@
     "execa": "^9.5.2",
     "fs-extra": "^11.1.1",
     "glob": "^10.2.2",
-    "husky": "^4.3.6",
     "jsdom": "^26.0.0",
     "lint-staged": "^10.5.3",
     "prettier": "^3.4.2",
@@ -84,11 +83,6 @@
     "trailingComma": "es5",
     "printWidth": 100,
     "singleQuote": true
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "pnpm run format:staged && pnpm run lint:staged"
-    }
   },
   "lint-staged": {
     "*.{js,ts,tsx}": "eslint --quiet --fix --cache"
