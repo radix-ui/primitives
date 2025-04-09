@@ -1,0 +1,23 @@
+{
+  "name": "@repo/builder",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "main": "./builder.js",
+  "exports": {
+    ".": "./builder.js"
+  },
+  "bin": {
+    "radix-build": "./radix-build.js"
+  },
+  "dependencies": {
+    "esbuild": "0.24.2",
+    "tsup": "^8.3.6"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "eslint": "^9.18.0"
+  }
+}
