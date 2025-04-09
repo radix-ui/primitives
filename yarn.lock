@@ -2717,7 +2717,6 @@ __metadata:
     "@repo/typescript-config": "workspace:*"
     "@types/react": "npm:^19.0.7"
     "@types/react-dom": "npm:^19.0.3"
-    "@types/resize-observer-browser": "npm:^0.1.4"
     eslint: "npm:^9.18.0"
     react: "npm:^19.0.0"
     react-dom: "npm:^19.0.0"
@@ -3262,7 +3261,6 @@ __metadata:
     "@repo/typescript-config": "workspace:*"
     "@types/react": "npm:^19.0.7"
     "@types/react-dom": "npm:^19.0.3"
-    "@types/resize-observer-browser": "npm:^0.1.4"
     eslint: "npm:^9.18.0"
     react: "npm:^19.0.0"
     react-dom: "npm:^19.0.0"
@@ -4580,13 +4578,6 @@ __metadata:
   dependencies:
     csstype: "npm:^3.0.2"
   checksum: 10/09522132bde715888e57c61fc89a87db06699872535450296f1c975c5014a7953ff08c3bff6b37d4a4515ceeb65b09cc5f841513cc8fede65fec788790b21154
-  languageName: node
-  linkType: hard
-
-"@types/resize-observer-browser@npm:^0.1.4":
-  version: 0.1.11
-  resolution: "@types/resize-observer-browser@npm:0.1.11"
-  checksum: 10/1e36bde885fb5d89d7138edce3b6dae51f14605a89cd1ffcf60e53ca1866515afe82b6fda7abb84f9c9639166f45480c9b7e512849bcc6502597984f302937c1
   languageName: node
   linkType: hard
 
