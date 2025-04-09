@@ -32,7 +32,7 @@
     "strictPropertyInitialization": true,
     "stripInternal": true,
     "target": "ES2022",
-    "types": ["node", "vitest/globals", "@testing-library/react", "vitest-axe/extend-expect"],
+    "types": ["node", "@testing-library/react", "vitest-axe/extend-expect"],
     "typeRoots": ["./node_modules/@types", "./types", "./node_modules"]
   }
 }

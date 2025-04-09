@@ -1,8 +1,10 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { cleanup, render, screen, fireEvent } from '@testing-library/react';
 import { Slot, Slottable } from '@radix-ui/react-slot';
+import { afterEach, describe, it, beforeEach, vi, expect } from 'vitest';
 
 describe('given a slotted Trigger', () => {
+  afterEach(cleanup);
   describe('with onClick on itself', () => {
     const handleClick = vi.fn();
 
@@ -109,6 +111,7 @@ describe('given a slotted Trigger', () => {
 });
 
 describe('given a Button with Slottable', () => {
+  afterEach(cleanup);
   describe('without asChild', () => {
     it('should render a button with icon on the left/right', async () => {
       const tree = render(

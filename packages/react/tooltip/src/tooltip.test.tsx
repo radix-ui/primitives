@@ -1,8 +1,11 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import * as Tooltip from '@radix-ui/react-tooltip';
 import userEvent from '@testing-library/user-event';
+import { afterEach, describe, it, expect } from 'vitest';
 
 describe('Tooltip', () => {
+  afterEach(cleanup);
+
   it('renders tooltip trigger', () => {
     render(
       <Tooltip.Provider>
