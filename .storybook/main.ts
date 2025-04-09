@@ -1,6 +1,7 @@
 import type { StorybookConfig } from '@storybook/react-webpack5';
 import path from 'path';
 
+// TODO: figure out why glob causes dev server to hang
 const packageMap = {
   // core packages
   '@radix-ui/number': 'core/number',
