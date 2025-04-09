@@ -92,15 +92,16 @@ const ToggleGroupImplSingle = React.forwardRef<
 
   const [value, setValue] = useControllableState({
     prop: valueProp,
-    defaultProp: defaultValue,
+    defaultProp: defaultValue ?? '',
     onChange: onValueChange,
+    caller: TOGGLE_GROUP_NAME,
   });
 
   return (
     <ToggleGroupValueProvider
       scope={props.__scopeToggleGroup}
       type="single"
-      value={value ? [value] : []}
+      value={React.useMemo(() => (value ? [value] : []), [value])}
       onItemActivate={setValue}
       onItemDeactivate={React.useCallback(() => setValue(''), [setValue])}
     >
@@ -137,10 +138,11 @@ const ToggleGroupImplMultiple = React.forwardRef<
     ...toggleGroupMultipleProps
   } = props;
 
-  const [value = [], setValue] = useControllableState({
+  const [value, setValue] = useControllableState({
     prop: valueProp,
-    defaultProp: defaultValue,
+    defaultProp: defaultValue ?? [],
     onChange: onValueChange,
+    caller: TOGGLE_GROUP_NAME,
   });
 
   const handleButtonActivate = React.useCallback(

@@ -49,10 +49,11 @@ const Switch = React.forwardRef<SwitchElement, SwitchProps>(
     const hasConsumerStoppedPropagationRef = React.useRef(false);
     // We set this to true by default so that events bubble to forms without JS (SSR)
     const isFormControl = button ? form || !!button.closest('form') : true;
-    const [checked = false, setChecked] = useControllableState({
+    const [checked, setChecked] = useControllableState({
       prop: checkedProp,
-      defaultProp: defaultChecked,
+      defaultProp: defaultChecked ?? false,
       onChange: onCheckedChange,
+      caller: SWITCH_NAME,
     });
 
     return (
