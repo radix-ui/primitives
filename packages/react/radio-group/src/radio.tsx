@@ -26,6 +26,7 @@ type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.butt
 interface RadioProps extends PrimitiveButtonProps {
   checked?: boolean;
   required?: boolean;
+  disableNativeInput?: boolean;
   onCheck?(): void;
 }
 
@@ -40,13 +41,18 @@ const Radio = React.forwardRef<RadioElement, RadioProps>(
       value = 'on',
       onCheck,
       form,
+      disableNativeInput,
       ...radioProps
     } = props;
     const [button, setButton] = React.useState<HTMLButtonElement | null>(null);
     const composedRefs = useComposedRefs(forwardedRef, (node) => setButton(node));
     const hasConsumerStoppedPropagationRef = React.useRef(false);
     // We set this to true by default so that events bubble to forms without JS (SSR)
-    const isFormControl = button ? form || !!button.closest('form') : true;
+    const isFormControl = disableNativeInput
+      ? false
+      : button
+        ? form || !!button.closest('form')
+        : true;
 
     return (
       <RadioProvider scope={__scopeRadio} checked={checked} disabled={disabled}>

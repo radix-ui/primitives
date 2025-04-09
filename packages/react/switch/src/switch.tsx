@@ -27,6 +27,7 @@ interface SwitchProps extends PrimitiveButtonProps {
   checked?: boolean;
   defaultChecked?: boolean;
   required?: boolean;
+  disableNativeInput?: boolean;
   onCheckedChange?(checked: boolean): void;
 }
 
@@ -42,13 +43,18 @@ const Switch = React.forwardRef<SwitchElement, SwitchProps>(
       value = 'on',
       onCheckedChange,
       form,
+      disableNativeInput,
       ...switchProps
     } = props;
     const [button, setButton] = React.useState<HTMLButtonElement | null>(null);
     const composedRefs = useComposedRefs(forwardedRef, (node) => setButton(node));
     const hasConsumerStoppedPropagationRef = React.useRef(false);
     // We set this to true by default so that events bubble to forms without JS (SSR)
-    const isFormControl = button ? form || !!button.closest('form') : true;
+    const isFormControl = disableNativeInput
+      ? false
+      : button
+        ? form || !!button.closest('form')
+        : true;
     const [checked = false, setChecked] = useControllableState({
       prop: checkedProp,
       defaultProp: defaultChecked,
