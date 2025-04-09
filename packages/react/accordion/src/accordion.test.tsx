@@ -1,15 +1,18 @@
 import * as React from 'react';
 import { axe } from 'vitest-axe';
 import type { RenderResult } from '@testing-library/react';
-import { render, fireEvent } from '@testing-library/react';
+import { cleanup, render, fireEvent } from '@testing-library/react';
 import * as Accordion from '@radix-ui/react-accordion';
 import type { Mock } from 'vitest';
+import { afterEach, describe, it, beforeEach, vi, expect } from 'vitest';
 
 const ITEMS = ['One', 'Two', 'Three'];
 
 describe('given a single Accordion', () => {
   let handleValueChange: Mock;
   let rendered: RenderResult;
+
+  afterEach(cleanup);
 
   describe('with default orientation=vertical', () => {
     beforeEach(() => {
@@ -287,6 +290,8 @@ describe('given a single Accordion', () => {
 describe('given a multiple Accordion', () => {
   let handleValueChange: Mock;
   let rendered: RenderResult;
+
+  afterEach(cleanup);
 
   beforeEach(() => {
     handleValueChange = vi.fn();

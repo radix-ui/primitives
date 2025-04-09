@@ -1,7 +1,8 @@
 import type { RenderResult } from '@testing-library/react';
-import { fireEvent, render } from '@testing-library/react';
+import { cleanup, fireEvent, render } from '@testing-library/react';
 import * as Toggle from '@radix-ui/react-toggle';
 import { axe } from 'vitest-axe';
+import { afterEach, describe, it, beforeEach, vi, expect } from 'vitest';
 
 const TEXT_CHILD = 'Like';
 
@@ -11,6 +12,8 @@ describe('given a Toggle with text', () => {
   beforeEach(() => {
     rendered = render(<Toggle.Root>{TEXT_CHILD}</Toggle.Root>);
   });
+
+  afterEach(cleanup);
 
   it('should have no accessibility violations', async () => {
     expect(await axe(rendered.container)).toHaveNoViolations();
@@ -46,6 +49,8 @@ describe('given a Toggle with text and defaultPressed="true"', () => {
     rendered = render(<Toggle.Root defaultPressed>{TEXT_CHILD}</Toggle.Root>);
   });
 
+  afterEach(cleanup);
+
   it('should render with attributes true/on by default', () => {
     const button = rendered.getByRole('button', { name: TEXT_CHILD });
 
@@ -75,6 +80,8 @@ describe('given a Toggle with text and disabled="true"', () => {
   beforeEach(() => {
     rendered = render(<Toggle.Root disabled>{TEXT_CHILD}</Toggle.Root>);
   });
+
+  afterEach(cleanup);
 
   it('on click the attributes do not change', () => {
     const button = rendered.getByRole('button', { name: TEXT_CHILD });
@@ -107,6 +114,8 @@ describe('given a controlled Toggle (with pressed and onPressedChange)', () => {
       </Toggle.Root>
     );
   });
+
+  afterEach(cleanup);
 
   it('Click event should keep the same attributes, and pass the new state to onPressedChange', () => {
     const button = rendered.getByRole('button', { name: TEXT_CHILD });

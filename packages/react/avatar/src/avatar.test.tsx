@@ -1,9 +1,10 @@
 import { axe } from 'vitest-axe';
 import type { RenderResult } from '@testing-library/react';
-import { render, waitFor } from '@testing-library/react';
+import { cleanup, render, waitFor } from '@testing-library/react';
 import * as Avatar from '@radix-ui/react-avatar';
 import * as React from 'react';
 import { renderToString } from 'react-dom/server';
+import { afterEach, describe, it, beforeAll, afterAll, beforeEach, vi, expect } from 'vitest';
 
 const ROOT_TEST_ID = 'avatar-root';
 const FALLBACK_TEXT = 'AB';
@@ -12,6 +13,8 @@ const DELAY = 300;
 const cache = new Set<string>();
 
 describe('given an Avatar with fallback and no image', () => {
+  afterEach(cleanup);
+
   const ui = (
     <Avatar.Root data-testid={ROOT_TEST_ID}>
       <Avatar.Fallback>{FALLBACK_TEXT}</Avatar.Fallback>
@@ -52,6 +55,8 @@ describe('given an Avatar with fallback and an image', () => {
     window.Image = originalGlobalImage;
     vi.restoreAllMocks();
   });
+
+  afterEach(cleanup);
 
   beforeEach(() => {
     cache.clear();
@@ -138,6 +143,8 @@ describe('given an Avatar with fallback and an image', () => {
   });
 
   describe('SSR', () => {
+    afterEach(cleanup);
+
     function renderAndHydrate(ui: React.ReactElement) {
       const container = document.createElement('div');
       document.body.appendChild(container);
@@ -175,6 +182,8 @@ describe('given an Avatar with fallback and delayed render', () => {
       </Avatar.Root>
     );
   });
+
+  afterEach(cleanup);
 
   it('should not render a fallback immediately', () => {
     fallback = rendered.queryByText(FALLBACK_TEXT);
@@ -219,6 +228,8 @@ describe('given an Avatar with an image that only works when referrerPolicy=no-r
     window.Image = originalGlobalImage;
     vi.restoreAllMocks();
   });
+
+  afterEach(cleanup);
 
   describe('referrerPolicy=no-referrer', () => {
     beforeEach(() => {

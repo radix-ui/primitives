@@ -1,7 +1,8 @@
 import { axe } from 'vitest-axe';
 import type { RenderResult } from '@testing-library/react';
-import { render } from '@testing-library/react';
+import { cleanup, render } from '@testing-library/react';
 import { Arrow } from '@radix-ui/react-arrow';
+import { afterEach, describe, it, beforeEach, expect } from 'vitest';
 
 const WIDTH = 40;
 const HEIGHT = 30;
@@ -9,6 +10,8 @@ const HEIGHT = 30;
 describe('given a default Arrow', () => {
   let rendered: RenderResult;
   let svg: HTMLElement;
+
+  afterEach(cleanup);
 
   beforeEach(() => {
     rendered = render(<Arrow width={WIDTH} height={HEIGHT} data-testid="test-arrow" />);

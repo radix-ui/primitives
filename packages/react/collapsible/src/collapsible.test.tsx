@@ -1,8 +1,9 @@
 import React from 'react';
 import { axe } from 'vitest-axe';
 import type { RenderResult } from '@testing-library/react';
-import { render, fireEvent } from '@testing-library/react';
+import { cleanup, render, fireEvent } from '@testing-library/react';
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@radix-ui/react-collapsible';
+import { afterEach, describe, it, beforeEach, vi, expect } from 'vitest';
 
 const TRIGGER_TEXT = 'Trigger';
 const CONTENT_TEXT = 'Content';
@@ -18,6 +19,8 @@ describe('given a default Collapsible', () => {
   let rendered: RenderResult;
   let trigger: HTMLElement;
   let content: HTMLElement | null;
+
+  afterEach(cleanup);
 
   beforeEach(() => {
     rendered = render(<CollapsibleTest />);
@@ -55,6 +58,8 @@ describe('given an open uncontrolled Collapsible', () => {
   let content: HTMLElement | null;
   const onOpenChange = vi.fn();
 
+  afterEach(cleanup);
+
   beforeEach(() => {
     rendered = render(<CollapsibleTest defaultOpen onOpenChange={onOpenChange} />);
   });
@@ -80,6 +85,8 @@ describe('given an open controlled Collapsible', () => {
   let rendered: RenderResult;
   let content: HTMLElement;
   const onOpenChange = vi.fn();
+
+  afterEach(cleanup);
 
   beforeEach(() => {
     rendered = render(<CollapsibleTest open onOpenChange={onOpenChange} />);

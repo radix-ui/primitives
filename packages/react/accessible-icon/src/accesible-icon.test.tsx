@@ -1,8 +1,9 @@
 import React from 'react';
 import { axe } from 'vitest-axe';
 import type { RenderResult } from '@testing-library/react';
-import { render } from '@testing-library/react';
+import { cleanup, render } from '@testing-library/react';
 import { AccessibleIcon } from '@radix-ui/react-accessible-icon';
+import { afterEach, describe, it, beforeEach, vi, expect } from 'vitest';
 
 const LABEL_TEXT = 'Close';
 
@@ -13,6 +14,8 @@ const AccessibleIconTest = (props: Omit<React.ComponentProps<typeof AccessibleIc
 describe('given a default AccessibleIcon', () => {
   let rendered: RenderResult;
   let label: HTMLElement;
+
+  afterEach(cleanup);
 
   beforeEach(() => {
     rendered = render(

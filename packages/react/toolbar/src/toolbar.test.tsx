@@ -1,5 +1,6 @@
-import { render, fireEvent, getByText } from '@testing-library/react';
+import { cleanup, render, fireEvent, getByText } from '@testing-library/react';
 import * as Toolbar from '@radix-ui/react-toolbar';
+import { afterEach, describe, it, vi, expect } from 'vitest';
 
 const component = (props: any) => {
   return render(
@@ -14,6 +15,7 @@ const component = (props: any) => {
 };
 
 describe('given a default Toolbar', () => {
+  afterEach(cleanup);
   it('Click event should be called just once', async () => {
     const spy = vi.fn();
 

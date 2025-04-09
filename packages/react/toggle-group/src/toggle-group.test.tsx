@@ -1,9 +1,10 @@
 import * as React from 'react';
 import { axe } from 'vitest-axe';
 import type { RenderResult } from '@testing-library/react';
-import { render, fireEvent } from '@testing-library/react';
+import { cleanup, render, fireEvent } from '@testing-library/react';
 import * as ToggleGroup from '@radix-ui/react-toggle-group';
 import type { Mock } from 'vitest';
+import { afterEach, describe, it, beforeEach, vi, expect } from 'vitest';
 
 describe('given a single ToggleGroup', () => {
   let handleValueChange: Mock;
@@ -17,6 +18,8 @@ describe('given a single ToggleGroup', () => {
     one = rendered.getByText('One');
     two = rendered.getByText('Two');
   });
+
+  afterEach(cleanup);
 
   it('should have no accessibility violations', async () => {
     expect(await axe(rendered.container)).toHaveNoViolations();
@@ -69,6 +72,8 @@ describe('given a multiple ToggleGroup', () => {
     one = rendered.getByText('One');
     two = rendered.getByText('Two');
   });
+
+  afterEach(cleanup);
 
   it('should have no accessibility violations', async () => {
     expect(await axe(rendered.container)).toHaveNoViolations();
