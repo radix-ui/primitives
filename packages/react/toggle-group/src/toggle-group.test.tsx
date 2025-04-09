@@ -2,7 +2,7 @@ import * as React from 'react';
 import { axe } from 'vitest-axe';
 import type { RenderResult } from '@testing-library/react';
 import { cleanup, render, fireEvent } from '@testing-library/react';
-import * as ToggleGroup from '@radix-ui/react-toggle-group';
+import * as ToggleGroup from './toggle-group';
 import type { Mock } from 'vitest';
 import { afterEach, describe, it, beforeEach, vi, expect } from 'vitest';
 

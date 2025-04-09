@@ -46,7 +46,6 @@
     "@radix-ui/react-use-controllable-state": "workspace:*"
   },
   "devDependencies": {
-    "@radix-ui/react-menubar": "workspace:*",
     "@repo/builder": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/test-data": "workspace:*",

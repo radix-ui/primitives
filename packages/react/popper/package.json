@@ -46,8 +46,6 @@
     "@radix-ui/rect": "workspace:*"
   },
   "devDependencies": {
-    "@radix-ui/react-popper": "workspace:*",
-    "@radix-ui/react-portal": "workspace:*",
     "@repo/builder": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",

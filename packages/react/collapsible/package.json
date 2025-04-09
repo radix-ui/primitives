@@ -44,7 +44,6 @@
     "@radix-ui/react-use-layout-effect": "workspace:*"
   },
   "devDependencies": {
-    "@radix-ui/react-collapsible": "workspace:*",
     "@repo/builder": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",

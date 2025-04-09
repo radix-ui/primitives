@@ -43,9 +43,6 @@
     "@radix-ui/react-toggle-group": "workspace:*"
   },
   "devDependencies": {
-    "@radix-ui/react-dropdown-menu": "workspace:*",
-    "@radix-ui/react-toggle": "workspace:*",
-    "@radix-ui/react-toolbar": "workspace:*",
     "@repo/builder": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",

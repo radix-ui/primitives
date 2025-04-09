@@ -37,7 +37,6 @@
     "@radix-ui/react-use-callback-ref": "workspace:*"
   },
   "devDependencies": {
-    "@radix-ui/react-use-controllable-state": "workspace:*",
     "@repo/builder": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",

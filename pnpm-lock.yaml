@@ -366,9 +366,6 @@ importers:
         specifier: workspace:*
         version: link:../visually-hidden
     devDependencies:
-      '@radix-ui/react-accessible-icon':
-        specifier: workspace:*
-        version: 'link:'
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
@@ -427,9 +424,6 @@ importers:
         specifier: workspace:*
         version: link:../use-controllable-state
     devDependencies:
-      '@radix-ui/react-accordion':
-        specifier: workspace:*
-        version: 'link:'
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
@@ -479,9 +473,6 @@ importers:
         specifier: workspace:*
         version: link:../slot
     devDependencies:
-      '@radix-ui/react-alert-dialog':
-        specifier: workspace:*
-        version: 'link:'
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
@@ -522,12 +513,6 @@ importers:
         specifier: workspace:*
         version: link:../use-layout-effect
     devDependencies:
-      '@radix-ui/react-announce':
-        specifier: workspace:*
-        version: 'link:'
-      '@radix-ui/react-visually-hidden':
-        specifier: workspace:*
-        version: link:../visually-hidden
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
@@ -562,12 +547,6 @@ importers:
         specifier: workspace:*
         version: link:../primitive
     devDependencies:
-      '@radix-ui/react-arrow':
-        specifier: workspace:*
-        version: 'link:'
-      '@radix-ui/react-visually-hidden':
-        specifier: workspace:*
-        version: link:../visually-hidden
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
@@ -602,9 +581,6 @@ importers:
         specifier: workspace:*
         version: link:../primitive
     devDependencies:
-      '@radix-ui/react-aspect-ratio':
-        specifier: workspace:*
-        version: 'link:'
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
@@ -648,9 +624,6 @@ importers:
         specifier: workspace:*
         version: link:../use-layout-effect
     devDependencies:
-      '@radix-ui/react-avatar':
-        specifier: workspace:*
-        version: 'link:'
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
@@ -706,12 +679,6 @@ importers:
         specifier: workspace:*
         version: link:../use-size
     devDependencies:
-      '@radix-ui/react-checkbox':
-        specifier: workspace:*
-        version: 'link:'
-      '@radix-ui/react-label':
-        specifier: workspace:*
-        version: link:../label
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
@@ -767,9 +734,6 @@ importers:
         specifier: workspace:*
         version: link:../use-layout-effect
     devDependencies:
-      '@radix-ui/react-collapsible':
-        specifier: workspace:*
-        version: 'link:'
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
@@ -813,9 +777,6 @@ importers:
         specifier: workspace:*
         version: link:../slot
     devDependencies:
-      '@radix-ui/react-collection':
-        specifier: workspace:*
-        version: 'link:'
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
@@ -846,9 +807,6 @@ importers:
 
   packages/react/compose-refs:
     devDependencies:
-      '@radix-ui/react-compose-refs':
-        specifier: workspace:*
-        version: 'link:'
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
@@ -879,9 +837,6 @@ importers:
 
   packages/react/context:
     devDependencies:
-      '@radix-ui/react-context':
-        specifier: workspace:*
-        version: 'link:'
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
@@ -931,9 +886,6 @@ importers:
         specifier: workspace:*
         version: link:../use-controllable-state
     devDependencies:
-      '@radix-ui/react-context-menu':
-        specifier: workspace:*
-        version: 'link:'
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
@@ -1010,9 +962,6 @@ importers:
         specifier: ^2.6.3
         version: 2.6.3(@types/react@19.1.0)(react@19.0.0)
     devDependencies:
-      '@radix-ui/react-dialog':
-        specifier: workspace:*
-        version: 'link:'
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
@@ -1043,9 +992,6 @@ importers:
 
   packages/react/direction:
     devDependencies:
-      '@radix-ui/react-direction':
-        specifier: workspace:*
-        version: 'link:'
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
@@ -1092,24 +1038,6 @@ importers:
         specifier: workspace:*
         version: link:../use-escape-keydown
     devDependencies:
-      '@radix-ui/react-dismissable-layer':
-        specifier: workspace:*
-        version: 'link:'
-      '@radix-ui/react-focus-guards':
-        specifier: workspace:*
-        version: link:../focus-guards
-      '@radix-ui/react-focus-scope':
-        specifier: workspace:*
-        version: link:../focus-scope
-      '@radix-ui/react-popper':
-        specifier: workspace:*
-        version: link:../popper
-      '@radix-ui/react-portal':
-        specifier: workspace:*
-        version: link:../portal
-      '@radix-ui/react-slot':
-        specifier: workspace:*
-        version: link:../slot
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
@@ -1165,18 +1093,6 @@ importers:
         specifier: workspace:*
         version: link:../use-controllable-state
     devDependencies:
-      '@radix-ui/react-dialog':
-        specifier: workspace:*
-        version: link:../dialog
-      '@radix-ui/react-dropdown-menu':
-        specifier: workspace:*
-        version: 'link:'
-      '@radix-ui/react-popper':
-        specifier: workspace:*
-        version: link:../popper
-      '@radix-ui/react-tooltip':
-        specifier: workspace:*
-        version: link:../tooltip
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
@@ -1210,9 +1126,6 @@ importers:
 
   packages/react/focus-guards:
     devDependencies:
-      '@radix-ui/react-focus-guards':
-        specifier: workspace:*
-        version: 'link:'
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
@@ -1253,9 +1166,6 @@ importers:
         specifier: workspace:*
         version: link:../use-callback-ref
     devDependencies:
-      '@radix-ui/react-focus-scope':
-        specifier: workspace:*
-        version: 'link:'
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
@@ -1305,9 +1215,6 @@ importers:
         specifier: workspace:*
         version: link:../primitive
     devDependencies:
-      '@radix-ui/react-form':
-        specifier: workspace:*
-        version: 'link:'
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
@@ -1366,12 +1273,6 @@ importers:
         specifier: workspace:*
         version: link:../use-controllable-state
     devDependencies:
-      '@radix-ui/react-dialog':
-        specifier: workspace:*
-        version: link:../dialog
-      '@radix-ui/react-hover-card':
-        specifier: workspace:*
-        version: 'link:'
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
@@ -1406,9 +1307,6 @@ importers:
         specifier: workspace:*
         version: link:../use-layout-effect
     devDependencies:
-      '@radix-ui/react-id':
-        specifier: workspace:*
-        version: 'link:'
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
@@ -1443,9 +1341,6 @@ importers:
         specifier: workspace:*
         version: link:../primitive
     devDependencies:
-      '@radix-ui/react-label':
-        specifier: workspace:*
-        version: 'link:'
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
@@ -1531,9 +1426,6 @@ importers:
         specifier: ^2.6.3
         version: 2.6.3(@types/react@19.1.0)(react@19.0.0)
     devDependencies:
-      '@radix-ui/react-menu':
-        specifier: workspace:*
-        version: 'link:'
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
@@ -1598,9 +1490,6 @@ importers:
         specifier: workspace:*
         version: link:../use-controllable-state
     devDependencies:
-      '@radix-ui/react-menubar':
-        specifier: workspace:*
-        version: 'link:'
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
@@ -1677,9 +1566,6 @@ importers:
         specifier: workspace:*
         version: link:../visually-hidden
     devDependencies:
-      '@radix-ui/react-navigation-menu':
-        specifier: workspace:*
-        version: 'link:'
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
@@ -1756,9 +1642,6 @@ importers:
         specifier: ^2.6.3
         version: 2.6.3(@types/react@19.1.0)(react@19.0.0)
     devDependencies:
-      '@radix-ui/react-popover':
-        specifier: workspace:*
-        version: 'link:'
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
@@ -1820,12 +1703,6 @@ importers:
         specifier: workspace:*
         version: link:../../core/rect
     devDependencies:
-      '@radix-ui/react-popper':
-        specifier: workspace:*
-        version: 'link:'
-      '@radix-ui/react-portal':
-        specifier: workspace:*
-        version: link:../portal
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
@@ -1863,9 +1740,6 @@ importers:
         specifier: workspace:*
         version: link:../use-layout-effect
     devDependencies:
-      '@radix-ui/react-portal':
-        specifier: workspace:*
-        version: 'link:'
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
@@ -1903,9 +1777,6 @@ importers:
         specifier: workspace:*
         version: link:../use-layout-effect
     devDependencies:
-      '@radix-ui/react-presence':
-        specifier: workspace:*
-        version: 'link:'
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
@@ -1940,9 +1811,6 @@ importers:
         specifier: workspace:*
         version: link:../slot
     devDependencies:
-      '@radix-ui/react-primitive':
-        specifier: workspace:*
-        version: 'link:'
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
@@ -1980,9 +1848,6 @@ importers:
         specifier: workspace:*
         version: link:../primitive
     devDependencies:
-      '@radix-ui/react-progress':
-        specifier: workspace:*
-        version: 'link:'
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
@@ -2044,12 +1909,6 @@ importers:
         specifier: workspace:*
         version: link:../use-size
     devDependencies:
-      '@radix-ui/react-label':
-        specifier: workspace:*
-        version: link:../label
-      '@radix-ui/react-radio-group':
-        specifier: workspace:*
-        version: 'link:'
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
@@ -2234,9 +2093,6 @@ importers:
         specifier: workspace:*
         version: link:../visually-hidden
     devDependencies:
-      '@repo/eslint-config':
-        specifier: workspace:*
-        version: link:../../../internal/eslint-config
       '@repo/typescript-config':
         specifier: workspace:*
         version: link:../../../internal/typescript-config
@@ -2289,9 +2145,6 @@ importers:
         specifier: workspace:*
         version: link:../use-controllable-state
     devDependencies:
-      '@radix-ui/react-roving-focus':
-        specifier: workspace:*
-        version: 'link:'
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
@@ -2350,9 +2203,6 @@ importers:
         specifier: workspace:*
         version: link:../use-layout-effect
     devDependencies:
-      '@radix-ui/react-scroll-area':
-        specifier: workspace:*
-        version: 'link:'
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
@@ -2447,15 +2297,6 @@ importers:
         specifier: ^2.6.3
         version: 2.6.3(@types/react@19.1.0)(react@19.0.0)
     devDependencies:
-      '@radix-ui/react-dialog':
-        specifier: workspace:*
-        version: link:../dialog
-      '@radix-ui/react-label':
-        specifier: workspace:*
-        version: link:../label
-      '@radix-ui/react-select':
-        specifier: workspace:*
-        version: 'link:'
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
@@ -2493,9 +2334,6 @@ importers:
         specifier: workspace:*
         version: link:../primitive
     devDependencies:
-      '@radix-ui/react-separator':
-        specifier: workspace:*
-        version: 'link:'
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
@@ -2560,9 +2398,6 @@ importers:
         specifier: workspace:*
         version: link:../use-size
     devDependencies:
-      '@radix-ui/react-slider':
-        specifier: workspace:*
-        version: 'link:'
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
@@ -2597,9 +2432,6 @@ importers:
         specifier: workspace:*
         version: link:../compose-refs
     devDependencies:
-      '@radix-ui/react-slot':
-        specifier: workspace:*
-        version: 'link:'
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
@@ -2652,12 +2484,6 @@ importers:
         specifier: workspace:*
         version: link:../use-size
     devDependencies:
-      '@radix-ui/react-label':
-        specifier: workspace:*
-        version: link:../label
-      '@radix-ui/react-switch':
-        specifier: workspace:*
-        version: 'link:'
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
@@ -2713,9 +2539,6 @@ importers:
         specifier: workspace:*
         version: link:../use-controllable-state
     devDependencies:
-      '@radix-ui/react-tabs':
-        specifier: workspace:*
-        version: 'link:'
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
@@ -2783,12 +2606,6 @@ importers:
         specifier: workspace:*
         version: link:../visually-hidden
     devDependencies:
-      '@radix-ui/react-dialog':
-        specifier: workspace:*
-        version: link:../dialog
-      '@radix-ui/react-toast':
-        specifier: workspace:*
-        version: 'link:'
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
@@ -2829,9 +2646,6 @@ importers:
         specifier: workspace:*
         version: link:../use-controllable-state
     devDependencies:
-      '@radix-ui/react-toggle':
-        specifier: workspace:*
-        version: 'link:'
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
@@ -2884,9 +2698,6 @@ importers:
         specifier: workspace:*
         version: link:../use-controllable-state
     devDependencies:
-      '@radix-ui/react-toggle-group':
-        specifier: workspace:*
-        version: 'link:'
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
@@ -2939,15 +2750,6 @@ importers:
         specifier: workspace:*
         version: link:../toggle-group
     devDependencies:
-      '@radix-ui/react-dropdown-menu':
-        specifier: workspace:*
-        version: link:../dropdown-menu
-      '@radix-ui/react-toggle':
-        specifier: workspace:*
-        version: link:../toggle
-      '@radix-ui/react-toolbar':
-        specifier: workspace:*
-        version: 'link:'
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
@@ -3015,12 +2817,6 @@ importers:
         specifier: workspace:*
         version: link:../visually-hidden
     devDependencies:
-      '@radix-ui/react-dialog':
-        specifier: workspace:*
-        version: link:../dialog
-      '@radix-ui/react-tooltip':
-        specifier: workspace:*
-        version: 'link:'
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
@@ -3051,9 +2847,6 @@ importers:
 
   packages/react/use-callback-ref:
     devDependencies:
-      '@radix-ui/react-use-callback-ref':
-        specifier: workspace:*
-        version: 'link:'
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
@@ -3088,9 +2881,6 @@ importers:
         specifier: workspace:*
         version: link:../use-callback-ref
     devDependencies:
-      '@radix-ui/react-use-controllable-state':
-        specifier: workspace:*
-        version: 'link:'
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
@@ -3125,9 +2915,6 @@ importers:
         specifier: workspace:*
         version: link:../use-callback-ref
     devDependencies:
-      '@radix-ui/react-use-escape-keydown':
-        specifier: workspace:*
-        version: 'link:'
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
@@ -3158,9 +2945,6 @@ importers:
 
   packages/react/use-layout-effect:
     devDependencies:
-      '@radix-ui/react-use-layout-effect':
-        specifier: workspace:*
-        version: 'link:'
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
@@ -3191,9 +2975,6 @@ importers:
 
   packages/react/use-previous:
     devDependencies:
-      '@radix-ui/react-use-previous':
-        specifier: workspace:*
-        version: 'link:'
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
@@ -3228,9 +3009,6 @@ importers:
         specifier: workspace:*
         version: link:../../core/rect
     devDependencies:
-      '@radix-ui/react-use-rect':
-        specifier: workspace:*
-        version: 'link:'
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
@@ -3265,9 +3043,6 @@ importers:
         specifier: workspace:*
         version: link:../use-layout-effect
     devDependencies:
-      '@radix-ui/react-use-size':
-        specifier: workspace:*
-        version: 'link:'
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
@@ -3302,9 +3077,6 @@ importers:
         specifier: workspace:*
         version: link:../primitive
     devDependencies:
-      '@radix-ui/react-visually-hidden':
-        specifier: workspace:*
-        version: 'link:'
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder

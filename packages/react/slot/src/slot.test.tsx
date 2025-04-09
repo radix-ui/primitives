@@ -1,6 +1,6 @@
 import React from 'react';
 import { cleanup, render, screen, fireEvent } from '@testing-library/react';
-import { Slot, Slottable } from '@radix-ui/react-slot';
+import { Slot, Slottable } from './slot';
 import { afterEach, describe, it, beforeEach, vi, expect } from 'vitest';
 
 describe('given a slotted Trigger', () => {

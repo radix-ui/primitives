@@ -47,7 +47,6 @@
     "@radix-ui/react-use-size": "workspace:*"
   },
   "devDependencies": {
-    "@radix-ui/react-slider": "workspace:*",
     "@repo/builder": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",

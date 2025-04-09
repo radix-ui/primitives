@@ -2,7 +2,7 @@ import React from 'react';
 import { axe } from 'vitest-axe';
 import type { RenderResult } from '@testing-library/react';
 import { cleanup, render } from '@testing-library/react';
-import { AccessibleIcon } from '@radix-ui/react-accessible-icon';
+import { AccessibleIcon } from './accessible-icon';
 import { afterEach, describe, it, beforeEach, vi, expect } from 'vitest';
 
 const LABEL_TEXT = 'Close';

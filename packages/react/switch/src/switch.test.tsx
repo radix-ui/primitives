@@ -1,4 +1,4 @@
-import * as Switch from '@radix-ui/react-switch';
+import * as Switch from './switch';
 import { cleanup, render } from '@testing-library/react';
 import { afterEach, describe, it, expect } from 'vitest';
 
