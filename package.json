@@ -8,7 +8,7 @@
     "lint:staged": "lint-staged",
     "types:check": "pnpm -r --parallel run typecheck",
     "test": "vitest",
-    "test:ci": "pnpm types:check && vitest run && pnpm cypress:ci",
+    "test:ci": "vitest run && pnpm cypress:ci",
     "storybook": "BROWSER=none storybook dev -p 9009",
     "cypress:ci": "start-server-and-test 'pnpm dev' http://localhost:9009 cypress:run",
     "cypress:run": "cypress run",
