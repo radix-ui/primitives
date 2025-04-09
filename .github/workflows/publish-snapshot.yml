@@ -1,4 +1,4 @@
-name: 'Publish Snapshot Release'
+name: "Publish Snapshot Release"
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - main
     paths-ignore:
       # - '.github/**'
-      - '**/package.json'
+      - "**/package.json"
 
 env:
   NPM_TOKEN: ${{ secrets.NPM_AUTOMATION_FROM_CHANCE }}
@@ -28,9 +28,9 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
-          registry-url: 'https://registry.npmjs.org'
-          cache: 'pnpm'
+          node-version-file: ".nvmrc"
+          registry-url: "https://registry.npmjs.org"
+          cache: "pnpm"
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile

@@ -1,22 +1,24 @@
 // @ts-check
-import path from 'node:path';
-import fs from 'node:fs';
-import * as esbuild from 'esbuild';
-import * as tsup from 'tsup';
+import path from "node:path";
+import fs from "node:fs";
+import * as esbuild from "esbuild";
+import * as tsup from "tsup";
 
 /**
  * @param {string} relativePath
  */
 export async function build(relativePath) {
-  const packageJsonPath = path.resolve(relativePath, 'package.json');
+  const packageJsonPath = path.resolve(relativePath, "package.json");
   if (!fs.existsSync(packageJsonPath)) {
     return;
   }
 
-  const packageJsonContents = await fs.promises.readFile(packageJsonPath, 'utf-8').catch(() => {
-    console.error(`Failed to read package.json file at ${packageJsonPath}`);
-    process.exit(1);
-  });
+  const packageJsonContents = await fs.promises
+    .readFile(packageJsonPath, "utf-8")
+    .catch(() => {
+      console.error(`Failed to read package.json file at ${packageJsonPath}`);
+      process.exit(1);
+    });
 
   /** @type {PackageJson} */
   let packageJson;
@@ -29,35 +31,39 @@ export async function build(relativePath) {
 
   const tasks = [];
   const pkg = packageJson.name;
-  const files = ['index.ts'];
-  if (pkg === 'radix-ui') {
-    files.push('internal.ts');
+  const files = ["index.ts"];
+  if (pkg === "radix-ui") {
+    files.push("internal.ts");
   }
 
-  const entryPoints = files.map((file) => `${relativePath || '.'}/src/${file}`);
-  const dist = `${relativePath || '.'}/dist`;
+  const entryPoints = files.map((file) => `${relativePath || "."}/src/${file}`);
+  const dist = `${relativePath || "."}/dist`;
 
   /** @type {esbuild.BuildOptions} */
   const esbuildConfig = {
     entryPoints: entryPoints,
-    external: ['@radix-ui/*'],
-    packages: 'external',
+    external: ["@radix-ui/*"],
+    packages: "external",
     bundle: true,
     sourcemap: true,
-    format: 'cjs',
-    target: 'es2022',
+    format: "cjs",
+    target: "es2022",
     outdir: dist,
   };
 
-  tasks.push(esbuild.build(esbuildConfig).then(() => console.log(`CJS: Built ${relativePath}`)));
+  tasks.push(
+    esbuild
+      .build(esbuildConfig)
+      .then(() => console.log(`CJS: Built ${relativePath}`)),
+  );
   tasks.push(
     esbuild
       .build({
         ...esbuildConfig,
-        format: 'esm',
-        outExtension: { '.js': '.mjs' },
+        format: "esm",
+        outExtension: { ".js": ".mjs" },
       })
-      .then(() => console.log(`ESM: Built ${relativePath}`))
+      .then(() => console.log(`ESM: Built ${relativePath}`)),
   );
 
   // tsup is used to emit d.ts files only (esbuild can't do that).
@@ -71,13 +77,13 @@ export async function build(relativePath) {
     tsup
       .build({
         entry: entryPoints,
-        format: ['cjs', 'esm'],
+        format: ["cjs", "esm"],
         dts: { only: true },
         outDir: dist,
         silent: true,
         external: [/@radix-ui\/.+/],
       })
-      .then(() => console.log(`TSC: Built ${relativePath}`))
+      .then(() => console.log(`TSC: Built ${relativePath}`)),
   );
 
   await Promise.all(tasks);
