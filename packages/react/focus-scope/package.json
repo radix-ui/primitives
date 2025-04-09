@@ -37,6 +37,7 @@
     "@radix-ui/react-use-callback-ref": "workspace:*"
   },
   "devDependencies": {
+    "@radix-ui/react-focus-scope": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/react": "^19.0.7",

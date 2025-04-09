@@ -38,6 +38,7 @@
     "@radix-ui/react-use-layout-effect": "workspace:*"
   },
   "devDependencies": {
+    "@radix-ui/react-avatar": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/react": "^19.0.7",

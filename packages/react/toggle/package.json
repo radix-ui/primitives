@@ -37,6 +37,7 @@
     "@radix-ui/react-use-controllable-state": "workspace:*"
   },
   "devDependencies": {
+    "@radix-ui/react-toggle": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/react": "^19.0.7",

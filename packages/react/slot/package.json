@@ -35,6 +35,7 @@
     "@radix-ui/react-compose-refs": "workspace:*"
   },
   "devDependencies": {
+    "@radix-ui/react-slot": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/react": "^19.0.7",
