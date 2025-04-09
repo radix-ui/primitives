@@ -2,7 +2,7 @@ import React from 'react';
 import { axe } from 'vitest-axe';
 import type { RenderResult } from '@testing-library/react';
 import { cleanup, render, fireEvent } from '@testing-library/react';
-import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@radix-ui/react-collapsible';
+import { Collapsible, CollapsibleTrigger, CollapsibleContent } from './collapsible';
 import { afterEach, describe, it, beforeEach, vi, expect } from 'vitest';
 
 const TRIGGER_TEXT = 'Trigger';

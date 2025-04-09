@@ -57,9 +57,6 @@
     "react-remove-scroll": "^2.6.3"
   },
   "devDependencies": {
-    "@radix-ui/react-dialog": "workspace:*",
-    "@radix-ui/react-label": "workspace:*",
-    "@radix-ui/react-select": "workspace:*",
     "@repo/builder": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/test-data": "workspace:*",

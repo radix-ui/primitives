@@ -37,7 +37,6 @@
     "@radix-ui/react-primitive": "workspace:*"
   },
   "devDependencies": {
-    "@radix-ui/react-separator": "workspace:*",
     "@repo/builder": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",

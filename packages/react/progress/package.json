@@ -38,7 +38,6 @@
     "@radix-ui/react-primitive": "workspace:*"
   },
   "devDependencies": {
-    "@radix-ui/react-progress": "workspace:*",
     "@repo/builder": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",

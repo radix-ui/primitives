@@ -2,7 +2,7 @@ import React from 'react';
 import { axe } from 'vitest-axe';
 import type { RenderResult } from '@testing-library/react';
 import { cleanup, render, fireEvent } from '@testing-library/react';
-import * as AlertDialog from '@radix-ui/react-alert-dialog';
+import * as AlertDialog from './alert-dialog';
 import { afterEach, describe, it, beforeEach, expect } from 'vitest';
 
 const OPEN_TEXT = 'Open';

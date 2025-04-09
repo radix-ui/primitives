@@ -2,7 +2,7 @@ import * as React from 'react';
 import { axe } from 'vitest-axe';
 import type { RenderResult } from '@testing-library/react';
 import { cleanup, render, fireEvent } from '@testing-library/react';
-import { Checkbox, CheckboxIndicator } from '@radix-ui/react-checkbox';
+import { Checkbox, CheckboxIndicator } from './checkbox';
 import { afterEach, describe, it, beforeEach, vi, expect } from 'vitest';
 
 const CHECKBOX_ROLE = 'checkbox';

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import userEvent from '@testing-library/user-event';
 import { cleanup, render, waitFor } from '@testing-library/react';
-import { FocusScope } from '@radix-ui/react-focus-scope';
+import { FocusScope } from './focus-scope';
 import type { RenderResult } from '@testing-library/react';
 import { afterEach, describe, it, beforeEach, vi, expect } from 'vitest';
 

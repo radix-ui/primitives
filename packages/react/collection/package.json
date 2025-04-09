@@ -40,7 +40,6 @@
     "@radix-ui/react-slot": "workspace:*"
   },
   "devDependencies": {
-    "@radix-ui/react-collection": "workspace:*",
     "@repo/builder": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",

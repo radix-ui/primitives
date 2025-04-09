@@ -25,6 +25,5 @@
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
 Cypress.Commands.add('visitStory', (storyName, options) => {
-  // eslint-disable-next-line cypress/no-unnecessary-waiting
-  return cy.visit(`iframe.html?id=components-${storyName}`, options).wait(0);
+  return cy.visit(`iframe.html?id=components-${storyName}`, options);
 });

@@ -41,12 +41,6 @@
     "@radix-ui/react-use-escape-keydown": "workspace:*"
   },
   "devDependencies": {
-    "@radix-ui/react-dismissable-layer": "workspace:*",
-    "@radix-ui/react-focus-guards": "workspace:*",
-    "@radix-ui/react-focus-scope": "workspace:*",
-    "@radix-ui/react-popper": "workspace:*",
-    "@radix-ui/react-portal": "workspace:*",
-    "@radix-ui/react-slot": "workspace:*",
     "@repo/builder": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",

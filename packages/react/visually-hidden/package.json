@@ -51,7 +51,6 @@
     }
   },
   "devDependencies": {
-    "@radix-ui/react-visually-hidden": "workspace:*",
     "@repo/builder": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
