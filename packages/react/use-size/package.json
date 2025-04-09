@@ -29,7 +29,8 @@
   "sideEffects": false,
   "scripts": {
     "lint": "eslint --max-warnings 0 src",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@radix-ui/react-use-layout-effect": "workspace:*"
@@ -49,7 +50,6 @@
     "@repo/typescript-config": "workspace:*",
     "@types/react": "^19.0.7",
     "@types/react-dom": "^19.0.3",
-    "@types/resize-observer-browser": "^0.1.4",
     "eslint": "^9.18.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

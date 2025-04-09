@@ -28,7 +28,7 @@ export default [
     },
   },
   ...storybook.configs['flat/recommended'],
-  { ...pluginCypress.configs.recommended, files: ['cypress/**/*.cy.ts'] },
+  { ...pluginCypress.configs.recommended, files: ['cypress/**/*.{ts,js}'] },
   {
     ignores: ['dist/**', '.next/**'],
     rules: {

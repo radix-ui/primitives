@@ -29,7 +29,8 @@
   "sideEffects": false,
   "scripts": {
     "lint": "eslint --max-warnings 0 src",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "@radix-ui/react-context": "workspace:*",
