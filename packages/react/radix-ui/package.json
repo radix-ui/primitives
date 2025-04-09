@@ -52,6 +52,7 @@
     "@radix-ui/react-accessible-icon": "workspace:*",
     "@radix-ui/react-accordion": "workspace:*",
     "@radix-ui/react-alert-dialog": "workspace:*",
+    "@radix-ui/react-arrow": "workspace:*",
     "@radix-ui/react-aspect-ratio": "workspace:*",
     "@radix-ui/react-avatar": "workspace:*",
     "@radix-ui/react-checkbox": "workspace:*",
