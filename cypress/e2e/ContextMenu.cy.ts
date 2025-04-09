@@ -1,6 +1,4 @@
-// TODO: this test is failing to load the story in CI for some reason. Debug and
-// un-skip when fixed.
-describe.skip('ContextMenu', () => {
+describe('ContextMenu', () => {
   describe('given submenu user', () => {
     beforeEach(() => {
       cy.visitStory('contextmenu--submenus');
