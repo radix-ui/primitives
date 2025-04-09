@@ -35,6 +35,7 @@
     "@radix-ui/react-visually-hidden": "workspace:*"
   },
   "devDependencies": {
+    "@radix-ui/react-accessible-icon": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/react": "^19.0.7",

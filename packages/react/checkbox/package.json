@@ -42,6 +42,8 @@
     "@radix-ui/react-use-size": "workspace:*"
   },
   "devDependencies": {
+    "@radix-ui/react-checkbox": "workspace:*",
+    "@radix-ui/react-label": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/react": "^19.0.7",

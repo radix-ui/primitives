@@ -40,6 +40,7 @@
     "@radix-ui/react-primitive": "workspace:*"
   },
   "devDependencies": {
+    "@radix-ui/react-form": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/react": "^19.0.7",

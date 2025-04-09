@@ -35,6 +35,8 @@
     "@radix-ui/react-primitive": "workspace:*"
   },
   "devDependencies": {
+    "@radix-ui/react-arrow": "workspace:*",
+    "@radix-ui/react-visually-hidden": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/react": "^19.0.7",

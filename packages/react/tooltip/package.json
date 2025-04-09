@@ -46,6 +46,8 @@
     "@radix-ui/react-visually-hidden": "workspace:*"
   },
   "devDependencies": {
+    "@radix-ui/react-dialog": "workspace:*",
+    "@radix-ui/react-tooltip": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/react": "^19.0.7",

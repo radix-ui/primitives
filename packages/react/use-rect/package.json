@@ -35,6 +35,7 @@
     "@radix-ui/rect": "workspace:*"
   },
   "devDependencies": {
+    "@radix-ui/react-use-rect": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/react": "^19.0.7",

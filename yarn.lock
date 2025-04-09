@@ -1630,6 +1630,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-accessible-icon@workspace:packages/react/accessible-icon"
   dependencies:
+    "@radix-ui/react-accessible-icon": "workspace:*"
     "@radix-ui/react-visually-hidden": "workspace:*"
     "@repo/eslint-config": "workspace:*"
     "@repo/typescript-config": "workspace:*"
@@ -1657,6 +1658,7 @@ __metadata:
   resolution: "@radix-ui/react-accordion@workspace:packages/react/accordion"
   dependencies:
     "@radix-ui/primitive": "workspace:*"
+    "@radix-ui/react-accordion": "workspace:*"
     "@radix-ui/react-collapsible": "workspace:*"
     "@radix-ui/react-collection": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
@@ -1691,6 +1693,7 @@ __metadata:
   resolution: "@radix-ui/react-alert-dialog@workspace:packages/react/alert-dialog"
   dependencies:
     "@radix-ui/primitive": "workspace:*"
+    "@radix-ui/react-alert-dialog": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
     "@radix-ui/react-dialog": "workspace:*"
@@ -1717,13 +1720,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@radix-ui/react-announce@workspace:packages/react/announce":
+"@radix-ui/react-announce@workspace:*, @radix-ui/react-announce@workspace:packages/react/announce":
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-announce@workspace:packages/react/announce"
   dependencies:
+    "@radix-ui/react-announce": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-use-layout-effect": "workspace:*"
+    "@radix-ui/react-visually-hidden": "workspace:*"
     "@repo/eslint-config": "workspace:*"
     "@repo/typescript-config": "workspace:*"
     "@types/react": "npm:^19.0.7"
@@ -1749,7 +1754,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-arrow@workspace:packages/react/arrow"
   dependencies:
+    "@radix-ui/react-arrow": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
+    "@radix-ui/react-visually-hidden": "workspace:*"
     "@repo/eslint-config": "workspace:*"
     "@repo/typescript-config": "workspace:*"
     "@types/react": "npm:^19.0.7"
@@ -1775,6 +1782,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-aspect-ratio@workspace:packages/react/aspect-ratio"
   dependencies:
+    "@radix-ui/react-aspect-ratio": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
     "@repo/eslint-config": "workspace:*"
     "@repo/typescript-config": "workspace:*"
@@ -1801,6 +1809,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-avatar@workspace:packages/react/avatar"
   dependencies:
+    "@radix-ui/react-avatar": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-use-callback-ref": "workspace:*"
@@ -1831,8 +1840,10 @@ __metadata:
   resolution: "@radix-ui/react-checkbox@workspace:packages/react/checkbox"
   dependencies:
     "@radix-ui/primitive": "workspace:*"
+    "@radix-ui/react-checkbox": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
+    "@radix-ui/react-label": "workspace:*"
     "@radix-ui/react-presence": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
@@ -1864,6 +1875,7 @@ __metadata:
   resolution: "@radix-ui/react-collapsible@workspace:packages/react/collapsible"
   dependencies:
     "@radix-ui/primitive": "workspace:*"
+    "@radix-ui/react-collapsible": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
     "@radix-ui/react-id": "workspace:*"
@@ -1896,6 +1908,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-collection@workspace:packages/react/collection"
   dependencies:
+    "@radix-ui/react-collection": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
@@ -1925,6 +1938,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-compose-refs@workspace:packages/react/compose-refs"
   dependencies:
+    "@radix-ui/react-compose-refs": "workspace:*"
     "@repo/eslint-config": "workspace:*"
     "@repo/typescript-config": "workspace:*"
     "@types/react": "npm:^19.0.7"
@@ -1948,6 +1962,7 @@ __metadata:
   dependencies:
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
+    "@radix-ui/react-context-menu": "workspace:*"
     "@radix-ui/react-menu": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-use-callback-ref": "workspace:*"
@@ -1978,6 +1993,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-context@workspace:packages/react/context"
   dependencies:
+    "@radix-ui/react-context": "workspace:*"
     "@repo/eslint-config": "workspace:*"
     "@repo/typescript-config": "workspace:*"
     "@types/react": "npm:^19.0.7"
@@ -2002,6 +2018,7 @@ __metadata:
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
+    "@radix-ui/react-dialog": "workspace:*"
     "@radix-ui/react-dismissable-layer": "workspace:*"
     "@radix-ui/react-focus-guards": "workspace:*"
     "@radix-ui/react-focus-scope": "workspace:*"
@@ -2038,6 +2055,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-direction@workspace:packages/react/direction"
   dependencies:
+    "@radix-ui/react-direction": "workspace:*"
     "@repo/eslint-config": "workspace:*"
     "@repo/typescript-config": "workspace:*"
     "@types/react": "npm:^19.0.7"
@@ -2061,7 +2079,13 @@ __metadata:
   dependencies:
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
+    "@radix-ui/react-dismissable-layer": "workspace:*"
+    "@radix-ui/react-focus-guards": "workspace:*"
+    "@radix-ui/react-focus-scope": "workspace:*"
+    "@radix-ui/react-popper": "workspace:*"
+    "@radix-ui/react-portal": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
+    "@radix-ui/react-slot": "workspace:*"
     "@radix-ui/react-use-callback-ref": "workspace:*"
     "@radix-ui/react-use-escape-keydown": "workspace:*"
     "@repo/eslint-config": "workspace:*"
@@ -2093,9 +2117,13 @@ __metadata:
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
+    "@radix-ui/react-dialog": "workspace:*"
+    "@radix-ui/react-dropdown-menu": "workspace:*"
     "@radix-ui/react-id": "workspace:*"
     "@radix-ui/react-menu": "workspace:*"
+    "@radix-ui/react-popper": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
+    "@radix-ui/react-tooltip": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
     "@repo/eslint-config": "workspace:*"
     "@repo/test-data": "workspace:*"
@@ -2123,6 +2151,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-focus-guards@workspace:packages/react/focus-guards"
   dependencies:
+    "@radix-ui/react-focus-guards": "workspace:*"
     "@repo/eslint-config": "workspace:*"
     "@repo/typescript-config": "workspace:*"
     "@types/react": "npm:^19.0.7"
@@ -2145,6 +2174,7 @@ __metadata:
   resolution: "@radix-ui/react-focus-scope@workspace:packages/react/focus-scope"
   dependencies:
     "@radix-ui/react-compose-refs": "workspace:*"
+    "@radix-ui/react-focus-scope": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-use-callback-ref": "workspace:*"
     "@repo/eslint-config": "workspace:*"
@@ -2175,6 +2205,7 @@ __metadata:
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
+    "@radix-ui/react-form": "workspace:*"
     "@radix-ui/react-id": "workspace:*"
     "@radix-ui/react-label": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
@@ -2206,7 +2237,9 @@ __metadata:
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
+    "@radix-ui/react-dialog": "workspace:*"
     "@radix-ui/react-dismissable-layer": "workspace:*"
+    "@radix-ui/react-hover-card": "workspace:*"
     "@radix-ui/react-popper": "workspace:*"
     "@radix-ui/react-portal": "workspace:*"
     "@radix-ui/react-presence": "workspace:*"
@@ -2237,6 +2270,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-id@workspace:packages/react/id"
   dependencies:
+    "@radix-ui/react-id": "workspace:*"
     "@radix-ui/react-use-layout-effect": "workspace:*"
     "@repo/eslint-config": "workspace:*"
     "@repo/typescript-config": "workspace:*"
@@ -2259,6 +2293,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-label@workspace:packages/react/label"
   dependencies:
+    "@radix-ui/react-label": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
     "@repo/eslint-config": "workspace:*"
     "@repo/typescript-config": "workspace:*"
@@ -2294,6 +2329,7 @@ __metadata:
     "@radix-ui/react-focus-guards": "workspace:*"
     "@radix-ui/react-focus-scope": "workspace:*"
     "@radix-ui/react-id": "workspace:*"
+    "@radix-ui/react-menu": "workspace:*"
     "@radix-ui/react-popper": "workspace:*"
     "@radix-ui/react-portal": "workspace:*"
     "@radix-ui/react-presence": "workspace:*"
@@ -2336,6 +2372,7 @@ __metadata:
     "@radix-ui/react-direction": "workspace:*"
     "@radix-ui/react-id": "workspace:*"
     "@radix-ui/react-menu": "workspace:*"
+    "@radix-ui/react-menubar": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-roving-focus": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
@@ -2372,6 +2409,7 @@ __metadata:
     "@radix-ui/react-direction": "workspace:*"
     "@radix-ui/react-dismissable-layer": "workspace:*"
     "@radix-ui/react-id": "workspace:*"
+    "@radix-ui/react-navigation-menu": "workspace:*"
     "@radix-ui/react-presence": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-use-callback-ref": "workspace:*"
@@ -2411,6 +2449,7 @@ __metadata:
     "@radix-ui/react-focus-guards": "workspace:*"
     "@radix-ui/react-focus-scope": "workspace:*"
     "@radix-ui/react-id": "workspace:*"
+    "@radix-ui/react-popover": "workspace:*"
     "@radix-ui/react-popper": "workspace:*"
     "@radix-ui/react-portal": "workspace:*"
     "@radix-ui/react-presence": "workspace:*"
@@ -2448,6 +2487,8 @@ __metadata:
     "@radix-ui/react-arrow": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
+    "@radix-ui/react-popper": "workspace:*"
+    "@radix-ui/react-portal": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-use-callback-ref": "workspace:*"
     "@radix-ui/react-use-layout-effect": "workspace:*"
@@ -2479,6 +2520,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-portal@workspace:packages/react/portal"
   dependencies:
+    "@radix-ui/react-portal": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-use-layout-effect": "workspace:*"
     "@repo/eslint-config": "workspace:*"
@@ -2507,6 +2549,7 @@ __metadata:
   resolution: "@radix-ui/react-presence@workspace:packages/react/presence"
   dependencies:
     "@radix-ui/react-compose-refs": "workspace:*"
+    "@radix-ui/react-presence": "workspace:*"
     "@radix-ui/react-use-layout-effect": "workspace:*"
     "@repo/eslint-config": "workspace:*"
     "@repo/typescript-config": "workspace:*"
@@ -2533,6 +2576,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-primitive@workspace:packages/react/primitive"
   dependencies:
+    "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-slot": "workspace:*"
     "@repo/eslint-config": "workspace:*"
     "@repo/typescript-config": "workspace:*"
@@ -2561,6 +2605,7 @@ __metadata:
   dependencies:
     "@radix-ui/react-context": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
+    "@radix-ui/react-progress": "workspace:*"
     "@repo/eslint-config": "workspace:*"
     "@repo/typescript-config": "workspace:*"
     "@types/react": "npm:^19.0.7"
@@ -2590,8 +2635,10 @@ __metadata:
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
     "@radix-ui/react-direction": "workspace:*"
+    "@radix-ui/react-label": "workspace:*"
     "@radix-ui/react-presence": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
+    "@radix-ui/react-radio-group": "workspace:*"
     "@radix-ui/react-roving-focus": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
     "@radix-ui/react-use-previous": "workspace:*"
@@ -2628,6 +2675,7 @@ __metadata:
     "@radix-ui/react-direction": "workspace:*"
     "@radix-ui/react-id": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
+    "@radix-ui/react-roving-focus": "workspace:*"
     "@radix-ui/react-use-callback-ref": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
     "@repo/eslint-config": "workspace:*"
@@ -2662,6 +2710,7 @@ __metadata:
     "@radix-ui/react-direction": "workspace:*"
     "@radix-ui/react-presence": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
+    "@radix-ui/react-scroll-area": "workspace:*"
     "@radix-ui/react-use-callback-ref": "workspace:*"
     "@radix-ui/react-use-layout-effect": "workspace:*"
     "@repo/eslint-config": "workspace:*"
@@ -2695,14 +2744,17 @@ __metadata:
     "@radix-ui/react-collection": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
+    "@radix-ui/react-dialog": "workspace:*"
     "@radix-ui/react-direction": "workspace:*"
     "@radix-ui/react-dismissable-layer": "workspace:*"
     "@radix-ui/react-focus-guards": "workspace:*"
     "@radix-ui/react-focus-scope": "workspace:*"
     "@radix-ui/react-id": "workspace:*"
+    "@radix-ui/react-label": "workspace:*"
     "@radix-ui/react-popper": "workspace:*"
     "@radix-ui/react-portal": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
+    "@radix-ui/react-select": "workspace:*"
     "@radix-ui/react-slot": "workspace:*"
     "@radix-ui/react-use-callback-ref": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
@@ -2738,6 +2790,7 @@ __metadata:
   resolution: "@radix-ui/react-separator@workspace:packages/react/separator"
   dependencies:
     "@radix-ui/react-primitive": "workspace:*"
+    "@radix-ui/react-separator": "workspace:*"
     "@repo/eslint-config": "workspace:*"
     "@repo/typescript-config": "workspace:*"
     "@types/react": "npm:^19.0.7"
@@ -2770,6 +2823,7 @@ __metadata:
     "@radix-ui/react-context": "workspace:*"
     "@radix-ui/react-direction": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
+    "@radix-ui/react-slider": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
     "@radix-ui/react-use-layout-effect": "workspace:*"
     "@radix-ui/react-use-previous": "workspace:*"
@@ -2802,6 +2856,7 @@ __metadata:
   resolution: "@radix-ui/react-slot@workspace:packages/react/slot"
   dependencies:
     "@radix-ui/react-compose-refs": "workspace:*"
+    "@radix-ui/react-slot": "workspace:*"
     "@repo/eslint-config": "workspace:*"
     "@repo/typescript-config": "workspace:*"
     "@types/react": "npm:^19.0.7"
@@ -2826,7 +2881,9 @@ __metadata:
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
+    "@radix-ui/react-label": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
+    "@radix-ui/react-switch": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
     "@radix-ui/react-use-previous": "workspace:*"
     "@radix-ui/react-use-size": "workspace:*"
@@ -2862,6 +2919,7 @@ __metadata:
     "@radix-ui/react-presence": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-roving-focus": "workspace:*"
+    "@radix-ui/react-tabs": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
     "@repo/eslint-config": "workspace:*"
     "@repo/typescript-config": "workspace:*"
@@ -2892,10 +2950,12 @@ __metadata:
     "@radix-ui/react-collection": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
+    "@radix-ui/react-dialog": "workspace:*"
     "@radix-ui/react-dismissable-layer": "workspace:*"
     "@radix-ui/react-portal": "workspace:*"
     "@radix-ui/react-presence": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
+    "@radix-ui/react-toast": "workspace:*"
     "@radix-ui/react-use-callback-ref": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
     "@radix-ui/react-use-layout-effect": "workspace:*"
@@ -2931,6 +2991,7 @@ __metadata:
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-roving-focus": "workspace:*"
     "@radix-ui/react-toggle": "workspace:*"
+    "@radix-ui/react-toggle-group": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
     "@repo/eslint-config": "workspace:*"
     "@repo/typescript-config": "workspace:*"
@@ -2959,6 +3020,7 @@ __metadata:
   dependencies:
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
+    "@radix-ui/react-toggle": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
     "@repo/eslint-config": "workspace:*"
     "@repo/typescript-config": "workspace:*"
@@ -2988,10 +3050,13 @@ __metadata:
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
     "@radix-ui/react-direction": "workspace:*"
+    "@radix-ui/react-dropdown-menu": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-roving-focus": "workspace:*"
     "@radix-ui/react-separator": "workspace:*"
+    "@radix-ui/react-toggle": "workspace:*"
     "@radix-ui/react-toggle-group": "workspace:*"
+    "@radix-ui/react-toolbar": "workspace:*"
     "@repo/eslint-config": "workspace:*"
     "@repo/typescript-config": "workspace:*"
     "@types/react": "npm:^19.0.7"
@@ -3020,6 +3085,7 @@ __metadata:
     "@radix-ui/primitive": "workspace:*"
     "@radix-ui/react-compose-refs": "workspace:*"
     "@radix-ui/react-context": "workspace:*"
+    "@radix-ui/react-dialog": "workspace:*"
     "@radix-ui/react-dismissable-layer": "workspace:*"
     "@radix-ui/react-id": "workspace:*"
     "@radix-ui/react-popper": "workspace:*"
@@ -3027,6 +3093,7 @@ __metadata:
     "@radix-ui/react-presence": "workspace:*"
     "@radix-ui/react-primitive": "workspace:*"
     "@radix-ui/react-slot": "workspace:*"
+    "@radix-ui/react-tooltip": "workspace:*"
     "@radix-ui/react-use-controllable-state": "workspace:*"
     "@radix-ui/react-visually-hidden": "workspace:*"
     "@repo/eslint-config": "workspace:*"
@@ -3054,6 +3121,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-use-callback-ref@workspace:packages/react/use-callback-ref"
   dependencies:
+    "@radix-ui/react-use-callback-ref": "workspace:*"
     "@repo/eslint-config": "workspace:*"
     "@repo/typescript-config": "workspace:*"
     "@types/react": "npm:^19.0.7"
@@ -3076,6 +3144,7 @@ __metadata:
   resolution: "@radix-ui/react-use-controllable-state@workspace:packages/react/use-controllable-state"
   dependencies:
     "@radix-ui/react-use-callback-ref": "workspace:*"
+    "@radix-ui/react-use-controllable-state": "workspace:*"
     "@repo/eslint-config": "workspace:*"
     "@repo/typescript-config": "workspace:*"
     "@types/react": "npm:^19.0.7"
@@ -3098,6 +3167,7 @@ __metadata:
   resolution: "@radix-ui/react-use-escape-keydown@workspace:packages/react/use-escape-keydown"
   dependencies:
     "@radix-ui/react-use-callback-ref": "workspace:*"
+    "@radix-ui/react-use-escape-keydown": "workspace:*"
     "@repo/eslint-config": "workspace:*"
     "@repo/typescript-config": "workspace:*"
     "@types/react": "npm:^19.0.7"
@@ -3119,6 +3189,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-use-layout-effect@workspace:packages/react/use-layout-effect"
   dependencies:
+    "@radix-ui/react-use-layout-effect": "workspace:*"
     "@repo/eslint-config": "workspace:*"
     "@repo/typescript-config": "workspace:*"
     "@types/react": "npm:^19.0.7"
@@ -3140,6 +3211,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-use-previous@workspace:packages/react/use-previous"
   dependencies:
+    "@radix-ui/react-use-previous": "workspace:*"
     "@repo/eslint-config": "workspace:*"
     "@repo/typescript-config": "workspace:*"
     "@types/react": "npm:^19.0.7"
@@ -3161,6 +3233,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@radix-ui/react-use-rect@workspace:packages/react/use-rect"
   dependencies:
+    "@radix-ui/react-use-rect": "workspace:*"
     "@radix-ui/rect": "workspace:*"
     "@repo/eslint-config": "workspace:*"
     "@repo/typescript-config": "workspace:*"
@@ -3184,6 +3257,7 @@ __metadata:
   resolution: "@radix-ui/react-use-size@workspace:packages/react/use-size"
   dependencies:
     "@radix-ui/react-use-layout-effect": "workspace:*"
+    "@radix-ui/react-use-size": "workspace:*"
     "@repo/eslint-config": "workspace:*"
     "@repo/typescript-config": "workspace:*"
     "@types/react": "npm:^19.0.7"
@@ -3207,6 +3281,15 @@ __metadata:
   resolution: "@radix-ui/react-visually-hidden@workspace:packages/react/visually-hidden"
   dependencies:
     "@radix-ui/react-primitive": "workspace:*"
+    "@radix-ui/react-visually-hidden": "workspace:*"
+    "@repo/eslint-config": "workspace:*"
+    "@repo/typescript-config": "workspace:*"
+    "@types/react": "npm:^19.0.7"
+    "@types/react-dom": "npm:^19.0.3"
+    eslint: "npm:^9.18.0"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
+    typescript: "npm:^5.7.3"
   peerDependencies:
     "@types/react": "*"
     "@types/react-dom": "*"

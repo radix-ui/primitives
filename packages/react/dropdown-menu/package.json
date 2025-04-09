@@ -41,6 +41,10 @@
     "@radix-ui/react-use-controllable-state": "workspace:*"
   },
   "devDependencies": {
+    "@radix-ui/react-dialog": "workspace:*",
+    "@radix-ui/react-dropdown-menu": "workspace:*",
+    "@radix-ui/react-popper": "workspace:*",
+    "@radix-ui/react-tooltip": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/test-data": "workspace:*",
     "@repo/typescript-config": "workspace:*",
