@@ -16,7 +16,7 @@ export const Styled = () => {
     'Always Show Toolbar in Fullscreen',
     'Always Show Full URLs',
   ];
-  const [checkedSelection, setCheckedSelection] = React.useState<string[]>([checkOptions[1]]);
+  const [checkedSelection, setCheckedSelection] = React.useState([checkOptions[1]!]);
 
   const radioOptions = ['Andy', 'Benoît', 'Colm', 'Jenna', 'Pedro'];
   const [radioSelection, setRadioSelection] = React.useState(radioOptions[1]);

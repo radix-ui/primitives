@@ -182,7 +182,7 @@ const Slider = React.forwardRef<SliderElement, SliderProps>(
                   const isSkipKey = isPageKey || (event.shiftKey && ARROW_KEYS.includes(event.key));
                   const multiplier = isSkipKey ? 10 : 1;
                   const atIndex = valueIndexToChangeRef.current;
-                  const value = values[atIndex];
+                  const value = values[atIndex]!;
                   const stepInDirection = step * multiplier * stepDirection;
                   updateValues(value + stepInDirection, atIndex, { commit: true });
                 }
@@ -725,7 +725,7 @@ function getThumbInBoundsOffset(width: number, left: number, direction: number) 
  * getStepsBetweenValues([10, 11, 20]);
  */
 function getStepsBetweenValues(values: number[]) {
-  return values.slice(0, -1).map((value, index) => values[index + 1] - value);
+  return values.slice(0, -1).map((value, index) => values[index + 1]! - value);
 }
 
 /**

@@ -101,14 +101,14 @@ function SourceChanger({
   sources,
   children,
 }: {
-  sources: string[];
+  sources: [string, ...string[]];
   children: (src: string) => React.ReactElement;
 }) {
   const [src, setSrc] = React.useState(sources[0]);
   React.useEffect(() => {
     const interval = setInterval(() => {
       const nextIndex = (sources.indexOf(src) + 1) % sources.length;
-      setSrc(sources[nextIndex]);
+      setSrc(sources[nextIndex]!);
     }, 1000);
     return () => clearInterval(interval);
   }, [sources, src]);
