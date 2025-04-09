@@ -1,7 +1,7 @@
 import { axe } from 'vitest-axe';
 import type { RenderResult } from '@testing-library/react';
 import { cleanup, render } from '@testing-library/react';
-import { Arrow } from '@radix-ui/react-arrow';
+import { Arrow } from './arrow';
 import { afterEach, describe, it, beforeEach, expect } from 'vitest';
 
 const WIDTH = 40;

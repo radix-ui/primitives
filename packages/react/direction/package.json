@@ -34,7 +34,6 @@
     "build": "radix-build"
   },
   "devDependencies": {
-    "@radix-ui/react-direction": "workspace:*",
     "@repo/builder": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",

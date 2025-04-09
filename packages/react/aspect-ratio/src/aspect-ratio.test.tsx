@@ -1,7 +1,7 @@
 import { axe } from 'vitest-axe';
 import type { RenderResult } from '@testing-library/react';
 import { cleanup, render } from '@testing-library/react';
-import { AspectRatio } from '@radix-ui/react-aspect-ratio';
+import { AspectRatio } from './aspect-ratio';
 import { afterEach, describe, it, beforeEach, expect } from 'vitest';
 
 const RATIO = 1 / 2;

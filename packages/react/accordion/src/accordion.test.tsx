@@ -2,7 +2,7 @@ import * as React from 'react';
 import { axe } from 'vitest-axe';
 import type { RenderResult } from '@testing-library/react';
 import { cleanup, render, fireEvent } from '@testing-library/react';
-import * as Accordion from '@radix-ui/react-accordion';
+import * as Accordion from './accordion';
 import type { Mock } from 'vitest';
 import { afterEach, describe, it, beforeEach, vi, expect } from 'vitest';
 

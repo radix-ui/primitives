@@ -44,7 +44,6 @@
     "@radix-ui/react-use-controllable-state": "workspace:*"
   },
   "devDependencies": {
-    "@radix-ui/react-tabs": "workspace:*",
     "@repo/builder": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",

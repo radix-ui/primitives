@@ -1,7 +1,7 @@
 import { axe } from 'vitest-axe';
 import type { RenderResult } from '@testing-library/react';
 import { cleanup, render, waitFor } from '@testing-library/react';
-import * as Avatar from '@radix-ui/react-avatar';
+import * as Avatar from './avatar';
 import * as React from 'react';
 import { renderToString } from 'react-dom/server';
 import { afterEach, describe, it, beforeAll, afterAll, beforeEach, vi, expect } from 'vitest';

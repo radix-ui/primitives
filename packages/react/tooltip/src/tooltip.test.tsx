@@ -1,5 +1,5 @@
 import { cleanup, render, screen, waitFor } from '@testing-library/react';
-import * as Tooltip from '@radix-ui/react-tooltip';
+import * as Tooltip from './tooltip';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, it, expect } from 'vitest';
 

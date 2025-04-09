@@ -46,7 +46,6 @@
     }
   },
   "devDependencies": {
-    "@radix-ui/react-use-size": "workspace:*",
     "@repo/builder": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",

@@ -51,7 +51,6 @@
     "react-remove-scroll": "^2.6.3"
   },
   "devDependencies": {
-    "@radix-ui/react-popover": "workspace:*",
     "@repo/builder": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",

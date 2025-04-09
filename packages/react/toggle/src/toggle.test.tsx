@@ -1,6 +1,6 @@
 import type { RenderResult } from '@testing-library/react';
 import { cleanup, fireEvent, render } from '@testing-library/react';
-import * as Toggle from '@radix-ui/react-toggle';
+import * as Toggle from './toggle';
 import { axe } from 'vitest-axe';
 import { afterEach, describe, it, beforeEach, vi, expect } from 'vitest';
 

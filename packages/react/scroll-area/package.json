@@ -45,7 +45,6 @@
     "@radix-ui/react-use-layout-effect": "workspace:*"
   },
   "devDependencies": {
-    "@radix-ui/react-scroll-area": "workspace:*",
     "@repo/builder": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
