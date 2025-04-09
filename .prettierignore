@@ -3,3 +3,12 @@ node_modules
 .yarn
 dist
 storybook-static
+.pnp
+.pnp.js
+coverage
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+*.log*
+.DS_Store
+*.pem

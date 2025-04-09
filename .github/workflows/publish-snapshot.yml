@@ -17,23 +17,29 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
           registry-url: 'https://registry.npmjs.org'
+          cache: 'pnpm'
 
       - name: Install dependencies
-        run: yarn
+        run: pnpm install --frozen-lockfile
 
       - name: Build packages
-        run: yarn build
+        run: pnpm build
 
       - name: Write .npmrc
         run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTOMATION_FROM_CHANCE }}" > .npmrc
 
       - name: Update snapshot version
-        run: yarn changeset version --snapshot
+        run: pnpm run bump:next
 
       - name: Commit changes
         run: |
@@ -43,6 +49,6 @@ jobs:
           git commit -m "Update snapshot version"
 
       - name: Publish snapshot
-        run: yarn workspaces foreach -pvW --include @radix-ui/\\* --include radix-ui npm publish --tolerate-republish --access public --tag next
+        run: pnpm run release:next
         env:
           YARN_NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTOMATION_FROM_CHANCE }}

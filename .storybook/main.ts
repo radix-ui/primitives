@@ -1,8 +1,75 @@
 import type { StorybookConfig } from '@storybook/react-webpack5';
 import path from 'path';
 
+// TODO: figure out why glob causes dev server to hang
+const packageMap = {
+  // core packages
+  '@radix-ui/number': 'core/number',
+  '@radix-ui/primitive': 'core/primitive',
+  '@radix-ui/rect': 'core/rect',
+
+  // react packages
+  'radix-ui': 'react/radix-ui',
+  '@radix-ui/react-accessible-icon': 'react/accessible-icon',
+  '@radix-ui/react-accordion': 'react/accordion',
+  '@radix-ui/react-alert-dialog': 'react/alert-dialog',
+  '@radix-ui/react-announce': 'react/announce',
+  '@radix-ui/react-arrow': 'react/arrow',
+  '@radix-ui/react-aspect-ratio': 'react/aspect-ratio',
+  '@radix-ui/react-avatar': 'react/avatar',
+  '@radix-ui/react-checkbox': 'react/checkbox',
+  '@radix-ui/react-collapsible': 'react/collapsible',
+  '@radix-ui/react-collection': 'react/collection',
+  '@radix-ui/react-compose-refs': 'react/compose-refs',
+  '@radix-ui/react-context': 'react/context',
+  '@radix-ui/react-context-menu': 'react/context-menu',
+  '@radix-ui/react-dialog': 'react/dialog',
+  '@radix-ui/react-direction': 'react/direction',
+  '@radix-ui/react-dismissable-layer': 'react/dismissable-layer',
+  '@radix-ui/react-dropdown-menu': 'react/dropdown-menu',
+  '@radix-ui/react-focus-guards': 'react/focus-guards',
+  '@radix-ui/react-focus-scope': 'react/focus-scope',
+  '@radix-ui/react-form': 'react/form',
+  '@radix-ui/react-hover-card': 'react/hover-card',
+  '@radix-ui/react-id': 'react/id',
+  '@radix-ui/react-label': 'react/label',
+  '@radix-ui/react-menu': 'react/menu',
+  '@radix-ui/react-menubar': 'react/menubar',
+  '@radix-ui/react-navigation-menu': 'react/navigation-menu',
+  '@radix-ui/react-popover': 'react/popover',
+  '@radix-ui/react-popper': 'react/popper',
+  '@radix-ui/react-portal': 'react/portal',
+  '@radix-ui/react-presence': 'react/presence',
+  '@radix-ui/react-primitive': 'react/primitive',
+  '@radix-ui/react-progress': 'react/progress',
+  '@radix-ui/react-radio-group': 'react/radio-group',
+  '@radix-ui/react-roving-focus': 'react/roving-focus',
+  '@radix-ui/react-scroll-area': 'react/scroll-area',
+  '@radix-ui/react-select': 'react/select',
+  '@radix-ui/react-separator': 'react/separator',
+  '@radix-ui/react-slider': 'react/slider',
+  '@radix-ui/react-slot': 'react/slot',
+  '@radix-ui/react-switch': 'react/switch',
+  '@radix-ui/react-tabs': 'react/tabs',
+  '@radix-ui/react-toast': 'react/toast',
+  '@radix-ui/react-toggle': 'react/toggle',
+  '@radix-ui/react-toggle-group': 'react/toggle-group',
+  '@radix-ui/react-toolbar': 'react/toolbar',
+  '@radix-ui/react-tooltip': 'react/tooltip',
+  '@radix-ui/react-use-callback-ref': 'react/use-callback-ref',
+  '@radix-ui/react-use-controllable-state': 'react/use-controllable-state',
+  '@radix-ui/react-use-escape-keydown': 'react/use-escape-keydown',
+  '@radix-ui/react-use-layout-effect': 'react/use-layout-effect',
+  '@radix-ui/react-use-previous': 'react/use-previous',
+  '@radix-ui/react-use-rect': 'react/use-rect',
+  '@radix-ui/react-use-size': 'react/use-size',
+  '@radix-ui/react-visually-hidden': 'react/visually-hidden',
+};
+
 const config: StorybookConfig = {
-  stories: ['../packages/core/**/*.stories.tsx', '../packages/react/**/*.stories.tsx'],
+  stories: Object.values(packageMap).map(
+    (packagePath) => `../packages/${packagePath}/src/*.stories.tsx`
+  ),
 
   addons: [
     getAbsolutePath('@storybook/addon-essentials'),
@@ -19,7 +86,7 @@ const config: StorybookConfig = {
     },
   },
 
-  swc: (config) => ({
+  swc: (config: any) => ({
     ...config,
     jsc: {
       ...config?.jsc,
@@ -41,7 +108,7 @@ const config: StorybookConfig = {
       ...config.resolve,
       alias: {
         ...config.resolve?.alias,
-        ...convertRadixPackagesToWebpackAliases(),
+        // ...convertRadixPackagesToWebpackAliases(),
       },
     },
   }),
@@ -55,77 +122,4 @@ export default config;
  */
 function getAbsolutePath(value: string): any {
   return path.dirname(require.resolve(path.join(value, 'package.json')));
-}
-
-function convertRadixPackagesToWebpackAliases() {
-  const rootDir = path.resolve(__dirname, '../');
-  const paths = Object.entries({
-    // core packages
-    '@radix-ui/number': ['./packages/core/number/src'],
-    '@radix-ui/primitive': ['./packages/core/primitive/src'],
-    '@radix-ui/rect': ['./packages/core/rect/src'],
-
-    // react packages
-    'radix-ui': ['./packages/react/radix-ui/src'],
-    '@radix-ui/react-accessible-icon': ['./packages/react/accessible-icon/src'],
-    '@radix-ui/react-accordion': ['./packages/react/accordion/src'],
-    '@radix-ui/react-alert-dialog': ['./packages/react/alert-dialog/src'],
-    '@radix-ui/react-announce': ['./packages/react/announce/src'],
-    '@radix-ui/react-arrow': ['./packages/react/arrow/src'],
-    '@radix-ui/react-aspect-ratio': ['./packages/react/aspect-ratio/src'],
-    '@radix-ui/react-avatar': ['./packages/react/avatar/src'],
-    '@radix-ui/react-checkbox': ['./packages/react/checkbox/src'],
-    '@radix-ui/react-collapsible': ['./packages/react/collapsible/src'],
-    '@radix-ui/react-collection': ['./packages/react/collection/src'],
-    '@radix-ui/react-compose-refs': ['./packages/react/compose-refs/src'],
-    '@radix-ui/react-context': ['./packages/react/context/src'],
-    '@radix-ui/react-context-menu': ['./packages/react/context-menu/src'],
-    '@radix-ui/react-dialog': ['./packages/react/dialog/src'],
-    '@radix-ui/react-direction': ['./packages/react/direction/src'],
-    '@radix-ui/react-dismissable-layer': ['./packages/react/dismissable-layer/src'],
-    '@radix-ui/react-dropdown-menu': ['./packages/react/dropdown-menu/src'],
-    '@radix-ui/react-focus-guards': ['./packages/react/focus-guards/src'],
-    '@radix-ui/react-focus-scope': ['./packages/react/focus-scope/src'],
-    '@radix-ui/react-form': ['./packages/react/form/src'],
-    '@radix-ui/react-hover-card': ['./packages/react/hover-card/src'],
-    '@radix-ui/react-id': ['./packages/react/id/src'],
-    '@radix-ui/react-label': ['./packages/react/label/src'],
-    '@radix-ui/react-menu': ['./packages/react/menu/src'],
-    '@radix-ui/react-menubar': ['./packages/react/menubar/src'],
-    '@radix-ui/react-navigation-menu': ['./packages/react/navigation-menu/src'],
-    '@radix-ui/react-popover': ['./packages/react/popover/src'],
-    '@radix-ui/react-popper': ['./packages/react/popper/src'],
-    '@radix-ui/react-portal': ['./packages/react/portal/src'],
-    '@radix-ui/react-presence': ['./packages/react/presence/src'],
-    '@radix-ui/react-primitive': ['./packages/react/primitive/src'],
-    '@radix-ui/react-progress': ['./packages/react/progress/src'],
-    '@radix-ui/react-radio-group': ['./packages/react/radio-group/src'],
-    '@radix-ui/react-roving-focus': ['./packages/react/roving-focus/src'],
-    '@radix-ui/react-scroll-area': ['./packages/react/scroll-area/src'],
-    '@radix-ui/react-select': ['./packages/react/select/src'],
-    '@radix-ui/react-separator': ['./packages/react/separator/src'],
-    '@radix-ui/react-slider': ['./packages/react/slider/src'],
-    '@radix-ui/react-slot': ['./packages/react/slot/src'],
-    '@radix-ui/react-switch': ['./packages/react/switch/src'],
-    '@radix-ui/react-tabs': ['./packages/react/tabs/src'],
-    '@radix-ui/react-toast': ['./packages/react/toast/src'],
-    '@radix-ui/react-toggle': ['./packages/react/toggle/src'],
-    '@radix-ui/react-toggle-group': ['./packages/react/toggle-group/src'],
-    '@radix-ui/react-toolbar': ['./packages/react/toolbar/src'],
-    '@radix-ui/react-tooltip': ['./packages/react/tooltip/src'],
-    '@radix-ui/react-use-callback-ref': ['./packages/react/use-callback-ref/src'],
-    '@radix-ui/react-use-controllable-state': ['./packages/react/use-controllable-state/src'],
-    '@radix-ui/react-use-escape-keydown': ['./packages/react/use-escape-keydown/src'],
-    '@radix-ui/react-use-layout-effect': ['./packages/react/use-layout-effect/src'],
-    '@radix-ui/react-use-previous': ['./packages/react/use-previous/src'],
-    '@radix-ui/react-use-rect': ['./packages/react/use-rect/src'],
-    '@radix-ui/react-use-size': ['./packages/react/use-size/src'],
-    '@radix-ui/react-visually-hidden': ['./packages/react/visually-hidden/src'],
-  });
-
-  return paths.reduce((aliases, [realPath, mappedPath]) => {
-    aliases[realPath] = path.join(rootDir, mappedPath[0]);
-    console.log(aliases[realPath]);
-    return aliases;
-  }, {});
 }

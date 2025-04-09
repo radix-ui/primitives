@@ -15,25 +15,25 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Set Node version
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
-      - uses: actions/cache@v3
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+
       - name: Install dependencies
-        if: steps.yarn-cache-dir-path.outputs.cache-hit != 'true'
-        run: yarn
+        run: pnpm install --frozen-lockfile
+
       - name: Lint
-        run: yarn lint
-      - name: Typecheck
-        run: yarn types:check
+        run: pnpm lint
+
       - name: Run build
-        run: yarn build
+        run: pnpm build
+
       - name: Run tests
-        run: yarn test:ci
+        run: pnpm test:ci

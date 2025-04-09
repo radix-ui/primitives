@@ -24,4 +24,5 @@ export const configs = [
     },
   },
   ...storybook.configs['flat/recommended'],
+  { ignores: ['**/dist/**'] },
 ];

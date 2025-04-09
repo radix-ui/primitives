@@ -68,10 +68,10 @@ git pull upstream main
 node -v
 ```
 
-5. Install dependencies with [yarn](https://yarnpkg.com):
+1. Install dependencies with [pnpm](https://pnpm.io):
 
 ```sh
-yarn install
+pnpm install
 ```
 
 6. Create a new branch related to your PR:
@@ -92,20 +92,20 @@ git push -u origin HEAD
 
 ## Working locally
 
-The repo is managed with Yarn Workspaces.
+The repo is managed with pnpm workspaces.
 
 ### Development
 
 ```bash
 # install dependencies
-yarn install
+pnpm install
 
 # start Storybook and see examples in the browser
-yarn dev
+pnpm dev
 ```
 
-Make your changes and check that they resolve the problem with an example in Storybook. We also suggest adding tests to support your change, and then run `yarn test` to make sure nothing is broken.
+Make your changes and check that they resolve the problem with an example in Storybook. We also suggest adding tests to support your change, and then run `pnpm test` to make sure nothing is broken.
 
-You also need to inform Changesets that a particular package has changed for proper versioning. Run `yarn changeset` to mark the appropriate type of change for those packages, then commit the resulting Changeset files.
+You also need to inform Changesets that a particular package has changed for proper versioning. Run `pnpm changeset` to mark the appropriate type of change for those packages, then commit the resulting Changeset files.
 
-Lastly, run `yarn build` to ensure that the build runs successfully before submitting the pull request.
+Lastly, run `pnpm build` to ensure that the build runs successfully before submitting the pull request.
