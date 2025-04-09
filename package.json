@@ -10,7 +10,7 @@
   ],
   "scripts": {
     "lint": "yarn workspaces foreach -pvW --exclude primitives run lint",
-    "types:check": "tsc --skipLibCheck --noEmit",
+    "types:check": "yarn workspaces foreach -pvW --exclude primitives run typecheck",
     "test": "vitest",
     "test:ci": "yarn types:check && vitest run && yarn cypress:ci",
     "storybook": "BROWSER=none storybook dev -p 9009",
@@ -92,8 +92,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "pretty-quick --staged && lint-staged",
-      "pre-push": "yarn types:check"
+      "pre-commit": "pretty-quick --staged && lint-staged"
     }
   },
   "lint-staged": {
