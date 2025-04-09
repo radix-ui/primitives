@@ -102,6 +102,7 @@
     "@radix-ui/react-visually-hidden": "workspace:*"
   },
   "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/react": "^19.0.7",
     "@types/react-dom": "^19.0.3",
