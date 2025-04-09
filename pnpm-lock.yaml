@@ -27,28 +27,28 @@ importers:
         specifier: ^3.0.0
         version: 3.0.0
       '@storybook/addon-essentials':
-        specifier: ^8.5.0
+        specifier: ^8.6.12
         version: 8.6.12(@types/react@19.1.0)(storybook@8.6.12(prettier@3.5.3))
       '@storybook/addon-storysource':
-        specifier: ^8.5.0
+        specifier: ^8.6.12
         version: 8.6.12(storybook@8.6.12(prettier@3.5.3))
       '@storybook/addon-webpack5-compiler-swc':
         specifier: ^2.0.0
         version: 2.1.0(@swc/helpers@0.5.15)(webpack@5.99.4(@swc/core@1.11.18(@swc/helpers@0.5.15))(esbuild@0.24.2))
       '@storybook/manager-api':
-        specifier: ^8.5.0
+        specifier: ^8.6.12
         version: 8.6.12(storybook@8.6.12(prettier@3.5.3))
       '@storybook/react':
-        specifier: ^8.5.0
+        specifier: ^8.6.12
         version: 8.6.12(@storybook/test@8.6.12(storybook@8.6.12(prettier@3.5.3)))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(storybook@8.6.12(prettier@3.5.3))(typescript@5.8.3)
       '@storybook/react-webpack5':
-        specifier: ^8.5.0
+        specifier: ^8.6.12
         version: 8.6.12(@storybook/test@8.6.12(storybook@8.6.12(prettier@3.5.3)))(@swc/core@1.11.18(@swc/helpers@0.5.15))(esbuild@0.24.2)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(storybook@8.6.12(prettier@3.5.3))(typescript@5.8.3)
       '@storybook/test':
-        specifier: ^8.5.0
+        specifier: ^8.6.12
         version: 8.6.12(storybook@8.6.12(prettier@3.5.3))
       '@storybook/theming':
-        specifier: ^8.5.0
+        specifier: ^8.6.12
         version: 8.6.12(storybook@8.6.12(prettier@3.5.3))
       '@testing-library/cypress':
         specifier: ^10.0.3
@@ -135,7 +135,7 @@ importers:
         specifier: 2.0.3
         version: 2.0.3
       storybook:
-        specifier: ^8.5.0
+        specifier: ^8.6.12
         version: 8.6.12(prettier@3.5.3)
       tsup:
         specifier: ^8.3.6
