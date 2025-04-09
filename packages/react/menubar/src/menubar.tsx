@@ -682,7 +682,7 @@ MenubarSubContent.displayName = SUB_CONTENT_NAME;
  * Example: `wrapArray(['a', 'b', 'c', 'd'], 2) === ['c', 'd', 'a', 'b']`
  */
 function wrapArray<T>(array: T[], startIndex: number) {
-  return array.map((_, index) => array[(startIndex + index) % array.length]);
+  return array.map<T>((_, index) => array[(startIndex + index) % array.length]!);
 }
 
 const Root = Menubar;

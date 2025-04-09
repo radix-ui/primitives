@@ -1252,7 +1252,7 @@ function focusFirst(candidates: HTMLElement[]) {
  * Example: `wrapArray(['a', 'b', 'c', 'd'], 2) === ['c', 'd', 'a', 'b']`
  */
 function wrapArray<T>(array: T[], startIndex: number) {
-  return array.map((_, index) => array[(startIndex + index) % array.length]);
+  return array.map<T>((_, index) => array[(startIndex + index) % array.length]!);
 }
 
 /**
@@ -1274,7 +1274,7 @@ function wrapArray<T>(array: T[], startIndex: number) {
  */
 function getNextMatch(values: string[], search: string, currentMatch?: string) {
   const isRepeated = search.length > 1 && Array.from(search).every((char) => char === search[0]);
-  const normalizedSearch = isRepeated ? search[0] : search;
+  const normalizedSearch = isRepeated ? search[0]! : search;
   const currentMatchIndex = currentMatch ? values.indexOf(currentMatch) : -1;
   let wrappedValues = wrapArray(values, Math.max(currentMatchIndex, 0));
   const excludeCurrentMatch = normalizedSearch.length === 1;
@@ -1296,10 +1296,12 @@ function isPointInPolygon(point: Point, polygon: Polygon) {
   const { x, y } = point;
   let inside = false;
   for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
-    const xi = polygon[i].x;
-    const yi = polygon[i].y;
-    const xj = polygon[j].x;
-    const yj = polygon[j].y;
+    const ii = polygon[i]!;
+    const jj = polygon[j]!;
+    const xi = ii.x;
+    const yi = ii.y;
+    const xj = jj.x;
+    const yj = jj.y;
 
     // prettier-ignore
     const intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);

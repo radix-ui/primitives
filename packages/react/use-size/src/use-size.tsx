@@ -22,7 +22,7 @@ function useSize(element: HTMLElement | null) {
           return;
         }
 
-        const entry = entries[0];
+        const entry = entries[0]!;
         let width: number;
         let height: number;
 

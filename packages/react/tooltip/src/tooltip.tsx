@@ -674,10 +674,12 @@ function isPointInPolygon(point: Point, polygon: Polygon) {
   const { x, y } = point;
   let inside = false;
   for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
-    const xi = polygon[i].x;
-    const yi = polygon[i].y;
-    const xj = polygon[j].x;
-    const yj = polygon[j].y;
+    const ii = polygon[i]!;
+    const jj = polygon[j]!;
+    const xi = ii.x;
+    const yi = ii.y;
+    const xj = jj.x;
+    const yj = jj.y;
 
     // prettier-ignore
     const intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
@@ -707,10 +709,10 @@ function getHullPresorted<P extends Point>(points: Readonly<Array<P>>): Array<P>
 
   const upperHull: Array<P> = [];
   for (let i = 0; i < points.length; i++) {
-    const p = points[i];
+    const p = points[i]!;
     while (upperHull.length >= 2) {
-      const q = upperHull[upperHull.length - 1];
-      const r = upperHull[upperHull.length - 2];
+      const q = upperHull[upperHull.length - 1]!;
+      const r = upperHull[upperHull.length - 2]!;
       if ((q.x - r.x) * (p.y - r.y) >= (q.y - r.y) * (p.x - r.x)) upperHull.pop();
       else break;
     }
@@ -720,10 +722,10 @@ function getHullPresorted<P extends Point>(points: Readonly<Array<P>>): Array<P>
 
   const lowerHull: Array<P> = [];
   for (let i = points.length - 1; i >= 0; i--) {
-    const p = points[i];
+    const p = points[i]!;
     while (lowerHull.length >= 2) {
-      const q = lowerHull[lowerHull.length - 1];
-      const r = lowerHull[lowerHull.length - 2];
+      const q = lowerHull[lowerHull.length - 1]!;
+      const r = lowerHull[lowerHull.length - 2]!;
       if ((q.x - r.x) * (p.y - r.y) >= (q.y - r.y) * (p.x - r.x)) lowerHull.pop();
       else break;
     }
@@ -734,8 +736,8 @@ function getHullPresorted<P extends Point>(points: Readonly<Array<P>>): Array<P>
   if (
     upperHull.length === 1 &&
     lowerHull.length === 1 &&
-    upperHull[0].x === lowerHull[0].x &&
-    upperHull[0].y === lowerHull[0].y
+    upperHull[0]!.x === lowerHull[0]!.x &&
+    upperHull[0]!.y === lowerHull[0]!.y
   ) {
     return upperHull;
   } else {

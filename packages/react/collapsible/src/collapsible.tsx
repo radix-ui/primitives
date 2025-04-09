@@ -188,8 +188,8 @@ const CollapsibleContentImpl = React.forwardRef<
 
       // kick off any animations/transitions that were originally set up if it isn't the initial mount
       if (!isMountAnimationPreventedRef.current) {
-        node.style.transitionDuration = originalStylesRef.current.transitionDuration;
-        node.style.animationName = originalStylesRef.current.animationName;
+        node.style.transitionDuration = originalStylesRef.current.transitionDuration!;
+        node.style.animationName = originalStylesRef.current.animationName!;
       }
 
       setIsPresent(present);

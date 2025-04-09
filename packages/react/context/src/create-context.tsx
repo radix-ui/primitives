@@ -103,7 +103,7 @@ function createContextScope(scopeName: string, createContextScopeDeps: CreateSco
  * composeContextScopes
  * -----------------------------------------------------------------------------------------------*/
 
-function composeContextScopes(...scopes: CreateScope[]) {
+function composeContextScopes(...scopes: [CreateScope, ...CreateScope[]]): CreateScope {
   const baseScope = scopes[0];
   if (scopes.length === 1) return baseScope;
 
