@@ -117,7 +117,9 @@ interface CheckboxTriggerProps
   extends Omit<
     React.ComponentPropsWithoutRef<typeof Primitive.button>,
     keyof CheckboxProviderProps
-  > {}
+  > {
+  children?: React.ReactNode;
+}
 
 const CheckboxTrigger = React.forwardRef<HTMLButtonElement, CheckboxTriggerProps>(
   (
