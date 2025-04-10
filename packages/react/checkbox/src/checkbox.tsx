@@ -102,7 +102,7 @@ const Checkbox = React.forwardRef<CheckboxElement, CheckboxProps>(
           })}
         />
         {isFormControl && (
-          <BubbleInput
+          <CheckboxBubbleInput
             control={button}
             bubbles={!hasConsumerStoppedPropagationRef.current}
             name={name}
@@ -161,56 +161,81 @@ const CheckboxIndicator = React.forwardRef<CheckboxIndicatorElement, CheckboxInd
 
 CheckboxIndicator.displayName = INDICATOR_NAME;
 
-/* ---------------------------------------------------------------------------------------------- */
+/* -------------------------------------------------------------------------------------------------
+ * CheckboxBubbleInput
+ * -----------------------------------------------------------------------------------------------*/
 
-type InputProps = React.ComponentPropsWithoutRef<'input'>;
-interface BubbleInputProps extends Omit<InputProps, 'checked'> {
+const BUBBLE_INPUT_NAME = 'CheckboxBubbleInput';
+
+type InputProps = React.ComponentPropsWithoutRef<typeof Primitive.input>;
+interface CheckboxBubbleInputProps extends Omit<InputProps, 'checked'> {
   checked: CheckedState;
   control: HTMLElement | null;
   bubbles: boolean;
 }
 
-const BubbleInput = (props: BubbleInputProps) => {
-  const { control, checked, bubbles = true, defaultChecked, ...inputProps } = props;
-  const ref = React.useRef<HTMLInputElement>(null);
-  const prevChecked = usePrevious(checked);
-  const controlSize = useSize(control);
+const CheckboxBubbleInput = React.forwardRef<HTMLInputElement, CheckboxBubbleInputProps>(
+  (
+    {
+      __scopeCheckbox,
+      control,
+      checked,
+      bubbles = true,
+      defaultChecked,
+      ...props
+    }: ScopedProps<CheckboxBubbleInputProps>,
+    forwardedRef
+  ) => {
+    const ref = React.useRef<HTMLInputElement>(null);
+    const composedRefs = useComposedRefs(ref, forwardedRef);
+    const prevChecked = usePrevious(checked);
+    const controlSize = useSize(control);
 
-  // Bubble checked change to parents (e.g form change event)
-  React.useEffect(() => {
-    const input = ref.current!;
-    const inputProto = window.HTMLInputElement.prototype;
-    const descriptor = Object.getOwnPropertyDescriptor(inputProto, 'checked') as PropertyDescriptor;
-    const setChecked = descriptor.set;
+    // Bubble checked change to parents (e.g form change event)
+    React.useEffect(() => {
+      const input = ref.current;
+      if (!input) return;
 
-    if (prevChecked !== checked && setChecked) {
-      const event = new Event('click', { bubbles });
-      input.indeterminate = isIndeterminate(checked);
-      setChecked.call(input, isIndeterminate(checked) ? false : checked);
-      input.dispatchEvent(event);
-    }
-  }, [prevChecked, checked, bubbles]);
+      const inputProto = window.HTMLInputElement.prototype;
+      const descriptor = Object.getOwnPropertyDescriptor(
+        inputProto,
+        'checked'
+      ) as PropertyDescriptor;
+      const setChecked = descriptor.set;
 
-  const defaultCheckedRef = React.useRef(isIndeterminate(checked) ? false : checked);
-  return (
-    <input
-      type="checkbox"
-      aria-hidden
-      defaultChecked={defaultChecked ?? defaultCheckedRef.current}
-      {...inputProps}
-      tabIndex={-1}
-      ref={ref}
-      style={{
-        ...props.style,
-        ...controlSize,
-        position: 'absolute',
-        pointerEvents: 'none',
-        opacity: 0,
-        margin: 0,
-      }}
-    />
-  );
-};
+      if (prevChecked !== checked && setChecked) {
+        const event = new Event('click', { bubbles });
+        input.indeterminate = isIndeterminate(checked);
+        setChecked.call(input, isIndeterminate(checked) ? false : checked);
+        input.dispatchEvent(event);
+      }
+    }, [prevChecked, checked, bubbles]);
+
+    const defaultCheckedRef = React.useRef(isIndeterminate(checked) ? false : checked);
+    return (
+      <Primitive.input
+        type="checkbox"
+        aria-hidden
+        defaultChecked={defaultChecked ?? defaultCheckedRef.current}
+        {...props}
+        tabIndex={-1}
+        ref={composedRefs}
+        style={{
+          ...props.style,
+          ...controlSize,
+          position: 'absolute',
+          pointerEvents: 'none',
+          opacity: 0,
+          margin: 0,
+        }}
+      />
+    );
+  }
+);
+
+CheckboxBubbleInput.displayName = BUBBLE_INPUT_NAME;
+
+/* ---------------------------------------------------------------------------------------------- */
 
 function isIndeterminate(checked?: CheckedState): checked is 'indeterminate' {
   return checked === 'indeterminate';
