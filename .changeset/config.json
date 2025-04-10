@@ -11,5 +11,5 @@
     "useCalculatedVersion": true,
     "prereleaseTemplate": "rc.{timestamp}"
   },
-  "ignore": []
+  "ignore": ["@repo/storybook", "@repo/ssr-testing"]
 }
