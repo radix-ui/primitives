@@ -33,7 +33,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build packages
-        run: pnpm build
+        run: pnpm run build
 
       - name: Write .npmrc
         run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTOMATION_FROM_CHANCE }}" > .npmrc
