@@ -447,8 +447,9 @@ const ContextMenuSub: React.FC<ContextMenuSubProps> = (props: ScopedProps<Contex
   const menuScope = useMenuScope(__scopeContextMenu);
   const [open, setOpen] = useControllableState({
     prop: openProp,
-    defaultProp: defaultOpen,
+    defaultProp: defaultOpen ?? false,
     onChange: onOpenChange,
+    caller: SUB_NAME,
   });
 
   return (

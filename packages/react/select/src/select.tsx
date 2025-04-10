@@ -57,7 +57,7 @@ type SelectContextValue = {
   valueNodeHasChildren: boolean;
   onValueNodeHasChildrenChange(hasChildren: boolean): void;
   contentId: string;
-  value?: string;
+  value: string | undefined;
   onValueChange(value: string): void;
   open: boolean;
   required?: boolean;
@@ -78,11 +78,34 @@ type SelectNativeOptionsContextValue = {
 const [SelectNativeOptionsProvider, useSelectNativeOptionsContext] =
   createSelectContext<SelectNativeOptionsContextValue>(SELECT_NAME);
 
-interface SelectProps {
-  children?: React.ReactNode;
-  value?: string;
+interface ControlledClearableSelectProps {
+  value: string | undefined;
+  defaultValue?: never;
+  onValueChange: (value: string | undefined) => void;
+}
+
+interface ControlledUnclearableSelectProps {
+  value: string;
+  defaultValue?: never;
+  onValueChange: (value: string) => void;
+}
+
+interface UncontrolledSelectProps {
+  value?: never;
   defaultValue?: string;
-  onValueChange?(value: string): void;
+  onValueChange?: {
+    (value: string): void;
+    (value: string | undefined): void;
+  };
+}
+
+type SelectControlProps =
+  | ControlledClearableSelectProps
+  | ControlledUnclearableSelectProps
+  | UncontrolledSelectProps;
+
+interface SelectSharedProps {
+  children?: React.ReactNode;
   open?: boolean;
   defaultOpen?: boolean;
   onOpenChange?(open: boolean): void;
@@ -93,6 +116,17 @@ interface SelectProps {
   required?: boolean;
   form?: string;
 }
+
+// TODO: Should improve typing somewhat, but this would be a breaking change.
+// Consider using in the next major version (along with some testing to be sure
+// it works as expected and doesn't cause problems)
+type _FutureSelectProps = SelectSharedProps & SelectControlProps;
+
+type SelectProps = SelectSharedProps & {
+  value?: string;
+  defaultValue?: string;
+  onValueChange?(value: string): void;
+};
 
 const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
   const {
@@ -116,15 +150,17 @@ const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
   const [valueNode, setValueNode] = React.useState<SelectValueElement | null>(null);
   const [valueNodeHasChildren, setValueNodeHasChildren] = React.useState(false);
   const direction = useDirection(dir);
-  const [open = false, setOpen] = useControllableState({
+  const [open, setOpen] = useControllableState({
     prop: openProp,
-    defaultProp: defaultOpen,
+    defaultProp: defaultOpen ?? false,
     onChange: onOpenChange,
+    caller: SELECT_NAME,
   });
   const [value, setValue] = useControllableState({
     prop: valueProp,
     defaultProp: defaultValue,
-    onChange: onValueChange,
+    onChange: onValueChange as any,
+    caller: SELECT_NAME,
   });
   const triggerPointerDownPosRef = React.useRef<{ x: number; y: number } | null>(null);
 
