@@ -2,7 +2,7 @@ import * as React from 'react';
 import { axe } from 'vitest-axe';
 import type { RenderResult } from '@testing-library/react';
 import { cleanup, render, fireEvent } from '@testing-library/react';
-import { Checkbox, CheckboxIndicator } from './checkbox';
+import * as Checkbox from './checkbox';
 import { afterEach, describe, it, beforeEach, vi, expect } from 'vitest';
 
 const CHECKBOX_ROLE = 'checkbox';
@@ -26,7 +26,7 @@ describe('given a default Checkbox', () => {
   let indicator: HTMLElement | null;
 
   beforeEach(() => {
-    rendered = render(<CheckboxTest />);
+    rendered = render(<LegacyCheckbox />);
     checkbox = rendered.getByRole(CHECKBOX_ROLE);
     indicator = rendered.queryByTestId(INDICATOR_TEST_ID);
   });
@@ -63,7 +63,7 @@ describe('given a disabled Checkbox', () => {
   let rendered: RenderResult;
 
   beforeEach(() => {
-    rendered = render(<CheckboxTest disabled />);
+    rendered = render(<LegacyCheckbox disabled />);
   });
 
   afterEach(cleanup);
@@ -80,7 +80,7 @@ describe('given an uncontrolled `checked` Checkbox', () => {
   const onCheckedChange = vi.fn();
 
   beforeEach(() => {
-    rendered = render(<CheckboxTest defaultChecked onCheckedChange={onCheckedChange} />);
+    rendered = render(<LegacyCheckbox defaultChecked onCheckedChange={onCheckedChange} />);
     checkbox = rendered.getByRole(CHECKBOX_ROLE);
     indicator = rendered.queryByTestId(INDICATOR_TEST_ID);
   });
@@ -112,7 +112,7 @@ describe('given a controlled `checked` Checkbox', () => {
   const onCheckedChange = vi.fn();
 
   beforeEach(() => {
-    rendered = render(<CheckboxTest checked onCheckedChange={onCheckedChange} />);
+    rendered = render(<LegacyCheckbox checked onCheckedChange={onCheckedChange} />);
     checkbox = rendered.getByRole(CHECKBOX_ROLE);
   });
 
@@ -142,7 +142,7 @@ describe('given an uncontrolled Checkbox in form', () => {
               expect(target.defaultChecked).toBe(true);
             }}
           >
-            <CheckboxTest defaultChecked />
+            <LegacyCheckbox defaultChecked />
           </form>
         );
         const checkbox = rendered.getByRole(CHECKBOX_ROLE);
@@ -155,7 +155,7 @@ describe('given an uncontrolled Checkbox in form', () => {
               done(null);
             }}
           >
-            <CheckboxTest defaultChecked={false} />
+            <LegacyCheckbox defaultChecked={false} />
           </form>
         );
         fireEvent.click(checkbox);
@@ -176,7 +176,7 @@ describe('given a controlled Checkbox in a form', () => {
               expect(target.defaultChecked).toBe(true);
             }}
           >
-            <CheckboxTest checked />
+            <LegacyCheckbox checked />
           </form>
         );
         const checkbox = rendered.getByRole(CHECKBOX_ROLE);
@@ -189,7 +189,7 @@ describe('given a controlled Checkbox in a form', () => {
               done(null);
             }}
           >
-            <CheckboxTest checked={false} />
+            <LegacyCheckbox checked={false} />
           </form>
         );
         fireEvent.click(checkbox);
@@ -197,7 +197,7 @@ describe('given a controlled Checkbox in a form', () => {
   });
 });
 
-function CheckboxTest(props: React.ComponentProps<typeof Checkbox>) {
+function LegacyCheckbox(props: React.ComponentProps<typeof Checkbox.Root>) {
   const containerRef = React.useRef<HTMLDivElement>(null);
   React.useEffect(() => {
     // We use the `hidden` attribute to hide the nested input from both sighted users and the
@@ -210,9 +210,9 @@ function CheckboxTest(props: React.ComponentProps<typeof Checkbox>) {
   }, []);
   return (
     <div ref={containerRef}>
-      <Checkbox aria-label="basic checkbox" {...props}>
-        <CheckboxIndicator data-testid={INDICATOR_TEST_ID} />
-      </Checkbox>
+      <Checkbox.Root aria-label="basic checkbox" {...props}>
+        <Checkbox.Indicator data-testid={INDICATOR_TEST_ID} />
+      </Checkbox.Root>
     </div>
   );
 }
