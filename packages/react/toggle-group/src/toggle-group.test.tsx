@@ -34,6 +34,10 @@ describe('given a single ToggleGroup', () => {
       expect(await axe(rendered.container)).toHaveNoViolations();
     });
 
+    it('should have radiogroup role', () => {
+      expect(rendered.getByRole('radiogroup')).toBeInTheDocument();
+    });
+
     it('should change value to `One`', () => {
       expect(handleValueChange).toHaveBeenCalledWith('One');
     });
@@ -77,6 +81,10 @@ describe('given a multiple ToggleGroup', () => {
 
   it('should have no accessibility violations', async () => {
     expect(await axe(rendered.container)).toHaveNoViolations();
+  });
+
+  it('should have group role', () => {
+    expect(rendered.getByRole('group')).toBeInTheDocument();
   });
 
   describe('when clicking `One`', () => {
