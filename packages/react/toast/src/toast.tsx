@@ -66,6 +66,10 @@ interface ToastProviderProps {
    * @defaultValue 50
    */
   swipeThreshold?: number;
+  /**
+   * Callback for when a toast opens or closes
+   */
+  onOpenChange?(toastCount: number): void
 }
 
 const ToastProvider: React.FC<ToastProviderProps> = (props: ScopedProps<ToastProviderProps>) => {
@@ -76,11 +80,16 @@ const ToastProvider: React.FC<ToastProviderProps> = (props: ScopedProps<ToastPro
     swipeDirection = 'right',
     swipeThreshold = 50,
     children,
+    onOpenChange,
   } = props;
   const [viewport, setViewport] = React.useState<ToastViewportElement | null>(null);
   const [toastCount, setToastCount] = React.useState(0);
   const isFocusedToastEscapeKeyDownRef = React.useRef(false);
   const isClosePausedRef = React.useRef(false);
+
+  useEffect(() => {
+    onOpenChange.?(toastCount)
+  }, [toastCount])
 
   if (!label.trim()) {
     console.error(
