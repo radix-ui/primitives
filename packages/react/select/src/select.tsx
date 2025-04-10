@@ -14,7 +14,7 @@ import * as PopperPrimitive from '@radix-ui/react-popper';
 import { createPopperScope } from '@radix-ui/react-popper';
 import { Portal as PortalPrimitive } from '@radix-ui/react-portal';
 import { Primitive } from '@radix-ui/react-primitive';
-import { Slot } from '@radix-ui/react-slot';
+import { createSlot } from '@radix-ui/react-slot';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
@@ -496,6 +496,8 @@ interface SelectContentImplProps
   position?: 'item-aligned' | 'popper';
 }
 
+const Slot = createSlot('SelectContent.RemoveScroll');
+
 const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectContentImplProps>(
   (props: ScopedProps<SelectContentImplProps>, forwardedRef) => {
     const {
@@ -885,7 +887,8 @@ const SelectItemAlignedPosition = React.forwardRef<
       const willAlignWithoutTopOverflow = contentTopToItemMiddle <= topEdgeToTriggerMiddle;
 
       if (willAlignWithoutTopOverflow) {
-        const isLastItem = items.length > 0 && selectedItem === items[items.length - 1].ref.current;
+        const isLastItem =
+          items.length > 0 && selectedItem === items[items.length - 1]!.ref.current;
         contentWrapper.style.bottom = 0 + 'px';
         const viewportOffsetBottom =
           content.clientHeight - viewport.offsetTop - viewport.offsetHeight;
@@ -900,7 +903,7 @@ const SelectItemAlignedPosition = React.forwardRef<
         const height = contentTopToItemMiddle + clampedTriggerMiddleToBottomEdge;
         contentWrapper.style.height = height + 'px';
       } else {
-        const isFirstItem = items.length > 0 && selectedItem === items[0].ref.current;
+        const isFirstItem = items.length > 0 && selectedItem === items[0]!.ref.current;
         contentWrapper.style.top = 0 + 'px';
         const clampedTopEdgeToTriggerMiddle = Math.max(
           topEdgeToTriggerMiddle,
@@ -1696,7 +1699,7 @@ function findNextItem<T extends { textValue: string }>(
   currentItem?: T
 ) {
   const isRepeated = search.length > 1 && Array.from(search).every((char) => char === search[0]);
-  const normalizedSearch = isRepeated ? search[0] : search;
+  const normalizedSearch = isRepeated ? search[0]! : search;
   const currentItemIndex = currentItem ? items.indexOf(currentItem) : -1;
   let wrappedItems = wrapArray(items, Math.max(currentItemIndex, 0));
   const excludeCurrentItem = normalizedSearch.length === 1;
@@ -1712,7 +1715,7 @@ function findNextItem<T extends { textValue: string }>(
  * Example: `wrapArray(['a', 'b', 'c', 'd'], 2) === ['c', 'd', 'a', 'b']`
  */
 function wrapArray<T>(array: T[], startIndex: number) {
-  return array.map((_, index) => array[(startIndex + index) % array.length]);
+  return array.map<T>((_, index) => array[(startIndex + index) % array.length]!);
 }
 
 const Root = Select;

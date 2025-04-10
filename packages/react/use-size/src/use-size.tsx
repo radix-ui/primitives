@@ -1,5 +1,3 @@
-/// <reference types="resize-observer-browser" />
-
 import * as React from 'react';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 
@@ -22,7 +20,7 @@ function useSize(element: HTMLElement | null) {
           return;
         }
 
-        const entry = entries[0];
+        const entry = entries[0]!;
         let width: number;
         let height: number;
 

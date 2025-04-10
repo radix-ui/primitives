@@ -1,10 +1,15 @@
 {
-  "$schema": "https://unpkg.com/@changesets/config@3.0.5/schema.json",
-  "changelog": "@changesets/cli/changelog",
+  "$schema": "https://unpkg.com/@changesets/config@3.1.1/schema.json",
+  "changelog": "./changelog.cjs",
+  "access": "public",
   "commit": false,
   "fixed": [],
   "linked": [],
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": ["@repo/ssr-testing"]
+  "snapshot": {
+    "useCalculatedVersion": true,
+    "prereleaseTemplate": "rc.{timestamp}"
+  },
+  "ignore": []
 }

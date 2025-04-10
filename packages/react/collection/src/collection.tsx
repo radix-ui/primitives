@@ -1,7 +1,7 @@
 import React from 'react';
 import { createContextScope } from '@radix-ui/react-context';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
-import { Slot } from '@radix-ui/react-slot';
+import { createSlot, type Slot } from '@radix-ui/react-slot';
 
 type SlotProps = React.ComponentPropsWithoutRef<typeof Slot>;
 type CollectionElement = HTMLElement;
@@ -54,12 +54,13 @@ function createCollection<ItemElement extends HTMLElement, ItemData = {}>(name: 
 
   const COLLECTION_SLOT_NAME = name + 'CollectionSlot';
 
+  const CollectionSlotImpl = createSlot(COLLECTION_SLOT_NAME);
   const CollectionSlot = React.forwardRef<CollectionElement, CollectionProps>(
     (props, forwardedRef) => {
       const { scope, children } = props;
       const context = useCollectionContext(COLLECTION_SLOT_NAME, scope);
       const composedRefs = useComposedRefs(forwardedRef, context.collectionRef);
-      return <Slot ref={composedRefs}>{children}</Slot>;
+      return <CollectionSlotImpl ref={composedRefs}>{children}</CollectionSlotImpl>;
     }
   );
 
@@ -77,6 +78,7 @@ function createCollection<ItemElement extends HTMLElement, ItemData = {}>(name: 
     scope: any;
   };
 
+  const CollectionItemSlotImpl = createSlot(ITEM_SLOT_NAME);
   const CollectionItemSlot = React.forwardRef<ItemElement, CollectionItemSlotProps>(
     (props, forwardedRef) => {
       const { scope, children, ...itemData } = props;
@@ -90,9 +92,9 @@ function createCollection<ItemElement extends HTMLElement, ItemData = {}>(name: 
       });
 
       return (
-        <Slot {...{ [ITEM_DATA_ATTR]: '' }} ref={composedRefs}>
+        <CollectionItemSlotImpl {...{ [ITEM_DATA_ATTR]: '' }} ref={composedRefs}>
           {children}
-        </Slot>
+        </CollectionItemSlotImpl>
       );
     }
   );

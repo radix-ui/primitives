@@ -1,8 +1,9 @@
 import React from 'react';
 import { axe } from 'vitest-axe';
 import type { RenderResult } from '@testing-library/react';
-import { render, fireEvent } from '@testing-library/react';
-import * as AlertDialog from '@radix-ui/react-alert-dialog';
+import { cleanup, render, fireEvent } from '@testing-library/react';
+import * as AlertDialog from './alert-dialog';
+import { afterEach, describe, it, beforeEach, expect } from 'vitest';
 
 const OPEN_TEXT = 'Open';
 const CANCEL_TEXT = 'Cancel';
@@ -29,6 +30,8 @@ describe('given a default Dialog', () => {
   let title: HTMLElement;
   let trigger: HTMLElement;
   let cancelButton: HTMLElement;
+
+  afterEach(cleanup);
 
   beforeEach(() => {
     rendered = render(<DialogTest />);

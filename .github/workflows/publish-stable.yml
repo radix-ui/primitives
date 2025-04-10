@@ -1,0 +1,47 @@
+name: 'Publish Stable Release'
+
+on:
+  push:
+    branches:
+      - stable
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  publish-stable:
+    name: Version or publish
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build packages
+        run: pnpm build
+
+      - name: Create Release Pull Request or Publish to npm
+        id: changesets
+        uses: changesets/action@v1
+        with:
+          title: New release
+          commit: New release
+          version: pnpm run bump:next # TODO: remove :next for :stable once we're confident in the release process
+          publish: pnpm run release:next # TODO: remove :next for :stable once we're confident in the release process
+          createGithubReleases: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_AUTOMATION_FROM_CHANCE }}

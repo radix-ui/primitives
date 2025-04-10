@@ -1,30 +1,38 @@
 {
   "name": "radix-ui",
-  "version": "1.2.0-rc.1",
+  "version": "1.2.0",
   "license": "MIT",
   "source": "./src/index.ts",
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
+  "main": "./src/index.ts",
+  "module": "./src/index.ts",
   "exports": {
-    ".": {
-      "import": {
-        "types": "./dist/index.d.mts",
-        "default": "./dist/index.mjs"
+    ".": "./src/index.ts",
+    "./*": "./src/*.ts"
+  },
+  "publishConfig": {
+    "main": "./dist/index.js",
+    "module": "./dist/index.mjs",
+    "types": "./dist/index.d.ts",
+    "exports": {
+      ".": {
+        "import": {
+          "types": "./dist/index.d.mts",
+          "default": "./dist/index.mjs"
+        },
+        "require": {
+          "types": "./dist/index.d.ts",
+          "default": "./dist/index.js"
+        }
       },
-      "require": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
-      }
-    },
-    "./*": {
-      "import": {
-        "types": "./dist/*.d.mts",
-        "default": "./dist/*.mjs"
-      },
-      "require": {
-        "types": "./dist/*.d.ts",
-        "default": "./dist/*.js"
+      "./*": {
+        "import": {
+          "types": "./dist/*.d.mts",
+          "default": "./dist/*.mjs"
+        },
+        "require": {
+          "types": "./dist/*.d.ts",
+          "default": "./dist/*.js"
+        }
       }
     }
   },
@@ -37,14 +45,15 @@
   "scripts": {
     "lint": "eslint --max-warnings 0 src",
     "clean": "rm -rf dist",
-    "version": "yarn version",
-    "build": "tsc ."
+    "typecheck": "tsc --noEmit",
+    "build": "tsc"
   },
   "dependencies": {
     "@radix-ui/primitive": "workspace:*",
     "@radix-ui/react-accessible-icon": "workspace:*",
     "@radix-ui/react-accordion": "workspace:*",
     "@radix-ui/react-alert-dialog": "workspace:*",
+    "@radix-ui/react-arrow": "workspace:*",
     "@radix-ui/react-aspect-ratio": "workspace:*",
     "@radix-ui/react-avatar": "workspace:*",
     "@radix-ui/react-checkbox": "workspace:*",
@@ -123,6 +132,5 @@
   },
   "bugs": {
     "url": "https://github.com/radix-ui/primitives/issues"
-  },
-  "stableVersion": "1.1.3"
+  }
 }

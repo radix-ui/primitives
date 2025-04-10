@@ -296,7 +296,7 @@ const AccordionImpl = React.forwardRef<AccordionImplElement, AccordionImplProps>
       }
 
       const clampedIndex = nextIndex % triggerCount;
-      triggerCollection[clampedIndex].ref.current?.focus();
+      triggerCollection[clampedIndex]!.ref.current?.focus();
     });
 
     return (

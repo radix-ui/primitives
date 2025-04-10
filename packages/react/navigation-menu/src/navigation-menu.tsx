@@ -1,5 +1,3 @@
-/// <reference types="resize-observer-browser" />
-
 import * as React from 'react';
 import ReactDOM from 'react-dom';
 import { createContextScope } from '@radix-ui/react-context';

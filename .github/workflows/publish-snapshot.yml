@@ -1,0 +1,54 @@
+name: 'Publish Snapshot Release'
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      # - '.github/**'
+      - '**/package.json'
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  publish-snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build packages
+        run: pnpm build
+
+      - name: Write .npmrc
+        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTOMATION_FROM_CHANCE }}" > .npmrc
+
+      - name: Update snapshot version
+        run: pnpm run bump:next
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "<41898282+github-actions[bot]@users.noreply.github.com>"
+          git add .
+          git commit -m "Update snapshot version"
+
+      - name: Publish snapshot
+        run: pnpm run release:next
+        env:
+          YARN_NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTOMATION_FROM_CHANCE }}

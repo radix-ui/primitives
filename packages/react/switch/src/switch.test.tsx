@@ -1,7 +1,10 @@
-import * as Switch from '@radix-ui/react-switch';
-import { render } from '@testing-library/react';
+import * as Switch from './switch';
+import { cleanup, render } from '@testing-library/react';
+import { afterEach, describe, it, expect } from 'vitest';
 
 describe('given a default Switch', () => {
+  afterEach(cleanup);
+
   let cleanedUp = false;
 
   function Test() {
