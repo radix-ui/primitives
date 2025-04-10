@@ -157,7 +157,7 @@ const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
     __scopeTooltip,
     children,
     open: openProp,
-    defaultOpen = false,
+    defaultOpen,
     onOpenChange,
     disableHoverableContent: disableHoverableContentProp,
     delayDuration: delayDurationProp,
@@ -173,9 +173,9 @@ const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
   const wasOpenDelayedRef = React.useRef(false);
   const providedDocument = useDocument();
   const documentWindow = providedDocument?.defaultView;
-  const [open = false, setOpen] = useControllableState({
+  const [open, setOpen] = useControllableState({
     prop: openProp,
-    defaultProp: defaultOpen,
+    defaultProp: defaultOpen ?? false,
     onChange: (open) => {
       if (open) {
         providerContext.onOpen();
@@ -188,6 +188,7 @@ const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
       }
       onOpenChange?.(open);
     },
+    caller: TOOLTIP_NAME,
   });
   const stateAttribute = React.useMemo(() => {
     return open ? (wasOpenDelayedRef.current ? 'delayed-open' : 'instant-open') : 'closed';

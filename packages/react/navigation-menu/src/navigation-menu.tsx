@@ -117,7 +117,7 @@ const NavigationMenu = React.forwardRef<NavigationMenuElement, NavigationMenuPro
     const skipDelayTimerRef = React.useRef(0);
     const [isOpenDelayed, setIsOpenDelayed] = React.useState(true);
     const documentWindow = useDocument()?.defaultView;
-    const [value = '', setValue] = useControllableState({
+    const [value, setValue] = useControllableState({
       prop: valueProp,
       onChange: (value) => {
         const isOpen = value !== '';
@@ -137,7 +137,8 @@ const NavigationMenu = React.forwardRef<NavigationMenuElement, NavigationMenuPro
 
         onValueChange?.(value);
       },
-      defaultProp: defaultValue,
+      defaultProp: defaultValue ?? '',
+      caller: NAVIGATION_MENU_NAME,
     });
 
     const startCloseTimer = React.useCallback(() => {
@@ -245,10 +246,11 @@ const NavigationMenuSub = React.forwardRef<NavigationMenuSubElement, NavigationM
       ...subProps
     } = props;
     const context = useNavigationMenuContext(SUB_NAME, __scopeNavigationMenu);
-    const [value = '', setValue] = useControllableState({
+    const [value, setValue] = useControllableState({
       prop: valueProp,
       onChange: onValueChange,
-      defaultProp: defaultValue,
+      defaultProp: defaultValue ?? '',
+      caller: SUB_NAME,
     });
 
     return (

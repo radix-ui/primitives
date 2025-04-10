@@ -2865,9 +2865,9 @@ importers:
 
   packages/react/use-controllable-state:
     dependencies:
-      '@radix-ui/react-use-callback-ref':
+      '@radix-ui/react-use-layout-effect':
         specifier: workspace:*
-        version: link:../use-callback-ref
+        version: link:../use-layout-effect
     devDependencies:
       '@repo/builder':
         specifier: workspace:*
