@@ -29,12 +29,13 @@ interface ToggleProps extends PrimitiveButtonProps {
 }
 
 const Toggle = React.forwardRef<ToggleElement, ToggleProps>((props, forwardedRef) => {
-  const { pressed: pressedProp, defaultPressed = false, onPressedChange, ...buttonProps } = props;
+  const { pressed: pressedProp, defaultPressed, onPressedChange, ...buttonProps } = props;
 
-  const [pressed = false, setPressed] = useControllableState({
+  const [pressed, setPressed] = useControllableState({
     prop: pressedProp,
     onChange: onPressedChange,
-    defaultProp: defaultPressed,
+    defaultProp: defaultPressed ?? false,
+    caller: NAME,
   });
 
   return (

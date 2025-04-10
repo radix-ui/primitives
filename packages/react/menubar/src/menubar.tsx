@@ -73,10 +73,11 @@ const Menubar = React.forwardRef<MenubarElement, MenubarProps>(
     } = props;
     const direction = useDirection(dir);
     const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeMenubar);
-    const [value = '', setValue] = useControllableState({
+    const [value, setValue] = useControllableState({
       prop: valueProp,
       onChange: onValueChange,
-      defaultProp: defaultValue,
+      defaultProp: defaultValue ?? '',
+      caller: MENUBAR_NAME,
     });
 
     // We need to manage tab stop id manually as `RovingFocusGroup` updates the stop
@@ -594,10 +595,11 @@ interface MenubarSubProps {
 const MenubarSub: React.FC<MenubarSubProps> = (props: ScopedProps<MenubarSubProps>) => {
   const { __scopeMenubar, children, open: openProp, onOpenChange, defaultOpen } = props;
   const menuScope = useMenuScope(__scopeMenubar);
-  const [open = false, setOpen] = useControllableState({
+  const [open, setOpen] = useControllableState({
     prop: openProp,
-    defaultProp: defaultOpen,
+    defaultProp: defaultOpen ?? false,
     onChange: onOpenChange,
+    caller: SUB_NAME,
   });
 
   return (

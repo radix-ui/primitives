@@ -25,7 +25,7 @@ const useRovingFocusGroupScope = createRovingFocusGroupScope();
 
 type TabsContextValue = {
   baseId: string;
-  value?: string;
+  value: string;
   onValueChange: (value: string) => void;
   orientation?: TabsProps['orientation'];
   dir?: TabsProps['dir'];
@@ -77,7 +77,8 @@ const Tabs = React.forwardRef<TabsElement, TabsProps>(
     const [value, setValue] = useControllableState({
       prop: valueProp,
       onChange: onValueChange,
-      defaultProp: defaultValue,
+      defaultProp: defaultValue ?? '',
+      caller: TABS_NAME,
     });
 
     return (

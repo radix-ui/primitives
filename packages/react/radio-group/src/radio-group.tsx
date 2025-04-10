@@ -30,7 +30,7 @@ type RadioGroupContextValue = {
   name?: string;
   required: boolean;
   disabled: boolean;
-  value?: string;
+  value: string;
   onValueChange(value: string): void;
 };
 
@@ -71,8 +71,9 @@ const RadioGroup = React.forwardRef<RadioGroupElement, RadioGroupProps>(
     const direction = useDirection(dir);
     const [value, setValue] = useControllableState({
       prop: valueProp,
-      defaultProp: defaultValue,
+      defaultProp: defaultValue ?? '',
       onChange: onValueChange,
+      caller: RADIO_GROUP_NAME,
     });
 
     return (

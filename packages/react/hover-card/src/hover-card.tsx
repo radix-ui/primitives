@@ -64,10 +64,11 @@ const HoverCard: React.FC<HoverCardProps> = (props: ScopedProps<HoverCardProps>)
   const hasSelectionRef = React.useRef(false);
   const isPointerDownOnContentRef = React.useRef(false);
 
-  const [open = false, setOpen] = useControllableState({
+  const [open, setOpen] = useControllableState({
     prop: openProp,
-    defaultProp: defaultOpen,
+    defaultProp: defaultOpen ?? false,
     onChange: onOpenChange,
+    caller: HOVERCARD_NAME,
   });
 
   const handleOpen = React.useCallback(() => {

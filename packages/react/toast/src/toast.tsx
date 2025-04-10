@@ -383,10 +383,11 @@ interface ToastProps extends Omit<ToastImplProps, keyof ToastImplPrivateProps> {
 const Toast = React.forwardRef<ToastElement, ToastProps>(
   (props: ScopedProps<ToastProps>, forwardedRef) => {
     const { forceMount, open: openProp, defaultOpen, onOpenChange, ...toastProps } = props;
-    const [open = true, setOpen] = useControllableState({
+    const [open, setOpen] = useControllableState({
       prop: openProp,
-      defaultProp: defaultOpen,
+      defaultProp: defaultOpen ?? true,
       onChange: onOpenChange,
+      caller: TOAST_NAME,
     });
     return (
       <Presence present={forceMount || open}>

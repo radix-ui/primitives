@@ -34,7 +34,7 @@
     "build": "radix-build"
   },
   "dependencies": {
-    "@radix-ui/react-use-callback-ref": "workspace:*"
+    "@radix-ui/react-use-layout-effect": "workspace:*"
   },
   "devDependencies": {
     "@repo/builder": "workspace:*",

@@ -108,14 +108,15 @@ const AccordionImplSingle = React.forwardRef<AccordionImplSingleElement, Accordi
 
     const [value, setValue] = useControllableState({
       prop: valueProp,
-      defaultProp: defaultValue,
+      defaultProp: defaultValue ?? '',
       onChange: onValueChange,
+      caller: ACCORDION_NAME,
     });
 
     return (
       <AccordionValueProvider
         scope={props.__scopeAccordion}
-        value={value ? [value] : []}
+        value={React.useMemo(() => (value ? [value] : []), [value])}
         onItemOpen={setValue}
         onItemClose={React.useCallback(() => collapsible && setValue(''), [collapsible, setValue])}
       >
@@ -157,10 +158,11 @@ const AccordionImplMultiple = React.forwardRef<
     ...accordionMultipleProps
   } = props;
 
-  const [value = [], setValue] = useControllableState({
+  const [value, setValue] = useControllableState({
     prop: valueProp,
-    defaultProp: defaultValue,
+    defaultProp: defaultValue ?? [],
     onChange: onValueChange,
+    caller: ACCORDION_NAME,
   });
 
   const handleItemOpen = React.useCallback(

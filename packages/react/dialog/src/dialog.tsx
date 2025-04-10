@@ -58,10 +58,11 @@ const Dialog: React.FC<DialogProps> = (props: ScopedProps<DialogProps>) => {
   } = props;
   const triggerRef = React.useRef<HTMLButtonElement>(null);
   const contentRef = React.useRef<DialogContentElement>(null);
-  const [open = false, setOpen] = useControllableState({
+  const [open, setOpen] = useControllableState({
     prop: openProp,
-    defaultProp: defaultOpen,
+    defaultProp: defaultOpen ?? false,
     onChange: onOpenChange,
+    caller: DIALOG_NAME,
   });
 
   return (
