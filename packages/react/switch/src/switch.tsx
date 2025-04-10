@@ -21,7 +21,7 @@ const [createSwitchContext, createSwitchScope] = createContextScope(SWITCH_NAME)
 type SwitchContextValue = { checked: boolean; disabled?: boolean };
 const [SwitchProvider, useSwitchContext] = createSwitchContext<SwitchContextValue>(SWITCH_NAME);
 
-type SwitchElement = React.ElementRef<typeof Primitive.button>;
+type SwitchElement = React.ComponentRef<typeof Primitive.button>;
 type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
 interface SwitchProps extends PrimitiveButtonProps {
   checked?: boolean;
@@ -109,7 +109,7 @@ Switch.displayName = SWITCH_NAME;
 
 const THUMB_NAME = 'SwitchThumb';
 
-type SwitchThumbElement = React.ElementRef<typeof Primitive.span>;
+type SwitchThumbElement = React.ComponentRef<typeof Primitive.span>;
 type PrimitiveSpanProps = React.ComponentPropsWithoutRef<typeof Primitive.span>;
 interface SwitchThumbProps extends PrimitiveSpanProps {}
 
