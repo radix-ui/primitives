@@ -17,9 +17,9 @@ const [createCheckboxContext, createCheckboxScope] = createContextScope(CHECKBOX
 
 type CheckedState = boolean | 'indeterminate';
 
-type CheckboxContextValue = {
-  checked: CheckedState;
-  setChecked: React.Dispatch<React.SetStateAction<CheckedState>>;
+type CheckboxContextValue<State extends CheckedState | boolean = CheckedState> = {
+  checked: State | boolean;
+  setChecked: React.Dispatch<React.SetStateAction<State | boolean>>;
   disabled: boolean | undefined;
   control: HTMLButtonElement | null;
   setControl: React.Dispatch<React.SetStateAction<HTMLButtonElement | null>>;
@@ -30,6 +30,8 @@ type CheckboxContextValue = {
   required: boolean | undefined;
   defaultChecked: boolean | undefined;
   isFormControl: boolean;
+  bubbleInput: HTMLInputElement | null;
+  setBubbleInput: React.Dispatch<React.SetStateAction<HTMLInputElement | null>>;
 };
 
 const [CheckboxProviderImpl, useCheckboxContext] =
@@ -39,11 +41,11 @@ const [CheckboxProviderImpl, useCheckboxContext] =
  * CheckboxProvider
  * -----------------------------------------------------------------------------------------------*/
 
-interface CheckboxProviderProps {
-  checked?: CheckedState;
-  defaultChecked?: CheckedState;
+interface CheckboxProviderProps<State extends CheckedState = CheckedState> {
+  checked?: State | boolean;
+  defaultChecked?: State | boolean;
   required?: boolean;
-  onCheckedChange?(checked: CheckedState): void;
+  onCheckedChange?(checked: State | boolean): void;
   name?: string;
   form?: string;
   disabled?: boolean;
@@ -57,10 +59,10 @@ interface CheckboxProviderProps {
      * @internal
      * @deprecated
      */
-    | ((context: CheckboxContextValue) => React.ReactNode);
+    | ((context: CheckboxContextValue<State>) => React.ReactNode);
 }
 
-const CheckboxProvider: React.FC<ScopedProps<CheckboxProviderProps>> = ({
+function CheckboxProvider<State extends CheckedState = CheckedState>({
   __scopeCheckbox,
   checked: checkedProp,
   children,
@@ -71,7 +73,7 @@ const CheckboxProvider: React.FC<ScopedProps<CheckboxProviderProps>> = ({
   onCheckedChange,
   required,
   value = 'on',
-}) => {
+}: ScopedProps<CheckboxProviderProps<State>>) {
   const [checked, setChecked] = useControllableState({
     prop: checkedProp,
     defaultProp: defaultChecked ?? false,
@@ -79,13 +81,14 @@ const CheckboxProvider: React.FC<ScopedProps<CheckboxProviderProps>> = ({
     caller: CHECKBOX_NAME,
   });
   const [control, setControl] = React.useState<HTMLButtonElement | null>(null);
+  const [bubbleInput, setBubbleInput] = React.useState<HTMLInputElement | null>(null);
   const hasConsumerStoppedPropagationRef = React.useRef(false);
   const isFormControl = control
     ? !!form || !!control.closest('form')
     : // We set this to true by default so that events bubble to forms without JS (SSR)
       true;
 
-  const context: CheckboxContextValue = {
+  const context: CheckboxContextValue<State> = {
     checked: checked,
     disabled: disabled,
     setChecked: setChecked,
@@ -98,14 +101,19 @@ const CheckboxProvider: React.FC<ScopedProps<CheckboxProviderProps>> = ({
     required: required,
     defaultChecked: isIndeterminate(defaultChecked) ? false : defaultChecked,
     isFormControl: isFormControl,
+    bubbleInput,
+    setBubbleInput,
   };
 
   return (
-    <CheckboxProviderImpl scope={__scopeCheckbox} {...context}>
+    <CheckboxProviderImpl
+      scope={__scopeCheckbox}
+      {...(context as unknown as CheckboxContextValue<CheckedState>)}
+    >
       {isFunction(children) ? children(context) : children}
     </CheckboxProviderImpl>
   );
-};
+}
 
 /* -------------------------------------------------------------------------------------------------
  * CheckboxTrigger
@@ -136,6 +144,7 @@ const CheckboxTrigger = React.forwardRef<HTMLButtonElement, CheckboxTriggerProps
       setChecked,
       hasConsumerStoppedPropagationRef,
       isFormControl,
+      bubbleInput,
     } = useCheckboxContext(TRIGGER_NAME, __scopeCheckbox);
     const composedRefs = useComposedRefs(forwardedRef, setControl);
 
@@ -167,11 +176,13 @@ const CheckboxTrigger = React.forwardRef<HTMLButtonElement, CheckboxTriggerProps
         })}
         onClick={composeEventHandlers(onClick, (event) => {
           setChecked((prevChecked) => (isIndeterminate(prevChecked) ? true : !prevChecked));
-          if (isFormControl) {
+          if (bubbleInput && isFormControl) {
             hasConsumerStoppedPropagationRef.current = event.isPropagationStopped();
-            // if checkbox is in a form, stop propagation from the button so that we only propagate
-            // one click event (from the input). We propagate changes from an input so that native
-            // form validation works and form events reflect checkbox updates.
+            // if checkbox has a bubble input and is a form control, stop
+            // propagation from the button so that we only propagate one click
+            // event (from the input). We propagate changes from an input so
+            // that native form validation works and form events reflect
+            // checkbox updates.
             if (!hasConsumerStoppedPropagationRef.current) event.stopPropagation();
           }
         })}
@@ -301,15 +312,17 @@ const CheckboxBubbleInput = React.forwardRef<HTMLInputElement, CheckboxBubbleInp
       name,
       value,
       form,
+      bubbleInput,
+      setBubbleInput,
     } = useCheckboxContext(BUBBLE_INPUT_NAME, __scopeCheckbox);
-    const ref = React.useRef<HTMLInputElement>(null);
-    const composedRefs = useComposedRefs(ref, forwardedRef);
+
+    const composedRefs = useComposedRefs(forwardedRef, setBubbleInput);
     const prevChecked = usePrevious(checked);
     const controlSize = useSize(control);
 
     // Bubble checked change to parents (e.g form change event)
     React.useEffect(() => {
-      const input = ref.current;
+      const input = bubbleInput;
       if (!input) return;
 
       const inputProto = window.HTMLInputElement.prototype;
@@ -326,7 +339,7 @@ const CheckboxBubbleInput = React.forwardRef<HTMLInputElement, CheckboxBubbleInp
         setChecked.call(input, isIndeterminate(checked) ? false : checked);
         input.dispatchEvent(event);
       }
-    }, [prevChecked, checked, hasConsumerStoppedPropagationRef]);
+    }, [bubbleInput, prevChecked, checked, hasConsumerStoppedPropagationRef]);
 
     const defaultCheckedRef = React.useRef(isIndeterminate(checked) ? false : checked);
     return (
@@ -379,6 +392,7 @@ const Provider = CheckboxProvider;
 const Trigger = CheckboxTrigger;
 const Root = Checkbox;
 const Indicator = CheckboxIndicator;
+const BubbleInput = CheckboxBubbleInput;
 
 export {
   createCheckboxScope,
@@ -387,16 +401,19 @@ export {
   CheckboxProvider,
   CheckboxTrigger,
   CheckboxIndicator,
+  CheckboxBubbleInput,
   //
   Root,
   Trigger,
   Provider,
   Indicator,
+  BubbleInput,
 };
 export type {
   CheckboxProps,
   CheckboxProviderProps,
   CheckboxTriggerProps,
   CheckboxIndicatorProps,
+  CheckboxBubbleInputProps,
   CheckedState,
 };
