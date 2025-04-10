@@ -977,14 +977,14 @@ const ChromaticSelect = ({
 );
 
 const SelectShort = React.forwardRef<
-  React.ElementRef<typeof ChromaticSelect>,
+  React.ComponentRef<typeof ChromaticSelect>,
   React.ComponentProps<typeof ChromaticSelect>
 >(({ count = 9, ...props }, forwardedRef) => (
   <ChromaticSelect count={count} {...props} ref={forwardedRef} />
 ));
 
 const SelectLong = React.forwardRef<
-  React.ElementRef<typeof ChromaticSelect>,
+  React.ComponentRef<typeof ChromaticSelect>,
   React.ComponentProps<typeof ChromaticSelect>
 >(({ count = 50, ...props }, forwardedRef) => (
   <ChromaticSelect count={count} {...props} ref={forwardedRef} />
