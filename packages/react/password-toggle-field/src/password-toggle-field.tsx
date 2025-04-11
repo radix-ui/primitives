@@ -12,7 +12,7 @@ interface PasswordToggleFieldContextValue {
   inputId: string;
   inputRef: React.RefObject<HTMLInputElement | null>;
   visible: boolean;
-  setVisible: React.Dispatch<React.SetStateAction<boolean | undefined>>;
+  setVisible: React.Dispatch<React.SetStateAction<boolean>>;
   syncInputId: (providedId: string | number | undefined) => void;
 }
 
@@ -53,7 +53,7 @@ function PasswordToggleField(props: PasswordToggleFieldProps) {
   const { visible: visibleProp, defaultVisible, onVisiblityChange, children } = props;
   const [visible = false, setVisible] = useControllableState({
     prop: visibleProp,
-    defaultProp: defaultVisible,
+    defaultProp: defaultVisible ?? false,
     onChange: onVisiblityChange,
   });
 

@@ -1603,6 +1603,9 @@ importers:
         specifier: workspace:*
         version: link:../use-layout-effect
     devDependencies:
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -1645,7 +1648,13 @@ importers:
       '@radix-ui/react-use-controllable-state':
         specifier: workspace:*
         version: link:../use-controllable-state
+      '@radix-ui/react-use-is-hydrated':
+        specifier: workspace:*
+        version: link:../use-is-hydrated
     devDependencies:
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -1698,6 +1707,9 @@ importers:
         specifier: workspace:*
         version: link:../use-is-hydrated
     devDependencies:
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config
@@ -2143,6 +2155,15 @@ importers:
       '@radix-ui/react-navigation-menu':
         specifier: workspace:*
         version: link:../navigation-menu
+      '@radix-ui/react-one-time-password-field':
+        specifier: workspace:*
+        version: link:../one-time-password-field
+      '@radix-ui/react-password-strength':
+        specifier: workspace:*
+        version: link:../password-strength
+      '@radix-ui/react-password-toggle-field':
+        specifier: workspace:*
+        version: link:../password-toggle-field
       '@radix-ui/react-popover':
         specifier: workspace:*
         version: link:../popover
