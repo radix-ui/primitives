@@ -1,6 +1,5 @@
 import * as React from 'react';
-import * as OneTimePasswordField from '@radix-ui/react-one-time-password-field';
-import * as Separator from '@radix-ui/react-separator';
+import { OneTimePasswordField, Separator } from 'radix-ui';
 import styles from './one-time-password-field.stories.module.css';
 
 export default {

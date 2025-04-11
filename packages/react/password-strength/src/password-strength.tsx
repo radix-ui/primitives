@@ -15,8 +15,8 @@ interface PasswordStrengthContextValue {
   rules: ValidatedRule[];
   progress: number;
   validatedRuleCount: number;
-  value: string | undefined;
-  setValue: React.Dispatch<React.SetStateAction<string | undefined>>;
+  value: string;
+  setValue: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const PasswordStrengthContext = React.createContext<PasswordStrengthContextValue | null>(null);
@@ -47,7 +47,7 @@ const PasswordStrength: React.FC<PasswordStrengthProps> = function PasswordStren
 }) {
   const [value, setValue] = useControllableState({
     prop: valueProp,
-    defaultProp: defaultValue,
+    defaultProp: defaultValue ?? '',
     onChange: onValueChange,
   });
   const { validatedRules, validatedRuleCount, progress } = React.useMemo(() => {

@@ -6,7 +6,8 @@
   "scripts": {
     "lint": "eslint --max-warnings 0 .",
     "dev": "storybook dev -p 6006",
-    "build": "storybook build"
+    "build": "storybook build",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@radix-ui/colors": "^3.0.0",

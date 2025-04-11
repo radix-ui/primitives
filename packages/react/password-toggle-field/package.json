@@ -2,23 +2,28 @@
   "name": "@radix-ui/react-password-toggle-field",
   "version": "0.0.0",
   "license": "MIT",
-  "exports": {
-    ".": {
-      "import": {
-        "types": "./dist/index.d.mts",
-        "default": "./dist/index.mjs"
-      },
-      "require": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
+  "source": "./src/index.ts",
+  "main": "./src/index.ts",
+  "module": "./src/index.ts",
+  "publishConfig": {
+    "main": "./dist/index.js",
+    "module": "./dist/index.mjs",
+    "types": "./dist/index.d.ts",
+    "exports": {
+      ".": {
+        "import": {
+          "types": "./dist/index.d.mts",
+          "default": "./dist/index.mjs"
+        },
+        "require": {
+          "types": "./dist/index.d.ts",
+          "default": "./dist/index.js"
+        }
       }
     }
   },
-  "source": "./src/index.ts",
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
   "files": [
+    "src",
     "dist",
     "README.md"
   ],
@@ -26,7 +31,8 @@
   "scripts": {
     "lint": "eslint --max-warnings 0 src",
     "clean": "rm -rf dist",
-    "version": "yarn version"
+    "typecheck": "tsc --noEmit",
+    "build": "radix-build"
   },
   "dependencies": {
     "@radix-ui/primitive": "workspace:*",
@@ -39,6 +45,7 @@
     "@radix-ui/react-use-is-hydrated": "workspace:*"
   },
   "devDependencies": {
+    "@repo/builder": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/react": "^19.0.7",
@@ -69,6 +76,5 @@
   },
   "bugs": {
     "url": "https://github.com/radix-ui/primitives/issues"
-  },
-  "stableVersion": "1.1.1"
+  }
 }

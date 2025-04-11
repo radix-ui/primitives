@@ -10,7 +10,7 @@ type AutoComplete = 'off' | 'one-time-code';
 
 interface OneTimePasswordFieldContextValue {
   value: string[];
-  setValue: React.Dispatch<React.SetStateAction<string[] | undefined>>;
+  setValue: React.Dispatch<React.SetStateAction<string[]>>;
   state?: FieldState;
   onEnterPressed: () => void;
   onChildAdd: (input: HTMLInputElement) => void;
@@ -104,8 +104,8 @@ const OneTimePasswordField = React.forwardRef<HTMLDivElement, OneTimePasswordFie
     const [allChildrenAdded, setAllChildrenAdded] = React.useState<boolean>(false);
 
     const [value, setValue] = useControllableState({
-      prop: getValueAsArray(valueProp, length),
-      defaultProp: getValueAsArray(defaultValue, length),
+      prop: valueProp != null ? getValueAsArray(valueProp, length) : undefined,
+      defaultProp: defaultValue != null ? getValueAsArray(defaultValue, length) : [],
       onChange: (value) => onValueChange?.(value.join('')),
     });
 
@@ -394,12 +394,8 @@ function focusSibling(input: HTMLInputElement, { back = false } = {}) {
   }
 }
 
-function getValueAsArray(value: string | undefined, length: number) {
-  if (!value) {
-    return undefined;
-  }
-
-  return createEmptyArray(length).map((_, index) => value?.[index] ?? '');
+function getValueAsArray(value: string, length: number) {
+  return createEmptyArray(length).map((_, index) => value[index] ?? '');
 }
 
 function createEmptyArray(length: number): string[] {

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as PasswordStrength from '@radix-ui/react-password-strength';
+import { PasswordStrength } from 'radix-ui';
 import styles from './password-strength.stories.module.css';
 
 export default {
