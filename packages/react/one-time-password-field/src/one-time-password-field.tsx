@@ -3,14 +3,30 @@ import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { unstable_createCollection as createCollection } from '@radix-ui/react-collection';
+import * as RovingFocusGroup from '@radix-ui/react-roving-focus';
+import { createRovingFocusGroupScope } from '@radix-ui/react-roving-focus';
 import * as React from 'react';
 import { flushSync } from 'react-dom';
 import type { Scope } from '@radix-ui/react-context';
 import { createContextScope } from '@radix-ui/react-context';
+import { useDirection } from '@radix-ui/react-direction';
+import { clamp } from '@radix-ui/number';
 
 type FieldState = 'valid' | 'invalid';
 type InputType = 'password' | 'text';
 type AutoComplete = 'off' | 'one-time-code';
+
+type KeyboardActionDetails =
+  | {
+      action: 'keydown';
+      key: string;
+      metaKey: boolean;
+      ctrlKey: boolean;
+    }
+  | {
+      action: 'cut';
+      key?: never;
+    };
 
 interface OneTimePasswordFieldContextValue {
   value: string[];
@@ -21,15 +37,18 @@ interface OneTimePasswordFieldContextValue {
   hiddenInputRef: React.RefObject<HTMLInputElement | null>;
   childrenRefs: React.RefObject<HTMLInputElement[]>;
   //
-  disabled?: boolean;
-  readOnly?: boolean;
+  disabled: boolean;
+  readOnly: boolean;
   autoComplete: AutoComplete;
-  autoFocus?: boolean;
-  form?: string | undefined;
-  name?: string | undefined;
-  placeholder?: string | undefined;
-  required?: boolean;
-  type?: InputType;
+  autoFocus: boolean;
+  form: string | undefined;
+  name: string | undefined;
+  placeholder: string | undefined;
+  required: boolean;
+  type: InputType;
+  keyboardActionRef: React.RefObject<KeyboardActionDetails | null>;
+  pattern: string | undefined;
+  inputMode: Exclude<React.HTMLAttributes<HTMLInputElement>['inputMode'], undefined>;
 }
 
 const ONE_TIME_PASSWORD_FIELD_NAME = 'OneTimePasswordField';
@@ -38,10 +57,14 @@ const [Collection, useCollection, createCollectionScope] = createCollection<HTML
 );
 const [createOneTimePasswordFieldContext] = createContextScope(ONE_TIME_PASSWORD_FIELD_NAME, [
   createCollectionScope,
+  createRovingFocusGroupScope,
 ]);
+const useRovingFocusGroupScope = createRovingFocusGroupScope();
 
 const [OneTimePasswordFieldContext, useOneTimePasswordFieldContext] =
   createOneTimePasswordFieldContext<OneTimePasswordFieldContextValue>(ONE_TIME_PASSWORD_FIELD_NAME);
+
+type RovingFocusGroupProps = React.ComponentPropsWithoutRef<typeof RovingFocusGroup.Root>;
 
 interface OneTimePasswordFieldOwnProps {
   onValueChange?: (value: string) => void;
@@ -61,6 +84,11 @@ interface OneTimePasswordFieldOwnProps {
   placeholder?: string | undefined;
   required?: boolean;
   type?: InputType;
+  pattern?: string;
+  inputMode?: React.HTMLAttributes<HTMLInputElement>['inputMode'];
+  //
+  dir?: RovingFocusGroupProps['dir'];
+  orientation?: RovingFocusGroupProps['orientation'];
 }
 
 type ScopedProps<P> = P & { __scopeOneTimePasswordField?: Scope };
@@ -105,10 +133,16 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
       placeholder,
       required = false,
       type = 'password',
+      orientation,
+      dir,
+      inputMode = 'numeric',
+      pattern = inputMode === 'numeric' || inputMode === 'decimal' ? '\\d{1}' : undefined,
       ...domProps
     }: ScopedProps<OneTimePasswordFieldProps>,
     forwardedRef
   ) {
+    const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeOneTimePasswordField);
+    const direction = useDirection(dir);
     const [lastCharIndex, setLastCharIndex] = React.useState<number>(0);
     const [value, setValue] = useControllableState({
       prop: valueProp != null ? getValueAsArray(valueProp, valueProp.length) : undefined,
@@ -119,6 +153,7 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
     const hiddenInputRef = React.useRef<HTMLInputElement>(null);
     const childrenRefs = React.useRef<HTMLInputElement[]>([]);
 
+    const keyboardActionRef = React.useRef<KeyboardActionDetails | null>(null);
     const rootRef = React.useRef<HTMLDivElement | null>(null);
     const composedRefs = useComposedRefs(forwardedRef, rootRef);
 
@@ -134,7 +169,6 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
 
     const collection = useCollection(__scopeOneTimePasswordField);
     const length = collection.size;
-    console.log(collection);
 
     useAutoSubmit({
       attemptSubmit,
@@ -145,7 +179,7 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
       value,
     });
 
-    const handleCharChange = React.useCallback(
+    const onCharChange = React.useCallback(
       (char: string, index: number) => {
         setValue((previousValue) => {
           const arrayToCopy = previousValue ?? createEmptyArray(length);
@@ -164,7 +198,7 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
         value={value}
         state={state}
         attemptSubmit={attemptSubmit}
-        onCharChange={handleCharChange}
+        onCharChange={onCharChange}
         disabled={disabled}
         readOnly={readOnly}
         autoComplete={autoComplete}
@@ -177,29 +211,42 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
         hiddenInputRef={hiddenInputRef}
         setValue={setValue}
         childrenRefs={childrenRefs}
+        keyboardActionRef={keyboardActionRef}
+        pattern={pattern}
+        inputMode={inputMode}
       >
-        <Primitive.div
-          {...domProps}
-          ref={composedRefs}
-          data-state={state}
-          onPaste={composeEventHandlers(onPaste, (event: React.ClipboardEvent<HTMLDivElement>) => {
-            event.preventDefault();
-            const pastedValue = event.clipboardData.getData('Text');
-            const sanitizedValue = pastedValue.replace(/[^\d]/g, '').slice(0, length);
-            const value = sanitizedValue
-              .padEnd(length, '#')
-              .split('')
-              .map((char) => (char === '#' ? '' : char));
-
-            setValue(value);
-            setLastCharIndex(sanitizedValue.length - 1);
-
-            const index = Math.min(sanitizedValue.length, length - 1);
-            childrenRefs.current?.[index]?.focus();
-          })}
+        <RovingFocusGroup.Root
+          asChild
+          {...rovingFocusGroupScope}
+          orientation={orientation}
+          dir={direction}
         >
-          {children}
-        </Primitive.div>
+          <Primitive.div
+            {...domProps}
+            ref={composedRefs}
+            data-state={state}
+            onPaste={composeEventHandlers(
+              onPaste,
+              (event: React.ClipboardEvent<HTMLDivElement>) => {
+                event.preventDefault();
+                const pastedValue = event.clipboardData.getData('Text');
+                const sanitizedValue = pastedValue.replace(/[^\d]/g, '').slice(0, length);
+                const value = sanitizedValue
+                  .padEnd(length, '#')
+                  .split('')
+                  .map((char) => (char === '#' ? '' : char));
+
+                setValue(value);
+                setLastCharIndex(sanitizedValue.length - 1);
+
+                const index = Math.min(sanitizedValue.length, length - 1);
+                childrenRefs.current?.[index]?.focus();
+              }
+            )}
+          >
+            {children}
+          </Primitive.div>
+        </RovingFocusGroup.Root>
       </OneTimePasswordFieldContext>
     );
   }
@@ -273,6 +320,9 @@ const OneTimePasswordFieldInput = React.forwardRef<
     __scopeOneTimePasswordField,
     onChange,
     onKeyDown,
+    onPointerDown,
+    onCut,
+    onFocus,
     ...props
   }: ScopedProps<OneTimePasswordFieldInputProps>,
   forwardedRef
@@ -290,6 +340,8 @@ const OneTimePasswordFieldInput = React.forwardRef<
     placeholder: _placeholder,
     required: _required,
     type: _type,
+    pattern: _pattern,
+    inputMode: _inputMode,
     ...domProps
   } = props as any;
 
@@ -297,91 +349,183 @@ const OneTimePasswordFieldInput = React.forwardRef<
     'OneTimePasswordFieldInput',
     __scopeOneTimePasswordField
   );
+  const { keyboardActionRef } = context;
   const collection = useCollection(__scopeOneTimePasswordField);
+  const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeOneTimePasswordField);
 
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [element, setElement] = React.useState<HTMLInputElement | null>(null);
   const index = element ? collection.indexOf(element) : -1;
-  console.log({ index });
   const composedInputRef = useComposedRefs(forwardedRef, inputRef, setElement);
   const char = context.value[index] ?? '';
 
+  const keyboardActionTimeoutRef = React.useRef<number | null>(null);
+  React.useEffect(() => {
+    return () => {
+      window.clearTimeout(keyboardActionTimeoutRef.current!);
+    };
+  }, []);
+
+  const totalValue = context.value.join('').trim();
+  const lastSelectableIndex = clamp(totalValue.length, [0, collection.size - 1]);
+  const isFocusable = index <= lastSelectableIndex;
+
   return (
     <Collection.ItemSlot scope={__scopeOneTimePasswordField}>
-      <Primitive.input
-        ref={composedInputRef}
-        autoComplete={index === 0 ? context.autoComplete : 'off'}
-        inputMode="numeric"
-        maxLength={1}
-        pattern="\d{1}"
-        readOnly={context.readOnly}
-        value={char}
-        data-radix-otp-input=""
-        data-radix-index={index}
-        onChange={composeEventHandlers(onChange, (event) => {
-          // Only update the value if it matches the input pattern (number only)
-          if (event.target.validity.valid) {
-            const char = event.target.value;
-            flushSync(() => {
-              context.onCharChange(char, index);
-            });
-            if (char !== '') {
-              focusSibling(event.currentTarget, { back: char === '' });
+      <RovingFocusGroup.Item
+        {...rovingFocusGroupScope}
+        asChild
+        focusable={!context.disabled && isFocusable}
+        active={index === lastSelectableIndex}
+      >
+        <Primitive.input
+          ref={composedInputRef}
+          autoComplete={index === 0 ? context.autoComplete : 'off'}
+          inputMode={context.inputMode}
+          maxLength={1}
+          pattern={context.pattern}
+          readOnly={context.readOnly}
+          value={char}
+          data-radix-otp-input=""
+          data-radix-index={index}
+          onFocus={composeEventHandlers(onFocus, (event) => {
+            event.currentTarget.select();
+          })}
+          onCut={composeEventHandlers(onCut, (event) => {
+            const currentValue = event.currentTarget.value;
+            if (currentValue !== '') {
+              // In this case the value will be cleared, but we don't want to
+              // set it directly because the user may want to prevent default
+              // behavior in the onChange handler. The keyboardActionRef will
+              // is set temporarily so the change handler can behave correctly
+              // in response to the action.
+              keyboardActionRef.current = {
+                action: 'cut',
+              };
+              // Set a short timeout to clear the action tracker after the change
+              // handler has had time to complete.
+              keyboardActionTimeoutRef.current = window.setTimeout(() => {
+                keyboardActionRef.current = null;
+              }, 10);
             }
-          }
-        })}
-        onKeyDown={composeEventHandlers(onKeyDown, (event) => {
-          switch (event.key) {
-            case 'ArrowLeft': {
-              focusSibling(event.currentTarget, { back: true });
-              event.preventDefault();
-              return;
-            }
-            case 'ArrowRight': {
-              focusSibling(event.currentTarget);
-              event.preventDefault();
-              return;
-            }
-            case 'Backspace': {
-              if (event.metaKey || event.ctrlKey) {
-                context.setValue([]);
-                // focus first input
-                context.childrenRefs.current?.[0]?.focus();
+          })}
+          onChange={composeEventHandlers(onChange, (event) => {
+            const keyboardAction = keyboardActionRef.current;
+            keyboardActionRef.current = null;
+            if (keyboardAction?.action === 'cut' || keyboardAction?.key === 'Backspace') {
+              const isClearing =
+                keyboardAction.action === 'keydown' &&
+                (keyboardAction.metaKey || keyboardAction.ctrlKey);
+              flushSync(() => {
+                if (isClearing) {
+                  context.setValue([]);
+                } else {
+                  context.onCharChange('', index);
+                }
+              });
+              if (isClearing) {
+                collection.at(0)?.element.focus();
               } else {
-                focusSibling(event.currentTarget, { back: true });
+                if (index === totalValue.length - 1) {
+                  const previous = collection.from(event.currentTarget, -1)?.element;
+                  if (previous) {
+                    previous.focus();
+                  }
+                } else {
+                  event.currentTarget.select();
+                }
               }
               return;
             }
-            case 'Enter': {
-              event.preventDefault();
-              context.attemptSubmit();
-              return;
+
+            // Only update the value if it matches the input pattern
+            if (event.target.validity.valid) {
+              const character = event.target.value;
+              flushSync(() => {
+                context.onCharChange(character, index);
+              });
+
+              const lastElement = collection.at(-1)?.element;
+              if (character !== '' && event.currentTarget !== lastElement) {
+                const next = collection.from(event.currentTarget, 1)?.element;
+                if (next) {
+                  next.focus();
+                }
+              }
+            } else {
+              const element = event.target;
+              requestAnimationFrame(() => {
+                if (element.ownerDocument.activeElement === element) {
+                  element.select();
+                }
+              });
             }
-          }
-        })}
-        {...domProps}
-      />
+          })}
+          onKeyDown={composeEventHandlers(onKeyDown, (event) => {
+            switch (event.key) {
+              case 'Backspace': {
+                const currentValue = event.currentTarget.value;
+                // if current value is empty, no change event will fire. In this
+                // case we want to return focus to the previous input
+                if (currentValue === '') {
+                  const element = event.currentTarget;
+                  collection.from(element, -1)?.element.focus();
+                } else {
+                  // In this case the value will be cleared, but we don't want to
+                  // set it directly because the user may want to prevent default
+                  // behavior in the onChange handler. The keyboardActionRef will
+                  // is set temporarily so the change handler can behave correctly
+                  // in response to the backspace key vs. clearing the value by
+                  // setting state externally.
+                  keyboardActionRef.current = {
+                    action: 'keydown',
+                    key: 'Backspace',
+                    metaKey: event.metaKey,
+                    ctrlKey: event.ctrlKey,
+                  };
+                  // Set a short timeout to clear the action tracker after the change
+                  // handler has had time to complete.
+                  keyboardActionTimeoutRef.current = window.setTimeout(() => {
+                    keyboardActionRef.current = null;
+                  }, 10);
+                }
+
+                return;
+              }
+              case 'Enter': {
+                event.preventDefault();
+                context.attemptSubmit();
+                return;
+              }
+              default: {
+                const isValueSelected =
+                  event.currentTarget.selectionStart === 0 &&
+                  event.currentTarget.selectionEnd === 1;
+                if (isValueSelected && event.currentTarget.value === event.key) {
+                  // if current value is same as the key press with a value
+                  // selected, no change event will fire. Focus the next input.
+                  const element = event.currentTarget;
+                  collection.from(element, 1)?.element.focus();
+                }
+              }
+            }
+          })}
+          onPointerDown={composeEventHandlers(onPointerDown, (event) => {
+            if (index > lastSelectableIndex) {
+              event.preventDefault();
+              const element = collection.at(lastSelectableIndex)?.element;
+              if (element) {
+                element.focus();
+                element.select();
+              }
+            }
+          })}
+          {...domProps}
+        />
+      </RovingFocusGroup.Item>
     </Collection.ItemSlot>
   );
 });
-
-function focusSibling(input: HTMLInputElement, { back = false } = {}) {
-  const parent = input.parentElement;
-  const index = input.dataset.radixIndex ? Number.parseInt(input.dataset.radixIndex) : Number.NaN;
-  if (Number.isNaN(index)) {
-    return;
-  }
-
-  const siblingInput = parent?.querySelector<HTMLElement>(
-    `[data-radix-otp-input][data-radix-index="${index + (back ? -1 : 1)}"]`
-  );
-  if (siblingInput) {
-    siblingInput.focus();
-    if (siblingInput instanceof HTMLInputElement) {
-      siblingInput.select();
-    }
-  }
-}
 
 function getValueAsArray(value: string, length: number) {
   return createEmptyArray(length).map((_, index) => value[index] ?? '');
@@ -437,8 +581,6 @@ function useAutoSubmit({
     if (previousValue === currentValue) {
       return;
     }
-
-    console.log({ lastCharIndex });
 
     if (autoSubmit && value.every((char) => char !== '') && lastCharIndex + 1 === length) {
       onAutoSubmit?.(value.join(''));

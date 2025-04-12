@@ -1584,6 +1584,9 @@ importers:
 
   packages/react/one-time-password-field:
     dependencies:
+      '@radix-ui/number':
+        specifier: workspace:*
+        version: link:../../core/number
       '@radix-ui/primitive':
         specifier: workspace:*
         version: link:../../core/primitive
@@ -1596,9 +1599,15 @@ importers:
       '@radix-ui/react-context':
         specifier: workspace:*
         version: link:../context
+      '@radix-ui/react-direction':
+        specifier: workspace:*
+        version: link:../direction
       '@radix-ui/react-primitive':
         specifier: workspace:*
         version: link:../primitive
+      '@radix-ui/react-roving-focus':
+        specifier: workspace:*
+        version: link:../roving-focus
       '@radix-ui/react-use-controllable-state':
         specifier: workspace:*
         version: link:../use-controllable-state
