@@ -2,7 +2,11 @@ import { Primitive } from '@radix-ui/react-primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { composeEventHandlers } from '@radix-ui/primitive';
+import { unstable_createCollection as createCollection } from '@radix-ui/react-collection';
 import * as React from 'react';
+import { flushSync } from 'react-dom';
+import type { Scope } from '@radix-ui/react-context';
+import { createContextScope } from '@radix-ui/react-context';
 
 type FieldState = 'valid' | 'invalid';
 type InputType = 'password' | 'text';
@@ -12,13 +16,10 @@ interface OneTimePasswordFieldContextValue {
   value: string[];
   setValue: React.Dispatch<React.SetStateAction<string[]>>;
   state?: FieldState;
-  onEnterPressed: () => void;
-  onChildAdd: (input: HTMLInputElement) => void;
+  attemptSubmit: () => void;
   onCharChange: (char: string, index: number) => void;
-  allChildrenAdded: boolean;
   hiddenInputRef: React.RefObject<HTMLInputElement | null>;
   childrenRefs: React.RefObject<HTMLInputElement[]>;
-  length: number;
   //
   disabled?: boolean;
   readOnly?: boolean;
@@ -31,20 +32,25 @@ interface OneTimePasswordFieldContextValue {
   type?: InputType;
 }
 
-const OneTimePasswordFieldContext = React.createContext<OneTimePasswordFieldContextValue | null>(
-  null
+const ONE_TIME_PASSWORD_FIELD_NAME = 'OneTimePasswordField';
+const [Collection, useCollection, createCollectionScope] = createCollection<HTMLInputElement>(
+  ONE_TIME_PASSWORD_FIELD_NAME
 );
-OneTimePasswordFieldContext.displayName = 'OneTimePasswordFieldContext';
+const [createOneTimePasswordFieldContext] = createContextScope(ONE_TIME_PASSWORD_FIELD_NAME, [
+  createCollectionScope,
+]);
+
+const [OneTimePasswordFieldContext, useOneTimePasswordFieldContext] =
+  createOneTimePasswordFieldContext<OneTimePasswordFieldContextValue>(ONE_TIME_PASSWORD_FIELD_NAME);
 
 interface OneTimePasswordFieldOwnProps {
-  children?: ((args: { inputs: Array<{ index: number }> }) => React.ReactNode) | React.ReactNode;
   onValueChange?: (value: string) => void;
-  length: number;
   id?: string;
   state?: FieldState;
   value?: string;
   defaultValue?: string;
   autoSubmit?: boolean;
+  onAutoSubmit?: (value: string) => void;
   //
   disabled?: boolean;
   readOnly?: boolean;
@@ -57,6 +63,19 @@ interface OneTimePasswordFieldOwnProps {
   type?: InputType;
 }
 
+type ScopedProps<P> = P & { __scopeOneTimePasswordField?: Scope };
+
+const OneTimePasswordFieldCollectionProvider = ({
+  __scopeOneTimePasswordField,
+  children,
+}: ScopedProps<{ children: React.ReactNode }>) => {
+  return (
+    <Collection.Provider scope={__scopeOneTimePasswordField}>
+      <Collection.Slot scope={__scopeOneTimePasswordField}>{children}</Collection.Slot>
+    </Collection.Provider>
+  );
+};
+
 interface OneTimePasswordFieldProps
   extends OneTimePasswordFieldOwnProps,
     Omit<
@@ -64,9 +83,10 @@ interface OneTimePasswordFieldProps
       keyof OneTimePasswordFieldOwnProps
     > {}
 
-const OneTimePasswordField = React.forwardRef<HTMLDivElement, OneTimePasswordFieldProps>(
-  function OneTimePasswordField(
+const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswordFieldProps>(
+  function OneTimePasswordFieldImpl(
     {
+      __scopeOneTimePasswordField,
       id,
       defaultValue,
       value: valueProp,
@@ -75,7 +95,7 @@ const OneTimePasswordField = React.forwardRef<HTMLDivElement, OneTimePasswordFie
       children,
       state,
       onPaste,
-      //
+      onAutoSubmit,
       disabled = false,
       readOnly = false,
       autoComplete = 'one-time-code',
@@ -85,68 +105,45 @@ const OneTimePasswordField = React.forwardRef<HTMLDivElement, OneTimePasswordFie
       placeholder,
       required = false,
       type = 'password',
-      length,
       ...domProps
-    },
+    }: ScopedProps<OneTimePasswordFieldProps>,
     forwardedRef
   ) {
-    // runtime validation for `length` to improve errors
-    if (length == null) {
-      // TODO: improve error messages
-      throw new Error('A `length` prop is required');
-    } else if (typeof length !== 'number') {
-      throw new Error('The `length` prop must be a number');
-    } else if (!Number.isInteger(length) || length <= 0) {
-      throw new Error('The `length` prop must be a positive integer');
-    }
-
     const [lastCharIndex, setLastCharIndex] = React.useState<number>(0);
-    const [allChildrenAdded, setAllChildrenAdded] = React.useState<boolean>(false);
-
     const [value, setValue] = useControllableState({
-      prop: valueProp != null ? getValueAsArray(valueProp, length) : undefined,
-      defaultProp: defaultValue != null ? getValueAsArray(defaultValue, length) : [],
+      prop: valueProp != null ? getValueAsArray(valueProp, valueProp.length) : undefined,
+      defaultProp: defaultValue != null ? getValueAsArray(defaultValue, defaultValue.length) : [],
       onChange: (value) => onValueChange?.(value.join('')),
     });
 
     const hiddenInputRef = React.useRef<HTMLInputElement>(null);
     const childrenRefs = React.useRef<HTMLInputElement[]>([]);
 
-    const attemptAutoSubmit = React.useCallback(
-      (enterPressed = false) => {
-        if (
-          autoSubmit &&
-          value &&
-          value.every((char) => char !== '') &&
-          (enterPressed || lastCharIndex + 1 === length)
-        ) {
-          // TODO: use `form` prop if provided
-          hiddenInputRef.current?.form?.requestSubmit();
-        }
-      },
-      [value, length, lastCharIndex, autoSubmit]
-    );
+    const rootRef = React.useRef<HTMLDivElement | null>(null);
+    const composedRefs = useComposedRefs(forwardedRef, rootRef);
 
-    const handleEnterPressed = React.useCallback(
-      () => attemptAutoSubmit(true),
-      [attemptAutoSubmit]
-    );
+    const attemptSubmit = React.useCallback(() => {
+      const formElement = form
+        ? ((rootRef.current?.ownerDocument ?? document).getElementById(form) as HTMLFormElement)
+        : hiddenInputRef.current?.form;
 
-    const handleChildAdd = React.useCallback(
-      (input: HTMLInputElement) => {
-        if (input) {
-          input.dataset.index = `${childrenRefs.current.length}`;
-          childrenRefs.current.push(input);
-        } else {
-          childrenRefs.current.pop();
-        }
+      if (isFormElement(formElement)) {
+        formElement.requestSubmit();
+      }
+    }, [form]);
 
-        if (childrenRefs.current.length === length) {
-          setAllChildrenAdded(true);
-        }
-      },
-      [length]
-    );
+    const collection = useCollection(__scopeOneTimePasswordField);
+    const length = collection.size;
+    console.log(collection);
+
+    useAutoSubmit({
+      attemptSubmit,
+      autoSubmit,
+      lastCharIndex,
+      length,
+      onAutoSubmit,
+      value,
+    });
 
     const handleCharChange = React.useCallback(
       (char: string, index: number) => {
@@ -161,56 +158,29 @@ const OneTimePasswordField = React.forwardRef<HTMLDivElement, OneTimePasswordFie
       [length, setValue]
     );
 
-    const otpContext = React.useMemo<OneTimePasswordFieldContextValue>(
-      () => ({
-        value: value ?? createEmptyArray(length),
-        state,
-        allChildrenAdded,
-        onEnterPressed: handleEnterPressed,
-        onChildAdd: handleChildAdd,
-        onCharChange: handleCharChange,
-        disabled,
-        readOnly,
-        autoComplete,
-        autoFocus,
-        form,
-        name,
-        placeholder,
-        required,
-        type,
-        hiddenInputRef,
-        setValue,
-        childrenRefs,
-        length,
-      }),
-      [
-        value,
-        allChildrenAdded,
-        state,
-        handleEnterPressed,
-        handleChildAdd,
-        handleCharChange,
-        disabled,
-        readOnly,
-        autoComplete,
-        autoFocus,
-        form,
-        name,
-        placeholder,
-        required,
-        type,
-        setValue,
-        length,
-      ]
-    );
-
-    React.useEffect(attemptAutoSubmit, [attemptAutoSubmit]);
-
     return (
-      <OneTimePasswordFieldContext.Provider value={otpContext}>
+      <OneTimePasswordFieldContext
+        scope={__scopeOneTimePasswordField}
+        value={value}
+        state={state}
+        attemptSubmit={attemptSubmit}
+        onCharChange={handleCharChange}
+        disabled={disabled}
+        readOnly={readOnly}
+        autoComplete={autoComplete}
+        autoFocus={autoFocus}
+        form={form}
+        name={name}
+        placeholder={placeholder}
+        required={required}
+        type={type}
+        hiddenInputRef={hiddenInputRef}
+        setValue={setValue}
+        childrenRefs={childrenRefs}
+      >
         <Primitive.div
           {...domProps}
-          ref={forwardedRef}
+          ref={composedRefs}
           data-state={state}
           onPaste={composeEventHandlers(onPaste, (event: React.ClipboardEvent<HTMLDivElement>) => {
             event.preventDefault();
@@ -228,13 +198,19 @@ const OneTimePasswordField = React.forwardRef<HTMLDivElement, OneTimePasswordFie
             childrenRefs.current?.[index]?.focus();
           })}
         >
-          {typeof children === 'function'
-            ? children({
-                inputs: Array.from({ length }).map((_, index) => ({ index })),
-              })
-            : children}
+          {children}
         </Primitive.div>
-      </OneTimePasswordFieldContext.Provider>
+      </OneTimePasswordFieldContext>
+    );
+  }
+);
+
+const OneTimePasswordField = React.forwardRef<HTMLDivElement, OneTimePasswordFieldProps>(
+  function OneTimePasswordField(props, ref) {
+    return (
+      <OneTimePasswordFieldCollectionProvider>
+        <OneTimePasswordFieldImpl {...props} ref={ref} />
+      </OneTimePasswordFieldCollectionProvider>
     );
   }
 );
@@ -255,8 +231,14 @@ interface OneTimePasswordFieldHiddenInputProps
 const OneTimePasswordFieldHiddenInput = React.forwardRef<
   HTMLInputElement,
   OneTimePasswordFieldHiddenInputProps
->(function OneTimePasswordFieldHiddenInput(props, forwardedRef) {
-  const { value, hiddenInputRef } = useOneTimePasswordFieldContext();
+>(function OneTimePasswordFieldHiddenInput(
+  { __scopeOneTimePasswordField, ...props }: ScopedProps<OneTimePasswordFieldHiddenInputProps>,
+  forwardedRef
+) {
+  const { value, hiddenInputRef } = useOneTimePasswordFieldContext(
+    'OneTimePasswordFieldHiddenInput',
+    __scopeOneTimePasswordField
+  );
   const ref = useComposedRefs(hiddenInputRef, forwardedRef);
   return (
     <input
@@ -277,7 +259,6 @@ const OneTimePasswordFieldHiddenInput = React.forwardRef<
 
 interface OneTimePasswordFieldInputOwnProps {
   autoComplete?: 'one-time-code' | 'off';
-  index: number;
 }
 
 interface OneTimePasswordFieldInputProps
@@ -287,7 +268,15 @@ interface OneTimePasswordFieldInputProps
 const OneTimePasswordFieldInput = React.forwardRef<
   HTMLInputElement,
   OneTimePasswordFieldInputProps
->(function OneTimePasswordFieldInput({ onChange, onKeyDown, index, ...props }, forwardedRef) {
+>(function OneTimePasswordFieldInput(
+  {
+    __scopeOneTimePasswordField,
+    onChange,
+    onKeyDown,
+    ...props
+  }: ScopedProps<OneTimePasswordFieldInputProps>,
+  forwardedRef
+) {
   // TODO: warn if these values are passed
   const {
     value: _value,
@@ -304,81 +293,81 @@ const OneTimePasswordFieldInput = React.forwardRef<
     ...domProps
   } = props as any;
 
-  const context = useOneTimePasswordFieldContext();
-
-  // runtime validation for `index` to improve errors
-  if (index == null) {
-    // TODO: improve error messages
-    throw new Error('A `index` prop is required');
-  } else if (typeof index !== 'number') {
-    throw new Error('The `index` prop must be a number');
-  } else if (!Number.isInteger(index) || index < 0) {
-    throw new Error('The `index` prop must be a positive integer');
-  } else if (index >= context.length) {
-    throw new Error('The `index` prop must be less than the root `length`');
-  }
+  const context = useOneTimePasswordFieldContext(
+    'OneTimePasswordFieldInput',
+    __scopeOneTimePasswordField
+  );
+  const collection = useCollection(__scopeOneTimePasswordField);
 
   const inputRef = React.useRef<HTMLInputElement>(null);
-  const composedInputRef = useComposedRefs(forwardedRef, inputRef, context.onChildAdd);
+  const [element, setElement] = React.useState<HTMLInputElement | null>(null);
+  const index = element ? collection.indexOf(element) : -1;
+  console.log({ index });
+  const composedInputRef = useComposedRefs(forwardedRef, inputRef, setElement);
   const char = context.value[index] ?? '';
 
   return (
-    <Primitive.input
-      ref={composedInputRef}
-      autoComplete={index === 0 ? context.autoComplete : 'off'}
-      inputMode="numeric"
-      maxLength={1}
-      pattern="\d{1}"
-      readOnly={context.readOnly}
-      value={char}
-      data-radix-otp-input=""
-      data-radix-index={index}
-      onChange={composeEventHandlers(onChange, (event) => {
-        // Only update the value if it matches the input pattern (number only)
-        if (event.target.validity.valid) {
-          const char = event.target.value;
-          const index = Number(event.target.dataset.index ?? -1);
-          context.onCharChange(char, index);
-          if (char !== '') {
-            focusSibling(event.currentTarget, { back: char === '' });
+    <Collection.ItemSlot scope={__scopeOneTimePasswordField}>
+      <Primitive.input
+        ref={composedInputRef}
+        autoComplete={index === 0 ? context.autoComplete : 'off'}
+        inputMode="numeric"
+        maxLength={1}
+        pattern="\d{1}"
+        readOnly={context.readOnly}
+        value={char}
+        data-radix-otp-input=""
+        data-radix-index={index}
+        onChange={composeEventHandlers(onChange, (event) => {
+          // Only update the value if it matches the input pattern (number only)
+          if (event.target.validity.valid) {
+            const char = event.target.value;
+            flushSync(() => {
+              context.onCharChange(char, index);
+            });
+            if (char !== '') {
+              focusSibling(event.currentTarget, { back: char === '' });
+            }
           }
-        }
-      })}
-      onKeyDown={composeEventHandlers(onKeyDown, (event) => {
-        if (event.key === 'ArrowLeft') {
-          focusSibling(event.currentTarget, { back: true });
-          event.preventDefault();
-        } else if (event.key === 'ArrowRight') {
-          focusSibling(event.currentTarget);
-          event.preventDefault();
-        } else if (event.key === 'Backspace') {
-          if (event.metaKey || event.ctrlKey) {
-            context.setValue([]);
-            // focus first input
-            context.childrenRefs.current?.[0]?.focus();
-          } else {
-            focusSibling(event.currentTarget, { back: true });
+        })}
+        onKeyDown={composeEventHandlers(onKeyDown, (event) => {
+          switch (event.key) {
+            case 'ArrowLeft': {
+              focusSibling(event.currentTarget, { back: true });
+              event.preventDefault();
+              return;
+            }
+            case 'ArrowRight': {
+              focusSibling(event.currentTarget);
+              event.preventDefault();
+              return;
+            }
+            case 'Backspace': {
+              if (event.metaKey || event.ctrlKey) {
+                context.setValue([]);
+                // focus first input
+                context.childrenRefs.current?.[0]?.focus();
+              } else {
+                focusSibling(event.currentTarget, { back: true });
+              }
+              return;
+            }
+            case 'Enter': {
+              event.preventDefault();
+              context.attemptSubmit();
+              return;
+            }
           }
-        } else if (event.key === 'Enter' && char !== '') {
-          context.onEnterPressed();
-        }
-      })}
-      {...domProps}
-    />
+        })}
+        {...domProps}
+      />
+    </Collection.ItemSlot>
   );
 });
 
-function useOneTimePasswordFieldContext() {
-  const context = React.useContext(OneTimePasswordFieldContext);
-  if (!context) {
-    throw new Error('TODO: add error message');
-  }
-  return context;
-}
-
 function focusSibling(input: HTMLInputElement, { back = false } = {}) {
   const parent = input.parentElement;
-  const index = input.dataset.index ? Number.parseInt(input.dataset.index) : Number.NaN;
+  const index = input.dataset.radixIndex ? Number.parseInt(input.dataset.radixIndex) : Number.NaN;
   if (Number.isNaN(index)) {
     return;
   }
@@ -420,3 +409,40 @@ export type {
   OneTimePasswordFieldInputProps,
   OneTimePasswordFieldHiddenInputProps,
 };
+
+function isFormElement(element: Element | null | undefined): element is HTMLFormElement {
+  return element?.tagName === 'FORM';
+}
+
+function useAutoSubmit({
+  autoSubmit = false,
+  value,
+  length,
+  lastCharIndex,
+  attemptSubmit,
+  onAutoSubmit,
+}: {
+  value: string[];
+  autoSubmit: boolean | undefined;
+  length: number;
+  lastCharIndex: number;
+  attemptSubmit: () => void;
+  onAutoSubmit: ((value: string) => void) | undefined;
+}) {
+  const currentValue = value.join('');
+  const valueRef = React.useRef(currentValue);
+  React.useEffect(() => {
+    const previousValue = valueRef.current;
+    valueRef.current = currentValue;
+    if (previousValue === currentValue) {
+      return;
+    }
+
+    console.log({ lastCharIndex });
+
+    if (autoSubmit && value.every((char) => char !== '') && lastCharIndex + 1 === length) {
+      onAutoSubmit?.(value.join(''));
+      attemptSubmit();
+    }
+  }, [attemptSubmit, autoSubmit, currentValue, lastCharIndex, length, onAutoSubmit, value]);
+}

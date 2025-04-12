@@ -1,5 +1,7 @@
 import * as React from 'react';
 import { OneTimePasswordField, Separator } from 'radix-ui';
+import { Dialog as DialogPrimitive } from 'radix-ui';
+import dialogStyles from './dialog.stories.module.css';
 import styles from './one-time-password-field.stories.module.css';
 
 export default {
@@ -9,6 +11,8 @@ export default {
 export const Styled = () => {
   const [error, setError] = React.useState<string | null>(null);
   const [code, setCode] = React.useState('');
+  const [showSuccessMessage, setShowSuccessMessage] = React.useState(false);
+
   const rootRef = React.useRef<HTMLDivElement | null>(null);
   const VALID_CODE = '123456';
   const isInvalid = code.length === VALID_CODE.length ? code !== VALID_CODE : false;
@@ -17,31 +21,22 @@ export const Styled = () => {
     <div className={styles.viewport}>
       <form
         className={styles.form}
-        onChange={() => setError(null)}
         onSubmit={(event) => {
           event.preventDefault();
-
-          const inputs = Array.from(rootRef.current!.querySelectorAll('input')).filter(
-            (input) => input.type !== 'hidden'
-          );
-
-          console.log(Math.random());
-
           if (isInvalid) {
             setError('Invalid code');
-            const lastInput = inputs.at(-1);
-            lastInput?.focus();
-          } else if (code.length !== VALID_CODE.length) {
+          }
+          //
+          else if (code.length !== VALID_CODE.length) {
             setError('Please fill in all fields');
-            // focus last filled input
-            const lastInput = inputs.find((input) => input.value);
-            lastInput?.focus();
-          } else if (Math.random() > 0.675) {
+          }
+          //
+          else if (Math.random() > 0.675) {
             setError('Server error');
-            const lastInput = inputs.at(-1);
-            lastInput?.focus();
-          } else {
-            window.alert('Success!');
+          }
+          //
+          else {
+            setShowSuccessMessage(true);
           }
         }}
       >
@@ -54,35 +49,65 @@ export const Styled = () => {
             ref={rootRef}
             onValueChange={(value) => setCode(value)}
             value={code}
-            length={6}
           >
-            {({ inputs }) => (
-              <React.Fragment>
-                {inputs.map((input, index) => {
-                  const isLastInput = index === inputs.length - 1;
-                  if (isLastInput) {
-                    return <OneTimePasswordField.Input key={input.index} index={input.index} />;
-                  } else {
-                    return (
-                      <React.Fragment key={input.index}>
-                        <OneTimePasswordField.Input key={input.index} index={input.index} />
-                        <Separator.Root orientation="vertical" className={styles.separator} />
-                      </React.Fragment>
-                    );
-                  }
-                })}
-                <OneTimePasswordField.HiddenInput />
-              </React.Fragment>
-            )}
+            <OneTimePasswordField.Input />
+            <Separator.Root orientation="vertical" className={styles.separator} />
+            <OneTimePasswordField.Input />
+            <Separator.Root orientation="vertical" className={styles.separator} />
+            <OneTimePasswordField.Input />
+            <Separator.Root orientation="vertical" className={styles.separator} />
+            <OneTimePasswordField.Input />
+            <Separator.Root orientation="vertical" className={styles.separator} />
+            <OneTimePasswordField.Input />
+            <Separator.Root orientation="vertical" className={styles.separator} />
+            <OneTimePasswordField.Input />
           </OneTimePasswordField.Root>
           {error && <ErrorMessage>{error}</ErrorMessage>}
         </div>
         <button>Submit</button>
       </form>
+      <Dialog
+        open={showSuccessMessage}
+        onOpenChange={setShowSuccessMessage}
+        title="Password match"
+        content="Success!"
+      />
     </div>
   );
 };
 
 function ErrorMessage({ children }: { children: string }) {
   return <div className={styles.errorMessage}>{children}</div>;
+}
+
+function Dialog({
+  trigger,
+  title = 'Hello!',
+  content,
+  open,
+  onOpenChange,
+}: {
+  title?: string;
+  content: string;
+  trigger?: React.ReactNode;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
+  const lastFocusedRef = React.useRef<HTMLElement | null>(null);
+  React.useLayoutEffect(() => {
+    lastFocusedRef.current = document.activeElement as HTMLElement;
+  }, []);
+  return (
+    <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
+      {trigger}
+      <DialogPrimitive.Portal>
+        <DialogPrimitive.Overlay className={dialogStyles.overlay} />
+        <DialogPrimitive.Content className={dialogStyles.contentDefault}>
+          <DialogPrimitive.Title>{title}</DialogPrimitive.Title>
+          <DialogPrimitive.Description>{content}</DialogPrimitive.Description>
+          <DialogPrimitive.Close className={dialogStyles.close}>close</DialogPrimitive.Close>
+        </DialogPrimitive.Content>
+      </DialogPrimitive.Portal>
+    </DialogPrimitive.Root>
+  );
 }
