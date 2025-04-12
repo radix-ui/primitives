@@ -2,6 +2,8 @@ import React from 'react';
 import { createContextScope } from '@radix-ui/react-context';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createSlot, type Slot } from '@radix-ui/react-slot';
+import type { EntryOf } from './ordered-dictionary';
+import { OrderedDict } from './ordered-dictionary';
 
 type SlotProps = React.ComponentPropsWithoutRef<typeof Slot>;
 type CollectionElement = HTMLElement;
@@ -9,12 +11,26 @@ interface CollectionProps extends SlotProps {
   scope: any;
 }
 
-// We have resorted to returning slots directly rather than exposing primitives that can then
-// be slotted like `<CollectionItem as={Slot}>…</CollectionItem>`.
-// This is because we encountered issues with generic types that cannot be statically analysed
-// due to creating them dynamically via createCollection.
+interface BaseItemData {
+  id?: string;
+}
 
-function createCollection<ItemElement extends HTMLElement, ItemData = {}>(name: string) {
+type ItemDataWithElement<
+  ItemData extends BaseItemData,
+  ItemElement extends HTMLElement,
+> = ItemData & {
+  element: ItemElement;
+};
+
+type ItemMap<ItemElement extends HTMLElement, ItemData extends BaseItemData> = OrderedDict<
+  ItemElement,
+  ItemDataWithElement<ItemData, ItemElement>
+>;
+
+function createCollection<
+  ItemElement extends HTMLElement,
+  ItemData extends BaseItemData = BaseItemData,
+>(name: string) {
   /* -----------------------------------------------------------------------------------------------
    * CollectionProvider
    * ---------------------------------------------------------------------------------------------*/
@@ -23,24 +39,73 @@ function createCollection<ItemElement extends HTMLElement, ItemData = {}>(name: 
   const [createCollectionContext, createCollectionScope] = createContextScope(PROVIDER_NAME);
 
   type ContextValue = {
-    collectionRef: React.RefObject<CollectionElement | null>;
-    itemMap: Map<
-      React.RefObject<ItemElement | null>,
-      { ref: React.RefObject<ItemElement | null> } & ItemData
-    >;
+    collectionElement: CollectionElement | null;
+    collectionRef: React.Ref<CollectionElement | null>;
+    collectionRefObject: React.RefObject<CollectionElement | null>;
+    itemMap: ItemMap<ItemElement, ItemData>;
+    setItemMap: React.Dispatch<React.SetStateAction<ItemMap<ItemElement, ItemData>>>;
   };
 
   const [CollectionProviderImpl, useCollectionContext] = createCollectionContext<ContextValue>(
     PROVIDER_NAME,
-    { collectionRef: { current: null }, itemMap: new Map() }
+    {
+      collectionElement: null,
+      collectionRef: { current: null },
+      collectionRefObject: { current: null },
+      itemMap: new OrderedDict(),
+      setItemMap: () => void 0,
+    }
   );
 
   const CollectionProvider: React.FC<{ children?: React.ReactNode; scope: any }> = (props) => {
     const { scope, children } = props;
     const ref = React.useRef<CollectionElement>(null);
-    const itemMap = React.useRef<ContextValue['itemMap']>(new Map()).current;
+    const [collectionElement, setCollectionElement] = React.useState<CollectionElement | null>(
+      null
+    );
+    const composeRefs = useComposedRefs(ref, setCollectionElement);
+    const [itemMap, setItemMap] = React.useState<ItemMap<ItemElement, ItemData>>(new OrderedDict());
+
+    React.useEffect(() => {
+      if (!collectionElement) return;
+
+      const observer = getChildListObserver(() => {
+        // setItemMap((map) => {
+        //   const copy = new OrderedDict(map).toSorted(([, a], [, b]) =>
+        //     !a.element || !b.element ? 0 : isElementPreceding(a.element, b.element) ? -1 : 1
+        //   );
+        //   // check if the order has changed
+        //   let index = -1;
+        //   for (const entry of copy) {
+        //     index++;
+        //     const key = map.keyAt(index)!;
+        //     const [copyKey] = entry;
+        //     if (key !== copyKey) {
+        //       // order has changed!
+        //       return copy;
+        //     }
+        //   }
+        //   return map;
+        // });
+      });
+      observer.observe(collectionElement, {
+        childList: true,
+        subtree: true,
+      });
+      return () => {
+        observer.disconnect();
+      };
+    }, [collectionElement]);
+
     return (
-      <CollectionProviderImpl scope={scope} itemMap={itemMap} collectionRef={ref}>
+      <CollectionProviderImpl
+        scope={scope}
+        itemMap={itemMap}
+        setItemMap={setItemMap}
+        collectionRef={composeRefs}
+        collectionRefObject={ref}
+        collectionElement={collectionElement}
+      >
         {children}
       </CollectionProviderImpl>
     );
@@ -83,16 +148,48 @@ function createCollection<ItemElement extends HTMLElement, ItemData = {}>(name: 
     (props, forwardedRef) => {
       const { scope, children, ...itemData } = props;
       const ref = React.useRef<ItemElement>(null);
-      const composedRefs = useComposedRefs(forwardedRef, ref);
+      const [element, setElement] = React.useState<ItemElement | null>(null);
+      const composedRefs = useComposedRefs(forwardedRef, ref, setElement);
       const context = useCollectionContext(ITEM_SLOT_NAME, scope);
 
+      const { setItemMap } = context;
+
+      const itemDataRef = React.useRef(itemData);
+      if (!shallowEqual(itemDataRef.current, itemData)) {
+        itemDataRef.current = itemData;
+      }
+      const memoizedItemData = itemDataRef.current;
+
       React.useEffect(() => {
-        context.itemMap.set(ref, { ref, ...(itemData as unknown as ItemData) });
-        return () => void context.itemMap.delete(ref);
-      });
+        const itemData = memoizedItemData;
+        setItemMap((map) => {
+          if (!element) {
+            return map;
+          }
+
+          if (!map.has(element)) {
+            map.set(element, { ...(itemData as unknown as ItemData), element });
+            return map.toSorted(sortByDocumentPosition);
+          }
+
+          return map
+            .set(element, { ...(itemData as unknown as ItemData), element })
+            .toSorted(sortByDocumentPosition);
+        });
+
+        return () => {
+          setItemMap((map) => {
+            if (!element || !map.has(element)) {
+              return map;
+            }
+            map.delete(element);
+            return new OrderedDict(map);
+          });
+        };
+      }, [element, memoizedItemData, setItemMap]);
 
       return (
-        <CollectionItemSlotImpl {...{ [ITEM_DATA_ATTR]: '' }} ref={composedRefs}>
+        <CollectionItemSlotImpl {...{ [ITEM_DATA_ATTR]: '' }} ref={composedRefs as any}>
           {children}
         </CollectionItemSlotImpl>
       );
@@ -106,20 +203,9 @@ function createCollection<ItemElement extends HTMLElement, ItemData = {}>(name: 
    * ---------------------------------------------------------------------------------------------*/
 
   function useCollection(scope: any) {
-    const context = useCollectionContext(name + 'CollectionConsumer', scope);
+    const { itemMap } = useCollectionContext(name + 'CollectionConsumer', scope);
 
-    const getItems = React.useCallback(() => {
-      const collectionNode = context.collectionRef.current;
-      if (!collectionNode) return [];
-      const orderedNodes = Array.from(collectionNode.querySelectorAll(`[${ITEM_DATA_ATTR}]`));
-      const items = Array.from(context.itemMap.values());
-      const orderedItems = items.sort(
-        (a, b) => orderedNodes.indexOf(a.ref.current!) - orderedNodes.indexOf(b.ref.current!)
-      );
-      return orderedItems;
-    }, [context.collectionRef, context.itemMap]);
-
-    return getItems;
+    return itemMap;
   }
 
   return [
@@ -131,3 +217,45 @@ function createCollection<ItemElement extends HTMLElement, ItemData = {}>(name: 
 
 export { createCollection };
 export type { CollectionProps };
+
+function shallowEqual(a: any, b: any) {
+  if (a === b) return true;
+  if (typeof a !== 'object' || typeof b !== 'object') return false;
+  if (a == null || b == null) return false;
+  const keysA = Object.keys(a);
+  const keysB = Object.keys(b);
+  if (keysA.length !== keysB.length) return false;
+  for (const key of keysA) {
+    if (!Object.prototype.hasOwnProperty.call(b, key)) return false;
+    if (a[key] !== b[key]) return false;
+  }
+  return true;
+}
+
+function isElementPreceding(a: Element, b: Element) {
+  return !!(b.compareDocumentPosition(a) & Node.DOCUMENT_POSITION_PRECEDING);
+}
+
+function sortByDocumentPosition<E extends HTMLElement, T extends BaseItemData>(
+  a: EntryOf<ItemMap<E, T>>,
+  b: EntryOf<ItemMap<E, T>>
+) {
+  return !a[1].element || !b[1].element
+    ? 0
+    : isElementPreceding(a[1].element, b[1].element)
+      ? -1
+      : 1;
+}
+
+function getChildListObserver(callback: () => void) {
+  const observer = new MutationObserver((mutationsList) => {
+    for (const mutation of mutationsList) {
+      if (mutation.type === 'childList') {
+        callback();
+        return;
+      }
+    }
+  });
+
+  return observer;
+}
