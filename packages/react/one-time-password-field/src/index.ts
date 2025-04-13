@@ -3,6 +3,7 @@ export type {
   OneTimePasswordFieldProps,
   OneTimePasswordFieldInputProps,
   OneTimePasswordFieldHiddenInputProps,
+  InputValidationType,
 } from './one-time-password-field';
 export {
   OneTimePasswordField,

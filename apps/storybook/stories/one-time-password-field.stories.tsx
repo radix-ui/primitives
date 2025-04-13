@@ -8,10 +8,12 @@ export default {
   title: 'Components/OneTimePasswordField',
 };
 
-export const Styled = () => {
+export const Controlled = () => {
   const [error, setError] = React.useState<string | null>(null);
   const [code, setCode] = React.useState('');
   const [showSuccessMessage, setShowSuccessMessage] = React.useState(false);
+  const [validationType, setValidationType] =
+    React.useState<OneTimePasswordField.InputValidationType>('numeric');
 
   const rootRef = React.useRef<HTMLDivElement | null>(null);
   const VALID_CODE = '123456';
@@ -40,6 +42,20 @@ export const Styled = () => {
           }
         }}
       >
+        <label className={styles.selectField}>
+          <span>Validation type</span>
+          <select
+            value={validationType}
+            onChange={(e) =>
+              setValidationType(e.target.value as OneTimePasswordField.InputValidationType)
+            }
+          >
+            <option value="numeric">Numeric</option>
+            <option value="alphanumeric">Alphanumeric</option>
+            <option value="alpha">Alpha</option>
+            <option value="none">None</option>
+          </select>
+        </label>
         <div className={styles.field}>
           <OneTimePasswordField.Root
             autoSubmit
@@ -47,6 +63,7 @@ export const Styled = () => {
             className={styles.otpRoot}
             autoFocus
             ref={rootRef}
+            validationType={validationType}
             onValueChange={(value) => setCode(value)}
             value={code}
           >

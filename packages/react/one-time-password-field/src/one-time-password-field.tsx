@@ -29,7 +29,8 @@ type ReducerAction =
   | { type: 'SET_CHAR'; char: string; index: number }
   | { type: 'CLEAR_CHAR'; index: number; reason?: 'Backspace' | 'Delete' | null }
   | { type: 'CLEAR' }
-  | { type: 'PASTE'; value: string };
+  | { type: 'PASTE'; value: string }
+  | { type: 'SET_VALUE'; value: string[] };
 type Dispatcher = React.Dispatch<ReducerAction>;
 
 type InputValidationType = 'alpha' | 'numeric' | 'alphanumeric' | 'none';
@@ -40,17 +41,17 @@ type InputValidation = Record<
 
 const INPUT_VALIDATION_MAP = {
   numeric: {
-    regexp: /[^\d]/,
+    regexp: /[^\d]/g,
     pattern: '\\d{1}',
     inputMode: 'numeric',
   },
   alpha: {
-    regexp: /[^a-zA-Z]/,
+    regexp: /[^a-zA-Z]/g,
     pattern: '[a-zA-Z]{1}',
     inputMode: 'text',
   },
   alphanumeric: {
-    regexp: /[^a-zA-Z0-9]/,
+    regexp: /[^a-zA-Z0-9]/g,
     pattern: '[a-zA-Z0-9]{1}',
     inputMode: 'text',
   },
@@ -255,6 +256,15 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
             };
           }
 
+          case 'SET_VALUE': {
+            const value = sanitizeValue(action.value, validation?.regexp);
+            return {
+              effects: state.effects,
+              state: value,
+              lastCharIndex: value.length - 1,
+            };
+          }
+
           default:
             return state;
         }
@@ -274,6 +284,15 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
         effect();
       }
     }, [state]);
+
+    const validationTypeRef = React.useRef(validationType);
+    // update the value in the hidden input when the validation type changes
+    React.useEffect(() => {
+      if (validationTypeRef.current !== validationType) {
+        validationTypeRef.current = validationType;
+        dispatch({ type: 'SET_VALUE', value: state.state });
+      }
+    }, [dispatch, validationType, state.state]);
 
     const { state: value, lastCharIndex } = state;
 
@@ -421,15 +440,7 @@ const OneTimePasswordFieldInput = React.forwardRef<
   HTMLInputElement,
   OneTimePasswordFieldInputProps
 >(function OneTimePasswordFieldInput(
-  {
-    __scopeOneTimePasswordField,
-    onChange,
-    onKeyDown,
-    onPointerDown,
-    onCut,
-    onFocus,
-    ...props
-  }: ScopedProps<OneTimePasswordFieldInputProps>,
+  { __scopeOneTimePasswordField, ...props }: ScopedProps<OneTimePasswordFieldInputProps>,
   forwardedRef
 ) {
   // TODO: warn if these values are passed
@@ -445,8 +456,6 @@ const OneTimePasswordFieldInput = React.forwardRef<
     placeholder: _placeholder,
     required: _required,
     type: _type,
-    pattern: _pattern,
-    inputMode: _inputMode,
     ...domProps
   } = props as any;
 
@@ -499,10 +508,11 @@ const OneTimePasswordFieldInput = React.forwardRef<
           value={char}
           data-radix-otp-input=""
           data-radix-index={index}
-          onFocus={composeEventHandlers(onFocus, (event) => {
+          {...domProps}
+          onFocus={composeEventHandlers(props.onFocus, (event) => {
             event.currentTarget.select();
           })}
-          onCut={composeEventHandlers(onCut, (event) => {
+          onCut={composeEventHandlers(props.onCut, (event) => {
             const currentValue = event.currentTarget.value;
             if (currentValue !== '') {
               // In this case the value will be cleared, but we don't want to
@@ -520,7 +530,7 @@ const OneTimePasswordFieldInput = React.forwardRef<
               }, 10);
             }
           })}
-          onChange={composeEventHandlers(onChange, (event) => {
+          onChange={composeEventHandlers(props.onChange, (event) => {
             const action = userActionRef.current;
             userActionRef.current = null;
 
@@ -559,7 +569,7 @@ const OneTimePasswordFieldInput = React.forwardRef<
               });
             }
           })}
-          onKeyDown={composeEventHandlers(onKeyDown, (event) => {
+          onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
             switch (event.key) {
               case 'Delete':
               case 'Backspace': {
@@ -616,14 +626,13 @@ const OneTimePasswordFieldInput = React.forwardRef<
               }
             }
           })}
-          onPointerDown={composeEventHandlers(onPointerDown, (event) => {
+          onPointerDown={composeEventHandlers(props.onPointerDown, (event) => {
             if (index > lastSelectableIndex) {
               event.preventDefault();
               const element = collection.at(lastSelectableIndex)?.element;
               focusInput(element);
             }
           })}
-          {...domProps}
         />
       </RovingFocusGroup.Item>
     </Collection.ItemSlot>
@@ -647,6 +656,7 @@ export type {
   OneTimePasswordFieldProps,
   OneTimePasswordFieldInputProps,
   OneTimePasswordFieldHiddenInputProps,
+  InputValidationType,
 };
 
 function isFormElement(element: Element | null | undefined): element is HTMLFormElement {
@@ -689,6 +699,8 @@ function sanitizeValue(value: string | string[], regexp: RegExp | undefined | nu
     value = value.join('');
   }
   if (regexp) {
+    // global regexp is stateful, so we clone it for each call
+    regexp = new RegExp(regexp);
     return value.replace(regexp, '').split('').filter(Boolean);
   }
   return value.split('').filter(Boolean);
