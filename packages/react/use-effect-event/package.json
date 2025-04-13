@@ -38,6 +38,9 @@
       "optional": true
     }
   },
+  "dependencies": {
+    "@radix-ui/react-use-layout-effect": "workspace:*"
+  },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
