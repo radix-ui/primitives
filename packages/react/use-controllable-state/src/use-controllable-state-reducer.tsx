@@ -1,14 +1,9 @@
 import * as React from 'react';
-import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
-
-// Prevent bundlers from trying to optimize the import
-const useInsertionEffect: typeof useLayoutEffect =
-  (React as any)[' useInsertionEffect '.trim().toString()] || useLayoutEffect;
+import { useEffectEvent } from '@radix-ui/react-use-effect-event';
 
 type ChangeHandler<T> = (state: T) => void;
 
-interface UseControllableStateParams<K, T> {
-  key: K;
+interface UseControllableStateParams<T> {
   prop: T | undefined;
   defaultProp: T;
   onChange: ChangeHandler<T> | undefined;
@@ -19,59 +14,36 @@ interface AnyAction {
   type: string;
 }
 
-const SYNC_ACTION = Symbol('RADIX:CONTROLLED_UPDATE');
+export function useControllableStateReducer<T, S extends {}, A extends AnyAction>(
+  reducer: (prevState: S & { state: T }, action: A) => S & { state: T },
+  userArgs: UseControllableStateParams<T>,
+  initialState: S
+): [S & { state: T }, React.Dispatch<A>];
 
-export function useControllableStateReducer<
-  S extends { [key: string]: any },
-  K extends keyof S,
-  A extends AnyAction,
->(
-  reducer: (prevState: S, action: A) => S,
-  userArgs: UseControllableStateParams<K, S[K]>,
-  initialState: Omit<S, K>
-): [S, React.Dispatch<A>];
-
-export function useControllableStateReducer<
-  S extends { [key: string]: any },
-  K extends keyof S,
-  A extends AnyAction,
->(
-  reducer: (prevState: S, action: A) => S,
-  userArgs: UseControllableStateParams<K, S[K]>,
-  initialState: Omit<S, K>
-): [S, React.Dispatch<A>];
-
-export function useControllableStateReducer<
-  S extends { [key: string]: any },
-  K extends keyof S,
-  I,
-  A extends AnyAction,
->(
-  reducer: (prevState: S, action: A) => S,
-  userArgs: UseControllableStateParams<K, S[K]>,
+export function useControllableStateReducer<T, S extends {}, I, A extends AnyAction>(
+  reducer: (prevState: S & { state: T }, action: A) => S & { state: T },
+  userArgs: UseControllableStateParams<T>,
   initialArg: I,
-  init: (i: I & { [key in K]: S[K] }) => Omit<S, K>
-): [S, React.Dispatch<A>];
+  init: (i: I & { state: T }) => S
+): [S & { state: T }, React.Dispatch<A>];
 
-export function useControllableStateReducer<
-  S extends { [key: string]: any },
-  K extends keyof S,
-  A extends AnyAction,
->(
-  reducer: (prevState: S, action: A) => S,
-  userArgs: UseControllableStateParams<K, S[K]>,
+export function useControllableStateReducer<T, S extends {}, A extends AnyAction>(
+  reducer: (prevState: S & { state: T }, action: A) => S & { state: T },
+  userArgs: UseControllableStateParams<T>,
   initialArg: any,
-  init?: (i: any) => Omit<S, K>
-): [S, React.Dispatch<A>] {
-  const { key, prop, defaultProp, onChange, caller } = userArgs;
-  const isControlled = prop !== undefined;
+  init?: (i: any) => Omit<S, 'state'>
+): [S & { state: T }, React.Dispatch<A>] {
+  const { prop: controlledState, defaultProp, onChange: onChangeProp, caller } = userArgs;
+  const isControlled = controlledState !== undefined;
+
+  const onChange = useEffectEvent(onChangeProp);
 
   // OK to disable conditionally calling hooks here because they will always run
   // consistently in the same environment. Bundlers should be able to remove the
   // code block entirely in production.
   /* eslint-disable react-hooks/rules-of-hooks */
   if (process.env.NODE_ENV !== 'production') {
-    const isControlledRef = React.useRef(prop !== undefined);
+    const isControlledRef = React.useRef(controlledState !== undefined);
     React.useEffect(() => {
       const wasControlled = isControlledRef.current;
       if (wasControlled !== isControlled) {
@@ -84,64 +56,47 @@ export function useControllableStateReducer<
       isControlledRef.current = isControlled;
     }, [isControlled, caller]);
   }
-
   /* eslint-enable react-hooks/rules-of-hooks */
 
-  const [internalState, dispatch] = React.useReducer<S, [action: A]>(
-    (state: S, action: A): S => {
-      switch (action.type) {
-        // @ts-expect-error
-        case SYNC_ACTION: {
-          if (!isControlled) {
-            return state;
-          }
-
-          const nextValue = (action as any).payload;
-          const value = isFunction(nextValue) ? nextValue(prop) : nextValue;
-          if (value !== prop) {
-            onChangeRef.current?.(value);
-          }
-          return { ...state, [action.type]: value };
-        }
-        default:
-          return reducer(state, action);
-      }
-    },
-    //
-    { ...initialArg, [key]: defaultProp },
+  type InternalState = S & { state: T };
+  const args: [InternalState] = [{ ...initialArg, state: defaultProp }];
+  if (init) {
     // @ts-expect-error
-    init
+    args.push(init);
+  }
+
+  const [internalState, dispatch] = React.useReducer(
+    (state: InternalState, action: A): InternalState => {
+      const next = reducer(state, action);
+      if (!Object.is(next.state, state.state)) {
+        if (isControlled) {
+          onChange(next.state);
+        }
+      }
+      return next;
+    },
+    ...args
   );
 
-  const uncontrolledProp = internalState[key];
-  const prevValueRef = React.useRef(uncontrolledProp);
-  const onChangeRef = React.useRef(onChange);
-  useInsertionEffect(() => {
-    onChangeRef.current = onChange;
-  }, [onChange]);
-
+  const uncontrolledState = internalState.state;
+  const prevValueRef = React.useRef(uncontrolledState);
   React.useEffect(() => {
-    if (prevValueRef.current !== uncontrolledProp) {
-      onChangeRef.current?.(uncontrolledProp);
-      prevValueRef.current = uncontrolledProp;
+    if (prevValueRef.current !== uncontrolledState) {
+      prevValueRef.current = uncontrolledState;
+      if (!isControlled) {
+        onChange(uncontrolledState);
+      }
     }
-  }, [uncontrolledProp, prevValueRef]);
+  }, [onChange, uncontrolledState, prevValueRef, isControlled]);
 
   const state = React.useMemo(() => {
-    const isControlled = prop !== undefined;
+    const isControlled = controlledState !== undefined;
     if (isControlled) {
-      return {
-        ...internalState,
-        [key]: prop,
-      };
+      return { ...internalState, state: controlledState };
     }
 
     return internalState;
-  }, [internalState, prop, key]);
+  }, [internalState, controlledState]);
 
-  return [state, dispatch] as any;
-}
-
-function isFunction(value: unknown): value is (...args: any[]) => any {
-  return typeof value === 'function';
+  return [state, dispatch];
 }

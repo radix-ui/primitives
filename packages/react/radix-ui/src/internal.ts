@@ -12,8 +12,13 @@ export * as Presence from '@radix-ui/react-presence';
 export type { PrimitivePropsWithRef } from '@radix-ui/react-primitive';
 export * as RovingFocus from '@radix-ui/react-roving-focus';
 export { useCallbackRef } from '@radix-ui/react-use-callback-ref';
-export { useControllableState } from '@radix-ui/react-use-controllable-state';
+export {
+  useControllableState,
+  useControllableStateReducer,
+} from '@radix-ui/react-use-controllable-state';
+export { useEffectEvent } from '@radix-ui/react-use-effect-event';
 export { useEscapeKeydown } from '@radix-ui/react-use-escape-keydown';
+export { useIsHydrated } from '@radix-ui/react-use-is-hydrated';
 export { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 export { useSize } from '@radix-ui/react-use-size';
 export { composeEventHandlers } from '@radix-ui/primitive';
