@@ -2898,6 +2898,10 @@ importers:
         version: 5.8.3
 
   packages/react/use-effect-event:
+    dependencies:
+      '@radix-ui/react-use-layout-effect':
+        specifier: workspace:*
+        version: link:../use-layout-effect
     devDependencies:
       '@repo/eslint-config':
         specifier: workspace:*
