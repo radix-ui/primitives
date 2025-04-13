@@ -19,14 +19,19 @@ type AutoComplete = 'off' | 'one-time-code';
 type KeyboardActionDetails =
   | {
       type: 'keydown';
-      key: 'Backspace' | 'Delete';
+      key: 'Backspace' | 'Delete' | 'Char';
       metaKey: boolean;
       ctrlKey: boolean;
     }
   | { type: 'cut' };
 
 type UpdateAction =
-  | { type: 'SET_CHAR'; char: string; index: number }
+  | {
+      type: 'SET_CHAR';
+      char: string;
+      index: number;
+      event: React.KeyboardEvent | React.ChangeEvent;
+    }
   | { type: 'CLEAR_CHAR'; index: number; reason: 'Backspace' | 'Delete' | 'Cut' }
   | { type: 'CLEAR'; reason: 'Reset' | 'Backspace' | 'Delete' }
   | { type: 'PASTE'; value: string };
@@ -187,13 +192,40 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
       switch (action.type) {
         case 'SET_CHAR': {
           const { index, char } = action;
+          const currentTarget = collection.at(index)?.element;
           if (value[index] === char) {
+            const next = currentTarget && collection.from(currentTarget, 1)?.element;
+            focusInput(next);
             return;
           }
 
-          const newValue = [...value];
-          newValue[index] = char;
-          const currentTarget = collection.at(index)?.element;
+          if (validation) {
+            const regexp = new RegExp(validation.regexp);
+            const clean = char.replace(regexp, '');
+            if (clean !== char) {
+              // not valid; ignore
+              return;
+            }
+          }
+
+          // no more space
+          if (char !== '' && value.length >= collection.size) {
+            // replace current value; move to next input
+            const newValue = [...value];
+            newValue[index] = char;
+            flushSync(() => setValue(newValue));
+            const next = currentTarget && collection.from(currentTarget, 1)?.element;
+            focusInput(next);
+            return;
+          }
+
+          const newValue = [
+            //
+            ...value.slice(0, index),
+            char,
+            ...value.slice(index),
+          ];
+
           const lastElement = collection.at(-1)?.element;
           flushSync(() => setValue(newValue));
           if (char !== '' && currentTarget !== lastElement) {
@@ -532,6 +564,12 @@ const OneTimePasswordFieldInput = React.forwardRef<
                   dispatch({ type: 'CLEAR_CHAR', index, reason: 'Cut' });
                   return;
                 case 'keydown': {
+                  if (action.key === 'Char') {
+                    // update resulting from a keydown event that set a value
+                    // directly. Ignore.
+                    return;
+                  }
+
                   const isClearing =
                     action.key === 'Backspace' && (action.metaKey || action.ctrlKey);
                   if (isClearing) {
@@ -548,7 +586,7 @@ const OneTimePasswordFieldInput = React.forwardRef<
 
             // Only update the value if it matches the input pattern
             if (event.target.validity.valid) {
-              dispatch({ type: 'SET_CHAR', char: event.target.value, index });
+              dispatch({ type: 'SET_CHAR', char: event.target.value, index, event });
             } else {
               const element = event.target;
               requestAnimationFrame(() => {
@@ -607,7 +645,55 @@ const OneTimePasswordFieldInput = React.forwardRef<
                   // if current value is same as the key press, no change event
                   // will fire. Focus the next input.
                   const element = event.currentTarget;
+                  event.preventDefault();
                   focusInput(collection.from(element, 1)?.element);
+                  return;
+                } else if (
+                  // input already has a value, but...
+                  event.currentTarget.value &&
+                  // the value is not selected
+                  !(
+                    event.currentTarget.selectionStart === 0 &&
+                    event.currentTarget.selectionEnd != null &&
+                    event.currentTarget.selectionEnd > 0
+                  )
+                ) {
+                  const attemptedValue = event.key;
+                  if (event.key.length > 1 || event.key === ' ') {
+                    // not a character; do nothing
+                    return;
+                  } else {
+                    // user is attempting to enter a character, but the input
+                    // will not update by default since it's limited to a single
+                    // character.
+                    const nextInput = collection.from(event.currentTarget, 1)?.element;
+                    const lastInput = collection.at(-1)?.element;
+                    if (nextInput !== lastInput && event.currentTarget !== lastInput) {
+                      // if selection is before the value, set the value of the
+                      // current input. Otherwise set the value of the next
+                      // input.
+                      if (event.currentTarget.selectionStart === 0) {
+                        dispatch({ type: 'SET_CHAR', char: attemptedValue, index, event });
+                      } else {
+                        dispatch({
+                          type: 'SET_CHAR',
+                          char: attemptedValue,
+                          index: index + 1,
+                          event,
+                        });
+                      }
+
+                      userActionRef.current = {
+                        type: 'keydown',
+                        key: 'Char',
+                        metaKey: event.metaKey,
+                        ctrlKey: event.ctrlKey,
+                      };
+                      keyboardActionTimeoutRef.current = window.setTimeout(() => {
+                        userActionRef.current = null;
+                      }, 10);
+                    }
+                  }
                 }
               }
             }
