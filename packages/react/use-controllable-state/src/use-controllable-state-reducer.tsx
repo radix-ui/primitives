@@ -107,11 +107,13 @@ export function useControllableStateReducer<T, S extends {}, A extends AnyAction
     return internalState;
   }, [internalState, controlledState]);
 
-  // Sync internal state for controlled components so that reducer is called
-  // with the correct state values
-  if (isControlled && !Object.is(controlledState, internalState.state)) {
-    dispatch({ type: SYNC_STATE, state: controlledState });
-  }
+  React.useEffect(() => {
+    // Sync internal state for controlled components so that reducer is called
+    // with the correct state values
+    if (isControlled && !Object.is(controlledState, internalState.state)) {
+      dispatch({ type: SYNC_STATE, state: controlledState });
+    }
+  }, [controlledState, internalState.state, isControlled]);
 
   return [state, dispatch as React.Dispatch<A>];
 }
