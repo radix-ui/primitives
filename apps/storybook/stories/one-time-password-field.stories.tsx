@@ -83,7 +83,10 @@ export const Controlled = () => {
           </OneTimePasswordField.Root>
           {error && <ErrorMessage>{error}</ErrorMessage>}
         </div>
-        <button type="reset">Reset</button>
+        <button type="button" onClick={() => setCode('')}>
+          Reset state
+        </button>
+        <button type="reset">Reset form</button>
         <button>Submit</button>
       </form>
       <Dialog

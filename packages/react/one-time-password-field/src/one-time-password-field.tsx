@@ -172,6 +172,10 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
         ? INPUT_VALIDATION_MAP[validationType as keyof InputValidation]
         : undefined;
 
+    const controlledValue = React.useMemo(() => {
+      return valueProp != null ? sanitizeValue(valueProp, validation?.regexp) : undefined;
+    }, [valueProp, validation?.regexp]);
+
     const [state, dispatch] = useControllableStateReducer(
       (state, action: ReducerAction) => {
         switch (action.type) {
@@ -195,7 +199,6 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
             return {
               effects: state.effects,
               state: newValue,
-              lastCharIndex: action.index,
             };
           }
 
@@ -219,7 +222,6 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
             return {
               effects: state.effects,
               state: newValue,
-              lastCharIndex: action.index,
             };
           }
 
@@ -237,7 +239,6 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
             return {
               effects: state.effects,
               state: [],
-              lastCharIndex: 0,
             };
           }
 
@@ -254,7 +255,6 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
             return {
               effects: state.effects,
               state: value,
-              lastCharIndex: value.length - 1,
             };
           }
 
@@ -263,7 +263,6 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
             return {
               effects: state.effects,
               state: value,
-              lastCharIndex: value.length - 1,
             };
           }
 
@@ -273,11 +272,11 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
       },
       {
         caller: 'OneTimePasswordField',
-        prop: valueProp != null ? sanitizeValue(valueProp, validation?.regexp) : undefined,
+        prop: controlledValue,
         defaultProp: defaultValue != null ? sanitizeValue(defaultValue, validation?.regexp) : [],
         onChange: (value) => onValueChange?.(value.filter(Boolean).join('')),
       },
-      { lastCharIndex: 0, effects: new Set<() => void>() }
+      { effects: new Set<() => void>() }
     );
 
     React.useEffect(() => {
@@ -296,7 +295,7 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
       }
     }, [dispatch, validationType, state.state]);
 
-    const { state: value, lastCharIndex } = state;
+    const { state: value } = state;
 
     const hiddenInputRef = React.useRef<HTMLInputElement>(null);
 
@@ -335,14 +334,21 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
       }
     }, [dispatch, locateForm]);
 
-    useAutoSubmit({
-      attemptSubmit,
-      autoSubmit,
-      lastCharIndex,
-      length: collection.size,
-      onAutoSubmit,
-      value,
-    });
+    const currentValue = value.join('');
+    const valueRef = React.useRef(currentValue);
+    const length = collection.size;
+    React.useEffect(() => {
+      const previousValue = valueRef.current;
+      valueRef.current = currentValue;
+      if (previousValue === currentValue) {
+        return;
+      }
+
+      if (autoSubmit && value.every((char) => char !== '') && value.length === length) {
+        onAutoSubmit?.(value.join(''));
+        attemptSubmit();
+      }
+    }, [attemptSubmit, autoSubmit, currentValue, length, onAutoSubmit, value]);
 
     return (
       <OneTimePasswordFieldContext
@@ -684,37 +690,6 @@ export type {
 
 function isFormElement(element: Element | null | undefined): element is HTMLFormElement {
   return element?.tagName === 'FORM';
-}
-
-function useAutoSubmit({
-  autoSubmit = false,
-  value,
-  length,
-  lastCharIndex,
-  attemptSubmit,
-  onAutoSubmit,
-}: {
-  value: string[];
-  autoSubmit: boolean | undefined;
-  length: number;
-  lastCharIndex: number;
-  attemptSubmit: () => void;
-  onAutoSubmit: ((value: string) => void) | undefined;
-}) {
-  const currentValue = value.join('');
-  const valueRef = React.useRef(currentValue);
-  React.useEffect(() => {
-    const previousValue = valueRef.current;
-    valueRef.current = currentValue;
-    if (previousValue === currentValue) {
-      return;
-    }
-
-    if (autoSubmit && value.every((char) => char !== '') && lastCharIndex + 1 === length) {
-      onAutoSubmit?.(value.join(''));
-      attemptSubmit();
-    }
-  }, [attemptSubmit, autoSubmit, currentValue, lastCharIndex, length, onAutoSubmit, value]);
 }
 
 function sanitizeValue(value: string | string[], regexp: RegExp | undefined | null) {
