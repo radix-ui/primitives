@@ -139,8 +139,8 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
     const direction = useDirection(dir);
     const [lastCharIndex, setLastCharIndex] = React.useState<number>(0);
     const [value, setValue] = useControllableState({
-      prop: valueProp != null ? getValueAsArray(valueProp, valueProp.length) : undefined,
-      defaultProp: defaultValue != null ? getValueAsArray(defaultValue, defaultValue.length) : [],
+      prop: valueProp != null ? sanitizeValue(valueProp.split('')) : undefined,
+      defaultProp: defaultValue != null ? sanitizeValue(defaultValue.split('')) : [],
       onChange: (value) => onValueChange?.(value.join('')),
     });
 
@@ -162,13 +162,12 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
     }, [form]);
 
     const collection = useCollection(__scopeOneTimePasswordField);
-    const length = collection.size;
 
     useAutoSubmit({
       attemptSubmit,
       autoSubmit,
       lastCharIndex,
-      length,
+      length: collection.size,
       onAutoSubmit,
       value,
     });
@@ -176,14 +175,13 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
     const onCharChange = React.useCallback(
       (char: string, index: number) => {
         setValue((previousValue) => {
-          const arrayToCopy = previousValue ?? createEmptyArray(length);
-          const newValue = [...arrayToCopy];
+          const newValue = [...previousValue];
           newValue[index] = char;
           return newValue;
         });
         setLastCharIndex(index);
       },
-      [length, setValue]
+      [setValue]
     );
 
     const clearValue = React.useCallback(() => {
@@ -227,17 +225,14 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
               (event: React.ClipboardEvent<HTMLDivElement>) => {
                 event.preventDefault();
                 const pastedValue = event.clipboardData.getData('Text');
-                const sanitizedValue = pastedValue.replace(/[^\d]/g, '').slice(0, length);
-                const value = sanitizedValue
-                  .padEnd(length, '#')
-                  .split('')
-                  .map((char) => (char === '#' ? '' : char));
+                const value = sanitizeValue(pastedValue.split(''));
+                if (!value) {
+                  return;
+                }
 
                 setValue(value);
-                setLastCharIndex(sanitizedValue.length - 1);
-
-                const index = Math.min(sanitizedValue.length, length - 1);
-                childrenRefs.current?.[index]?.focus();
+                setLastCharIndex(value.length - 1);
+                collection.at(value.length - 1)?.element.focus();
               }
             )}
           >
@@ -290,7 +285,7 @@ const OneTimePasswordFieldHiddenInput = React.forwardRef<
       {...props}
       type="hidden"
       readOnly
-      value={value}
+      value={value.join('').trim()}
       autoComplete="off"
       autoFocus={false}
       autoCapitalize="off"
@@ -477,7 +472,6 @@ const OneTimePasswordFieldInput = React.forwardRef<
                     collection.from(element, -1)?.element.focus();
                   }
                 } else {
-                  console.warn('sdfklsdf');
                   // In this case the value will be cleared, but we don't want to
                   // set it directly because the user may want to prevent default
                   // behavior in the onChange handler. The keyboardActionRef will
@@ -534,14 +528,6 @@ const OneTimePasswordFieldInput = React.forwardRef<
   );
 });
 
-function getValueAsArray(value: string, length: number) {
-  return createEmptyArray(length).map((_, index) => value[index] ?? '');
-}
-
-function createEmptyArray(length: number): string[] {
-  return Array.from<string>({ length }).fill('');
-}
-
 const Root = OneTimePasswordField;
 const Input = OneTimePasswordFieldInput;
 const HiddenInput = OneTimePasswordFieldHiddenInput;
@@ -594,4 +580,8 @@ function useAutoSubmit({
       attemptSubmit();
     }
   }, [attemptSubmit, autoSubmit, currentValue, lastCharIndex, length, onAutoSubmit, value]);
+}
+
+function sanitizeValue(value: string[]) {
+  return value.join('').replace(/[^\d]/g, '').split('').filter(Boolean);
 }

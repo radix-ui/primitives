@@ -61,6 +61,8 @@ export const Styled = () => {
             <OneTimePasswordField.Input />
             <Separator.Root orientation="vertical" className={styles.separator} />
             <OneTimePasswordField.Input />
+
+            {/* <OneTimePasswordField.HiddenInput /> */}
           </OneTimePasswordField.Root>
           {error && <ErrorMessage>{error}</ErrorMessage>}
         </div>
