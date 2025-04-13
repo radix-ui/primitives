@@ -26,13 +26,13 @@ type KeyboardActionDetails =
     }
   | { type: 'cut' };
 
-type ReducerAction =
+type UpdateAction =
   | { type: 'SET_CHAR'; char: string; index: number }
   | { type: 'CLEAR_CHAR'; index: number; reason: 'Backspace' | 'Delete' | 'Cut' }
   | { type: 'CLEAR'; reason: 'Reset' | 'Backspace' | 'Delete' }
   | { type: 'PASTE'; value: string }
   | { type: 'SET_VALUE'; value: string[] };
-type Dispatcher = React.Dispatch<ReducerAction>;
+type Dispatcher = React.Dispatch<UpdateAction>;
 
 type InputValidationType = 'alpha' | 'numeric' | 'alphanumeric' | 'none';
 type InputValidation = Record<
