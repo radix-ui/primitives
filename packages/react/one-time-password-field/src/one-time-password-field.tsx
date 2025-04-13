@@ -32,12 +32,36 @@ type ReducerAction =
   | { type: 'PASTE'; value: string };
 type Dispatcher = React.Dispatch<ReducerAction>;
 
+type InputValidationType = 'alpha' | 'numeric' | 'alphanumeric' | 'none';
+type InputValidation = Record<
+  Exclude<InputValidationType, 'none'>,
+  { regexp: RegExp; pattern: string; inputMode: string }
+>;
+
+const INPUT_VALIDATION_MAP = {
+  numeric: {
+    regexp: /[^\d]/,
+    pattern: '\\d{1}',
+    inputMode: 'numeric',
+  },
+  alpha: {
+    regexp: /[^a-zA-Z]/,
+    pattern: '[a-zA-Z]{1}',
+    inputMode: 'text',
+  },
+  alphanumeric: {
+    regexp: /[^a-zA-Z0-9]/,
+    pattern: '[a-zA-Z0-9]{1}',
+    inputMode: 'text',
+  },
+} satisfies InputValidation;
+
 interface OneTimePasswordFieldContextValue {
   value: string[];
   state?: FieldState;
   attemptSubmit: () => void;
   hiddenInputRef: React.RefObject<HTMLInputElement | null>;
-  //
+  validationType: InputValidationType;
   disabled: boolean;
   readOnly: boolean;
   autoComplete: AutoComplete;
@@ -74,7 +98,7 @@ interface OneTimePasswordFieldOwnProps {
   defaultValue?: string;
   autoSubmit?: boolean;
   onAutoSubmit?: (value: string) => void;
-  //
+  validationType?: InputValidationType;
   disabled?: boolean;
   readOnly?: boolean;
   autoComplete?: AutoComplete;
@@ -133,20 +157,19 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
       type = 'password',
       orientation,
       dir,
+      validationType = 'numeric',
       ...domProps
     }: ScopedProps<OneTimePasswordFieldProps>,
     forwardedRef
   ) {
     const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeOneTimePasswordField);
     const direction = useDirection(dir);
-    // const [lastCharIndex, setLastCharIndex] = React.useState<number>(0);
-    // const [value, setValue] = useControllableState({
-    //   prop: valueProp != null ? sanitizeValue(valueProp.split('')) : undefined,
-    //   defaultProp: defaultValue != null ? sanitizeValue(defaultValue.split('')) : [],
-    //   onChange: (value) => onValueChange?.(value.filter(Boolean).join('')),
-    // });
-
     const collection = useCollection(__scopeOneTimePasswordField);
+
+    const validation =
+      validationType in INPUT_VALIDATION_MAP
+        ? INPUT_VALIDATION_MAP[validationType as keyof InputValidation]
+        : undefined;
 
     const [state, dispatch] = useControllableStateReducer(
       (state, action: ReducerAction) => {
@@ -217,7 +240,7 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
 
           case 'PASTE': {
             const { value: pastedValue } = action;
-            const value = sanitizeValue(pastedValue.split(''));
+            const value = sanitizeValue(pastedValue, validation?.regexp);
             if (!value) {
               return state;
             }
@@ -238,8 +261,8 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
       },
       {
         caller: 'OneTimePasswordField',
-        prop: valueProp != null ? sanitizeValue(valueProp.split('')) : undefined,
-        defaultProp: defaultValue != null ? sanitizeValue(defaultValue.split('')) : [],
+        prop: valueProp != null ? sanitizeValue(valueProp, validation?.regexp) : undefined,
+        defaultProp: defaultValue != null ? sanitizeValue(defaultValue, validation?.regexp) : [],
         onChange: (value) => onValueChange?.(value.filter(Boolean).join('')),
       },
       { lastCharIndex: 0, effects: new Set<() => void>() }
@@ -297,6 +320,7 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
         hiddenInputRef={hiddenInputRef}
         userActionRef={userActionRef}
         dispatch={dispatch}
+        validationType={validationType}
       >
         <RovingFocusGroup.Root
           asChild
@@ -313,7 +337,7 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
               (event: React.ClipboardEvent<HTMLDivElement>) => {
                 event.preventDefault();
                 const pastedValue = event.clipboardData.getData('Text');
-                const value = sanitizeValue(pastedValue.split(''));
+                const value = sanitizeValue(pastedValue, validation?.regexp);
                 if (!value) {
                   return;
                 }
@@ -430,7 +454,7 @@ const OneTimePasswordFieldInput = React.forwardRef<
     'OneTimePasswordFieldInput',
     __scopeOneTimePasswordField
   );
-  const { dispatch, userActionRef } = context;
+  const { dispatch, userActionRef, validationType } = context;
   const collection = useCollection(__scopeOneTimePasswordField);
   const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeOneTimePasswordField);
 
@@ -451,6 +475,11 @@ const OneTimePasswordFieldInput = React.forwardRef<
   const lastSelectableIndex = clamp(totalValue.length, [0, collection.size - 1]);
   const isFocusable = index <= lastSelectableIndex;
 
+  const validation =
+    validationType in INPUT_VALIDATION_MAP
+      ? INPUT_VALIDATION_MAP[validationType as keyof InputValidation]
+      : undefined;
+
   return (
     <Collection.ItemSlot scope={__scopeOneTimePasswordField}>
       <RovingFocusGroup.Item
@@ -461,10 +490,11 @@ const OneTimePasswordFieldInput = React.forwardRef<
       >
         <Primitive.input
           ref={composedInputRef}
+          type="text"
           autoComplete={index === 0 ? context.autoComplete : 'off'}
-          inputMode="numeric"
+          inputMode={validation?.inputMode}
           maxLength={1}
-          pattern="\d{1}"
+          pattern={validation?.pattern}
           readOnly={context.readOnly}
           value={char}
           data-radix-otp-input=""
@@ -503,7 +533,8 @@ const OneTimePasswordFieldInput = React.forwardRef<
                   dispatch({ type: 'CLEAR_CHAR', index });
                   return;
                 case 'keydown': {
-                  const isClearing = action.key === 'Delete' && (action.metaKey || action.ctrlKey);
+                  const isClearing =
+                    action.key === 'Backspace' && (action.metaKey || action.ctrlKey);
                   if (isClearing) {
                     dispatch({ type: 'CLEAR' });
                   } else {
@@ -653,8 +684,14 @@ function useAutoSubmit({
   }, [attemptSubmit, autoSubmit, currentValue, lastCharIndex, length, onAutoSubmit, value]);
 }
 
-function sanitizeValue(value: string[]) {
-  return value.join('').replace(/[^\d]/g, '').split('').filter(Boolean);
+function sanitizeValue(value: string | string[], regexp: RegExp | undefined | null) {
+  if (Array.isArray(value)) {
+    value = value.join('');
+  }
+  if (regexp) {
+    return value.replace(regexp, '').split('').filter(Boolean);
+  }
+  return value.split('').filter(Boolean);
 }
 
 function focusInput(element: HTMLInputElement | null | undefined) {
