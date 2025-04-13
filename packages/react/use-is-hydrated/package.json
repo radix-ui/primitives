@@ -1,23 +1,27 @@
 {
-  "name": "@radix-ui/use-is-hydrated",
-  "version": "1.1.0",
+  "name": "@radix-ui/react-use-is-hydrated",
+  "version": "0.0.0",
   "license": "MIT",
-  "exports": {
-    ".": {
-      "import": {
-        "types": "./dist/index.d.mts",
-        "default": "./dist/index.mjs"
-      },
-      "require": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
+  "source": "./src/index.ts",
+  "main": "./src/index.ts",
+  "module": "./src/index.ts",
+  "publishConfig": {
+    "main": "./dist/index.js",
+    "module": "./dist/index.mjs",
+    "types": "./dist/index.d.ts",
+    "exports": {
+      ".": {
+        "import": {
+          "types": "./dist/index.d.mts",
+          "default": "./dist/index.mjs"
+        },
+        "require": {
+          "types": "./dist/index.d.ts",
+          "default": "./dist/index.js"
+        }
       }
     }
   },
-  "source": "./src/index.ts",
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
   "files": [
     "src",
     "dist",
@@ -27,7 +31,8 @@
   "scripts": {
     "lint": "eslint --max-warnings 0 src",
     "clean": "rm -rf dist",
-    "version": "yarn version"
+    "typecheck": "tsc --noEmit",
+    "build": "radix-build"
   },
   "dependencies": {
     "use-sync-external-store": "^1.4.0"
@@ -42,6 +47,7 @@
     }
   },
   "devDependencies": {
+    "@repo/builder": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/react": "^19.0.7",
