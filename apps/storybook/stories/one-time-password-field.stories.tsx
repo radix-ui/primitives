@@ -8,6 +8,102 @@ export default {
   title: 'Components/OneTimePasswordField',
 };
 
+type FormState = { type: 'idle' } | { type: 'valid' } | { type: 'invalid'; error: string };
+
+export const Uncontrolled = () => {
+  const [code, setCode] = React.useState('');
+  const [showSuccessMessage, setShowSuccessMessage] = React.useState(false);
+  const [validationType, setValidationType] =
+    React.useState<OneTimePasswordField.InputValidationType>('numeric');
+
+  const rootRef = React.useRef<HTMLDivElement | null>(null);
+  const VALID_CODE = '123456';
+
+  const [formState, setFormState] = React.useState<FormState>({ type: 'idle' });
+
+  return (
+    <div className={styles.viewport}>
+      <form
+        className={styles.form}
+        onSubmit={(event) => {
+          const formData = new FormData(event.currentTarget);
+          const code = formData.get('code') as string;
+          event.preventDefault();
+          if (code.length === VALID_CODE.length && code !== VALID_CODE) {
+            setFormState({ type: 'invalid', error: 'Invalid code' });
+          }
+          //
+          else if (code.length !== VALID_CODE.length) {
+            setFormState({ type: 'invalid', error: 'Please fill in all fields' });
+          }
+          //
+          else if (Math.random() > 0.675) {
+            setFormState({ type: 'invalid', error: 'Server error' });
+          }
+          //
+          else {
+            setFormState({ type: 'valid' });
+            setShowSuccessMessage(true);
+          }
+        }}
+      >
+        <label className={styles.selectField}>
+          <span>Validation type</span>
+          <select
+            value={validationType}
+            onChange={(e) =>
+              setValidationType(e.target.value as OneTimePasswordField.InputValidationType)
+            }
+          >
+            <option value="numeric">Numeric</option>
+            <option value="alphanumeric">Alphanumeric</option>
+            <option value="alpha">Alpha</option>
+            <option value="none">None</option>
+          </select>
+        </label>
+        <div className={styles.field}>
+          <OneTimePasswordField.Root
+            autoSubmit
+            data-state={formState.type}
+            className={styles.otpRoot}
+            autoFocus
+            ref={rootRef}
+            validationType={validationType}
+            onValueChange={(value) => setCode(value)}
+            value={code}
+          >
+            <OneTimePasswordField.Input />
+            <Separator.Root orientation="vertical" className={styles.separator} />
+            <OneTimePasswordField.Input />
+            <Separator.Root orientation="vertical" className={styles.separator} />
+            <OneTimePasswordField.Input />
+            <Separator.Root orientation="vertical" className={styles.separator} />
+            <OneTimePasswordField.Input />
+            <Separator.Root orientation="vertical" className={styles.separator} />
+            <OneTimePasswordField.Input />
+            <Separator.Root orientation="vertical" className={styles.separator} />
+            <OneTimePasswordField.Input />
+
+            <OneTimePasswordField.HiddenInput name="code" />
+          </OneTimePasswordField.Root>
+          {formState.type === 'invalid' && <ErrorMessage>{formState.error}</ErrorMessage>}
+        </div>
+        <button type="button" onClick={() => setCode('')}>
+          Reset state
+        </button>
+        <button type="reset">Reset form</button>
+        <button>Submit</button>
+      </form>
+      <Dialog
+        open={showSuccessMessage}
+        onOpenChange={setShowSuccessMessage}
+        title="Password match"
+        content="Success!"
+      />
+    </div>
+  );
+};
+
 export const Controlled = () => {
   const [error, setError] = React.useState<string | null>(null);
   const [code, setCode] = React.useState('');
@@ -59,7 +155,7 @@ export const Controlled = () => {
         <div className={styles.field}>
           <OneTimePasswordField.Root
             autoSubmit
-            state={error || isInvalid ? 'invalid' : isValid ? 'valid' : undefined}
+            data-state={error || isInvalid ? 'invalid' : isValid ? 'valid' : undefined}
             className={styles.otpRoot}
             autoFocus
             ref={rootRef}
