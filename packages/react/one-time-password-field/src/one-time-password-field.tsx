@@ -18,19 +18,16 @@ type AutoComplete = 'off' | 'one-time-code';
 
 type KeyboardActionDetails =
   | {
-      action: 'keydown';
-      key: string;
+      type: 'keydown';
+      key: 'Backspace' | 'Delete';
       metaKey: boolean;
       ctrlKey: boolean;
     }
-  | {
-      action: 'cut';
-      key?: never;
-    };
+  | { type: 'cut' };
 
 type ReducerAction =
   | { type: 'SET_CHAR'; char: string; index: number }
-  | { type: 'CLEAR_CHAR'; index: number }
+  | { type: 'CLEAR_CHAR'; index: number; reason?: 'Backspace' | 'Delete' | null }
   | { type: 'CLEAR' }
   | { type: 'PASTE'; value: string };
 type Dispatcher = React.Dispatch<ReducerAction>;
@@ -50,7 +47,7 @@ interface OneTimePasswordFieldContextValue {
   placeholder: string | undefined;
   required: boolean;
   type: InputType;
-  keyboardActionRef: React.RefObject<KeyboardActionDetails | null>;
+  userActionRef: React.RefObject<KeyboardActionDetails | null>;
   dispatch: Dispatcher;
 }
 
@@ -167,9 +164,7 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
             state.effects.add(() => {
               if (char !== '' && currentTarget !== lastElement) {
                 const next = currentTarget && collection.from(currentTarget, 1)?.element;
-                if (next) {
-                  next.focus();
-                }
+                focusInput(next);
               }
             });
 
@@ -181,22 +176,19 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
           }
 
           case 'CLEAR_CHAR': {
-            const { index } = action;
+            const { index, reason } = action;
             if (!state.state[index]) {
               return state;
             }
 
             const newValue = state.state.filter((_, i) => i !== index);
-            const totalValue = state.state.join('').trim();
             const currentTarget = collection.at(index)?.element;
             const previous = currentTarget && collection.from(currentTarget, -1)?.element;
             state.effects.add(() => {
-              if (index === totalValue.length - 1) {
-                if (previous) {
-                  previous.focus();
-                }
-              } else if (currentTarget) {
-                currentTarget.select();
+              if (reason === 'Backspace') {
+                focusInput(previous);
+              } else if (reason === 'Delete') {
+                focusInput(currentTarget);
               }
             });
 
@@ -214,7 +206,7 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
             }
 
             state.effects.add(() => {
-              collection.at(0)?.element.focus();
+              focusInput(collection.at(0)?.element);
             });
             return {
               effects: state.effects,
@@ -231,7 +223,7 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
             }
 
             state.effects.add(() => {
-              collection.at(value.length - 1)?.element.focus();
+              focusInput(collection.at(value.length - 1)?.element);
             });
             return {
               effects: state.effects,
@@ -264,7 +256,7 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
 
     const hiddenInputRef = React.useRef<HTMLInputElement>(null);
 
-    const keyboardActionRef = React.useRef<KeyboardActionDetails | null>(null);
+    const userActionRef = React.useRef<KeyboardActionDetails | null>(null);
     const rootRef = React.useRef<HTMLDivElement | null>(null);
     const composedRefs = useComposedRefs(forwardedRef, rootRef);
 
@@ -303,7 +295,7 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
         required={required}
         type={type}
         hiddenInputRef={hiddenInputRef}
-        keyboardActionRef={keyboardActionRef}
+        userActionRef={userActionRef}
         dispatch={dispatch}
       >
         <RovingFocusGroup.Root
@@ -329,7 +321,7 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
                 flushSync(() => {
                   dispatch({ type: 'PASTE', value: pastedValue });
                 });
-                collection.at(value.length - 1)?.element.focus();
+                focusInput(collection.at(value.length - 1)?.element);
               }
             )}
           >
@@ -438,7 +430,7 @@ const OneTimePasswordFieldInput = React.forwardRef<
     'OneTimePasswordFieldInput',
     __scopeOneTimePasswordField
   );
-  const { dispatch, keyboardActionRef } = context;
+  const { dispatch, userActionRef } = context;
   const collection = useCollection(__scopeOneTimePasswordField);
   const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeOneTimePasswordField);
 
@@ -485,33 +477,43 @@ const OneTimePasswordFieldInput = React.forwardRef<
             if (currentValue !== '') {
               // In this case the value will be cleared, but we don't want to
               // set it directly because the user may want to prevent default
-              // behavior in the onChange handler. The keyboardActionRef will
+              // behavior in the onChange handler. The userActionRef will
               // is set temporarily so the change handler can behave correctly
               // in response to the action.
-              keyboardActionRef.current = {
-                action: 'cut',
+              userActionRef.current = {
+                type: 'cut',
               };
               // Set a short timeout to clear the action tracker after the change
               // handler has had time to complete.
               keyboardActionTimeoutRef.current = window.setTimeout(() => {
-                keyboardActionRef.current = null;
+                userActionRef.current = null;
               }, 10);
             }
           })}
           onChange={composeEventHandlers(onChange, (event) => {
-            const keyboardAction = keyboardActionRef.current;
-            keyboardActionRef.current = null;
-            if (keyboardAction?.action === 'cut' || keyboardAction?.key === 'Backspace') {
-              const isClearing =
-                keyboardAction.action === 'keydown' &&
-                (keyboardAction.metaKey || keyboardAction.ctrlKey);
+            const action = userActionRef.current;
+            userActionRef.current = null;
 
-              if (isClearing) {
-                dispatch({ type: 'CLEAR' });
-              } else {
-                dispatch({ type: 'CLEAR_CHAR', index });
+            if (action) {
+              switch (action.type) {
+                case 'cut':
+                  // TODO: do we want to assume the user wantt to clear the
+                  // entire value here and copy the code to the clipboard instead
+                  // of just the value of the given input?
+                  dispatch({ type: 'CLEAR_CHAR', index });
+                  return;
+                case 'keydown': {
+                  const isClearing = action.key === 'Delete' && (action.metaKey || action.ctrlKey);
+                  if (isClearing) {
+                    dispatch({ type: 'CLEAR' });
+                  } else {
+                    dispatch({ type: 'CLEAR_CHAR', index, reason: action.key });
+                  }
+                  return;
+                }
+                default:
+                  return;
               }
-              return;
             }
 
             // Only update the value if it matches the input pattern
@@ -528,35 +530,38 @@ const OneTimePasswordFieldInput = React.forwardRef<
           })}
           onKeyDown={composeEventHandlers(onKeyDown, (event) => {
             switch (event.key) {
+              case 'Delete':
               case 'Backspace': {
                 const currentValue = event.currentTarget.value;
-                // if current value is empty, no change event will fire when the
-                // user backspaces.
+                // if current value is empty, no change event will fire
                 if (currentValue === '') {
+                  // if the user presses delete when there is no value, noop
+                  if (event.key === 'Delete') return;
+
                   const isClearing = event.metaKey || event.ctrlKey;
                   if (isClearing) {
                     dispatch({ type: 'CLEAR' });
                   } else {
                     const element = event.currentTarget;
-                    collection.from(element, -1)?.element.focus();
+                    focusInput(collection.from(element, -1)?.element);
                   }
                 } else {
-                  // In this case the value will be cleared, but we don't want to
-                  // set it directly because the user may want to prevent default
-                  // behavior in the onChange handler. The keyboardActionRef will
-                  // is set temporarily so the change handler can behave correctly
-                  // in response to the backspace key vs. clearing the value by
+                  // In this case the value will be cleared, but we don't want
+                  // to set it directly because the user may want to prevent
+                  // default behavior in the onChange handler. The userActionRef
+                  // will is set temporarily so the change handler can behave
+                  // correctly in response to the key vs. clearing the value by
                   // setting state externally.
-                  keyboardActionRef.current = {
-                    action: 'keydown',
-                    key: 'Backspace',
+                  userActionRef.current = {
+                    type: 'keydown',
+                    key: event.key,
                     metaKey: event.metaKey,
                     ctrlKey: event.ctrlKey,
                   };
                   // Set a short timeout to clear the action tracker after the change
                   // handler has had time to complete.
                   keyboardActionTimeoutRef.current = window.setTimeout(() => {
-                    keyboardActionRef.current = null;
+                    userActionRef.current = null;
                   }, 10);
                 }
 
@@ -575,7 +580,7 @@ const OneTimePasswordFieldInput = React.forwardRef<
                   // if current value is same as the key press with a value
                   // selected, no change event will fire. Focus the next input.
                   const element = event.currentTarget;
-                  collection.from(element, 1)?.element.focus();
+                  focusInput(collection.from(element, 1)?.element);
                 }
               }
             }
@@ -584,10 +589,7 @@ const OneTimePasswordFieldInput = React.forwardRef<
             if (index > lastSelectableIndex) {
               event.preventDefault();
               const element = collection.at(lastSelectableIndex)?.element;
-              if (element) {
-                element.focus();
-                element.select();
-              }
+              focusInput(element);
             }
           })}
           {...domProps}
@@ -653,4 +655,17 @@ function useAutoSubmit({
 
 function sanitizeValue(value: string[]) {
   return value.join('').replace(/[^\d]/g, '').split('').filter(Boolean);
+}
+
+function focusInput(element: HTMLInputElement | null | undefined) {
+  if (!element) return;
+  if (element.ownerDocument.activeElement === element) {
+    // if the element is already focused, select the value in the next
+    // animation frame
+    window.requestAnimationFrame(() => {
+      element.select?.();
+    });
+  } else {
+    element.focus();
+  }
 }
