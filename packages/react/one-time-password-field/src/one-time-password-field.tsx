@@ -27,8 +27,8 @@ type KeyboardActionDetails =
 
 type ReducerAction =
   | { type: 'SET_CHAR'; char: string; index: number }
-  | { type: 'CLEAR_CHAR'; index: number; reason?: 'Backspace' | 'Delete' | null }
-  | { type: 'CLEAR' }
+  | { type: 'CLEAR_CHAR'; index: number; reason: 'Backspace' | 'Delete' | 'Cut' }
+  | { type: 'CLEAR'; reason: 'Reset' | 'Backspace' | 'Delete' }
   | { type: 'PASTE'; value: string }
   | { type: 'SET_VALUE'; value: string[] };
 type Dispatcher = React.Dispatch<ReducerAction>;
@@ -211,7 +211,7 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
             state.effects.add(() => {
               if (reason === 'Backspace') {
                 focusInput(previous);
-              } else if (reason === 'Delete') {
+              } else if (reason === 'Delete' || reason === 'Cut') {
                 focusInput(currentTarget);
               }
             });
@@ -229,9 +229,11 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
               return state;
             }
 
-            state.effects.add(() => {
-              focusInput(collection.at(0)?.element);
-            });
+            if (action.reason === 'Backspace' || action.reason === 'Delete') {
+              state.effects.add(() => {
+                focusInput(collection.at(0)?.element);
+              });
+            }
             return {
               effects: state.effects,
               state: [],
@@ -303,7 +305,7 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
     const composedRefs = useComposedRefs(forwardedRef, rootRef);
 
     const firstInput = collection.at(0)?.element;
-    const attemptSubmit = React.useCallback(() => {
+    const locateForm = React.useCallback(() => {
       let formElement: HTMLFormElement | null | undefined;
       if (form) {
         const associatedElement = (rootRef.current?.ownerDocument ?? document).getElementById(form);
@@ -316,10 +318,22 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
         formElement = firstInput.form;
       }
 
-      if (formElement) {
-        formElement.requestSubmit();
-      }
+      return formElement ?? null;
     }, [form, firstInput]);
+
+    const attemptSubmit = React.useCallback(() => {
+      const formElement = locateForm();
+      formElement?.requestSubmit();
+    }, [locateForm]);
+
+    React.useEffect(() => {
+      const form = locateForm();
+      if (form) {
+        const reset = () => dispatch({ type: 'CLEAR', reason: 'Reset' });
+        form.addEventListener('reset', reset);
+        return () => form.removeEventListener('reset', reset);
+      }
+    }, [dispatch, locateForm]);
 
     useAutoSubmit({
       attemptSubmit,
@@ -549,13 +563,13 @@ const OneTimePasswordFieldInput = React.forwardRef<
                   // TODO: do we want to assume the user wantt to clear the
                   // entire value here and copy the code to the clipboard instead
                   // of just the value of the given input?
-                  dispatch({ type: 'CLEAR_CHAR', index });
+                  dispatch({ type: 'CLEAR_CHAR', index, reason: 'Cut' });
                   return;
                 case 'keydown': {
                   const isClearing =
                     action.key === 'Backspace' && (action.metaKey || action.ctrlKey);
                   if (isClearing) {
-                    dispatch({ type: 'CLEAR' });
+                    dispatch({ type: 'CLEAR', reason: 'Backspace' });
                   } else {
                     dispatch({ type: 'CLEAR_CHAR', index, reason: action.key });
                   }
@@ -590,7 +604,7 @@ const OneTimePasswordFieldInput = React.forwardRef<
 
                   const isClearing = event.metaKey || event.ctrlKey;
                   if (isClearing) {
-                    dispatch({ type: 'CLEAR' });
+                    dispatch({ type: 'CLEAR', reason: 'Backspace' });
                   } else {
                     const element = event.currentTarget;
                     focusInput(collection.from(element, -1)?.element);
