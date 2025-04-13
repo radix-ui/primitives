@@ -1,6 +1,6 @@
 import { Primitive } from '@radix-ui/react-primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
-import { useControllableStateReducer } from '@radix-ui/react-use-controllable-state';
+import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { unstable_createCollection as createCollection } from '@radix-ui/react-collection';
 import * as RovingFocusGroup from '@radix-ui/react-roving-focus';
@@ -11,6 +11,7 @@ import type { Scope } from '@radix-ui/react-context';
 import { createContextScope } from '@radix-ui/react-context';
 import { useDirection } from '@radix-ui/react-direction';
 import { clamp } from '@radix-ui/number';
+import { useEffectEvent } from '@radix-ui/react-use-effect-event';
 
 type FieldState = 'valid' | 'invalid';
 type InputType = 'password' | 'text';
@@ -176,126 +177,94 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
       return valueProp != null ? sanitizeValue(valueProp, validation?.regexp) : undefined;
     }, [valueProp, validation?.regexp]);
 
-    const [state, dispatch] = useControllableStateReducer(
-      (state, action: ReducerAction) => {
-        switch (action.type) {
-          case 'SET_CHAR': {
-            const { index, char } = action;
-            if (state.state[index] === char) {
-              return state;
-            }
+    const [value, _setValue] = useControllableState({
+      caller: 'OneTimePasswordField',
+      prop: controlledValue,
+      defaultProp: defaultValue != null ? sanitizeValue(defaultValue, validation?.regexp) : [],
+      onChange: (value) => onValueChange?.(value.filter(Boolean).join('')),
+    });
+    const [_effects, _setEffects] = React.useState<Set<() => void>>(new Set());
 
-            const newValue = [...state.state];
-            newValue[index] = char;
-            const currentTarget = collection.at(index)?.element;
-            const lastElement = collection.at(-1)?.element;
-            state.effects.add(() => {
-              if (char !== '' && currentTarget !== lastElement) {
-                const next = currentTarget && collection.from(currentTarget, 1)?.element;
-                focusInput(next);
-              }
-            });
-
-            return {
-              effects: state.effects,
-              state: newValue,
-            };
+    const dispatch = useEffectEvent<Dispatcher>((action) => {
+      switch (action.type) {
+        case 'SET_CHAR': {
+          const { index, char } = action;
+          if (value[index] === char) {
+            return;
           }
 
-          case 'CLEAR_CHAR': {
-            const { index, reason } = action;
-            if (!state.state[index]) {
-              return state;
-            }
-
-            const newValue = state.state.filter((_, i) => i !== index);
-            const currentTarget = collection.at(index)?.element;
-            const previous = currentTarget && collection.from(currentTarget, -1)?.element;
-            state.effects.add(() => {
-              if (reason === 'Backspace') {
-                focusInput(previous);
-              } else if (reason === 'Delete' || reason === 'Cut') {
-                focusInput(currentTarget);
-              }
-            });
-
-            return {
-              effects: state.effects,
-              state: newValue,
-            };
+          const newValue = [...value];
+          newValue[index] = char;
+          const currentTarget = collection.at(index)?.element;
+          const lastElement = collection.at(-1)?.element;
+          flushSync(() => _setValue(newValue));
+          if (char !== '' && currentTarget !== lastElement) {
+            const next = currentTarget && collection.from(currentTarget, 1)?.element;
+            focusInput(next);
           }
-
-          case 'CLEAR': {
-            const { state: value } = state;
-            if (value.length === 0) {
-              return state;
-            }
-
-            if (action.reason === 'Backspace' || action.reason === 'Delete') {
-              state.effects.add(() => {
-                focusInput(collection.at(0)?.element);
-              });
-            }
-            return {
-              effects: state.effects,
-              state: [],
-            };
-          }
-
-          case 'PASTE': {
-            const { value: pastedValue } = action;
-            const value = sanitizeValue(pastedValue, validation?.regexp);
-            if (!value) {
-              return state;
-            }
-
-            state.effects.add(() => {
-              focusInput(collection.at(value.length - 1)?.element);
-            });
-            return {
-              effects: state.effects,
-              state: value,
-            };
-          }
-
-          case 'SET_VALUE': {
-            const value = sanitizeValue(action.value, validation?.regexp);
-            return {
-              effects: state.effects,
-              state: value,
-            };
-          }
-
-          default:
-            return state;
+          return;
         }
-      },
-      {
-        caller: 'OneTimePasswordField',
-        prop: controlledValue,
-        defaultProp: defaultValue != null ? sanitizeValue(defaultValue, validation?.regexp) : [],
-        onChange: (value) => onValueChange?.(value.filter(Boolean).join('')),
-      },
-      { effects: new Set<() => void>() }
-    );
 
-    React.useEffect(() => {
-      for (const effect of state.effects) {
-        state.effects.delete(effect);
-        effect();
+        case 'CLEAR_CHAR': {
+          const { index, reason } = action;
+          if (!value[index]) {
+            return;
+          }
+
+          const newValue = value.filter((_, i) => i !== index);
+          const currentTarget = collection.at(index)?.element;
+          const previous = currentTarget && collection.from(currentTarget, -1)?.element;
+
+          flushSync(() => _setValue(newValue));
+          if (reason === 'Backspace') {
+            focusInput(previous);
+          } else if (reason === 'Delete' || reason === 'Cut') {
+            focusInput(currentTarget);
+          }
+          return;
+        }
+
+        case 'CLEAR': {
+          if (value.length === 0) {
+            return;
+          }
+
+          if (action.reason === 'Backspace' || action.reason === 'Delete') {
+            flushSync(() => _setValue([]));
+            focusInput(collection.at(0)?.element);
+          } else {
+            _setValue([]);
+          }
+          return;
+        }
+
+        case 'PASTE': {
+          const { value: pastedValue } = action;
+          const value = sanitizeValue(pastedValue, validation?.regexp);
+          if (!value) {
+            return;
+          }
+
+          flushSync(() => _setValue(value));
+          focusInput(collection.at(value.length - 1)?.element);
+          return;
+        }
+
+        case 'SET_VALUE': {
+          _setValue(value);
+          return;
+        }
       }
-    }, [state]);
+    });
 
     const validationTypeRef = React.useRef(validationType);
     // update the value in the hidden input when the validation type changes
     React.useEffect(() => {
       if (validationTypeRef.current !== validationType) {
         validationTypeRef.current = validationType;
-        dispatch({ type: 'SET_VALUE', value: state.state });
+        dispatch({ type: 'SET_VALUE', value });
       }
-    }, [dispatch, validationType, state.state]);
-
-    const { state: value } = state;
+    }, [dispatch, validationType, value]);
 
     const hiddenInputRef = React.useRef<HTMLInputElement>(null);
 

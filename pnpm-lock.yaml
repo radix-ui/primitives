@@ -1611,6 +1611,9 @@ importers:
       '@radix-ui/react-use-controllable-state':
         specifier: workspace:*
         version: link:../use-controllable-state
+      '@radix-ui/react-use-effect-event':
+        specifier: workspace:*
+        version: link:../use-effect-event
       '@radix-ui/react-use-layout-effect':
         specifier: workspace:*
         version: link:../use-layout-effect
