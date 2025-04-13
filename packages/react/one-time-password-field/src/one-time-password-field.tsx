@@ -302,15 +302,24 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
     const rootRef = React.useRef<HTMLDivElement | null>(null);
     const composedRefs = useComposedRefs(forwardedRef, rootRef);
 
+    const firstInput = collection.at(0)?.element;
     const attemptSubmit = React.useCallback(() => {
-      const formElement = form
-        ? ((rootRef.current?.ownerDocument ?? document).getElementById(form) as HTMLFormElement)
-        : hiddenInputRef.current?.form;
+      let formElement: HTMLFormElement | null | undefined;
+      if (form) {
+        const associatedElement = (rootRef.current?.ownerDocument ?? document).getElementById(form);
+        if (isFormElement(associatedElement)) {
+          formElement = associatedElement;
+        }
+      } else if (hiddenInputRef.current) {
+        formElement = hiddenInputRef.current.form;
+      } else if (firstInput) {
+        formElement = firstInput.form;
+      }
 
-      if (isFormElement(formElement)) {
+      if (formElement) {
         formElement.requestSubmit();
       }
-    }, [form]);
+    }, [form, firstInput]);
 
     useAutoSubmit({
       attemptSubmit,
