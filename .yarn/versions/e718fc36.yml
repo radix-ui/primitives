@@ -1,8 +1,0 @@
-releases:
-  "@radix-ui/react-one-time-password-field": minor
-  "@radix-ui/react-password-strength": minor
-  "@radix-ui/react-password-toggle-field": minor
-  "@radix-ui/react-use-is-hydrated": major
-
-declined:
-  - primitives
