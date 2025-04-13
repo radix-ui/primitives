@@ -30,8 +30,7 @@ type UpdateAction =
   | { type: 'SET_CHAR'; char: string; index: number }
   | { type: 'CLEAR_CHAR'; index: number; reason: 'Backspace' | 'Delete' | 'Cut' }
   | { type: 'CLEAR'; reason: 'Reset' | 'Backspace' | 'Delete' }
-  | { type: 'PASTE'; value: string }
-  | { type: 'SET_VALUE'; value: string[] };
+  | { type: 'PASTE'; value: string };
 type Dispatcher = React.Dispatch<UpdateAction>;
 
 type InputValidationType = 'alpha' | 'numeric' | 'alphanumeric' | 'none';
@@ -177,14 +176,14 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
       return valueProp != null ? sanitizeValue(valueProp, validation?.regexp) : undefined;
     }, [valueProp, validation?.regexp]);
 
-    const [value, _setValue] = useControllableState({
+    const [value, setValue] = useControllableState({
       caller: 'OneTimePasswordField',
       prop: controlledValue,
       defaultProp: defaultValue != null ? sanitizeValue(defaultValue, validation?.regexp) : [],
       onChange: (value) => onValueChange?.(value.filter(Boolean).join('')),
     });
-    const [_effects, _setEffects] = React.useState<Set<() => void>>(new Set());
 
+    // Update function *specifically* for event handlers.
     const dispatch = useEffectEvent<Dispatcher>((action) => {
       switch (action.type) {
         case 'SET_CHAR': {
@@ -197,7 +196,7 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
           newValue[index] = char;
           const currentTarget = collection.at(index)?.element;
           const lastElement = collection.at(-1)?.element;
-          flushSync(() => _setValue(newValue));
+          flushSync(() => setValue(newValue));
           if (char !== '' && currentTarget !== lastElement) {
             const next = currentTarget && collection.from(currentTarget, 1)?.element;
             focusInput(next);
@@ -215,7 +214,7 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
           const currentTarget = collection.at(index)?.element;
           const previous = currentTarget && collection.from(currentTarget, -1)?.element;
 
-          flushSync(() => _setValue(newValue));
+          flushSync(() => setValue(newValue));
           if (reason === 'Backspace') {
             focusInput(previous);
           } else if (reason === 'Delete' || reason === 'Cut') {
@@ -230,10 +229,10 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
           }
 
           if (action.reason === 'Backspace' || action.reason === 'Delete') {
-            flushSync(() => _setValue([]));
+            flushSync(() => setValue([]));
             focusInput(collection.at(0)?.element);
           } else {
-            _setValue([]);
+            setValue([]);
           }
           return;
         }
@@ -245,26 +244,21 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
             return;
           }
 
-          flushSync(() => _setValue(value));
+          flushSync(() => setValue(value));
           focusInput(collection.at(value.length - 1)?.element);
-          return;
-        }
-
-        case 'SET_VALUE': {
-          _setValue(value);
           return;
         }
       }
     });
 
+    // re-validate when the validation type changes
     const validationTypeRef = React.useRef(validationType);
-    // update the value in the hidden input when the validation type changes
     React.useEffect(() => {
       if (validationTypeRef.current !== validationType) {
         validationTypeRef.current = validationType;
-        dispatch({ type: 'SET_VALUE', value });
+        setValue(value);
       }
-    }, [dispatch, validationType, value]);
+    }, [setValue, validationType, value]);
 
     const hiddenInputRef = React.useRef<HTMLInputElement>(null);
 
@@ -358,11 +352,7 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
                 if (!value) {
                   return;
                 }
-
-                flushSync(() => {
-                  dispatch({ type: 'PASTE', value: pastedValue });
-                });
-                focusInput(collection.at(value.length - 1)?.element);
+                dispatch({ type: 'PASTE', value: pastedValue });
               }
             )}
           >
