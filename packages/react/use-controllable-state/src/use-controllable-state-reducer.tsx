@@ -14,6 +14,13 @@ interface AnyAction {
   type: string;
 }
 
+const SYNC_STATE = Symbol('RADIX:SYNC_STATE');
+
+interface SyncStateAction<T> {
+  type: typeof SYNC_STATE;
+  state: T;
+}
+
 export function useControllableStateReducer<T, S extends {}, A extends AnyAction>(
   reducer: (prevState: S & { state: T }, action: A) => S & { state: T },
   userArgs: UseControllableStateParams<T>,
@@ -66,12 +73,14 @@ export function useControllableStateReducer<T, S extends {}, A extends AnyAction
   }
 
   const [internalState, dispatch] = React.useReducer(
-    (state: InternalState, action: A): InternalState => {
+    (state: InternalState, action: A | SyncStateAction<T>): InternalState => {
+      if (action.type === SYNC_STATE) {
+        return { ...state, state: action.state };
+      }
+
       const next = reducer(state, action);
-      if (!Object.is(next.state, state.state)) {
-        if (isControlled) {
-          onChange(next.state);
-        }
+      if (isControlled && !Object.is(next.state, state.state)) {
+        onChange(next.state);
       }
       return next;
     },
@@ -98,5 +107,11 @@ export function useControllableStateReducer<T, S extends {}, A extends AnyAction
     return internalState;
   }, [internalState, controlledState]);
 
-  return [state, dispatch];
+  // Sync internal state for controlled components so that reducer is called
+  // with the correct state values
+  if (isControlled && !Object.is(controlledState, internalState.state)) {
+    dispatch({ type: SYNC_STATE, state: controlledState });
+  }
+
+  return [state, dispatch as React.Dispatch<A>];
 }
