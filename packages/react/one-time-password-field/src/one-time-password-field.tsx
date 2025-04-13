@@ -30,7 +30,7 @@ type KeyboardActionDetails =
 
 interface OneTimePasswordFieldContextValue {
   value: string[];
-  setValue: React.Dispatch<React.SetStateAction<string[]>>;
+  clearValue: () => void;
   state?: FieldState;
   attemptSubmit: () => void;
   onCharChange: (char: string, index: number) => void;
@@ -47,8 +47,6 @@ interface OneTimePasswordFieldContextValue {
   required: boolean;
   type: InputType;
   keyboardActionRef: React.RefObject<KeyboardActionDetails | null>;
-  pattern: string | undefined;
-  inputMode: Exclude<React.HTMLAttributes<HTMLInputElement>['inputMode'], undefined>;
 }
 
 const ONE_TIME_PASSWORD_FIELD_NAME = 'OneTimePasswordField';
@@ -84,8 +82,6 @@ interface OneTimePasswordFieldOwnProps {
   placeholder?: string | undefined;
   required?: boolean;
   type?: InputType;
-  pattern?: string;
-  inputMode?: React.HTMLAttributes<HTMLInputElement>['inputMode'];
   //
   dir?: RovingFocusGroupProps['dir'];
   orientation?: RovingFocusGroupProps['orientation'];
@@ -135,8 +131,6 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
       type = 'password',
       orientation,
       dir,
-      inputMode = 'numeric',
-      pattern = inputMode === 'numeric' || inputMode === 'decimal' ? '\\d{1}' : undefined,
       ...domProps
     }: ScopedProps<OneTimePasswordFieldProps>,
     forwardedRef
@@ -192,6 +186,11 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
       [length, setValue]
     );
 
+    const clearValue = React.useCallback(() => {
+      setValue((value) => (value.length === 0 ? value : []));
+      setLastCharIndex(0);
+    }, [setValue]);
+
     return (
       <OneTimePasswordFieldContext
         scope={__scopeOneTimePasswordField}
@@ -209,11 +208,9 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
         required={required}
         type={type}
         hiddenInputRef={hiddenInputRef}
-        setValue={setValue}
+        clearValue={clearValue}
         childrenRefs={childrenRefs}
         keyboardActionRef={keyboardActionRef}
-        pattern={pattern}
-        inputMode={inputMode}
       >
         <RovingFocusGroup.Root
           asChild
@@ -381,9 +378,9 @@ const OneTimePasswordFieldInput = React.forwardRef<
         <Primitive.input
           ref={composedInputRef}
           autoComplete={index === 0 ? context.autoComplete : 'off'}
-          inputMode={context.inputMode}
+          inputMode="numeric"
           maxLength={1}
-          pattern={context.pattern}
+          pattern="\d{1}"
           readOnly={context.readOnly}
           value={char}
           data-radix-otp-input=""
@@ -416,16 +413,16 @@ const OneTimePasswordFieldInput = React.forwardRef<
               const isClearing =
                 keyboardAction.action === 'keydown' &&
                 (keyboardAction.metaKey || keyboardAction.ctrlKey);
-              flushSync(() => {
-                if (isClearing) {
-                  context.setValue([]);
-                } else {
-                  context.onCharChange('', index);
-                }
-              });
+
               if (isClearing) {
+                flushSync(() => {
+                  context.clearValue();
+                });
                 collection.at(0)?.element.focus();
               } else {
+                flushSync(() => {
+                  context.onCharChange('', index);
+                });
                 if (index === totalValue.length - 1) {
                   const previous = collection.from(event.currentTarget, -1)?.element;
                   if (previous) {
@@ -435,6 +432,7 @@ const OneTimePasswordFieldInput = React.forwardRef<
                   event.currentTarget.select();
                 }
               }
+
               return;
             }
 
@@ -465,12 +463,21 @@ const OneTimePasswordFieldInput = React.forwardRef<
             switch (event.key) {
               case 'Backspace': {
                 const currentValue = event.currentTarget.value;
-                // if current value is empty, no change event will fire. In this
-                // case we want to return focus to the previous input
+                // if current value is empty, no change event will fire when the
+                // user backspaces.
                 if (currentValue === '') {
-                  const element = event.currentTarget;
-                  collection.from(element, -1)?.element.focus();
+                  const isClearing = event.metaKey || event.ctrlKey;
+                  if (isClearing) {
+                    flushSync(() => {
+                      context.clearValue();
+                    });
+                    collection.at(0)?.element.focus();
+                  } else {
+                    const element = event.currentTarget;
+                    collection.from(element, -1)?.element.focus();
+                  }
                 } else {
+                  console.warn('sdfklsdf');
                   // In this case the value will be cleared, but we don't want to
                   // set it directly because the user may want to prevent default
                   // behavior in the onChange handler. The keyboardActionRef will
