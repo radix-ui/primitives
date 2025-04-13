@@ -2,23 +2,39 @@ import * as React from 'react';
 import { OneTimePasswordField, Separator } from 'radix-ui';
 import { Dialog as DialogPrimitive } from 'radix-ui';
 import dialogStyles from './dialog.stories.module.css';
+import type { Meta, StoryObj } from '@storybook/react';
 import styles from './one-time-password-field.stories.module.css';
 
 export default {
   title: 'Components/OneTimePasswordField',
-};
+} satisfies Meta<typeof OneTimePasswordField.Root>;
+
+type Story = StoryObj<typeof OneTimePasswordField.Root>;
 
 type FormState = { type: 'idle' } | { type: 'valid' } | { type: 'invalid'; error: string };
 
-export const Uncontrolled = () => {
-  const [code, setCode] = React.useState('');
+const VALID_CODE = '123456';
+
+const sharedStoryProps = {
+  argTypes: {
+    validationType: {
+      options: ['numeric', 'alphanumeric', 'alpha', 'none'],
+      control: { type: 'select' },
+    },
+    autoSubmit: {
+      control: { type: 'boolean' },
+    },
+  },
+} satisfies Story;
+
+export const Uncontrolled = {
+  ...sharedStoryProps,
+  render: (args) => <UncontrolledImpl {...args} />,
+} satisfies Story;
+
+function UncontrolledImpl(props: OneTimePasswordField.OneTimePasswordFieldProps) {
   const [showSuccessMessage, setShowSuccessMessage] = React.useState(false);
-  const [validationType, setValidationType] =
-    React.useState<OneTimePasswordField.InputValidationType>('numeric');
-
   const rootRef = React.useRef<HTMLDivElement | null>(null);
-  const VALID_CODE = '123456';
-
   const [formState, setFormState] = React.useState<FormState>({ type: 'idle' });
 
   return (
@@ -47,30 +63,13 @@ export const Uncontrolled = () => {
           }
         }}
       >
-        <label className={styles.selectField}>
-          <span>Validation type</span>
-          <select
-            value={validationType}
-            onChange={(e) =>
-              setValidationType(e.target.value as OneTimePasswordField.InputValidationType)
-            }
-          >
-            <option value="numeric">Numeric</option>
-            <option value="alphanumeric">Alphanumeric</option>
-            <option value="alpha">Alpha</option>
-            <option value="none">None</option>
-          </select>
-        </label>
         <div className={styles.field}>
           <OneTimePasswordField.Root
-            autoSubmit
             data-state={formState.type}
             className={styles.otpRoot}
             autoFocus
             ref={rootRef}
-            validationType={validationType}
-            onValueChange={(value) => setCode(value)}
-            value={code}
+            {...props}
           >
             <OneTimePasswordField.Input />
             <Separator.Root orientation="vertical" className={styles.separator} />
@@ -88,9 +87,6 @@ export const Uncontrolled = () => {
           </OneTimePasswordField.Root>
           {formState.type === 'invalid' && <ErrorMessage>{formState.error}</ErrorMessage>}
         </div>
-        <button type="button" onClick={() => setCode('')}>
-          Reset state
-        </button>
         <button type="reset">Reset form</button>
         <button>Submit</button>
       </form>
@@ -102,15 +98,17 @@ export const Uncontrolled = () => {
       />
     </div>
   );
-};
+}
 
-export const Controlled = () => {
+export const Controlled = {
+  ...sharedStoryProps,
+  render: (args) => <ControlledImpl {...args} />,
+} satisfies Story;
+
+function ControlledImpl(props: OneTimePasswordField.OneTimePasswordFieldProps) {
   const [error, setError] = React.useState<string | null>(null);
   const [code, setCode] = React.useState('');
   const [showSuccessMessage, setShowSuccessMessage] = React.useState(false);
-  const [validationType, setValidationType] =
-    React.useState<OneTimePasswordField.InputValidationType>('numeric');
-
   const rootRef = React.useRef<HTMLDivElement | null>(null);
   const VALID_CODE = '123456';
   const isInvalid = code.length === VALID_CODE.length ? code !== VALID_CODE : false;
@@ -124,44 +122,32 @@ export const Controlled = () => {
           if (isInvalid) {
             setError('Invalid code');
           }
+
           //
           else if (code.length !== VALID_CODE.length) {
             setError('Please fill in all fields');
           }
+
           //
           else if (Math.random() > 0.675) {
             setError('Server error');
           }
+
           //
           else {
             setShowSuccessMessage(true);
           }
         }}
       >
-        <label className={styles.selectField}>
-          <span>Validation type</span>
-          <select
-            value={validationType}
-            onChange={(e) =>
-              setValidationType(e.target.value as OneTimePasswordField.InputValidationType)
-            }
-          >
-            <option value="numeric">Numeric</option>
-            <option value="alphanumeric">Alphanumeric</option>
-            <option value="alpha">Alpha</option>
-            <option value="none">None</option>
-          </select>
-        </label>
         <div className={styles.field}>
           <OneTimePasswordField.Root
-            autoSubmit
             data-state={error || isInvalid ? 'invalid' : isValid ? 'valid' : undefined}
             className={styles.otpRoot}
             autoFocus
             ref={rootRef}
-            validationType={validationType}
             onValueChange={(value) => setCode(value)}
             value={code}
+            {...props}
           >
             <OneTimePasswordField.Input />
             <Separator.Root orientation="vertical" className={styles.separator} />
@@ -193,7 +179,7 @@ export const Controlled = () => {
       />
     </div>
   );
-};
+}
 
 function ErrorMessage({ children }: { children: string }) {
   return <div className={styles.errorMessage}>{children}</div>;
