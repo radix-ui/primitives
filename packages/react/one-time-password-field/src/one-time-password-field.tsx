@@ -35,7 +35,6 @@ interface OneTimePasswordFieldContextValue {
   attemptSubmit: () => void;
   onCharChange: (char: string, index: number) => void;
   hiddenInputRef: React.RefObject<HTMLInputElement | null>;
-  childrenRefs: React.RefObject<HTMLInputElement[]>;
   //
   disabled: boolean;
   readOnly: boolean;
@@ -145,7 +144,6 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
     });
 
     const hiddenInputRef = React.useRef<HTMLInputElement>(null);
-    const childrenRefs = React.useRef<HTMLInputElement[]>([]);
 
     const keyboardActionRef = React.useRef<KeyboardActionDetails | null>(null);
     const rootRef = React.useRef<HTMLDivElement | null>(null);
@@ -207,7 +205,6 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
         type={type}
         hiddenInputRef={hiddenInputRef}
         clearValue={clearValue}
-        childrenRefs={childrenRefs}
         keyboardActionRef={keyboardActionRef}
       >
         <RovingFocusGroup.Root
