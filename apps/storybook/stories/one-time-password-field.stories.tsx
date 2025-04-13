@@ -79,7 +79,7 @@ export const Controlled = () => {
             <Separator.Root orientation="vertical" className={styles.separator} />
             <OneTimePasswordField.Input />
 
-            {/* <OneTimePasswordField.HiddenInput /> */}
+            <OneTimePasswordField.HiddenInput name="code" />
           </OneTimePasswordField.Root>
           {error && <ErrorMessage>{error}</ErrorMessage>}
         </div>
