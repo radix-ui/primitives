@@ -1,6 +1,6 @@
 import { Primitive } from '@radix-ui/react-primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
-import { useControllableState } from '@radix-ui/react-use-controllable-state';
+import { useControllableStateReducer } from '@radix-ui/react-use-controllable-state';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { unstable_createCollection as createCollection } from '@radix-ui/react-collection';
 import * as RovingFocusGroup from '@radix-ui/react-roving-focus';
@@ -28,12 +28,17 @@ type KeyboardActionDetails =
       key?: never;
     };
 
+type ReducerAction =
+  | { type: 'SET_CHAR'; char: string; index: number }
+  | { type: 'CLEAR_CHAR'; index: number }
+  | { type: 'CLEAR' }
+  | { type: 'PASTE'; value: string };
+type Dispatcher = React.Dispatch<ReducerAction>;
+
 interface OneTimePasswordFieldContextValue {
   value: string[];
-  clearValue: () => void;
   state?: FieldState;
   attemptSubmit: () => void;
-  onCharChange: (char: string, index: number) => void;
   hiddenInputRef: React.RefObject<HTMLInputElement | null>;
   //
   disabled: boolean;
@@ -46,6 +51,7 @@ interface OneTimePasswordFieldContextValue {
   required: boolean;
   type: InputType;
   keyboardActionRef: React.RefObject<KeyboardActionDetails | null>;
+  dispatch: Dispatcher;
 }
 
 const ONE_TIME_PASSWORD_FIELD_NAME = 'OneTimePasswordField';
@@ -116,7 +122,7 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
       onValueChange,
       autoSubmit,
       children,
-      state,
+      state: fieldState,
       onPaste,
       onAutoSubmit,
       disabled = false,
@@ -136,12 +142,125 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
   ) {
     const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeOneTimePasswordField);
     const direction = useDirection(dir);
-    const [lastCharIndex, setLastCharIndex] = React.useState<number>(0);
-    const [value, setValue] = useControllableState({
-      prop: valueProp != null ? sanitizeValue(valueProp.split('')) : undefined,
-      defaultProp: defaultValue != null ? sanitizeValue(defaultValue.split('')) : [],
-      onChange: (value) => onValueChange?.(value.join('')),
-    });
+    // const [lastCharIndex, setLastCharIndex] = React.useState<number>(0);
+    // const [value, setValue] = useControllableState({
+    //   prop: valueProp != null ? sanitizeValue(valueProp.split('')) : undefined,
+    //   defaultProp: defaultValue != null ? sanitizeValue(defaultValue.split('')) : [],
+    //   onChange: (value) => onValueChange?.(value.filter(Boolean).join('')),
+    // });
+
+    const collection = useCollection(__scopeOneTimePasswordField);
+
+    const [state, dispatch] = useControllableStateReducer(
+      (state, action: ReducerAction) => {
+        switch (action.type) {
+          case 'SET_CHAR': {
+            const { index, char } = action;
+            if (state.state[index] === char) {
+              return state;
+            }
+
+            const newValue = [...state.state];
+            newValue[index] = char;
+            const currentTarget = collection.at(index)?.element;
+            const lastElement = collection.at(-1)?.element;
+            state.effects.add(() => {
+              if (char !== '' && currentTarget !== lastElement) {
+                const next = currentTarget && collection.from(currentTarget, 1)?.element;
+                if (next) {
+                  next.focus();
+                }
+              }
+            });
+
+            return {
+              effects: state.effects,
+              state: newValue,
+              lastCharIndex: action.index,
+            };
+          }
+
+          case 'CLEAR_CHAR': {
+            const { index } = action;
+            if (!state.state[index]) {
+              return state;
+            }
+
+            const newValue = state.state.filter((_, i) => i !== index);
+            const totalValue = state.state.join('').trim();
+            const currentTarget = collection.at(index)?.element;
+            const previous = currentTarget && collection.from(currentTarget, -1)?.element;
+            state.effects.add(() => {
+              if (index === totalValue.length - 1) {
+                if (previous) {
+                  previous.focus();
+                }
+              } else if (currentTarget) {
+                currentTarget.select();
+              }
+            });
+
+            return {
+              effects: state.effects,
+              state: newValue,
+              lastCharIndex: action.index,
+            };
+          }
+
+          case 'CLEAR': {
+            const { state: value } = state;
+            if (value.length === 0) {
+              return state;
+            }
+
+            state.effects.add(() => {
+              collection.at(0)?.element.focus();
+            });
+            return {
+              effects: state.effects,
+              state: [],
+              lastCharIndex: 0,
+            };
+          }
+
+          case 'PASTE': {
+            const { value: pastedValue } = action;
+            const value = sanitizeValue(pastedValue.split(''));
+            if (!value) {
+              return state;
+            }
+
+            state.effects.add(() => {
+              collection.at(value.length - 1)?.element.focus();
+            });
+            return {
+              effects: state.effects,
+              state: value,
+              lastCharIndex: value.length - 1,
+            };
+          }
+
+          default:
+            return state;
+        }
+      },
+      {
+        caller: 'OneTimePasswordField',
+        prop: valueProp != null ? sanitizeValue(valueProp.split('')) : undefined,
+        defaultProp: defaultValue != null ? sanitizeValue(defaultValue.split('')) : [],
+        onChange: (value) => onValueChange?.(value.filter(Boolean).join('')),
+      },
+      { lastCharIndex: 0, effects: new Set<() => void>() }
+    );
+
+    React.useEffect(() => {
+      for (const effect of state.effects) {
+        state.effects.delete(effect);
+        effect();
+      }
+    }, [state]);
+
+    const { state: value, lastCharIndex } = state;
 
     const hiddenInputRef = React.useRef<HTMLInputElement>(null);
 
@@ -159,8 +278,6 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
       }
     }, [form]);
 
-    const collection = useCollection(__scopeOneTimePasswordField);
-
     useAutoSubmit({
       attemptSubmit,
       autoSubmit,
@@ -170,30 +287,12 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
       value,
     });
 
-    const onCharChange = React.useCallback(
-      (char: string, index: number) => {
-        setValue((previousValue) => {
-          const newValue = [...previousValue];
-          newValue[index] = char;
-          return newValue;
-        });
-        setLastCharIndex(index);
-      },
-      [setValue]
-    );
-
-    const clearValue = React.useCallback(() => {
-      setValue((value) => (value.length === 0 ? value : []));
-      setLastCharIndex(0);
-    }, [setValue]);
-
     return (
       <OneTimePasswordFieldContext
         scope={__scopeOneTimePasswordField}
         value={value}
-        state={state}
+        state={fieldState}
         attemptSubmit={attemptSubmit}
-        onCharChange={onCharChange}
         disabled={disabled}
         readOnly={readOnly}
         autoComplete={autoComplete}
@@ -204,8 +303,8 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
         required={required}
         type={type}
         hiddenInputRef={hiddenInputRef}
-        clearValue={clearValue}
         keyboardActionRef={keyboardActionRef}
+        dispatch={dispatch}
       >
         <RovingFocusGroup.Root
           asChild
@@ -216,7 +315,7 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
           <Primitive.div
             {...domProps}
             ref={composedRefs}
-            data-state={state}
+            data-state={fieldState}
             onPaste={composeEventHandlers(
               onPaste,
               (event: React.ClipboardEvent<HTMLDivElement>) => {
@@ -227,8 +326,9 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
                   return;
                 }
 
-                setValue(value);
-                setLastCharIndex(value.length - 1);
+                flushSync(() => {
+                  dispatch({ type: 'PASTE', value: pastedValue });
+                });
                 collection.at(value.length - 1)?.element.focus();
               }
             )}
@@ -338,7 +438,7 @@ const OneTimePasswordFieldInput = React.forwardRef<
     'OneTimePasswordFieldInput',
     __scopeOneTimePasswordField
   );
-  const { keyboardActionRef } = context;
+  const { dispatch, keyboardActionRef } = context;
   const collection = useCollection(__scopeOneTimePasswordField);
   const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeOneTimePasswordField);
 
@@ -407,41 +507,16 @@ const OneTimePasswordFieldInput = React.forwardRef<
                 (keyboardAction.metaKey || keyboardAction.ctrlKey);
 
               if (isClearing) {
-                flushSync(() => {
-                  context.clearValue();
-                });
-                collection.at(0)?.element.focus();
+                dispatch({ type: 'CLEAR' });
               } else {
-                flushSync(() => {
-                  context.onCharChange('', index);
-                });
-                if (index === totalValue.length - 1) {
-                  const previous = collection.from(event.currentTarget, -1)?.element;
-                  if (previous) {
-                    previous.focus();
-                  }
-                } else {
-                  event.currentTarget.select();
-                }
+                dispatch({ type: 'CLEAR_CHAR', index });
               }
-
               return;
             }
 
             // Only update the value if it matches the input pattern
             if (event.target.validity.valid) {
-              const character = event.target.value;
-              flushSync(() => {
-                context.onCharChange(character, index);
-              });
-
-              const lastElement = collection.at(-1)?.element;
-              if (character !== '' && event.currentTarget !== lastElement) {
-                const next = collection.from(event.currentTarget, 1)?.element;
-                if (next) {
-                  next.focus();
-                }
-              }
+              dispatch({ type: 'SET_CHAR', char: event.target.value, index });
             } else {
               const element = event.target;
               requestAnimationFrame(() => {
@@ -460,10 +535,7 @@ const OneTimePasswordFieldInput = React.forwardRef<
                 if (currentValue === '') {
                   const isClearing = event.metaKey || event.ctrlKey;
                   if (isClearing) {
-                    flushSync(() => {
-                      context.clearValue();
-                    });
-                    collection.at(0)?.element.focus();
+                    dispatch({ type: 'CLEAR' });
                   } else {
                     const element = event.currentTarget;
                     collection.from(element, -1)?.element.focus();
