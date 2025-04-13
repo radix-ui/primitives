@@ -13,7 +13,6 @@ import { useDirection } from '@radix-ui/react-direction';
 import { clamp } from '@radix-ui/number';
 import { useEffectEvent } from '@radix-ui/react-use-effect-event';
 
-type FieldState = 'valid' | 'invalid';
 type InputType = 'password' | 'text';
 type AutoComplete = 'off' | 'one-time-code';
 
@@ -59,7 +58,6 @@ const INPUT_VALIDATION_MAP = {
 
 interface OneTimePasswordFieldContextValue {
   value: string[];
-  state?: FieldState;
   attemptSubmit: () => void;
   hiddenInputRef: React.RefObject<HTMLInputElement | null>;
   validationType: InputValidationType;
@@ -94,7 +92,6 @@ type RovingFocusGroupProps = React.ComponentPropsWithoutRef<typeof RovingFocusGr
 interface OneTimePasswordFieldOwnProps {
   onValueChange?: (value: string) => void;
   id?: string;
-  state?: FieldState;
   value?: string;
   defaultValue?: string;
   autoSubmit?: boolean;
@@ -144,7 +141,6 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
       onValueChange,
       autoSubmit,
       children,
-      state: fieldState,
       onPaste,
       onAutoSubmit,
       disabled = false,
@@ -317,7 +313,6 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
       <OneTimePasswordFieldContext
         scope={__scopeOneTimePasswordField}
         value={value}
-        state={fieldState}
         attemptSubmit={attemptSubmit}
         disabled={disabled}
         readOnly={readOnly}
@@ -342,7 +337,6 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
           <Primitive.div
             {...domProps}
             ref={composedRefs}
-            data-state={fieldState}
             onPaste={composeEventHandlers(
               onPaste,
               (event: React.ClipboardEvent<HTMLDivElement>) => {
@@ -602,12 +596,9 @@ const OneTimePasswordFieldInput = React.forwardRef<
                 return;
               }
               default: {
-                const isValueSelected =
-                  event.currentTarget.selectionStart === 0 &&
-                  event.currentTarget.selectionEnd === 1;
-                if (isValueSelected && event.currentTarget.value === event.key) {
-                  // if current value is same as the key press with a value
-                  // selected, no change event will fire. Focus the next input.
+                if (event.currentTarget.value === event.key) {
+                  // if current value is same as the key press, no change event
+                  // will fire. Focus the next input.
                   const element = event.currentTarget;
                   focusInput(collection.from(element, 1)?.element);
                 }
