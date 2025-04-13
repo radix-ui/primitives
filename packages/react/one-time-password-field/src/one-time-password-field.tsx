@@ -35,21 +35,24 @@ type Dispatcher = React.Dispatch<UpdateAction>;
 type InputValidationType = 'alpha' | 'numeric' | 'alphanumeric' | 'none';
 type InputValidation = Record<
   Exclude<InputValidationType, 'none'>,
-  { regexp: RegExp; pattern: string; inputMode: string }
+  { type: InputValidationType; regexp: RegExp; pattern: string; inputMode: string }
 >;
 
 const INPUT_VALIDATION_MAP = {
   numeric: {
+    type: 'numeric',
     regexp: /[^\d]/g,
     pattern: '\\d{1}',
     inputMode: 'numeric',
   },
   alpha: {
+    type: 'alpha',
     regexp: /[^a-zA-Z]/g,
     pattern: '[a-zA-Z]{1}',
     inputMode: 'text',
   },
   alphanumeric: {
+    type: 'alphanumeric',
     regexp: /[^a-zA-Z0-9]/g,
     pattern: '[a-zA-Z0-9]{1}',
     inputMode: 'text',
@@ -248,13 +251,17 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
     });
 
     // re-validate when the validation type changes
-    const validationTypeRef = React.useRef(validationType);
+    const validationTypeRef = React.useRef(validation);
     React.useEffect(() => {
-      if (validationTypeRef.current !== validationType) {
-        validationTypeRef.current = validationType;
-        setValue(value);
+      if (!validation) {
+        return;
       }
-    }, [setValue, validationType, value]);
+
+      if (validationTypeRef.current?.type !== validation.type) {
+        validationTypeRef.current = validation;
+        setValue(sanitizeValue(value, validation.regexp));
+      }
+    }, [setValue, validation, value]);
 
     const hiddenInputRef = React.useRef<HTMLInputElement>(null);
 
