@@ -80,6 +80,7 @@ interface OneTimePasswordFieldContextValue {
   type: InputType;
   userActionRef: React.RefObject<KeyboardActionDetails | null>;
   dispatch: Dispatcher;
+  orientation: Exclude<RovingFocusGroupProps['orientation'], undefined>;
 }
 
 const ONE_TIME_PASSWORD_FIELD_NAME = 'OneTimePasswordField';
@@ -160,7 +161,8 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
       placeholder,
       required = false,
       type = 'password',
-      orientation,
+      // TODO: Change default to vertical when inputs use vertical writing mode
+      orientation = 'horizontal',
       dir,
       validationType = 'numeric',
       ...domProps
@@ -373,6 +375,7 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
         userActionRef={userActionRef}
         dispatch={dispatch}
         validationType={validationType}
+        orientation={orientation}
       >
         <RovingFocusGroup.Root
           asChild
@@ -662,6 +665,16 @@ const OneTimePasswordFieldInput = React.forwardRef<
                 context.attemptSubmit();
                 return;
               }
+              case 'ArrowDown':
+              case 'ArrowUp': {
+                if (context.orientation === 'horizontal') {
+                  // in horizontal orientation, the up/down will de-select the
+                  // input instead of moving focus
+                  event.preventDefault();
+                }
+                return;
+              }
+              // TODO: Handle left/right arrow keys in vertical writing mode
               default: {
                 if (event.currentTarget.value === event.key) {
                   // if current value is same as the key press, no change event
