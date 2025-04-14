@@ -19,6 +19,9 @@ const VALID_CODE = '123456';
 
 const sharedStoryProps = {
   argTypes: {
+    placeholder: {
+      control: { type: 'text' },
+    },
     validationType: {
       options: ['numeric', 'alphanumeric', 'alpha', 'none'],
       control: { type: 'select' },
