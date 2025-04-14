@@ -385,6 +385,7 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
         >
           <Primitive.div
             {...domProps}
+            role="group"
             ref={composedRefs}
             onPaste={composeEventHandlers(
               onPaste,
