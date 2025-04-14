@@ -532,6 +532,7 @@ const OneTimePasswordFieldInput = React.forwardRef<
         <Primitive.input
           ref={composedInputRef}
           type="text"
+          aria-label={`Character ${index + 1} of ${collection.size}`}
           autoComplete={index === 0 ? context.autoComplete : 'off'}
           inputMode={validation?.inputMode}
           maxLength={1}
