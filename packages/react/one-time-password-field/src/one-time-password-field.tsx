@@ -517,13 +517,20 @@ const OneTimePasswordFieldHiddenInput = React.forwardRef<
  * OneTimePasswordFieldInput
  * -----------------------------------------------------------------------------------------------*/
 
-interface OneTimePasswordFieldInputOwnProps {
-  autoComplete?: 'one-time-code' | 'off';
-}
-
 interface OneTimePasswordFieldInputProps
-  extends OneTimePasswordFieldInputOwnProps,
-    Omit<Primitive.PrimitivePropsWithRef<'input'>, keyof OneTimePasswordFieldInputOwnProps> {}
+  extends Omit<
+    Primitive.PrimitivePropsWithRef<'input'>,
+    | 'value'
+    | 'defaultValue'
+    | 'disabled'
+    | 'readOnly'
+    | 'autoComplete'
+    | 'autoFocus'
+    | 'form'
+    | 'name'
+    | 'placeholder'
+    | 'type'
+  > {}
 
 const OneTimePasswordFieldInput = React.forwardRef<
   HTMLInputElement,
@@ -545,7 +552,7 @@ const OneTimePasswordFieldInput = React.forwardRef<
     placeholder: _placeholder,
     type: _type,
     ...domProps
-  } = props as any;
+  } = props as Primitive.PrimitivePropsWithRef<'input'>;
 
   const context = useOneTimePasswordFieldContext(
     'OneTimePasswordFieldInput',
@@ -566,6 +573,8 @@ const OneTimePasswordFieldInput = React.forwardRef<
   } else {
     index = element ? collection.indexOf(element) : -1;
     if (context.placeholder && context.value.length === 0) {
+      // only set placeholder after hydration to prevent flickering when indices
+      // are re-calculated
       placeholder = context.placeholder[index];
     }
   }
@@ -892,5 +901,5 @@ type UpdateAction =
 type Dispatcher = React.Dispatch<UpdateAction>;
 type InputValidation = Record<
   Exclude<InputValidationType, 'none'>,
-  { type: InputValidationType; regexp: RegExp; pattern: string; inputMode: string }
+  { type: InputValidationType; regexp: RegExp; pattern: string; inputMode: 'text' | 'numeric' }
 >;
