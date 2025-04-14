@@ -170,6 +170,12 @@ function ControlledImpl(props: OneTimePasswordField.OneTimePasswordFieldProps) {
         </button>
         <button type="reset">Reset form</button>
         <button>Submit</button>
+        <output
+          data-state={error || isInvalid ? 'invalid' : isValid ? 'valid' : undefined}
+          className={styles.output}
+        >
+          {code || 'code'}
+        </output>
       </form>
       <Dialog
         open={showSuccessMessage}
