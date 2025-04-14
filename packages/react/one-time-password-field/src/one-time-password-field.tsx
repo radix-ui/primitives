@@ -14,35 +14,7 @@ import { useDirection } from '@radix-ui/react-direction';
 import { clamp } from '@radix-ui/number';
 import { useEffectEvent } from '@radix-ui/react-use-effect-event';
 
-type InputType = 'password' | 'text';
-type AutoComplete = 'off' | 'one-time-code';
-
-type KeyboardActionDetails =
-  | {
-      type: 'keydown';
-      key: 'Backspace' | 'Delete' | 'Char';
-      metaKey: boolean;
-      ctrlKey: boolean;
-    }
-  | { type: 'cut' };
-
-type UpdateAction =
-  | {
-      type: 'SET_CHAR';
-      char: string;
-      index: number;
-      event: React.KeyboardEvent | React.ChangeEvent;
-    }
-  | { type: 'CLEAR_CHAR'; index: number; reason: 'Backspace' | 'Delete' | 'Cut' }
-  | { type: 'CLEAR'; reason: 'Reset' | 'Backspace' | 'Delete' }
-  | { type: 'PASTE'; value: string };
-type Dispatcher = React.Dispatch<UpdateAction>;
-
 type InputValidationType = 'alpha' | 'numeric' | 'alphanumeric' | 'none';
-type InputValidation = Record<
-  Exclude<InputValidationType, 'none'>,
-  { type: InputValidationType; regexp: RegExp; pattern: string; inputMode: string }
->;
 
 const INPUT_VALIDATION_MAP = {
   numeric: {
@@ -65,31 +37,34 @@ const INPUT_VALIDATION_MAP = {
   },
 } satisfies InputValidation;
 
+/* -------------------------------------------------------------------------------------------------
+ * OneTimePasswordFieldContext
+ * -----------------------------------------------------------------------------------------------*/
+
 interface OneTimePasswordFieldContextValue {
-  value: string[];
   attemptSubmit: () => void;
-  hiddenInputRef: React.RefObject<HTMLInputElement | null>;
-  validationType: InputValidationType;
-  disabled: boolean;
-  readOnly: boolean;
   autoComplete: AutoComplete;
   autoFocus: boolean;
+  disabled: boolean;
+  dispatch: Dispatcher;
   form: string | undefined;
+  hiddenInputRef: React.RefObject<HTMLInputElement | null>;
+  isHydrated: boolean;
   name: string | undefined;
+  orientation: Exclude<RovingFocusGroupProps['orientation'], undefined>;
   placeholder: string | undefined;
+  preHydrationIndexTracker: React.RefObject<number>;
+  readOnly: boolean;
   required: boolean;
   type: InputType;
   userActionRef: React.RefObject<KeyboardActionDetails | null>;
-  dispatch: Dispatcher;
-  orientation: Exclude<RovingFocusGroupProps['orientation'], undefined>;
-  preHydrationIndexTracker: React.RefObject<number>;
-  isHydrated: boolean;
+  validationType: InputValidationType;
+  value: string[];
 }
 
 const ONE_TIME_PASSWORD_FIELD_NAME = 'OneTimePasswordField';
-const [Collection, useCollection, createCollectionScope] = createCollection<HTMLInputElement>(
-  ONE_TIME_PASSWORD_FIELD_NAME
-);
+const [Collection, { useCollection, createCollectionScope, useInitCollection }] =
+  createCollection<HTMLInputElement>(ONE_TIME_PASSWORD_FIELD_NAME);
 const [createOneTimePasswordFieldContext] = createContextScope(ONE_TIME_PASSWORD_FIELD_NAME, [
   createCollectionScope,
   createRovingFocusGroupScope,
@@ -102,39 +77,27 @@ const [OneTimePasswordFieldContext, useOneTimePasswordFieldContext] =
 type RovingFocusGroupProps = React.ComponentPropsWithoutRef<typeof RovingFocusGroup.Root>;
 
 interface OneTimePasswordFieldOwnProps {
-  onValueChange?: (value: string) => void;
-  id?: string;
-  value?: string;
-  defaultValue?: string;
-  autoSubmit?: boolean;
-  onAutoSubmit?: (value: string) => void;
-  validationType?: InputValidationType;
-  disabled?: boolean;
-  readOnly?: boolean;
   autoComplete?: AutoComplete;
   autoFocus?: boolean;
+  autoSubmit?: boolean;
+  defaultValue?: string;
+  dir?: RovingFocusGroupProps['dir'];
+  disabled?: boolean;
   form?: string | undefined;
+  id?: string;
   name?: string | undefined;
+  onAutoSubmit?: (value: string) => void;
+  onValueChange?: (value: string) => void;
+  orientation?: RovingFocusGroupProps['orientation'];
   placeholder?: string | undefined;
+  readOnly?: boolean;
   required?: boolean;
   type?: InputType;
-  //
-  dir?: RovingFocusGroupProps['dir'];
-  orientation?: RovingFocusGroupProps['orientation'];
+  validationType?: InputValidationType;
+  value?: string;
 }
 
 type ScopedProps<P> = P & { __scopeOneTimePasswordField?: Scope };
-
-const OneTimePasswordFieldCollectionProvider = ({
-  __scopeOneTimePasswordField,
-  children,
-}: ScopedProps<{ children: React.ReactNode }>) => {
-  return (
-    <Collection.Provider scope={__scopeOneTimePasswordField}>
-      <Collection.Slot scope={__scopeOneTimePasswordField}>{children}</Collection.Slot>
-    </Collection.Provider>
-  );
-};
 
 interface OneTimePasswordFieldProps
   extends OneTimePasswordFieldOwnProps,
@@ -143,7 +106,7 @@ interface OneTimePasswordFieldProps
       keyof OneTimePasswordFieldOwnProps
     > {}
 
-const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswordFieldProps>(
+const OneTimePasswordField = React.forwardRef<HTMLDivElement, OneTimePasswordFieldProps>(
   function OneTimePasswordFieldImpl(
     {
       __scopeOneTimePasswordField,
@@ -174,7 +137,8 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
   ) {
     const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeOneTimePasswordField);
     const direction = useDirection(dir);
-    const collection = useCollection(__scopeOneTimePasswordField);
+    const collectionState = useInitCollection();
+    const [collection] = collectionState;
 
     const validation =
       validationType in INPUT_VALIDATION_MAP
@@ -390,43 +354,37 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
         preHydrationIndexTracker={preHydrationIndexTracker}
         isHydrated={isHydrated}
       >
-        <RovingFocusGroup.Root
-          asChild
-          {...rovingFocusGroupScope}
-          orientation={orientation}
-          dir={direction}
-        >
-          <Primitive.div
-            {...domProps}
-            role="group"
-            ref={composedRefs}
-            onPaste={composeEventHandlers(
-              onPaste,
-              (event: React.ClipboardEvent<HTMLDivElement>) => {
-                event.preventDefault();
-                const pastedValue = event.clipboardData.getData('Text');
-                const value = sanitizeValue(pastedValue, validation?.regexp);
-                if (!value) {
-                  return;
-                }
-                dispatch({ type: 'PASTE', value: pastedValue });
-              }
-            )}
-          >
-            {children}
-          </Primitive.div>
-        </RovingFocusGroup.Root>
+        <Collection.Provider scope={__scopeOneTimePasswordField} state={collectionState}>
+          <Collection.Slot scope={__scopeOneTimePasswordField}>
+            <RovingFocusGroup.Root
+              asChild
+              {...rovingFocusGroupScope}
+              orientation={orientation}
+              dir={direction}
+            >
+              <Primitive.div
+                {...domProps}
+                role="group"
+                ref={composedRefs}
+                onPaste={composeEventHandlers(
+                  onPaste,
+                  (event: React.ClipboardEvent<HTMLDivElement>) => {
+                    event.preventDefault();
+                    const pastedValue = event.clipboardData.getData('Text');
+                    const value = sanitizeValue(pastedValue, validation?.regexp);
+                    if (!value) {
+                      return;
+                    }
+                    dispatch({ type: 'PASTE', value: pastedValue });
+                  }
+                )}
+              >
+                {children}
+              </Primitive.div>
+            </RovingFocusGroup.Root>
+          </Collection.Slot>
+        </Collection.Provider>
       </OneTimePasswordFieldContext>
-    );
-  }
-);
-
-const OneTimePasswordField = React.forwardRef<HTMLDivElement, OneTimePasswordFieldProps>(
-  function OneTimePasswordField(props, ref) {
-    return (
-      <OneTimePasswordFieldCollectionProvider>
-        <OneTimePasswordFieldImpl {...props} ref={ref} />
-      </OneTimePasswordFieldCollectionProvider>
     );
   }
 );
@@ -789,6 +747,8 @@ export type {
   InputValidationType,
 };
 
+/* -----------------------------------------------------------------------------------------------*/
+
 function isFormElement(element: Element | null | undefined): element is HTMLFormElement {
   return element?.tagName === 'FORM';
 }
@@ -821,3 +781,30 @@ function focusInput(element: HTMLInputElement | null | undefined) {
 function isInputEvent(event: Event): event is InputEvent {
   return event.type === 'input';
 }
+
+type InputType = 'password' | 'text';
+type AutoComplete = 'off' | 'one-time-code';
+type KeyboardActionDetails =
+  | {
+      type: 'keydown';
+      key: 'Backspace' | 'Delete' | 'Char';
+      metaKey: boolean;
+      ctrlKey: boolean;
+    }
+  | { type: 'cut' };
+
+type UpdateAction =
+  | {
+      type: 'SET_CHAR';
+      char: string;
+      index: number;
+      event: React.KeyboardEvent | React.ChangeEvent;
+    }
+  | { type: 'CLEAR_CHAR'; index: number; reason: 'Backspace' | 'Delete' | 'Cut' }
+  | { type: 'CLEAR'; reason: 'Reset' | 'Backspace' | 'Delete' }
+  | { type: 'PASTE'; value: string };
+type Dispatcher = React.Dispatch<UpdateAction>;
+type InputValidation = Record<
+  Exclude<InputValidationType, 'none'>,
+  { type: InputValidationType; regexp: RegExp; pattern: string; inputMode: string }
+>;
