@@ -189,9 +189,30 @@ function ControlledImpl(props: OneTimePasswordField.OneTimePasswordFieldProps) {
   );
 }
 
-export const PastedAndDeleted: Story = {
+export const PastedAndDeletedControlled: Story = {
   render: (args) => <ControlledImpl {...args} />,
-  name: 'Pasted and deleted (test)',
+  name: 'Pasted and deleted (controlled test)',
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const inputs = canvas.getAllByRole<HTMLInputElement>('textbox', {
+      hidden: false,
+    });
+
+    const firstInput = inputs[0]!;
+    expect(firstInput).toBeInTheDocument();
+    await userEvent.click(firstInput);
+    await userEvent.paste('123123');
+    expect(getInputValues(inputs)).toBe('1,2,3,1,2,3');
+    await userEvent.keyboard('{backspace}{backspace}{backspace}{backspace}{backspace}');
+    expect(getInputValues(inputs)).toBe('1,,,,,');
+    await userEvent.keyboard('{backspace}');
+    expect(getInputValues(inputs)).toBe(',,,,,');
+  },
+};
+
+export const PastedAndDeletedUncontrolled: Story = {
+  render: (args) => <UncontrolledImpl {...args} />,
+  name: 'Pasted and deleted (uncontrolled test)',
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const inputs = canvas.getAllByRole<HTMLInputElement>('textbox', {
