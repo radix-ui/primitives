@@ -3,10 +3,12 @@ import { OneTimePasswordField, Separator } from 'radix-ui';
 import { Dialog as DialogPrimitive } from 'radix-ui';
 import dialogStyles from './dialog.stories.module.css';
 import type { Meta, StoryObj } from '@storybook/react';
+import { userEvent, within, expect } from '@storybook/test';
 import styles from './one-time-password-field.stories.module.css';
 
 export default {
   title: 'Components/OneTimePasswordField',
+  component: OneTimePasswordField.Root,
 } satisfies Meta<typeof OneTimePasswordField.Root>;
 
 type Story = StoryObj<typeof OneTimePasswordField.Root>;
@@ -187,6 +189,30 @@ function ControlledImpl(props: OneTimePasswordField.OneTimePasswordFieldProps) {
   );
 }
 
+export const PastedAndDeleted: Story = {
+  render: (args) => <ControlledImpl {...args} />,
+  name: 'Pasted and deleted (test)',
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const inputs = canvas.getAllByRole<HTMLInputElement>('textbox', {
+      hidden: false,
+    });
+
+    const firstInput = inputs[0]!;
+    expect(firstInput).toBeInTheDocument();
+    await userEvent.click(firstInput);
+    await userEvent.paste('123123');
+    expect(getInputValues(inputs)).toBe('1,2,3,1,2,3');
+    await userEvent.keyboard('{backspace}{backspace}{backspace}{backspace}{backspace}');
+    expect(getInputValues(inputs)).toBe('1,,,,,');
+    await userEvent.keyboard('{backspace}');
+    // With the current bug, the actual behavior is 1,2,3,1,2,3
+    expect(getInputValues(inputs)).toBe(',,,,,');
+
+    // if we keep deleting while the first input is focused, we eventually get ,2,3,1,2,3
+  },
+};
+
 function ErrorMessage({ children }: { children: string }) {
   return <div className={styles.errorMessage}>{children}</div>;
 }
@@ -221,4 +247,8 @@ function Dialog({
       </DialogPrimitive.Portal>
     </DialogPrimitive.Root>
   );
+}
+
+function getInputValues(inputs: HTMLInputElement[]) {
+  return inputs.map((input) => input.value).join(',');
 }
