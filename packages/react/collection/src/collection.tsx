@@ -46,7 +46,7 @@ function createCollection<
     setItemMap: React.Dispatch<React.SetStateAction<ItemMap<ItemElement, ItemData>>>;
   };
 
-  const [CollectionProviderImpl, useCollectionContext] = createCollectionContext<ContextValue>(
+  const [CollectionContextProvider, useCollectionContext] = createCollectionContext<ContextValue>(
     PROVIDER_NAME,
     {
       collectionElement: null,
@@ -57,14 +57,45 @@ function createCollection<
     }
   );
 
-  const CollectionProvider: React.FC<{ children?: React.ReactNode; scope: any }> = (props) => {
-    const { scope, children } = props;
+  type CollectionState = [
+    ItemMap: ItemMap<ItemElement, ItemData>,
+    SetItemMap: React.Dispatch<React.SetStateAction<ItemMap<ItemElement, ItemData>>>,
+  ];
+
+  const CollectionProvider: React.FC<{
+    children?: React.ReactNode;
+    scope: any;
+    state?: CollectionState;
+  }> = ({ state, ...props }) => {
+    return state ? (
+      <CollectionProviderImpl {...props} state={state} />
+    ) : (
+      <CollectionInit {...props} />
+    );
+  };
+  CollectionProvider.displayName = PROVIDER_NAME;
+
+  const CollectionInit: React.FC<{
+    children?: React.ReactNode;
+    scope: any;
+  }> = (props) => {
+    const state = useInitCollection();
+    return <CollectionProviderImpl {...props} state={state} />;
+  };
+  CollectionInit.displayName = PROVIDER_NAME + 'Init';
+
+  const CollectionProviderImpl: React.FC<{
+    children?: React.ReactNode;
+    scope: any;
+    state: CollectionState;
+  }> = (props) => {
+    const { scope, children, state } = props;
     const ref = React.useRef<CollectionElement>(null);
     const [collectionElement, setCollectionElement] = React.useState<CollectionElement | null>(
       null
     );
     const composeRefs = useComposedRefs(ref, setCollectionElement);
-    const [itemMap, setItemMap] = React.useState<ItemMap<ItemElement, ItemData>>(new OrderedDict());
+    const [itemMap, setItemMap] = state;
 
     React.useEffect(() => {
       if (!collectionElement) return;
@@ -98,7 +129,7 @@ function createCollection<
     }, [collectionElement]);
 
     return (
-      <CollectionProviderImpl
+      <CollectionContextProvider
         scope={scope}
         itemMap={itemMap}
         setItemMap={setItemMap}
@@ -107,11 +138,11 @@ function createCollection<
         collectionElement={collectionElement}
       >
         {children}
-      </CollectionProviderImpl>
+      </CollectionContextProvider>
     );
   };
 
-  CollectionProvider.displayName = PROVIDER_NAME;
+  CollectionProviderImpl.displayName = PROVIDER_NAME + 'Impl';
 
   /* -----------------------------------------------------------------------------------------------
    * CollectionSlot
@@ -199,6 +230,14 @@ function createCollection<
   CollectionItemSlot.displayName = ITEM_SLOT_NAME;
 
   /* -----------------------------------------------------------------------------------------------
+   * useInitCollection
+   * ---------------------------------------------------------------------------------------------*/
+
+  function useInitCollection() {
+    return React.useState<ItemMap<ItemElement, ItemData>>(new OrderedDict());
+  }
+
+  /* -----------------------------------------------------------------------------------------------
    * useCollection
    * ---------------------------------------------------------------------------------------------*/
 
@@ -208,10 +247,15 @@ function createCollection<
     return itemMap;
   }
 
+  const functions = {
+    createCollectionScope,
+    useCollection,
+    useInitCollection,
+  };
+
   return [
     { Provider: CollectionProvider, Slot: CollectionSlot, ItemSlot: CollectionItemSlot },
-    useCollection,
-    createCollectionScope,
+    functions,
   ] as const;
 }
 
