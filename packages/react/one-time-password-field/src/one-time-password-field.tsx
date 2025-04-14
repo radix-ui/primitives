@@ -5,6 +5,7 @@ import { composeEventHandlers } from '@radix-ui/primitive';
 import { unstable_createCollection as createCollection } from '@radix-ui/react-collection';
 import * as RovingFocusGroup from '@radix-ui/react-roving-focus';
 import { createRovingFocusGroupScope } from '@radix-ui/react-roving-focus';
+import { useIsHydrated } from '@radix-ui/react-use-is-hydrated';
 import * as React from 'react';
 import { flushSync } from 'react-dom';
 import type { Scope } from '@radix-ui/react-context';
@@ -81,6 +82,8 @@ interface OneTimePasswordFieldContextValue {
   userActionRef: React.RefObject<KeyboardActionDetails | null>;
   dispatch: Dispatcher;
   orientation: Exclude<RovingFocusGroupProps['orientation'], undefined>;
+  preHydrationIndexTracker: React.RefObject<number>;
+  isHydrated: boolean;
 }
 
 const ONE_TIME_PASSWORD_FIELD_NAME = 'OneTimePasswordField';
@@ -357,6 +360,14 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
       }
     }, [attemptSubmit, autoSubmit, currentValue, length, onAutoSubmit, value]);
 
+    // Before hydration (and in SSR) we can track the index of an input during
+    // render, as indices calculated by the collection package should almost
+    // always align with render order anyway. This ensures that index-dependent
+    // attributes are immediately rendered, in case browser extensions rely on
+    // those for auto-complete functionality and JS has not hydrated.
+    const preHydrationIndexTracker = React.useRef<number>(0);
+    const isHydrated = useIsHydrated();
+
     return (
       <OneTimePasswordFieldContext
         scope={__scopeOneTimePasswordField}
@@ -376,6 +387,8 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
         dispatch={dispatch}
         validationType={validationType}
         orientation={orientation}
+        preHydrationIndexTracker={preHydrationIndexTracker}
+        isHydrated={isHydrated}
       >
         <RovingFocusGroup.Root
           asChild
@@ -495,13 +508,21 @@ const OneTimePasswordFieldInput = React.forwardRef<
     'OneTimePasswordFieldInput',
     __scopeOneTimePasswordField
   );
-  const { dispatch, userActionRef, validationType } = context;
+  const { dispatch, userActionRef, validationType, preHydrationIndexTracker, isHydrated } = context;
   const collection = useCollection(__scopeOneTimePasswordField);
   const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeOneTimePasswordField);
 
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [element, setElement] = React.useState<HTMLInputElement | null>(null);
-  const index = element ? collection.indexOf(element) : -1;
+
+  let index: number;
+  if (!isHydrated) {
+    index = preHydrationIndexTracker.current;
+    preHydrationIndexTracker.current++;
+  } else {
+    index = element ? collection.indexOf(element) : -1;
+  }
+
   const composedInputRef = useComposedRefs(forwardedRef, inputRef, setElement);
   const char = context.value[index] ?? '';
 
