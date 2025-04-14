@@ -199,6 +199,11 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
             return;
           }
 
+          // empty values should be handled in the CLEAR_CHAR action
+          if (char === '') {
+            return;
+          }
+
           if (validation) {
             const regexp = new RegExp(validation.regexp);
             const clean = char.replace(regexp, '');
@@ -209,7 +214,7 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
           }
 
           // no more space
-          if (char !== '' && value.length >= collection.size) {
+          if (value.length >= collection.size) {
             // replace current value; move to next input
             const newValue = [...value];
             newValue[index] = char;
@@ -228,9 +233,11 @@ const OneTimePasswordFieldImpl = React.forwardRef<HTMLDivElement, OneTimePasswor
 
           const lastElement = collection.at(-1)?.element;
           flushSync(() => setValue(newValue));
-          if (char !== '' && currentTarget !== lastElement) {
+          if (currentTarget !== lastElement) {
             const next = currentTarget && collection.from(currentTarget, 1)?.element;
             focusInput(next);
+          } else {
+            currentTarget?.select();
           }
           return;
         }
@@ -586,7 +593,20 @@ const OneTimePasswordFieldInput = React.forwardRef<
 
             // Only update the value if it matches the input pattern
             if (event.target.validity.valid) {
-              dispatch({ type: 'SET_CHAR', char: event.target.value, index, event });
+              if (event.target.value === '') {
+                let reason: 'Backspace' | 'Delete' | 'Cut' = 'Backspace';
+                if (isInputEvent(event.nativeEvent)) {
+                  const inputType = event.nativeEvent.inputType;
+                  if (inputType === 'deleteContentBackward') {
+                    reason = 'Backspace';
+                  } else if (inputType === 'deleteByCut') {
+                    reason = 'Cut';
+                  }
+                }
+                dispatch({ type: 'CLEAR_CHAR', index, reason });
+              } else {
+                dispatch({ type: 'SET_CHAR', char: event.target.value, index, event });
+              }
             } else {
               const element = event.target;
               requestAnimationFrame(() => {
@@ -611,7 +631,9 @@ const OneTimePasswordFieldInput = React.forwardRef<
                     dispatch({ type: 'CLEAR', reason: 'Backspace' });
                   } else {
                     const element = event.currentTarget;
-                    focusInput(collection.from(element, -1)?.element);
+                    requestAnimationFrame(() => {
+                      focusInput(collection.from(element, -1)?.element);
+                    });
                   }
                 } else {
                   // In this case the value will be cleared, but we don't want
@@ -758,4 +780,8 @@ function focusInput(element: HTMLInputElement | null | undefined) {
   } else {
     element.focus();
   }
+}
+
+function isInputEvent(event: Event): event is InputEvent {
+  return event.type === 'input';
 }
