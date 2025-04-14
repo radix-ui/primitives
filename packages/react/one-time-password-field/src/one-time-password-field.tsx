@@ -1,4 +1,4 @@
-import { Primitive } from '@radix-ui/react-primitive';
+import * as Primitive from '@radix-ui/react-primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { composeEventHandlers } from '@radix-ui/primitive';
@@ -38,8 +38,10 @@ const INPUT_VALIDATION_MAP = {
 } satisfies InputValidation;
 
 /* -------------------------------------------------------------------------------------------------
- * OneTimePasswordFieldContext
+ * OneTimePasswordFieldProvider
  * -----------------------------------------------------------------------------------------------*/
+
+type RovingFocusGroupProps = RovingFocusGroup.RovingFocusGroupProps;
 
 interface OneTimePasswordFieldContextValue {
   attemptSubmit: () => void;
@@ -74,7 +76,9 @@ const useRovingFocusGroupScope = createRovingFocusGroupScope();
 const [OneTimePasswordFieldContext, useOneTimePasswordFieldContext] =
   createOneTimePasswordFieldContext<OneTimePasswordFieldContextValue>(ONE_TIME_PASSWORD_FIELD_NAME);
 
-type RovingFocusGroupProps = React.ComponentPropsWithoutRef<typeof RovingFocusGroup.Root>;
+/* -------------------------------------------------------------------------------------------------
+ * OneTimePasswordField
+ * -----------------------------------------------------------------------------------------------*/
 
 interface OneTimePasswordFieldOwnProps {
   autoComplete?: AutoComplete;
@@ -101,10 +105,7 @@ type ScopedProps<P> = P & { __scopeOneTimePasswordField?: Scope };
 
 interface OneTimePasswordFieldProps
   extends OneTimePasswordFieldOwnProps,
-    Omit<
-      React.ComponentPropsWithoutRef<typeof Primitive.div>,
-      keyof OneTimePasswordFieldOwnProps
-    > {}
+    Omit<Primitive.PrimitivePropsWithRef<'div'>, keyof OneTimePasswordFieldOwnProps> {}
 
 const OneTimePasswordField = React.forwardRef<HTMLDivElement, OneTimePasswordFieldProps>(
   function OneTimePasswordFieldImpl(
@@ -362,7 +363,7 @@ const OneTimePasswordField = React.forwardRef<HTMLDivElement, OneTimePasswordFie
               orientation={orientation}
               dir={direction}
             >
-              <Primitive.div
+              <Primitive.Root.div
                 {...domProps}
                 role="group"
                 ref={composedRefs}
@@ -380,7 +381,7 @@ const OneTimePasswordField = React.forwardRef<HTMLDivElement, OneTimePasswordFie
                 )}
               >
                 {children}
-              </Primitive.div>
+              </Primitive.Root.div>
             </RovingFocusGroup.Root>
           </Collection.Slot>
         </Collection.Provider>
@@ -388,6 +389,10 @@ const OneTimePasswordField = React.forwardRef<HTMLDivElement, OneTimePasswordFie
     );
   }
 );
+
+/* -------------------------------------------------------------------------------------------------
+ * OneTimePasswordFieldHiddenInput
+ * -----------------------------------------------------------------------------------------------*/
 
 interface OneTimePasswordFieldHiddenInputProps
   extends Omit<
@@ -431,13 +436,17 @@ const OneTimePasswordFieldHiddenInput = React.forwardRef<
   );
 });
 
+/* -------------------------------------------------------------------------------------------------
+ * OneTimePasswordFieldInput
+ * -----------------------------------------------------------------------------------------------*/
+
 interface OneTimePasswordFieldInputOwnProps {
   autoComplete?: 'one-time-code' | 'off';
 }
 
 interface OneTimePasswordFieldInputProps
   extends OneTimePasswordFieldInputOwnProps,
-    Omit<React.ComponentProps<typeof Primitive.input>, keyof OneTimePasswordFieldInputOwnProps> {}
+    Omit<Primitive.PrimitivePropsWithRef<'input'>, keyof OneTimePasswordFieldInputOwnProps> {}
 
 const OneTimePasswordFieldInput = React.forwardRef<
   HTMLInputElement,
@@ -508,7 +517,7 @@ const OneTimePasswordFieldInput = React.forwardRef<
         focusable={!context.disabled && isFocusable}
         active={index === lastSelectableIndex}
       >
-        <Primitive.input
+        <Primitive.Root.input
           ref={composedInputRef}
           type="text"
           aria-label={`Character ${index + 1} of ${collection.size}`}
@@ -727,18 +736,14 @@ const OneTimePasswordFieldInput = React.forwardRef<
   );
 });
 
-const Root = OneTimePasswordField;
-const Input = OneTimePasswordFieldInput;
-const HiddenInput = OneTimePasswordFieldHiddenInput;
-
 export {
   OneTimePasswordField,
   OneTimePasswordFieldInput,
   OneTimePasswordFieldHiddenInput,
   //
-  Root,
-  Input,
-  HiddenInput,
+  OneTimePasswordField as Root,
+  OneTimePasswordFieldInput as Input,
+  OneTimePasswordFieldHiddenInput as HiddenInput,
 };
 export type {
   OneTimePasswordFieldProps,
