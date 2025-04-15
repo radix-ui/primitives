@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as Select from '@radix-ui/react-select';
+import { Select } from 'radix-ui';
 
 export default function Page() {
   return (
