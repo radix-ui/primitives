@@ -171,12 +171,26 @@ export class OrderedDict<K, V> extends Map<K, V> {
     return at(this.#keys, index);
   }
 
+  from(key: K, offset: number) {
+    const index = this.indexOf(key);
+    if (index === -1) {
+      return undefined;
+    }
+    let dest = index + offset;
+    if (dest < 0) dest = 0;
+    if (dest >= this.size) dest = this.size - 1;
+    return this.at(dest);
+  }
+
   keyFrom(key: K, offset: number) {
     const index = this.indexOf(key);
     if (index === -1) {
       return undefined;
     }
-    return this.keyAt(index + offset);
+    let dest = index + offset;
+    if (dest < 0) dest = 0;
+    if (dest >= this.size) dest = this.size - 1;
+    return this.keyAt(dest);
   }
 
   find(
