@@ -1,7 +1,6 @@
 ---
 '@radix-ui/react-one-time-password-field': minor
 'radix-ui': minor
-'@radix-ui/react-collection': patch
 ---
 
 Introduce new One Time Password Field primitive
