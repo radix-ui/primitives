@@ -271,12 +271,8 @@ const OneTimePasswordField = React.forwardRef<HTMLDivElement, OneTimePasswordFie
             return;
           }
 
-          const newValue = [
-            //
-            ...value.slice(0, index),
-            char,
-            ...value.slice(index),
-          ];
+          const newValue = [...value];
+          newValue[index] = char;
 
           const lastElement = collection.at(-1)?.element;
           flushSync(() => setValue(newValue));
