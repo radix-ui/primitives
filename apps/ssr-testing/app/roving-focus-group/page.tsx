@@ -1,26 +1,18 @@
-'use client';
 import * as React from 'react';
-import { composeEventHandlers } from '@radix-ui/primitive';
-import * as RovingFocusGroup from '@radix-ui/react-roving-focus';
-
-type RovingFocusGroupProps = React.ComponentProps<typeof RovingFocusGroup.Root>;
+import { RovingFocusProvider, RovingFocusToggle, ButtonGroup, Button } from './roving-focus.client';
 
 export default function Page() {
-  const [dir, setDir] = React.useState<RovingFocusGroupProps['dir']>('ltr');
-
   return (
     <>
       <h1>Basic</h1>
-      <div dir={dir}>
-        <h2>
-          Direction: {dir}{' '}
-          <button type="button" onClick={() => setDir((prev) => (prev === 'ltr' ? 'rtl' : 'ltr'))}>
-            Toggle to {dir === 'ltr' ? 'rtl' : 'ltr'}
-          </button>
-        </h2>
+      <RovingFocusProvider>
+        <div>
+          <RovingFocusToggle />
+        </div>
 
         <h3>no orientation (both) + no looping</h3>
-        <ButtonGroup dir={dir} defaultValue="two">
+
+        <ButtonGroup defaultValue="two">
           <Button value="one">One</Button>
           <Button value="two">Two</Button>
           <Button disabled value="three">
@@ -30,7 +22,8 @@ export default function Page() {
         </ButtonGroup>
 
         <h3>no orientation (both) + looping</h3>
-        <ButtonGroup dir={dir} loop>
+
+        <ButtonGroup loop>
           <Button value="one">One</Button>
           <Button value="two">Two</Button>
           <Button disabled value="three">
@@ -40,7 +33,8 @@ export default function Page() {
         </ButtonGroup>
 
         <h3>horizontal orientation + no looping</h3>
-        <ButtonGroup orientation="horizontal" dir={dir}>
+
+        <ButtonGroup orientation="horizontal">
           <Button value="one">One</Button>
           <Button value="two">Two</Button>
           <Button disabled value="three">
@@ -50,7 +44,8 @@ export default function Page() {
         </ButtonGroup>
 
         <h3>horizontal orientation + looping</h3>
-        <ButtonGroup orientation="horizontal" dir={dir} loop>
+
+        <ButtonGroup orientation="horizontal" loop>
           <Button value="one">One</Button>
           <Button value="two">Two</Button>
           <Button disabled value="three">
@@ -60,7 +55,8 @@ export default function Page() {
         </ButtonGroup>
 
         <h3>vertical orientation + no looping</h3>
-        <ButtonGroup orientation="vertical" dir={dir}>
+
+        <ButtonGroup orientation="vertical">
           <Button value="one">One</Button>
           <Button value="two">Two</Button>
           <Button disabled value="three">
@@ -70,7 +66,8 @@ export default function Page() {
         </ButtonGroup>
 
         <h3>vertical orientation + looping</h3>
-        <ButtonGroup orientation="vertical" dir={dir} loop>
+
+        <ButtonGroup orientation="vertical" loop>
           <Button value="one">One</Button>
           <Button value="two">Two</Button>
           <Button disabled value="three">
@@ -78,7 +75,7 @@ export default function Page() {
           </Button>
           <Button value="four">Four</Button>
         </ButtonGroup>
-      </div>
+      </RovingFocusProvider>
 
       <h1>Nested</h1>
       <ButtonGroup orientation="vertical" loop>
@@ -107,64 +104,3 @@ export default function Page() {
     </>
   );
 }
-
-const ButtonGroupContext = React.createContext<{
-  value?: string;
-  setValue: React.Dispatch<React.SetStateAction<string | undefined>>;
-}>({} as any);
-
-type ButtonGroupProps = Omit<React.ComponentPropsWithRef<'div'>, 'defaultValue'> &
-  RovingFocusGroupProps & { defaultValue?: string };
-
-const ButtonGroup = ({ defaultValue, ...props }: ButtonGroupProps) => {
-  const [value, setValue] = React.useState(defaultValue);
-  return (
-    <ButtonGroupContext.Provider value={{ value, setValue }}>
-      <RovingFocusGroup.Root
-        {...props}
-        style={{
-          ...props.style,
-          display: 'inline-flex',
-          flexDirection: props.orientation === 'vertical' ? 'column' : 'row',
-          gap: 10,
-        }}
-      />
-    </ButtonGroupContext.Provider>
-  );
-};
-
-type ButtonProps = Omit<React.ComponentPropsWithRef<'button'>, 'value'> & { value?: string };
-
-const Button = (props: ButtonProps) => {
-  const { value: contextValue, setValue } = React.useContext(ButtonGroupContext);
-  const isSelected =
-    contextValue !== undefined && props.value !== undefined && contextValue === props.value;
-
-  return (
-    <RovingFocusGroup.Item asChild active={isSelected}>
-      <button
-        {...props}
-        style={{
-          ...props.style,
-          border: '1px solid',
-          borderColor: '#ccc',
-          padding: '5px 10px',
-          borderRadius: 5,
-          ...(isSelected
-            ? {
-                borderColor: 'black',
-                backgroundColor: 'black',
-                color: 'white',
-              }
-            : {}),
-        }}
-        onClick={props.disabled ? undefined : () => setValue(props.value)}
-        onFocus={composeEventHandlers(props.onFocus, (event) => {
-          if (contextValue !== undefined) {
-            event.target.click();
-          }
-        })}
-      />
-    </RovingFocusGroup.Item>
-  );
-};

@@ -1,53 +1,47 @@
 import * as React from 'react';
-import {
-  Accordion,
-  AccordionItem,
-  AccordionHeader,
-  AccordionTrigger,
-  AccordionContent,
-} from '@radix-ui/react-accordion';
+import { Accordion } from 'radix-ui';
 
 export default function Page() {
   return (
-    <Accordion type="multiple">
-      <AccordionItem value="one">
-        <AccordionHeader>
-          <AccordionTrigger>One</AccordionTrigger>
-        </AccordionHeader>
-        <AccordionContent>
+    <Accordion.Root type="multiple">
+      <Accordion.Item value="one">
+        <Accordion.Header>
+          <Accordion.Trigger>One</Accordion.Trigger>
+        </Accordion.Header>
+        <Accordion.Content>
           Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate viverra
           integer ullamcorper congue curabitur sociis, nisi malesuada scelerisque quam suscipit
           habitant sed.
-        </AccordionContent>
-      </AccordionItem>
-      <AccordionItem value="two">
-        <AccordionHeader>
-          <AccordionTrigger>Two</AccordionTrigger>
-        </AccordionHeader>
-        <AccordionContent>
+        </Accordion.Content>
+      </Accordion.Item>
+      <Accordion.Item value="two">
+        <Accordion.Header>
+          <Accordion.Trigger>Two</Accordion.Trigger>
+        </Accordion.Header>
+        <Accordion.Content>
           Cursus sed mattis commodo fermentum conubia ipsum pulvinar sagittis, diam eget bibendum
           porta nascetur ac dictum, leo tellus dis integer platea ultrices mi.
-        </AccordionContent>
-      </AccordionItem>
-      <AccordionItem value="three" disabled>
-        <AccordionHeader>
-          <AccordionTrigger>Three (disabled)</AccordionTrigger>
-        </AccordionHeader>
-        <AccordionContent>
+        </Accordion.Content>
+      </Accordion.Item>
+      <Accordion.Item value="three" disabled>
+        <Accordion.Header>
+          <Accordion.Trigger>Three (disabled)</Accordion.Trigger>
+        </Accordion.Header>
+        <Accordion.Content>
           Sociis hac sapien turpis conubia sagittis justo dui, inceptos penatibus feugiat himenaeos
           euismod magna, nec tempor pulvinar eu etiam mattis.
-        </AccordionContent>
-      </AccordionItem>
-      <AccordionItem value="four">
-        <AccordionHeader>
-          <AccordionTrigger>Four</AccordionTrigger>
-        </AccordionHeader>
-        <AccordionContent>
+        </Accordion.Content>
+      </Accordion.Item>
+      <Accordion.Item value="four">
+        <Accordion.Header>
+          <Accordion.Trigger>Four</Accordion.Trigger>
+        </Accordion.Header>
+        <Accordion.Content>
           Odio placerat quisque sapien sagittis non sociis ligula penatibus dignissim vitae, enim
           vulputate nullam semper potenti etiam volutpat libero.
           <button>Cool</button>
-        </AccordionContent>
-      </AccordionItem>
-    </Accordion>
+        </Accordion.Content>
+      </Accordion.Item>
+    </Accordion.Root>
   );
 }

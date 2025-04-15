@@ -1,24 +1,18 @@
 import * as React from 'react';
-import {
-  ScrollArea,
-  ScrollAreaViewport,
-  Scrollbar,
-  ScrollAreaCorner,
-  ScrollAreaThumb,
-} from '@radix-ui/react-scroll-area';
+import { ScrollArea } from 'radix-ui';
 
 export default function Page() {
   return (
-    <ScrollArea style={{ width: '400px', height: '400px' }}>
-      <Scrollbar orientation="vertical">
-        <ScrollAreaThumb />
-      </Scrollbar>
+    <ScrollArea.Root style={{ width: '400px', height: '400px' }}>
+      <ScrollArea.Scrollbar orientation="vertical">
+        <ScrollArea.Thumb />
+      </ScrollArea.Scrollbar>
 
-      <Scrollbar orientation="horizontal">
-        <ScrollAreaThumb />
-      </Scrollbar>
+      <ScrollArea.Scrollbar orientation="horizontal">
+        <ScrollArea.Thumb />
+      </ScrollArea.Scrollbar>
 
-      <ScrollAreaViewport style={{ width: '2000px', padding: 20 }}>
+      <ScrollArea.Viewport style={{ width: '2000px', padding: 20 }}>
         <LongContent />
         <LongContent />
         <LongContent />
@@ -26,10 +20,10 @@ export default function Page() {
         <LongContent />
         <LongContent />
         <LongContent />
-      </ScrollAreaViewport>
+      </ScrollArea.Viewport>
 
-      <ScrollAreaCorner />
-    </ScrollArea>
+      <ScrollArea.Corner />
+    </ScrollArea.Root>
   );
 }
 

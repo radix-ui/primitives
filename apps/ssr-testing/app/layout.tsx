@@ -21,7 +21,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <Link href="/dropdown-menu">DropdownMenu</Link>
               <Link href="/form">Form</Link>
               <Link href="/hover-card">HoverCard</Link>
-              <Link href="/id">Id</Link>
               <Link href="/label">Label</Link>
               <Link href="/menubar">Menubar</Link>
               <Link href="/navigation-menu">NavigationMenu</Link>
