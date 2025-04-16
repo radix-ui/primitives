@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { composeRefs } from '@radix-ui/react-compose-refs';
+import { useComposedRefs } from '@radix-ui/react-compose-refs';
 
 /* -------------------------------------------------------------------------------------------------
  * Slot
@@ -66,13 +66,14 @@ interface SlotCloneProps {
 /* @__NO_SIDE_EFFECTS__ */ function createSlotClone(ownerName: string) {
   const SlotClone = React.forwardRef<any, SlotCloneProps>((props, forwardedRef) => {
     const { children, ...slotProps } = props;
+    const childrenRef = React.isValidElement(children) ? getElementRef(children) : undefined;
+    const ref = useComposedRefs(childrenRef, forwardedRef);
 
     if (React.isValidElement(children)) {
-      const childrenRef = getElementRef(children);
       const props = mergeProps(slotProps, children.props as AnyProps);
       // do not pass ref to React.Fragment for React 19 compatibility
       if (children.type !== React.Fragment) {
-        props.ref = forwardedRef ? composeRefs(forwardedRef, childrenRef) : childrenRef;
+        props.ref = ref;
       }
       return React.cloneElement(children, props);
     }
