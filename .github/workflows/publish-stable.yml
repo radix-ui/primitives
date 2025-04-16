@@ -39,8 +39,8 @@ jobs:
         with:
           title: New release
           commit: New release
-          version: pnpm run bump:next # TODO: remove :next for :stable once we're confident in the release process
-          publish: pnpm run release:next # TODO: remove :next for :stable once we're confident in the release process
+          version: pnpm run bump:stable
+          publish: pnpm run release:stable
           createGithubReleases: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
