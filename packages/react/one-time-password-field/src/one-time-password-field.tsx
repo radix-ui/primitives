@@ -557,13 +557,22 @@ interface OneTimePasswordFieldInputProps
     | 'name'
     | 'placeholder'
     | 'type'
-  > {}
+  > {
+  /**
+   * Callback fired when the user input fails native HTML input validation.
+   */
+  onInvalidChange?: (character: string) => void;
+}
 
 const OneTimePasswordFieldInput = React.forwardRef<
   HTMLInputElement,
   OneTimePasswordFieldInputProps
 >(function OneTimePasswordFieldInput(
-  { __scopeOneTimePasswordField, ...props }: ScopedProps<OneTimePasswordFieldInputProps>,
+  {
+    __scopeOneTimePasswordField,
+    onInvalidChange,
+    ...props
+  }: ScopedProps<OneTimePasswordFieldInputProps>,
   forwardedRef
 ) {
   // TODO: warn if these values are passed
@@ -719,6 +728,7 @@ const OneTimePasswordFieldInput = React.forwardRef<
               }
             } else {
               const element = event.target;
+              onInvalidChange?.(element.value);
               requestAnimationFrame(() => {
                 if (element.ownerDocument.activeElement === element) {
                   element.select();
