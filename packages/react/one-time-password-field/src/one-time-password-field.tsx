@@ -98,9 +98,9 @@ interface OneTimePasswordFieldOwnProps {
    */
   autoFocus?: boolean;
   /**
-   * Whether the component should attempt to automatically submit when all
-   * fields are filled. If the field is associated with an HTML `form` element,
-   * the form's `requestSubmit` method will be called.
+   * Whether or not the component should attempt to automatically submit when
+   * all fields are filled. If the field is associated with an HTML `form`
+   * element, the form's `requestSubmit` method will be called.
    *
    * @defaultValue `false`
    */
@@ -116,7 +116,7 @@ interface OneTimePasswordFieldOwnProps {
    */
   dir?: RovingFocusGroupProps['dir'];
   /**
-   * Whether the the field's input elements are disabled.
+   * Whether or not the the field's input elements are disabled.
    */
   disabled?: boolean;
   /**
