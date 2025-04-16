@@ -74,6 +74,7 @@
     "@radix-ui/react-menu": "workspace:*",
     "@radix-ui/react-menubar": "workspace:*",
     "@radix-ui/react-navigation-menu": "workspace:*",
+    "@radix-ui/react-one-time-password-field": "workspace:*",
     "@radix-ui/react-popover": "workspace:*",
     "@radix-ui/react-popper": "workspace:*",
     "@radix-ui/react-portal": "workspace:*",
