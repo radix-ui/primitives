@@ -1,5 +1,5 @@
 import { Primitive as BasePrimitive, dispatchDiscreteCustomEvent } from '@radix-ui/react-primitive';
-export * as ArrowPrimitive from '@radix-ui/react-arrow';
+export * as Arrow from '@radix-ui/react-arrow';
 export * as Collection from '@radix-ui/react-collection';
 export { composeRefs, useComposedRefs } from '@radix-ui/react-compose-refs';
 export * as Context from '@radix-ui/react-context';
