@@ -35,6 +35,7 @@ const INPUT_VALIDATION_MAP = {
     pattern: '[a-zA-Z0-9]{1}',
     inputMode: 'text',
   },
+  none: null,
 } satisfies InputValidation;
 
 /* -------------------------------------------------------------------------------------------------
@@ -164,6 +165,12 @@ interface OneTimePasswordFieldOwnProps {
    */
   readOnly?: boolean;
   /**
+   * Function for custom sanitization when `validationType` is set to `"none"`.
+   * This function will be called before updating values in response to user
+   * interactions.
+   */
+  sanitizeValue?: (value: string) => string;
+  /**
    * The input type of the field's input elements. Can be `"password"` or `"text"`.
    */
   type?: InputType;
@@ -209,6 +216,7 @@ const OneTimePasswordField = React.forwardRef<HTMLDivElement, OneTimePasswordFie
       orientation = 'horizontal',
       dir,
       validationType = 'numeric',
+      sanitizeValue: sanitizeValueProp,
       ...domProps
     }: ScopedProps<OneTimePasswordFieldProps>,
     forwardedRef
@@ -218,20 +226,43 @@ const OneTimePasswordField = React.forwardRef<HTMLDivElement, OneTimePasswordFie
     const collectionState = useInitCollection();
     const [collection] = collectionState;
 
-    const validation =
-      validationType in INPUT_VALIDATION_MAP
-        ? INPUT_VALIDATION_MAP[validationType as keyof InputValidation]
-        : undefined;
+    const validation = INPUT_VALIDATION_MAP[validationType]
+      ? INPUT_VALIDATION_MAP[validationType as keyof InputValidation]
+      : null;
+
+    const sanitizeValue = React.useCallback(
+      (value: string | string[]) => {
+        if (Array.isArray(value)) {
+          value = value.map(removeWhitespace).join('');
+        } else {
+          value = removeWhitespace(value);
+        }
+
+        if (validation) {
+          // global regexp is stateful, so we clone it for each call
+          const regexp = new RegExp(validation.regexp);
+          value = value.replace(regexp, '');
+        } else if (sanitizeValueProp) {
+          value = sanitizeValueProp(value);
+        }
+
+        return value.split('');
+      },
+      [validation, sanitizeValueProp]
+    );
 
     const controlledValue = React.useMemo(() => {
-      return valueProp != null ? sanitizeValue(valueProp, validation?.regexp) : undefined;
-    }, [valueProp, validation?.regexp]);
+      return valueProp != null ? sanitizeValue(valueProp) : undefined;
+    }, [valueProp, sanitizeValue]);
 
     const [value, setValue] = useControllableState({
       caller: 'OneTimePasswordField',
       prop: controlledValue,
-      defaultProp: defaultValue != null ? sanitizeValue(defaultValue, validation?.regexp) : [],
-      onChange: (value) => onValueChange?.(value.filter(Boolean).join('')),
+      defaultProp: defaultValue != null ? sanitizeValue(defaultValue) : [],
+      onChange: React.useCallback(
+        (value: string[]) => onValueChange?.(value.join('')),
+        [onValueChange]
+      ),
     });
 
     // Update function *specifically* for event handlers.
@@ -320,7 +351,7 @@ const OneTimePasswordField = React.forwardRef<HTMLDivElement, OneTimePasswordFie
 
         case 'PASTE': {
           const { value: pastedValue } = action;
-          const value = sanitizeValue(pastedValue, validation?.regexp);
+          const value = sanitizeValue(pastedValue);
           if (!value) {
             return;
           }
@@ -341,9 +372,9 @@ const OneTimePasswordField = React.forwardRef<HTMLDivElement, OneTimePasswordFie
 
       if (validationTypeRef.current?.type !== validation.type) {
         validationTypeRef.current = validation;
-        setValue(sanitizeValue(value, validation.regexp));
+        setValue(sanitizeValue(value.join('')));
       }
-    }, [setValue, validation, value]);
+    }, [sanitizeValue, setValue, validation, value]);
 
     const hiddenInputRef = React.useRef<HTMLInputElement>(null);
 
@@ -444,7 +475,7 @@ const OneTimePasswordField = React.forwardRef<HTMLDivElement, OneTimePasswordFie
                   (event: React.ClipboardEvent<HTMLDivElement>) => {
                     event.preventDefault();
                     const pastedValue = event.clipboardData.getData('Text');
-                    const value = sanitizeValue(pastedValue, validation?.regexp);
+                    const value = sanitizeValue(pastedValue);
                     if (!value) {
                       return;
                     }
@@ -658,7 +689,7 @@ const OneTimePasswordFieldInput = React.forwardRef<
 
                   const isClearing =
                     action.key === 'Backspace' && (action.metaKey || action.ctrlKey);
-                  if (isClearing) {
+                  if (action.key === 'Clear' || isClearing) {
                     dispatch({ type: 'CLEAR', reason: 'Backspace' });
                   } else {
                     dispatch({ type: 'CLEAR_CHAR', index, reason: action.key });
@@ -697,6 +728,7 @@ const OneTimePasswordFieldInput = React.forwardRef<
           })}
           onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
             switch (event.key) {
+              case 'Clear':
               case 'Delete':
               case 'Backspace': {
                 const currentValue = event.currentTarget.value;
@@ -705,7 +737,7 @@ const OneTimePasswordFieldInput = React.forwardRef<
                   // if the user presses delete when there is no value, noop
                   if (event.key === 'Delete') return;
 
-                  const isClearing = event.metaKey || event.ctrlKey;
+                  const isClearing = event.key === 'Clear' || event.metaKey || event.ctrlKey;
                   if (isClearing) {
                     dispatch({ type: 'CLEAR', reason: 'Backspace' });
                   } else {
@@ -844,16 +876,8 @@ function isFormElement(element: Element | null | undefined): element is HTMLForm
   return element?.tagName === 'FORM';
 }
 
-function sanitizeValue(value: string | string[], regexp: RegExp | undefined | null) {
-  if (Array.isArray(value)) {
-    value = value.join('');
-  }
-  if (regexp) {
-    // global regexp is stateful, so we clone it for each call
-    regexp = new RegExp(regexp);
-    return value.replace(regexp, '').split('').filter(Boolean);
-  }
-  return value.split('').filter(Boolean);
+function removeWhitespace(value: string) {
+  return value.replace(/\s/g, '');
 }
 
 function focusInput(element: HTMLInputElement | null | undefined) {
@@ -878,7 +902,7 @@ type AutoComplete = 'off' | 'one-time-code';
 type KeyboardActionDetails =
   | {
       type: 'keydown';
-      key: 'Backspace' | 'Delete' | 'Char';
+      key: 'Backspace' | 'Delete' | 'Clear' | 'Char';
       metaKey: boolean;
       ctrlKey: boolean;
     }
@@ -892,10 +916,15 @@ type UpdateAction =
       event: React.KeyboardEvent | React.ChangeEvent;
     }
   | { type: 'CLEAR_CHAR'; index: number; reason: 'Backspace' | 'Delete' | 'Cut' }
-  | { type: 'CLEAR'; reason: 'Reset' | 'Backspace' | 'Delete' }
+  | { type: 'CLEAR'; reason: 'Reset' | 'Backspace' | 'Delete' | 'Clear' }
   | { type: 'PASTE'; value: string };
 type Dispatcher = React.Dispatch<UpdateAction>;
 type InputValidation = Record<
-  Exclude<InputValidationType, 'none'>,
-  { type: InputValidationType; regexp: RegExp; pattern: string; inputMode: 'text' | 'numeric' }
+  InputValidationType,
+  {
+    type: InputValidationType;
+    regexp: RegExp;
+    pattern: string;
+    inputMode: 'text' | 'numeric';
+  } | null
 >;
