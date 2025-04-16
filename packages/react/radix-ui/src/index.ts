@@ -14,6 +14,7 @@ export * as HoverCard from '@radix-ui/react-hover-card';
 export * as Label from '@radix-ui/react-label';
 export * as Menubar from '@radix-ui/react-menubar';
 export * as NavigationMenu from '@radix-ui/react-navigation-menu';
+export * as unstable_OneTimePasswordField from '@radix-ui/react-one-time-password-field';
 export * as Popover from '@radix-ui/react-popover';
 export * as Portal from '@radix-ui/react-portal';
 export * as Progress from '@radix-ui/react-progress';
