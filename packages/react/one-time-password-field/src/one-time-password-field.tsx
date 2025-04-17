@@ -678,6 +678,7 @@ const OneTimePasswordFieldInput = React.forwardRef<
             }
           })}
           onChange={composeEventHandlers(props.onChange, (event) => {
+            event.preventDefault();
             const action = userActionRef.current;
             userActionRef.current = null;
 
