@@ -2157,6 +2157,9 @@ importers:
         specifier: workspace:*
         version: link:../visually-hidden
     devDependencies:
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../../internal/eslint-config

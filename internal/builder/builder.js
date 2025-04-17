@@ -8,13 +8,27 @@ import * as tsup from 'tsup';
  * @param {string} relativePath
  */
 export async function build(relativePath) {
-  const packageJson = path.resolve(relativePath, 'package.json');
-  if (!fs.existsSync(packageJson)) {
+  const packageJsonPath = path.resolve(relativePath, 'package.json');
+  if (!fs.existsSync(packageJsonPath)) {
     return;
   }
 
+  const packageJsonContents = await fs.promises.readFile(packageJsonPath, 'utf-8').catch(() => {
+    console.error(`Failed to read package.json file at ${packageJsonPath}`);
+    process.exit(1);
+  });
+
+  /** @type {PackageJson} */
+  let packageJson;
+  try {
+    packageJson = JSON.parse(packageJsonContents);
+  } catch {
+    console.error(`Failed to parse package.json file at ${packageJsonPath}`);
+    process.exit(1);
+  }
+
   const tasks = [];
-  const pkg = relativePath.split(path.sep).slice(2)[0];
+  const pkg = packageJson.name;
   const files = ['index.ts'];
   if (pkg === 'radix-ui') {
     files.push('internal.ts');
@@ -68,3 +82,7 @@ export async function build(relativePath) {
 
   await Promise.all(tasks);
 }
+
+/**
+ * @typedef {{ name: string }} PackageJson
+ */
