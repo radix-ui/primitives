@@ -46,7 +46,10 @@
     "lint": "eslint --max-warnings 0 src",
     "clean": "rm -rf dist",
     "typecheck": "tsc --noEmit",
-    "build": "tsc"
+    "build:esm": "tsc",
+    "build:cjs": "tsc --module commonjs --moduleResolution node --outDir dist/cjs",
+    "// build": "pnpm run --parallel \"/^build:.*/\"",
+    "build": "radix-build"
   },
   "dependencies": {
     "@radix-ui/primitive": "workspace:*",
@@ -105,6 +108,7 @@
     "@radix-ui/react-visually-hidden": "workspace:*"
   },
   "devDependencies": {
+    "@repo/builder": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/react": "^19.0.7",
