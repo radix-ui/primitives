@@ -206,10 +206,11 @@ const ITEM_NAME = 'RovingFocusGroupItem';
 
 type RovingFocusItemElement = React.ElementRef<typeof Primitive.span>;
 type PrimitiveSpanProps = React.ComponentPropsWithoutRef<typeof Primitive.span>;
-interface RovingFocusItemProps extends PrimitiveSpanProps {
+interface RovingFocusItemProps extends Omit<PrimitiveSpanProps, 'children'> {
   tabStopId?: string;
   focusable?: boolean;
   active?: boolean;
+  children?: React.ReactNode | ((props: { isCurrentTabStop: boolean }) => React.ReactNode);
 }
 
 const RovingFocusGroupItem = React.forwardRef<RovingFocusItemElement, RovingFocusItemProps>(
@@ -219,6 +220,7 @@ const RovingFocusGroupItem = React.forwardRef<RovingFocusItemElement, RovingFocu
       focusable = true,
       active = false,
       tabStopId,
+      children,
       ...itemProps
     } = props;
     const autoId = useId();
@@ -292,7 +294,9 @@ const RovingFocusGroupItem = React.forwardRef<RovingFocusItemElement, RovingFocu
               });
             }
           })}
-        />
+        >
+          {typeof children === 'function' ? children({ isCurrentTabStop }) : children}
+        </Primitive.span>
       </Collection.ItemSlot>
     );
   }
