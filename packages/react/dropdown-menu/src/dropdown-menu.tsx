@@ -115,6 +115,11 @@ const DropdownMenuTrigger = React.forwardRef<DropdownMenuTriggerElement, Dropdow
           {...triggerProps}
           ref={composeRefs(forwardedRef, context.triggerRef)}
           onClick={composeEventHandlers(props.onClick, context.onOpenToggle)}
+          onPointerDown={composeEventHandlers(props.onPointerDown, (event) => {
+            // prevent trigger focusing when opening
+            // this allows the content to be given focus without competition
+            if (!context.open) event.preventDefault();
+          })}
           onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
             if (disabled) return;
             if (['Enter', ' '].includes(event.key)) context.onOpenToggle();
