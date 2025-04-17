@@ -62,6 +62,7 @@ interface OneTimePasswordFieldContextValue {
   userActionRef: React.RefObject<KeyboardActionDetails | null>;
   validationType: InputValidationType;
   value: string[];
+  sanitizeValue: (arg: string | string[]) => string[];
 }
 
 const ONE_TIME_PASSWORD_FIELD_NAME = 'OneTimePasswordField';
@@ -457,6 +458,7 @@ const OneTimePasswordField = React.forwardRef<HTMLDivElement, OneTimePasswordFie
         orientation={orientation}
         preHydrationIndexTracker={preHydrationIndexTracker}
         isHydrated={isHydrated}
+        sanitizeValue={sanitizeValue}
       >
         <Collection.Provider scope={__scopeOneTimePasswordField} state={collectionState}>
           <Collection.Slot scope={__scopeOneTimePasswordField}>
@@ -475,10 +477,6 @@ const OneTimePasswordField = React.forwardRef<HTMLDivElement, OneTimePasswordFie
                   (event: React.ClipboardEvent<HTMLDivElement>) => {
                     event.preventDefault();
                     const pastedValue = event.clipboardData.getData('Text');
-                    const value = sanitizeValue(pastedValue);
-                    if (!value) {
-                      return;
-                    }
                     dispatch({ type: 'PASTE', value: pastedValue });
                   }
                 )}
@@ -677,7 +675,19 @@ const OneTimePasswordFieldInput = React.forwardRef<
               }, 10);
             }
           })}
+          onInput={composeEventHandlers(props.onInput, (event) => {
+            const value = event.currentTarget.value;
+            if (value.length > 1) {
+              // Password managers may try to insert the code into a single
+              // input, in which case form validation will fail to prevent
+              // additional input. Handle this the same as if a user were
+              // pasting a value.
+              event.preventDefault();
+              dispatch({ type: 'PASTE', value });
+            }
+          })}
           onChange={composeEventHandlers(props.onChange, (event) => {
+            const value = event.target.value;
             event.preventDefault();
             const action = userActionRef.current;
             userActionRef.current = null;
@@ -713,7 +723,7 @@ const OneTimePasswordFieldInput = React.forwardRef<
 
             // Only update the value if it matches the input pattern
             if (event.target.validity.valid) {
-              if (event.target.value === '') {
+              if (value === '') {
                 let reason: 'Backspace' | 'Delete' | 'Cut' = 'Backspace';
                 if (isInputEvent(event.nativeEvent)) {
                   const inputType = event.nativeEvent.inputType;
@@ -725,7 +735,7 @@ const OneTimePasswordFieldInput = React.forwardRef<
                 }
                 dispatch({ type: 'CLEAR_CHAR', index, reason });
               } else {
-                dispatch({ type: 'SET_CHAR', char: event.target.value, index, event });
+                dispatch({ type: 'SET_CHAR', char: value, index, event });
               }
             } else {
               const element = event.target;
@@ -853,11 +863,10 @@ const OneTimePasswordFieldInput = React.forwardRef<
             }
           })}
           onPointerDown={composeEventHandlers(props.onPointerDown, (event) => {
-            if (index > lastSelectableIndex) {
-              event.preventDefault();
-              const element = collection.at(lastSelectableIndex)?.element;
-              focusInput(element);
-            }
+            event.preventDefault();
+            const indexToFocus = Math.min(index, lastSelectableIndex);
+            const element = collection.at(indexToFocus)?.element;
+            focusInput(element);
           })}
         />
       </RovingFocusGroup.Item>
