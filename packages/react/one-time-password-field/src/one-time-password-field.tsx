@@ -640,145 +640,40 @@ const OneTimePasswordFieldInput = React.forwardRef<
         focusable={!context.disabled && isFocusable}
         active={index === lastSelectableIndex}
       >
-        <Primitive.Root.input
-          ref={composedInputRef}
-          type="text"
-          aria-label={`Character ${index + 1} of ${collection.size}`}
-          autoComplete={index === 0 ? context.autoComplete : 'off'}
-          inputMode={validation?.inputMode}
-          maxLength={1}
-          pattern={validation?.pattern}
-          readOnly={context.readOnly}
-          value={char}
-          placeholder={placeholder}
-          data-radix-otp-input=""
-          data-radix-index={index}
-          {...domProps}
-          onFocus={composeEventHandlers(props.onFocus, (event) => {
-            event.currentTarget.select();
-          })}
-          onCut={composeEventHandlers(props.onCut, (event) => {
-            const currentValue = event.currentTarget.value;
-            if (currentValue !== '') {
-              // In this case the value will be cleared, but we don't want to
-              // set it directly because the user may want to prevent default
-              // behavior in the onChange handler. The userActionRef will
-              // is set temporarily so the change handler can behave correctly
-              // in response to the action.
-              userActionRef.current = {
-                type: 'cut',
-              };
-              // Set a short timeout to clear the action tracker after the change
-              // handler has had time to complete.
-              keyboardActionTimeoutRef.current = window.setTimeout(() => {
-                userActionRef.current = null;
-              }, 10);
-            }
-          })}
-          onInput={composeEventHandlers(props.onInput, (event) => {
-            const value = event.currentTarget.value;
-            if (value.length > 1) {
-              // Password managers may try to insert the code into a single
-              // input, in which case form validation will fail to prevent
-              // additional input. Handle this the same as if a user were
-              // pasting a value.
-              event.preventDefault();
-              dispatch({ type: 'PASTE', value });
-            }
-          })}
-          onChange={composeEventHandlers(props.onChange, (event) => {
-            const value = event.target.value;
-            event.preventDefault();
-            const action = userActionRef.current;
-            userActionRef.current = null;
-
-            if (action) {
-              switch (action.type) {
-                case 'cut':
-                  // TODO: do we want to assume the user wantt to clear the
-                  // entire value here and copy the code to the clipboard instead
-                  // of just the value of the given input?
-                  dispatch({ type: 'CLEAR_CHAR', index, reason: 'Cut' });
-                  return;
-                case 'keydown': {
-                  if (action.key === 'Char') {
-                    // update resulting from a keydown event that set a value
-                    // directly. Ignore.
-                    return;
-                  }
-
-                  const isClearing =
-                    action.key === 'Backspace' && (action.metaKey || action.ctrlKey);
-                  if (action.key === 'Clear' || isClearing) {
-                    dispatch({ type: 'CLEAR', reason: 'Backspace' });
-                  } else {
-                    dispatch({ type: 'CLEAR_CHAR', index, reason: action.key });
-                  }
-                  return;
-                }
-                default:
-                  return;
-              }
-            }
-
-            // Only update the value if it matches the input pattern
-            if (event.target.validity.valid) {
-              if (value === '') {
-                let reason: 'Backspace' | 'Delete' | 'Cut' = 'Backspace';
-                if (isInputEvent(event.nativeEvent)) {
-                  const inputType = event.nativeEvent.inputType;
-                  if (inputType === 'deleteContentBackward') {
-                    reason = 'Backspace';
-                  } else if (inputType === 'deleteByCut') {
-                    reason = 'Cut';
-                  }
-                }
-                dispatch({ type: 'CLEAR_CHAR', index, reason });
-              } else {
-                dispatch({ type: 'SET_CHAR', char: value, index, event });
-              }
-            } else {
-              const element = event.target;
-              onInvalidChange?.(element.value);
-              requestAnimationFrame(() => {
-                if (element.ownerDocument.activeElement === element) {
-                  element.select();
-                }
-              });
-            }
-          })}
-          onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
-            switch (event.key) {
-              case 'Clear':
-              case 'Delete':
-              case 'Backspace': {
+        {({ isCurrentTabStop }) => {
+          const supportsAutoComplete = isHydrated ? isCurrentTabStop : index === 0;
+          return (
+            <Primitive.Root.input
+              ref={composedInputRef}
+              type="text"
+              aria-label={`Character ${index + 1} of ${collection.size}`}
+              autoComplete={supportsAutoComplete ? context.autoComplete : 'off'}
+              data-1p-ignore={supportsAutoComplete ? undefined : 'true'}
+              data-lpignore={supportsAutoComplete ? undefined : 'true'}
+              data-protonpass-ignore={supportsAutoComplete ? undefined : 'true'}
+              data-bwignore={supportsAutoComplete ? undefined : 'true'}
+              inputMode={validation?.inputMode}
+              maxLength={1}
+              pattern={validation?.pattern}
+              readOnly={context.readOnly}
+              value={char}
+              placeholder={placeholder}
+              data-radix-otp-input=""
+              data-radix-index={index}
+              {...domProps}
+              onFocus={composeEventHandlers(props.onFocus, (event) => {
+                event.currentTarget.select();
+              })}
+              onCut={composeEventHandlers(props.onCut, (event) => {
                 const currentValue = event.currentTarget.value;
-                // if current value is empty, no change event will fire
-                if (currentValue === '') {
-                  // if the user presses delete when there is no value, noop
-                  if (event.key === 'Delete') return;
-
-                  const isClearing = event.key === 'Clear' || event.metaKey || event.ctrlKey;
-                  if (isClearing) {
-                    dispatch({ type: 'CLEAR', reason: 'Backspace' });
-                  } else {
-                    const element = event.currentTarget;
-                    requestAnimationFrame(() => {
-                      focusInput(collection.from(element, -1)?.element);
-                    });
-                  }
-                } else {
-                  // In this case the value will be cleared, but we don't want
-                  // to set it directly because the user may want to prevent
-                  // default behavior in the onChange handler. The userActionRef
-                  // will is set temporarily so the change handler can behave
-                  // correctly in response to the key vs. clearing the value by
-                  // setting state externally.
+                if (currentValue !== '') {
+                  // In this case the value will be cleared, but we don't want to
+                  // set it directly because the user may want to prevent default
+                  // behavior in the onChange handler. The userActionRef will
+                  // is set temporarily so the change handler can behave correctly
+                  // in response to the action.
                   userActionRef.current = {
-                    type: 'keydown',
-                    key: event.key,
-                    metaKey: event.metaKey,
-                    ctrlKey: event.ctrlKey,
+                    type: 'cut',
                   };
                   // Set a short timeout to clear the action tracker after the change
                   // handler has had time to complete.
@@ -786,89 +681,203 @@ const OneTimePasswordFieldInput = React.forwardRef<
                     userActionRef.current = null;
                   }, 10);
                 }
-
-                return;
-              }
-              case 'Enter': {
-                event.preventDefault();
-                context.attemptSubmit();
-                return;
-              }
-              case 'ArrowDown':
-              case 'ArrowUp': {
-                if (context.orientation === 'horizontal') {
-                  // in horizontal orientation, the up/down will de-select the
-                  // input instead of moving focus
+              })}
+              onInput={composeEventHandlers(props.onInput, (event) => {
+                const value = event.currentTarget.value;
+                if (value.length > 1) {
+                  // Password managers may try to insert the code into a single
+                  // input, in which case form validation will fail to prevent
+                  // additional input. Handle this the same as if a user were
+                  // pasting a value.
                   event.preventDefault();
+                  dispatch({ type: 'PASTE', value });
                 }
-                return;
-              }
-              // TODO: Handle left/right arrow keys in vertical writing mode
-              default: {
-                if (event.currentTarget.value === event.key) {
-                  // if current value is same as the key press, no change event
-                  // will fire. Focus the next input.
-                  const element = event.currentTarget;
-                  event.preventDefault();
-                  focusInput(collection.from(element, 1)?.element);
-                  return;
-                } else if (
-                  // input already has a value, but...
-                  event.currentTarget.value &&
-                  // the value is not selected
-                  !(
-                    event.currentTarget.selectionStart === 0 &&
-                    event.currentTarget.selectionEnd != null &&
-                    event.currentTarget.selectionEnd > 0
-                  )
-                ) {
-                  const attemptedValue = event.key;
-                  if (event.key.length > 1 || event.key === ' ') {
-                    // not a character; do nothing
-                    return;
-                  } else {
-                    // user is attempting to enter a character, but the input
-                    // will not update by default since it's limited to a single
-                    // character.
-                    const nextInput = collection.from(event.currentTarget, 1)?.element;
-                    const lastInput = collection.at(-1)?.element;
-                    if (nextInput !== lastInput && event.currentTarget !== lastInput) {
-                      // if selection is before the value, set the value of the
-                      // current input. Otherwise set the value of the next
-                      // input.
-                      if (event.currentTarget.selectionStart === 0) {
-                        dispatch({ type: 'SET_CHAR', char: attemptedValue, index, event });
-                      } else {
-                        dispatch({
-                          type: 'SET_CHAR',
-                          char: attemptedValue,
-                          index: index + 1,
-                          event,
-                        });
+              })}
+              onChange={composeEventHandlers(props.onChange, (event) => {
+                const value = event.target.value;
+                event.preventDefault();
+                const action = userActionRef.current;
+                userActionRef.current = null;
+
+                if (action) {
+                  switch (action.type) {
+                    case 'cut':
+                      // TODO: do we want to assume the user wantt to clear the
+                      // entire value here and copy the code to the clipboard instead
+                      // of just the value of the given input?
+                      dispatch({ type: 'CLEAR_CHAR', index, reason: 'Cut' });
+                      return;
+                    case 'keydown': {
+                      if (action.key === 'Char') {
+                        // update resulting from a keydown event that set a value
+                        // directly. Ignore.
+                        return;
                       }
 
+                      const isClearing =
+                        action.key === 'Backspace' && (action.metaKey || action.ctrlKey);
+                      if (action.key === 'Clear' || isClearing) {
+                        dispatch({ type: 'CLEAR', reason: 'Backspace' });
+                      } else {
+                        dispatch({ type: 'CLEAR_CHAR', index, reason: action.key });
+                      }
+                      return;
+                    }
+                    default:
+                      return;
+                  }
+                }
+
+                // Only update the value if it matches the input pattern
+                if (event.target.validity.valid) {
+                  if (value === '') {
+                    let reason: 'Backspace' | 'Delete' | 'Cut' = 'Backspace';
+                    if (isInputEvent(event.nativeEvent)) {
+                      const inputType = event.nativeEvent.inputType;
+                      if (inputType === 'deleteContentBackward') {
+                        reason = 'Backspace';
+                      } else if (inputType === 'deleteByCut') {
+                        reason = 'Cut';
+                      }
+                    }
+                    dispatch({ type: 'CLEAR_CHAR', index, reason });
+                  } else {
+                    dispatch({ type: 'SET_CHAR', char: value, index, event });
+                  }
+                } else {
+                  const element = event.target;
+                  onInvalidChange?.(element.value);
+                  requestAnimationFrame(() => {
+                    if (element.ownerDocument.activeElement === element) {
+                      element.select();
+                    }
+                  });
+                }
+              })}
+              onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
+                switch (event.key) {
+                  case 'Clear':
+                  case 'Delete':
+                  case 'Backspace': {
+                    const currentValue = event.currentTarget.value;
+                    // if current value is empty, no change event will fire
+                    if (currentValue === '') {
+                      // if the user presses delete when there is no value, noop
+                      if (event.key === 'Delete') return;
+
+                      const isClearing = event.key === 'Clear' || event.metaKey || event.ctrlKey;
+                      if (isClearing) {
+                        dispatch({ type: 'CLEAR', reason: 'Backspace' });
+                      } else {
+                        const element = event.currentTarget;
+                        requestAnimationFrame(() => {
+                          focusInput(collection.from(element, -1)?.element);
+                        });
+                      }
+                    } else {
+                      // In this case the value will be cleared, but we don't want
+                      // to set it directly because the user may want to prevent
+                      // default behavior in the onChange handler. The userActionRef
+                      // will is set temporarily so the change handler can behave
+                      // correctly in response to the key vs. clearing the value by
+                      // setting state externally.
                       userActionRef.current = {
                         type: 'keydown',
-                        key: 'Char',
+                        key: event.key,
                         metaKey: event.metaKey,
                         ctrlKey: event.ctrlKey,
                       };
+                      // Set a short timeout to clear the action tracker after the change
+                      // handler has had time to complete.
                       keyboardActionTimeoutRef.current = window.setTimeout(() => {
                         userActionRef.current = null;
                       }, 10);
                     }
+
+                    return;
+                  }
+                  case 'Enter': {
+                    event.preventDefault();
+                    context.attemptSubmit();
+                    return;
+                  }
+                  case 'ArrowDown':
+                  case 'ArrowUp': {
+                    if (context.orientation === 'horizontal') {
+                      // in horizontal orientation, the up/down will de-select the
+                      // input instead of moving focus
+                      event.preventDefault();
+                    }
+                    return;
+                  }
+                  // TODO: Handle left/right arrow keys in vertical writing mode
+                  default: {
+                    if (event.currentTarget.value === event.key) {
+                      // if current value is same as the key press, no change event
+                      // will fire. Focus the next input.
+                      const element = event.currentTarget;
+                      event.preventDefault();
+                      focusInput(collection.from(element, 1)?.element);
+                      return;
+                    } else if (
+                      // input already has a value, but...
+                      event.currentTarget.value &&
+                      // the value is not selected
+                      !(
+                        event.currentTarget.selectionStart === 0 &&
+                        event.currentTarget.selectionEnd != null &&
+                        event.currentTarget.selectionEnd > 0
+                      )
+                    ) {
+                      const attemptedValue = event.key;
+                      if (event.key.length > 1 || event.key === ' ') {
+                        // not a character; do nothing
+                        return;
+                      } else {
+                        // user is attempting to enter a character, but the input
+                        // will not update by default since it's limited to a single
+                        // character.
+                        const nextInput = collection.from(event.currentTarget, 1)?.element;
+                        const lastInput = collection.at(-1)?.element;
+                        if (nextInput !== lastInput && event.currentTarget !== lastInput) {
+                          // if selection is before the value, set the value of the
+                          // current input. Otherwise set the value of the next
+                          // input.
+                          if (event.currentTarget.selectionStart === 0) {
+                            dispatch({ type: 'SET_CHAR', char: attemptedValue, index, event });
+                          } else {
+                            dispatch({
+                              type: 'SET_CHAR',
+                              char: attemptedValue,
+                              index: index + 1,
+                              event,
+                            });
+                          }
+
+                          userActionRef.current = {
+                            type: 'keydown',
+                            key: 'Char',
+                            metaKey: event.metaKey,
+                            ctrlKey: event.ctrlKey,
+                          };
+                          keyboardActionTimeoutRef.current = window.setTimeout(() => {
+                            userActionRef.current = null;
+                          }, 10);
+                        }
+                      }
+                    }
                   }
                 }
-              }
-            }
-          })}
-          onPointerDown={composeEventHandlers(props.onPointerDown, (event) => {
-            event.preventDefault();
-            const indexToFocus = Math.min(index, lastSelectableIndex);
-            const element = collection.at(indexToFocus)?.element;
-            focusInput(element);
-          })}
-        />
+              })}
+              onPointerDown={composeEventHandlers(props.onPointerDown, (event) => {
+                event.preventDefault();
+                const indexToFocus = Math.min(index, lastSelectableIndex);
+                const element = collection.at(indexToFocus)?.element;
+                focusInput(element);
+              })}
+            />
+          );
+        }}
       </RovingFocusGroup.Item>
     </Collection.ItemSlot>
   );
