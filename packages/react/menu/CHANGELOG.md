@@ -1,5 +1,9 @@
 # @radix-ui/react-menu
 
+## 2.1.10
+
+- Updated dependencies: `@radix-ui/react-roving-focus@1.1.6`
+
 ## 2.1.9
 
 - Updated dependencies: `@radix-ui/react-roving-focus@1.1.5`

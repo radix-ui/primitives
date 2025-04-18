@@ -1,5 +1,9 @@
 # @radix-ui/react-checkbox
 
+## 1.2.2
+
+- Updated dependencies: `@radix-ui/react-use-controllable-state@1.2.2`
+
 ## 1.2.1
 
 - Updated dependencies: `@radix-ui/react-use-controllable-state@1.2.1`

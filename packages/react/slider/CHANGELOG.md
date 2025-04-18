@@ -1,5 +1,9 @@
 # @radix-ui/react-slider
 
+## 1.3.2
+
+- Updated dependencies: `@radix-ui/react-use-controllable-state@1.2.2`
+
 ## 1.3.1
 
 - Updated dependencies: `@radix-ui/react-use-controllable-state@1.2.1`

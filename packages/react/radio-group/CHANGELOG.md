@@ -1,5 +1,9 @@
 # @radix-ui/react-radio-group
 
+## 1.3.2
+
+- Updated dependencies: `@radix-ui/react-use-controllable-state@1.2.2`, `@radix-ui/react-roving-focus@1.1.6`
+
 ## 1.3.1
 
 - Updated dependencies: `@radix-ui/react-use-controllable-state@1.2.1`, `@radix-ui/react-roving-focus@1.1.5`
