@@ -608,6 +608,9 @@ importers:
       '@radix-ui/react-use-callback-ref':
         specifier: workspace:*
         version: link:../use-callback-ref
+      '@radix-ui/react-use-is-hydrated':
+        specifier: workspace:*
+        version: link:../use-is-hydrated
       '@radix-ui/react-use-layout-effect':
         specifier: workspace:*
         version: link:../use-layout-effect
