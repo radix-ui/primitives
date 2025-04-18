@@ -1,5 +1,9 @@
 # @radix-ui/react-toast
 
+## 1.2.9
+
+- Updated dependencies: `@radix-ui/react-use-controllable-state@1.2.1`
+
 ## 1.2.8
 
 - Minor improvements to `useControllableState` to enhance performance, reduce surface area for bugs, and log warnings when misused (#3455)

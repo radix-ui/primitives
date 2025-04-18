@@ -1,5 +1,9 @@
 # @radix-ui/react-navigation-menu
 
+## 1.2.8
+
+- Updated dependencies: `@radix-ui/react-use-controllable-state@1.2.1`
+
 ## 1.2.7
 
 - Minor improvements to `useControllableState` to enhance performance, reduce surface area for bugs, and log warnings when misused (#3455)

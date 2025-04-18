@@ -1,5 +1,9 @@
 # @radix-ui/react-toggle-group
 
+## 1.1.5
+
+- Updated dependencies: `@radix-ui/react-use-controllable-state@1.2.1`, `@radix-ui/react-roving-focus@1.1.5`, `@radix-ui/react-toggle@1.1.5`
+
 ## 1.1.4
 
 - Minor improvements to `useControllableState` to enhance performance, reduce surface area for bugs, and log warnings when misused (#3455)

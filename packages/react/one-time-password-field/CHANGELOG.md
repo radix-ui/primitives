@@ -1,5 +1,9 @@
 # @radix-ui/react-one-time-password-field
 
+## 0.1.1
+
+- Updated dependencies: `@radix-ui/react-use-effect-event@0.0.1`, `@radix-ui/react-use-controllable-state@1.2.1`, `@radix-ui/react-roving-focus@1.1.5`
+
 ## 0.1.0
 
 ### Introduce new One Time Password Field primitive
