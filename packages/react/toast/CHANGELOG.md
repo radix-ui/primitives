@@ -1,5 +1,9 @@
 # @radix-ui/react-toast
 
+## 1.2.10
+
+- Updated dependencies: `@radix-ui/react-use-controllable-state@1.2.2`
+
 ## 1.2.9
 
 - Updated dependencies: `@radix-ui/react-use-controllable-state@1.2.1`

@@ -1,5 +1,9 @@
 # @radix-ui/react-tooltip
 
+## 1.2.3
+
+- Updated dependencies: `@radix-ui/react-use-controllable-state@1.2.2`
+
 ## 1.2.2
 
 - Updated dependencies: `@radix-ui/react-use-controllable-state@1.2.1`

@@ -1,5 +1,9 @@
 # @radix-ui/react-one-time-password-field
 
+## 0.1.2
+
+- Updated dependencies: `@radix-ui/react-use-effect-event@0.0.2`, `@radix-ui/react-use-controllable-state@1.2.2`, `@radix-ui/react-roving-focus@1.1.6`
+
 ## 0.1.1
 
 - Updated dependencies: `@radix-ui/react-use-effect-event@0.0.1`, `@radix-ui/react-use-controllable-state@1.2.1`, `@radix-ui/react-roving-focus@1.1.5`

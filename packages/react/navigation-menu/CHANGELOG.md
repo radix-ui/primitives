@@ -1,5 +1,9 @@
 # @radix-ui/react-navigation-menu
 
+## 1.2.9
+
+- Updated dependencies: `@radix-ui/react-use-controllable-state@1.2.2`
+
 ## 1.2.8
 
 - Updated dependencies: `@radix-ui/react-use-controllable-state@1.2.1`
