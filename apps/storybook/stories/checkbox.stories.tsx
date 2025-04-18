@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-pascal-case */
 import * as React from 'react';
 import { Checkbox, Label as LabelPrimitive } from 'radix-ui';
 import styles from './checkbox.stories.module.css';
@@ -5,6 +6,194 @@ import styles from './checkbox.stories.module.css';
 export default { title: 'Components/Checkbox' };
 
 export const Styled = () => (
+  <>
+    <p>This checkbox is nested inside a label. The state is uncontrolled.</p>
+
+    <h1>Custom label</h1>
+    <Label>
+      Label{' '}
+      <Checkbox.unstable_Provider>
+        <Checkbox.unstable_Trigger className={styles.root}>
+          <Checkbox.Indicator className={styles.indicator} />
+        </Checkbox.unstable_Trigger>
+      </Checkbox.unstable_Provider>
+    </Label>
+
+    <br />
+    <br />
+
+    <h1>Native label</h1>
+    <label>
+      Label{' '}
+      <Checkbox.unstable_Provider>
+        <Checkbox.unstable_Trigger className={styles.root}>
+          <Checkbox.Indicator className={styles.indicator} />
+        </Checkbox.unstable_Trigger>
+      </Checkbox.unstable_Provider>
+    </label>
+
+    <h1>Native label + native checkbox</h1>
+    <label>
+      Label <input type="checkbox" />
+    </label>
+
+    <h1>Custom label + htmlFor</h1>
+    <Label htmlFor="one">Label</Label>
+    <Checkbox.unstable_Provider>
+      <Checkbox.unstable_Trigger className={styles.root} id="one">
+        <Checkbox.Indicator className={styles.indicator} />
+      </Checkbox.unstable_Trigger>
+    </Checkbox.unstable_Provider>
+
+    <br />
+    <br />
+
+    <h1>Native label + htmlFor</h1>
+    <label htmlFor="two">Label</label>
+    <Checkbox.unstable_Provider>
+      <Checkbox.unstable_Trigger className={styles.root} id="two">
+        <Checkbox.Indicator className={styles.indicator} />
+      </Checkbox.unstable_Trigger>
+    </Checkbox.unstable_Provider>
+
+    <h1>Native label + native checkbox</h1>
+    <label htmlFor="three">Label</label>
+    <input type="checkbox" id="three" />
+  </>
+);
+
+export const Controlled = () => {
+  const [checked, setChecked] = React.useState<boolean | 'indeterminate'>(true);
+
+  return (
+    <>
+      <p>This checkbox is placed adjacent to its label. The state is controlled.</p>
+      <Label htmlFor="randBox">Label</Label>{' '}
+      <Checkbox.unstable_Provider checked={checked} onCheckedChange={setChecked}>
+        <Checkbox.unstable_Trigger className={styles.root} id="randBox">
+          <Checkbox.Indicator className={styles.indicator} />
+        </Checkbox.unstable_Trigger>
+      </Checkbox.unstable_Provider>
+    </>
+  );
+};
+
+export const Indeterminate = () => {
+  const [checked, setChecked] = React.useState<boolean | 'indeterminate'>('indeterminate');
+
+  return (
+    <>
+      <p>
+        <Checkbox.unstable_Provider checked={checked} onCheckedChange={setChecked}>
+          <Checkbox.unstable_Trigger className={styles.root}>
+            <Checkbox.Indicator className={styles.indicator} />
+          </Checkbox.unstable_Trigger>
+        </Checkbox.unstable_Provider>
+      </p>
+
+      <button
+        type="button"
+        onClick={() =>
+          setChecked((prevIsChecked) =>
+            prevIsChecked === 'indeterminate' ? false : 'indeterminate'
+          )
+        }
+      >
+        Toggle indeterminate
+      </button>
+    </>
+  );
+};
+
+export const WithinForm = () => {
+  const [data, setData] = React.useState({ optional: false, required: false, stopprop: false });
+  const [checked, setChecked] = React.useState<boolean | 'indeterminate'>('indeterminate');
+
+  return (
+    <form
+      onSubmit={(event) => event.preventDefault()}
+      onChange={(event) => {
+        const input = event.target as HTMLInputElement;
+        setData((prevData) => ({ ...prevData, [input.name]: input.checked }));
+      }}
+    >
+      <fieldset>
+        <legend>optional checked: {String(data.optional)}</legend>
+        <label>
+          <Checkbox.Root
+            className={styles.root}
+            name="optional"
+            checked={checked}
+            onCheckedChange={setChecked}
+          >
+            <Checkbox.Indicator className={styles.indicator} />
+          </Checkbox.Root>{' '}
+          with label
+        </label>
+        <br />
+        <br />
+
+        <button
+          type="button"
+          onClick={() => {
+            setChecked((v) => (v === 'indeterminate' ? false : 'indeterminate'));
+          }}
+        >
+          Toggle indeterminate
+        </button>
+      </fieldset>
+
+      <br />
+      <br />
+
+      <fieldset>
+        <legend>required checked: {String(data.required)}</legend>
+        <Checkbox.unstable_Provider name="required" required>
+          <Checkbox.unstable_Trigger className={styles.root}>
+            <Checkbox.Indicator className={styles.indicator} />
+          </Checkbox.unstable_Trigger>
+          <Checkbox.unstable_BubbleInput />
+        </Checkbox.unstable_Provider>
+      </fieldset>
+
+      <br />
+      <br />
+
+      <fieldset>
+        <legend>stop propagation checked: {String(data.stopprop)}</legend>
+        <Checkbox.unstable_Provider name="stopprop">
+          <Checkbox.unstable_Trigger
+            className={styles.root}
+            onClick={(event) => event.stopPropagation()}
+          >
+            <Checkbox.Indicator className={styles.indicator} />
+          </Checkbox.unstable_Trigger>
+          <Checkbox.unstable_BubbleInput />
+        </Checkbox.unstable_Provider>
+      </fieldset>
+
+      <br />
+      <br />
+
+      <fieldset>
+        <legend>no bubble input checked: {String(data.stopprop)}</legend>
+        <Checkbox.unstable_Provider name="stopprop">
+          <Checkbox.unstable_Trigger className={styles.root}>
+            <Checkbox.Indicator className={styles.indicator} />
+          </Checkbox.unstable_Trigger>
+        </Checkbox.unstable_Provider>
+      </fieldset>
+
+      <br />
+      <br />
+
+      <button type="reset">Reset</button>
+      <button>Submit</button>
+    </form>
+  );
+};
+
+export const LegacyStyled = () => (
   <>
     <p>This checkbox is nested inside a label. The state is uncontrolled.</p>
 
@@ -53,7 +242,7 @@ export const Styled = () => (
   </>
 );
 
-export const Controlled = () => {
+export const LegacyControlled = () => {
   const [checked, setChecked] = React.useState<boolean | 'indeterminate'>(true);
 
   return (
@@ -72,7 +261,7 @@ export const Controlled = () => {
   );
 };
 
-export const Indeterminate = () => {
+export const LegacyIndeterminate = () => {
   const [checked, setChecked] = React.useState<boolean | 'indeterminate'>('indeterminate');
 
   return (
@@ -97,7 +286,7 @@ export const Indeterminate = () => {
   );
 };
 
-export const WithinForm = () => {
+export const LegacyWithinForm = () => {
   const [data, setData] = React.useState({ optional: false, required: false, stopprop: false });
   const [checked, setChecked] = React.useState<boolean | 'indeterminate'>('indeterminate');
 
@@ -170,7 +359,7 @@ export const WithinForm = () => {
   );
 };
 
-export const Animated = () => {
+export const LegacyAnimated = () => {
   const [checked, setChecked] = React.useState<boolean | 'indeterminate'>('indeterminate');
 
   return (
@@ -195,7 +384,7 @@ export const Animated = () => {
   );
 };
 
-export const Chromatic = () => (
+export const LegacyChromatic = () => (
   <>
     <h1>Uncontrolled</h1>
     <h2>Unchecked</h2>
@@ -261,6 +450,6 @@ export const Chromatic = () => (
     </Checkbox.Root>
   </>
 );
-Chromatic.parameters = { chromatic: { disable: false } };
+LegacyChromatic.parameters = { chromatic: { disable: false } };
 
 const Label = (props: any) => <LabelPrimitive.Root {...props} className={styles.label} />;
