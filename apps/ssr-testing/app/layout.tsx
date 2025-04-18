@@ -24,6 +24,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <Link href="/label">Label</Link>
               <Link href="/menubar">Menubar</Link>
               <Link href="/navigation-menu">NavigationMenu</Link>
+              <Link href="/one-time-password-field">OneTimePasswordField</Link>
               <Link href="/popover">Popover</Link>
               <Link href="/portal">Portal</Link>
               <Link href="/progress">Progress</Link>
