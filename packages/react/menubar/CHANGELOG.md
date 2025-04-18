@@ -1,5 +1,9 @@
 # @radix-ui/react-menubar
 
+## 1.1.9
+
+- Updated dependencies: `@radix-ui/react-use-controllable-state@1.2.1`, `@radix-ui/react-roving-focus@1.1.5`, `@radix-ui/react-menu@2.1.9`
+
 ## 1.1.8
 
 - Minor improvements to `useControllableState` to enhance performance, reduce surface area for bugs, and log warnings when misused (#3455)

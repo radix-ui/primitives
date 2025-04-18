@@ -1,5 +1,9 @@
 # @radix-ui/react-hover-card
 
+## 1.1.9
+
+- Updated dependencies: `@radix-ui/react-use-controllable-state@1.2.1`
+
 ## 1.1.8
 
 - Minor improvements to `useControllableState` to enhance performance, reduce surface area for bugs, and log warnings when misused (#3455)

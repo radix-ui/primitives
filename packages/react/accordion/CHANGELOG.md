@@ -1,5 +1,9 @@
 # @radix-ui/react-accordion
 
+## 1.2.6
+
+- Updated dependencies: `@radix-ui/react-use-controllable-state@1.2.1`, `@radix-ui/react-collapsible@1.1.6`
+
 ## 1.2.5
 
 - Minor improvements to `useControllableState` to enhance performance, reduce surface area for bugs, and log warnings when misused (#3455)
