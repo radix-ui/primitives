@@ -465,8 +465,8 @@ export const NestedComposition = () => {
 };
 
 export const SingleItemAsDialogTrigger = () => {
-  const dropdownTriggerRef = React.useRef<React.ElementRef<typeof DropdownMenu.Trigger>>(null);
-  const dropdownTriggerRef2 = React.useRef<React.ElementRef<typeof DropdownMenu.Trigger>>(null);
+  const dropdownTriggerRef = React.useRef<React.ComponentRef<typeof DropdownMenu.Trigger>>(null);
+  const dropdownTriggerRef2 = React.useRef<React.ComponentRef<typeof DropdownMenu.Trigger>>(null);
   const isDialogOpenRef = React.useRef(false);
 
   function handleModalDialogClose(event: Event) {
@@ -557,8 +557,8 @@ export const MultipleItemsAsDialogTriggers = () => {
   const [switchAccountsOpen, setSwitchAccountsOpen] = React.useState(false);
   const [deleteOpen2, setDeleteOpen2] = React.useState(false);
   const [switchAccountsOpen2, setSwitchAccountsOpen2] = React.useState(false);
-  const dropdownTriggerRef = React.useRef<React.ElementRef<typeof DropdownMenu.Trigger>>(null);
-  const dropdownTriggerRef2 = React.useRef<React.ElementRef<typeof DropdownMenu.Trigger>>(null);
+  const dropdownTriggerRef = React.useRef<React.ComponentRef<typeof DropdownMenu.Trigger>>(null);
+  const dropdownTriggerRef2 = React.useRef<React.ComponentRef<typeof DropdownMenu.Trigger>>(null);
 
   return (
     <div

@@ -73,7 +73,7 @@ const [ViewportContentProvider, useViewportContentContext] = createNavigationMen
   items: Map<string, ContentData>;
 }>(NAVIGATION_MENU_NAME);
 
-type NavigationMenuElement = React.ElementRef<typeof Primitive.nav>;
+type NavigationMenuElement = React.ComponentRef<typeof Primitive.nav>;
 type PrimitiveNavProps = React.ComponentPropsWithoutRef<typeof Primitive.nav>;
 interface NavigationMenuProps
   extends Omit<NavigationMenuProviderProps, keyof NavigationMenuProviderPrivateProps>,
@@ -220,7 +220,7 @@ NavigationMenu.displayName = NAVIGATION_MENU_NAME;
 
 const SUB_NAME = 'NavigationMenuSub';
 
-type NavigationMenuSubElement = React.ElementRef<typeof Primitive.div>;
+type NavigationMenuSubElement = React.ComponentRef<typeof Primitive.div>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface NavigationMenuSubProps
   extends Omit<NavigationMenuProviderProps, keyof NavigationMenuProviderPrivateProps>,
@@ -360,7 +360,7 @@ const NavigationMenuProvider: React.FC<NavigationMenuProviderProps> = (
 
 const LIST_NAME = 'NavigationMenuList';
 
-type NavigationMenuListElement = React.ElementRef<typeof Primitive.ul>;
+type NavigationMenuListElement = React.ComponentRef<typeof Primitive.ul>;
 type PrimitiveUnorderedListProps = React.ComponentPropsWithoutRef<typeof Primitive.ul>;
 interface NavigationMenuListProps extends PrimitiveUnorderedListProps {}
 
@@ -391,7 +391,7 @@ NavigationMenuList.displayName = LIST_NAME;
 
 const ITEM_NAME = 'NavigationMenuItem';
 
-type FocusProxyElement = React.ElementRef<typeof VisuallyHiddenPrimitive.Root>;
+type FocusProxyElement = React.ComponentRef<typeof VisuallyHiddenPrimitive.Root>;
 
 type NavigationMenuItemContextValue = {
   value: string;
@@ -408,7 +408,7 @@ type NavigationMenuItemContextValue = {
 const [NavigationMenuItemContextProvider, useNavigationMenuItemContext] =
   createNavigationMenuContext<NavigationMenuItemContextValue>(ITEM_NAME);
 
-type NavigationMenuItemElement = React.ElementRef<typeof Primitive.li>;
+type NavigationMenuItemElement = React.ComponentRef<typeof Primitive.li>;
 type PrimitiveListItemProps = React.ComponentPropsWithoutRef<typeof Primitive.li>;
 interface NavigationMenuItemProps extends PrimitiveListItemProps {
   value?: string;
@@ -469,7 +469,7 @@ NavigationMenuItem.displayName = ITEM_NAME;
 
 const TRIGGER_NAME = 'NavigationMenuTrigger';
 
-type NavigationMenuTriggerElement = React.ElementRef<typeof Primitive.button>;
+type NavigationMenuTriggerElement = React.ComponentRef<typeof Primitive.button>;
 type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
 interface NavigationMenuTriggerProps extends PrimitiveButtonProps {}
 
@@ -582,7 +582,7 @@ NavigationMenuTrigger.displayName = TRIGGER_NAME;
 const LINK_NAME = 'NavigationMenuLink';
 const LINK_SELECT = 'navigationMenu.linkSelect';
 
-type NavigationMenuLinkElement = React.ElementRef<typeof Primitive.a>;
+type NavigationMenuLinkElement = React.ComponentRef<typeof Primitive.a>;
 type PrimitiveLinkProps = React.ComponentPropsWithoutRef<typeof Primitive.a>;
 interface NavigationMenuLinkProps extends Omit<PrimitiveLinkProps, 'onSelect'> {
   active?: boolean;
@@ -664,7 +664,7 @@ const NavigationMenuIndicator = React.forwardRef<
 
 NavigationMenuIndicator.displayName = INDICATOR_NAME;
 
-type NavigationMenuIndicatorImplElement = React.ElementRef<typeof Primitive.div>;
+type NavigationMenuIndicatorImplElement = React.ComponentRef<typeof Primitive.div>;
 interface NavigationMenuIndicatorImplProps extends PrimitiveDivProps {}
 
 const NavigationMenuIndicatorImpl = React.forwardRef<
@@ -828,7 +828,7 @@ const ViewportContentMounter = React.forwardRef<
 const ROOT_CONTENT_DISMISS = 'navigationMenu.rootContentDismiss';
 
 type MotionAttribute = 'to-start' | 'to-end' | 'from-start' | 'from-end';
-type NavigationMenuContentImplElement = React.ElementRef<typeof DismissableLayer>;
+type NavigationMenuContentImplElement = React.ComponentRef<typeof DismissableLayer>;
 type DismissableLayerProps = React.ComponentPropsWithoutRef<typeof DismissableLayer>;
 
 interface NavigationMenuContentImplPrivateProps {
@@ -1009,7 +1009,7 @@ NavigationMenuViewport.displayName = VIEWPORT_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
-type NavigationMenuViewportImplElement = React.ElementRef<typeof Primitive.div>;
+type NavigationMenuViewportImplElement = React.ComponentRef<typeof Primitive.div>;
 interface NavigationMenuViewportImplProps extends PrimitiveDivProps {}
 
 const NavigationMenuViewportImpl = React.forwardRef<
@@ -1082,7 +1082,7 @@ const NavigationMenuViewportImpl = React.forwardRef<
 
 const FOCUS_GROUP_NAME = 'FocusGroup';
 
-type FocusGroupElement = React.ElementRef<typeof Primitive.div>;
+type FocusGroupElement = React.ComponentRef<typeof Primitive.div>;
 interface FocusGroupProps extends PrimitiveDivProps {}
 
 const FocusGroup = React.forwardRef<FocusGroupElement, FocusGroupProps>(
@@ -1105,7 +1105,7 @@ const FocusGroup = React.forwardRef<FocusGroupElement, FocusGroupProps>(
 const ARROW_KEYS = ['ArrowRight', 'ArrowLeft', 'ArrowUp', 'ArrowDown'];
 const FOCUS_GROUP_ITEM_NAME = 'FocusGroupItem';
 
-type FocusGroupItemElement = React.ElementRef<typeof Primitive.button>;
+type FocusGroupItemElement = React.ComponentRef<typeof Primitive.button>;
 interface FocusGroupItemProps extends PrimitiveButtonProps {}
 
 const FocusGroupItem = React.forwardRef<FocusGroupItemElement, FocusGroupItemProps>(

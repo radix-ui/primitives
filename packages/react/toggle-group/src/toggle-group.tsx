@@ -179,7 +179,7 @@ const [ToggleGroupContext, useToggleGroupContext] =
   createToggleGroupContext<ToggleGroupContextValue>(TOGGLE_GROUP_NAME);
 
 type RovingFocusGroupProps = React.ComponentPropsWithoutRef<typeof RovingFocusGroup.Root>;
-type ToggleGroupImplElement = React.ElementRef<typeof Primitive.div>;
+type ToggleGroupImplElement = React.ComponentRef<typeof Primitive.div>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface ToggleGroupImplProps extends PrimitiveDivProps {
   /**
@@ -269,7 +269,7 @@ ToggleGroupItem.displayName = ITEM_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
-type ToggleGroupItemImplElement = React.ElementRef<typeof Toggle>;
+type ToggleGroupItemImplElement = React.ComponentRef<typeof Toggle>;
 type ToggleProps = React.ComponentPropsWithoutRef<typeof Toggle>;
 interface ToggleGroupItemImplProps extends Omit<ToggleProps, 'defaultPressed' | 'onPressedChange'> {
   /**

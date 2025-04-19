@@ -121,7 +121,7 @@ const VIEWPORT_DEFAULT_HOTKEY = ['F8'];
 const VIEWPORT_PAUSE = 'toast.viewportPause';
 const VIEWPORT_RESUME = 'toast.viewportResume';
 
-type ToastViewportElement = React.ElementRef<typeof Primitive.ol>;
+type ToastViewportElement = React.ComponentRef<typeof Primitive.ol>;
 type PrimitiveOrderedListProps = React.ComponentPropsWithoutRef<typeof Primitive.ol>;
 interface ToastViewportProps extends PrimitiveOrderedListProps {
   /**
@@ -327,7 +327,7 @@ ToastViewport.displayName = VIEWPORT_NAME;
 
 const FOCUS_PROXY_NAME = 'ToastFocusProxy';
 
-type FocusProxyElement = React.ElementRef<typeof VisuallyHidden>;
+type FocusProxyElement = React.ComponentRef<typeof VisuallyHidden>;
 type VisuallyHiddenProps = React.ComponentPropsWithoutRef<typeof VisuallyHidden>;
 interface FocusProxyProps extends VisuallyHiddenProps {
   onFocusFromOutsideViewport(): void;
@@ -442,7 +442,7 @@ const [ToastInteractiveProvider, useToastInteractiveContext] = createToastContex
   onClose() {},
 });
 
-type ToastImplElement = React.ElementRef<typeof Primitive.li>;
+type ToastImplElement = React.ComponentRef<typeof Primitive.li>;
 type DismissableLayerProps = React.ComponentPropsWithoutRef<typeof DismissableLayer.Root>;
 type ToastImplPrivateProps = { open: boolean; onClose(): void };
 type PrimitiveListItemProps = React.ComponentPropsWithoutRef<typeof Primitive.li>;
@@ -710,7 +710,7 @@ const ToastAnnounce: React.FC<ToastAnnounceProps> = (props: ScopedProps<ToastAnn
 
 const TITLE_NAME = 'ToastTitle';
 
-type ToastTitleElement = React.ElementRef<typeof Primitive.div>;
+type ToastTitleElement = React.ComponentRef<typeof Primitive.div>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface ToastTitleProps extends PrimitiveDivProps {}
 
@@ -729,7 +729,7 @@ ToastTitle.displayName = TITLE_NAME;
 
 const DESCRIPTION_NAME = 'ToastDescription';
 
-type ToastDescriptionElement = React.ElementRef<typeof Primitive.div>;
+type ToastDescriptionElement = React.ComponentRef<typeof Primitive.div>;
 interface ToastDescriptionProps extends PrimitiveDivProps {}
 
 const ToastDescription = React.forwardRef<ToastDescriptionElement, ToastDescriptionProps>(
@@ -785,7 +785,7 @@ ToastAction.displayName = ACTION_NAME;
 
 const CLOSE_NAME = 'ToastClose';
 
-type ToastCloseElement = React.ElementRef<typeof Primitive.button>;
+type ToastCloseElement = React.ComponentRef<typeof Primitive.button>;
 type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
 interface ToastCloseProps extends PrimitiveButtonProps {}
 
@@ -811,7 +811,7 @@ ToastClose.displayName = CLOSE_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
-type ToastAnnounceExcludeElement = React.ElementRef<typeof Primitive.div>;
+type ToastAnnounceExcludeElement = React.ComponentRef<typeof Primitive.div>;
 interface ToastAnnounceExcludeProps extends PrimitiveDivProps {
   altText?: string;
 }

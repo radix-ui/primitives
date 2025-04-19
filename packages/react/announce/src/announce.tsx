@@ -21,7 +21,7 @@ const listenerMap = new Map<Element, number>();
 
 const NAME = 'Announce';
 
-type AnnounceElement = React.ElementRef<typeof Primitive.div>;
+type AnnounceElement = React.ComponentRef<typeof Primitive.div>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface AnnounceProps extends PrimitiveDivProps {
   /**

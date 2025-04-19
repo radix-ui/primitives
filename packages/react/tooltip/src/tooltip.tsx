@@ -260,7 +260,7 @@ Tooltip.displayName = TOOLTIP_NAME;
 
 const TRIGGER_NAME = 'TooltipTrigger';
 
-type TooltipTriggerElement = React.ElementRef<typeof Primitive.button>;
+type TooltipTriggerElement = React.ComponentRef<typeof Primitive.button>;
 type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
 interface TooltipTriggerProps extends PrimitiveButtonProps {}
 
@@ -481,7 +481,7 @@ const TooltipContentHoverable = React.forwardRef<
 const [VisuallyHiddenContentContextProvider, useVisuallyHiddenContentContext] =
   createTooltipContext(TOOLTIP_NAME, { isInside: false });
 
-type TooltipContentImplElement = React.ElementRef<typeof PopperPrimitive.Content>;
+type TooltipContentImplElement = React.ComponentRef<typeof PopperPrimitive.Content>;
 type DismissableLayerProps = React.ComponentPropsWithoutRef<typeof DismissableLayer>;
 type PopperContentProps = React.ComponentPropsWithoutRef<typeof PopperPrimitive.Content>;
 interface TooltipContentImplProps extends Omit<PopperContentProps, 'onPlaced'> {
@@ -582,7 +582,7 @@ TooltipContent.displayName = CONTENT_NAME;
 
 const ARROW_NAME = 'TooltipArrow';
 
-type TooltipArrowElement = React.ElementRef<typeof PopperPrimitive.Arrow>;
+type TooltipArrowElement = React.ComponentRef<typeof PopperPrimitive.Arrow>;
 type PopperArrowProps = React.ComponentPropsWithoutRef<typeof PopperPrimitive.Arrow>;
 interface TooltipArrowProps extends PopperArrowProps {}
 
