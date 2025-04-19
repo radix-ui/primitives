@@ -2,6 +2,7 @@ import * as React from 'react';
 import { createContextScope } from '@radix-ui/react-context';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
+import { useIsHydrated } from '@radix-ui/react-use-is-hydrated';
 import { Primitive } from '@radix-ui/react-primitive';
 import { useIsHydrated } from '@radix-ui/react-use-is-hydrated';
 
