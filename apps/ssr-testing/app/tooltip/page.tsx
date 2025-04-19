@@ -7,7 +7,15 @@ export default function Page() {
       <Tooltip.Root>
         <Tooltip.Trigger>Hover or Focus me</Tooltip.Trigger>
         <Tooltip.Portal>
-          <Tooltip.Content sideOffset={5}>
+          <Tooltip.Content
+            sideOffset={5}
+            side="left"
+            align="center"
+            avoidCollisions={true}
+            collisionBoundary={document.body}
+            collisionPadding={10}
+            sticky="partial"
+          >
             Nicely done!
             <Tooltip.Arrow />
           </Tooltip.Content>

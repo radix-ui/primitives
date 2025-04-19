@@ -6,7 +6,16 @@ export default function Page() {
     <Popover.Root>
       <Popover.Trigger>open</Popover.Trigger>
       <Popover.Portal>
-        <Popover.Content sideOffset={5}>
+        <Popover.Content
+          side="left"
+          sideOffset={5}
+          align="center"
+          avoidCollisions={true}
+          collisionBoundary={document.body}
+          collisionPadding={10}
+          sticky="partial"
+        >
+          <div>Your popover content here</div>
           <Popover.Close>close</Popover.Close>
           <Popover.Arrow width={20} height={10} />
         </Popover.Content>
