@@ -2,7 +2,7 @@
 
 ## 1.1.7
 
-- Fix hydration mismatch error in `OneTimePasswordField` and add opt-in `index` prop
+- Internal changes to render props
 
 ## 1.1.6
 
