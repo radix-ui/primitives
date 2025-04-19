@@ -1,5 +1,9 @@
 # @radix-ui/react-menubar
 
+## 1.1.11
+
+- Updated dependencies: `@radix-ui/react-roving-focus@1.1.7`, `@radix-ui/react-menu@2.1.11`
+
 ## 1.1.10
 
 - Updated dependencies: `@radix-ui/react-use-controllable-state@1.2.2`, `@radix-ui/react-roving-focus@1.1.6`, `@radix-ui/react-menu@2.1.10`
