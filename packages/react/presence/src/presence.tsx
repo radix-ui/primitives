@@ -100,7 +100,9 @@ function usePresence(present: boolean) {
        */
       const handleAnimationEnd = (event: AnimationEvent) => {
         const currentAnimationName = getAnimationName(stylesRef.current);
-        const isCurrentAnimation = currentAnimationName.includes(event.animationName);
+        // The event.animationName is unescaped for CSS syntax,
+        // so we need to escape it to compare with the animationName computed from the style.
+        const isCurrentAnimation = currentAnimationName.includes(CSS.escape(event.animationName));
         if (event.target === node && isCurrentAnimation) {
           // With React 18 concurrency this update is applied a frame after the
           // animation ends, creating a flash of visible content. By setting the
