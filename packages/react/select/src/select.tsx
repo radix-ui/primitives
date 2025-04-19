@@ -1269,8 +1269,13 @@ const SelectItem = React.forwardRef<SelectItemElement, SelectItemProps>(
 
     const handleSelect = () => {
       if (!disabled) {
-        context.onValueChange(value);
-        context.onOpenChange(false);
+        const startTransition = React.startTransition
+          ? React.startTransition
+          : window.requestAnimationFrame;
+        startTransition(() => {
+          context.onValueChange(value);
+          context.onOpenChange(false);
+        });
       }
     };
 

@@ -678,6 +678,47 @@ export const WithinDialog = () => (
   </div>
 );
 
+export const WithLink = () => (
+  <div style={{ padding: 50 }}>
+    <Label>
+      Choose a number:
+      <Select.Root defaultValue="two">
+        <Select.Trigger className={styles.trigger}>
+          <Select.Value />
+          <Select.Icon />
+        </Select.Trigger>
+        <Select.Portal>
+          <Select.Content className={styles.content}>
+            <Select.Viewport className={styles.viewport}>
+              <Select.Item className={styles.item} value="one">
+                <Select.ItemText>One</Select.ItemText>
+                <a href="/#" target="_blank" rel="noopener noreferrer">
+                  (link)
+                </a>
+                <Select.ItemIndicator className={styles.indicator}>
+                  <TickIcon />
+                </Select.ItemIndicator>
+              </Select.Item>
+              <Select.Item className={styles.item} value="two">
+                <Select.ItemText>Two</Select.ItemText>
+                <Select.ItemIndicator className={styles.indicator}>
+                  <TickIcon />
+                </Select.ItemIndicator>
+              </Select.Item>
+              <Select.Item className={styles.item} value="three">
+                <Select.ItemText>Three</Select.ItemText>
+                <Select.ItemIndicator className={styles.indicator}>
+                  <TickIcon />
+                </Select.ItemIndicator>
+              </Select.Item>
+            </Select.Viewport>
+          </Select.Content>
+        </Select.Portal>
+      </Select.Root>
+    </Label>
+  </div>
+);
+
 export const WithVeryLongSelectItems = () => (
   <div style={{ paddingLeft: 300 }}>
     <Label>
