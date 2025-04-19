@@ -56,7 +56,6 @@ interface OneTimePasswordFieldContextValue {
   name: string | undefined;
   orientation: Exclude<RovingFocusGroupProps['orientation'], undefined>;
   placeholder: string | undefined;
-  preHydrationIndexTracker: React.RefObject<number>;
   readOnly: boolean;
   type: InputType;
   userActionRef: React.RefObject<KeyboardActionDetails | null>;
@@ -429,13 +428,6 @@ const OneTimePasswordField = React.forwardRef<HTMLDivElement, OneTimePasswordFie
         attemptSubmit();
       }
     }, [attemptSubmit, autoSubmit, currentValue, length, onAutoSubmit, value]);
-
-    // Before hydration (and in SSR) we can track the index of an input during
-    // render, as indices calculated by the collection package should almost
-    // always align with render order anyway. This ensures that index-dependent
-    // attributes are immediately rendered, in case browser extensions rely on
-    // those for auto-complete functionality and JS has not hydrated.
-    const preHydrationIndexTracker = React.useRef<number>(0);
     const isHydrated = useIsHydrated();
 
     return (
@@ -456,7 +448,6 @@ const OneTimePasswordField = React.forwardRef<HTMLDivElement, OneTimePasswordFie
         dispatch={dispatch}
         validationType={validationType}
         orientation={orientation}
-        preHydrationIndexTracker={preHydrationIndexTracker}
         isHydrated={isHydrated}
         sanitizeValue={sanitizeValue}
       >
@@ -560,6 +551,12 @@ interface OneTimePasswordFieldInputProps
    * Callback fired when the user input fails native HTML input validation.
    */
   onInvalidChange?: (character: string) => void;
+  /**
+   * User-provided index to determine the order of the inputs. This is useful if
+   * you need certain index-based attributes to be set on the initial render,
+   * often to prevent flickering after hydration.
+   */
+  index?: number;
 }
 
 const OneTimePasswordFieldInput = React.forwardRef<
@@ -569,6 +566,7 @@ const OneTimePasswordFieldInput = React.forwardRef<
   {
     __scopeOneTimePasswordField,
     onInvalidChange,
+    index: indexProp,
     ...props
   }: ScopedProps<OneTimePasswordFieldInputProps>,
   forwardedRef
@@ -592,25 +590,20 @@ const OneTimePasswordFieldInput = React.forwardRef<
     'OneTimePasswordFieldInput',
     __scopeOneTimePasswordField
   );
-  const { dispatch, userActionRef, validationType, preHydrationIndexTracker, isHydrated } = context;
+  const { dispatch, userActionRef, validationType, isHydrated } = context;
   const collection = useCollection(__scopeOneTimePasswordField);
   const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeOneTimePasswordField);
 
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [element, setElement] = React.useState<HTMLInputElement | null>(null);
 
+  const index = indexProp ?? (element ? collection.indexOf(element) : -1);
+  const canSetPlaceholder = indexProp != null || isHydrated;
   let placeholder: string | undefined;
-  let index: number;
-  if (!isHydrated) {
-    index = preHydrationIndexTracker.current;
-    preHydrationIndexTracker.current++;
-  } else {
-    index = element ? collection.indexOf(element) : -1;
-    if (context.placeholder && context.value.length === 0) {
-      // only set placeholder after hydration to prevent flickering when indices
-      // are re-calculated
-      placeholder = context.placeholder[index];
-    }
+  if (canSetPlaceholder && context.placeholder && context.value.length === 0) {
+    // only set placeholder after hydration to prevent flickering when indices
+    // are re-calculated
+    placeholder = context.placeholder[index];
   }
 
   const composedInputRef = useComposedRefs(forwardedRef, inputRef, setElement);
@@ -640,8 +633,8 @@ const OneTimePasswordFieldInput = React.forwardRef<
         focusable={!context.disabled && isFocusable}
         active={index === lastSelectableIndex}
       >
-        {({ isCurrentTabStop }) => {
-          const supportsAutoComplete = isHydrated ? isCurrentTabStop : index === 0;
+        {({ hasTabStop, isCurrentTabStop }) => {
+          const supportsAutoComplete = hasTabStop ? isCurrentTabStop : index === 0;
           return (
             <Primitive.Root.input
               ref={composedInputRef}
