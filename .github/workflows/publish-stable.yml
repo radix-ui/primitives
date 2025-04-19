@@ -10,6 +10,7 @@ concurrency: ${{ github.workflow }}-${{ github.ref }}
 jobs:
   publish-stable:
     name: Version or publish
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -40,7 +41,7 @@ jobs:
           title: New release
           commit: New release
           version: pnpm run bump:stable
-          publish: pnpm run release:stable
+          publish: pnpm run release:stable:ci
           createGithubReleases: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,5 +1,10 @@
 # @radix-ui/react-one-time-password-field
 
+## 0.1.3
+
+- Fix hydration mismatch error in `OneTimePasswordField` and add opt-in `index` prop
+- Updated dependencies: `@radix-ui/react-roving-focus@1.1.7`
+
 ## 0.1.2
 
 - Updated dependencies: `@radix-ui/react-use-effect-event@0.0.2`, `@radix-ui/react-use-controllable-state@1.2.2`, `@radix-ui/react-roving-focus@1.1.6`

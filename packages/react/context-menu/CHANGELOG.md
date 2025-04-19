@@ -1,5 +1,9 @@
 # @radix-ui/react-context-menu
 
+## 2.2.11
+
+- Updated dependencies: `@radix-ui/react-menu@2.1.11`
+
 ## 2.2.10
 
 - Updated dependencies: `@radix-ui/react-use-controllable-state@1.2.2`, `@radix-ui/react-menu@2.1.10`
