@@ -1,5 +1,9 @@
 # @radix-ui/react-toggle-group
 
+## 1.1.7
+
+- Updated dependencies: `@radix-ui/react-roving-focus@1.1.7`
+
 ## 1.1.6
 
 - Updated dependencies: `@radix-ui/react-use-controllable-state@1.2.2`, `@radix-ui/react-roving-focus@1.1.6`, `@radix-ui/react-toggle@1.1.6`

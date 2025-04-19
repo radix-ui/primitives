@@ -1,5 +1,9 @@
 # @radix-ui/react-roving-focus
 
+## 1.1.7
+
+- Fix hydration mismatch error in `OneTimePasswordField` and add opt-in `index` prop
+
 ## 1.1.6
 
 - Updated dependencies: `@radix-ui/react-use-controllable-state@1.2.2`
