@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { PasswordToggleField } from 'radix-ui';
+import { unstable_PasswordToggleField as PasswordToggleField } from 'radix-ui';
 import styles from './password-toggle-field.stories.module.css';
 
 export default {
