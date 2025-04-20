@@ -1,74 +1,29 @@
 import * as React from 'react';
+import type { Meta, StoryObj } from '@storybook/react';
+import { useArgs } from '@storybook/preview-api';
 import { unstable_PasswordToggleField as PasswordToggleField } from 'radix-ui';
 import styles from './password-toggle-field.stories.module.css';
 
 export default {
   title: 'Components/PasswordToggleField',
-};
+  component: PasswordToggleField.Root,
+} satisfies Meta<typeof PasswordToggleField.Root>;
 
-export const Styled = () => {
-  return (
-    <div className={styles.viewport}>
-      <PasswordToggleField.Root>
-        <div className={styles.field}>
-          <PasswordToggleField.Input className={styles.input} />
-          <PasswordToggleField.Toggle className={styles.toggle}>
-            <PasswordToggleField.Icon
-              className={styles.toggleIcon}
-              visible={<EyeOpenIcon />}
-              hidden={<EyeClosedIcon />}
-            />
-          </PasswordToggleField.Toggle>
-        </div>
-      </PasswordToggleField.Root>
-    </div>
-  );
-};
+type Story = StoryObj<typeof PasswordToggleField.Root>;
+type StoryArgs = Exclude<Story['args'], undefined>;
 
-export const Controlled = () => {
-  const [visible, setVisible] = React.useState(false);
-  return (
-    <div className={styles.viewport}>
-      <PasswordToggleField.Root visible={visible} onVisiblityChange={setVisible}>
-        <div className={styles.field}>
-          <PasswordToggleField.Input className={styles.input} />
-          <PasswordToggleField.Toggle className={styles.toggle}>
-            <PasswordToggleField.Icon
-              className={styles.toggleIcon}
-              visible={<EyeOpenIcon />}
-              hidden={<EyeClosedIcon />}
-            />
-          </PasswordToggleField.Toggle>
-        </div>
-      </PasswordToggleField.Root>
-      <hr />
-      <button type="button" onClick={() => setVisible((v) => !v)}>
-        Outside Toggle
-      </button>
-    </div>
-  );
-};
-
-export const InsideForm = () => {
-  const [visible, setVisible] = React.useState(false);
-  const [submissionType, setSubmissionType] = React.useState<'server' | 'client'>('server');
-  const inputRef = React.useRef<HTMLInputElement>(null);
-  return (
-    <div className={styles.viewport}>
-      <form
-        onSubmit={(event) => {
-          if (submissionType === 'client') {
-            event.preventDefault();
-            window.alert(`Submitted! Field is ${visible ? 'visible' : 'hidden'}`);
-            event.currentTarget.reset();
-            console.log(inputRef.current);
-            inputRef.current?.focus();
-          }
-        }}
-      >
-        <PasswordToggleField.Root visible={visible} onVisiblityChange={setVisible}>
+export const Uncontrolled = {
+  argTypes: {
+    children: { table: { disable: true } },
+    defaultVisible: { table: { disable: true } },
+    visible: { table: { disable: true } },
+  },
+  render: function Uncontrolled(args) {
+    return (
+      <div className={styles.viewport}>
+        <PasswordToggleField.Root {...args}>
           <div className={styles.field}>
-            <PasswordToggleField.Input ref={inputRef} className={styles.input} />
+            <PasswordToggleField.Input className={styles.input} />
             <PasswordToggleField.Toggle className={styles.toggle}>
               <PasswordToggleField.Icon
                 className={styles.toggleIcon}
@@ -78,43 +33,89 @@ export const InsideForm = () => {
             </PasswordToggleField.Toggle>
           </div>
         </PasswordToggleField.Root>
-        <button>Submit ({submissionType})</button>
-      </form>
-      <hr />
+      </div>
+    );
+  },
+} satisfies Story;
 
-      <fieldset
-        onChange={(event) => {
-          const target = event.target as HTMLInputElement;
-          if (target.value === 'server') {
-            setSubmissionType('server');
-          } else if (target.value === 'client') {
-            setSubmissionType('client');
-          }
-        }}
-      >
-        <legend>Submission Type</legend>
-        <label>
-          <input
-            type="radio"
-            name="submissionType"
-            value="server"
-            checked={submissionType === 'server'}
-          />{' '}
-          Server
-        </label>
-        <label>
-          <input
-            type="radio"
-            name="submissionType"
-            value="client"
-            checked={submissionType === 'client'}
-          />{' '}
-          Client
-        </label>
-      </fieldset>
-    </div>
-  );
-};
+export const Controlled = {
+  argTypes: {
+    children: { table: { disable: true } },
+    defaultVisible: { table: { disable: true } },
+    visible: { control: { type: 'boolean' } },
+  },
+  args: {
+    visible: false,
+  },
+  render: function Controlled(args) {
+    const [{ visible }, updateArgs] = useArgs<StoryArgs>();
+    return (
+      <div className={styles.viewport}>
+        <PasswordToggleField.Root
+          {...args}
+          visible={visible}
+          onVisiblityChange={(visible) => updateArgs({ visible })}
+        >
+          <div className={styles.field}>
+            <PasswordToggleField.Input className={styles.input} />
+            <PasswordToggleField.Toggle className={styles.toggle}>
+              <PasswordToggleField.Icon
+                className={styles.toggleIcon}
+                visible={<EyeOpenIcon />}
+                hidden={<EyeClosedIcon />}
+              />
+            </PasswordToggleField.Toggle>
+          </div>
+        </PasswordToggleField.Root>
+      </div>
+    );
+  },
+} satisfies Story;
+
+export const InsideForm = {
+  argTypes: {
+    children: { table: { disable: true } },
+    defaultVisible: { table: { disable: true } },
+    visible: { control: { type: 'boolean' } },
+  },
+  args: {
+    visible: false,
+  },
+  render: function InsideForm(args) {
+    const [{ visible }, updateArgs] = useArgs<StoryArgs>();
+    const inputRef = React.useRef<HTMLInputElement>(null);
+    return (
+      <div className={styles.viewport}>
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
+            // should be reset on submit, so this should always be hidden
+            window.alert(`Submitted! Field is ${visible ? 'visible' : 'hidden'}`);
+            inputRef.current?.focus();
+          }}
+        >
+          <PasswordToggleField.Root
+            visible={visible}
+            onVisiblityChange={(visible) => updateArgs({ visible })}
+            {...args}
+          >
+            <div className={styles.field}>
+              <PasswordToggleField.Input ref={inputRef} className={styles.input} />
+              <PasswordToggleField.Toggle className={styles.toggle}>
+                <PasswordToggleField.Icon
+                  className={styles.toggleIcon}
+                  visible={<EyeOpenIcon />}
+                  hidden={<EyeClosedIcon />}
+                />
+              </PasswordToggleField.Toggle>
+            </div>
+          </PasswordToggleField.Root>
+          <button>Submit</button>
+        </form>
+      </div>
+    );
+  },
+} satisfies Story;
 
 const EyeClosedIcon = () => (
   <svg
