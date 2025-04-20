@@ -276,8 +276,8 @@ const PasswordToggleFieldToggle = React.forwardRef<
 });
 
 interface PasswordToggleFieldSlotDeclarativeProps {
-  visible: React.ReactElement;
-  hidden: React.ReactElement;
+  visible: React.ReactNode;
+  hidden: React.ReactNode;
 }
 
 interface PasswordToggleFieldSlotRenderProps {
@@ -299,17 +299,10 @@ const PasswordToggleFieldSlot: React.FC<PasswordToggleFieldSlotProps> = (props) 
 
 type PrimitiveSvgProps = Omit<React.ComponentPropsWithoutRef<typeof Primitive.svg>, 'children'>;
 
-interface PasswordToggleFieldIconDeclarativeProps
-  extends PasswordToggleFieldSlotDeclarativeProps,
-    PrimitiveSvgProps {}
-
-interface PasswordToggleFieldIconRenderProps
-  extends PasswordToggleFieldSlotRenderProps,
-    PrimitiveSvgProps {}
-
-type PasswordToggleFieldIconProps =
-  | PasswordToggleFieldIconDeclarativeProps
-  | PasswordToggleFieldIconRenderProps;
+interface PasswordToggleFieldIconProps extends PrimitiveSvgProps {
+  visible: React.ReactElement;
+  hidden: React.ReactElement;
+}
 
 const PasswordToggleFieldIcon = React.forwardRef<SVGSVGElement, PasswordToggleFieldIconProps>(
   function PasswordToggleFieldIcon(
@@ -321,18 +314,10 @@ const PasswordToggleFieldIcon = React.forwardRef<SVGSVGElement, PasswordToggleFi
     forwardedRef
   ) {
     const { visible } = usePasswordToggleFieldContext();
-    if ('render' in props) {
-      return (
-        <Primitive.svg {...props} ref={forwardedRef} aria-hidden asChild>
-          {props.render({ visible })}
-        </Primitive.svg>
-      );
-    }
-
     const { visible: visibleIcon, hidden: hiddenIcon, ...domProps } = props;
     return (
       <Primitive.svg {...domProps} ref={forwardedRef} aria-hidden asChild>
-        {props.visible ? visibleIcon : hiddenIcon}
+        {visible ? visibleIcon : hiddenIcon}
       </Primitive.svg>
     );
   }
