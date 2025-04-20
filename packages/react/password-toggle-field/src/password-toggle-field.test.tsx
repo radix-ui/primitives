@@ -5,6 +5,57 @@ import * as PasswordToggleField from './password-toggle-field';
 import { afterEach, describe, it, beforeEach, expect } from 'vitest';
 import { userEvent, type UserEvent } from '@testing-library/user-event';
 
+describe('given an uncontrolled PasswordToggleField', () => {
+  let rendered: RenderResult;
+  let user: UserEvent;
+
+  afterEach(cleanup);
+
+  beforeEach(() => {
+    user = userEvent.setup();
+    rendered = render(
+      <>
+        <label htmlFor="password">Password</label>
+        <PasswordToggleField.Root>
+          <PasswordToggleField.Input id="password" />
+          <PasswordToggleField.Toggle>
+            <PasswordToggleField.Slot visible="Hide" hidden="Show" />
+          </PasswordToggleField.Toggle>
+        </PasswordToggleField.Root>
+      </>
+    );
+  });
+
+  afterEach(cleanup);
+
+  it('should have no accessibility violations', async () => {
+    expect(await axe(rendered.container)).toHaveNoViolations();
+  });
+
+  it('should initially be hidden', () => {
+    const toggle = screen.getByRole('button', { name: 'Show' });
+    expect(toggle.textContent).toBe('Show');
+  });
+
+  it('toggles the children when clicked', async () => {
+    const toggle = screen.getByRole('button', { name: 'Show' });
+    await act(async () => await user.click(toggle));
+    expect(toggle.textContent).toBe('Hide');
+  });
+
+  it('should initially render input as `type=password`', async () => {
+    const input = screen.getByLabelText<HTMLInputElement>('Password');
+    expect(input.type).toBe('password');
+  });
+
+  it('should initially render input as `type=text` when toggled', async () => {
+    const input = screen.getByLabelText<HTMLInputElement>('Password');
+    const toggle = screen.getByRole('button', { name: 'Show' });
+    await act(async () => await user.click(toggle));
+    expect(input.type).toBe('text');
+  });
+});
+
 describe('given a PasswordToggleField with an Icon', () => {
   let rendered: RenderResult;
   let user: UserEvent;
@@ -42,7 +93,7 @@ describe('given a PasswordToggleField with an Icon', () => {
   });
 
   it('toggles the icon when clicked', async () => {
-    const toggle = screen.getByRole('button');
+    const toggle = screen.getByRole('button', { name: 'Show password' });
     await act(async () => await user.click(toggle));
     expect(screen.getByTestId('open')).toBeVisible();
     expect(screen.queryByTestId('closed')).not.toBeInTheDocument();
@@ -55,30 +106,29 @@ describe('given a PasswordToggleField with an Icon', () => {
 
   it('should initially render input as `type=text` when toggled', async () => {
     const input = screen.getByLabelText<HTMLInputElement>('Password');
-    const toggle = screen.getByRole('button');
+    const toggle = screen.getByRole('button', { name: 'Show password' });
     await act(async () => await user.click(toggle));
     expect(input.type).toBe('text');
   });
 
   it('should retain its value when toggled', async () => {
     const input = screen.getByLabelText('Password');
-    const toggle = screen.getByRole('button');
+    const toggle = screen.getByRole('button', { name: 'Show password' });
     await act(async () => await user.type(input, 'pass123'));
     await act(async () => await user.click(toggle));
     expect(input).toHaveValue('pass123');
   });
 });
 
-describe('given a PasswordToggleField with a Slot', () => {
-  let rendered: RenderResult;
+describe('given a PasswordToggleField in a form', () => {
   let user: UserEvent;
 
   afterEach(cleanup);
 
   beforeEach(() => {
     user = userEvent.setup();
-    rendered = render(
-      <>
+    render(
+      <form onSubmit={(e) => e.preventDefault()}>
         <label htmlFor="password">Password</label>
         <PasswordToggleField.Root>
           <PasswordToggleField.Input id="password" />
@@ -86,37 +136,21 @@ describe('given a PasswordToggleField with a Slot', () => {
             <PasswordToggleField.Slot visible="Hide" hidden="Show" />
           </PasswordToggleField.Toggle>
         </PasswordToggleField.Root>
-      </>
+        <button>Submit</button>
+      </form>
     );
   });
 
   afterEach(cleanup);
 
-  it('should have no accessibility violations', async () => {
-    expect(await axe(rendered.container)).toHaveNoViolations();
-  });
-
-  it('should initially be hidden', () => {
-    const toggle = screen.getByRole('button');
-    expect(toggle.textContent).toBe('Show');
-  });
-
-  it('toggles the children when clicked', async () => {
-    const toggle = screen.getByRole('button');
-    await act(async () => await user.click(toggle));
-    expect(toggle.textContent).toBe('Hide');
-  });
-
-  it('should initially render input as `type=password`', async () => {
+  it('should reset visibility to hidden after submission', async () => {
+    const toggle = screen.getByRole('button', { name: 'Show' });
     const input = screen.getByLabelText<HTMLInputElement>('Password');
-    expect(input.type).toBe('password');
-  });
-
-  it('should initially render input as `type=text` when toggled', async () => {
-    const input = screen.getByLabelText<HTMLInputElement>('Password');
-    const toggle = screen.getByRole('button');
-    await act(async () => await user.click(toggle));
+    await act(() => user.click(toggle));
     expect(input.type).toBe('text');
+    const submitButton = screen.getByText('Submit');
+    await act(() => user.click(submitButton));
+    expect(input.type).toBe('password');
   });
 });
 
