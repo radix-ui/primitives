@@ -189,24 +189,24 @@ const PasswordToggleFieldToggle = React.forwardRef<
 
     const DEFAULT_ARIA_LABEL = visible ? 'Hide password' : 'Show password';
 
-    function checkForInnerTextLabel(elementInnerText: string | undefined) {
-      const innerText = elementInnerText ? elementInnerText : undefined;
+    function checkForInnerTextLabel(textContent: string | undefined | null) {
+      const text = textContent ? textContent : undefined;
       // If the element has inner text, no need to force an aria-label.
-      setInternalAriaLabel(innerText ? undefined : DEFAULT_ARIA_LABEL);
+      setInternalAriaLabel(text ? undefined : DEFAULT_ARIA_LABEL);
     }
 
-    checkForInnerTextLabel(element.innerText);
+    checkForInnerTextLabel(element.textContent);
 
     const observer = new MutationObserver((entries) => {
-      let innerText: string | undefined;
+      let textContent: string | undefined;
       for (const entry of entries) {
         if (entry.type === 'characterData') {
-          if (element.innerText) {
-            innerText = element.innerText;
+          if (element.textContent) {
+            textContent = element.textContent;
           }
         }
       }
-      checkForInnerTextLabel(innerText);
+      checkForInnerTextLabel(textContent);
     });
     observer.observe(element, { characterData: true, subtree: true });
     return () => {
