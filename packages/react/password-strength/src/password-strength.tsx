@@ -84,18 +84,20 @@ const PasswordStrength: React.FC<PasswordStrengthProps> = ({
   }
 
   return (
-    <PasswordStrengthProvider
-      scope={__scopePasswordStrength}
-      progress={progress}
-      rules={validatedRules}
-      value={value}
-      validatedRuleCount={validatedRuleCount}
-      setValue={setValue}
-    >
-      <Collection.Provider scope={__scopePasswordStrength}>
-        <Collection.Slot scope={__scopePasswordStrength}>{children}</Collection.Slot>
-      </Collection.Provider>
-    </PasswordStrengthProvider>
+    <Collection.Provider scope={__scopePasswordStrength}>
+      <Collection.Slot scope={__scopePasswordStrength}>
+        <PasswordStrengthProvider
+          scope={__scopePasswordStrength}
+          progress={progress}
+          rules={validatedRules}
+          value={value}
+          validatedRuleCount={validatedRuleCount}
+          setValue={setValue}
+        >
+          {children}
+        </PasswordStrengthProvider>
+      </Collection.Slot>
+    </Collection.Provider>
   );
 };
 PasswordStrength.displayName = PASSWORD_STRENGTH_NAME;
