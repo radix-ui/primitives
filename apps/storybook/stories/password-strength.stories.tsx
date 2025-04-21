@@ -39,18 +39,13 @@ export const Styled = () => {
 
         <PasswordStrength.Rules
           render={({ rules }) => (
-            <ul className={styles.rules}>
+            <RulesList>
               {rules.map(({ label, isValid }) => (
-                <li
-                  className={styles.rule}
-                  key={label}
-                  style={{ color: isValid ? '#222' : undefined }}
-                >
-                  <CheckIcon style={{ color: isValid ? '#30a46c' : '#999' }} />
+                <RulesItem key={label} isValid={isValid}>
                   {label}
-                </li>
+                </RulesItem>
               ))}
-            </ul>
+            </RulesList>
           )}
         />
       </PasswordStrength.Root>
@@ -102,24 +97,79 @@ export const Circle = () => {
 
         <PasswordStrength.Rules
           render={({ rules }) => (
-            <ul className={styles.rules}>
+            <RulesList>
               {rules.map(({ label, isValid }) => (
-                <li
-                  className={styles.rule}
-                  key={label}
-                  style={{ color: isValid ? '#222' : undefined }}
-                >
-                  <CheckIcon style={{ color: isValid ? '#30a46c' : '#999' }} />
+                <RulesItem key={label} isValid={isValid}>
                   {label}
-                </li>
+                </RulesItem>
               ))}
-            </ul>
+            </RulesList>
           )}
         />
       </PasswordStrength.Root>
     </div>
   );
 };
+
+export const WithoutIndicators = () => {
+  const [password, setPassword] = React.useState('');
+  const rules: PasswordStrength.PasswordStrengthRule[] = [
+    {
+      label: 'At least 8 characters long.',
+      validate: (password) => password.length >= 8,
+    },
+    {
+      label: 'At least one uppercase letter.',
+      validate: (password) => /[A-Z]/.test(password),
+    },
+    {
+      label: 'At least one number.',
+      validate: (password) => /[0-9]/.test(password),
+    },
+    {
+      label: 'At least one special character.',
+      validate: (password) => /[^A-Za-z0-9]/.test(password),
+    },
+    {
+      label: 'Must contain the word "Radix"',
+      validate: (password) => password.includes('Radix'),
+    },
+  ];
+  return (
+    <div className={styles.viewport}>
+      <PasswordStrength.Root value={password} onValueChange={setPassword} rules={rules}>
+        <PasswordStrength.Input placeholder="Password" className={styles.input} data-1p-ignore />
+
+        <PasswordStrength.Progress className={styles.progressBar} />
+
+        <PasswordStrength.Rules
+          render={({ rules }) => (
+            <RulesList>
+              {rules.map(({ label, isValid }) => (
+                <RulesItem key={label} isValid={isValid}>
+                  {label}
+                </RulesItem>
+              ))}
+            </RulesList>
+          )}
+        />
+      </PasswordStrength.Root>
+    </div>
+  );
+};
+
+function RulesList({ children }: { children: React.ReactNode }) {
+  return <ul className={styles.rules}>{children}</ul>;
+}
+
+function RulesItem({ children, isValid }: { isValid: boolean; children: React.ReactNode }) {
+  return (
+    <li className={styles.rule} style={{ color: isValid ? '#222' : undefined }}>
+      <CheckIcon style={{ color: isValid ? '#30a46c' : '#999' }} />
+      {children}
+    </li>
+  );
+}
 
 function CheckIcon({ className, style }: { className?: string; style?: React.CSSProperties }) {
   return (
