@@ -109,10 +109,11 @@ PasswordStrength.displayName = PASSWORD_STRENGTH_NAME;
 const PASSWORD_STRENGTH_PROGRESS_NAME = PASSWORD_STRENGTH_NAME + 'Progress';
 
 interface PasswordStrengthProgressOwnProps {
-  children?: ((args: { rules: Array<ValidatedRule> }) => React.ReactNode) | React.ReactNode;
-  'aria-valuetext'?:
-    | string
-    | ((props: { rules: ValidatedRule[]; total: number; validated: number }) => string);
+  getAriaValuetext?: (props: {
+    rules: ValidatedRule[];
+    total: number;
+    validated: number;
+  }) => string;
 }
 
 interface PasswordStrengthProgressProps
@@ -128,6 +129,7 @@ const PasswordStrengthProgress = React.forwardRef<HTMLDivElement, PasswordStreng
       __scopePasswordStrength,
       children,
       'aria-valuetext': ariaValueTextProp,
+      getAriaValuetext,
       ...props
     }: ScopedProps<PasswordStrengthProgressProps>,
     forwardedRef
@@ -140,14 +142,13 @@ const PasswordStrengthProgress = React.forwardRef<HTMLDivElement, PasswordStreng
 
     let ariaValueText: string | undefined;
     if (ariaValueTextProp) {
-      ariaValueText =
-        typeof ariaValueTextProp === 'function'
-          ? ariaValueTextProp({
-              rules,
-              total: totalRuleCount,
-              validated: validatedRuleCount,
-            })
-          : ariaValueTextProp;
+      ariaValueText = ariaValueTextProp;
+    } else if (typeof getAriaValuetext === 'function') {
+      ariaValueText = getAriaValuetext({
+        rules,
+        total: totalRuleCount,
+        validated: validatedRuleCount,
+      });
     }
     if (!ariaValueText) {
       ariaValueText = `${validatedRuleCount} of ${totalRuleCount} rules satisfied`;
@@ -172,7 +173,7 @@ const PasswordStrengthProgress = React.forwardRef<HTMLDivElement, PasswordStreng
         data-step={Math.ceil(progress * totalRuleCount)}
         {...props}
       >
-        {typeof children === 'function' ? children({ rules }) : children}
+        {children}
       </Primitive.div>
     );
   }
@@ -285,18 +286,18 @@ PasswordStrengthIndicator.displayName = PASSWORD_STRENGTH_INDICATOR_NAME;
 const PASSWORD_STRENGTH_RULES_NAME = PASSWORD_STRENGTH_NAME + 'Rules';
 
 interface PasswordStrengthRulesProps {
-  children: (props: { rules: Array<ValidatedRule> }) => React.ReactNode;
+  render: (props: { rules: Array<ValidatedRule> }) => React.ReactNode;
 }
 
 const PasswordStrengthRules: React.FC<PasswordStrengthRulesProps> = ({
   __scopePasswordStrength,
-  children,
+  render,
 }: ScopedProps<PasswordStrengthRulesProps>) => {
   const { rules } = usePasswordStrengthContext(
     PASSWORD_STRENGTH_RULES_NAME,
     __scopePasswordStrength
   );
-  return children({ rules });
+  return render({ rules });
 };
 PasswordStrengthRules.displayName = PASSWORD_STRENGTH_RULES_NAME;
 

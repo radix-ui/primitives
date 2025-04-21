@@ -31,15 +31,14 @@ export const Styled = () => {
       <PasswordStrength.Root value={password} onValueChange={setPassword} rules={rules}>
         <PasswordStrength.Input placeholder="Password" className={styles.input} data-1p-ignore />
         <PasswordStrength.Progress className={styles.bars}>
-          {({ rules }) =>
-            rules.map((rule) => (
-              <PasswordStrength.Indicator key={rule.label} className={styles.bar} />
-            ))
-          }
+          <PasswordStrength.Indicator className={styles.bar} />
+          <PasswordStrength.Indicator className={styles.bar} />
+          <PasswordStrength.Indicator className={styles.bar} />
+          <PasswordStrength.Indicator className={styles.bar} />
         </PasswordStrength.Progress>
 
-        <PasswordStrength.Rules>
-          {({ rules }) => (
+        <PasswordStrength.Rules
+          render={({ rules }) => (
             <ul className={styles.rules}>
               {rules.map(({ label, isValid }) => (
                 <li
@@ -53,7 +52,7 @@ export const Styled = () => {
               ))}
             </ul>
           )}
-        </PasswordStrength.Rules>
+        />
       </PasswordStrength.Root>
     </div>
   );
@@ -86,23 +85,23 @@ export const Circle = () => {
 
         <PasswordStrength.Progress className={styles.circle} asChild>
           <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <PasswordStrength.Indicator index={0} className={styles.circleSegment} asChild>
+            <PasswordStrength.Indicator className={styles.circleSegment} asChild>
               <path d="M63.9847 31C63.4666 14.1217 49.8783 0.533422 33 0.0153198V10.0223C44.3547 10.5303 53.4697 19.6453 53.9777 31H63.9847Z" />
             </PasswordStrength.Indicator>
-            <PasswordStrength.Indicator index={1} className={styles.circleSegment} asChild>
+            <PasswordStrength.Indicator className={styles.circleSegment} asChild>
               <path d="M53.9777 33C53.4697 44.3547 44.3547 53.4697 33 53.9777V63.9847C49.8783 63.4666 63.4666 49.8783 63.9847 33H53.9777Z" />
             </PasswordStrength.Indicator>
-            <PasswordStrength.Indicator index={2} className={styles.circleSegment} asChild>
+            <PasswordStrength.Indicator className={styles.circleSegment} asChild>
               <path d="M0.0153198 33C0.533424 49.8783 14.1217 63.4666 31 63.9847V53.9777C19.6453 53.4697 10.5303 44.3547 10.0223 33H0.0153198Z" />
             </PasswordStrength.Indicator>
-            <PasswordStrength.Indicator index={3} className={styles.circleSegment} asChild>
+            <PasswordStrength.Indicator className={styles.circleSegment} asChild>
               <path d="M0.0153198 31C0.53342 14.1217 14.1217 0.533422 31 0.0153198V10.0223C19.6453 10.5303 10.5303 19.6453 10.0223 31H0.0153198Z" />
             </PasswordStrength.Indicator>
           </svg>
         </PasswordStrength.Progress>
 
-        <PasswordStrength.Rules>
-          {({ rules }) => (
+        <PasswordStrength.Rules
+          render={({ rules }) => (
             <ul className={styles.rules}>
               {rules.map(({ label, isValid }) => (
                 <li
@@ -116,7 +115,7 @@ export const Circle = () => {
               ))}
             </ul>
           )}
-        </PasswordStrength.Rules>
+        />
       </PasswordStrength.Root>
     </div>
   );
