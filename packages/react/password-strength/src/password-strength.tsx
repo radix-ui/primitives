@@ -3,6 +3,9 @@ import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { Primitive } from '@radix-ui/react-primitive';
 import { useIsHydrated } from '@radix-ui/react-use-is-hydrated';
+import { unstable_createCollection as createCollection } from '@radix-ui/react-collection';
+import type { Scope } from '@radix-ui/react-context';
+import { createContextScope } from '@radix-ui/react-context';
 import { composeEventHandlers } from '@radix-ui/primitive';
 
 // This reference is for constructing an in-memory input element whose only
@@ -10,6 +13,12 @@ import { composeEventHandlers } from '@radix-ui/primitive';
 // validity keys. We're breaking some rules here, so only set this once
 // and only when React is hydrated on the client.
 const INPUT_CACHE = new WeakMap<typeof PasswordStrength, HTMLInputElement | null>();
+
+const PASSWORD_STRENGTH_NAME = 'PasswordStrength';
+
+/* -------------------------------------------------------------------------------------------------
+ * PasswordStrengthProvider
+ * -----------------------------------------------------------------------------------------------*/
 
 interface PasswordStrengthContextValue {
   rules: ValidatedRule[];
@@ -19,16 +28,20 @@ interface PasswordStrengthContextValue {
   setValue: React.Dispatch<React.SetStateAction<string>>;
 }
 
-const PasswordStrengthContext = React.createContext<PasswordStrengthContextValue | null>(null);
-PasswordStrengthContext.displayName = 'PasswordStrengthContext';
+const [Collection, { useCollection, createCollectionScope }] =
+  createCollection<HTMLDivElement>(PASSWORD_STRENGTH_NAME);
+const [createOneTimePasswordFieldContext] = createContextScope(PASSWORD_STRENGTH_NAME, [
+  createCollectionScope,
+]);
 
-function usePasswordStrengthContext() {
-  const context = React.useContext(PasswordStrengthContext);
-  if (!context) {
-    throw Error('usePasswordStrengthContext must be called in PasswordStrength.Root');
-  }
-  return context;
-}
+const [PasswordStrengthProvider, usePasswordStrengthContext] =
+  createOneTimePasswordFieldContext<PasswordStrengthContextValue>(PASSWORD_STRENGTH_NAME);
+
+type ScopedProps<P> = P & { __scopePasswordStrength?: Scope };
+
+/* -------------------------------------------------------------------------------------------------
+ * PasswordStrength
+ * -----------------------------------------------------------------------------------------------*/
 
 interface PasswordStrengthProps {
   value?: string;
@@ -38,13 +51,14 @@ interface PasswordStrengthProps {
   rules: PasswordStrengthRule[];
 }
 
-const PasswordStrength: React.FC<PasswordStrengthProps> = function PasswordStrength({
+const PasswordStrength: React.FC<PasswordStrengthProps> = ({
+  __scopePasswordStrength,
   value: valueProp,
   defaultValue,
   onValueChange,
   children,
   rules,
-}) {
+}: ScopedProps<PasswordStrengthProps>) => {
   const [value, setValue] = useControllableState({
     prop: valueProp,
     defaultProp: defaultValue ?? '',
@@ -70,19 +84,27 @@ const PasswordStrength: React.FC<PasswordStrengthProps> = function PasswordStren
   }
 
   return (
-    <PasswordStrengthContext.Provider
-      value={{
-        progress,
-        rules: validatedRules,
-        value,
-        validatedRuleCount,
-        setValue,
-      }}
+    <PasswordStrengthProvider
+      scope={__scopePasswordStrength}
+      progress={progress}
+      rules={validatedRules}
+      value={value}
+      validatedRuleCount={validatedRuleCount}
+      setValue={setValue}
     >
-      {children}
-    </PasswordStrengthContext.Provider>
+      <Collection.Provider scope={__scopePasswordStrength}>
+        <Collection.Slot scope={__scopePasswordStrength}>{children}</Collection.Slot>
+      </Collection.Provider>
+    </PasswordStrengthProvider>
   );
 };
+PasswordStrength.displayName = PASSWORD_STRENGTH_NAME;
+
+/* -------------------------------------------------------------------------------------------------
+ * PasswordStrengthProgress
+ * -----------------------------------------------------------------------------------------------*/
+
+const PASSWORD_STRENGTH_PROGRESS_NAME = PASSWORD_STRENGTH_NAME + 'Progress';
 
 interface PasswordStrengthProgressOwnProps {
   children?: ((args: { rules: Array<ValidatedRule> }) => React.ReactNode) | React.ReactNode;
@@ -99,11 +121,19 @@ interface PasswordStrengthProgressProps
     PasswordStrengthProgressOwnProps {}
 
 const PasswordStrengthProgress = React.forwardRef<HTMLDivElement, PasswordStrengthProgressProps>(
-  function PasswordStrengthProgress(
-    { children, 'aria-valuetext': ariaValueTextProp, ...props },
+  (
+    {
+      __scopePasswordStrength,
+      children,
+      'aria-valuetext': ariaValueTextProp,
+      ...props
+    }: ScopedProps<PasswordStrengthProgressProps>,
     forwardedRef
-  ) {
-    const { rules, progress, validatedRuleCount } = usePasswordStrengthContext();
+  ) => {
+    const { rules, progress, validatedRuleCount } = usePasswordStrengthContext(
+      PASSWORD_STRENGTH_PROGRESS_NAME,
+      __scopePasswordStrength
+    );
     const totalRuleCount = rules.length;
 
     let ariaValueText: string | undefined;
@@ -145,6 +175,13 @@ const PasswordStrengthProgress = React.forwardRef<HTMLDivElement, PasswordStreng
     );
   }
 );
+PasswordStrengthProgress.displayName = PASSWORD_STRENGTH_PROGRESS_NAME;
+
+/* -------------------------------------------------------------------------------------------------
+ * PasswordStrengthInput
+ * -----------------------------------------------------------------------------------------------*/
+
+const PASSWORD_STRENGTH_INPUT_NAME = PASSWORD_STRENGTH_NAME + 'Input';
 
 interface PasswordStrengthInputProps
   extends Omit<React.ComponentPropsWithoutRef<typeof Primitive.input>, 'value' | 'type'> {
@@ -152,18 +189,22 @@ interface PasswordStrengthInputProps
 }
 
 const PasswordStrengthInput = React.forwardRef<HTMLInputElement, PasswordStrengthInputProps>(
-  function PasswordStrengthInput(
+  (
     {
+      __scopePasswordStrength,
       onChange,
       // TODO: warn if value is passed
       // @ts-expect-error
       value: _value,
       type = 'password',
       ...props
-    },
+    }: ScopedProps<PasswordStrengthInputProps>,
     forwardedRef
-  ) {
-    const { progress, value = '', setValue } = usePasswordStrengthContext();
+  ) => {
+    const { progress, value, setValue } = usePasswordStrengthContext(
+      PASSWORD_STRENGTH_INPUT_NAME,
+      __scopePasswordStrength
+    );
     const inputRef = React.useRef<HTMLInputElement | null>(null);
     const ref = useComposedRefs(forwardedRef, inputRef);
 
@@ -181,45 +222,87 @@ const PasswordStrengthInput = React.forwardRef<HTMLInputElement, PasswordStrengt
     );
   }
 );
+PasswordStrengthInput.displayName = PASSWORD_STRENGTH_INPUT_NAME;
+
+/* -------------------------------------------------------------------------------------------------
+ * PasswordStrengthIndicator
+ * -----------------------------------------------------------------------------------------------*/
+
+const PASSWORD_STRENGTH_INDICATOR_NAME = PASSWORD_STRENGTH_NAME + 'Indicator';
 
 interface PasswordStrengthIndicatorProps
   extends React.ComponentPropsWithoutRef<typeof Primitive.div> {
-  index: number;
+  index?: number;
 }
 
 const PasswordStrengthIndicator = React.forwardRef<HTMLDivElement, PasswordStrengthIndicatorProps>(
-  function PasswordStrengthIndicator({ style, index, ...props }, forwardedRef) {
-    const { progress, rules } = usePasswordStrengthContext();
+  (
+    {
+      __scopePasswordStrength,
+      style,
+      index: indexProp,
+      ...props
+    }: ScopedProps<PasswordStrengthIndicatorProps>,
+    forwardedRef
+  ) => {
+    const { progress, rules } = usePasswordStrengthContext(
+      PASSWORD_STRENGTH_INDICATOR_NAME,
+      __scopePasswordStrength
+    );
+    const collection = useCollection(__scopePasswordStrength);
+    const [element, setElement] = React.useState<HTMLDivElement | null>(null);
+    const index = indexProp ?? (element ? collection.indexOf(element) : -1);
     const ownScore = calculateElementProgress(progress, index, rules.length);
+    const composedRef = useComposedRefs(forwardedRef, setElement);
     return (
-      <Primitive.div
-        style={
-          {
-            ...style,
-            '--radix-password-strength-indicator-progress': ownScore,
-          } as React.CSSProperties
-        }
-        aria-hidden
-        data-progress={ownScore}
-        data-active={ownScore > 0}
-        data-index={index}
-        ref={forwardedRef}
-        {...props}
-      />
+      <Collection.ItemSlot scope={__scopePasswordStrength}>
+        <Primitive.div
+          style={
+            {
+              ...style,
+              '--radix-password-strength-indicator-progress': ownScore,
+            } as React.CSSProperties
+          }
+          aria-hidden
+          data-progress={ownScore}
+          data-active={ownScore > 0}
+          data-index={index}
+          ref={composedRef}
+          {...props}
+        />
+      </Collection.ItemSlot>
     );
   }
 );
+PasswordStrengthIndicator.displayName = PASSWORD_STRENGTH_INDICATOR_NAME;
+
+/* -------------------------------------------------------------------------------------------------
+ * PasswordStrengthRules
+ * -----------------------------------------------------------------------------------------------*/
+
+const PASSWORD_STRENGTH_RULES_NAME = PASSWORD_STRENGTH_NAME + 'Rules';
 
 interface PasswordStrengthRulesProps {
   children: (props: { rules: Array<ValidatedRule> }) => React.ReactNode;
 }
 
-const PasswordStrengthRules: React.FC<PasswordStrengthRulesProps> = function PasswordStrengthRules({
+const PasswordStrengthRules: React.FC<PasswordStrengthRulesProps> = ({
+  __scopePasswordStrength,
   children,
-}) {
-  const { rules } = usePasswordStrengthContext();
-  return children({ rules }) as React.ReactElement;
+}: ScopedProps<PasswordStrengthRulesProps>) => {
+  const { rules } = usePasswordStrengthContext(
+    PASSWORD_STRENGTH_RULES_NAME,
+    __scopePasswordStrength
+  );
+  return children({ rules });
 };
+PasswordStrengthRules.displayName = PASSWORD_STRENGTH_RULES_NAME;
+
+/* -------------------------------------------------------------------------------------------------
+ * PasswordStrengthAnnounce
+ * -----------------------------------------------------------------------------------------------*/
+
+const PASSWORD_STRENGTH_ANNOUNCE_NAME = PASSWORD_STRENGTH_NAME + 'Announce';
 
 interface PasswordStrengthAnnounceProps
   extends Omit<React.ComponentPropsWithoutRef<'div'>, 'children'> {
@@ -229,17 +312,21 @@ interface PasswordStrengthAnnounceProps
 // TODO: Not sure if we need this, test with different
 // ATs to see if aria-invalid + error state is sufficient.
 const PasswordStrengthAnnounce = React.forwardRef<HTMLDivElement, PasswordStrengthAnnounceProps>(
-  function PasswordStrengthAnnounce(
+  (
     {
+      __scopePasswordStrength,
       style,
       message,
       // @ts-expect-error
       children,
       ...props
-    },
+    }: ScopedProps<PasswordStrengthAnnounceProps>,
     forwardedRef
-  ) {
-    const { rules, progress } = usePasswordStrengthContext();
+  ) => {
+    const { rules, progress } = usePasswordStrengthContext(
+      PASSWORD_STRENGTH_ANNOUNCE_NAME,
+      __scopePasswordStrength
+    );
     const isValid = progress >= 1;
     const [wasValid, setWasValid] = React.useState(isValid);
     const validationHasChanged = React.useRef(false);
@@ -276,13 +363,15 @@ const PasswordStrengthAnnounce = React.forwardRef<HTMLDivElement, PasswordStreng
     );
   }
 );
+PasswordStrengthAnnounce.displayName = PASSWORD_STRENGTH_ANNOUNCE_NAME;
+
+/* -----------------------------------------------------------------------------------------------*/
 
 function calculateElementProgress(progress: number, index: number, ruleCount: number): number {
   if (ruleCount <= 1) {
     return progress;
   }
   const elementProgress = progress * ruleCount - index;
-  console.log(elementProgress);
   return Math.min(1, Math.max(0, elementProgress));
 }
 
@@ -296,13 +385,6 @@ interface ValidatedRule {
   isValid: boolean;
 }
 
-const Root = PasswordStrength;
-const Progress = PasswordStrengthProgress;
-const Input = PasswordStrengthInput;
-const Indicator = PasswordStrengthIndicator;
-const Rules = PasswordStrengthRules;
-const Announce = PasswordStrengthAnnounce;
-
 export {
   PasswordStrength,
   PasswordStrengthProgress,
@@ -311,12 +393,12 @@ export {
   PasswordStrengthRules,
   PasswordStrengthAnnounce,
   //
-  Root,
-  Progress,
-  Input,
-  Indicator,
-  Rules,
-  Announce,
+  PasswordStrength as Root,
+  PasswordStrengthProgress as Progress,
+  PasswordStrengthInput as Input,
+  PasswordStrengthIndicator as Indicator,
+  PasswordStrengthRules as Rules,
+  PasswordStrengthAnnounce as Announce,
 };
 export type {
   PasswordStrengthProps,
