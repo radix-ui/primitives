@@ -16,12 +16,19 @@ const PASSWORD_TOGGLE_FIELD_NAME = 'PasswordToggleField';
  * PasswordToggleFieldProvider
  * -----------------------------------------------------------------------------------------------*/
 
+type InternalFocusState = {
+  clickTriggered: boolean;
+  selectionStart: number | null;
+  selectionEnd: number | null;
+};
+
 interface PasswordToggleFieldContextValue {
   inputId: string;
   inputRef: React.RefObject<HTMLInputElement | null>;
   visible: boolean;
   setVisible: React.Dispatch<React.SetStateAction<boolean>>;
   syncInputId: (providedId: string | number | undefined) => void;
+  focusState: React.RefObject<InternalFocusState>;
 }
 
 const [createPasswordToggleFieldContext] = createContextScope(PASSWORD_TOGGLE_FIELD_NAME);
@@ -41,6 +48,12 @@ interface PasswordToggleFieldProps {
   onVisiblityChange?: (visible: boolean) => void;
   children?: React.ReactNode;
 }
+
+const INITIAL_FOCUS_STATE: InternalFocusState = {
+  clickTriggered: false,
+  selectionStart: null,
+  selectionEnd: null,
+};
 
 const PasswordToggleField: React.FC<PasswordToggleFieldProps> = ({
   __scopePasswordToggleField,
@@ -65,6 +78,7 @@ const PasswordToggleField: React.FC<PasswordToggleFieldProps> = ({
   });
 
   const inputRef = React.useRef<HTMLInputElement | null>(null);
+  const focusState = React.useRef<InternalFocusState>(INITIAL_FOCUS_STATE);
 
   return (
     <PasswordToggleFieldProvider
@@ -74,6 +88,7 @@ const PasswordToggleField: React.FC<PasswordToggleFieldProps> = ({
       setVisible={setVisible}
       syncInputId={syncInputId}
       visible={visible}
+      focusState={focusState}
     >
       {children}
     </PasswordToggleFieldProvider>
@@ -111,10 +126,8 @@ const PasswordToggleFieldInput = React.forwardRef<HTMLInputElement, PasswordTogg
     }: ScopedProps<PasswordToggleFieldInputProps>,
     forwardedRef
   ) => {
-    const { visible, inputRef, inputId, syncInputId, setVisible } = usePasswordToggleFieldContext(
-      PASSWORD_TOGGLE_FIELD_INPUT_NAME,
-      __scopePasswordToggleField
-    );
+    const { visible, inputRef, inputId, syncInputId, setVisible, focusState } =
+      usePasswordToggleFieldContext(PASSWORD_TOGGLE_FIELD_INPUT_NAME, __scopePasswordToggleField);
 
     React.useEffect(() => {
       syncInputId(idProp);
@@ -150,8 +163,7 @@ const PasswordToggleFieldInput = React.forwardRef<HTMLInputElement, PasswordTogg
         'submit',
         () => {
           // always reset the visibility on submit regardless of whether the
-          // default action is prevented. This ensures consistent behavior between
-          // server-side and client-side form submissions.
+          // default action is prevented
           _setVisible(false);
         },
         { signal: controller.signal }
@@ -170,6 +182,13 @@ const PasswordToggleFieldInput = React.forwardRef<HTMLInputElement, PasswordTogg
         ref={useComposedRefs(forwardedRef, inputRef)}
         spellCheck={spellCheck}
         type={visible ? 'text' : 'password'}
+        onBlur={composeEventHandlers(props.onBlur, (event) => {
+          // get the cursor position
+          const { selectionStart, selectionEnd } = event.currentTarget;
+          console.log({ selectionStart, selectionEnd });
+          focusState.current.selectionStart = selectionStart;
+          focusState.current.selectionEnd = selectionEnd;
+        })}
       />
     );
   }
@@ -206,7 +225,7 @@ const PasswordToggleFieldToggle = React.forwardRef<
     }: ScopedProps<PasswordToggleFieldToggleProps>,
     forwardedRef
   ) => {
-    const { setVisible, visible, inputRef, inputId } = usePasswordToggleFieldContext(
+    const { setVisible, visible, inputRef, inputId, focusState } = usePasswordToggleFieldContext(
       PASSWORD_TOGGLE_FIELD_TOGGLE_NAME,
       __scopePasswordToggleField
     );
@@ -262,19 +281,17 @@ const PasswordToggleFieldToggle = React.forwardRef<
       ariaControls ??= inputId;
     }
 
-    const clickTriggeredFocus = React.useRef(false);
-
     React.useEffect(() => {
       let cleanup = () => {};
       const ownerWindow = elementRef.current?.ownerDocument?.defaultView || window;
-      const reset = () => (clickTriggeredFocus.current = false);
+      const reset = () => (focusState.current.clickTriggered = false);
       const handlePointerUp = () => (cleanup = requestIdleCallback(ownerWindow, reset));
       ownerWindow.addEventListener('pointerup', handlePointerUp);
       return () => {
         cleanup();
         ownerWindow.removeEventListener('pointerup', handlePointerUp);
       };
-    }, []);
+    }, [focusState]);
 
     return (
       <Primitive.button
@@ -284,23 +301,38 @@ const PasswordToggleFieldToggle = React.forwardRef<
         ref={ref}
         id={inputId}
         onPointerDown={composeEventHandlers(onPointerDown, () => {
-          clickTriggeredFocus.current = true;
+          focusState.current.clickTriggered = true;
         })}
         onPointerCancel={(event) => {
           // do not use `composeEventHandlers` here because we always want to
           // reset the ref on cancellation, regardless of whether the user has
           // called preventDefault on the event
           onPointerCancel?.(event);
-          clickTriggeredFocus.current = false;
+          focusState.current.clickTriggered = false;
         }}
         onClick={composeEventHandlers(onClick, () => {
           flushSync(() => {
             setVisible((s) => !s);
           });
-          if (clickTriggeredFocus.current) {
-            clickTriggeredFocus.current = false;
-            inputRef.current?.focus();
+          if (focusState.current.clickTriggered) {
+            const input = inputRef.current;
+            if (input) {
+              const { selectionStart, selectionEnd } = focusState.current;
+              input.focus();
+              if (selectionStart !== null || selectionEnd !== null) {
+                // wait a tick so that focus has settled, then restore select position
+                requestAnimationFrame(() => {
+                  // make sure the input still has focus (developer may have
+                  // programatically moved focus elsewhere)
+                  if (input.ownerDocument.activeElement === input) {
+                    input.selectionStart = selectionStart;
+                    input.selectionEnd = selectionEnd;
+                  }
+                });
+              }
+            }
           }
+          focusState.current = INITIAL_FOCUS_STATE;
         })}
         {...props}
         type="button"
