@@ -5,7 +5,7 @@ import * as PasswordToggleField from './password-toggle-field';
 import { afterEach, describe, it, beforeEach, expect } from 'vitest';
 import { userEvent, type UserEvent } from '@testing-library/user-event';
 
-describe('given an uncontrolled PasswordToggleField', () => {
+describe('given a default PasswordToggleField', () => {
   let rendered: RenderResult;
   let user: UserEvent;
 
@@ -53,6 +53,32 @@ describe('given an uncontrolled PasswordToggleField', () => {
     const toggle = screen.getByRole('button', { name: 'Show' });
     await act(async () => await user.click(toggle));
     expect(input.type).toBe('text');
+  });
+
+  it('should re-focus the input after toggling', async () => {
+    const input = screen.getByLabelText<HTMLInputElement>('Password');
+    const toggle = screen.getByRole('button', { name: 'Show' });
+    await act(async () => await user.click(toggle));
+    expect(document.activeElement).toBe(input);
+  });
+
+  it("should restore the input's selection after toggling", async () => {
+    const input = screen.getByLabelText<HTMLInputElement>('Password');
+    const toggle = screen.getByRole('button', { name: 'Show' });
+    await act(async () => await user.click(input));
+    await act(async () => await user.type(input, 'p'));
+    await act(async () => await user.click(toggle));
+    // selection should be at the end of the input value
+    expect(input.selectionStart).toBe(1);
+    expect(input.selectionEnd).toBe(1);
+
+    await act(async () => await user.type(input, 'assword'));
+    input.selectionStart = 0;
+    input.selectionEnd = 4;
+
+    await act(async () => await user.click(toggle));
+    expect(input.selectionStart).toBe(0);
+    expect(input.selectionEnd).toBe(4);
   });
 });
 
