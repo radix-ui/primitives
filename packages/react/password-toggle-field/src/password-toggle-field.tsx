@@ -185,7 +185,6 @@ const PasswordToggleFieldInput = React.forwardRef<HTMLInputElement, PasswordTogg
         onBlur={composeEventHandlers(props.onBlur, (event) => {
           // get the cursor position
           const { selectionStart, selectionEnd } = event.currentTarget;
-          console.log({ selectionStart, selectionEnd });
           focusState.current.selectionStart = selectionStart;
           focusState.current.selectionEnd = selectionEnd;
         })}
@@ -215,6 +214,7 @@ const PasswordToggleFieldToggle = React.forwardRef<
       onClick,
       onPointerDown,
       onPointerCancel,
+      onPointerUp,
       onFocus,
       children,
       'aria-label': ariaLabelProp,
@@ -300,6 +300,7 @@ const PasswordToggleFieldToggle = React.forwardRef<
         aria-label={ariaLabel}
         ref={ref}
         id={inputId}
+        {...props}
         onPointerDown={composeEventHandlers(onPointerDown, () => {
           focusState.current.clickTriggered = true;
         })}
@@ -308,9 +309,18 @@ const PasswordToggleFieldToggle = React.forwardRef<
           // reset the ref on cancellation, regardless of whether the user has
           // called preventDefault on the event
           onPointerCancel?.(event);
-          focusState.current.clickTriggered = false;
+          focusState.current = INITIAL_FOCUS_STATE;
         }}
-        onClick={composeEventHandlers(onClick, () => {
+        // do not use `composeEventHandlers` here because we always want to
+        // reset the ref after click, regardless of whether the user has
+        // called preventDefault on the event
+        onClick={(event) => {
+          onClick?.(event);
+          if (event.defaultPrevented) {
+            focusState.current = INITIAL_FOCUS_STATE;
+            return;
+          }
+
           flushSync(() => {
             setVisible((s) => !s);
           });
@@ -333,8 +343,16 @@ const PasswordToggleFieldToggle = React.forwardRef<
             }
           }
           focusState.current = INITIAL_FOCUS_STATE;
-        })}
-        {...props}
+        }}
+        onPointerUp={(event) => {
+          onPointerUp?.(event);
+          // if click handler hasn't been called at this point, it may have been
+          // intercepted, in which case we still want to reset our internal
+          // state
+          setTimeout(() => {
+            focusState.current = INITIAL_FOCUS_STATE;
+          }, 50);
+        }}
         type="button"
       >
         {children}
