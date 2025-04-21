@@ -32,8 +32,8 @@ export const Styled = () => {
         <PasswordStrength.Input placeholder="Password" className={styles.input} data-1p-ignore />
         <PasswordStrength.Progress className={styles.bars}>
           {({ rules }) =>
-            rules.map((rule, index) => (
-              <PasswordStrength.Indicator key={rule.label} index={index} className={styles.bar} />
+            rules.map((rule) => (
+              <PasswordStrength.Indicator key={rule.label} className={styles.bar} />
             ))
           }
         </PasswordStrength.Progress>
