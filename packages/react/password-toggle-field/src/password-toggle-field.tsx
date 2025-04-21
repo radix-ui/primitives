@@ -7,6 +7,14 @@ import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { useId } from '@radix-ui/react-id';
 import { useIsHydrated } from '@radix-ui/react-use-is-hydrated';
 import { useEffectEvent } from '@radix-ui/react-use-effect-event';
+import type { Scope } from '@radix-ui/react-context';
+import { createContextScope } from '@radix-ui/react-context';
+
+const PASSWORD_TOGGLE_FIELD_NAME = 'PasswordToggleField';
+
+/* -------------------------------------------------------------------------------------------------
+ * PasswordToggleFieldProvider
+ * -----------------------------------------------------------------------------------------------*/
 
 interface PasswordToggleFieldContextValue {
   inputId: string;
@@ -16,20 +24,15 @@ interface PasswordToggleFieldContextValue {
   syncInputId: (providedId: string | number | undefined) => void;
 }
 
-const PasswordToggleFieldContext = React.createContext<null | PasswordToggleFieldContextValue>(
-  null
-);
-PasswordToggleFieldContext.displayName = 'PasswordToggleFieldContext';
+const [createPasswordToggleFieldContext] = createContextScope(PASSWORD_TOGGLE_FIELD_NAME);
+const [PasswordToggleFieldProvider, usePasswordToggleFieldContext] =
+  createPasswordToggleFieldContext<PasswordToggleFieldContextValue>(PASSWORD_TOGGLE_FIELD_NAME);
 
-function usePasswordToggleFieldContext() {
-  const context = React.useContext(PasswordToggleFieldContext);
-  if (!context) {
-    throw new Error(
-      'A PasswordToggleField cannot be rendered outside the PasswordToggleField component'
-    );
-  }
-  return context;
-}
+/* -------------------------------------------------------------------------------------------------
+ * PasswordToggleField
+ * -----------------------------------------------------------------------------------------------*/
+
+type ScopedProps<P> = P & { __scopePasswordToggleField?: Scope };
 
 interface PasswordToggleFieldProps {
   id?: string;
@@ -39,7 +42,10 @@ interface PasswordToggleFieldProps {
   children?: React.ReactNode;
 }
 
-function PasswordToggleField(props: PasswordToggleFieldProps) {
+const PasswordToggleField: React.FC<PasswordToggleFieldProps> = ({
+  __scopePasswordToggleField,
+  ...props
+}: ScopedProps<PasswordToggleFieldProps>) => {
   const baseId = useId(props.id);
   const defaultInputId = `${baseId}-input`;
   const [inputIdState, setInputIdState] = React.useState<null | string>(defaultInputId);
@@ -52,6 +58,7 @@ function PasswordToggleField(props: PasswordToggleFieldProps) {
 
   const { visible: visibleProp, defaultVisible, onVisiblityChange, children } = props;
   const [visible = false, setVisible] = useControllableState({
+    caller: PASSWORD_TOGGLE_FIELD_NAME,
     prop: visibleProp,
     defaultProp: defaultVisible ?? false,
     onChange: onVisiblityChange,
@@ -60,40 +67,55 @@ function PasswordToggleField(props: PasswordToggleFieldProps) {
   const inputRef = React.useRef<HTMLInputElement | null>(null);
 
   return (
-    <PasswordToggleFieldContext.Provider
-      value={{
-        inputId,
-        inputRef,
-        setVisible,
-        syncInputId,
-        visible,
-      }}
+    <PasswordToggleFieldProvider
+      scope={__scopePasswordToggleField}
+      inputId={inputId}
+      inputRef={inputRef}
+      setVisible={setVisible}
+      syncInputId={syncInputId}
+      visible={visible}
     >
       {children}
-    </PasswordToggleFieldContext.Provider>
+    </PasswordToggleFieldProvider>
   );
+};
+PasswordToggleField.displayName = PASSWORD_TOGGLE_FIELD_NAME;
+
+/* -------------------------------------------------------------------------------------------------
+ * PasswordToggleFieldInput
+ * -----------------------------------------------------------------------------------------------*/
+
+const PASSWORD_TOGGLE_FIELD_INPUT_NAME = PASSWORD_TOGGLE_FIELD_NAME + 'Input';
+
+type PrimitiveInputProps = React.ComponentPropsWithoutRef<'input'>;
+
+interface PasswordToggleFieldOwnProps {
+  autoComplete?: 'current-password' | 'new-password';
 }
 
-type PrimitiveInputProps = Omit<
-  React.ComponentPropsWithoutRef<typeof Primitive.input>,
-  'type' | 'autoComplete'
->;
-interface PasswordToggleFieldInputProps extends PrimitiveInputProps {
+interface PasswordToggleFieldInputProps
+  extends PasswordToggleFieldOwnProps,
+    Omit<PrimitiveInputProps, keyof PasswordToggleFieldOwnProps | 'type'> {
   autoComplete?: 'current-password' | 'new-password';
 }
 
 const PasswordToggleFieldInput = React.forwardRef<HTMLInputElement, PasswordToggleFieldInputProps>(
-  function PasswordToggleFieldInput(
+  (
     {
+      __scopePasswordToggleField,
       autoComplete = 'current-password',
       autoCapitalize = 'off',
       spellCheck = false,
       id: idProp,
       ...props
-    },
+    }: ScopedProps<PasswordToggleFieldInputProps>,
     forwardedRef
-  ) {
-    const { visible, inputRef, inputId, syncInputId, setVisible } = usePasswordToggleFieldContext();
+  ) => {
+    const { visible, inputRef, inputId, syncInputId, setVisible } = usePasswordToggleFieldContext(
+      PASSWORD_TOGGLE_FIELD_INPUT_NAME,
+      __scopePasswordToggleField
+    );
+
     React.useEffect(() => {
       syncInputId(idProp);
     }, [idProp, syncInputId]);
@@ -152,128 +174,149 @@ const PasswordToggleFieldInput = React.forwardRef<HTMLInputElement, PasswordTogg
     );
   }
 );
+PasswordToggleFieldInput.displayName = PASSWORD_TOGGLE_FIELD_INPUT_NAME;
 
-type PrimitiveButtonProps = Omit<React.ComponentPropsWithoutRef<typeof Primitive.button>, 'type'>;
-interface PasswordToggleFieldToggleProps extends PrimitiveButtonProps {}
+/* -------------------------------------------------------------------------------------------------
+ * PasswordToggleFieldToggle
+ * -----------------------------------------------------------------------------------------------*/
+
+const PASSWORD_TOGGLE_FIELD_TOGGLE_NAME = PASSWORD_TOGGLE_FIELD_NAME + 'Toggle';
+
+type PrimitiveButtonProps = React.ComponentPropsWithoutRef<'button'>;
+
+interface PasswordToggleFieldToggleProps extends Omit<PrimitiveButtonProps, 'type'> {}
 
 const PasswordToggleFieldToggle = React.forwardRef<
   HTMLButtonElement,
   PasswordToggleFieldToggleProps
->(function PasswordToggleFieldToggle(
-  {
-    onClick,
-    onPointerDown,
-    onPointerCancel,
-    onFocus,
-    children,
-    'aria-label': ariaLabelProp,
-    'aria-controls': ariaControls,
-    'aria-hidden': ariaHidden,
-    tabIndex,
-    ...props
-  },
-  forwardedRef
-) {
-  const { setVisible, visible, inputRef, inputId } = usePasswordToggleFieldContext();
-  const [internalAriaLabel, setInternalAriaLabel] = React.useState<string | undefined>(undefined);
-  const elementRef = React.useRef<HTMLButtonElement>(null);
-  const ref = useComposedRefs(forwardedRef, elementRef);
-  const isHydrated = useIsHydrated();
+>(
+  (
+    {
+      __scopePasswordToggleField,
+      onClick,
+      onPointerDown,
+      onPointerCancel,
+      onFocus,
+      children,
+      'aria-label': ariaLabelProp,
+      'aria-controls': ariaControls,
+      'aria-hidden': ariaHidden,
+      tabIndex,
+      ...props
+    }: ScopedProps<PasswordToggleFieldToggleProps>,
+    forwardedRef
+  ) => {
+    const { setVisible, visible, inputRef, inputId } = usePasswordToggleFieldContext(
+      PASSWORD_TOGGLE_FIELD_TOGGLE_NAME,
+      __scopePasswordToggleField
+    );
+    const [internalAriaLabel, setInternalAriaLabel] = React.useState<string | undefined>(undefined);
+    const elementRef = React.useRef<HTMLButtonElement>(null);
+    const ref = useComposedRefs(forwardedRef, elementRef);
+    const isHydrated = useIsHydrated();
 
-  React.useEffect(() => {
-    const element = elementRef.current;
-    if (!element || ariaLabelProp) {
-      setInternalAriaLabel(undefined);
-      return;
-    }
+    React.useEffect(() => {
+      const element = elementRef.current;
+      if (!element || ariaLabelProp) {
+        setInternalAriaLabel(undefined);
+        return;
+      }
 
-    const DEFAULT_ARIA_LABEL = visible ? 'Hide password' : 'Show password';
+      const DEFAULT_ARIA_LABEL = visible ? 'Hide password' : 'Show password';
 
-    function checkForInnerTextLabel(textContent: string | undefined | null) {
-      const text = textContent ? textContent : undefined;
-      // If the element has inner text, no need to force an aria-label.
-      setInternalAriaLabel(text ? undefined : DEFAULT_ARIA_LABEL);
-    }
+      function checkForInnerTextLabel(textContent: string | undefined | null) {
+        const text = textContent ? textContent : undefined;
+        // If the element has inner text, no need to force an aria-label.
+        setInternalAriaLabel(text ? undefined : DEFAULT_ARIA_LABEL);
+      }
 
-    checkForInnerTextLabel(element.textContent);
+      checkForInnerTextLabel(element.textContent);
 
-    const observer = new MutationObserver((entries) => {
-      let textContent: string | undefined;
-      for (const entry of entries) {
-        if (entry.type === 'characterData') {
-          if (element.textContent) {
-            textContent = element.textContent;
+      const observer = new MutationObserver((entries) => {
+        let textContent: string | undefined;
+        for (const entry of entries) {
+          if (entry.type === 'characterData') {
+            if (element.textContent) {
+              textContent = element.textContent;
+            }
           }
         }
-      }
-      checkForInnerTextLabel(textContent);
-    });
-    observer.observe(element, { characterData: true, subtree: true });
-    return () => {
-      observer.disconnect();
-    };
-  }, [visible, ariaLabelProp]);
+        checkForInnerTextLabel(textContent);
+      });
+      observer.observe(element, { characterData: true, subtree: true });
+      return () => {
+        observer.disconnect();
+      };
+    }, [visible, ariaLabelProp]);
 
-  const ariaLabel = ariaLabelProp || internalAriaLabel;
+    const ariaLabel = ariaLabelProp || internalAriaLabel;
 
-  // Before hydration the button will not work, but we want to render it
-  // regardless to prevent potential layout shift. Hide it from assistive tech
-  // by default. Post-hydration it will be visible, focusable and associated
-  // with the input via aria-controls.
-  if (!isHydrated) {
-    ariaHidden ??= true;
-    tabIndex ??= -1;
-  } else {
-    ariaControls ??= inputId;
-  }
+    // Before hydration the button will not work, but we want to render it
+    // regardless to prevent potential layout shift. Hide it from assistive tech
+    // by default. Post-hydration it will be visible, focusable and associated
+    // with the input via aria-controls.
+    if (!isHydrated) {
+      ariaHidden ??= true;
+      tabIndex ??= -1;
+    } else {
+      ariaControls ??= inputId;
+    }
 
-  const clickTriggeredFocus = React.useRef(false);
+    const clickTriggeredFocus = React.useRef(false);
 
-  React.useEffect(() => {
-    let cleanup = () => {};
-    const ownerWindow = elementRef.current?.ownerDocument?.defaultView || window;
-    const reset = () => (clickTriggeredFocus.current = false);
-    const handlePointerUp = () => (cleanup = requestIdleCallback(ownerWindow, reset));
-    ownerWindow.addEventListener('pointerup', handlePointerUp);
-    return () => {
-      cleanup();
-      ownerWindow.removeEventListener('pointerup', handlePointerUp);
-    };
-  }, []);
+    React.useEffect(() => {
+      let cleanup = () => {};
+      const ownerWindow = elementRef.current?.ownerDocument?.defaultView || window;
+      const reset = () => (clickTriggeredFocus.current = false);
+      const handlePointerUp = () => (cleanup = requestIdleCallback(ownerWindow, reset));
+      ownerWindow.addEventListener('pointerup', handlePointerUp);
+      return () => {
+        cleanup();
+        ownerWindow.removeEventListener('pointerup', handlePointerUp);
+      };
+    }, []);
 
-  return (
-    <Primitive.button
-      aria-controls={ariaControls}
-      aria-hidden={ariaHidden}
-      aria-label={ariaLabel}
-      ref={ref}
-      id={inputId}
-      onPointerDown={composeEventHandlers(onPointerDown, () => {
-        clickTriggeredFocus.current = true;
-      })}
-      onPointerCancel={(event) => {
-        // do not use `composeEventHandlers` here because we always want to
-        // reset the ref on cancellation, regardless of whether the user has
-        // called preventDefault on the event
-        onPointerCancel?.(event);
-        clickTriggeredFocus.current = false;
-      }}
-      onClick={composeEventHandlers(onClick, () => {
-        flushSync(() => {
-          setVisible((s) => !s);
-        });
-        if (clickTriggeredFocus.current) {
+    return (
+      <Primitive.button
+        aria-controls={ariaControls}
+        aria-hidden={ariaHidden}
+        aria-label={ariaLabel}
+        ref={ref}
+        id={inputId}
+        onPointerDown={composeEventHandlers(onPointerDown, () => {
+          clickTriggeredFocus.current = true;
+        })}
+        onPointerCancel={(event) => {
+          // do not use `composeEventHandlers` here because we always want to
+          // reset the ref on cancellation, regardless of whether the user has
+          // called preventDefault on the event
+          onPointerCancel?.(event);
           clickTriggeredFocus.current = false;
-          inputRef.current?.focus();
-        }
-      })}
-      {...props}
-      type="button"
-    >
-      {children}
-    </Primitive.button>
-  );
-});
+        }}
+        onClick={composeEventHandlers(onClick, () => {
+          flushSync(() => {
+            setVisible((s) => !s);
+          });
+          if (clickTriggeredFocus.current) {
+            clickTriggeredFocus.current = false;
+            inputRef.current?.focus();
+          }
+        })}
+        {...props}
+        type="button"
+      >
+        {children}
+      </Primitive.button>
+    );
+  }
+);
+PasswordToggleFieldToggle.displayName = PASSWORD_TOGGLE_FIELD_TOGGLE_NAME;
+
+/* -------------------------------------------------------------------------------------------------
+ * PasswordToggleFieldSlot
+ * -----------------------------------------------------------------------------------------------*/
+
+const PASSWORD_TOGGLE_FIELD_SLOT_NAME = PASSWORD_TOGGLE_FIELD_NAME + 'Slot';
 
 interface PasswordToggleFieldSlotDeclarativeProps {
   visible: React.ReactNode;
@@ -288,32 +331,51 @@ type PasswordToggleFieldSlotProps =
   | PasswordToggleFieldSlotDeclarativeProps
   | PasswordToggleFieldSlotRenderProps;
 
-const PasswordToggleFieldSlot: React.FC<PasswordToggleFieldSlotProps> = (props) => {
-  const { visible } = usePasswordToggleFieldContext();
-  if ('render' in props) {
-    return props.render({ visible });
-  }
+const PasswordToggleFieldSlot: React.FC<PasswordToggleFieldSlotProps> = ({
+  __scopePasswordToggleField,
+  ...props
+}: ScopedProps<PasswordToggleFieldSlotProps>) => {
+  const { visible } = usePasswordToggleFieldContext(
+    PASSWORD_TOGGLE_FIELD_SLOT_NAME,
+    __scopePasswordToggleField
+  );
 
-  return visible ? props.visible : props.hidden;
+  return 'render' in props
+    ? //
+      props.render({ visible })
+    : visible
+      ? props.visible
+      : props.hidden;
 };
+PasswordToggleFieldSlot.displayName = PASSWORD_TOGGLE_FIELD_SLOT_NAME;
 
-type PrimitiveSvgProps = Omit<React.ComponentPropsWithoutRef<typeof Primitive.svg>, 'children'>;
+/* -------------------------------------------------------------------------------------------------
+ * PasswordToggleFieldIcon
+ * -----------------------------------------------------------------------------------------------*/
 
-interface PasswordToggleFieldIconProps extends PrimitiveSvgProps {
+const PASSWORD_TOGGLE_FIELD_ICON_NAME = PASSWORD_TOGGLE_FIELD_NAME + 'Icon';
+
+type PrimitiveSvgProps = React.ComponentPropsWithoutRef<'svg'>;
+
+interface PasswordToggleFieldIconProps extends Omit<PrimitiveSvgProps, 'children'> {
   visible: React.ReactElement;
   hidden: React.ReactElement;
 }
 
 const PasswordToggleFieldIcon = React.forwardRef<SVGSVGElement, PasswordToggleFieldIconProps>(
-  function PasswordToggleFieldIcon(
+  (
     {
+      __scopePasswordToggleField,
       // @ts-expect-error
       children,
       ...props
-    },
+    }: ScopedProps<PasswordToggleFieldIconProps>,
     forwardedRef
-  ) {
-    const { visible } = usePasswordToggleFieldContext();
+  ) => {
+    const { visible } = usePasswordToggleFieldContext(
+      PASSWORD_TOGGLE_FIELD_ICON_NAME,
+      __scopePasswordToggleField
+    );
     const { visible: visibleIcon, hidden: hiddenIcon, ...domProps } = props;
     return (
       <Primitive.svg {...domProps} ref={forwardedRef} aria-hidden asChild>
@@ -322,12 +384,7 @@ const PasswordToggleFieldIcon = React.forwardRef<SVGSVGElement, PasswordToggleFi
     );
   }
 );
-
-const Root = PasswordToggleField;
-const Input = PasswordToggleFieldInput;
-const Toggle = PasswordToggleFieldToggle;
-const Slot = PasswordToggleFieldSlot;
-const Icon = PasswordToggleFieldIcon;
+PasswordToggleFieldIcon.displayName = PASSWORD_TOGGLE_FIELD_ICON_NAME;
 
 export {
   PasswordToggleField,
@@ -336,11 +393,11 @@ export {
   PasswordToggleFieldSlot,
   PasswordToggleFieldIcon,
   //
-  Root,
-  Input,
-  Toggle,
-  Slot,
-  Icon,
+  PasswordToggleField as Root,
+  PasswordToggleFieldInput as Input,
+  PasswordToggleFieldToggle as Toggle,
+  PasswordToggleFieldSlot as Slot,
+  PasswordToggleFieldIcon as Icon,
 };
 export type {
   PasswordToggleFieldProps,
