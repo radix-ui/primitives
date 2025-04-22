@@ -1,5 +1,9 @@
 # @radix-ui/react-dropdown-menu
 
+## 2.1.12
+
+- Updated dependencies: `@radix-ui/react-menu@2.1.12`
+
 ## 2.1.11
 
 - Updated dependencies: `@radix-ui/react-menu@2.1.11`
