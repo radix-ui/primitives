@@ -8,6 +8,9 @@ on:
       # - '.github/**'
       - '**/package.json'
 
+env:
+  NPM_TOKEN: ${{ secrets.NPM_AUTOMATION_FROM_CHANCE }}
+
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
@@ -50,5 +53,3 @@ jobs:
 
       - name: Publish snapshot
         run: pnpm run release:next
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_AUTOMATION_FROM_CHANCE }}

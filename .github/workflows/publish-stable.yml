@@ -5,6 +5,10 @@ on:
     branches:
       - stable
 
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  NPM_TOKEN: ${{ secrets.NPM_AUTOMATION_FROM_CHANCE }}
+
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
@@ -46,6 +50,3 @@ jobs:
           version: pnpm run bump:stable
           publish: pnpm run release:stable:ci
           createGithubReleases: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_AUTOMATION_FROM_CHANCE }}
