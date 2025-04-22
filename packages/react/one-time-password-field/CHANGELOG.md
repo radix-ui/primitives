@@ -1,5 +1,9 @@
 # @radix-ui/react-one-time-password-field
 
+## 0.1.4
+
+- Updated dependencies: `@radix-ui/react-use-is-hydrated@0.1.0`
+
 ## 0.1.3
 
 - Fix hydration mismatch error in `OneTimePasswordField` and add opt-in `index` prop
