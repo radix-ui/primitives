@@ -1,5 +1,9 @@
 # radix-ui
 
+## 1.3.4
+
+- Updated dependencies: `@radix-ui/react-use-is-hydrated@0.1.0`, `@radix-ui/react-presence@1.1.4`, `@radix-ui/react-avatar@1.1.7`, `@radix-ui/react-one-time-password-field@0.1.4`, `@radix-ui/react-checkbox@1.2.3`, `@radix-ui/react-collapsible@1.1.8`, `@radix-ui/react-dialog@1.1.11`, `@radix-ui/react-hover-card@1.1.11`, `@radix-ui/react-menu@2.1.12`, `@radix-ui/react-navigation-menu@1.2.10`, `@radix-ui/react-popover@1.1.11`, `@radix-ui/react-radio-group@1.3.4`, `@radix-ui/react-scroll-area@1.2.6`, `@radix-ui/react-tabs@1.1.9`, `@radix-ui/react-toast@1.2.11`, `@radix-ui/react-tooltip@1.2.4`, `@radix-ui/react-accordion@1.2.8`, `@radix-ui/react-alert-dialog@1.1.11`, `@radix-ui/react-context-menu@2.2.12`, `@radix-ui/react-dropdown-menu@2.1.12`, `@radix-ui/react-menubar@1.1.12`
+
 ## 1.3.3
 
 - Updated dependencies: `@radix-ui/react-one-time-password-field@0.1.3`, `@radix-ui/react-roving-focus@1.1.7`, `@radix-ui/react-menu@2.1.11`, `@radix-ui/react-menubar@1.1.11`, `@radix-ui/react-radio-group@1.3.3`, `@radix-ui/react-tabs@1.1.8`, `@radix-ui/react-toggle-group@1.1.7`, `@radix-ui/react-toolbar@1.1.7`, `@radix-ui/react-context-menu@2.2.11`, `@radix-ui/react-dropdown-menu@2.1.11`

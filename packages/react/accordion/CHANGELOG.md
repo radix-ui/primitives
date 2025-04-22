@@ -1,5 +1,9 @@
 # @radix-ui/react-accordion
 
+## 1.2.8
+
+- Updated dependencies: `@radix-ui/react-collapsible@1.1.8`
+
 ## 1.2.7
 
 - Updated dependencies: `@radix-ui/react-use-controllable-state@1.2.2`, `@radix-ui/react-collapsible@1.1.7`

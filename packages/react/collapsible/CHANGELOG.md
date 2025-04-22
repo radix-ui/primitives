@@ -1,5 +1,9 @@
 # @radix-ui/react-collapsible
 
+## 1.1.8
+
+- Updated dependencies: `@radix-ui/react-presence@1.1.4`
+
 ## 1.1.7
 
 - Updated dependencies: `@radix-ui/react-use-controllable-state@1.2.2`

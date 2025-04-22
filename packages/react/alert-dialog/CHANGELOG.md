@@ -1,5 +1,9 @@
 # @radix-ui/react-alert-dialog
 
+## 1.1.11
+
+- Updated dependencies: `@radix-ui/react-dialog@1.1.11`
+
 ## 1.1.10
 
 - Updated dependencies: `@radix-ui/react-dialog@1.1.10`
