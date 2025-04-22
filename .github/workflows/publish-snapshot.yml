@@ -36,7 +36,7 @@ jobs:
         run: pnpm build
 
       - name: Write .npmrc
-        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTOMATION_FROM_CHANCE }}" > .npmrc
+        run: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc
 
       - name: Update snapshot version
         run: pnpm run bump:next
@@ -51,4 +51,4 @@ jobs:
       - name: Publish snapshot
         run: pnpm run release:next
         env:
-          YARN_NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTOMATION_FROM_CHANCE }}
+          NPM_TOKEN: ${{ secrets.NPM_AUTOMATION_FROM_CHANCE }}

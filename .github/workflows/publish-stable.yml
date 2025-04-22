@@ -34,6 +34,9 @@ jobs:
       - name: Build packages
         run: pnpm build
 
+      - name: Write .npmrc
+        run: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc
+
       - name: Create Release Pull Request or Publish to npm
         id: changesets
         uses: changesets/action@v1
