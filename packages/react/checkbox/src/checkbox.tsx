@@ -50,16 +50,7 @@ interface CheckboxProviderProps<State extends CheckedState = CheckedState> {
   form?: string;
   disabled?: boolean;
   value?: string | number | readonly string[];
-  children:
-    | React.ReactNode
-    /**
-     * Note that this API is only used internally to maintain backwards
-     * compatibility. Users should not need to read the context, and this will
-     * be removed in the next major version when the core API changes.
-     * @internal
-     * @deprecated
-     */
-    | ((context: CheckboxContextValue<State>) => React.ReactNode);
+  children?: React.ReactNode;
 }
 
 function CheckboxProvider<State extends CheckedState = CheckedState>({
@@ -73,6 +64,8 @@ function CheckboxProvider<State extends CheckedState = CheckedState>({
   onCheckedChange,
   required,
   value = 'on',
+  // @ts-expect-error
+  internal_do_not_use_render,
 }: ScopedProps<CheckboxProviderProps<State>>) {
   const [checked, setChecked] = useControllableState({
     prop: checkedProp,
@@ -110,7 +103,7 @@ function CheckboxProvider<State extends CheckedState = CheckedState>({
       scope={__scopeCheckbox}
       {...(context as unknown as CheckboxContextValue<CheckedState>)}
     >
-      {isFunction(children) ? children(context) : children}
+      {isFunction(internal_do_not_use_render) ? internal_do_not_use_render(context) : children}
     </CheckboxProviderImpl>
   );
 }
@@ -232,14 +225,14 @@ const Checkbox = React.forwardRef<CheckboxElement, CheckboxProps>(
         name={name}
         form={form}
         value={value}
-      >
-        {({ isFormControl }) => (
+        // @ts-expect-error
+        internal_do_not_use_render={({ isFormControl }: CheckboxContextValue) => (
           <>
             <CheckboxTrigger {...checkboxProps} ref={forwardedRef} />
             {isFormControl && <CheckboxBubbleInput />}
           </>
         )}
-      </CheckboxProvider>
+      />
     );
   }
 );
