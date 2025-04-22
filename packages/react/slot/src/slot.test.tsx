@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { cleanup, render, screen, fireEvent } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { Slot, Slottable } from './slot';
 import { afterEach, describe, it, beforeEach, vi, expect } from 'vitest';
 
@@ -139,6 +140,36 @@ describe('given a Button with Slottable', () => {
   });
 });
 
+describe('given an Input', () => {
+  const handleRef = vi.fn();
+
+  beforeEach(() => {
+    handleRef.mockReset();
+  });
+
+  afterEach(cleanup);
+
+  describe('without asChild', () => {
+    it('should only call function refs once', async () => {
+      render(<Input ref={handleRef} />);
+      await userEvent.type(screen.getByRole('textbox'), 'foo');
+      expect(handleRef).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('with asChild', () => {
+    it('should only call function refs once', async () => {
+      render(
+        <Input asChild ref={handleRef}>
+          <input />
+        </Input>
+      );
+      await userEvent.type(screen.getByRole('textbox'), 'foo');
+      expect(handleRef).toHaveBeenCalledTimes(1);
+    });
+  });
+});
+
 type TriggerProps = React.ComponentProps<'button'> & { as: React.ElementType };
 
 const Trigger = ({ as: Comp = 'button', ...props }: TriggerProps) => <Comp {...props} />;
@@ -157,6 +188,27 @@ const Button = React.forwardRef<
       {iconLeft}
       <Slottable>{children}</Slottable>
       {iconRight}
+    </Comp>
+  );
+});
+
+const Input = React.forwardRef<
+  React.ElementRef<'input'>,
+  React.ComponentProps<'input'> & {
+    asChild?: boolean;
+  }
+>(({ asChild, children, ...props }, forwardedRef) => {
+  const Comp = asChild ? Slot : 'input';
+  const [value, setValue] = useState('');
+
+  return (
+    <Comp
+      {...props}
+      onChange={(event) => setValue(event.target.value)}
+      ref={forwardedRef}
+      value={value}
+    >
+      {children}
     </Comp>
   );
 });
