@@ -2,4 +2,4 @@
 
 ## 0.1.0
 
-- Update the dependency specification for use-sync-external-store
+- Update the dependency for `use-sync-external-store` to ensure entrypoint is valid
