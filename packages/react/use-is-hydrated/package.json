@@ -35,7 +35,7 @@
     "build": "radix-build"
   },
   "dependencies": {
-    "use-sync-external-store": "^1.4.0"
+    "use-sync-external-store": "^1.5.0"
   },
   "peerDependencies": {
     "@types/react": "*",
