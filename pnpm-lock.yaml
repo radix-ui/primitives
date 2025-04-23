@@ -208,6 +208,9 @@ importers:
       '@storybook/manager-api':
         specifier: ^8.6.12
         version: 8.6.12(storybook@8.6.12(prettier@3.5.3))
+      '@storybook/preview-api':
+        specifier: ^8.6.12
+        version: 8.6.12(storybook@8.6.12(prettier@3.5.3))
       '@storybook/react':
         specifier: ^8.6.12
         version: 8.6.12(@storybook/test@8.6.12(storybook@8.6.12(prettier@3.5.3)))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(storybook@8.6.12(prettier@3.5.3))(typescript@5.8.3)
@@ -1652,6 +1655,61 @@ importers:
         specifier: ^5.7.3
         version: 5.8.3
 
+  packages/react/password-toggle-field:
+    dependencies:
+      '@radix-ui/primitive':
+        specifier: workspace:*
+        version: link:../../core/primitive
+      '@radix-ui/react-compose-refs':
+        specifier: workspace:*
+        version: link:../compose-refs
+      '@radix-ui/react-context':
+        specifier: workspace:*
+        version: link:../context
+      '@radix-ui/react-id':
+        specifier: workspace:*
+        version: link:../id
+      '@radix-ui/react-primitive':
+        specifier: workspace:*
+        version: link:../primitive
+      '@radix-ui/react-use-controllable-state':
+        specifier: workspace:*
+        version: link:../use-controllable-state
+      '@radix-ui/react-use-effect-event':
+        specifier: workspace:*
+        version: link:../use-effect-event
+      '@radix-ui/react-use-is-hydrated':
+        specifier: workspace:*
+        version: link:../use-is-hydrated
+    devDependencies:
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../../../internal/eslint-config
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../../../internal/typescript-config
+      '@types/react':
+        specifier: ^19.0.7
+        version: 19.1.0
+      '@types/react-dom':
+        specifier: ^19.0.3
+        version: 19.1.1(@types/react@19.1.0)
+      eslint:
+        specifier: ^9.18.0
+        version: 9.24.0
+      react:
+        specifier: ^19.0.0
+        version: 19.1.0
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.1.0(react@19.1.0)
+      typescript:
+        specifier: ^5.7.3
+        version: 5.8.3
+
   packages/react/popover:
     dependencies:
       '@radix-ui/primitive':
@@ -2075,6 +2133,9 @@ importers:
       '@radix-ui/react-one-time-password-field':
         specifier: workspace:*
         version: link:../one-time-password-field
+      '@radix-ui/react-password-toggle-field':
+        specifier: workspace:*
+        version: link:../password-toggle-field
       '@radix-ui/react-popover':
         specifier: workspace:*
         version: link:../popover
