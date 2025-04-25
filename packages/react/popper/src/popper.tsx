@@ -82,7 +82,7 @@ const PopperAnchor = React.forwardRef<PopperAnchorElement, PopperAnchorProps>(
       // a DOM node e.g. pointer position, so we override the
       // `anchorRef` with their virtual ref in this case.
       context.onAnchorChange(virtualRef?.current || ref.current);
-    });
+    }, [context.onAnchorChange]);
 
     return virtualRef ? null : <Primitive.div {...anchorProps} ref={composedRefs} />;
   }
