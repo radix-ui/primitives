@@ -1,1 +1,1 @@
-export { useRect } from './useRect';
+export { useRect } from './use-rect';

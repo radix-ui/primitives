@@ -1,0 +1,95 @@
+.root {
+}
+
+.item {
+  vertical-align: middle;
+  width: 30px;
+  height: 30px;
+  display: inline-grid;
+  padding: 0;
+  place-items: center;
+  border: 1px solid var(--color-gray300);
+  border-radius: 9999px;
+
+  &:focus {
+    outline: none;
+    border-color: var(--color-red);
+    box-shadow: 0 0 0 1px var(--color-red);
+  }
+
+  ,
+  &[data-disabled] {
+    opacity: 0.5;
+  }
+}
+
+.indicator {
+  width: 18px;
+  height: 18px;
+  background-color: var(--color-red);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: inherit;
+}
+
+.animatedIndicator {
+  &[data-state='checked'] {
+    animation: radioGroup-fadeIn 300ms ease-out;
+  }
+  &[data-state='unchecked'] {
+    animation: radioGroup-fadeOut 300ms ease-in;
+  }
+}
+
+.rootAttr,
+.itemAttr,
+.indicatorAttr {
+  background-color: rgba(0, 0, 255, 0.3);
+  border: 2px solid blue;
+  padding: 10px;
+
+  &[tabindex='0'] {
+    box-shadow: inset 0 0 0 2px yellow;
+  }
+  &:disabled {
+    opacity: 0.5;
+  }
+  &[data-disabled] {
+    border-style: dashed;
+  }
+  &[data-state='unchecked'] {
+    border-color: red;
+  }
+  &[data-state='checked'] {
+    border-color: green;
+  }
+}
+
+.label {
+  /* ensures it can receive vertical margins */
+  display: inline-block;
+  /* better default alignment */
+  vertical-align: middle;
+  /* mimics default `label` tag (as we render a `span`) */
+  cursor: default;
+  display: inline-block;
+}
+
+@keyframes radioGroup-fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes radioGroup-fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}

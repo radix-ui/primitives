@@ -3,5 +3,5 @@ export {
   Label,
   //
   Root,
-} from './Label';
-export type { LabelProps } from './Label';
+} from './label';
+export type { LabelProps } from './label';

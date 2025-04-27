@@ -7,5 +7,5 @@ export {
   //
   Root,
   Indicator,
-} from './Progress';
-export type { ProgressProps, ProgressIndicatorProps } from './Progress';
+} from './progress';
+export type { ProgressProps, ProgressIndicatorProps } from './progress';

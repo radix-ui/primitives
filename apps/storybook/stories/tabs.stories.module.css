@@ -1,0 +1,118 @@
+.root {
+  /* ensures things are layed out correctly by default */
+  display: flex;
+  &[data-orientation='horizontal'] {
+    flexdirection: column;
+  }
+  /* ---------- */
+  border: 1px solid #eee;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif,
+    'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+  max-width: 20rem;
+}
+
+.list {
+  flex-shrink: 0;
+  /* ensures things are layed out correctly by default */
+  display: flex;
+  &[data-orientation='vertical'] {
+    flex-direction: column;
+  }
+  /* ---------- */
+  background-color: #eee;
+}
+
+.trigger {
+  all: unset;
+  flex-shrink: 0;
+  /* ---------- */
+  padding: 0.4em 0.6em;
+  font-weight: 500;
+  line-height: 1;
+  user-select: none;
+
+  &[data-orientation='horizontal'] {
+    border-top: 4px solid transparent;
+    border-bottom: 4px solid var(--border-color, transparent);
+  }
+
+  &[data-orientation='vertical'] {
+    padding: 0.6em;
+    border-right: 4px solid var(--border-color, transparent);
+  }
+
+  &[data-disabled] {
+    color: var(--color-gray300);
+  }
+
+  &[data-state='active'] {
+    --border-color: crimson;
+  }
+
+  &:focus {
+    --border-color: #111;
+    outline: 1px solid var(--border-color);
+    &[data-state='active'] {
+      --border-color: crimson;
+    }
+  }
+}
+
+.content {
+  flex-grow: 1;
+  /* ---------- */
+  padding: 1em;
+  font-weight: 300;
+  font-size: 0.85em;
+  line-height: 1.65;
+  &[data-orientation='horizontal'] {
+    border-top: none;
+  }
+  &[data-orientation='vertical'] {
+    border-left: none;
+  }
+}
+
+@keyframes show {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0px);
+  }
+}
+
+.animatedContent {
+  &[data-state='active'] {
+    animation: tabs--show 400ms ease;
+  }
+}
+
+.contentAttr {
+  /* ensure we can see the content (because it has `hidden` attribute) */
+  display: block;
+}
+
+.rootAttr,
+.contentAttr,
+.listAttr,
+.triggerAttr {
+  background-color: rgb(0 0 255 / 0.3);
+  border: 2px solid blue;
+  padding: 10px;
+  &:disabled {
+    opacity: 0.5;
+  }
+  &[data-disabled] {
+    border-style: dashed;
+  }
+
+  &[data-state='inactive'] {
+    border-color: red;
+  }
+  &[data-state='active'] {
+    border-color: green;
+  }
+}
