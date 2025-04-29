@@ -1,7 +1,13 @@
 import * as React from 'react';
 
-import * as DocumentContext from '@radix-ui/react-document-context';
+import { Parent } from './parent';
+import { Child } from './child';
 
 export default function Page() {
-  return <DocumentContext.DocumentProvider>Document Context</DocumentContext.DocumentProvider>;
+  return (
+    <Parent>
+      <h1>Document Context</h1>
+      <Child />
+    </Parent>
+  );
 }

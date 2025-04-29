@@ -6,7 +6,7 @@ const DocumentContext = React.createContext<Document | null>(null);
 DocumentContext.displayName = 'DocumentContext';
 
 interface DocumentProviderProps {
-  document: Document;
+  document: Document | null;
   children: React.ReactNode;
 }
 
