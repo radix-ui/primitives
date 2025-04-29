@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Presence, DocumentContext } from 'radix-ui/internal';
+import { Presence } from 'radix-ui/internal';
 import styles from './presence.stories.module.css';
 
 export default { title: 'Utilities/Presence' };
@@ -35,17 +35,15 @@ export const WithDeferredMountAnimation = () => {
   const timerRef = React.useRef(0);
   const [open, setOpen] = React.useState(false);
   const [animate, setAnimate] = React.useState(false);
-  const documentWindow = DocumentContext.useDocument()?.defaultView;
 
   React.useEffect(() => {
-    if (!documentWindow) return;
     if (open) {
-      timerRef.current = documentWindow.setTimeout(() => setAnimate(true), 150);
+      timerRef.current = window.setTimeout(() => setAnimate(true), 150);
     } else {
       setAnimate(false);
-      documentWindow.clearTimeout(timerRef.current);
+      window.clearTimeout(timerRef.current);
     }
-  }, [open, documentWindow]);
+  }, [open]);
 
   return (
     <>

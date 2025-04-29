@@ -257,7 +257,7 @@ export const Animated = () => {
         });
       }, 3000);
       return () => {
-        clearTimeout(timerRef.current);
+        window.clearTimeout(timerRef.current);
       };
     }
   }, [count, hasDynamicContent]);
