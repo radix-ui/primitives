@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { DocumentProvider, useDocument } from './document-context';
+import { describe, it, expect } from 'vitest';
 
 // Test component that uses the document context
 function TestComponent() {

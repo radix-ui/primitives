@@ -1,12 +1,9 @@
 import * as React from 'react';
-
-import * as Tooltip from '@radix-ui/react-tooltip';
-import * as Dialog from '@radix-ui/react-dialog';
-import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { createPortal } from 'react-dom';
-import * as DocumentContext from '@radix-ui/react-document-context';
-
+import { DocumentContext } from 'radix-ui/internal';
+import { Dialog, DropdownMenu, Tooltip } from 'radix-ui';
 import styles from './document-context.stories.module.css';
+
 export default { title: 'Utilities/DocumentContext' };
 
 export const Default = () => {
