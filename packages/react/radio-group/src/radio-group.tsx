@@ -11,7 +11,6 @@ import {
   RadioRoot,
   RadioTrigger,
   RadioBubbleInput,
-  type RadioBubbleInputProps,
   RadioIndicator,
   createRadioScope,
   useRadioContext,
@@ -241,6 +240,27 @@ const RadioGroupItemTrigger = React.forwardRef<
 RadioGroupItemTrigger.displayName = ITEM_TRIGGER_NAME;
 
 /* -------------------------------------------------------------------------------------------------
+ * RadioGroupItemBubbleInput
+ * -----------------------------------------------------------------------------------------------*/
+
+const ITEM_BUBBLE_INPUT_NAME = 'RadioGroupItemBubbleInput';
+
+type RadioGroupItemBubbleInputElement = HTMLInputElement;
+type RadioBubbleInputProps = React.ComponentPropsWithoutRef<typeof RadioBubbleInput>;
+interface RadioGroupItemBubbleInputProps extends RadioBubbleInputProps {}
+
+const RadioGroupItemBubbleInput = React.forwardRef<
+  RadioGroupItemBubbleInputElement,
+  RadioGroupItemBubbleInputProps
+>((props: ScopedProps<RadioGroupItemBubbleInputProps>, forwardedRef) => {
+  const { __scopeRadioGroup, ...inputProps } = props;
+  const radioScope = useRadioScope(__scopeRadioGroup);
+  return <RadioBubbleInput {...radioScope} {...inputProps} ref={forwardedRef} />;
+});
+
+RadioGroupItemBubbleInput.displayName = ITEM_BUBBLE_INPUT_NAME;
+
+/* -------------------------------------------------------------------------------------------------
  * RadioGroupItem
  * -----------------------------------------------------------------------------------------------*/
 
@@ -322,14 +342,14 @@ export {
   RadioGroup,
   RadioGroupItemRoot,
   RadioGroupItemTrigger,
-  RadioBubbleInput as RadioGroupItemBubbleInput,
+  RadioGroupItemBubbleInput,
   RadioGroupItem,
   RadioGroupIndicator,
   //
   RadioGroup as Root,
   RadioGroupItemRoot as ItemRoot,
   RadioGroupItemTrigger as ItemTrigger,
-  RadioBubbleInput as ItemBubbleInput,
+  RadioGroupItemBubbleInput as ItemBubbleInput,
   RadioGroupItem as Item,
   RadioGroupIndicator as Indicator,
 };
@@ -337,7 +357,7 @@ export type {
   RadioGroupProps,
   RadioGroupItemRootProps,
   RadioGroupItemTriggerProps,
-  RadioBubbleInputProps as RadioGroupItemBubbleInputProps,
+  RadioGroupItemBubbleInputProps,
   RadioGroupItemProps,
   RadioGroupIndicatorProps,
 };
