@@ -5,20 +5,24 @@ import { useDocument } from '@radix-ui/react-document-context';
 /**
  * Listens for when the escape key is down
  */
-function useEscapeKeydown(onEscapeKeyDownProp?: (event: KeyboardEvent) => void) {
+function useEscapeKeydown(
+  onEscapeKeyDownProp?: (event: KeyboardEvent) => void,
+  ownerDocument?: Document
+) {
   const providedDocument = useDocument();
+  const document = ownerDocument || providedDocument;
   const onEscapeKeyDown = useCallbackRef(onEscapeKeyDownProp);
 
   React.useEffect(() => {
-    if (!providedDocument) return;
+    const _document = document || globalThis.document;
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         onEscapeKeyDown(event);
       }
     };
-    providedDocument.addEventListener('keydown', handleKeyDown, { capture: true });
-    return () => providedDocument.removeEventListener('keydown', handleKeyDown, { capture: true });
-  }, [onEscapeKeyDown, providedDocument]);
+    _document.addEventListener('keydown', handleKeyDown, { capture: true });
+    return () => _document.removeEventListener('keydown', handleKeyDown, { capture: true });
+  }, [onEscapeKeyDown, document]);
 }
 
 export { useEscapeKeydown };
