@@ -223,7 +223,7 @@ export const LegacyChromatic = () => {
 
       <h1>Controlled</h1>
       <h2>Unset</h2>
-      <RadioGroup.Root className={styles.root} value="">
+      <RadioGroup.Root className={styles.root} value={null}>
         <RadioGroup.Item className={styles.item} value="1">
           <RadioGroup.Indicator className={styles.indicator} />
         </RadioGroup.Item>
