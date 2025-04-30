@@ -8,7 +8,7 @@ import { createRovingFocusGroupScope } from '@radix-ui/react-roving-focus';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { useDirection } from '@radix-ui/react-direction';
 import {
-  RadioProvider,
+  RadioRoot,
   RadioTrigger,
   RadioBubbleInput,
   type RadioBubbleInputProps,
@@ -124,7 +124,7 @@ RadioGroup.displayName = RADIO_GROUP_NAME;
 
 const ITEM_ROOT_NAME = 'RadioGroupItemRoot';
 
-type RadioProviderProps = React.ComponentPropsWithoutRef<typeof RadioProvider>;
+type RadioProviderProps = React.ComponentPropsWithoutRef<typeof RadioRoot>;
 interface RadioGroupItemRootProps extends Omit<RadioProviderProps, 'name' | 'required'> {
   value: string;
 }
@@ -143,7 +143,7 @@ const RadioGroupItemRoot = (props: ScopedProps<RadioGroupItemRootProps>) => {
   const radioScope = useRadioScope(__scopeRadioGroup);
 
   return (
-    <RadioProvider
+    <RadioRoot
       {...itemProps}
       {...radioScope}
       disabled={context.disabled || disabled}

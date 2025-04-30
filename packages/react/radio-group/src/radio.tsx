@@ -32,10 +32,10 @@ interface RadioContextValue {
   bubbleInput: HTMLInputElement | null;
   setBubbleInput: React.Dispatch<React.SetStateAction<HTMLInputElement | null>>;
 }
-const [RadioProviderImpl, useRadioContext] = createRadioContext<RadioContextValue>(RADIO_NAME);
+const [RadioProvider, useRadioContext] = createRadioContext<RadioContextValue>(RADIO_NAME);
 
 /* -------------------------------------------------------------------------------------------------
- * RadioProvider
+ * RadioRoot
  * -----------------------------------------------------------------------------------------------*/
 
 const RadioScopeContext = React.createContext<Scope | null>(null);
@@ -51,7 +51,7 @@ function useInternalRadioScope(displayName: string): Scope {
   return scope;
 }
 
-interface RadioProviderProps {
+interface RadioRootProps {
   checked?: boolean;
   required?: boolean;
   name?: string;
@@ -61,7 +61,7 @@ interface RadioProviderProps {
   children?: React.ReactNode;
 }
 
-const RadioProvider = (props: ScopedProps<RadioProviderProps>) => {
+const RadioRoot = (props: ScopedProps<RadioRootProps>) => {
   const {
     __scopeRadio,
     name,
@@ -99,11 +99,11 @@ const RadioProvider = (props: ScopedProps<RadioProviderProps>) => {
 
   return (
     <RadioScopeContext.Provider value={__scopeRadio}>
-      <RadioProviderImpl scope={__scopeRadio} {...context}>
+      <RadioProvider scope={__scopeRadio} {...context}>
         {typeof internal_do_not_use_render === 'function'
           ? internal_do_not_use_render(context)
           : children}
-      </RadioProviderImpl>
+      </RadioProvider>
     </RadioScopeContext.Provider>
   );
 };
@@ -115,7 +115,7 @@ const RadioProvider = (props: ScopedProps<RadioProviderProps>) => {
 const TRIGGER_NAME = 'RadioTrigger';
 
 interface RadioTriggerProps
-  extends Omit<React.ComponentPropsWithoutRef<typeof Primitive.button>, keyof RadioProviderProps> {
+  extends Omit<React.ComponentPropsWithoutRef<typeof Primitive.button>, keyof RadioRootProps> {
   children?: React.ReactNode;
   onCheck?: () => void;
 }
@@ -277,19 +277,19 @@ export {
   //
   RadioIndicator,
   RadioTrigger,
-  RadioProvider,
+  RadioRoot,
   RadioBubbleInput,
   //
   RadioTrigger as Trigger,
   RadioIndicator as Indicator,
-  RadioProvider as Provider,
+  RadioRoot as Root,
   RadioBubbleInput as BubbleInput,
 };
 
 export type {
   RadioTriggerProps,
   RadioIndicatorProps,
-  RadioProviderProps,
+  RadioRootProps,
   RadioBubbleInputProps,
   RadioContextValue,
 };
