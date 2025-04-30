@@ -252,10 +252,6 @@ const RadioBubbleInput = React.forwardRef<HTMLInputElement, RadioBubbleInputProp
         style={{
           ...props.style,
           ...controlSize,
-          // We transform because the input is absolutely positioned but we have
-          // rendered it **after** the button. This pulls it back to sit on top
-          // of the button.
-          transform: 'translateX(-100%)',
           position: 'absolute',
           pointerEvents: 'none',
           opacity: 0,

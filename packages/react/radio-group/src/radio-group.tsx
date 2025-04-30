@@ -304,7 +304,17 @@ const RadioGroupItem = React.forwardRef<RadioGroupItemElement, RadioGroupItemPro
         internal_do_not_use_render={({ isFormControl }: RadioContextValue) => (
           <>
             <RadioGroupItemTrigger {...triggerProps} {...radioScope} ref={forwardedRef} />
-            {isFormControl && <RadioBubbleInput {...radioScope} />}
+            {isFormControl && (
+              <RadioBubbleInput
+                {...radioScope}
+                style={{
+                  // We transform because the input is absolutely positioned but we have
+                  // rendered it **after** the button. This pulls it back to sit on top
+                  // of the button.
+                  transform: 'translateX(-100%)',
+                }}
+              />
+            )}
           </>
         )}
       />
