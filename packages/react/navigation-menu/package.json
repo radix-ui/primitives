@@ -40,6 +40,7 @@
     "@radix-ui/react-context": "workspace:*",
     "@radix-ui/react-direction": "workspace:*",
     "@radix-ui/react-dismissable-layer": "workspace:*",
+    "@radix-ui/react-document-context": "workspace:*",
     "@radix-ui/react-id": "workspace:*",
     "@radix-ui/react-presence": "workspace:*",
     "@radix-ui/react-primitive": "workspace:*",
