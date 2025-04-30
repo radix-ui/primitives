@@ -381,12 +381,6 @@ function getState(checked: CheckedState) {
   return isIndeterminate(checked) ? 'indeterminate' : checked ? 'checked' : 'unchecked';
 }
 
-const Provider = CheckboxProvider;
-const Trigger = CheckboxTrigger;
-const Root = Checkbox;
-const Indicator = CheckboxIndicator;
-const BubbleInput = CheckboxBubbleInput;
-
 export {
   createCheckboxScope,
   //
@@ -396,11 +390,11 @@ export {
   CheckboxIndicator,
   CheckboxBubbleInput,
   //
-  Root,
-  Trigger,
-  Provider,
-  Indicator,
-  BubbleInput,
+  Checkbox as Root,
+  CheckboxProvider as Trigger,
+  CheckboxTrigger as Provider,
+  CheckboxIndicator as Indicator,
+  CheckboxBubbleInput as BubbleInput,
 };
 export type {
   CheckboxProps,
