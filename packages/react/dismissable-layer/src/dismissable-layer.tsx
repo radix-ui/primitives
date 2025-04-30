@@ -283,12 +283,12 @@ function usePointerDownOutside(onPointerDownOutside?: (event: PointerDownOutside
      *   })
      * });
      */
-    const timerId = documentWindow.setTimeout(() => {
+    const timerId = globalThis.window.setTimeout(() => {
       providedDocument.addEventListener('pointerdown', handlePointerDown);
     }, 0);
 
     return () => {
-      documentWindow.clearTimeout(timerId);
+      globalThis.window.clearTimeout(timerId);
       providedDocument?.removeEventListener('pointerdown', handlePointerDown);
       providedDocument?.removeEventListener('click', handleClickRef.current);
     };

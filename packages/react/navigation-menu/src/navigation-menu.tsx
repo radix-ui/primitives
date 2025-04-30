@@ -116,7 +116,6 @@ const NavigationMenu = React.forwardRef<NavigationMenuElement, NavigationMenuPro
     const closeTimerRef = React.useRef(0);
     const skipDelayTimerRef = React.useRef(0);
     const [isOpenDelayed, setIsOpenDelayed] = React.useState(true);
-    const documentWindow = useDocument()?.defaultView;
     const [value, setValue] = useControllableState({
       prop: valueProp,
       onChange: (value) => {
@@ -124,12 +123,11 @@ const NavigationMenu = React.forwardRef<NavigationMenuElement, NavigationMenuPro
         const hasSkipDelayDuration = skipDelayDuration > 0;
 
         if (isOpen) {
-          documentWindow?.clearTimeout(skipDelayTimerRef.current);
+          globalThis.window.clearTimeout(skipDelayTimerRef.current);
           if (hasSkipDelayDuration) setIsOpenDelayed(false);
         } else {
-          documentWindow?.clearTimeout(skipDelayTimerRef.current);
-          if (!documentWindow) return;
-          skipDelayTimerRef.current = documentWindow.setTimeout(
+          globalThis.window.clearTimeout(skipDelayTimerRef.current);
+          skipDelayTimerRef.current = globalThis.window.setTimeout(
             () => setIsOpenDelayed(true),
             skipDelayDuration
           );
@@ -142,17 +140,16 @@ const NavigationMenu = React.forwardRef<NavigationMenuElement, NavigationMenuPro
     });
 
     const startCloseTimer = React.useCallback(() => {
-      if (!documentWindow) return;
-      documentWindow.clearTimeout(closeTimerRef.current);
-      closeTimerRef.current = documentWindow.setTimeout(() => setValue(''), 150);
-    }, [setValue, documentWindow]);
+      globalThis.window.clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = globalThis.window.setTimeout(() => setValue(''), 150);
+    }, [setValue]);
 
     const handleOpen = React.useCallback(
       (itemValue: string) => {
-        documentWindow?.clearTimeout(closeTimerRef.current);
+        globalThis.window.clearTimeout(closeTimerRef.current);
         setValue(itemValue);
       },
-      [setValue, documentWindow]
+      [setValue]
     );
 
     const handleDelayedOpen = React.useCallback(
@@ -161,24 +158,24 @@ const NavigationMenu = React.forwardRef<NavigationMenuElement, NavigationMenuPro
         if (isOpenItem) {
           // If the item is already open (e.g. we're transitioning from the content to the trigger)
           // then we want to clear the close timer immediately.
-          documentWindow?.clearTimeout(closeTimerRef.current);
-        } else if (documentWindow) {
-          openTimerRef.current = documentWindow.setTimeout(() => {
-            documentWindow.clearTimeout(closeTimerRef.current);
+          globalThis.window.clearTimeout(closeTimerRef.current);
+        } else {
+          openTimerRef.current = globalThis.window.setTimeout(() => {
+            globalThis.window.clearTimeout(closeTimerRef.current);
             setValue(itemValue);
           }, delayDuration);
         }
       },
-      [value, setValue, delayDuration, documentWindow]
+      [value, setValue, delayDuration]
     );
 
     React.useEffect(() => {
       return () => {
-        documentWindow?.clearTimeout(openTimerRef.current);
-        documentWindow?.clearTimeout(closeTimerRef.current);
-        documentWindow?.clearTimeout(skipDelayTimerRef.current);
+        globalThis.window.clearTimeout(openTimerRef.current);
+        globalThis.window.clearTimeout(closeTimerRef.current);
+        globalThis.window.clearTimeout(skipDelayTimerRef.current);
       };
-    }, [documentWindow]);
+    }, []);
 
     return (
       <NavigationMenuProvider
@@ -189,15 +186,15 @@ const NavigationMenu = React.forwardRef<NavigationMenuElement, NavigationMenuPro
         orientation={orientation}
         rootNavigationMenu={navigationMenu}
         onTriggerEnter={(itemValue) => {
-          documentWindow?.clearTimeout(openTimerRef.current);
+          globalThis.window.clearTimeout(openTimerRef.current);
           if (isOpenDelayed) handleDelayedOpen(itemValue);
           else handleOpen(itemValue);
         }}
         onTriggerLeave={() => {
-          documentWindow?.clearTimeout(openTimerRef.current);
+          globalThis.window.clearTimeout(openTimerRef.current);
           startCloseTimer();
         }}
-        onContentEnter={() => documentWindow?.clearTimeout(closeTimerRef.current)}
+        onContentEnter={() => globalThis.window.clearTimeout(closeTimerRef.current)}
         onContentLeave={startCloseTimer}
         onItemSelect={(itemValue) => {
           setValue((prevValue) => (prevValue === itemValue ? '' : itemValue));
@@ -1155,7 +1152,7 @@ const FocusGroupItem = React.forwardRef<FocusGroupItemElement, FocusGroupItemPro
                * Imperative focus during keydown is risky so we prevent React's batching updates
                * to avoid potential bugs. See: https://github.com/facebook/react/issues/20332
                */
-              setTimeout(() => {
+              globalThis.window.setTimeout(() => {
                 if (providedDocument) {
                   focusFirst(candidateNodes, providedDocument);
                 }
@@ -1223,11 +1220,10 @@ function removeFromTabOrder(candidates: HTMLElement[]) {
 }
 
 function useResizeObserver(element: HTMLElement | null, onResize: () => void) {
-  const documentWindow = useDocument()?.defaultView;
   const handleResize = useCallbackRef(onResize);
   useLayoutEffect(() => {
     let rAF = 0;
-    if (element && documentWindow) {
+    if (element) {
       /**
        * Resize Observer will throw an often benign error that says `ResizeObserver loop
        * completed with undelivered notifications`. This means that ResizeObserver was not
@@ -1237,15 +1233,15 @@ function useResizeObserver(element: HTMLElement | null, onResize: () => void) {
        */
       const resizeObserver = new ResizeObserver(() => {
         cancelAnimationFrame(rAF);
-        rAF = documentWindow.requestAnimationFrame(handleResize);
+        rAF = globalThis.window.requestAnimationFrame(handleResize);
       });
       resizeObserver.observe(element);
       return () => {
-        documentWindow.cancelAnimationFrame(rAF);
+        globalThis.window.cancelAnimationFrame(rAF);
         resizeObserver.unobserve(element);
       };
     }
-  }, [element, handleResize, documentWindow]);
+  }, [element, handleResize]);
 }
 
 function getOpenState(open: boolean) {

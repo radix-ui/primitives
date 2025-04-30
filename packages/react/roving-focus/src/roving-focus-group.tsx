@@ -289,7 +289,7 @@ const RovingFocusGroupItem = React.forwardRef<RovingFocusItemElement, RovingFocu
                * Imperative focus during keydown is risky so we prevent React's batching updates
                * to avoid potential bugs. See: https://github.com/facebook/react/issues/20332
                */
-              setTimeout(() => {
+              globalThis.window.setTimeout(() => {
                 if (providedDocument) {
                   focusFirst(candidateNodes, providedDocument);
                 }

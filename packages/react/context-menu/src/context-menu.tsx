@@ -6,9 +6,7 @@ import * as MenuPrimitive from '@radix-ui/react-menu';
 import { createMenuScope } from '@radix-ui/react-menu';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
-
 import type { Scope } from '@radix-ui/react-context';
-import { useDocument } from '@radix-ui/react-document-context';
 
 type Direction = 'ltr' | 'rtl';
 type Point = { x: number; y: number };
@@ -98,12 +96,11 @@ const ContextMenuTrigger = React.forwardRef<ContextMenuTriggerElement, ContextMe
     const virtualRef = React.useRef({
       getBoundingClientRect: () => DOMRect.fromRect({ width: 0, height: 0, ...pointRef.current }),
     });
-    const documentWindow = useDocument()?.defaultView;
 
     const longPressTimerRef = React.useRef(0);
     const clearLongPress = React.useCallback(
-      () => documentWindow?.clearTimeout(longPressTimerRef.current),
-      [documentWindow]
+      () => globalThis.window.clearTimeout(longPressTimerRef.current),
+      []
     );
     const handleOpen = (event: React.MouseEvent | React.PointerEvent) => {
       pointRef.current = { x: event.clientX, y: event.clientY };
@@ -143,12 +140,10 @@ const ContextMenuTrigger = React.forwardRef<ContextMenuTriggerElement, ContextMe
                   whenTouchOrPen((event) => {
                     // clear the long press here in case there's multiple touch points
                     clearLongPress();
-                    if (documentWindow) {
-                      longPressTimerRef.current = documentWindow?.setTimeout(
-                        () => handleOpen(event),
-                        700
-                      );
-                    }
+                    longPressTimerRef.current = globalThis.window.setTimeout(
+                      () => handleOpen(event),
+                      700
+                    );
                   })
                 )
           }

@@ -679,7 +679,7 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
          * Imperative focus during keydown is risky so we prevent React's batching updates
          * to avoid potential bugs. See: https://github.com/facebook/react/issues/20332
          */
-        setTimeout(() => (nextItem.ref.current as HTMLElement).focus());
+        globalThis.window.setTimeout(() => (nextItem.ref.current as HTMLElement).focus());
       }
     });
 
@@ -809,7 +809,7 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
                      * Imperative focus during keydown is risky so we prevent React's batching updates
                      * to avoid potential bugs. See: https://github.com/facebook/react/issues/20332
                      */
-                    setTimeout(() => focusFirst(candidateNodes));
+                    globalThis.window.setTimeout(() => focusFirst(candidateNodes));
 
                     event.preventDefault();
                   }
@@ -1718,7 +1718,6 @@ function useTypeaheadSearch(onSearchChange: (search: string) => void) {
   const handleSearchChange = useCallbackRef(onSearchChange);
   const searchRef = React.useRef('');
   const timerRef = React.useRef(0);
-  const documentWindow = useDocument()?.defaultView;
 
   const handleTypeaheadSearch = React.useCallback(
     (key: string) => {
@@ -1727,24 +1726,23 @@ function useTypeaheadSearch(onSearchChange: (search: string) => void) {
 
       (function updateSearch(value: string) {
         searchRef.current = value;
-        if (!documentWindow) return;
-        documentWindow.clearTimeout(timerRef.current);
+        globalThis.window.clearTimeout(timerRef.current);
         // Reset `searchRef` 1 second after it was last updated
         if (value !== '')
-          timerRef.current = documentWindow.setTimeout(() => updateSearch(''), 1000);
+          timerRef.current = globalThis.window.setTimeout(() => updateSearch(''), 1000);
       })(search);
     },
-    [handleSearchChange, documentWindow]
+    [handleSearchChange]
   );
 
   const resetTypeahead = React.useCallback(() => {
     searchRef.current = '';
-    documentWindow?.clearTimeout(timerRef.current);
-  }, [documentWindow]);
+    globalThis.window.clearTimeout(timerRef.current);
+  }, []);
 
   React.useEffect(() => {
-    return () => documentWindow?.clearTimeout(timerRef.current);
-  }, [documentWindow]);
+    return () => globalThis.window.clearTimeout(timerRef.current);
+  }, []);
 
   return [searchRef, handleTypeaheadSearch, resetTypeahead] as const;
 }

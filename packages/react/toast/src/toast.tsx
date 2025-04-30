@@ -501,7 +501,6 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
     const closeTimerRef = React.useRef(0);
     const { onToastAdd, onToastRemove } = context;
     const providedDocument = useDocument();
-    const documentWindow = providedDocument?.defaultView;
     const handleClose = useCallbackRef(() => {
       // focus viewport if focus is within toast to read the remaining toast
       // count to SR users and ensure focus isn't lost
@@ -513,12 +512,12 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
 
     const startTimer = React.useCallback(
       (duration: number) => {
-        if (!duration || duration === Infinity || !documentWindow) return;
-        documentWindow.clearTimeout(closeTimerRef.current);
+        if (!duration || duration === Infinity) return;
+        globalThis.window.clearTimeout(closeTimerRef.current);
         closeTimerStartTimeRef.current = new Date().getTime();
-        closeTimerRef.current = documentWindow.setTimeout(handleClose, duration);
+        closeTimerRef.current = globalThis.window.setTimeout(handleClose, duration);
       },
-      [handleClose, documentWindow]
+      [handleClose]
     );
 
     React.useEffect(() => {
@@ -531,7 +530,7 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
         const handlePause = () => {
           const elapsedTime = new Date().getTime() - closeTimerStartTimeRef.current;
           closeTimerRemainingTimeRef.current = closeTimerRemainingTimeRef.current - elapsedTime;
-          documentWindow?.clearTimeout(closeTimerRef.current);
+          globalThis.window.clearTimeout(closeTimerRef.current);
           onPause?.();
         };
         viewport.addEventListener(VIEWPORT_PAUSE, handlePause);
@@ -541,7 +540,7 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
           viewport.removeEventListener(VIEWPORT_RESUME, handleResume);
         };
       }
-    }, [context.viewport, duration, onPause, onResume, startTimer, documentWindow]);
+    }, [context.viewport, duration, onPause, onResume, startTimer]);
 
     // start timer when toast opens or duration changes.
     // we include `open` in deps because closed !== unmounted when animating
@@ -699,13 +698,11 @@ const ToastAnnounce: React.FC<ToastAnnounceProps> = (props: ScopedProps<ToastAnn
   // render text content in the next frame to ensure toast is announced in NVDA
   useNextFrame(() => setRenderAnnounceText(true));
 
-  const documentWindow = useDocument()?.defaultView;
   // cleanup after announcing
   React.useEffect(() => {
-    if (!documentWindow) return;
-    const timer = documentWindow.setTimeout(() => setIsAnnounced(true), 1000);
-    return () => documentWindow.clearTimeout(timer);
-  }, [documentWindow]);
+    const timer = globalThis.window.setTimeout(() => setIsAnnounced(true), 1000);
+    return () => globalThis.window.clearTimeout(timer);
+  }, []);
 
   return isAnnounced ? null : (
     <Portal asChild>
@@ -912,20 +909,18 @@ const isDeltaInDirection = (
 };
 
 function useNextFrame(callback = () => {}) {
-  const documentWindow = useDocument()?.defaultView;
   const fn = useCallbackRef(callback);
   useLayoutEffect(() => {
-    if (!documentWindow) return;
     let raf1 = 0;
     let raf2 = 0;
-    raf1 = documentWindow.requestAnimationFrame(
-      () => (raf2 = documentWindow.requestAnimationFrame(fn))
+    raf1 = globalThis.window.requestAnimationFrame(
+      () => (raf2 = globalThis.window.requestAnimationFrame(fn))
     );
     return () => {
-      documentWindow.cancelAnimationFrame(raf1);
-      documentWindow.cancelAnimationFrame(raf2);
+      globalThis.window.cancelAnimationFrame(raf1);
+      globalThis.window.cancelAnimationFrame(raf2);
     };
-  }, [fn, documentWindow]);
+  }, [fn]);
 }
 
 function isHTMLElement(node: any): node is HTMLElement {

@@ -403,8 +403,6 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
       ? { as: Slot, allowPinchZoom: true }
       : undefined;
 
-    const documentWindow = providedDocument?.defaultView;
-
     const handleTypeaheadSearch = (key: string) => {
       const search = searchRef.current + key;
       const items = getItems().filter((item) => !item.disabled);
@@ -417,10 +415,9 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
       // Reset `searchRef` 1 second after it was last updated
       (function updateSearch(value: string) {
         searchRef.current = value;
-        if (!documentWindow) return;
-        documentWindow.clearTimeout(timerRef.current);
+        globalThis.window.clearTimeout(timerRef.current);
         if (value !== '')
-          timerRef.current = documentWindow.setTimeout(() => updateSearch(''), 1000);
+          timerRef.current = globalThis.window.setTimeout(() => updateSearch(''), 1000);
       })(search);
 
       if (newItem) {
@@ -428,13 +425,13 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
          * Imperative focus during keydown is risky so we prevent React's batching updates
          * to avoid potential bugs. See: https://github.com/facebook/react/issues/20332
          */
-        setTimeout(() => (newItem as HTMLElement).focus());
+        globalThis.window.setTimeout(() => (newItem as HTMLElement).focus());
       }
     };
 
     React.useEffect(() => {
-      return () => documentWindow?.clearTimeout(timerRef.current);
-    }, [documentWindow]);
+      return () => globalThis.window.clearTimeout(timerRef.current);
+    }, []);
 
     // Make sure the whole tree has focus guards as our `MenuContent` may be
     // the last element in the DOM (because of the `Portal`)
@@ -546,7 +543,7 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
                   onBlur={composeEventHandlers(props.onBlur, (event) => {
                     // clear search buffer when leaving the menu
                     if (!event.currentTarget.contains(event.target)) {
-                      documentWindow?.clearTimeout(timerRef.current);
+                      globalThis.window.clearTimeout(timerRef.current);
                       searchRef.current = '';
                     }
                   })}
@@ -1042,21 +1039,20 @@ const MenuSubTrigger = React.forwardRef<MenuSubTriggerElement, MenuSubTriggerPro
     const openTimerRef = React.useRef<number | null>(null);
     const { pointerGraceTimerRef, onPointerGraceIntentChange } = contentContext;
     const scope = { __scopeMenu: props.__scopeMenu };
-    const documentWindow = useDocument()?.defaultView;
     const clearOpenTimer = React.useCallback(() => {
-      if (openTimerRef.current) documentWindow?.clearTimeout(openTimerRef.current);
+      if (openTimerRef.current) globalThis.window.clearTimeout(openTimerRef.current);
       openTimerRef.current = null;
-    }, [documentWindow]);
+    }, []);
 
     React.useEffect(() => clearOpenTimer, [clearOpenTimer]);
 
     React.useEffect(() => {
       const pointerGraceTimer = pointerGraceTimerRef.current;
       return () => {
-        documentWindow?.clearTimeout(pointerGraceTimer);
+        globalThis.window.clearTimeout(pointerGraceTimer);
         onPointerGraceIntentChange(null);
       };
-    }, [pointerGraceTimerRef, onPointerGraceIntentChange, documentWindow]);
+    }, [pointerGraceTimerRef, onPointerGraceIntentChange]);
 
     return (
       <MenuAnchor asChild {...scope}>
@@ -1088,8 +1084,7 @@ const MenuSubTrigger = React.forwardRef<MenuSubTriggerElement, MenuSubTriggerPro
               if (event.defaultPrevented) return;
               if (!props.disabled && !context.open && !openTimerRef.current) {
                 contentContext.onPointerGraceIntentChange(null);
-                if (!documentWindow) return;
-                openTimerRef.current = documentWindow.setTimeout(() => {
+                openTimerRef.current = globalThis.window.setTimeout(() => {
                   context.onOpenChange(true);
                   clearOpenTimer();
                 }, 100);
@@ -1123,9 +1118,8 @@ const MenuSubTrigger = React.forwardRef<MenuSubTriggerElement, MenuSubTriggerPro
                   side,
                 });
 
-                if (!documentWindow) return;
-                documentWindow.clearTimeout(pointerGraceTimerRef.current);
-                pointerGraceTimerRef.current = documentWindow.setTimeout(
+                globalThis.window.clearTimeout(pointerGraceTimerRef.current);
+                pointerGraceTimerRef.current = globalThis.window.setTimeout(
                   () => contentContext.onPointerGraceIntentChange(null),
                   300
                 );

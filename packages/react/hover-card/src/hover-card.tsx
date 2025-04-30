@@ -64,7 +64,6 @@ const HoverCard: React.FC<HoverCardProps> = (props: ScopedProps<HoverCardProps>)
   const closeTimerRef = React.useRef(0);
   const hasSelectionRef = React.useRef(false);
   const isPointerDownOnContentRef = React.useRef(false);
-  const documentWindow = useDocument()?.defaultView;
 
   const [open, setOpen] = useControllableState({
     prop: openProp,
@@ -74,26 +73,24 @@ const HoverCard: React.FC<HoverCardProps> = (props: ScopedProps<HoverCardProps>)
   });
 
   const handleOpen = React.useCallback(() => {
-    clearTimeout(closeTimerRef.current);
-    if (!documentWindow) return;
-    openTimerRef.current = documentWindow.setTimeout(() => setOpen(true), openDelay);
-  }, [openDelay, setOpen, documentWindow]);
+    globalThis.window.clearTimeout(closeTimerRef.current);
+    openTimerRef.current = globalThis.window.setTimeout(() => setOpen(true), openDelay);
+  }, [openDelay, setOpen]);
 
   const handleClose = React.useCallback(() => {
-    clearTimeout(openTimerRef.current);
-    if (!documentWindow) return;
+    globalThis.window.clearTimeout(openTimerRef.current);
     if (!hasSelectionRef.current && !isPointerDownOnContentRef.current) {
-      closeTimerRef.current = documentWindow.setTimeout(() => setOpen(false), closeDelay);
+      closeTimerRef.current = globalThis.window.setTimeout(() => setOpen(false), closeDelay);
     }
-  }, [closeDelay, setOpen, documentWindow]);
+  }, [closeDelay, setOpen]);
 
   const handleDismiss = React.useCallback(() => setOpen(false), [setOpen]);
 
   // cleanup any queued state updates on unmount
   React.useEffect(() => {
     return () => {
-      clearTimeout(openTimerRef.current);
-      clearTimeout(closeTimerRef.current);
+      globalThis.window.clearTimeout(openTimerRef.current);
+      globalThis.window.clearTimeout(closeTimerRef.current);
     };
   }, []);
 
@@ -302,7 +299,7 @@ const HoverCardContentImpl = React.forwardRef<
         context.isPointerDownOnContentRef.current = false;
 
         // Delay a frame to ensure we always access the latest selection
-        setTimeout(() => {
+        globalThis.window.setTimeout(() => {
           const hasSelection = providedDocument.getSelection()?.toString() !== '';
           if (hasSelection) context.hasSelectionRef.current = true;
         });

@@ -245,28 +245,27 @@ const ScrollAreaScrollbarHover = React.forwardRef<
   const { forceMount, ...scrollbarProps } = props;
   const context = useScrollAreaContext(SCROLLBAR_NAME, props.__scopeScrollArea);
   const [visible, setVisible] = React.useState(false);
-  const documentWindow = useDocument()?.defaultView;
 
   React.useEffect(() => {
     const scrollArea = context.scrollArea;
     let hideTimer = 0;
-    if (scrollArea && documentWindow) {
+    if (scrollArea) {
       const handlePointerEnter = () => {
-        documentWindow.clearTimeout(hideTimer);
+        globalThis.window.clearTimeout(hideTimer);
         setVisible(true);
       };
       const handlePointerLeave = () => {
-        hideTimer = documentWindow.setTimeout(() => setVisible(false), context.scrollHideDelay);
+        hideTimer = globalThis.window.setTimeout(() => setVisible(false), context.scrollHideDelay);
       };
       scrollArea.addEventListener('pointerenter', handlePointerEnter);
       scrollArea.addEventListener('pointerleave', handlePointerLeave);
       return () => {
-        documentWindow.clearTimeout(hideTimer);
+        globalThis.window.clearTimeout(hideTimer);
         scrollArea.removeEventListener('pointerenter', handlePointerEnter);
         scrollArea.removeEventListener('pointerleave', handlePointerLeave);
       };
     }
-  }, [context.scrollArea, context.scrollHideDelay, documentWindow]);
+  }, [context.scrollArea, context.scrollHideDelay]);
 
   return (
     <Presence present={forceMount || visible}>
@@ -310,14 +309,13 @@ const ScrollAreaScrollbarScroll = React.forwardRef<
       POINTER_ENTER: 'interacting',
     },
   });
-  const documentWindow = useDocument()?.defaultView;
 
   React.useEffect(() => {
-    if (state === 'idle' && documentWindow) {
-      const hideTimer = documentWindow.setTimeout(() => send('HIDE'), context.scrollHideDelay);
-      return () => documentWindow.clearTimeout(hideTimer);
+    if (state === 'idle') {
+      const hideTimer = globalThis.window.setTimeout(() => send('HIDE'), context.scrollHideDelay);
+      return () => globalThis.window.clearTimeout(hideTimer);
     }
-  }, [state, context.scrollHideDelay, send, documentWindow]);
+  }, [state, context.scrollHideDelay, send]);
 
   React.useEffect(() => {
     const viewport = context.viewport;
@@ -984,18 +982,13 @@ const addUnlinkedScrollListener = (node: HTMLElement, handler = () => {}) => {
 };
 
 function useDebounceCallback(callback: () => void, delay: number) {
-  const documentWindow = useDocument()?.defaultView;
   const handleCallback = useCallbackRef(callback);
   const debounceTimerRef = React.useRef(0);
-  React.useEffect(
-    () => () => documentWindow?.clearTimeout(debounceTimerRef.current),
-    [documentWindow]
-  );
+  React.useEffect(() => () => globalThis.window.clearTimeout(debounceTimerRef.current), []);
   return React.useCallback(() => {
-    if (!documentWindow) return;
-    documentWindow.clearTimeout(debounceTimerRef.current);
-    debounceTimerRef.current = documentWindow.setTimeout(handleCallback, delay);
-  }, [handleCallback, delay, documentWindow]);
+    globalThis.window.clearTimeout(debounceTimerRef.current);
+    debounceTimerRef.current = globalThis.window.setTimeout(handleCallback, delay);
+  }, [handleCallback, delay]);
 }
 
 function useResizeObserver(element: HTMLElement | null, onResize: () => void) {

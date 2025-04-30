@@ -100,16 +100,12 @@ const AvatarFallback = React.forwardRef<AvatarFallbackElement, AvatarFallbackPro
     const { __scopeAvatar, delayMs, ...fallbackProps } = props;
     const context = useAvatarContext(FALLBACK_NAME, __scopeAvatar);
     const [canRender, setCanRender] = React.useState(delayMs === undefined);
-    const providedDocument = useDocument();
-    const documentWindow = providedDocument?.defaultView;
-
     React.useEffect(() => {
-      if (!documentWindow) return;
       if (delayMs !== undefined) {
-        const timerId = documentWindow.setTimeout(() => setCanRender(true), delayMs);
-        return () => documentWindow.clearTimeout(timerId);
+        const timerId = globalThis.window.setTimeout(() => setCanRender(true), delayMs);
+        return () => globalThis.window.clearTimeout(timerId);
       }
-    }, [delayMs, documentWindow]);
+    }, [delayMs]);
 
     return canRender && context.imageLoadingStatus !== 'loaded' ? (
       <Primitive.span {...fallbackProps} ref={forwardedRef} />
