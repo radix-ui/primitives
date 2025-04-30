@@ -4,7 +4,7 @@ import styles from './radio-group.stories.module.css';
 
 export default { title: 'Components/RadioGroup' };
 
-export const Styled = () => (
+export const LegacyStyled = () => (
   <Label>
     Favourite pet
     <RadioGroup.Root className={styles.root} defaultValue="1">
@@ -30,7 +30,7 @@ export const Styled = () => (
   </Label>
 );
 
-export const Controlled = () => {
+export const LegacyControlled = () => {
   const [value, setValue] = React.useState('2');
 
   return (
@@ -48,7 +48,7 @@ export const Controlled = () => {
   );
 };
 
-export const Unset = () => (
+export const LegacyUnset = () => (
   <Label>
     Favourite pet
     <RadioGroup.Root className={styles.root}>
@@ -74,7 +74,7 @@ export const Unset = () => (
   </Label>
 );
 
-export const WithinForm = () => {
+export const LegacyWithinForm = () => {
   const [data, setData] = React.useState({ optional: '', required: '', stopprop: '' });
 
   return (
@@ -156,7 +156,7 @@ export const WithinForm = () => {
   );
 };
 
-export const Animated = () => {
+export const LegacyAnimated = () => {
   const indicatorClass = [styles.indicator, styles.animatedIndicator].join(' ');
   return (
     <Label>
@@ -185,7 +185,7 @@ export const Animated = () => {
   );
 };
 
-export const Chromatic = () => {
+export const LegacyChromatic = () => {
   const manualFocusRef = React.useRef<React.ElementRef<typeof RadioGroup.Item>>(null);
 
   React.useEffect(() => {
@@ -411,6 +411,6 @@ export const Chromatic = () => {
     </>
   );
 };
-Chromatic.parameters = { chromatic: { disable: false } };
+LegacyChromatic.parameters = { chromatic: { disable: false } };
 
 const Label = (props: any) => <LabelPrimitive.Root {...props} className={styles.label} />;

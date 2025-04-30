@@ -391,8 +391,8 @@ export {
   CheckboxBubbleInput,
   //
   Checkbox as Root,
-  CheckboxProvider as Trigger,
-  CheckboxTrigger as Provider,
+  CheckboxProvider as Provider,
+  CheckboxTrigger as Trigger,
   CheckboxIndicator as Indicator,
   CheckboxBubbleInput as BubbleInput,
 };
