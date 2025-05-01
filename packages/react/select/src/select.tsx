@@ -310,8 +310,7 @@ const SelectTrigger = React.forwardRef<SelectTriggerElement, SelectTriggerProps>
       <PopperPrimitive.Anchor asChild {...popperScope}>
         <Primitive.button
           type="button"
-          // https://w3c.github.io/html-aam/#el-select-listbox
-          role={context.multiple ? 'combobox' : 'listbox'}
+          role="combobox"
           aria-controls={context.contentId}
           aria-expanded={context.open}
           aria-required={context.required}

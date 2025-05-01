@@ -81,20 +81,11 @@ describe('given a single isolated Select', () => {
   beforeEach(() => {
     handleValueChange = vi.fn();
     rendered = render(<SelectTest onValueChange={handleValueChange} />);
-    trigger = rendered.getByRole('listbox', { name: LABEL_TEXT });
+    trigger = rendered.getByRole('combobox', { name: LABEL_TEXT });
   });
 
   it('should have no accessibility violations', async () => {
-    expect(
-      await axe(rendered.container, {
-        rules: {
-          // Listbox role is not an allowed role for button, but is the role for single select
-          // https://www.w3.org/TR/html-aria/#el-button
-          'aria-allowed-attr': { enabled: false },
-          'aria-allowed-role': { enabled: false },
-        },
-      })
-    ).toHaveNoViolations();
+    expect(await axe(rendered.container)).toHaveNoViolations();
   });
 
   describe('after clicking the trigger', () => {
@@ -133,20 +124,11 @@ describe('given a single Select in a form', () => {
         <SelectTest name={SELECT_NAME} />
       </form>
     );
-    trigger = rendered.getByRole('listbox', { name: LABEL_TEXT });
+    trigger = rendered.getByRole('combobox', { name: LABEL_TEXT });
   });
 
   it('should have no accessibility violations', async () => {
-    expect(
-      await axe(rendered.container, {
-        rules: {
-          // Listbox role is not an allowed role for button, but is the role for single select
-          // https://www.w3.org/TR/html-aria/#el-button
-          'aria-allowed-attr': { enabled: false },
-          'aria-allowed-role': { enabled: false },
-        },
-      })
-    ).toHaveNoViolations();
+    expect(await axe(rendered.container)).toHaveNoViolations();
   });
 
   describe('after clicking the trigger', () => {
@@ -174,16 +156,7 @@ describe('given a multiple isolated Select', () => {
   });
 
   it('should have no accessibility violations', async () => {
-    expect(
-      await axe(rendered.container, {
-        rules: {
-          // Listbox role is not an allowed role for button, but is the role for single select
-          // https://www.w3.org/TR/html-aria/#el-button
-          'aria-allowed-attr': { enabled: false },
-          'aria-allowed-role': { enabled: false },
-        },
-      })
-    ).toHaveNoViolations();
+    expect(await axe(rendered.container)).toHaveNoViolations();
   });
 
   describe('after clicking the trigger', () => {
@@ -230,16 +203,7 @@ describe('given a multi Select in a form', () => {
   });
 
   it('should have no accessibility violations', async () => {
-    expect(
-      await axe(rendered.container, {
-        rules: {
-          // Listbox role is not an allowed role for button, but is the role for single select
-          // https://www.w3.org/TR/html-aria/#el-button
-          'aria-allowed-attr': { enabled: false },
-          'aria-allowed-role': { enabled: false },
-        },
-      })
-    ).toHaveNoViolations();
+    expect(await axe(rendered.container)).toHaveNoViolations();
   });
 
   describe('after clicking the trigger', () => {
