@@ -1,5 +1,9 @@
 # @radix-ui/react-menubar
 
+## 1.1.13
+
+- Updated dependencies: `@radix-ui/react-collection@1.1.5`, `@radix-ui/react-menu@2.1.13`, `@radix-ui/react-primitive@2.1.1`, `@radix-ui/react-roving-focus@1.1.8`
+
 ## 1.1.12
 
 - Updated dependencies: `@radix-ui/react-menu@2.1.12`

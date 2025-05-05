@@ -1,5 +1,9 @@
 # @radix-ui/react-accordion
 
+## 1.2.9
+
+- Updated dependencies: `@radix-ui/react-collection@1.1.5`, `@radix-ui/react-primitive@2.1.1`, `@radix-ui/react-collapsible@1.1.9`
+
 ## 1.2.8
 
 - Updated dependencies: `@radix-ui/react-collapsible@1.1.8`

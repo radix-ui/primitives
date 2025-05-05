@@ -1,5 +1,9 @@
 # @radix-ui/react-context-menu
 
+## 2.2.13
+
+- Updated dependencies: `@radix-ui/react-menu@2.1.13`, `@radix-ui/react-primitive@2.1.1`
+
 ## 2.2.12
 
 - Updated dependencies: `@radix-ui/react-menu@2.1.12`

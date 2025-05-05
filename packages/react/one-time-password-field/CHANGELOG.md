@@ -1,5 +1,10 @@
 # @radix-ui/react-one-time-password-field
 
+## 0.1.5
+
+- - Update default input type to `text` and pass to the underlying input element ([#3510](https://github.com/radix-ui/primitives/pull/3510))
+- Updated dependencies: `@radix-ui/react-collection@1.1.5`, `@radix-ui/react-primitive@2.1.1`, `@radix-ui/react-roving-focus@1.1.8`
+
 ## 0.1.4
 
 - Updated dependencies: `@radix-ui/react-use-is-hydrated@0.1.0`

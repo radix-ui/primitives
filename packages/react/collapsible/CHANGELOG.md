@@ -1,5 +1,9 @@
 # @radix-ui/react-collapsible
 
+## 1.1.9
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.1`
+
 ## 1.1.8
 
 - Updated dependencies: `@radix-ui/react-presence@1.1.4`

@@ -1,9 +1,8 @@
----
-'@radix-ui/react-password-toggle-field': minor
-'radix-ui': minor
----
+# @radix-ui/react-password-toggle-field
 
-Introduce new Password Toggle Field primitive
+## 0.1.0
+
+### Introduce new Password Toggle Field primitive
 
 This new primitive provides components for rendering a password input alongside a button to toggle its visibility. Aside from its primary functionality, it also includes:
 
@@ -39,3 +38,7 @@ function FieldWithTextToggle() {
   );
 }
 ```
+
+### Other updates
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.1`

@@ -1,5 +1,10 @@
 # @radix-ui/react-radio-group
 
+## 1.3.5
+
+- Allow passing value of `null` to controlled Radio Group when all items are unchecked
+- Updated dependencies: `@radix-ui/react-primitive@2.1.1`, `@radix-ui/react-roving-focus@1.1.8`
+
 ## 1.3.4
 
 - Updated dependencies: `@radix-ui/react-presence@1.1.4`
