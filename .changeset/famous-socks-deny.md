@@ -2,4 +2,4 @@
 '@radix-ui/react-slot': patch
 ---
 
-use stable composed refs in SlotClone
+Use stable composed refs in SlotClone ([#3477](https://github.com/radix-ui/primitives/pull/3477))
