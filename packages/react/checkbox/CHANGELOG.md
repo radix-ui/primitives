@@ -1,5 +1,10 @@
 # @radix-ui/react-checkbox
 
+## 1.3.0
+
+- Add unstable `Provider`, `Trigger` and `BubbleInput` parts to Checkbox ([#3459](https://github.com/radix-ui/primitives/pull/3459))
+- Updated dependencies: `@radix-ui/react-primitive@2.1.1`
+
 ## 1.2.3
 
 - Updated dependencies: `@radix-ui/react-presence@1.1.4`

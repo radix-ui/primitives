@@ -1,5 +1,9 @@
 # @radix-ui/react-collection
 
+## 1.1.5
+
+- Updated dependencies: `@radix-ui/react-slot@1.2.1`, `@radix-ui/react-primitive@2.1.1`
+
 ## 1.1.4
 
 - Add unstable collection utilities

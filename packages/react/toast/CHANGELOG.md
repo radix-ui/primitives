@@ -1,5 +1,9 @@
 # @radix-ui/react-toast
 
+## 1.2.12
+
+- Updated dependencies: `@radix-ui/react-collection@1.1.5`, `@radix-ui/react-primitive@2.1.1`, `@radix-ui/react-dismissable-layer@1.1.8`, `@radix-ui/react-portal@1.1.7`, `@radix-ui/react-visually-hidden@1.2.1`
+
 ## 1.2.11
 
 - Updated dependencies: `@radix-ui/react-presence@1.1.4`

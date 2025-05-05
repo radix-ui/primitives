@@ -1,5 +1,9 @@
 # @radix-ui/react-toggle-group
 
+## 1.1.8
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.1`, `@radix-ui/react-roving-focus@1.1.8`, `@radix-ui/react-toggle@1.1.7`
+
 ## 1.1.7
 
 - Updated dependencies: `@radix-ui/react-roving-focus@1.1.7`
