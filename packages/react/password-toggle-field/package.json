@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-password-toggle-field",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "license": "MIT",
   "source": "./src/index.ts",
   "main": "./src/index.ts",

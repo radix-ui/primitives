@@ -1,5 +1,9 @@
 # @radix-ui/react-roving-focus
 
+## 1.1.8
+
+- Updated dependencies: `@radix-ui/react-collection@1.1.5`, `@radix-ui/react-primitive@2.1.1`
+
 ## 1.1.7
 
 - Internal changes to render props
