@@ -10,6 +10,7 @@ storybook-static
 .pnp
 .pnp.js
 *.pem
+.npmrc
 
 # Testing
 cypress/videos
