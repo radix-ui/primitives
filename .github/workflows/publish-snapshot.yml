@@ -44,12 +44,5 @@ jobs:
       - name: Update snapshot version
         run: pnpm run bump:next
 
-      - name: Commit changes
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "<41898282+github-actions[bot]@users.noreply.github.com>"
-          git add .
-          git commit -m "Update snapshot version"
-
       - name: Publish snapshot
-        run: pnpm run release:next
+        run: pnpm run release:next --no-git-checks
