@@ -228,8 +228,18 @@ const Checkbox = React.forwardRef<CheckboxElement, CheckboxProps>(
         // @ts-expect-error
         internal_do_not_use_render={({ isFormControl }: CheckboxContextValue) => (
           <>
-            <CheckboxTrigger {...checkboxProps} ref={forwardedRef} />
-            {isFormControl && <CheckboxBubbleInput />}
+            <CheckboxTrigger
+              {...checkboxProps}
+              ref={forwardedRef}
+              // @ts-expect-error
+              __scopeCheckbox={__scopeCheckbox}
+            />
+            {isFormControl && (
+              <CheckboxBubbleInput
+                // @ts-expect-error
+                __scopeCheckbox={__scopeCheckbox}
+              />
+            )}
           </>
         )}
       />
@@ -287,14 +297,7 @@ type InputProps = React.ComponentPropsWithoutRef<typeof Primitive.input>;
 interface CheckboxBubbleInputProps extends Omit<InputProps, 'checked'> {}
 
 const CheckboxBubbleInput = React.forwardRef<HTMLInputElement, CheckboxBubbleInputProps>(
-  (
-    {
-      __scopeCheckbox,
-
-      ...props
-    }: ScopedProps<CheckboxBubbleInputProps>,
-    forwardedRef
-  ) => {
+  ({ __scopeCheckbox, ...props }: ScopedProps<CheckboxBubbleInputProps>, forwardedRef) => {
     const {
       control,
       hasConsumerStoppedPropagationRef,
