@@ -3,6 +3,7 @@ import { createContextScope } from '@radix-ui/react-context';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { Primitive } from '@radix-ui/react-primitive';
+import { useIsHydrated } from '@radix-ui/react-use-is-hydrated';
 
 import type { Scope } from '@radix-ui/react-context';
 
@@ -176,18 +177,6 @@ function useImageLoadingStatus(
   }, [image, crossOrigin, referrerPolicy]);
 
   return loadingStatus;
-}
-
-function subscribe() {
-  return () => {};
-}
-
-function useIsHydrated() {
-  return React.useSyncExternalStore(
-    subscribe,
-    () => true,
-    () => false
-  );
 }
 
 const Root = Avatar;

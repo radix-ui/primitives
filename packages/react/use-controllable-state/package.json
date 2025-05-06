@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-use-controllable-state",
-  "version": "1.1.1",
+  "version": "1.2.2",
   "license": "MIT",
   "source": "./src/index.ts",
   "main": "./src/index.ts",
@@ -34,6 +34,7 @@
     "build": "radix-build"
   },
   "dependencies": {
+    "@radix-ui/react-use-effect-event": "workspace:*",
     "@radix-ui/react-use-layout-effect": "workspace:*"
   },
   "devDependencies": {
@@ -43,8 +44,8 @@
     "@types/react": "^19.0.7",
     "@types/react-dom": "^19.0.3",
     "eslint": "^9.18.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
     "typescript": "^5.7.3"
   },
   "peerDependencies": {

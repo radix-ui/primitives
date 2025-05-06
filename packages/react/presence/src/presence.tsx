@@ -31,7 +31,7 @@ Presence.displayName = 'Presence';
 
 function usePresence(present: boolean) {
   const [node, setNode] = React.useState<HTMLElement>();
-  const stylesRef = React.useRef<CSSStyleDeclaration>({} as any);
+  const stylesRef = React.useRef<CSSStyleDeclaration | null>(null);
   const prevPresentRef = React.useRef(present);
   const prevAnimationNameRef = React.useRef<string>('none');
   const initialState = present ? 'mounted' : 'unmounted';
@@ -153,7 +153,7 @@ function usePresence(present: boolean) {
   return {
     isPresent: ['mounted', 'unmountSuspended'].includes(state),
     ref: React.useCallback((node: HTMLElement) => {
-      if (node) stylesRef.current = getComputedStyle(node);
+      stylesRef.current = node ? getComputedStyle(node) : null;
       setNode(node);
     }, []),
   };
@@ -161,7 +161,7 @@ function usePresence(present: boolean) {
 
 /* -----------------------------------------------------------------------------------------------*/
 
-function getAnimationName(styles?: CSSStyleDeclaration) {
+function getAnimationName(styles: CSSStyleDeclaration | null) {
   return styles?.animationName || 'none';
 }
 

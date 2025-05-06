@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-dismissable-layer",
-  "version": "1.1.6",
+  "version": "1.1.9",
   "license": "MIT",
   "source": "./src/index.ts",
   "main": "./src/index.ts",
@@ -47,8 +47,8 @@
     "@types/react": "^19.0.7",
     "@types/react-dom": "^19.0.3",
     "eslint": "^9.18.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
     "react-remove-scroll": "^2.6.3",
     "typescript": "^5.7.3"
   },

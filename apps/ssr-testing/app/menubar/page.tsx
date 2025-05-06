@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as Menubar from '@radix-ui/react-menubar';
+import { Menubar } from 'radix-ui';
 
 export default function Page() {
   return (

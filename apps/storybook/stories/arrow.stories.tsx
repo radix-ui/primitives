@@ -1,4 +1,4 @@
-import { ArrowPrimitive as Arrow } from 'radix-ui/internal';
+import { Arrow } from 'radix-ui/internal';
 
 export default { title: 'Utilities/Arrow' };
 

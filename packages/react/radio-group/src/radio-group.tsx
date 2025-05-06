@@ -30,7 +30,7 @@ type RadioGroupContextValue = {
   name?: string;
   required: boolean;
   disabled: boolean;
-  value: string;
+  value: string | null;
   onValueChange(value: string): void;
 };
 
@@ -48,7 +48,7 @@ interface RadioGroupProps extends PrimitiveDivProps {
   orientation?: RovingFocusGroupProps['orientation'];
   loop?: RovingFocusGroupProps['loop'];
   defaultValue?: string;
-  value?: RadioGroupContextValue['value'];
+  value?: string | null;
   onValueChange?: RadioGroupContextValue['onValueChange'];
 }
 
@@ -71,8 +71,8 @@ const RadioGroup = React.forwardRef<RadioGroupElement, RadioGroupProps>(
     const direction = useDirection(dir);
     const [value, setValue] = useControllableState({
       prop: valueProp,
-      defaultProp: defaultValue ?? '',
-      onChange: onValueChange,
+      defaultProp: defaultValue ?? null,
+      onChange: onValueChange as (value: string | null) => void,
       caller: RADIO_GROUP_NAME,
     });
 

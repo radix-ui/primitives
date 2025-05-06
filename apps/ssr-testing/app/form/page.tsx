@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as Form from '@radix-ui/react-form';
+import { Form } from 'radix-ui';
 
 export default function Page() {
   return (

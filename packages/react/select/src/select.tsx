@@ -19,7 +19,7 @@ import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { usePrevious } from '@radix-ui/react-use-previous';
-import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
+import { VISUALLY_HIDDEN_STYLES } from '@radix-ui/react-visually-hidden';
 import { hideOthers } from 'aria-hidden';
 import { RemoveScroll } from 'react-remove-scroll';
 
@@ -216,7 +216,7 @@ const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
         </Collection.Provider>
 
         {isFormControl ? (
-          <BubbleSelect
+          <SelectBubbleInput
             key={nativeSelectKey}
             aria-hidden
             required={required}
@@ -231,7 +231,7 @@ const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
           >
             {value === undefined ? <option value="" /> : null}
             {Array.from(nativeOptionsSet)}
-          </BubbleSelect>
+          </SelectBubbleInput>
         ) : null}
       </SelectProvider>
     </PopperPrimitive.Root>
@@ -1629,22 +1629,26 @@ const SelectArrow = React.forwardRef<SelectArrowElement, SelectArrowProps>(
 
 SelectArrow.displayName = ARROW_NAME;
 
-/* -----------------------------------------------------------------------------------------------*/
+/* -------------------------------------------------------------------------------------------------
+ * SelectBubbleInput
+ * -----------------------------------------------------------------------------------------------*/
 
-function shouldShowPlaceholder(value?: string) {
-  return value === '' || value === undefined;
-}
+const BUBBLE_INPUT_NAME = 'SelectBubbleInput';
 
-const BubbleSelect = React.forwardRef<HTMLSelectElement, React.ComponentPropsWithoutRef<'select'>>(
-  (props, forwardedRef) => {
-    const { value, ...selectProps } = props;
+type InputProps = React.ComponentPropsWithoutRef<typeof Primitive.select>;
+interface SwitchBubbleInputProps extends InputProps {}
+
+const SelectBubbleInput = React.forwardRef<HTMLSelectElement, SwitchBubbleInputProps>(
+  ({ __scopeSelect, value, ...props }: ScopedProps<SwitchBubbleInputProps>, forwardedRef) => {
     const ref = React.useRef<HTMLSelectElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, ref);
     const prevValue = usePrevious(value);
 
     // Bubble value change to parents (e.g form change event)
     React.useEffect(() => {
-      const select = ref.current!;
+      const select = ref.current;
+      if (!select) return;
+
       const selectProto = window.HTMLSelectElement.prototype;
       const descriptor = Object.getOwnPropertyDescriptor(
         selectProto,
@@ -1659,26 +1663,35 @@ const BubbleSelect = React.forwardRef<HTMLSelectElement, React.ComponentPropsWit
     }, [prevValue, value]);
 
     /**
-     * We purposefully use a `select` here to support form autofill as much
-     * as possible.
+     * We purposefully use a `select` here to support form autofill as much as
+     * possible.
      *
      * We purposefully do not add the `value` attribute here to allow the value
-     * to be set programmatically and bubble to any parent form `onChange` event.
-     * Adding the `value` will cause React to consider the programmatic
+     * to be set programmatically and bubble to any parent form `onChange`
+     * event. Adding the `value` will cause React to consider the programmatic
      * dispatch a duplicate and it will get swallowed.
      *
-     * We use `VisuallyHidden` rather than `display: "none"` because Safari autofill
-     * won't work otherwise.
+     * We use visually hidden styles rather than `display: "none"` because
+     * Safari autofill won't work otherwise.
      */
     return (
-      <VisuallyHidden asChild>
-        <select {...selectProps} ref={composedRefs} defaultValue={value} />
-      </VisuallyHidden>
+      <Primitive.select
+        {...props}
+        style={{ ...VISUALLY_HIDDEN_STYLES, ...props.style }}
+        ref={composedRefs}
+        defaultValue={value}
+      />
     );
   }
 );
 
-BubbleSelect.displayName = 'BubbleSelect';
+SelectBubbleInput.displayName = BUBBLE_INPUT_NAME;
+
+/* -----------------------------------------------------------------------------------------------*/
+
+function shouldShowPlaceholder(value?: string) {
+  return value === '' || value === undefined;
+}
 
 function useTypeaheadSearch(onSearchChange: (search: string) => void) {
   const handleSearchChange = useCallbackRef(onSearchChange);

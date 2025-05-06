@@ -73,7 +73,7 @@ const Radio = React.forwardRef<RadioElement, RadioProps>(
           })}
         />
         {isFormControl && (
-          <BubbleInput
+          <RadioBubbleInput
             control={button}
             bubbles={!hasConsumerStoppedPropagationRef.current}
             name={name}
@@ -130,53 +130,77 @@ const RadioIndicator = React.forwardRef<RadioIndicatorElement, RadioIndicatorPro
 
 RadioIndicator.displayName = INDICATOR_NAME;
 
-/* ---------------------------------------------------------------------------------------------- */
+/* -------------------------------------------------------------------------------------------------
+ * RadioBubbleInput
+ * -----------------------------------------------------------------------------------------------*/
 
-type InputProps = React.ComponentPropsWithoutRef<'input'>;
-interface BubbleInputProps extends Omit<InputProps, 'checked'> {
+const BUBBLE_INPUT_NAME = 'RadioBubbleInput';
+
+type InputProps = React.ComponentPropsWithoutRef<typeof Primitive.input>;
+interface RadioBubbleInputProps extends Omit<InputProps, 'checked'> {
   checked: boolean;
   control: HTMLElement | null;
   bubbles: boolean;
 }
 
-const BubbleInput = (props: BubbleInputProps) => {
-  const { control, checked, bubbles = true, ...inputProps } = props;
-  const ref = React.useRef<HTMLInputElement>(null);
-  const prevChecked = usePrevious(checked);
-  const controlSize = useSize(control);
+const RadioBubbleInput = React.forwardRef<HTMLInputElement, RadioBubbleInputProps>(
+  (
+    {
+      __scopeRadio,
+      control,
+      checked,
+      bubbles = true,
+      ...props
+    }: ScopedProps<RadioBubbleInputProps>,
+    forwardedRef
+  ) => {
+    const ref = React.useRef<HTMLInputElement>(null);
+    const composedRefs = useComposedRefs(ref, forwardedRef);
+    const prevChecked = usePrevious(checked);
+    const controlSize = useSize(control);
 
-  // Bubble checked change to parents (e.g form change event)
-  React.useEffect(() => {
-    const input = ref.current!;
-    const inputProto = window.HTMLInputElement.prototype;
-    const descriptor = Object.getOwnPropertyDescriptor(inputProto, 'checked') as PropertyDescriptor;
-    const setChecked = descriptor.set;
-    if (prevChecked !== checked && setChecked) {
-      const event = new Event('click', { bubbles });
-      setChecked.call(input, checked);
-      input.dispatchEvent(event);
-    }
-  }, [prevChecked, checked, bubbles]);
+    // Bubble checked change to parents (e.g form change event)
+    React.useEffect(() => {
+      const input = ref.current;
+      if (!input) return;
 
-  return (
-    <input
-      type="radio"
-      aria-hidden
-      defaultChecked={checked}
-      {...inputProps}
-      tabIndex={-1}
-      ref={ref}
-      style={{
-        ...props.style,
-        ...controlSize,
-        position: 'absolute',
-        pointerEvents: 'none',
-        opacity: 0,
-        margin: 0,
-      }}
-    />
-  );
-};
+      const inputProto = window.HTMLInputElement.prototype;
+      const descriptor = Object.getOwnPropertyDescriptor(
+        inputProto,
+        'checked'
+      ) as PropertyDescriptor;
+      const setChecked = descriptor.set;
+      if (prevChecked !== checked && setChecked) {
+        const event = new Event('click', { bubbles });
+        setChecked.call(input, checked);
+        input.dispatchEvent(event);
+      }
+    }, [prevChecked, checked, bubbles]);
+
+    return (
+      <Primitive.input
+        type="radio"
+        aria-hidden
+        defaultChecked={checked}
+        {...props}
+        tabIndex={-1}
+        ref={composedRefs}
+        style={{
+          ...props.style,
+          ...controlSize,
+          position: 'absolute',
+          pointerEvents: 'none',
+          opacity: 0,
+          margin: 0,
+        }}
+      />
+    );
+  }
+);
+
+RadioBubbleInput.displayName = BUBBLE_INPUT_NAME;
+
+/* ---------------------------------------------------------------------------------------------- */
 
 function getState(checked: boolean) {
   return checked ? 'checked' : 'unchecked';

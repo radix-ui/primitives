@@ -1,29 +1,21 @@
 import * as React from 'react';
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuPortal,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuArrow,
-} from '@radix-ui/react-dropdown-menu';
+import { DropdownMenu } from 'radix-ui';
 
 export default function Page() {
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger>Open</DropdownMenuTrigger>
-      <DropdownMenuPortal>
-        <DropdownMenuContent sideOffset={5}>
-          <DropdownMenuItem>Undo</DropdownMenuItem>
-          <DropdownMenuItem>Redo</DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem disabled>Cut</DropdownMenuItem>
-          <DropdownMenuItem>Copy</DropdownMenuItem>
-          <DropdownMenuItem>Paste</DropdownMenuItem>
-          <DropdownMenuArrow />
-        </DropdownMenuContent>
-      </DropdownMenuPortal>
-    </DropdownMenu>
+    <DropdownMenu.Root>
+      <DropdownMenu.Trigger>Open</DropdownMenu.Trigger>
+      <DropdownMenu.Portal>
+        <DropdownMenu.Content sideOffset={5}>
+          <DropdownMenu.Item>Undo</DropdownMenu.Item>
+          <DropdownMenu.Item>Redo</DropdownMenu.Item>
+          <DropdownMenu.Separator />
+          <DropdownMenu.Item disabled>Cut</DropdownMenu.Item>
+          <DropdownMenu.Item>Copy</DropdownMenu.Item>
+          <DropdownMenu.Item>Paste</DropdownMenu.Item>
+          <DropdownMenu.Arrow />
+        </DropdownMenu.Content>
+      </DropdownMenu.Portal>
+    </DropdownMenu.Root>
   );
 }

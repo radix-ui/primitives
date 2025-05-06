@@ -1,3 +1,6 @@
+// Adapted from https://github.com/reach/observe-rect/tree
+// MIT license, React Training
+
 type Measurable = { getBoundingClientRect(): DOMRect };
 
 /**

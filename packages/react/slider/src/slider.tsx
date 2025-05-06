@@ -616,7 +616,7 @@ const SliderThumbImpl = React.forwardRef<SliderThumbImplElement, SliderThumbImpl
         </Collection.ItemSlot>
 
         {isFormControl && (
-          <BubbleInput
+          <SliderBubbleInput
             key={index}
             name={
               name ??
@@ -633,37 +633,59 @@ const SliderThumbImpl = React.forwardRef<SliderThumbImplElement, SliderThumbImpl
 
 SliderThumb.displayName = THUMB_NAME;
 
+/* -------------------------------------------------------------------------------------------------
+ * SliderBubbleInput
+ * -----------------------------------------------------------------------------------------------*/
+
+const BUBBLE_INPUT_NAME = 'RadioBubbleInput';
+
+type InputProps = React.ComponentPropsWithoutRef<typeof Primitive.input>;
+interface SliderBubbleInputProps extends InputProps {}
+
+const SliderBubbleInput = React.forwardRef<HTMLInputElement, SliderBubbleInputProps>(
+  ({ __scopeSlider, value, ...props }: ScopedProps<SliderBubbleInputProps>, forwardedRef) => {
+    const ref = React.useRef<HTMLInputElement>(null);
+    const composedRefs = useComposedRefs(ref, forwardedRef);
+    const prevValue = usePrevious(value);
+
+    // Bubble value change to parents (e.g form change event)
+    React.useEffect(() => {
+      const input = ref.current;
+      if (!input) return;
+
+      const inputProto = window.HTMLInputElement.prototype;
+      const descriptor = Object.getOwnPropertyDescriptor(inputProto, 'value') as PropertyDescriptor;
+      const setValue = descriptor.set;
+      if (prevValue !== value && setValue) {
+        const event = new Event('input', { bubbles: true });
+        setValue.call(input, value);
+        input.dispatchEvent(event);
+      }
+    }, [prevValue, value]);
+
+    /**
+     * We purposefully do not use `type="hidden"` here otherwise forms that
+     * wrap it will not be able to access its value via the FormData API.
+     *
+     * We purposefully do not add the `value` attribute here to allow the value
+     * to be set programmatically and bubble to any parent form `onChange` event.
+     * Adding the `value` will cause React to consider the programmatic
+     * dispatch a duplicate and it will get swallowed.
+     */
+    return (
+      <Primitive.input
+        style={{ display: 'none' }}
+        {...props}
+        ref={composedRefs}
+        defaultValue={value}
+      />
+    );
+  }
+);
+
+SliderBubbleInput.displayName = BUBBLE_INPUT_NAME;
+
 /* -----------------------------------------------------------------------------------------------*/
-
-const BubbleInput = (props: React.ComponentPropsWithoutRef<'input'>) => {
-  const { value, ...inputProps } = props;
-  const ref = React.useRef<HTMLInputElement>(null);
-  const prevValue = usePrevious(value);
-
-  // Bubble value change to parents (e.g form change event)
-  React.useEffect(() => {
-    const input = ref.current!;
-    const inputProto = window.HTMLInputElement.prototype;
-    const descriptor = Object.getOwnPropertyDescriptor(inputProto, 'value') as PropertyDescriptor;
-    const setValue = descriptor.set;
-    if (prevValue !== value && setValue) {
-      const event = new Event('input', { bubbles: true });
-      setValue.call(input, value);
-      input.dispatchEvent(event);
-    }
-  }, [prevValue, value]);
-
-  /**
-   * We purposefully do not use `type="hidden"` here otherwise forms that
-   * wrap it will not be able to access its value via the FormData API.
-   *
-   * We purposefully do not add the `value` attribute here to allow the value
-   * to be set programmatically and bubble to any parent form `onChange` event.
-   * Adding the `value` will cause React to consider the programmatic
-   * dispatch a duplicate and it will get swallowed.
-   */
-  return <input style={{ display: 'none' }} {...inputProps} ref={ref} defaultValue={value} />;
-};
 
 function getNextSortedValues(prevValues: number[] = [], nextValue: number, atIndex: number) {
   const nextValues = [...prevValues];
