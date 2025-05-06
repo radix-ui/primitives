@@ -53,20 +53,24 @@ interface CheckboxProviderProps<State extends CheckedState = CheckedState> {
   children?: React.ReactNode;
 }
 
-function CheckboxProvider<State extends CheckedState = CheckedState>({
-  __scopeCheckbox,
-  checked: checkedProp,
-  children,
-  defaultChecked,
-  disabled,
-  form,
-  name,
-  onCheckedChange,
-  required,
-  value = 'on',
-  // @ts-expect-error
-  internal_do_not_use_render,
-}: ScopedProps<CheckboxProviderProps<State>>) {
+function CheckboxProvider<State extends CheckedState = CheckedState>(
+  props: ScopedProps<CheckboxProviderProps<State>>
+) {
+  const {
+    __scopeCheckbox,
+    checked: checkedProp,
+    children,
+    defaultChecked,
+    disabled,
+    form,
+    name,
+    onCheckedChange,
+    required,
+    value = 'on',
+    // @ts-expect-error
+    internal_do_not_use_render,
+  } = props;
+
   const [checked, setChecked] = useControllableState({
     prop: checkedProp,
     defaultProp: defaultChecked ?? false,
