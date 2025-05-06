@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-accordion",
-  "version": "1.2.9",
+  "version": "1.2.10",
   "license": "MIT",
   "source": "./src/index.ts",
   "main": "./src/index.ts",

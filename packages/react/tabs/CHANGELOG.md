@@ -1,5 +1,9 @@
 # @radix-ui/react-tabs
 
+## 1.1.11
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.2`, `@radix-ui/react-roving-focus@1.1.9`
+
 ## 1.1.10
 
 - Updated dependencies: `@radix-ui/react-primitive@2.1.1`, `@radix-ui/react-roving-focus@1.1.8`

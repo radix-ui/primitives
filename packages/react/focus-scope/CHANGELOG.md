@@ -1,5 +1,9 @@
 # @radix-ui/react-focus-scope
 
+## 1.1.6
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.2`
+
 ## 1.1.5
 
 - Updated dependencies: `@radix-ui/react-primitive@2.1.1`

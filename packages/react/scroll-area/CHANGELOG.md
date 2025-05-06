@@ -1,5 +1,9 @@
 # @radix-ui/react-scroll-area
 
+## 1.2.8
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.2`
+
 ## 1.2.7
 
 - Updated dependencies: `@radix-ui/react-primitive@2.1.1`
