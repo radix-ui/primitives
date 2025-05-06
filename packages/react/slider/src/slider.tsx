@@ -382,7 +382,7 @@ const SliderVertical = React.forwardRef<SliderVerticalElement, SliderVerticalPro
  * SliderImpl
  * -----------------------------------------------------------------------------------------------*/
 
-type SliderImplElement = React.ElementRef<typeof Primitive.span>;
+type SliderImplElement = React.ComponentRef<typeof Primitive.span>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 type SliderImplPrivateProps = {
   onSlideStart(event: React.PointerEvent): void;
@@ -462,7 +462,7 @@ const SliderImpl = React.forwardRef<SliderImplElement, SliderImplProps>(
 
 const TRACK_NAME = 'SliderTrack';
 
-type SliderTrackElement = React.ElementRef<typeof Primitive.span>;
+type SliderTrackElement = React.ComponentRef<typeof Primitive.span>;
 type PrimitiveSpanProps = React.ComponentPropsWithoutRef<typeof Primitive.span>;
 interface SliderTrackProps extends PrimitiveSpanProps {}
 
@@ -489,7 +489,7 @@ SliderTrack.displayName = TRACK_NAME;
 
 const RANGE_NAME = 'SliderRange';
 
-type SliderRangeElement = React.ElementRef<typeof Primitive.span>;
+type SliderRangeElement = React.ComponentRef<typeof Primitive.span>;
 interface SliderRangeProps extends PrimitiveSpanProps {}
 
 const SliderRange = React.forwardRef<SliderRangeElement, SliderRangeProps>(
@@ -546,7 +546,7 @@ const SliderThumb = React.forwardRef<SliderThumbElement, SliderThumbProps>(
   }
 );
 
-type SliderThumbImplElement = React.ElementRef<typeof Primitive.span>;
+type SliderThumbImplElement = React.ComponentRef<typeof Primitive.span>;
 interface SliderThumbImplProps extends PrimitiveSpanProps {
   index: number;
   name?: string;

@@ -82,7 +82,7 @@ RovingFocusGroup.displayName = GROUP_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
-type RovingFocusGroupImplElement = React.ElementRef<typeof Primitive.div>;
+type RovingFocusGroupImplElement = React.ComponentRef<typeof Primitive.div>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface RovingFocusGroupImplProps
   extends Omit<PrimitiveDivProps, 'dir'>,
@@ -200,7 +200,7 @@ const RovingFocusGroupImpl = React.forwardRef<
 
 const ITEM_NAME = 'RovingFocusGroupItem';
 
-type RovingFocusItemElement = React.ElementRef<typeof Primitive.span>;
+type RovingFocusItemElement = React.ComponentRef<typeof Primitive.span>;
 type PrimitiveSpanProps = React.ComponentPropsWithoutRef<typeof Primitive.span>;
 interface RovingFocusItemProps extends Omit<PrimitiveSpanProps, 'children'> {
   tabStopId?: string;

@@ -100,7 +100,7 @@ Popover.displayName = POPOVER_NAME;
 
 const ANCHOR_NAME = 'PopoverAnchor';
 
-type PopoverAnchorElement = React.ElementRef<typeof PopperPrimitive.Anchor>;
+type PopoverAnchorElement = React.ComponentRef<typeof PopperPrimitive.Anchor>;
 type PopperAnchorProps = React.ComponentPropsWithoutRef<typeof PopperPrimitive.Anchor>;
 interface PopoverAnchorProps extends PopperAnchorProps {}
 
@@ -128,7 +128,7 @@ PopoverAnchor.displayName = ANCHOR_NAME;
 
 const TRIGGER_NAME = 'PopoverTrigger';
 
-type PopoverTriggerElement = React.ElementRef<typeof Primitive.button>;
+type PopoverTriggerElement = React.ComponentRef<typeof Primitive.button>;
 type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
 interface PopoverTriggerProps extends PrimitiveButtonProps {}
 
@@ -352,7 +352,7 @@ const PopoverContentNonModal = React.forwardRef<PopoverContentTypeElement, Popov
 
 /* -----------------------------------------------------------------------------------------------*/
 
-type PopoverContentImplElement = React.ElementRef<typeof PopperPrimitive.Content>;
+type PopoverContentImplElement = React.ComponentRef<typeof PopperPrimitive.Content>;
 type FocusScopeProps = React.ComponentPropsWithoutRef<typeof FocusScope>;
 type DismissableLayerProps = React.ComponentPropsWithoutRef<typeof DismissableLayer>;
 type PopperContentProps = React.ComponentPropsWithoutRef<typeof PopperPrimitive.Content>;
@@ -447,7 +447,7 @@ const PopoverContentImpl = React.forwardRef<PopoverContentImplElement, PopoverCo
 
 const CLOSE_NAME = 'PopoverClose';
 
-type PopoverCloseElement = React.ElementRef<typeof Primitive.button>;
+type PopoverCloseElement = React.ComponentRef<typeof Primitive.button>;
 interface PopoverCloseProps extends PrimitiveButtonProps {}
 
 const PopoverClose = React.forwardRef<PopoverCloseElement, PopoverCloseProps>(
@@ -473,7 +473,7 @@ PopoverClose.displayName = CLOSE_NAME;
 
 const ARROW_NAME = 'PopoverArrow';
 
-type PopoverArrowElement = React.ElementRef<typeof PopperPrimitive.Arrow>;
+type PopoverArrowElement = React.ComponentRef<typeof PopperPrimitive.Arrow>;
 type PopperArrowProps = React.ComponentPropsWithoutRef<typeof PopperPrimitive.Arrow>;
 interface PopoverArrowProps extends PopperArrowProps {}
 

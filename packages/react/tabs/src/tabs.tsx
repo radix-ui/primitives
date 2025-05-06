@@ -34,7 +34,7 @@ type TabsContextValue = {
 
 const [TabsProvider, useTabsContext] = createTabsContext<TabsContextValue>(TABS_NAME);
 
-type TabsElement = React.ElementRef<typeof Primitive.div>;
+type TabsElement = React.ComponentRef<typeof Primitive.div>;
 type RovingFocusGroupProps = React.ComponentPropsWithoutRef<typeof RovingFocusGroup.Root>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface TabsProps extends PrimitiveDivProps {
@@ -110,7 +110,7 @@ Tabs.displayName = TABS_NAME;
 
 const TAB_LIST_NAME = 'TabsList';
 
-type TabsListElement = React.ElementRef<typeof Primitive.div>;
+type TabsListElement = React.ComponentRef<typeof Primitive.div>;
 interface TabsListProps extends PrimitiveDivProps {
   loop?: RovingFocusGroupProps['loop'];
 }
@@ -147,7 +147,7 @@ TabsList.displayName = TAB_LIST_NAME;
 
 const TRIGGER_NAME = 'TabsTrigger';
 
-type TabsTriggerElement = React.ElementRef<typeof Primitive.button>;
+type TabsTriggerElement = React.ComponentRef<typeof Primitive.button>;
 type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
 interface TabsTriggerProps extends PrimitiveButtonProps {
   value: string;
@@ -214,7 +214,7 @@ TabsTrigger.displayName = TRIGGER_NAME;
 
 const CONTENT_NAME = 'TabsContent';
 
-type TabsContentElement = React.ElementRef<typeof Primitive.div>;
+type TabsContentElement = React.ComponentRef<typeof Primitive.div>;
 interface TabsContentProps extends PrimitiveDivProps {
   value: string;
 

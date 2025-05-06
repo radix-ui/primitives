@@ -7,7 +7,7 @@ import { Primitive } from '@radix-ui/react-primitive';
 
 const NAME = 'Label';
 
-type LabelElement = React.ElementRef<typeof Primitive.label>;
+type LabelElement = React.ComponentRef<typeof Primitive.label>;
 type PrimitiveLabelProps = React.ComponentPropsWithoutRef<typeof Primitive.label>;
 interface LabelProps extends PrimitiveLabelProps {}
 

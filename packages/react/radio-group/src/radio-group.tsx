@@ -37,7 +37,7 @@ type RadioGroupContextValue = {
 const [RadioGroupProvider, useRadioGroupContext] =
   createRadioGroupContext<RadioGroupContextValue>(RADIO_GROUP_NAME);
 
-type RadioGroupElement = React.ElementRef<typeof Primitive.div>;
+type RadioGroupElement = React.ComponentRef<typeof Primitive.div>;
 type RovingFocusGroupProps = React.ComponentPropsWithoutRef<typeof RovingFocusGroup.Root>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface RadioGroupProps extends PrimitiveDivProps {
@@ -115,7 +115,7 @@ RadioGroup.displayName = RADIO_GROUP_NAME;
 
 const ITEM_NAME = 'RadioGroupItem';
 
-type RadioGroupItemElement = React.ElementRef<typeof Radio>;
+type RadioGroupItemElement = React.ComponentRef<typeof Radio>;
 type RadioProps = React.ComponentPropsWithoutRef<typeof Radio>;
 interface RadioGroupItemProps extends Omit<RadioProps, 'onCheck' | 'name'> {
   value: string;
@@ -128,7 +128,7 @@ const RadioGroupItem = React.forwardRef<RadioGroupItemElement, RadioGroupItemPro
     const isDisabled = context.disabled || disabled;
     const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeRadioGroup);
     const radioScope = useRadioScope(__scopeRadioGroup);
-    const ref = React.useRef<React.ElementRef<typeof Radio>>(null);
+    const ref = React.useRef<React.ComponentRef<typeof Radio>>(null);
     const composedRefs = useComposedRefs(forwardedRef, ref);
     const checked = context.value === itemProps.value;
     const isArrowKeyPressedRef = React.useRef(false);
@@ -190,7 +190,7 @@ RadioGroupItem.displayName = ITEM_NAME;
 
 const INDICATOR_NAME = 'RadioGroupIndicator';
 
-type RadioGroupIndicatorElement = React.ElementRef<typeof RadioIndicator>;
+type RadioGroupIndicatorElement = React.ComponentRef<typeof RadioIndicator>;
 type RadioIndicatorProps = React.ComponentPropsWithoutRef<typeof RadioIndicator>;
 interface RadioGroupIndicatorProps extends RadioIndicatorProps {}
 

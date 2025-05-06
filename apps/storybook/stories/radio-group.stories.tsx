@@ -186,7 +186,7 @@ export const LegacyAnimated = () => {
 };
 
 export const LegacyChromatic = () => {
-  const manualFocusRef = React.useRef<React.ElementRef<typeof RadioGroup.Item>>(null);
+  const manualFocusRef = React.useRef<React.ComponentRef<typeof RadioGroup.Item>>(null);
 
   React.useEffect(() => {
     manualFocusRef.current?.focus();

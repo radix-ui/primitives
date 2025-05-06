@@ -36,7 +36,7 @@ AlertDialog.displayName = ROOT_NAME;
  * -----------------------------------------------------------------------------------------------*/
 const TRIGGER_NAME = 'AlertDialogTrigger';
 
-type AlertDialogTriggerElement = React.ElementRef<typeof DialogPrimitive.Trigger>;
+type AlertDialogTriggerElement = React.ComponentRef<typeof DialogPrimitive.Trigger>;
 type DialogTriggerProps = React.ComponentPropsWithoutRef<typeof DialogPrimitive.Trigger>;
 interface AlertDialogTriggerProps extends DialogTriggerProps {}
 
@@ -75,7 +75,7 @@ AlertDialogPortal.displayName = PORTAL_NAME;
 
 const OVERLAY_NAME = 'AlertDialogOverlay';
 
-type AlertDialogOverlayElement = React.ElementRef<typeof DialogPrimitive.Overlay>;
+type AlertDialogOverlayElement = React.ComponentRef<typeof DialogPrimitive.Overlay>;
 type DialogOverlayProps = React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay>;
 interface AlertDialogOverlayProps extends DialogOverlayProps {}
 
@@ -102,7 +102,7 @@ type AlertDialogContentContextValue = {
 const [AlertDialogContentProvider, useAlertDialogContentContext] =
   createAlertDialogContext<AlertDialogContentContextValue>(CONTENT_NAME);
 
-type AlertDialogContentElement = React.ElementRef<typeof DialogPrimitive.Content>;
+type AlertDialogContentElement = React.ComponentRef<typeof DialogPrimitive.Content>;
 type DialogContentProps = React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>;
 interface AlertDialogContentProps
   extends Omit<DialogContentProps, 'onPointerDownOutside' | 'onInteractOutside'> {}
@@ -161,7 +161,7 @@ AlertDialogContent.displayName = CONTENT_NAME;
 
 const TITLE_NAME = 'AlertDialogTitle';
 
-type AlertDialogTitleElement = React.ElementRef<typeof DialogPrimitive.Title>;
+type AlertDialogTitleElement = React.ComponentRef<typeof DialogPrimitive.Title>;
 type DialogTitleProps = React.ComponentPropsWithoutRef<typeof DialogPrimitive.Title>;
 interface AlertDialogTitleProps extends DialogTitleProps {}
 
@@ -181,7 +181,7 @@ AlertDialogTitle.displayName = TITLE_NAME;
 
 const DESCRIPTION_NAME = 'AlertDialogDescription';
 
-type AlertDialogDescriptionElement = React.ElementRef<typeof DialogPrimitive.Description>;
+type AlertDialogDescriptionElement = React.ComponentRef<typeof DialogPrimitive.Description>;
 type DialogDescriptionProps = React.ComponentPropsWithoutRef<typeof DialogPrimitive.Description>;
 interface AlertDialogDescriptionProps extends DialogDescriptionProps {}
 
@@ -202,7 +202,7 @@ AlertDialogDescription.displayName = DESCRIPTION_NAME;
 
 const ACTION_NAME = 'AlertDialogAction';
 
-type AlertDialogActionElement = React.ElementRef<typeof DialogPrimitive.Close>;
+type AlertDialogActionElement = React.ComponentRef<typeof DialogPrimitive.Close>;
 type DialogCloseProps = React.ComponentPropsWithoutRef<typeof DialogPrimitive.Close>;
 interface AlertDialogActionProps extends DialogCloseProps {}
 
@@ -222,7 +222,7 @@ AlertDialogAction.displayName = ACTION_NAME;
 
 const CANCEL_NAME = 'AlertDialogCancel';
 
-type AlertDialogCancelElement = React.ElementRef<typeof DialogPrimitive.Close>;
+type AlertDialogCancelElement = React.ComponentRef<typeof DialogPrimitive.Close>;
 interface AlertDialogCancelProps extends DialogCloseProps {}
 
 const AlertDialogCancel = React.forwardRef<AlertDialogCancelElement, AlertDialogCancelProps>(

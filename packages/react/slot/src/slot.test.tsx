@@ -175,7 +175,7 @@ type TriggerProps = React.ComponentProps<'button'> & { as: React.ElementType };
 const Trigger = ({ as: Comp = 'button', ...props }: TriggerProps) => <Comp {...props} />;
 
 const Button = React.forwardRef<
-  React.ElementRef<'button'>,
+  React.ComponentRef<'button'>,
   React.ComponentProps<'button'> & {
     asChild?: boolean;
     iconLeft?: React.ReactNode;
