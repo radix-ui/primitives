@@ -18,82 +18,142 @@ const RADIO_NAME = 'Radio';
 type ScopedProps<P> = P & { __scopeRadio?: Scope };
 const [createRadioContext, createRadioScope] = createContextScope(RADIO_NAME);
 
-type RadioContextValue = { checked: boolean; disabled?: boolean };
+interface RadioContextValue {
+  checked: boolean;
+  disabled: boolean | undefined;
+  button: HTMLButtonElement | null;
+  setButton: React.Dispatch<React.SetStateAction<HTMLButtonElement | null>>;
+  name: string | undefined;
+  form: string | undefined;
+  value: string;
+  hasConsumerStoppedPropagationRef: React.RefObject<boolean>;
+  required: boolean | undefined;
+  isFormControl: boolean;
+  bubbleInput: HTMLInputElement | null;
+  setBubbleInput: React.Dispatch<React.SetStateAction<HTMLInputElement | null>>;
+}
 const [RadioProvider, useRadioContext] = createRadioContext<RadioContextValue>(RADIO_NAME);
 
-type RadioElement = React.ElementRef<typeof Primitive.button>;
-type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
-interface RadioProps extends PrimitiveButtonProps {
-  checked?: boolean;
-  required?: boolean;
-  onCheck?(): void;
+/* -------------------------------------------------------------------------------------------------
+ * RadioRoot
+ * -----------------------------------------------------------------------------------------------*/
+
+const RadioScopeContext = React.createContext<Scope | null>(null);
+RadioScopeContext.displayName = 'RadioScopeContext';
+
+function useInternalRadioScope(displayName: string): Scope {
+  const scope = React.useContext(RadioScopeContext);
+  if (!scope) {
+    throw new Error(
+      `[${displayName}] is missing a parent <Radio.Provider /> component. Make sure to wrap your component tree with <Radio.Provider />.`
+    );
+  }
+  return scope;
 }
 
-const Radio = React.forwardRef<RadioElement, RadioProps>(
-  (props: ScopedProps<RadioProps>, forwardedRef) => {
-    const {
-      __scopeRadio,
-      name,
-      checked = false,
-      required,
-      disabled,
-      value = 'on',
-      onCheck,
-      form,
-      ...radioProps
-    } = props;
-    const [button, setButton] = React.useState<HTMLButtonElement | null>(null);
-    const composedRefs = useComposedRefs(forwardedRef, (node) => setButton(node));
-    const hasConsumerStoppedPropagationRef = React.useRef(false);
-    // We set this to true by default so that events bubble to forms without JS (SSR)
-    const isFormControl = button ? form || !!button.closest('form') : true;
+interface RadioRootProps {
+  checked?: boolean;
+  required?: boolean;
+  name?: string;
+  form?: string;
+  disabled?: boolean;
+  value?: string;
+  children?: React.ReactNode;
+}
+
+const RadioRoot = (props: ScopedProps<RadioRootProps>) => {
+  const {
+    __scopeRadio,
+    name,
+    checked = false,
+    required,
+    disabled,
+    value = 'on',
+    form,
+    children,
+    // @ts-expect-error
+    internal_do_not_use_render,
+  } = props;
+  const [button, setButton] = React.useState<HTMLButtonElement | null>(null);
+  const [bubbleInput, setBubbleInput] = React.useState<HTMLInputElement | null>(null);
+  const hasConsumerStoppedPropagationRef = React.useRef(false);
+  const isFormControl = button
+    ? !!form || !!button.closest('form')
+    : // We set this to true by default so that events bubble to forms without JS (SSR)
+      true;
+
+  const context: RadioContextValue = {
+    checked,
+    disabled,
+    button,
+    setButton,
+    name,
+    form,
+    value,
+    hasConsumerStoppedPropagationRef,
+    required,
+    isFormControl,
+    bubbleInput,
+    setBubbleInput,
+  };
+
+  return (
+    <RadioScopeContext.Provider value={__scopeRadio}>
+      <RadioProvider scope={__scopeRadio} {...context}>
+        {typeof internal_do_not_use_render === 'function'
+          ? internal_do_not_use_render(context)
+          : children}
+      </RadioProvider>
+    </RadioScopeContext.Provider>
+  );
+};
+
+/* -------------------------------------------------------------------------------------------------
+ * RadioTrigger
+ * -----------------------------------------------------------------------------------------------*/
+
+const TRIGGER_NAME = 'RadioTrigger';
+
+interface RadioTriggerProps
+  extends Omit<React.ComponentPropsWithoutRef<typeof Primitive.button>, keyof RadioRootProps> {
+  children?: React.ReactNode;
+  onCheck?: () => void;
+}
+
+const RadioTrigger = React.forwardRef<HTMLButtonElement, RadioTriggerProps>(
+  ({ __scopeRadio, onCheck, ...radioProps }: ScopedProps<RadioTriggerProps>, forwardedRef) => {
+    const { value, disabled, checked, setButton, hasConsumerStoppedPropagationRef, isFormControl } =
+      useRadioContext(TRIGGER_NAME, __scopeRadio);
+    const composedRefs = useComposedRefs(forwardedRef, setButton);
 
     return (
-      <RadioProvider scope={__scopeRadio} checked={checked} disabled={disabled}>
-        <Primitive.button
-          type="button"
-          role="radio"
-          aria-checked={checked}
-          data-state={getState(checked)}
-          data-disabled={disabled ? '' : undefined}
-          disabled={disabled}
-          value={value}
-          {...radioProps}
-          ref={composedRefs}
-          onClick={composeEventHandlers(props.onClick, (event) => {
-            // radios cannot be unchecked so we only communicate a checked state
-            if (!checked) onCheck?.();
-            if (isFormControl) {
-              hasConsumerStoppedPropagationRef.current = event.isPropagationStopped();
-              // if radio is in a form, stop propagation from the button so that we only propagate
-              // one click event (from the input). We propagate changes from an input so that native
-              // form validation works and form events reflect radio updates.
-              if (!hasConsumerStoppedPropagationRef.current) event.stopPropagation();
-            }
-          })}
-        />
-        {isFormControl && (
-          <RadioBubbleInput
-            control={button}
-            bubbles={!hasConsumerStoppedPropagationRef.current}
-            name={name}
-            value={value}
-            checked={checked}
-            required={required}
-            disabled={disabled}
-            form={form}
-            // We transform because the input is absolutely positioned but we have
-            // rendered it **after** the button. This pulls it back to sit on top
-            // of the button.
-            style={{ transform: 'translateX(-100%)' }}
-          />
-        )}
-      </RadioProvider>
+      <Primitive.button
+        type="button"
+        role="radio"
+        aria-checked={checked}
+        data-state={getState(checked)}
+        data-disabled={disabled ? '' : undefined}
+        disabled={disabled}
+        value={value}
+        {...radioProps}
+        ref={composedRefs}
+        onClick={composeEventHandlers(radioProps.onClick, (event) => {
+          // radios cannot be unchecked so we only communicate a checked state
+          if (!checked) onCheck?.();
+          if (isFormControl) {
+            hasConsumerStoppedPropagationRef.current = event.isPropagationStopped();
+            // if radio is in a form, stop propagation from the button so that we only propagate
+            // one click event (from the input). We propagate changes from an input so that native
+            // form validation works and form events reflect radio updates.
+            if (!hasConsumerStoppedPropagationRef.current) event.stopPropagation();
+          }
+        })}
+      />
     );
   }
 );
 
-Radio.displayName = RADIO_NAME;
+RadioTrigger.displayName = TRIGGER_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * RadioIndicator
@@ -103,7 +163,7 @@ const INDICATOR_NAME = 'RadioIndicator';
 
 type RadioIndicatorElement = React.ElementRef<typeof Primitive.span>;
 type PrimitiveSpanProps = React.ComponentPropsWithoutRef<typeof Primitive.span>;
-export interface RadioIndicatorProps extends PrimitiveSpanProps {
+interface RadioIndicatorProps extends PrimitiveSpanProps {
   /**
    * Used to force mounting when more control is needed. Useful when
    * controlling animation with React animation libraries.
@@ -137,31 +197,30 @@ RadioIndicator.displayName = INDICATOR_NAME;
 const BUBBLE_INPUT_NAME = 'RadioBubbleInput';
 
 type InputProps = React.ComponentPropsWithoutRef<typeof Primitive.input>;
-interface RadioBubbleInputProps extends Omit<InputProps, 'checked'> {
-  checked: boolean;
-  control: HTMLElement | null;
-  bubbles: boolean;
-}
+interface RadioBubbleInputProps extends Omit<InputProps, 'checked'> {}
 
 const RadioBubbleInput = React.forwardRef<HTMLInputElement, RadioBubbleInputProps>(
-  (
-    {
-      __scopeRadio,
-      control,
+  ({ __scopeRadio, ...props }: ScopedProps<RadioBubbleInputProps>, forwardedRef) => {
+    const {
+      button,
+      hasConsumerStoppedPropagationRef,
       checked,
-      bubbles = true,
-      ...props
-    }: ScopedProps<RadioBubbleInputProps>,
-    forwardedRef
-  ) => {
-    const ref = React.useRef<HTMLInputElement>(null);
-    const composedRefs = useComposedRefs(ref, forwardedRef);
+      required,
+      disabled,
+      name,
+      value,
+      form,
+      bubbleInput,
+      setBubbleInput,
+    } = useRadioContext(BUBBLE_INPUT_NAME, __scopeRadio);
+
+    const composedRefs = useComposedRefs(forwardedRef, setBubbleInput);
     const prevChecked = usePrevious(checked);
-    const controlSize = useSize(control);
+    const controlSize = useSize(button);
 
     // Bubble checked change to parents (e.g form change event)
     React.useEffect(() => {
-      const input = ref.current;
+      const input = bubbleInput;
       if (!input) return;
 
       const inputProto = window.HTMLInputElement.prototype;
@@ -171,17 +230,22 @@ const RadioBubbleInput = React.forwardRef<HTMLInputElement, RadioBubbleInputProp
       ) as PropertyDescriptor;
       const setChecked = descriptor.set;
       if (prevChecked !== checked && setChecked) {
-        const event = new Event('click', { bubbles });
+        const event = new Event('click', { bubbles: !hasConsumerStoppedPropagationRef.current });
         setChecked.call(input, checked);
         input.dispatchEvent(event);
       }
-    }, [prevChecked, checked, bubbles]);
+    }, [prevChecked, checked, hasConsumerStoppedPropagationRef, bubbleInput]);
 
     return (
       <Primitive.input
         type="radio"
         aria-hidden
         defaultChecked={checked}
+        required={required}
+        disabled={disabled}
+        name={name}
+        value={value}
+        form={form}
         {...props}
         tabIndex={-1}
         ref={composedRefs}
@@ -208,8 +272,24 @@ function getState(checked: boolean) {
 
 export {
   createRadioScope,
+  useRadioContext,
+  useInternalRadioScope,
   //
-  Radio,
   RadioIndicator,
+  RadioTrigger,
+  RadioRoot,
+  RadioBubbleInput,
+  //
+  RadioTrigger as Trigger,
+  RadioIndicator as Indicator,
+  RadioRoot as Root,
+  RadioBubbleInput as BubbleInput,
 };
-export type { RadioProps };
+
+export type {
+  RadioTriggerProps,
+  RadioIndicatorProps,
+  RadioRootProps,
+  RadioBubbleInputProps,
+  RadioContextValue,
+};

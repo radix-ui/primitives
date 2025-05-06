@@ -1,183 +1,134 @@
+/* eslint-disable react/jsx-pascal-case */
 import * as React from 'react';
+import type { Meta } from '@storybook/react';
 import { Direction, Label as LabelPrimitive, RadioGroup } from 'radix-ui';
 import styles from './radio-group.stories.module.css';
 
-export default { title: 'Components/RadioGroup' };
+export default {
+  title: 'Components/RadioGroup',
+  component: RadioGroup.Root,
+} satisfies Meta<typeof RadioGroup.Root>;
 
-export const LegacyStyled = () => (
+export const Styled = () => (
   <Label>
     Favourite pet
     <RadioGroup.Root className={styles.root} defaultValue="1">
       <Label>
-        <RadioGroup.Item className={styles.item} value="1">
-          <RadioGroup.Indicator className={styles.indicator} />
-        </RadioGroup.Item>
+        <RadioGroup.unstable_ItemRoot value="1">
+          <RadioGroup.unstable_ItemTrigger className={styles.item}>
+            <RadioGroup.Indicator className={styles.indicator} />
+          </RadioGroup.unstable_ItemTrigger>
+        </RadioGroup.unstable_ItemRoot>
         Cat
       </Label>{' '}
       <Label>
-        <RadioGroup.Item className={styles.item} value="2">
-          <RadioGroup.Indicator className={styles.indicator} />
-        </RadioGroup.Item>
+        <RadioGroup.unstable_ItemRoot value="2">
+          <RadioGroup.unstable_ItemTrigger className={styles.item}>
+            <RadioGroup.Indicator className={styles.indicator} />
+          </RadioGroup.unstable_ItemTrigger>
+        </RadioGroup.unstable_ItemRoot>
         Dog
       </Label>{' '}
       <Label>
-        <RadioGroup.Item className={styles.item} value="3">
-          <RadioGroup.Indicator className={styles.indicator} />
-        </RadioGroup.Item>
+        <RadioGroup.unstable_ItemRoot value="3">
+          <RadioGroup.unstable_ItemTrigger className={styles.item}>
+            <RadioGroup.Indicator className={styles.indicator} />
+          </RadioGroup.unstable_ItemTrigger>
+        </RadioGroup.unstable_ItemRoot>
         Rabbit
       </Label>
     </RadioGroup.Root>
   </Label>
 );
 
-export const LegacyControlled = () => {
+export const Controlled = () => {
   const [value, setValue] = React.useState('2');
 
   return (
     <RadioGroup.Root className={styles.root} value={value} onValueChange={setValue}>
-      <RadioGroup.Item className={styles.item} value="1">
-        <RadioGroup.Indicator className={styles.indicator} />
-      </RadioGroup.Item>
-      <RadioGroup.Item className={styles.item} value="2">
-        <RadioGroup.Indicator className={styles.indicator} />
-      </RadioGroup.Item>
-      <RadioGroup.Item className={styles.item} value="3">
-        <RadioGroup.Indicator className={styles.indicator} />
-      </RadioGroup.Item>
+      <RadioGroup.unstable_ItemRoot value="1">
+        <RadioGroup.unstable_ItemTrigger className={styles.item}>
+          <RadioGroup.Indicator className={styles.indicator} />
+        </RadioGroup.unstable_ItemTrigger>
+      </RadioGroup.unstable_ItemRoot>
+      <RadioGroup.unstable_ItemRoot value="2">
+        <RadioGroup.unstable_ItemTrigger className={styles.item}>
+          <RadioGroup.Indicator className={styles.indicator} />
+        </RadioGroup.unstable_ItemTrigger>
+      </RadioGroup.unstable_ItemRoot>
+      <RadioGroup.unstable_ItemRoot value="3">
+        <RadioGroup.unstable_ItemTrigger className={styles.item}>
+          <RadioGroup.Indicator className={styles.indicator} />
+        </RadioGroup.unstable_ItemTrigger>
+      </RadioGroup.unstable_ItemRoot>
     </RadioGroup.Root>
   );
 };
 
-export const LegacyUnset = () => (
+export const Unset = () => (
   <Label>
     Favourite pet
     <RadioGroup.Root className={styles.root}>
       <Label>
-        <RadioGroup.Item className={styles.item} value="1">
-          <RadioGroup.Indicator className={styles.indicator} />
-        </RadioGroup.Item>
+        <RadioGroup.unstable_ItemRoot value="1">
+          <RadioGroup.unstable_ItemTrigger className={styles.item}>
+            <RadioGroup.Indicator className={styles.indicator} />
+          </RadioGroup.unstable_ItemTrigger>
+        </RadioGroup.unstable_ItemRoot>
         Cat
       </Label>{' '}
       <Label>
-        <RadioGroup.Item className={styles.item} value="2" disabled>
-          <RadioGroup.Indicator className={styles.indicator} />
-        </RadioGroup.Item>
+        <RadioGroup.unstable_ItemRoot value="2" disabled>
+          <RadioGroup.unstable_ItemTrigger className={styles.item}>
+            <RadioGroup.Indicator className={styles.indicator} />
+          </RadioGroup.unstable_ItemTrigger>
+        </RadioGroup.unstable_ItemRoot>
         Dog
       </Label>{' '}
       <Label>
-        <RadioGroup.Item className={styles.item} value="3">
-          <RadioGroup.Indicator className={styles.indicator} />
-        </RadioGroup.Item>
+        <RadioGroup.unstable_ItemRoot value="3">
+          <RadioGroup.unstable_ItemTrigger className={styles.item}>
+            <RadioGroup.Indicator className={styles.indicator} />
+          </RadioGroup.unstable_ItemTrigger>
+        </RadioGroup.unstable_ItemRoot>
         Rabbit
       </Label>
     </RadioGroup.Root>
   </Label>
 );
 
-export const LegacyWithinForm = () => {
-  const [data, setData] = React.useState({ optional: '', required: '', stopprop: '' });
-
-  return (
-    <form
-      onSubmit={(event) => event.preventDefault()}
-      onChange={(event) => {
-        const radio = event.target as HTMLInputElement;
-        setData((prevData) => ({ ...prevData, [radio.name]: radio.value }));
-      }}
-    >
-      <fieldset>
-        <legend>optional value: {data.optional}</legend>
-        <RadioGroup.Root className={styles.root} name="optional">
-          <RadioGroup.Item className={styles.item} value="1">
-            <RadioGroup.Indicator className={styles.indicator} />
-          </RadioGroup.Item>
-          <RadioGroup.Item className={styles.item} value="2">
-            <RadioGroup.Indicator className={styles.indicator} />
-          </RadioGroup.Item>
-          <RadioGroup.Item className={styles.item} value="3">
-            <RadioGroup.Indicator className={styles.indicator} />
-          </RadioGroup.Item>
-        </RadioGroup.Root>
-      </fieldset>
-
-      <br />
-      <br />
-
-      <fieldset>
-        <legend>required value: {data.required}</legend>
-        <RadioGroup.Root className={styles.root} name="required" required>
-          <RadioGroup.Item className={styles.item} value="1">
-            <RadioGroup.Indicator className={styles.indicator} />
-          </RadioGroup.Item>
-          <RadioGroup.Item className={styles.item} value="2">
-            <RadioGroup.Indicator className={styles.indicator} />
-          </RadioGroup.Item>
-          <RadioGroup.Item className={styles.item} value="3">
-            <RadioGroup.Indicator className={styles.indicator} />
-          </RadioGroup.Item>
-        </RadioGroup.Root>
-      </fieldset>
-
-      <br />
-      <br />
-
-      <fieldset>
-        <legend>stop propagation value: {data.stopprop}</legend>
-        <RadioGroup.Root className={styles.root} name="stopprop">
-          <RadioGroup.Item
-            className={styles.item}
-            value="1"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <RadioGroup.Indicator className={styles.indicator} />
-          </RadioGroup.Item>
-          <RadioGroup.Item
-            className={styles.item}
-            value="2"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <RadioGroup.Indicator className={styles.indicator} />
-          </RadioGroup.Item>
-          <RadioGroup.Item
-            className={styles.item}
-            value="3"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <RadioGroup.Indicator className={styles.indicator} />
-          </RadioGroup.Item>
-        </RadioGroup.Root>
-      </fieldset>
-
-      <br />
-      <br />
-
-      <button>Submit</button>
-    </form>
-  );
+export const WithinForm = () => {
+  return <p>TODO</p>;
 };
 
-export const LegacyAnimated = () => {
+export const Animated = () => {
   const indicatorClass = [styles.indicator, styles.animatedIndicator].join(' ');
   return (
     <Label>
       Favourite pet
       <RadioGroup.Root className={styles.root} defaultValue="1">
         <Label>
-          <RadioGroup.Item className={styles.item} value="1">
-            <RadioGroup.Indicator className={indicatorClass} />
-          </RadioGroup.Item>
+          <RadioGroup.unstable_ItemRoot value="1">
+            <RadioGroup.unstable_ItemTrigger className={styles.item}>
+              <RadioGroup.Indicator className={indicatorClass} />
+            </RadioGroup.unstable_ItemTrigger>
+          </RadioGroup.unstable_ItemRoot>
           Cat
         </Label>{' '}
         <Label>
-          <RadioGroup.Item className={styles.item} value="2">
-            <RadioGroup.Indicator className={indicatorClass} />
-          </RadioGroup.Item>
+          <RadioGroup.unstable_ItemRoot value="2">
+            <RadioGroup.unstable_ItemTrigger className={styles.item}>
+              <RadioGroup.Indicator className={indicatorClass} />
+            </RadioGroup.unstable_ItemTrigger>
+          </RadioGroup.unstable_ItemRoot>
           Dog
         </Label>{' '}
         <Label>
-          <RadioGroup.Item className={styles.item} value="3">
-            <RadioGroup.Indicator className={indicatorClass} />
-          </RadioGroup.Item>
+          <RadioGroup.unstable_ItemRoot value="3">
+            <RadioGroup.unstable_ItemTrigger className={styles.item}>
+              <RadioGroup.Indicator className={indicatorClass} />
+            </RadioGroup.unstable_ItemTrigger>
+          </RadioGroup.unstable_ItemRoot>
           Rabbit
         </Label>
       </RadioGroup.Root>
@@ -185,7 +136,7 @@ export const LegacyAnimated = () => {
   );
 };
 
-export const LegacyChromatic = () => {
+export const Chromatic = () => {
   const manualFocusRef = React.useRef<React.ElementRef<typeof RadioGroup.Item>>(null);
 
   React.useEffect(() => {
@@ -197,220 +148,316 @@ export const LegacyChromatic = () => {
       <h1>Uncontrolled</h1>
       <h2>Unset</h2>
       <RadioGroup.Root className={styles.root}>
-        <RadioGroup.Item className={styles.item} value="1">
-          <RadioGroup.Indicator className={styles.indicator} />
-        </RadioGroup.Item>
-        <RadioGroup.Item className={styles.item} value="2">
-          <RadioGroup.Indicator className={styles.indicator} />
-        </RadioGroup.Item>
-        <RadioGroup.Item className={styles.item} value="3">
-          <RadioGroup.Indicator className={styles.indicator} />
-        </RadioGroup.Item>
+        <RadioGroup.unstable_ItemRoot value="1">
+          <RadioGroup.unstable_ItemTrigger className={styles.item}>
+            <RadioGroup.Indicator className={styles.indicator} />
+          </RadioGroup.unstable_ItemTrigger>
+        </RadioGroup.unstable_ItemRoot>
+        <RadioGroup.unstable_ItemRoot value="2">
+          <RadioGroup.unstable_ItemTrigger className={styles.item}>
+            <RadioGroup.Indicator className={styles.indicator} />
+          </RadioGroup.unstable_ItemTrigger>
+        </RadioGroup.unstable_ItemRoot>
+        <RadioGroup.unstable_ItemRoot value="3">
+          <RadioGroup.unstable_ItemTrigger className={styles.item}>
+            <RadioGroup.Indicator className={styles.indicator} />
+          </RadioGroup.unstable_ItemTrigger>
+        </RadioGroup.unstable_ItemRoot>
       </RadioGroup.Root>
 
       <h2>Set</h2>
       <RadioGroup.Root className={styles.root} defaultValue="3">
-        <RadioGroup.Item className={styles.item} value="1">
-          <RadioGroup.Indicator className={styles.indicator} />
-        </RadioGroup.Item>
-        <RadioGroup.Item className={styles.item} value="2">
-          <RadioGroup.Indicator className={styles.indicator} />
-        </RadioGroup.Item>
-        <RadioGroup.Item className={styles.item} value="3">
-          <RadioGroup.Indicator className={styles.indicator} />
-        </RadioGroup.Item>
+        <RadioGroup.unstable_ItemRoot value="1">
+          <RadioGroup.unstable_ItemTrigger className={styles.item}>
+            <RadioGroup.Indicator className={styles.indicator} />
+          </RadioGroup.unstable_ItemTrigger>
+        </RadioGroup.unstable_ItemRoot>
+        <RadioGroup.unstable_ItemRoot value="2">
+          <RadioGroup.unstable_ItemTrigger className={styles.item}>
+            <RadioGroup.Indicator className={styles.indicator} />
+          </RadioGroup.unstable_ItemTrigger>
+        </RadioGroup.unstable_ItemRoot>
+        <RadioGroup.unstable_ItemRoot value="3">
+          <RadioGroup.unstable_ItemTrigger className={styles.item}>
+            <RadioGroup.Indicator className={styles.indicator} />
+          </RadioGroup.unstable_ItemTrigger>
+        </RadioGroup.unstable_ItemRoot>
       </RadioGroup.Root>
 
       <h1>Controlled</h1>
       <h2>Unset</h2>
       <RadioGroup.Root className={styles.root} value={null}>
-        <RadioGroup.Item className={styles.item} value="1">
-          <RadioGroup.Indicator className={styles.indicator} />
-        </RadioGroup.Item>
-        <RadioGroup.Item className={styles.item} value="2">
-          <RadioGroup.Indicator className={styles.indicator} />
-        </RadioGroup.Item>
-        <RadioGroup.Item className={styles.item} value="3">
-          <RadioGroup.Indicator className={styles.indicator} />
-        </RadioGroup.Item>
+        <RadioGroup.unstable_ItemRoot value="1">
+          <RadioGroup.unstable_ItemTrigger className={styles.item}>
+            <RadioGroup.Indicator className={styles.indicator} />
+          </RadioGroup.unstable_ItemTrigger>
+        </RadioGroup.unstable_ItemRoot>
+        <RadioGroup.unstable_ItemRoot value="2">
+          <RadioGroup.unstable_ItemTrigger className={styles.item}>
+            <RadioGroup.Indicator className={styles.indicator} />
+          </RadioGroup.unstable_ItemTrigger>
+        </RadioGroup.unstable_ItemRoot>
+        <RadioGroup.unstable_ItemRoot value="3">
+          <RadioGroup.unstable_ItemTrigger className={styles.item}>
+            <RadioGroup.Indicator className={styles.indicator} />
+          </RadioGroup.unstable_ItemTrigger>
+        </RadioGroup.unstable_ItemRoot>
       </RadioGroup.Root>
 
       <h2>Set</h2>
       <RadioGroup.Root className={styles.root} value="3">
-        <RadioGroup.Item className={styles.item} value="1">
-          <RadioGroup.Indicator className={styles.indicator} />
-        </RadioGroup.Item>
-        <RadioGroup.Item className={styles.item} value="2">
-          <RadioGroup.Indicator className={styles.indicator} />
-        </RadioGroup.Item>
-        <RadioGroup.Item className={styles.item} value="3">
-          <RadioGroup.Indicator className={styles.indicator} />
-        </RadioGroup.Item>
+        <RadioGroup.unstable_ItemRoot value="1">
+          <RadioGroup.unstable_ItemTrigger className={styles.item}>
+            <RadioGroup.Indicator className={styles.indicator} />
+          </RadioGroup.unstable_ItemTrigger>
+        </RadioGroup.unstable_ItemRoot>
+        <RadioGroup.unstable_ItemRoot value="2">
+          <RadioGroup.unstable_ItemTrigger className={styles.item}>
+            <RadioGroup.Indicator className={styles.indicator} />
+          </RadioGroup.unstable_ItemTrigger>
+        </RadioGroup.unstable_ItemRoot>
+        <RadioGroup.unstable_ItemRoot value="3">
+          <RadioGroup.unstable_ItemTrigger className={styles.item}>
+            <RadioGroup.Indicator className={styles.indicator} />
+          </RadioGroup.unstable_ItemTrigger>
+        </RadioGroup.unstable_ItemRoot>
       </RadioGroup.Root>
 
       <h1>Disabled item</h1>
       <RadioGroup.Root className={styles.root}>
-        <RadioGroup.Item className={styles.item} value="1">
-          <RadioGroup.Indicator className={styles.indicator} />
-        </RadioGroup.Item>
-        <RadioGroup.Item className={styles.item} value="2" disabled>
-          <RadioGroup.Indicator className={styles.indicator} />
-        </RadioGroup.Item>
-        <RadioGroup.Item className={styles.item} value="3">
-          <RadioGroup.Indicator className={styles.indicator} />
-        </RadioGroup.Item>
+        <RadioGroup.unstable_ItemRoot value="1">
+          <RadioGroup.unstable_ItemTrigger className={styles.item}>
+            <RadioGroup.Indicator className={styles.indicator} />
+          </RadioGroup.unstable_ItemTrigger>
+        </RadioGroup.unstable_ItemRoot>
+        <RadioGroup.unstable_ItemRoot value="2" disabled>
+          <RadioGroup.unstable_ItemTrigger className={styles.item}>
+            <RadioGroup.Indicator className={styles.indicator} />
+          </RadioGroup.unstable_ItemTrigger>
+        </RadioGroup.unstable_ItemRoot>
+        <RadioGroup.unstable_ItemRoot value="3">
+          <RadioGroup.unstable_ItemTrigger className={styles.item}>
+            <RadioGroup.Indicator className={styles.indicator} />
+          </RadioGroup.unstable_ItemTrigger>
+        </RadioGroup.unstable_ItemRoot>
       </RadioGroup.Root>
 
       <h1>Disabled root</h1>
       <RadioGroup.Root className={styles.root} disabled>
-        <RadioGroup.Item className={styles.item} value="1">
-          <RadioGroup.Indicator className={styles.indicator} />
-        </RadioGroup.Item>
+        <RadioGroup.unstable_ItemRoot value="1">
+          <RadioGroup.unstable_ItemTrigger className={styles.item}>
+            <RadioGroup.Indicator className={styles.indicator} />
+          </RadioGroup.unstable_ItemTrigger>
+        </RadioGroup.unstable_ItemRoot>
         {/* Not possible to set `disabled` back to `false` since it's set on the root (this item
             should still be disabled). */}
-        <RadioGroup.Item className={styles.item} value="2" disabled={false}>
-          <RadioGroup.Indicator className={styles.indicator} />
-        </RadioGroup.Item>
-        <RadioGroup.Item className={styles.item} value="3">
-          <RadioGroup.Indicator className={styles.indicator} />
-        </RadioGroup.Item>
+        <RadioGroup.unstable_ItemRoot value="2" disabled={false}>
+          <RadioGroup.unstable_ItemTrigger className={styles.item}>
+            <RadioGroup.Indicator className={styles.indicator} />
+          </RadioGroup.unstable_ItemTrigger>
+        </RadioGroup.unstable_ItemRoot>
+        <RadioGroup.unstable_ItemRoot value="3">
+          <RadioGroup.unstable_ItemTrigger className={styles.item}>
+            <RadioGroup.Indicator className={styles.indicator} />
+          </RadioGroup.unstable_ItemTrigger>
+        </RadioGroup.unstable_ItemRoot>
       </RadioGroup.Root>
 
       <h1>All items disabled</h1>
       <RadioGroup.Root className={styles.root}>
-        <RadioGroup.Item className={styles.item} value="1" disabled>
-          <RadioGroup.Indicator className={styles.indicator} />
-        </RadioGroup.Item>
-        <RadioGroup.Item className={styles.item} value="2" disabled>
-          <RadioGroup.Indicator className={styles.indicator} />
-        </RadioGroup.Item>
-        <RadioGroup.Item className={styles.item} value="3" disabled>
-          <RadioGroup.Indicator className={styles.indicator} />
-        </RadioGroup.Item>
+        <RadioGroup.unstable_ItemRoot value="1" disabled>
+          <RadioGroup.unstable_ItemTrigger className={styles.item}>
+            <RadioGroup.Indicator className={styles.indicator} />
+          </RadioGroup.unstable_ItemTrigger>
+        </RadioGroup.unstable_ItemRoot>
+        <RadioGroup.unstable_ItemRoot value="2" disabled>
+          <RadioGroup.unstable_ItemTrigger className={styles.item}>
+            <RadioGroup.Indicator className={styles.indicator} />
+          </RadioGroup.unstable_ItemTrigger>
+        </RadioGroup.unstable_ItemRoot>
+        <RadioGroup.unstable_ItemRoot value="3" disabled>
+          <RadioGroup.unstable_ItemTrigger className={styles.item}>
+            <RadioGroup.Indicator className={styles.indicator} />
+          </RadioGroup.unstable_ItemTrigger>
+        </RadioGroup.unstable_ItemRoot>
       </RadioGroup.Root>
 
       <h1>Manual focus into group</h1>
       <RadioGroup.Root className={styles.root}>
-        <RadioGroup.Item className={styles.item} value="1" ref={manualFocusRef}>
-          <RadioGroup.Indicator className={styles.indicator} />
-        </RadioGroup.Item>
-        <RadioGroup.Item className={styles.item} value="2">
-          <RadioGroup.Indicator className={styles.indicator} />
-        </RadioGroup.Item>
-        <RadioGroup.Item className={styles.item} value="3">
-          <RadioGroup.Indicator className={styles.indicator} />
-        </RadioGroup.Item>
+        <RadioGroup.unstable_ItemRoot value="1">
+          <RadioGroup.unstable_ItemTrigger className={styles.item} ref={manualFocusRef}>
+            <RadioGroup.Indicator className={styles.indicator} />
+          </RadioGroup.unstable_ItemTrigger>
+        </RadioGroup.unstable_ItemRoot>
+        <RadioGroup.unstable_ItemRoot value="2">
+          <RadioGroup.unstable_ItemTrigger className={styles.item}>
+            <RadioGroup.Indicator className={styles.indicator} />
+          </RadioGroup.unstable_ItemTrigger>
+        </RadioGroup.unstable_ItemRoot>
+        <RadioGroup.unstable_ItemRoot value="3">
+          <RadioGroup.unstable_ItemTrigger className={styles.item}>
+            <RadioGroup.Indicator className={styles.indicator} />
+          </RadioGroup.unstable_ItemTrigger>
+        </RadioGroup.unstable_ItemRoot>
       </RadioGroup.Root>
 
       <h1>Force mounted indicator</h1>
       <RadioGroup.Root className={styles.root}>
-        <RadioGroup.Item className={styles.item} value="1">
-          <RadioGroup.Indicator className={styles.indicator} forceMount />
-        </RadioGroup.Item>
-        <RadioGroup.Item className={styles.item} value="2">
-          <RadioGroup.Indicator className={styles.indicator} forceMount />
-        </RadioGroup.Item>
-        <RadioGroup.Item className={styles.item} value="3">
-          <RadioGroup.Indicator className={styles.indicator} forceMount />
-        </RadioGroup.Item>
+        <RadioGroup.unstable_ItemRoot value="1">
+          <RadioGroup.unstable_ItemTrigger className={styles.item}>
+            <RadioGroup.Indicator className={styles.indicator} forceMount />
+          </RadioGroup.unstable_ItemTrigger>
+        </RadioGroup.unstable_ItemRoot>
+        <RadioGroup.unstable_ItemRoot value="2">
+          <RadioGroup.unstable_ItemTrigger className={styles.item}>
+            <RadioGroup.Indicator className={styles.indicator} forceMount />
+          </RadioGroup.unstable_ItemTrigger>
+        </RadioGroup.unstable_ItemRoot>
+        <RadioGroup.unstable_ItemRoot value="3">
+          <RadioGroup.unstable_ItemTrigger className={styles.item}>
+            <RadioGroup.Indicator className={styles.indicator} forceMount />
+          </RadioGroup.unstable_ItemTrigger>
+        </RadioGroup.unstable_ItemRoot>
       </RadioGroup.Root>
 
       <h1>Direction</h1>
       <h2>Prop</h2>
       <RadioGroup.Root className={styles.root} defaultValue="1" dir="rtl">
-        <RadioGroup.Item className={styles.item} value="1">
-          <RadioGroup.Indicator className={styles.indicator} />
-        </RadioGroup.Item>
-        <RadioGroup.Item className={styles.item} value="2">
-          <RadioGroup.Indicator className={styles.indicator} />
-        </RadioGroup.Item>
-        <RadioGroup.Item className={styles.item} value="3">
-          <RadioGroup.Indicator className={styles.indicator} />
-        </RadioGroup.Item>
+        <RadioGroup.unstable_ItemRoot value="1">
+          <RadioGroup.unstable_ItemTrigger className={styles.item}>
+            <RadioGroup.Indicator className={styles.indicator} />
+          </RadioGroup.unstable_ItemTrigger>
+        </RadioGroup.unstable_ItemRoot>
+        <RadioGroup.unstable_ItemRoot value="2">
+          <RadioGroup.unstable_ItemTrigger className={styles.item}>
+            <RadioGroup.Indicator className={styles.indicator} />
+          </RadioGroup.unstable_ItemTrigger>
+        </RadioGroup.unstable_ItemRoot>
+        <RadioGroup.unstable_ItemRoot value="3">
+          <RadioGroup.unstable_ItemTrigger className={styles.item}>
+            <RadioGroup.Indicator className={styles.indicator} />
+          </RadioGroup.unstable_ItemTrigger>
+        </RadioGroup.unstable_ItemRoot>
       </RadioGroup.Root>
 
       <h2>Inherited</h2>
       <Direction.Provider dir="rtl">
         <RadioGroup.Root className={styles.root} defaultValue="1">
-          <RadioGroup.Item className={styles.item} value="1">
-            <RadioGroup.Indicator className={styles.indicator} />
-          </RadioGroup.Item>
-          <RadioGroup.Item className={styles.item} value="2">
-            <RadioGroup.Indicator className={styles.indicator} />
-          </RadioGroup.Item>
-          <RadioGroup.Item className={styles.item} value="3">
-            <RadioGroup.Indicator className={styles.indicator} />
-          </RadioGroup.Item>
+          <RadioGroup.unstable_ItemRoot value="1">
+            <RadioGroup.unstable_ItemTrigger className={styles.item}>
+              <RadioGroup.Indicator className={styles.indicator} />
+            </RadioGroup.unstable_ItemTrigger>
+          </RadioGroup.unstable_ItemRoot>
+          <RadioGroup.unstable_ItemRoot value="2">
+            <RadioGroup.unstable_ItemTrigger className={styles.item}>
+              <RadioGroup.Indicator className={styles.indicator} />
+            </RadioGroup.unstable_ItemTrigger>
+          </RadioGroup.unstable_ItemRoot>
+          <RadioGroup.unstable_ItemRoot value="3">
+            <RadioGroup.unstable_ItemTrigger className={styles.item}>
+              <RadioGroup.Indicator className={styles.indicator} />
+            </RadioGroup.unstable_ItemTrigger>
+          </RadioGroup.unstable_ItemRoot>
         </RadioGroup.Root>
       </Direction.Provider>
 
       <h1>State attributes</h1>
       <h2>Default</h2>
       <RadioGroup.Root className={styles.rootAttr} defaultValue="3">
-        <RadioGroup.Item className={styles.itemAttr} value="1">
-          <RadioGroup.Indicator className={styles.indicatorAttr} />
-        </RadioGroup.Item>
-        <RadioGroup.Item className={styles.itemAttr} value="2">
-          <RadioGroup.Indicator className={styles.indicatorAttr} />
-        </RadioGroup.Item>
-        <RadioGroup.Item className={styles.itemAttr} value="3">
-          <RadioGroup.Indicator className={styles.indicatorAttr} />
-        </RadioGroup.Item>
+        <RadioGroup.unstable_ItemRoot value="1">
+          <RadioGroup.unstable_ItemTrigger className={styles.itemAttr}>
+            <RadioGroup.Indicator className={styles.indicatorAttr} />
+          </RadioGroup.unstable_ItemTrigger>
+        </RadioGroup.unstable_ItemRoot>
+        <RadioGroup.unstable_ItemRoot value="2">
+          <RadioGroup.unstable_ItemTrigger className={styles.itemAttr}>
+            <RadioGroup.Indicator className={styles.indicatorAttr} />
+          </RadioGroup.unstable_ItemTrigger>
+        </RadioGroup.unstable_ItemRoot>
+        <RadioGroup.unstable_ItemRoot value="3">
+          <RadioGroup.unstable_ItemTrigger className={styles.itemAttr}>
+            <RadioGroup.Indicator className={styles.indicatorAttr} />
+          </RadioGroup.unstable_ItemTrigger>
+        </RadioGroup.unstable_ItemRoot>
       </RadioGroup.Root>
 
       <h2>Disabled item</h2>
       <RadioGroup.Root className={styles.rootAttr} defaultValue="3">
-        <RadioGroup.Item className={styles.itemAttr} value="1">
-          <RadioGroup.Indicator className={styles.indicatorAttr} />
-        </RadioGroup.Item>
-        <RadioGroup.Item className={styles.itemAttr} value="2" disabled>
-          <RadioGroup.Indicator className={styles.indicatorAttr} />
-        </RadioGroup.Item>
-        <RadioGroup.Item className={styles.itemAttr} value="3">
-          <RadioGroup.Indicator className={styles.indicatorAttr} />
-        </RadioGroup.Item>
+        <RadioGroup.unstable_ItemRoot value="1">
+          <RadioGroup.unstable_ItemTrigger className={styles.itemAttr}>
+            <RadioGroup.Indicator className={styles.indicatorAttr} />
+          </RadioGroup.unstable_ItemTrigger>
+        </RadioGroup.unstable_ItemRoot>
+        <RadioGroup.unstable_ItemRoot value="2" disabled>
+          <RadioGroup.unstable_ItemTrigger className={styles.itemAttr}>
+            <RadioGroup.Indicator className={styles.indicatorAttr} />
+          </RadioGroup.unstable_ItemTrigger>
+        </RadioGroup.unstable_ItemRoot>
+        <RadioGroup.unstable_ItemRoot value="3">
+          <RadioGroup.unstable_ItemTrigger className={styles.itemAttr}>
+            <RadioGroup.Indicator className={styles.indicatorAttr} />
+          </RadioGroup.unstable_ItemTrigger>
+        </RadioGroup.unstable_ItemRoot>
       </RadioGroup.Root>
 
       <RadioGroup.Root className={styles.rootAttr} defaultValue="2">
-        <RadioGroup.Item className={styles.itemAttr} value="1">
-          <RadioGroup.Indicator className={styles.indicatorAttr} />
-        </RadioGroup.Item>
-        <RadioGroup.Item className={styles.itemAttr} value="2" disabled>
-          <RadioGroup.Indicator className={styles.indicatorAttr} />
-        </RadioGroup.Item>
-        <RadioGroup.Item className={styles.itemAttr} value="3">
-          <RadioGroup.Indicator className={styles.indicatorAttr} />
-        </RadioGroup.Item>
+        <RadioGroup.unstable_ItemRoot value="1">
+          <RadioGroup.unstable_ItemTrigger className={styles.itemAttr}>
+            <RadioGroup.Indicator className={styles.indicatorAttr} />
+          </RadioGroup.unstable_ItemTrigger>
+        </RadioGroup.unstable_ItemRoot>
+        <RadioGroup.unstable_ItemRoot value="2" disabled>
+          <RadioGroup.unstable_ItemTrigger className={styles.itemAttr}>
+            <RadioGroup.Indicator className={styles.indicatorAttr} />
+          </RadioGroup.unstable_ItemTrigger>
+        </RadioGroup.unstable_ItemRoot>
+        <RadioGroup.unstable_ItemRoot value="3">
+          <RadioGroup.unstable_ItemTrigger className={styles.itemAttr}>
+            <RadioGroup.Indicator className={styles.indicatorAttr} />
+          </RadioGroup.unstable_ItemTrigger>
+        </RadioGroup.unstable_ItemRoot>
       </RadioGroup.Root>
 
       <h2>Disabled root</h2>
       <RadioGroup.Root className={styles.rootAttr} defaultValue="3" disabled>
-        <RadioGroup.Item className={styles.itemAttr} value="1">
-          <RadioGroup.Indicator className={styles.indicatorAttr} />
-        </RadioGroup.Item>
-        <RadioGroup.Item className={styles.itemAttr} value="2">
-          <RadioGroup.Indicator className={styles.indicatorAttr} />
-        </RadioGroup.Item>
-        <RadioGroup.Item className={styles.itemAttr} value="3">
-          <RadioGroup.Indicator className={styles.indicatorAttr} />
-        </RadioGroup.Item>
+        <RadioGroup.unstable_ItemRoot value="1">
+          <RadioGroup.unstable_ItemTrigger className={styles.itemAttr}>
+            <RadioGroup.Indicator className={styles.indicatorAttr} />
+          </RadioGroup.unstable_ItemTrigger>
+        </RadioGroup.unstable_ItemRoot>
+        <RadioGroup.unstable_ItemRoot value="2">
+          <RadioGroup.unstable_ItemTrigger className={styles.itemAttr}>
+            <RadioGroup.Indicator className={styles.indicatorAttr} />
+          </RadioGroup.unstable_ItemTrigger>
+        </RadioGroup.unstable_ItemRoot>
+        <RadioGroup.unstable_ItemRoot value="3">
+          <RadioGroup.unstable_ItemTrigger className={styles.itemAttr}>
+            <RadioGroup.Indicator className={styles.indicatorAttr} />
+          </RadioGroup.unstable_ItemTrigger>
+        </RadioGroup.unstable_ItemRoot>
       </RadioGroup.Root>
 
       <h2>All items disabled</h2>
       <RadioGroup.Root className={styles.rootAttr} defaultValue="3">
-        <RadioGroup.Item className={styles.itemAttr} value="1" disabled>
-          <RadioGroup.Indicator className={styles.indicatorAttr} />
-        </RadioGroup.Item>
-        <RadioGroup.Item className={styles.itemAttr} value="2" disabled>
-          <RadioGroup.Indicator className={styles.indicatorAttr} />
-        </RadioGroup.Item>
-        <RadioGroup.Item className={styles.itemAttr} value="3" disabled>
-          <RadioGroup.Indicator className={styles.indicatorAttr} />
-        </RadioGroup.Item>
+        <RadioGroup.unstable_ItemRoot value="1" disabled>
+          <RadioGroup.unstable_ItemTrigger className={styles.itemAttr}>
+            <RadioGroup.Indicator className={styles.indicatorAttr} />
+          </RadioGroup.unstable_ItemTrigger>
+        </RadioGroup.unstable_ItemRoot>
+        <RadioGroup.unstable_ItemRoot value="2" disabled>
+          <RadioGroup.unstable_ItemTrigger className={styles.itemAttr}>
+            <RadioGroup.Indicator className={styles.indicatorAttr} />
+          </RadioGroup.unstable_ItemTrigger>
+        </RadioGroup.unstable_ItemRoot>
+        <RadioGroup.unstable_ItemRoot value="3" disabled>
+          <RadioGroup.unstable_ItemTrigger className={styles.itemAttr}>
+            <RadioGroup.Indicator className={styles.indicatorAttr} />
+          </RadioGroup.unstable_ItemTrigger>
+        </RadioGroup.unstable_ItemRoot>
       </RadioGroup.Root>
     </>
   );
 };
-LegacyChromatic.parameters = { chromatic: { disable: false } };
+Chromatic.parameters = { chromatic: { disable: false } };
 
 const Label = (props: any) => <LabelPrimitive.Root {...props} className={styles.label} />;
