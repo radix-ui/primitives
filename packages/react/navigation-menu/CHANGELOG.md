@@ -1,5 +1,9 @@
 # @radix-ui/react-navigation-menu
 
+## 1.2.12
+
+- Updated dependencies: `@radix-ui/react-collection@1.1.6`, `@radix-ui/react-primitive@2.1.2`, `@radix-ui/react-dismissable-layer@1.1.9`, `@radix-ui/react-visually-hidden@1.2.2`
+
 ## 1.2.11
 
 - Updated dependencies: `@radix-ui/react-collection@1.1.5`, `@radix-ui/react-primitive@2.1.1`, `@radix-ui/react-dismissable-layer@1.1.8`, `@radix-ui/react-visually-hidden@1.2.1`

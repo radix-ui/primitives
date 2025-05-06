@@ -1,5 +1,9 @@
 # @radix-ui/react-primitive
 
+## 2.1.2
+
+- Updated dependencies: `@radix-ui/react-slot@1.2.2`
+
 ## 2.1.1
 
 - Updated dependencies: `@radix-ui/react-slot@1.2.1`
