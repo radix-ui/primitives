@@ -1,5 +1,9 @@
 # radix-ui
 
+## 1.4.1
+
+- Updated dependencies: `@radix-ui/react-checkbox@1.3.1`
+
 ## 1.4.0
 
 ### Introduce new Password Toggle Field primitive
