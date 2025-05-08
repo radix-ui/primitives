@@ -73,7 +73,12 @@ interface SlotCloneProps {
       const props = mergeProps(slotProps, children.props as AnyProps);
       // do not pass ref to React.Fragment for React 19 compatibility
       if (children.type !== React.Fragment) {
-        props.ref = ref;
+        /**
+         * In RSC you cannot pass a ref prop so React will throw an error to
+         * warn about this if the ref is not undefined. So ref is only composed
+         * by Slot if there is a defined forwardRef.
+         */
+        props.ref = forwardedRef ? ref : childrenRef;
       }
       return React.cloneElement(children, props);
     }
