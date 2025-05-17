@@ -590,7 +590,7 @@ const OneTimePasswordFieldInput = React.forwardRef<
     'OneTimePasswordFieldInput',
     __scopeOneTimePasswordField
   );
-  const { dispatch, userActionRef, validationType, isHydrated } = context;
+  const { dispatch, userActionRef, validationType, isHydrated, disabled } = context;
   const collection = useCollection(__scopeOneTimePasswordField);
   const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeOneTimePasswordField);
 
@@ -639,6 +639,7 @@ const OneTimePasswordFieldInput = React.forwardRef<
             <Primitive.Root.input
               ref={composedInputRef}
               type={context.type}
+              disabled={disabled}
               aria-label={`Character ${index + 1} of ${collection.size}`}
               autoComplete={supportsAutoComplete ? context.autoComplete : 'off'}
               data-1p-ignore={supportsAutoComplete ? undefined : 'true'}
