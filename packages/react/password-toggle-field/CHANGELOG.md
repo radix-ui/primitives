@@ -1,5 +1,9 @@
 # @radix-ui/react-password-toggle-field
 
+## 0.1.2
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.3`
+
 ## 0.1.1
 
 - Updated dependencies: `@radix-ui/react-primitive@2.1.2`

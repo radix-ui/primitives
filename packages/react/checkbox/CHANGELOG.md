@@ -1,5 +1,10 @@
 # @radix-ui/react-checkbox
 
+## 1.3.2
+
+- Replace deprecated 'ElementRef' with 'ComponentRef' (#3426)
+- Updated dependencies: `@radix-ui/react-primitive@2.1.3`
+
 ## 1.3.1
 
 - Fix type error emitted in build artifacts

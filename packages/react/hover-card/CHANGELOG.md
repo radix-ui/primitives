@@ -1,5 +1,10 @@
 # @radix-ui/react-hover-card
 
+## 1.1.14
+
+- Replace deprecated 'ElementRef' with 'ComponentRef' (#3426)
+- Updated dependencies: `@radix-ui/react-dismissable-layer@1.1.10`, `@radix-ui/react-popper@1.2.7`, `@radix-ui/react-portal@1.1.9`, `@radix-ui/react-primitive@2.1.3`
+
 ## 1.1.13
 
 - Updated dependencies: `@radix-ui/react-primitive@2.1.2`, `@radix-ui/react-dismissable-layer@1.1.9`, `@radix-ui/react-popper@1.2.6`, `@radix-ui/react-portal@1.1.8`

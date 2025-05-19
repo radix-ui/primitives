@@ -1,5 +1,10 @@
 # @radix-ui/react-tabs
 
+## 1.1.12
+
+- Replace deprecated 'ElementRef' with 'ComponentRef' (#3426)
+- Updated dependencies: `@radix-ui/react-roving-focus@1.1.10`, `@radix-ui/react-primitive@2.1.3`
+
 ## 1.1.11
 
 - Updated dependencies: `@radix-ui/react-primitive@2.1.2`, `@radix-ui/react-roving-focus@1.1.9`
