@@ -351,10 +351,12 @@ const OneTimePasswordField = React.forwardRef<HTMLDivElement, OneTimePasswordFie
 
         case 'PASTE': {
           const { value: pastedValue } = action;
-          const value = sanitizeValue(pastedValue);
-          if (!value) {
+          const sanitizedValue = sanitizeValue(pastedValue);
+          if (!sanitizedValue) {
             return;
           }
+
+          const value = sanitizedValue.slice(0, collection.size);
 
           flushSync(() => setValue(value));
           focusInput(collection.at(value.length - 1)?.element);
