@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import * as React from 'react';
 import { cleanup, render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Slot, Slottable } from './slot';
@@ -140,7 +140,9 @@ describe('given a Button with Slottable', () => {
   });
 });
 
-describe('given an Input', () => {
+// TODO: Unskip when underlying issue is resolved
+// Reverted in https://github.com/radix-ui/primitives/pull/3554
+describe.skip('given an Input', () => {
   const handleRef = vi.fn();
 
   beforeEach(() => {
@@ -199,7 +201,7 @@ const Input = React.forwardRef<
   }
 >(({ asChild, children, ...props }, forwardedRef) => {
   const Comp = asChild ? Slot : 'input';
-  const [value, setValue] = useState('');
+  const [value, setValue] = React.useState('');
 
   return (
     <Comp
