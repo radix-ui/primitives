@@ -2431,6 +2431,9 @@ importers:
         specifier: ^2.6.3
         version: 2.6.3(@types/react@19.1.0)(react@19.1.0)
     devDependencies:
+      '@radix-ui/react-label':
+        specifier: workspace:*
+        version: link:../label
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
