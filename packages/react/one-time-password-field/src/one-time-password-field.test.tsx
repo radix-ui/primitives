@@ -53,6 +53,21 @@ describe('given a default OneTimePasswordField', () => {
     expect(hiddenInput.value).toBe('1');
   });
 
+  it('should disable all inputs when Root is disabled', () => {
+    rendered.rerender(
+      <OneTimePasswordField.Root disabled>
+        <OneTimePasswordField.Input />
+        <OneTimePasswordField.Input />
+        <OneTimePasswordField.HiddenInput name="code" />
+      </OneTimePasswordField.Root>
+    );
+
+    const inputs = rendered.container.querySelectorAll('input:not([type="hidden"])');
+    inputs.forEach(input => {
+      expect(input).toBeDisabled();
+    });
+  });
+
   // TODO: userEvent paste not behaving as expected. Debug and unskip.
   // Replicated in storybook for now.
   it.todo('pastes the code into the input', async () => {
