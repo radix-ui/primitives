@@ -1,5 +1,10 @@
 # @radix-ui/react-collapsible
 
+## 1.1.11
+
+- Replace deprecated 'ElementRef' with 'ComponentRef' (#3426)
+- Updated dependencies: `@radix-ui/react-primitive@2.1.3`
+
 ## 1.1.10
 
 - Updated dependencies: `@radix-ui/react-primitive@2.1.2`
