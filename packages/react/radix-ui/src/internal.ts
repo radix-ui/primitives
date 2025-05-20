@@ -4,6 +4,7 @@ export * as Collection from '@radix-ui/react-collection';
 export { composeRefs, useComposedRefs } from '@radix-ui/react-compose-refs';
 export * as Context from '@radix-ui/react-context';
 export * as DismissableLayer from '@radix-ui/react-dismissable-layer';
+export * as DocumentContext from '@radix-ui/react-document-context';
 export * as FocusGuards from '@radix-ui/react-focus-guards';
 export * as FocusScope from '@radix-ui/react-focus-scope';
 export * as Menu from '@radix-ui/react-menu';

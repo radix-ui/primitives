@@ -7,6 +7,7 @@ import { composeEventHandlers } from '@radix-ui/primitive';
 import { createSlottable } from '@radix-ui/react-slot';
 
 import type { Scope } from '@radix-ui/react-context';
+import { useDocument } from '@radix-ui/react-document-context';
 
 /* -------------------------------------------------------------------------------------------------
  * AlertDialog
@@ -244,6 +245,7 @@ type DescriptionWarningProps = {
 };
 
 const DescriptionWarning: React.FC<DescriptionWarningProps> = ({ contentRef }) => {
+  const providedDocument = useDocument();
   const MESSAGE = `\`${CONTENT_NAME}\` requires a description for the component to be accessible for screen reader users.
 
 You can add a description to the \`${CONTENT_NAME}\` by passing a \`${DESCRIPTION_NAME}\` component as a child, which also benefits sighted users by adding visible context to the dialog.
@@ -253,11 +255,12 @@ Alternatively, you can use your own component as a description by assigning it a
 For more information, see https://radix-ui.com/primitives/docs/components/alert-dialog`;
 
   React.useEffect(() => {
-    const hasDescription = document.getElementById(
+    if (!providedDocument) return;
+    const hasDescription = providedDocument.getElementById(
       contentRef.current?.getAttribute('aria-describedby')!
     );
     if (!hasDescription) console.warn(MESSAGE);
-  }, [MESSAGE, contentRef]);
+  }, [MESSAGE, contentRef, providedDocument]);
 
   return null;
 };

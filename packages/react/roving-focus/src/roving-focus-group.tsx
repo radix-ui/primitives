@@ -10,6 +10,7 @@ import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { useDirection } from '@radix-ui/react-direction';
 
 import type { Scope } from '@radix-ui/react-context';
+import { useDocument } from '@radix-ui/react-document-context';
 
 const ENTRY_FOCUS = 'rovingFocusGroup.onEntryFocus';
 const EVENT_OPTIONS = { bubbles: false, cancelable: true };
@@ -124,6 +125,7 @@ const RovingFocusGroupImpl = React.forwardRef<
   const getItems = useCollection(__scopeRovingFocusGroup);
   const isClickFocusRef = React.useRef(false);
   const [focusableItemsCount, setFocusableItemsCount] = React.useState(0);
+  const providedDocument = useDocument();
 
   React.useEffect(() => {
     const node = ref.current;
@@ -182,7 +184,9 @@ const RovingFocusGroupImpl = React.forwardRef<
                 Boolean
               ) as typeof items;
               const candidateNodes = candidateItems.map((item) => item.ref.current!);
-              focusFirst(candidateNodes, preventScrollOnEntryFocus);
+              if (providedDocument) {
+                focusFirst(candidateNodes, providedDocument, preventScrollOnEntryFocus);
+              }
             }
           }
 
@@ -226,7 +230,7 @@ const RovingFocusGroupItem = React.forwardRef<RovingFocusItemElement, RovingFocu
     const context = useRovingFocusContext(ITEM_NAME, __scopeRovingFocusGroup);
     const isCurrentTabStop = context.currentTabStopId === id;
     const getItems = useCollection(__scopeRovingFocusGroup);
-
+    const providedDocument = useDocument();
     const { onFocusableItemAdd, onFocusableItemRemove, currentTabStopId } = context;
 
     React.useEffect(() => {
@@ -285,7 +289,11 @@ const RovingFocusGroupItem = React.forwardRef<RovingFocusItemElement, RovingFocu
                * Imperative focus during keydown is risky so we prevent React's batching updates
                * to avoid potential bugs. See: https://github.com/facebook/react/issues/20332
                */
-              setTimeout(() => focusFirst(candidateNodes));
+              globalThis.window.setTimeout(() => {
+                if (providedDocument) {
+                  focusFirst(candidateNodes, providedDocument);
+                }
+              });
             }
           })}
         >
@@ -324,13 +332,13 @@ function getFocusIntent(event: React.KeyboardEvent, orientation?: Orientation, d
   return MAP_KEY_TO_FOCUS_INTENT[key];
 }
 
-function focusFirst(candidates: HTMLElement[], preventScroll = false) {
-  const PREVIOUSLY_FOCUSED_ELEMENT = document.activeElement;
+function focusFirst(candidates: HTMLElement[], providedDocument: Document, preventScroll = false) {
+  const PREVIOUSLY_FOCUSED_ELEMENT = providedDocument.activeElement;
   for (const candidate of candidates) {
     // if focus is already where we want to go, we don't want to keep going through the candidates
     if (candidate === PREVIOUSLY_FOCUSED_ELEMENT) return;
     candidate.focus({ preventScroll });
-    if (document.activeElement !== PREVIOUSLY_FOCUSED_ELEMENT) return;
+    if (providedDocument.activeElement !== PREVIOUSLY_FOCUSED_ELEMENT) return;
   }
 }
 

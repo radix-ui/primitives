@@ -92,7 +92,6 @@ function usePresence(present: boolean) {
   useLayoutEffect(() => {
     if (node) {
       let timeoutId: number;
-      const ownerWindow = node.ownerDocument.defaultView ?? window;
       /**
        * Triggering an ANIMATION_OUT during an ANIMATION_IN will fire an `animationcancel`
        * event for ANIMATION_IN after we have entered `unmountSuspended` state. So, we
@@ -120,7 +119,7 @@ function usePresence(present: boolean) {
             // where the component chooses not to unmount). Doing this any
             // sooner than `setTimeout` (e.g. with `requestAnimationFrame`)
             // still causes a flash.
-            timeoutId = ownerWindow.setTimeout(() => {
+            timeoutId = globalThis.window.setTimeout(() => {
               if (node.style.animationFillMode === 'forwards') {
                 node.style.animationFillMode = currentFillMode;
               }
@@ -138,7 +137,7 @@ function usePresence(present: boolean) {
       node.addEventListener('animationcancel', handleAnimationEnd);
       node.addEventListener('animationend', handleAnimationEnd);
       return () => {
-        ownerWindow.clearTimeout(timeoutId);
+        globalThis.window.clearTimeout(timeoutId);
         node.removeEventListener('animationstart', handleAnimationStart);
         node.removeEventListener('animationcancel', handleAnimationEnd);
         node.removeEventListener('animationend', handleAnimationEnd);

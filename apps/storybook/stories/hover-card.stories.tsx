@@ -174,7 +174,7 @@ export const AsyncUpdate = () => {
 
   React.useEffect(() => {
     return () => {
-      clearTimeout(timerRef.current);
+      window.clearTimeout(timerRef.current);
     };
   }, []);
 

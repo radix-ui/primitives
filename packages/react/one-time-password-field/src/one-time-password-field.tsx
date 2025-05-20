@@ -13,6 +13,7 @@ import { createContextScope } from '@radix-ui/react-context';
 import { useDirection } from '@radix-ui/react-direction';
 import { clamp } from '@radix-ui/number';
 import { useEffectEvent } from '@radix-ui/react-use-effect-event';
+import { useDocument } from '@radix-ui/react-document-context';
 
 type InputValidationType = 'alpha' | 'numeric' | 'alphanumeric' | 'none';
 
@@ -381,12 +382,17 @@ const OneTimePasswordField = React.forwardRef<HTMLDivElement, OneTimePasswordFie
     const userActionRef = React.useRef<KeyboardActionDetails | null>(null);
     const rootRef = React.useRef<HTMLDivElement | null>(null);
     const composedRefs = useComposedRefs(forwardedRef, rootRef);
+    const providedDocument = useDocument();
 
     const firstInput = collection.at(0)?.element;
     const locateForm = React.useCallback(() => {
       let formElement: HTMLFormElement | null | undefined;
       if (form) {
-        const associatedElement = (rootRef.current?.ownerDocument ?? document).getElementById(form);
+        const associatedElement = (
+          rootRef.current?.ownerDocument ??
+          providedDocument ??
+          globalThis.document
+        ).getElementById(form);
         if (isFormElement(associatedElement)) {
           formElement = associatedElement;
         }
@@ -397,7 +403,7 @@ const OneTimePasswordField = React.forwardRef<HTMLDivElement, OneTimePasswordFie
       }
 
       return formElement ?? null;
-    }, [form, firstInput]);
+    }, [form, firstInput, providedDocument]);
 
     const attemptSubmit = React.useCallback(() => {
       const formElement = locateForm();
@@ -612,7 +618,7 @@ const OneTimePasswordFieldInput = React.forwardRef<
   const keyboardActionTimeoutRef = React.useRef<number | null>(null);
   React.useEffect(() => {
     return () => {
-      window.clearTimeout(keyboardActionTimeoutRef.current!);
+      globalThis.window.clearTimeout(keyboardActionTimeoutRef.current!);
     };
   }, []);
 
@@ -670,7 +676,7 @@ const OneTimePasswordFieldInput = React.forwardRef<
                   };
                   // Set a short timeout to clear the action tracker after the change
                   // handler has had time to complete.
-                  keyboardActionTimeoutRef.current = window.setTimeout(() => {
+                  keyboardActionTimeoutRef.current = globalThis.window.setTimeout(() => {
                     userActionRef.current = null;
                   }, 10);
                 }
@@ -782,7 +788,7 @@ const OneTimePasswordFieldInput = React.forwardRef<
                       };
                       // Set a short timeout to clear the action tracker after the change
                       // handler has had time to complete.
-                      keyboardActionTimeoutRef.current = window.setTimeout(() => {
+                      keyboardActionTimeoutRef.current = globalThis.window.setTimeout(() => {
                         userActionRef.current = null;
                       }, 10);
                     }
@@ -853,7 +859,7 @@ const OneTimePasswordFieldInput = React.forwardRef<
                             metaKey: event.metaKey,
                             ctrlKey: event.ctrlKey,
                           };
-                          keyboardActionTimeoutRef.current = window.setTimeout(() => {
+                          keyboardActionTimeoutRef.current = globalThis.window.setTimeout(() => {
                             userActionRef.current = null;
                           }, 10);
                         }
@@ -907,7 +913,7 @@ function focusInput(element: HTMLInputElement | null | undefined) {
   if (element.ownerDocument.activeElement === element) {
     // if the element is already focused, select the value in the next
     // animation frame
-    window.requestAnimationFrame(() => {
+    globalThis.window.requestAnimationFrame(() => {
       element.select?.();
     });
   } else {

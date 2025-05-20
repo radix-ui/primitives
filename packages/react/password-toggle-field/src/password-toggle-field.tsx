@@ -9,6 +9,7 @@ import { useIsHydrated } from '@radix-ui/react-use-is-hydrated';
 import { useEffectEvent } from '@radix-ui/react-use-effect-event';
 import type { Scope } from '@radix-ui/react-context';
 import { createContextScope } from '@radix-ui/react-context';
+import { useDocument } from '@radix-ui/react-document-context';
 
 const PASSWORD_TOGGLE_FIELD_NAME = 'PasswordToggleField';
 
@@ -233,6 +234,7 @@ const PasswordToggleFieldToggle = React.forwardRef<
     const elementRef = React.useRef<HTMLButtonElement>(null);
     const ref = useComposedRefs(forwardedRef, elementRef);
     const isHydrated = useIsHydrated();
+    const providedDocument = useDocument();
 
     React.useEffect(() => {
       const element = elementRef.current;
@@ -283,15 +285,16 @@ const PasswordToggleFieldToggle = React.forwardRef<
 
     React.useEffect(() => {
       let cleanup = () => {};
-      const ownerWindow = elementRef.current?.ownerDocument?.defaultView || window;
+      const ownerWindow =
+        elementRef.current?.ownerDocument?.defaultView || providedDocument?.defaultView;
       const reset = () => (focusState.current.clickTriggered = false);
-      const handlePointerUp = () => (cleanup = requestIdleCallback(ownerWindow, reset));
-      ownerWindow.addEventListener('pointerup', handlePointerUp);
+      const handlePointerUp = () => (cleanup = requestIdleCallback(reset));
+      ownerWindow?.addEventListener('pointerup', handlePointerUp);
       return () => {
         cleanup();
-        ownerWindow.removeEventListener('pointerup', handlePointerUp);
+        ownerWindow?.removeEventListener('pointerup', handlePointerUp);
       };
-    }, [focusState]);
+    }, [focusState, providedDocument]);
 
     return (
       <Primitive.button
@@ -349,7 +352,7 @@ const PasswordToggleFieldToggle = React.forwardRef<
           // if click handler hasn't been called at this point, it may have been
           // intercepted, in which case we still want to reset our internal
           // state
-          setTimeout(() => {
+          globalThis.window.setTimeout(() => {
             focusState.current = INITIAL_FOCUS_STATE;
           }, 50);
         }}
@@ -458,10 +461,10 @@ export type {
 };
 
 function requestIdleCallback(
-  window: Window,
   callback: IdleRequestCallback,
   options?: IdleRequestOptions
 ): () => void {
+  const window = globalThis.window;
   if ((window as any).requestIdleCallback) {
     const id = window.requestIdleCallback(callback, options);
     return () => {

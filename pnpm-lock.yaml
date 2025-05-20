@@ -457,6 +457,9 @@ importers:
       '@radix-ui/react-dialog':
         specifier: workspace:*
         version: link:../dialog
+      '@radix-ui/react-document-context':
+        specifier: workspace:*
+        version: link:../document-context
       '@radix-ui/react-primitive':
         specifier: workspace:*
         version: link:../primitive
@@ -605,6 +608,9 @@ importers:
       '@radix-ui/react-context':
         specifier: workspace:*
         version: link:../context
+      '@radix-ui/react-document-context':
+        specifier: workspace:*
+        version: link:../document-context
       '@radix-ui/react-primitive':
         specifier: workspace:*
         version: link:../primitive
@@ -925,6 +931,9 @@ importers:
       '@radix-ui/react-dismissable-layer':
         specifier: workspace:*
         version: link:../dismissable-layer
+      '@radix-ui/react-document-context':
+        specifier: workspace:*
+        version: link:../document-context
       '@radix-ui/react-focus-guards':
         specifier: workspace:*
         version: link:../focus-guards
@@ -1022,6 +1031,9 @@ importers:
       '@radix-ui/react-compose-refs':
         specifier: workspace:*
         version: link:../compose-refs
+      '@radix-ui/react-document-context':
+        specifier: workspace:*
+        version: link:../document-context
       '@radix-ui/react-primitive':
         specifier: workspace:*
         version: link:../primitive
@@ -1059,6 +1071,43 @@ importers:
       react-remove-scroll:
         specifier: ^2.6.3
         version: 2.6.3(@types/react@19.1.0)(react@19.1.0)
+      typescript:
+        specifier: ^5.7.3
+        version: 5.8.3
+
+  packages/react/document-context:
+    dependencies:
+      '@radix-ui/react-use-is-hydrated':
+        specifier: workspace:*
+        version: link:../use-is-hydrated
+    devDependencies:
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../../../internal/eslint-config
+      '@repo/test-data':
+        specifier: workspace:*
+        version: link:../../../internal/test-data
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../../../internal/typescript-config
+      '@types/react':
+        specifier: ^19.0.7
+        version: 19.1.0
+      '@types/react-dom':
+        specifier: ^19.0.3
+        version: 19.1.1(@types/react@19.1.0)
+      eslint:
+        specifier: ^9.18.0
+        version: 9.24.0
+      react:
+        specifier: ^19.1.0
+        version: 19.1.0
+      react-dom:
+        specifier: ^19.1.0
+        version: 19.1.0(react@19.1.0)
       typescript:
         specifier: ^5.7.3
         version: 5.8.3
@@ -1119,6 +1168,10 @@ importers:
         version: 5.8.3
 
   packages/react/focus-guards:
+    dependencies:
+      '@radix-ui/react-document-context':
+        specifier: workspace:*
+        version: link:../document-context
     devDependencies:
       '@repo/builder':
         specifier: workspace:*
@@ -1153,6 +1206,9 @@ importers:
       '@radix-ui/react-compose-refs':
         specifier: workspace:*
         version: link:../compose-refs
+      '@radix-ui/react-document-context':
+        specifier: workspace:*
+        version: link:../document-context
       '@radix-ui/react-primitive':
         specifier: workspace:*
         version: link:../primitive
@@ -1251,6 +1307,9 @@ importers:
       '@radix-ui/react-dismissable-layer':
         specifier: workspace:*
         version: link:../dismissable-layer
+      '@radix-ui/react-document-context':
+        specifier: workspace:*
+        version: link:../document-context
       '@radix-ui/react-popper':
         specifier: workspace:*
         version: link:../popper
@@ -1383,6 +1442,9 @@ importers:
       '@radix-ui/react-dismissable-layer':
         specifier: workspace:*
         version: link:../dismissable-layer
+      '@radix-ui/react-document-context':
+        specifier: workspace:*
+        version: link:../document-context
       '@radix-ui/react-focus-guards':
         specifier: workspace:*
         version: link:../focus-guards
@@ -1535,6 +1597,9 @@ importers:
       '@radix-ui/react-dismissable-layer':
         specifier: workspace:*
         version: link:../dismissable-layer
+      '@radix-ui/react-document-context':
+        specifier: workspace:*
+        version: link:../document-context
       '@radix-ui/react-id':
         specifier: workspace:*
         version: link:../id
@@ -1608,6 +1673,9 @@ importers:
       '@radix-ui/react-direction':
         specifier: workspace:*
         version: link:../direction
+      '@radix-ui/react-document-context':
+        specifier: workspace:*
+        version: link:../document-context
       '@radix-ui/react-primitive':
         specifier: workspace:*
         version: link:../primitive
@@ -1666,6 +1734,9 @@ importers:
       '@radix-ui/react-context':
         specifier: workspace:*
         version: link:../context
+      '@radix-ui/react-document-context':
+        specifier: workspace:*
+        version: link:../document-context
       '@radix-ui/react-id':
         specifier: workspace:*
         version: link:../id
@@ -1800,6 +1871,9 @@ importers:
       '@radix-ui/react-context':
         specifier: workspace:*
         version: link:../context
+      '@radix-ui/react-document-context':
+        specifier: workspace:*
+        version: link:../document-context
       '@radix-ui/react-primitive':
         specifier: workspace:*
         version: link:../primitive
@@ -1849,6 +1923,9 @@ importers:
 
   packages/react/portal:
     dependencies:
+      '@radix-ui/react-document-context':
+        specifier: workspace:*
+        version: link:../document-context
       '@radix-ui/react-primitive':
         specifier: workspace:*
         version: link:../primitive
@@ -2006,6 +2083,9 @@ importers:
       '@radix-ui/react-direction':
         specifier: workspace:*
         version: link:../direction
+      '@radix-ui/react-document-context':
+        specifier: workspace:*
+        version: link:../document-context
       '@radix-ui/react-presence':
         specifier: workspace:*
         version: link:../presence
@@ -2103,6 +2183,9 @@ importers:
       '@radix-ui/react-dismissable-layer':
         specifier: workspace:*
         version: link:../dismissable-layer
+      '@radix-ui/react-document-context':
+        specifier: workspace:*
+        version: link:../document-context
       '@radix-ui/react-dropdown-menu':
         specifier: workspace:*
         version: link:../dropdown-menu
@@ -2266,6 +2349,9 @@ importers:
       '@radix-ui/react-direction':
         specifier: workspace:*
         version: link:../direction
+      '@radix-ui/react-document-context':
+        specifier: workspace:*
+        version: link:../document-context
       '@radix-ui/react-id':
         specifier: workspace:*
         version: link:../id
@@ -2324,6 +2410,9 @@ importers:
       '@radix-ui/react-direction':
         specifier: workspace:*
         version: link:../direction
+      '@radix-ui/react-document-context':
+        specifier: workspace:*
+        version: link:../document-context
       '@radix-ui/react-presence':
         specifier: workspace:*
         version: link:../presence
@@ -2388,6 +2477,9 @@ importers:
       '@radix-ui/react-dismissable-layer':
         specifier: workspace:*
         version: link:../dismissable-layer
+      '@radix-ui/react-document-context':
+        specifier: workspace:*
+        version: link:../document-context
       '@radix-ui/react-focus-guards':
         specifier: workspace:*
         version: link:../focus-guards
@@ -2718,6 +2810,9 @@ importers:
       '@radix-ui/react-dismissable-layer':
         specifier: workspace:*
         version: link:../dismissable-layer
+      '@radix-ui/react-document-context':
+        specifier: workspace:*
+        version: link:../document-context
       '@radix-ui/react-portal':
         specifier: workspace:*
         version: link:../portal
@@ -2926,6 +3021,9 @@ importers:
       '@radix-ui/react-dismissable-layer':
         specifier: workspace:*
         version: link:../dismissable-layer
+      '@radix-ui/react-document-context':
+        specifier: workspace:*
+        version: link:../document-context
       '@radix-ui/react-id':
         specifier: workspace:*
         version: link:../id
@@ -3085,6 +3183,9 @@ importers:
 
   packages/react/use-escape-keydown:
     dependencies:
+      '@radix-ui/react-document-context':
+        specifier: workspace:*
+        version: link:../document-context
       '@radix-ui/react-use-callback-ref':
         specifier: workspace:*
         version: link:../use-callback-ref

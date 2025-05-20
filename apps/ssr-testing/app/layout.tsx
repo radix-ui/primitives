@@ -43,6 +43,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <Link href="/toolbar">Toolbar</Link>
               <Link href="/tooltip">Tooltip</Link>
               <Link href="/visually-hidden">VisuallyHidden</Link>
+              <Link href="/document-context">DocumentContext</Link>
             </div>
 
             <div>{children}</div>
