@@ -405,6 +405,12 @@ const OneTimePasswordField = React.forwardRef<HTMLDivElement, OneTimePasswordFie
     }, [locateForm]);
 
     React.useEffect(() => {
+      if (autoFocus && firstInput) {
+        firstInput.focus();
+      }
+    }, [autoFocus, firstInput]);
+
+    React.useEffect(() => {
       const form = locateForm();
       if (form) {
         const reset = () => dispatch({ type: 'CLEAR', reason: 'Reset' });
