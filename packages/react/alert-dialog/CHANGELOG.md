@@ -1,5 +1,10 @@
 # @radix-ui/react-alert-dialog
 
+## 1.1.14
+
+- Replace deprecated 'ElementRef' with 'ComponentRef' (#3426)
+- Updated dependencies: `@radix-ui/react-dialog@1.1.14`, `@radix-ui/react-slot@1.2.3`, `@radix-ui/react-primitive@2.1.3`
+
 ## 1.1.13
 
 - Updated dependencies: `@radix-ui/react-slot@1.2.2`, `@radix-ui/react-dialog@1.1.13`, `@radix-ui/react-primitive@2.1.2`

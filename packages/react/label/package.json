@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-label",
-  "version": "2.1.6",
+  "version": "2.1.7",
   "license": "MIT",
   "source": "./src/index.ts",
   "main": "./src/index.ts",
