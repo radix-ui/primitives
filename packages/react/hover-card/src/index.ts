@@ -13,6 +13,8 @@ export {
   Portal,
   Content,
   Arrow,
+  //
+  useHoverCardContext,
 } from './hover-card';
 export type {
   HoverCardProps,

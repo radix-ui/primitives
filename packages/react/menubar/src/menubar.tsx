@@ -743,6 +743,8 @@ export {
   Sub,
   SubTrigger,
   SubContent,
+  //
+  useMenubarContext,
 };
 export type {
   MenubarProps,

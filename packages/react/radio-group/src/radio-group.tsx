@@ -220,5 +220,7 @@ export {
   Root,
   Item,
   Indicator,
+  //
+  useRadioGroupContext,
 };
 export type { RadioGroupProps, RadioGroupItemProps, RadioGroupIndicatorProps };

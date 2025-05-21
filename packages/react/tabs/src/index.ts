@@ -11,5 +11,7 @@ export {
   List,
   Trigger,
   Content,
+  //
+  useTabsContext,
 } from './tabs';
 export type { TabsProps, TabsListProps, TabsTriggerProps, TabsContentProps } from './tabs';

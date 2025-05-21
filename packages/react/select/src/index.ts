@@ -35,6 +35,8 @@ export {
   ScrollDownButton,
   Separator,
   Arrow,
+  //
+  useSelectContext,
 } from './select';
 export type {
   SelectProps,

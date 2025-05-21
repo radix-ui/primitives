@@ -769,6 +769,8 @@ export {
   Portal,
   Content,
   Arrow,
+  //
+  useTooltipContext,
 };
 export type {
   TooltipProviderProps,

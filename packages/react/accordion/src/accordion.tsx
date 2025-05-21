@@ -526,6 +526,11 @@ export {
   Header,
   Trigger,
   Content,
+  //
+  useAccordionContext,
+  useAccordionItemContext,
+  useAccordionValueContext,
+  useAccordionCollapsibleContext,
 };
 export type {
   AccordionSingleProps,

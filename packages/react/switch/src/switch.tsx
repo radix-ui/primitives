@@ -217,5 +217,7 @@ export {
   //
   Root,
   Thumb,
+  //
+  useSwitchContext,
 };
 export type { SwitchProps, SwitchThumbProps };

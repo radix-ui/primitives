@@ -7,6 +7,9 @@ export {
   //
   Root,
   Item,
+  //
+  useToggleGroupContext,
+  useToggleGroupValueContext,
 } from './toggle-group';
 export type {
   ToggleGroupSingleProps,

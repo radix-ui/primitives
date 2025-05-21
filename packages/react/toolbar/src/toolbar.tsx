@@ -238,6 +238,8 @@ export {
   Link,
   ToggleGroup,
   ToggleItem,
+  //
+  useToolbarContext,
 };
 export type {
   ToolbarProps,

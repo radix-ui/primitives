@@ -37,6 +37,8 @@ export {
   Sub,
   SubTrigger,
   SubContent,
+  //
+  useMenubarContext,
 } from './menubar';
 export type {
   MenubarProps,

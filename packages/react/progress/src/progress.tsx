@@ -156,5 +156,7 @@ export {
   //
   Root,
   Indicator,
+  //
+  useProgressContext,
 };
 export type { ProgressProps, ProgressIndicatorProps };

@@ -9,6 +9,8 @@ export {
   Root,
   Trigger,
   Content,
+  //
+  useCollapsibleContext,
 } from './collapsible';
 export type {
   CollapsibleProps,

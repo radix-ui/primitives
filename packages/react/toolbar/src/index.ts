@@ -15,6 +15,8 @@ export {
   Link,
   ToggleGroup,
   ToggleItem,
+  //
+  useToolbarContext,
 } from './toolbar';
 export type {
   ToolbarProps,

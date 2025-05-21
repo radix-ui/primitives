@@ -294,6 +294,8 @@ export {
   Cancel,
   Title,
   Description,
+  //
+  useAlertDialogContentContext,
 };
 export type {
   AlertDialogProps,

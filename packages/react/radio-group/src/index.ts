@@ -9,5 +9,7 @@ export {
   Root,
   Item,
   Indicator,
+  //
+  useRadioGroupContext,
 } from './radio-group';
 export type { RadioGroupProps, RadioGroupItemProps, RadioGroupIndicatorProps } from './radio-group';

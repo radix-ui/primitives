@@ -17,6 +17,8 @@ export {
   Content,
   Close,
   Arrow,
+  //
+  usePopoverContext,
 } from './popover';
 export type {
   PopoverProps,

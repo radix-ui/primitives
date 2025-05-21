@@ -716,6 +716,10 @@ export {
   Message,
   ValidityState,
   Submit,
+  //
+  useFormFieldContext,
+  useValidationContext,
+  useAriaDescriptionContext,
 };
 
 export type {

@@ -545,6 +545,8 @@ export {
   Sub,
   SubTrigger,
   SubContent,
+  //
+  useDropdownMenuContext,
 };
 export type {
   DropdownMenuProps,

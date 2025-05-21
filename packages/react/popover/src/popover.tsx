@@ -519,6 +519,8 @@ export {
   Content,
   Close,
   Arrow,
+  //
+  usePopoverContext,
 };
 export type {
   PopoverProps,

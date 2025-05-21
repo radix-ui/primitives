@@ -418,5 +418,7 @@ export {
   //
   SIDE_OPTIONS,
   ALIGN_OPTIONS,
+  //
+  usePopperContext,
 };
 export type { PopperProps, PopperAnchorProps, PopperContentProps, PopperArrowProps };

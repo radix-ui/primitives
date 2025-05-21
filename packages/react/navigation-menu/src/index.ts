@@ -21,6 +21,8 @@ export {
   Indicator,
   Content,
   Viewport,
+  //
+  useNavigationMenuContext,
 } from './navigation-menu';
 export type {
   NavigationMenuProps,

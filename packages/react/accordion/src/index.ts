@@ -13,6 +13,11 @@ export {
   Header,
   Trigger,
   Content,
+  //
+  useAccordionContext,
+  useAccordionItemContext,
+  useAccordionValueContext,
+  useAccordionCollapsibleContext,
 } from './accordion';
 export type {
   AccordionSingleProps,

@@ -1374,6 +1374,9 @@ export {
   Sub,
   SubTrigger,
   SubContent,
+  //
+  useMenuContext,
+  useRadioGroupContext,
 };
 export type {
   MenuProps,
