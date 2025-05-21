@@ -314,5 +314,8 @@ export {
   //
   Root,
   Item,
+  //
+  useToggleGroupContext,
+  useToggleGroupValueContext,
 };
 export type { ToggleGroupSingleProps, ToggleGroupMultipleProps, ToggleGroupItemProps };

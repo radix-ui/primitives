@@ -35,6 +35,9 @@ export {
   Sub,
   SubTrigger,
   SubContent,
+  //
+  useMenuContext,
+  useRadioGroupContext,
 } from './menu';
 export type {
   MenuProps,

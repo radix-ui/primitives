@@ -402,6 +402,8 @@ export {
   CheckboxTrigger as Trigger,
   CheckboxIndicator as Indicator,
   CheckboxBubbleInput as BubbleInput,
+  //
+  useCheckboxContext,
 };
 export type {
   CheckboxProps,

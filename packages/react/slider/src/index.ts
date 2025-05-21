@@ -11,5 +11,8 @@ export {
   Track,
   Range,
   Thumb,
+  //
+  useSliderContext,
+  useSliderOrientationContext,
 } from './slider';
 export type { SliderProps, SliderTrackProps, SliderRangeProps, SliderThumbProps } from './slider';

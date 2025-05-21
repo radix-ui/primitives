@@ -806,5 +806,8 @@ export {
   Track,
   Range,
   Thumb,
+  //
+  useSliderContext,
+  useSliderOrientationContext,
 };
 export type { SliderProps, SliderTrackProps, SliderRangeProps, SliderThumbProps };

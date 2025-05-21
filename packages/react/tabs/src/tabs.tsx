@@ -294,5 +294,7 @@ export {
   List,
   Trigger,
   Content,
+  //
+  useTabsContext,
 };
 export type { TabsProps, TabsListProps, TabsTriggerProps, TabsContentProps };

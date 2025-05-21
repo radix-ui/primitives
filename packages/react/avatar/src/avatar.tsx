@@ -193,5 +193,7 @@ export {
   Root,
   Image,
   Fallback,
+  //
+  useAvatarContext,
 };
 export type { AvatarProps, AvatarImageProps, AvatarFallbackProps };

@@ -242,5 +242,7 @@ export {
   Root,
   Trigger,
   Content,
+  //
+  useCollapsibleContext,
 };
 export type { CollapsibleProps, CollapsibleTriggerProps, CollapsibleContentProps };

@@ -211,5 +211,7 @@ export {
   //
   Radio,
   RadioIndicator,
+  //
+  useRadioContext,
 };
 export type { RadioProps };

@@ -1820,6 +1820,8 @@ export {
   ScrollDownButton,
   Separator,
   Arrow,
+  //
+  useSelectContext,
 };
 export type {
   SelectProps,

@@ -17,6 +17,10 @@ export {
   Message,
   ValidityState,
   Submit,
+  //
+  useFormFieldContext,
+  useValidationContext,
+  useAriaDescriptionContext,
 } from './form';
 
 export type {

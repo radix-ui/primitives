@@ -21,6 +21,8 @@ export {
   Close,
   //
   WarningProvider,
+  //
+  useDialogContext,
 } from './dialog';
 export type {
   DialogProps,

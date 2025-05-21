@@ -425,6 +425,8 @@ export {
   Portal,
   Content,
   Arrow,
+  //
+  useHoverCardContext,
 };
 export type {
   HoverCardProps,

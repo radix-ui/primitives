@@ -14,6 +14,8 @@ export {
   //
   SIDE_OPTIONS,
   ALIGN_OPTIONS,
+  //
+  usePopperContext,
 } from './popper';
 export type {
   PopperProps,

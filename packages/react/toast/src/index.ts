@@ -17,6 +17,8 @@ export {
   Description,
   Action,
   Close,
+  //
+  useToastProviderContext,
 } from './toast';
 export type {
   ToastProviderProps,

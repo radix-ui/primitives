@@ -13,6 +13,8 @@ export {
   Trigger as unstable_Trigger,
   Indicator,
   BubbleInput as unstable_BubbleInput,
+  //
+  useCheckboxContext,
 } from './checkbox';
 export type {
   CheckboxProps,

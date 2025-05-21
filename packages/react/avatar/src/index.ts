@@ -9,5 +9,7 @@ export {
   Root,
   Image,
   Fallback,
+  //
+  useAvatarContext,
 } from './avatar';
 export type { AvatarProps, AvatarImageProps, AvatarFallbackProps } from './avatar';

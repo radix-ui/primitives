@@ -15,6 +15,8 @@ export {
   Portal,
   Content,
   Arrow,
+  //
+  useTooltipContext,
 } from './tooltip';
 export type {
   TooltipProps,

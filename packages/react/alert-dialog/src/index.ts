@@ -21,6 +21,8 @@ export {
   Cancel,
   Title,
   Description,
+  //
+  useAlertDialogContentContext,
 } from './alert-dialog';
 export type {
   AlertDialogProps,

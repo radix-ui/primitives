@@ -1029,6 +1029,9 @@ export {
   Scrollbar,
   Thumb,
   Corner,
+  //
+  useScrollAreaContext,
+  useScrollbarContext,
 };
 export type {
   ScrollAreaProps,

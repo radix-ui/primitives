@@ -578,6 +578,8 @@ export {
   Close,
   //
   WarningProvider,
+  //
+  useDialogContext,
 };
 export type {
   DialogProps,

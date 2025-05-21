@@ -976,6 +976,8 @@ export {
   Description,
   Action,
   Close,
+  //
+  useToastProviderContext,
 };
 export type {
   ToastProviderProps,

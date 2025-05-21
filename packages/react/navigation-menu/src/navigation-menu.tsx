@@ -1272,6 +1272,8 @@ export {
   Indicator,
   Content,
   Viewport,
+  //
+  useNavigationMenuContext,
 };
 export type {
   NavigationMenuProps,
