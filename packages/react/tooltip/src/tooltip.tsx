@@ -98,6 +98,8 @@ const TooltipProvider: React.FC<TooltipProviderProps> = (
             () => (isOpenDelayedRef.current = true),
             skipDelayDuration
           );
+        } else {
+          isOpenDelayedRef.current = true;
         }
       }, [skipDelayDuration])}
       isPointerInTransitRef={isPointerInTransitRef}
