@@ -76,8 +76,7 @@ const TooltipProvider: React.FC<TooltipProviderProps> = (
   const skipDelayTimerRef = React.useRef(0);
 
   React.useEffect(() => {
-    const skipDelayTimer = skipDelayTimerRef.current;
-    return () => window.clearTimeout(skipDelayTimer);
+    return () => window.clearTimeout(skipDelayTimerRef.current);
   }, []);
 
   return (
