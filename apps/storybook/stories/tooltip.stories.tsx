@@ -174,9 +174,9 @@ export const CustomDurations = () => (
     </div>
 
     <h2>Custom (0ms to move from one to another tooltip = never skip)</h2>
-    <div style={{ display: 'flex', gap: 50 }}>
+    <div style={{ display: 'flex', gap: 0 }}>
       <Tooltip.Provider skipDelayDuration={0}>
-        <Tooltip.Root>
+        <Tooltip.Root disableHoverableContent>
           <Tooltip.Trigger className={styles.trigger}>Hover me</Tooltip.Trigger>
           <Tooltip.Portal>
             <Tooltip.Content className={styles.content} sideOffset={5}>
@@ -185,7 +185,7 @@ export const CustomDurations = () => (
             </Tooltip.Content>
           </Tooltip.Portal>
         </Tooltip.Root>
-        <Tooltip.Root>
+        <Tooltip.Root disableHoverableContent>
           <Tooltip.Trigger className={styles.trigger}>Hover me</Tooltip.Trigger>
           <Tooltip.Portal>
             <Tooltip.Content className={styles.content} sideOffset={5}>
@@ -194,7 +194,7 @@ export const CustomDurations = () => (
             </Tooltip.Content>
           </Tooltip.Portal>
         </Tooltip.Root>
-        <Tooltip.Root>
+        <Tooltip.Root disableHoverableContent>
           <Tooltip.Trigger className={styles.trigger}>Hover me</Tooltip.Trigger>
           <Tooltip.Portal>
             <Tooltip.Content className={styles.content} sideOffset={5}>

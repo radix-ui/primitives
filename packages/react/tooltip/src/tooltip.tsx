@@ -86,15 +86,19 @@ const TooltipProvider: React.FC<TooltipProviderProps> = (
       isOpenDelayedRef={isOpenDelayedRef}
       delayDuration={delayDuration}
       onOpen={React.useCallback(() => {
-        window.clearTimeout(skipDelayTimerRef.current);
-        isOpenDelayedRef.current = false;
-      }, [])}
+        if (skipDelayDuration > 0) {
+          window.clearTimeout(skipDelayTimerRef.current);
+          isOpenDelayedRef.current = false;
+        }
+      }, [skipDelayDuration])}
       onClose={React.useCallback(() => {
-        window.clearTimeout(skipDelayTimerRef.current);
-        skipDelayTimerRef.current = window.setTimeout(
-          () => (isOpenDelayedRef.current = true),
-          skipDelayDuration
-        );
+        if (skipDelayDuration > 0) {
+          window.clearTimeout(skipDelayTimerRef.current);
+          skipDelayTimerRef.current = window.setTimeout(
+            () => (isOpenDelayedRef.current = true),
+            skipDelayDuration
+          );
+        }
       }, [skipDelayDuration])}
       isPointerInTransitRef={isPointerInTransitRef}
       onPointerInTransitChange={React.useCallback((inTransit: boolean) => {
