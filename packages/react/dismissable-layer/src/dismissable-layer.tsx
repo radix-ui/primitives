@@ -125,7 +125,7 @@ const DismissableLayer = React.forwardRef<DismissableLayerElement, DismissableLa
           disableOutsidePointerEvents &&
           context.layersWithOutsidePointerEventsDisabled.size === 1
         ) {
-          ownerDocument.body.style.pointerEvents = originalBodyPointerEvents;
+          ownerDocument.body.style.pointerEvents = originalBodyPointerEvents ?? "";
         }
       };
     }, [node, ownerDocument, disableOutsidePointerEvents, context]);
