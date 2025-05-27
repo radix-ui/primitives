@@ -195,7 +195,7 @@ const Button = React.forwardRef<
 });
 
 const Input = React.forwardRef<
-  React.ElementRef<'input'>,
+  React.ComponentRef<'input'>,
   React.ComponentProps<'input'> & {
     asChild?: boolean;
   }
