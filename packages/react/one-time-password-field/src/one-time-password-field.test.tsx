@@ -53,6 +53,25 @@ describe('given a default OneTimePasswordField', () => {
     expect(hiddenInput.value).toBe('1');
   });
 
+  it('should focus on first input when autoFocus is true', () => {
+    rendered.rerender(
+      <OneTimePasswordField.Root autoFocus>
+        <OneTimePasswordField.Input />
+        <OneTimePasswordField.Input />
+        <OneTimePasswordField.Input />
+        <OneTimePasswordField.Input />
+        <OneTimePasswordField.Input />
+        <OneTimePasswordField.Input />
+        <OneTimePasswordField.HiddenInput name="code" />
+      </OneTimePasswordField.Root>
+    );
+
+    const firstInput = rendered.container.querySelector(
+      'input:not([type="hidden"])'
+    ) as HTMLInputElement;
+    expect(document.activeElement).toBe(firstInput);
+  });
+
   // TODO: userEvent paste not behaving as expected. Debug and unskip.
   // Replicated in storybook for now.
   it.todo('pastes the code into the input', async () => {
