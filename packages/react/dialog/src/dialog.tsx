@@ -431,7 +431,7 @@ const TITLE_NAME = 'DialogTitle';
 
 type DialogTitleElement = React.ComponentRef<typeof Primitive.h2>;
 type PrimitiveHeading2Props = React.ComponentPropsWithoutRef<typeof Primitive.h2>;
-interface DialogTitleProps extends PrimitiveHeading2Props {}
+interface DialogTitleProps extends Omit<PrimitiveHeading2Props,"id"> {}
 
 const DialogTitle = React.forwardRef<DialogTitleElement, DialogTitleProps>(
   (props: ScopedProps<DialogTitleProps>, forwardedRef) => {
@@ -451,7 +451,7 @@ const DESCRIPTION_NAME = 'DialogDescription';
 
 type DialogDescriptionElement = React.ComponentRef<typeof Primitive.p>;
 type PrimitiveParagraphProps = React.ComponentPropsWithoutRef<typeof Primitive.p>;
-interface DialogDescriptionProps extends PrimitiveParagraphProps {}
+interface DialogDescriptionProps extends Omit<PrimitiveParagraphProps,"id"> {}
 
 const DialogDescription = React.forwardRef<DialogDescriptionElement, DialogDescriptionProps>(
   (props: ScopedProps<DialogDescriptionProps>, forwardedRef) => {
