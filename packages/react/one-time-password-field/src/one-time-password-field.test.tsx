@@ -32,6 +32,27 @@ describe('given a default OneTimePasswordField', () => {
     expect(await axe(rendered.container)).toHaveNoViolations();
   });
 
+  it('should mask input value when type is password', async () => {
+    rendered.rerender(
+      <OneTimePasswordField.Root type="password">
+        <OneTimePasswordField.Input />
+        <OneTimePasswordField.HiddenInput name="code" />
+      </OneTimePasswordField.Root>
+    );
+
+    const input = rendered.container.querySelector(
+      'input:not([type="hidden"])'
+    ) as HTMLInputElement;
+
+    await userEvent.type(input, '1');
+    expect(input.type).toBe('password');
+
+    const hiddenInput = rendered.container.querySelector(
+      'input[type="hidden"]'
+    ) as HTMLInputElement;
+    expect(hiddenInput.value).toBe('1');
+  });
+
   // TODO: userEvent paste not behaving as expected. Debug and unskip.
   // Replicated in storybook for now.
   it.todo('pastes the code into the input', async () => {

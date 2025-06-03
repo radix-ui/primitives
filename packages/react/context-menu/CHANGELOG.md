@@ -1,5 +1,18 @@
 # @radix-ui/react-context-menu
 
+## 2.2.15
+
+- Replace deprecated 'ElementRef' with 'ComponentRef' (#3426)
+- Updated dependencies: `@radix-ui/react-menu@2.1.15`, `@radix-ui/react-primitive@2.1.3`
+
+## 2.2.14
+
+- Updated dependencies: `@radix-ui/react-menu@2.1.14`, `@radix-ui/react-primitive@2.1.2`
+
+## 2.2.13
+
+- Updated dependencies: `@radix-ui/react-menu@2.1.13`, `@radix-ui/react-primitive@2.1.1`
+
 ## 2.2.12
 
 - Updated dependencies: `@radix-ui/react-menu@2.1.12`

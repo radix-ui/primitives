@@ -211,7 +211,7 @@ const OneTimePasswordField = React.forwardRef<HTMLDivElement, OneTimePasswordFie
       form,
       name,
       placeholder,
-      type = 'password',
+      type = 'text',
       // TODO: Change default to vertical when inputs use vertical writing mode
       orientation = 'horizontal',
       dir,
@@ -638,7 +638,7 @@ const OneTimePasswordFieldInput = React.forwardRef<
           return (
             <Primitive.Root.input
               ref={composedInputRef}
-              type="text"
+              type={context.type}
               aria-label={`Character ${index + 1} of ${collection.size}`}
               autoComplete={supportsAutoComplete ? context.autoComplete : 'off'}
               data-1p-ignore={supportsAutoComplete ? undefined : 'true'}

@@ -140,7 +140,7 @@ Menu.displayName = MENU_NAME;
 
 const ANCHOR_NAME = 'MenuAnchor';
 
-type MenuAnchorElement = React.ElementRef<typeof PopperPrimitive.Anchor>;
+type MenuAnchorElement = React.ComponentRef<typeof PopperPrimitive.Anchor>;
 type PopperAnchorProps = React.ComponentPropsWithoutRef<typeof PopperPrimitive.Anchor>;
 interface MenuAnchorProps extends PopperAnchorProps {}
 
@@ -310,7 +310,7 @@ const MenuRootContentNonModal = React.forwardRef<
 
 /* ---------------------------------------------------------------------------------------------- */
 
-type MenuContentImplElement = React.ElementRef<typeof PopperPrimitive.Content>;
+type MenuContentImplElement = React.ComponentRef<typeof PopperPrimitive.Content>;
 type FocusScopeProps = React.ComponentPropsWithoutRef<typeof FocusScope>;
 type DismissableLayerProps = React.ComponentPropsWithoutRef<typeof DismissableLayer>;
 type RovingFocusGroupProps = React.ComponentPropsWithoutRef<typeof RovingFocusGroup.Root>;
@@ -568,7 +568,7 @@ MenuContent.displayName = CONTENT_NAME;
 
 const GROUP_NAME = 'MenuGroup';
 
-type MenuGroupElement = React.ElementRef<typeof Primitive.div>;
+type MenuGroupElement = React.ComponentRef<typeof Primitive.div>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface MenuGroupProps extends PrimitiveDivProps {}
 
@@ -587,7 +587,7 @@ MenuGroup.displayName = GROUP_NAME;
 
 const LABEL_NAME = 'MenuLabel';
 
-type MenuLabelElement = React.ElementRef<typeof Primitive.div>;
+type MenuLabelElement = React.ComponentRef<typeof Primitive.div>;
 interface MenuLabelProps extends PrimitiveDivProps {}
 
 const MenuLabel = React.forwardRef<MenuLabelElement, MenuLabelProps>(
@@ -673,7 +673,7 @@ MenuItem.displayName = ITEM_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
-type MenuItemImplElement = React.ElementRef<typeof Primitive.div>;
+type MenuItemImplElement = React.ComponentRef<typeof Primitive.div>;
 interface MenuItemImplProps extends PrimitiveDivProps {
   disabled?: boolean;
   textValue?: string;
@@ -800,7 +800,7 @@ const [RadioGroupProvider, useRadioGroupContext] = createMenuContext<MenuRadioGr
   { value: undefined, onValueChange: () => {} }
 );
 
-type MenuRadioGroupElement = React.ElementRef<typeof MenuGroup>;
+type MenuRadioGroupElement = React.ComponentRef<typeof MenuGroup>;
 interface MenuRadioGroupProps extends MenuGroupProps {
   value?: string;
   onValueChange?: (value: string) => void;
@@ -826,7 +826,7 @@ MenuRadioGroup.displayName = RADIO_GROUP_NAME;
 
 const RADIO_ITEM_NAME = 'MenuRadioItem';
 
-type MenuRadioItemElement = React.ElementRef<typeof MenuItem>;
+type MenuRadioItemElement = React.ComponentRef<typeof MenuItem>;
 interface MenuRadioItemProps extends MenuItemProps {
   value: string;
 }
@@ -870,7 +870,7 @@ const [ItemIndicatorProvider, useItemIndicatorContext] = createMenuContext<Check
   { checked: false }
 );
 
-type MenuItemIndicatorElement = React.ElementRef<typeof Primitive.span>;
+type MenuItemIndicatorElement = React.ComponentRef<typeof Primitive.span>;
 type PrimitiveSpanProps = React.ComponentPropsWithoutRef<typeof Primitive.span>;
 interface MenuItemIndicatorProps extends PrimitiveSpanProps {
   /**
@@ -910,7 +910,7 @@ MenuItemIndicator.displayName = ITEM_INDICATOR_NAME;
 
 const SEPARATOR_NAME = 'MenuSeparator';
 
-type MenuSeparatorElement = React.ElementRef<typeof Primitive.div>;
+type MenuSeparatorElement = React.ComponentRef<typeof Primitive.div>;
 interface MenuSeparatorProps extends PrimitiveDivProps {}
 
 const MenuSeparator = React.forwardRef<MenuSeparatorElement, MenuSeparatorProps>(
@@ -935,7 +935,7 @@ MenuSeparator.displayName = SEPARATOR_NAME;
 
 const ARROW_NAME = 'MenuArrow';
 
-type MenuArrowElement = React.ElementRef<typeof PopperPrimitive.Arrow>;
+type MenuArrowElement = React.ComponentRef<typeof PopperPrimitive.Arrow>;
 type PopperArrowProps = React.ComponentPropsWithoutRef<typeof PopperPrimitive.Arrow>;
 interface MenuArrowProps extends PopperArrowProps {}
 

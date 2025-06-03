@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import * as React from 'react';
 import { cleanup, render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Slot, Slottable } from './slot';
@@ -140,7 +140,9 @@ describe('given a Button with Slottable', () => {
   });
 });
 
-describe('given an Input', () => {
+// TODO: Unskip when underlying issue is resolved
+// Reverted in https://github.com/radix-ui/primitives/pull/3554
+describe.skip('given an Input', () => {
   const handleRef = vi.fn();
 
   beforeEach(() => {
@@ -175,7 +177,7 @@ type TriggerProps = React.ComponentProps<'button'> & { as: React.ElementType };
 const Trigger = ({ as: Comp = 'button', ...props }: TriggerProps) => <Comp {...props} />;
 
 const Button = React.forwardRef<
-  React.ElementRef<'button'>,
+  React.ComponentRef<'button'>,
   React.ComponentProps<'button'> & {
     asChild?: boolean;
     iconLeft?: React.ReactNode;
@@ -193,13 +195,13 @@ const Button = React.forwardRef<
 });
 
 const Input = React.forwardRef<
-  React.ElementRef<'input'>,
+  React.ComponentRef<'input'>,
   React.ComponentProps<'input'> & {
     asChild?: boolean;
   }
 >(({ asChild, children, ...props }, forwardedRef) => {
   const Comp = asChild ? Slot : 'input';
-  const [value, setValue] = useState('');
+  const [value, setValue] = React.useState('');
 
   return (
     <Comp

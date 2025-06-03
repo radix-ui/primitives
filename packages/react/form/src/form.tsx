@@ -47,7 +47,7 @@ type AriaDescriptionContextValue = {
 const [AriaDescriptionProvider, useAriaDescriptionContext] =
   createFormContext<AriaDescriptionContextValue>(FORM_NAME);
 
-type FormElement = React.ElementRef<typeof Primitive.form>;
+type FormElement = React.ComponentRef<typeof Primitive.form>;
 type PrimitiveFormProps = React.ComponentPropsWithoutRef<typeof Primitive.form>;
 interface FormProps extends PrimitiveFormProps {
   onClearServerErrors?(): void;
@@ -200,7 +200,7 @@ type FormFieldContextValue = {
 const [FormFieldProvider, useFormFieldContext] =
   createFormContext<FormFieldContextValue>(FIELD_NAME);
 
-type FormFieldElement = React.ElementRef<typeof Primitive.div>;
+type FormFieldElement = React.ComponentRef<typeof Primitive.div>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface FormFieldProps extends PrimitiveDivProps {
   name: string;
@@ -235,7 +235,7 @@ FormField.displayName = FIELD_NAME;
 
 const LABEL_NAME = 'FormLabel';
 
-type FormLabelElement = React.ElementRef<typeof LabelPrimitive>;
+type FormLabelElement = React.ComponentRef<typeof LabelPrimitive>;
 type LabelProps = React.ComponentPropsWithoutRef<typeof LabelPrimitive>;
 interface FormLabelProps extends LabelProps {}
 
@@ -267,7 +267,7 @@ FormLabel.displayName = LABEL_NAME;
 
 const CONTROL_NAME = 'FormControl';
 
-type FormControlElement = React.ElementRef<typeof Primitive.input>;
+type FormControlElement = React.ComponentRef<typeof Primitive.input>;
 type PrimitiveInputProps = React.ComponentPropsWithoutRef<typeof Primitive.input>;
 interface FormControlProps extends PrimitiveInputProps {}
 
@@ -507,7 +507,7 @@ const FormBuiltInMessage = React.forwardRef<FormBuiltInMessageElement, FormBuilt
   }
 );
 
-type FormCustomMessageElement = React.ElementRef<typeof FormMessageImpl>;
+type FormCustomMessageElement = React.ComponentRef<typeof FormMessageImpl>;
 interface FormCustomMessageProps extends React.ComponentPropsWithoutRef<typeof FormMessageImpl> {
   match: CustomMatcher;
   forceMatch?: boolean;
@@ -548,7 +548,7 @@ const FormCustomMessage = React.forwardRef<FormCustomMessageElement, FormCustomM
   }
 );
 
-type FormMessageImplElement = React.ElementRef<typeof Primitive.span>;
+type FormMessageImplElement = React.ComponentRef<typeof Primitive.span>;
 type PrimitiveSpanProps = React.ComponentPropsWithoutRef<typeof Primitive.span>;
 interface FormMessageImplProps extends PrimitiveSpanProps {
   name: string;
@@ -599,7 +599,7 @@ FormValidityState.displayName = VALIDITY_STATE_NAME;
 
 const SUBMIT_NAME = 'FormSubmit';
 
-type FormSubmitElement = React.ElementRef<typeof Primitive.button>;
+type FormSubmitElement = React.ComponentRef<typeof Primitive.button>;
 type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
 interface FormSubmitProps extends PrimitiveButtonProps {}
 

@@ -91,7 +91,7 @@ Dialog.displayName = DIALOG_NAME;
 
 const TRIGGER_NAME = 'DialogTrigger';
 
-type DialogTriggerElement = React.ElementRef<typeof Primitive.button>;
+type DialogTriggerElement = React.ComponentRef<typeof Primitive.button>;
 type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
 interface DialogTriggerProps extends PrimitiveButtonProps {}
 
@@ -190,7 +190,7 @@ const DialogOverlay = React.forwardRef<DialogOverlayElement, DialogOverlayProps>
 
 DialogOverlay.displayName = OVERLAY_NAME;
 
-type DialogOverlayImplElement = React.ElementRef<typeof Primitive.div>;
+type DialogOverlayImplElement = React.ComponentRef<typeof Primitive.div>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface DialogOverlayImplProps extends PrimitiveDivProps {}
 
@@ -357,7 +357,7 @@ const DialogContentNonModal = React.forwardRef<DialogContentTypeElement, DialogC
 
 /* -----------------------------------------------------------------------------------------------*/
 
-type DialogContentImplElement = React.ElementRef<typeof DismissableLayer>;
+type DialogContentImplElement = React.ComponentRef<typeof DismissableLayer>;
 type DismissableLayerProps = React.ComponentPropsWithoutRef<typeof DismissableLayer>;
 type FocusScopeProps = React.ComponentPropsWithoutRef<typeof FocusScope>;
 interface DialogContentImplProps extends Omit<DismissableLayerProps, 'onDismiss'> {
@@ -429,7 +429,7 @@ const DialogContentImpl = React.forwardRef<DialogContentImplElement, DialogConte
 
 const TITLE_NAME = 'DialogTitle';
 
-type DialogTitleElement = React.ElementRef<typeof Primitive.h2>;
+type DialogTitleElement = React.ComponentRef<typeof Primitive.h2>;
 type PrimitiveHeading2Props = React.ComponentPropsWithoutRef<typeof Primitive.h2>;
 interface DialogTitleProps extends PrimitiveHeading2Props {}
 
@@ -449,7 +449,7 @@ DialogTitle.displayName = TITLE_NAME;
 
 const DESCRIPTION_NAME = 'DialogDescription';
 
-type DialogDescriptionElement = React.ElementRef<typeof Primitive.p>;
+type DialogDescriptionElement = React.ComponentRef<typeof Primitive.p>;
 type PrimitiveParagraphProps = React.ComponentPropsWithoutRef<typeof Primitive.p>;
 interface DialogDescriptionProps extends PrimitiveParagraphProps {}
 
@@ -469,7 +469,7 @@ DialogDescription.displayName = DESCRIPTION_NAME;
 
 const CLOSE_NAME = 'DialogClose';
 
-type DialogCloseElement = React.ElementRef<typeof Primitive.button>;
+type DialogCloseElement = React.ComponentRef<typeof Primitive.button>;
 interface DialogCloseProps extends PrimitiveButtonProps {}
 
 const DialogClose = React.forwardRef<DialogCloseElement, DialogCloseProps>(

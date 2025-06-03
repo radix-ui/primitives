@@ -29,7 +29,7 @@ type CollapsibleContextValue = {
 const [CollapsibleProvider, useCollapsibleContext] =
   createCollapsibleContext<CollapsibleContextValue>(COLLAPSIBLE_NAME);
 
-type CollapsibleElement = React.ElementRef<typeof Primitive.div>;
+type CollapsibleElement = React.ComponentRef<typeof Primitive.div>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface CollapsibleProps extends PrimitiveDivProps {
   defaultOpen?: boolean;
@@ -83,7 +83,7 @@ Collapsible.displayName = COLLAPSIBLE_NAME;
 
 const TRIGGER_NAME = 'CollapsibleTrigger';
 
-type CollapsibleTriggerElement = React.ElementRef<typeof Primitive.button>;
+type CollapsibleTriggerElement = React.ComponentRef<typeof Primitive.button>;
 type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
 interface CollapsibleTriggerProps extends PrimitiveButtonProps {}
 
@@ -142,7 +142,7 @@ CollapsibleContent.displayName = CONTENT_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
-type CollapsibleContentImplElement = React.ElementRef<typeof Primitive.div>;
+type CollapsibleContentImplElement = React.ComponentRef<typeof Primitive.div>;
 interface CollapsibleContentImplProps extends PrimitiveDivProps {
   present: boolean;
 }

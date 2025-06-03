@@ -1,5 +1,18 @@
 # @radix-ui/react-roving-focus
 
+## 1.1.10
+
+- Replace deprecated 'ElementRef' with 'ComponentRef' (#3426)
+- Updated dependencies: `@radix-ui/react-collection@1.1.7`, `@radix-ui/react-primitive@2.1.3`
+
+## 1.1.9
+
+- Updated dependencies: `@radix-ui/react-collection@1.1.6`, `@radix-ui/react-primitive@2.1.2`
+
+## 1.1.8
+
+- Updated dependencies: `@radix-ui/react-collection@1.1.5`, `@radix-ui/react-primitive@2.1.1`
+
 ## 1.1.7
 
 - Internal changes to render props

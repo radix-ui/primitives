@@ -117,7 +117,7 @@ HoverCard.displayName = HOVERCARD_NAME;
 
 const TRIGGER_NAME = 'HoverCardTrigger';
 
-type HoverCardTriggerElement = React.ElementRef<typeof Primitive.a>;
+type HoverCardTriggerElement = React.ComponentRef<typeof Primitive.a>;
 type PrimitiveLinkProps = React.ComponentPropsWithoutRef<typeof Primitive.a>;
 interface HoverCardTriggerProps extends PrimitiveLinkProps {}
 
@@ -227,7 +227,7 @@ HoverCardContent.displayName = CONTENT_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
-type HoverCardContentImplElement = React.ElementRef<typeof PopperPrimitive.Content>;
+type HoverCardContentImplElement = React.ComponentRef<typeof PopperPrimitive.Content>;
 type DismissableLayerProps = React.ComponentPropsWithoutRef<typeof DismissableLayer>;
 type PopperContentProps = React.ComponentPropsWithoutRef<typeof PopperPrimitive.Content>;
 interface HoverCardContentImplProps extends Omit<PopperContentProps, 'onPlaced'> {
@@ -366,7 +366,7 @@ const HoverCardContentImpl = React.forwardRef<
 
 const ARROW_NAME = 'HoverCardArrow';
 
-type HoverCardArrowElement = React.ElementRef<typeof PopperPrimitive.Arrow>;
+type HoverCardArrowElement = React.ComponentRef<typeof PopperPrimitive.Arrow>;
 type PopperArrowProps = React.ComponentPropsWithoutRef<typeof PopperPrimitive.Arrow>;
 interface HoverCardArrowProps extends PopperArrowProps {}
 

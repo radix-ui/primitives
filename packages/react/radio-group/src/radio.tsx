@@ -21,7 +21,7 @@ const [createRadioContext, createRadioScope] = createContextScope(RADIO_NAME);
 type RadioContextValue = { checked: boolean; disabled?: boolean };
 const [RadioProvider, useRadioContext] = createRadioContext<RadioContextValue>(RADIO_NAME);
 
-type RadioElement = React.ElementRef<typeof Primitive.button>;
+type RadioElement = React.ComponentRef<typeof Primitive.button>;
 type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
 interface RadioProps extends PrimitiveButtonProps {
   checked?: boolean;
@@ -101,7 +101,7 @@ Radio.displayName = RADIO_NAME;
 
 const INDICATOR_NAME = 'RadioIndicator';
 
-type RadioIndicatorElement = React.ElementRef<typeof Primitive.span>;
+type RadioIndicatorElement = React.ComponentRef<typeof Primitive.span>;
 type PrimitiveSpanProps = React.ComponentPropsWithoutRef<typeof Primitive.span>;
 export interface RadioIndicatorProps extends PrimitiveSpanProps {
   /**

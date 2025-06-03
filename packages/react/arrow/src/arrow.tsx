@@ -7,7 +7,7 @@ import { Primitive } from '@radix-ui/react-primitive';
 
 const NAME = 'Arrow';
 
-type ArrowElement = React.ElementRef<typeof Primitive.svg>;
+type ArrowElement = React.ComponentRef<typeof Primitive.svg>;
 type PrimitiveSvgProps = React.ComponentPropsWithoutRef<typeof Primitive.svg>;
 interface ArrowProps extends PrimitiveSvgProps {}
 
