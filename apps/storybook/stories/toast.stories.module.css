@@ -1,0 +1,205 @@
+.viewport,
+:global(:root) {
+  --_viewport-padding: 10px;
+}
+
+.viewport {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: 1px solid;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: var(--_viewport-padding);
+  gap: var(--_viewport-padding);
+  list-style: none;
+}
+
+.root {
+  position: relative;
+  overflow: hidden;
+  list-style: none;
+  width: 230px;
+  border-radius: 4px;
+  border: 1px solid black;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+  padding: 10px;
+  font-size: 12px;
+}
+
+.errorRoot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.animatedRoot {
+  &[data-state='open'] {
+    animation: toast-fadeIn 200ms ease-out;
+  }
+  &[data-state='closed'] {
+    animation: toast-fadeOut 200ms ease-out;
+  }
+  &[data-swipe='move'] {
+    transform: translate(var(--radix-toast-swipe-move-x), var(--radix-toast-swipe-move-y));
+  }
+  &[data-swipe='cancel'] {
+    transform: translate(0, 0);
+    transition: transform 200ms ease-out;
+  }
+  &[data-swipe='end'] {
+    animation-duration: 300ms;
+    animation-timing-function: ease-out;
+    &[data-swipe-direction='right'] {
+      animation-name: toast-slideRight;
+    }
+    &[data-swipe-direction='left'] {
+      animation-name: toast-slideLeft;
+    }
+    &[data-swipe-direction='up'] {
+      animation-name: toast-slideUp;
+    }
+    &[data-swipe-direction='down'] {
+      animation-name: toast-slideDown;
+    }
+  }
+}
+
+.header {
+  padding: 5px 10px;
+  margin: -10px -10px 10px;
+  background: black;
+  color: white;
+  position: relative;
+  height: 22px;
+  display: flex;
+  align-items: center;
+}
+
+.successHeader {
+  background: green;
+}
+
+.title {
+  font-size: inherit;
+  font-weight: normal;
+}
+
+.description {
+  margin: 0;
+}
+
+.button,
+.close {
+  border: 1px solid black;
+  border-radius: 4px;
+  background: gainsboro;
+  font-family: inherit;
+  padding: 2px 5px;
+  &:hover,
+  &:focus {
+    background: royalblue;
+    border-color: darkblue;
+    color: white;
+  }
+}
+
+.close {
+  position: absolute;
+  top: 50%;
+  right: 5px;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  padding: 0;
+}
+
+@keyframes toast-fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes toast-fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes toast-slideRight {
+  from {
+    transform: translateX(var(--radix-toast-swipe-end-x));
+  }
+  to {
+    transform: translateX(calc(100% + var(--_viewport-padding)));
+  }
+}
+
+@keyframes toast-slideLeft {
+  from {
+    transform: translateX(var(--radix-toast-swipe-end-x));
+  }
+  to {
+    transform: translateX(calc(-100% - var(--_viewport-padding)));
+  }
+}
+
+@keyframes toast-slideUp {
+  from {
+    transform: translateY(var(--radix-toast-swipe-end-y));
+  }
+  to {
+    transform: translateY(calc(-100% - var(--_viewport-padding)));
+  }
+}
+
+@keyframes toast-slideDown {
+  from {
+    transform: translateY(var(--radix-toast-swipe-end-y));
+  }
+  to {
+    transform: translateY(calc(100% + var(--_viewport-padding)));
+  }
+}
+
+@keyframes toast-loading {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0%);
+  }
+}
+
+.progressBar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  overflow: hidden;
+  background-color: var(--color-gray100);
+}
+
+.progressBarInner {
+  height: 100%;
+  background-color: var(--color-green);
+  animation-name: toast-loading;
+  animation-timing-function: linear;
+}
+
+.chromaticViewport {
+  display: inline-flex;
+  border: 5px solid royalblue;
+  flex-direction: column;
+  padding: var(--_viewport-padding);
+  gap: var(--_viewport-padding);
+}

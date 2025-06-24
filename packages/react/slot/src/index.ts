@@ -3,5 +3,7 @@ export {
   Slottable,
   //
   Root,
-} from './Slot';
-export type { SlotProps } from './Slot';
+  createSlot,
+  createSlottable,
+} from './slot';
+export type { SlotProps } from './slot';

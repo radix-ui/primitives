@@ -1,1 +1,1 @@
-export { useCallbackRef } from './useCallbackRef';
+export { useCallbackRef } from './use-callback-ref';

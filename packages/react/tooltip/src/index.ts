@@ -15,12 +15,12 @@ export {
   Portal,
   Content,
   Arrow,
-} from './Tooltip';
+} from './tooltip';
 export type {
-  TooltipProviderProps,
   TooltipProps,
+  TooltipProviderProps,
   TooltipTriggerProps,
   TooltipPortalProps,
   TooltipContentProps,
   TooltipArrowProps,
-} from './Tooltip';
+} from './tooltip';

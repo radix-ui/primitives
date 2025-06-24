@@ -1,2 +1,2 @@
-export { observeElementRect } from './observeElementRect';
-export type { Measurable } from './observeElementRect';
+export { observeElementRect } from './observe-element-rect';
+export type { Measurable } from './observe-element-rect';

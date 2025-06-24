@@ -17,7 +17,7 @@ export {
   Description,
   Action,
   Close,
-} from './Toast';
+} from './toast';
 export type {
   ToastProviderProps,
   ToastViewportProps,
@@ -26,4 +26,4 @@ export type {
   ToastDescriptionProps,
   ToastActionProps,
   ToastCloseProps,
-} from './Toast';
+} from './toast';

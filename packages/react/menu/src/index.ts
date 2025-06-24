@@ -35,7 +35,7 @@ export {
   Sub,
   SubTrigger,
   SubContent,
-} from './Menu';
+} from './menu';
 export type {
   MenuProps,
   MenuAnchorProps,
@@ -53,4 +53,4 @@ export type {
   MenuSubProps,
   MenuSubTriggerProps,
   MenuSubContentProps,
-} from './Menu';
+} from './menu';

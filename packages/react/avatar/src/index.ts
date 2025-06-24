@@ -9,5 +9,5 @@ export {
   Root,
   Image,
   Fallback,
-} from './Avatar';
-export type { AvatarProps, AvatarImageProps, AvatarFallbackProps } from './Avatar';
+} from './avatar';
+export type { AvatarProps, AvatarImageProps, AvatarFallbackProps } from './avatar';
