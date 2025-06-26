@@ -196,6 +196,7 @@ type AccordionImplContextValue = {
   disabled?: boolean;
   direction: AccordionImplProps['dir'];
   orientation: AccordionImplProps['orientation'];
+  keepChildrenMounted?: boolean;
 };
 
 const [AccordionImplProvider, useAccordionContext] =
@@ -219,11 +220,23 @@ interface AccordionImplProps extends PrimitiveDivProps {
    * The language read direction.
    */
   dir?: Direction;
+  /**
+   * When set to true, children of content will remain mounted when content is
+   * collapsed.
+   */
+  keepChildrenMounted?: boolean;
 }
 
 const AccordionImpl = React.forwardRef<AccordionImplElement, AccordionImplProps>(
   (props: ScopedProps<AccordionImplProps>, forwardedRef) => {
-    const { __scopeAccordion, disabled, dir, orientation = 'vertical', ...accordionProps } = props;
+    const {
+      __scopeAccordion,
+      disabled,
+      dir,
+      orientation = 'vertical',
+      keepChildrenMounted,
+      ...accordionProps
+    } = props;
     const accordionRef = React.useRef<AccordionImplElement>(null);
     const composedRefs = useComposedRefs(accordionRef, forwardedRef);
     const getItems = useCollection(__scopeAccordion);
@@ -307,6 +320,7 @@ const AccordionImpl = React.forwardRef<AccordionImplElement, AccordionImplProps>
         disabled={disabled}
         direction={dir}
         orientation={orientation}
+        keepChildrenMounted={keepChildrenMounted}
       >
         <Collection.Slot scope={__scopeAccordion}>
           <Primitive.div
@@ -373,6 +387,7 @@ const AccordionItem = React.forwardRef<AccordionItemElement, AccordionItemProps>
           {...collapsibleScope}
           {...accordionItemProps}
           ref={forwardedRef}
+          keepChildrenMounted={accordionContext.keepChildrenMounted}
           disabled={disabled}
           open={open}
           onOpenChange={(open) => {
