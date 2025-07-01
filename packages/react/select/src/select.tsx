@@ -1229,12 +1229,15 @@ SelectLabel.displayName = LABEL_NAME;
 
 const ITEM_NAME = 'SelectItem';
 
+type SelectItemKey = PrimitiveDivProps['key'];
+
 type SelectItemContextValue = {
   value: string;
   disabled: boolean;
   textId: string;
   isSelected: boolean;
   onItemTextChange(node: SelectItemTextElement | null): void;
+  itemKey?: SelectItemKey;
 };
 
 const [SelectItemContextProvider, useSelectItemContext] =
@@ -1245,6 +1248,7 @@ interface SelectItemProps extends PrimitiveDivProps {
   value: string;
   disabled?: boolean;
   textValue?: string;
+  itemKey?: SelectItemKey;
 }
 
 const SelectItem = React.forwardRef<SelectItemElement, SelectItemProps>(
@@ -1254,6 +1258,7 @@ const SelectItem = React.forwardRef<SelectItemElement, SelectItemProps>(
       value,
       disabled = false,
       textValue: textValueProp,
+      itemKey,
       ...itemProps
     } = props;
     const context = useSelectContext(ITEM_NAME, __scopeSelect);
@@ -1282,6 +1287,7 @@ const SelectItem = React.forwardRef<SelectItemElement, SelectItemProps>(
 
     return (
       <SelectItemContextProvider
+        itemKey={itemKey}
         scope={__scopeSelect}
         value={value}
         disabled={disabled}
@@ -1383,11 +1389,11 @@ const SelectItemText = React.forwardRef<SelectItemTextElement, SelectItemTextPro
     const textContent = itemTextNode?.textContent;
     const nativeOption = React.useMemo(
       () => (
-        <option key={itemContext.value} value={itemContext.value} disabled={itemContext.disabled}>
+        <option key={itemContext.itemKey ?? itemContext.value} value={itemContext.value} disabled={itemContext.disabled}>
           {textContent}
         </option>
       ),
-      [itemContext.disabled, itemContext.value, textContent]
+      [itemContext.disabled, itemContext.itemKey, itemContext.value, textContent]
     );
 
     const { onNativeOptionAdd, onNativeOptionRemove } = nativeOptionsContext;
