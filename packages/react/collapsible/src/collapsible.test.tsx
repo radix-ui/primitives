@@ -108,3 +108,41 @@ describe('given an open controlled Collapsible', () => {
     });
   });
 });
+
+describe('given a collapsible with keepChildrenMounted', () => {
+  let rendered: RenderResult;
+  let content: HTMLElement;
+
+  afterEach(cleanup);
+
+  beforeEach(() => {
+    rendered = render(<CollapsibleTest keepChildrenMounted />);
+    content = rendered.getByText(CONTENT_TEXT);
+  });
+
+  describe('when clicking the trigger', () => {
+    beforeEach(() => {
+      const trigger = rendered.getByText(TRIGGER_TEXT);
+      fireEvent.click(trigger);
+    });
+
+    it('should show the content', () => {
+      expect(content).toBeVisible();
+    })
+
+    describe('and clicking the trigger again', () => {
+      beforeEach(() => {
+        const trigger = rendered.getByText(TRIGGER_TEXT);
+        fireEvent.click(trigger);
+      });
+
+      it('should close the content', () => {
+        expect(content).not.toBeVisible();
+      });
+
+      it('should keep the children mounted', () => {
+        expect(content).toBeInTheDocument();
+      });
+    });
+  });
+})
