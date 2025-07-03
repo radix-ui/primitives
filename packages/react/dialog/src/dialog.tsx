@@ -15,6 +15,7 @@ import { hideOthers } from 'aria-hidden';
 import { createSlot } from '@radix-ui/react-slot';
 
 import type { Scope } from '@radix-ui/react-context';
+import { useDocument } from '@radix-ui/react-document-context';
 
 /* -------------------------------------------------------------------------------------------------
  * Dialog
@@ -506,6 +507,7 @@ const [WarningProvider, useWarningContext] = createContext(TITLE_WARNING_NAME, {
 type TitleWarningProps = { titleId?: string };
 
 const TitleWarning: React.FC<TitleWarningProps> = ({ titleId }) => {
+  const providedDocument = useDocument();
   const titleWarningContext = useWarningContext(TITLE_WARNING_NAME);
 
   const MESSAGE = `\`${titleWarningContext.contentName}\` requires a \`${titleWarningContext.titleName}\` for the component to be accessible for screen reader users.
@@ -515,11 +517,12 @@ If you want to hide the \`${titleWarningContext.titleName}\`, you can wrap it wi
 For more information, see https://radix-ui.com/primitives/docs/components/${titleWarningContext.docsSlug}`;
 
   React.useEffect(() => {
+    if (!providedDocument) return;
     if (titleId) {
-      const hasTitle = document.getElementById(titleId);
+      const hasTitle = providedDocument.getElementById(titleId);
       if (!hasTitle) console.error(MESSAGE);
     }
-  }, [MESSAGE, titleId]);
+  }, [MESSAGE, titleId, providedDocument]);
 
   return null;
 };
@@ -532,17 +535,19 @@ type DescriptionWarningProps = {
 };
 
 const DescriptionWarning: React.FC<DescriptionWarningProps> = ({ contentRef, descriptionId }) => {
+  const providedDocument = useDocument();
   const descriptionWarningContext = useWarningContext(DESCRIPTION_WARNING_NAME);
   const MESSAGE = `Warning: Missing \`Description\` or \`aria-describedby={undefined}\` for {${descriptionWarningContext.contentName}}.`;
 
   React.useEffect(() => {
+    if (!providedDocument) return;
     const describedById = contentRef.current?.getAttribute('aria-describedby');
     // if we have an id and the user hasn't set aria-describedby={undefined}
     if (descriptionId && describedById) {
-      const hasDescription = document.getElementById(descriptionId);
+      const hasDescription = providedDocument.getElementById(descriptionId);
       if (!hasDescription) console.warn(MESSAGE);
     }
-  }, [MESSAGE, contentRef, descriptionId]);
+  }, [MESSAGE, contentRef, descriptionId, providedDocument]);
 
   return null;
 };

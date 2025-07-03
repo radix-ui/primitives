@@ -68,6 +68,7 @@
     "@radix-ui/react-dialog": "workspace:*",
     "@radix-ui/react-direction": "workspace:*",
     "@radix-ui/react-dismissable-layer": "workspace:*",
+    "@radix-ui/react-document-context": "workspace:*",
     "@radix-ui/react-dropdown-menu": "workspace:*",
     "@radix-ui/react-focus-guards": "workspace:*",
     "@radix-ui/react-focus-scope": "workspace:*",

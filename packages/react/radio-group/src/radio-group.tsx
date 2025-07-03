@@ -10,6 +10,7 @@ import { useDirection } from '@radix-ui/react-direction';
 import { Radio, RadioIndicator, createRadioScope } from './radio';
 
 import type { Scope } from '@radix-ui/react-context';
+import { useDocument } from '@radix-ui/react-document-context';
 
 const ARROW_KEYS = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
 
@@ -132,21 +133,23 @@ const RadioGroupItem = React.forwardRef<RadioGroupItemElement, RadioGroupItemPro
     const composedRefs = useComposedRefs(forwardedRef, ref);
     const checked = context.value === itemProps.value;
     const isArrowKeyPressedRef = React.useRef(false);
+    const providedDocument = useDocument();
 
     React.useEffect(() => {
+      if (!providedDocument) return;
       const handleKeyDown = (event: KeyboardEvent) => {
         if (ARROW_KEYS.includes(event.key)) {
           isArrowKeyPressedRef.current = true;
         }
       };
       const handleKeyUp = () => (isArrowKeyPressedRef.current = false);
-      document.addEventListener('keydown', handleKeyDown);
-      document.addEventListener('keyup', handleKeyUp);
+      providedDocument.addEventListener('keydown', handleKeyDown);
+      providedDocument.addEventListener('keyup', handleKeyUp);
       return () => {
-        document.removeEventListener('keydown', handleKeyDown);
-        document.removeEventListener('keyup', handleKeyUp);
+        providedDocument.removeEventListener('keydown', handleKeyDown);
+        providedDocument.removeEventListener('keyup', handleKeyUp);
       };
-    }, []);
+    }, [providedDocument]);
 
     return (
       <RovingFocusGroup.Item

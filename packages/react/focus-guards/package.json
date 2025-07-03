@@ -33,6 +33,9 @@
     "typecheck": "tsc --noEmit",
     "build": "radix-build"
   },
+  "dependencies": {
+    "@radix-ui/react-document-context": "workspace:*"
+  },
   "devDependencies": {
     "@repo/builder": "workspace:*",
     "@repo/eslint-config": "workspace:*",
