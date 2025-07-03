@@ -38,6 +38,7 @@ export {
 } from './select';
 export type {
   SelectProps,
+  SelectSharedProps,
   SelectTriggerProps,
   SelectValueProps,
   SelectIconProps,
