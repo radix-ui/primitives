@@ -37,12 +37,12 @@ const ToggleGroup = React.forwardRef<
 
   if (type === 'single') {
     const singleProps = toggleGroupProps as ToggleGroupImplSingleProps;
-    return <ToggleGroupImplSingle {...singleProps} ref={forwardedRef} />;
+    return <ToggleGroupImplSingle role="radiogroup" {...singleProps} ref={forwardedRef} />;
   }
 
   if (type === 'multiple') {
     const multipleProps = toggleGroupProps as ToggleGroupImplMultipleProps;
-    return <ToggleGroupImplMultiple {...multipleProps} ref={forwardedRef} />;
+    return <ToggleGroupImplMultiple role="group" {...multipleProps} ref={forwardedRef} />;
   }
 
   throw new Error(`Missing prop \`type\` expected on \`${TOGGLE_GROUP_NAME}\``);
@@ -210,7 +210,7 @@ const ToggleGroupImpl = React.forwardRef<ToggleGroupImplElement, ToggleGroupImpl
     } = props;
     const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeToggleGroup);
     const direction = useDirection(dir);
-    const commonProps = { role: 'group', dir: direction, ...toggleGroupProps };
+    const commonProps = { dir: direction, ...toggleGroupProps };
     return (
       <ToggleGroupContext scope={__scopeToggleGroup} rovingFocus={rovingFocus} disabled={disabled}>
         {rovingFocus ? (
