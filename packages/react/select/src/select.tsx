@@ -1301,8 +1301,7 @@ const SelectItem = React.forwardRef<SelectItemElement, SelectItemProps>(
             role="option"
             aria-labelledby={textId}
             data-highlighted={isFocused ? '' : undefined}
-            // `isFocused` caveat fixes stuttering in VoiceOver
-            aria-selected={isSelected && isFocused}
+            aria-selected={isSelected}
             data-state={isSelected ? 'checked' : 'unchecked'}
             aria-disabled={disabled || undefined}
             data-disabled={disabled ? '' : undefined}
