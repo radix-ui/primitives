@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { composeEventHandlers } from '@radix-ui/primitive';
+import type { Timeout } from '@radix-ui/primitive';
+import { composeEventHandlers, getActiveElement, getOwnerDocument } from '@radix-ui/primitive';
 import { createCollection } from '@radix-ui/react-collection';
 import { useComposedRefs, composeRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
@@ -58,21 +59,24 @@ const [createMenuContext, createMenuScope] = createContextScope(MENU_NAME, [
 const usePopperScope = createPopperScope();
 const useRovingFocusGroupScope = createRovingFocusGroupScope();
 
-type MenuContextValue = {
+interface MenuContextValue {
   open: boolean;
   onOpenChange(open: boolean): void;
   content: MenuContentElement | null;
   onContentChange(content: MenuContentElement | null): void;
-};
+}
 
 const [MenuProvider, useMenuContext] = createMenuContext<MenuContextValue>(MENU_NAME);
 
-type MenuRootContextValue = {
+interface MenuRootContextValue {
   onClose(): void;
   isUsingKeyboardRef: React.RefObject<boolean>;
   dir: Direction;
   modal: boolean;
-};
+  anchorRef: React.RefObject<HTMLDivElement | null>;
+  getOwnerDocument: () => Document;
+  getActiveElement: () => HTMLElement | null;
+}
 
 const [MenuRootProvider, useMenuRootContext] = createMenuContext<MenuRootContextValue>(MENU_NAME);
 
@@ -91,8 +95,12 @@ const Menu: React.FC<MenuProps> = (props: ScopedProps<MenuProps>) => {
   const isUsingKeyboardRef = React.useRef(false);
   const handleOpenChange = useCallbackRef(onOpenChange);
   const direction = useDirection(dir);
-
+  const anchorRef = React.useRef<HTMLDivElement>(null);
+  const getOwnerDocumentImpl = React.useCallback(() => getOwnerDocument(anchorRef.current), []);
+  const getActiveElementImpl = React.useCallback(() => getActiveElement(anchorRef.current), []);
   React.useEffect(() => {
+    const document = getOwnerDocumentImpl();
+
     // Capture phase ensures we set the boolean before any side effects execute
     // in response to the key or pointer event as they might depend on this value.
     const handleKeyDown = () => {
@@ -107,7 +115,7 @@ const Menu: React.FC<MenuProps> = (props: ScopedProps<MenuProps>) => {
       document.removeEventListener('pointerdown', handlePointer, { capture: true });
       document.removeEventListener('pointermove', handlePointer, { capture: true });
     };
-  }, []);
+  }, [getOwnerDocumentImpl]);
 
   return (
     <PopperPrimitive.Root {...popperScope}>
@@ -124,6 +132,9 @@ const Menu: React.FC<MenuProps> = (props: ScopedProps<MenuProps>) => {
           isUsingKeyboardRef={isUsingKeyboardRef}
           dir={direction}
           modal={modal}
+          getOwnerDocument={getOwnerDocumentImpl}
+          getActiveElement={getActiveElementImpl}
+          anchorRef={anchorRef}
         >
           {children}
         </MenuRootProvider>
@@ -148,7 +159,9 @@ const MenuAnchor = React.forwardRef<MenuAnchorElement, MenuAnchorProps>(
   (props: ScopedProps<MenuAnchorProps>, forwardedRef) => {
     const { __scopeMenu, ...anchorProps } = props;
     const popperScope = usePopperScope(__scopeMenu);
-    return <PopperPrimitive.Anchor {...popperScope} {...anchorProps} ref={forwardedRef} />;
+    const rootContext = useMenuRootContext(ANCHOR_NAME, __scopeMenu);
+    const composedRefs = useComposedRefs(forwardedRef, rootContext.anchorRef);
+    return <PopperPrimitive.Anchor {...popperScope} {...anchorProps} ref={composedRefs} />;
   }
 );
 
@@ -206,7 +219,7 @@ type MenuContentContextValue = {
   onItemLeave(event: React.PointerEvent): void;
   onTriggerLeave(event: React.PointerEvent): void;
   searchRef: React.RefObject<string>;
-  pointerGraceTimerRef: React.MutableRefObject<number>;
+  pointerGraceTimerRef: React.RefObject<Timeout | undefined>;
   onPointerGraceIntentChange(intent: GraceIntent | null): void;
 };
 const [MenuContentProvider, useMenuContentContext] =
@@ -382,9 +395,9 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
     const [currentItemId, setCurrentItemId] = React.useState<string | null>(null);
     const contentRef = React.useRef<HTMLDivElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, contentRef, context.onContentChange);
-    const timerRef = React.useRef(0);
+    const timerRef = React.useRef<Timeout>(undefined);
     const searchRef = React.useRef('');
-    const pointerGraceTimerRef = React.useRef(0);
+    const pointerGraceTimerRef = React.useRef<Timeout>(undefined);
     const pointerGraceIntentRef = React.useRef<GraceIntent | null>(null);
     const pointerDirRef = React.useRef<Side>('right');
     const lastPointerXRef = React.useRef(0);
@@ -397,7 +410,7 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
     const handleTypeaheadSearch = (key: string) => {
       const search = searchRef.current + key;
       const items = getItems().filter((item) => !item.disabled);
-      const currentItem = document.activeElement;
+      const currentItem = rootContext.getActiveElement();
       const currentMatch = items.find((item) => item.ref.current === currentItem)?.textValue;
       const values = items.map((item) => item.textValue);
       const nextMatch = getNextMatch(values, search, currentMatch);
@@ -406,8 +419,8 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
       // Reset `searchRef` 1 second after it was last updated
       (function updateSearch(value: string) {
         searchRef.current = value;
-        window.clearTimeout(timerRef.current);
-        if (value !== '') timerRef.current = window.setTimeout(() => updateSearch(''), 1000);
+        clearTimeout(timerRef.current);
+        if (value !== '') timerRef.current = setTimeout(() => updateSearch(''), 1000);
       })(search);
 
       if (newItem) {
@@ -420,7 +433,7 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
     };
 
     React.useEffect(() => {
-      return () => window.clearTimeout(timerRef.current);
+      return () => clearTimeout(timerRef.current);
     }, []);
 
     // Make sure the whole tree has focus guards as our `MenuContent` may be
@@ -526,12 +539,12 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
                     const items = getItems().filter((item) => !item.disabled);
                     const candidateNodes = items.map((item) => item.ref.current!);
                     if (LAST_KEYS.includes(event.key)) candidateNodes.reverse();
-                    focusFirst(candidateNodes);
+                    focusFirst(candidateNodes, rootContext.getActiveElement);
                   })}
                   onBlur={composeEventHandlers(props.onBlur, (event) => {
                     // clear search buffer when leaving the menu
                     if (!event.currentTarget.contains(event.target)) {
-                      window.clearTimeout(timerRef.current);
+                      clearTimeout(timerRef.current);
                       searchRef.current = '';
                     }
                   })}
@@ -1024,12 +1037,12 @@ const MenuSubTrigger = React.forwardRef<MenuSubTriggerElement, MenuSubTriggerPro
     const rootContext = useMenuRootContext(SUB_TRIGGER_NAME, props.__scopeMenu);
     const subContext = useMenuSubContext(SUB_TRIGGER_NAME, props.__scopeMenu);
     const contentContext = useMenuContentContext(SUB_TRIGGER_NAME, props.__scopeMenu);
-    const openTimerRef = React.useRef<number | null>(null);
+    const openTimerRef = React.useRef<Timeout>(null);
     const { pointerGraceTimerRef, onPointerGraceIntentChange } = contentContext;
     const scope = { __scopeMenu: props.__scopeMenu };
 
     const clearOpenTimer = React.useCallback(() => {
-      if (openTimerRef.current) window.clearTimeout(openTimerRef.current);
+      if (openTimerRef.current) clearTimeout(openTimerRef.current);
       openTimerRef.current = null;
     }, []);
 
@@ -1038,7 +1051,7 @@ const MenuSubTrigger = React.forwardRef<MenuSubTriggerElement, MenuSubTriggerPro
     React.useEffect(() => {
       const pointerGraceTimer = pointerGraceTimerRef.current;
       return () => {
-        window.clearTimeout(pointerGraceTimer);
+        clearTimeout(pointerGraceTimer!);
         onPointerGraceIntentChange(null);
       };
     }, [pointerGraceTimerRef, onPointerGraceIntentChange]);
@@ -1073,7 +1086,7 @@ const MenuSubTrigger = React.forwardRef<MenuSubTriggerElement, MenuSubTriggerPro
               if (event.defaultPrevented) return;
               if (!props.disabled && !context.open && !openTimerRef.current) {
                 contentContext.onPointerGraceIntentChange(null);
-                openTimerRef.current = window.setTimeout(() => {
+                openTimerRef.current = setTimeout(() => {
                   context.onOpenChange(true);
                   clearOpenTimer();
                 }, 100);
@@ -1107,8 +1120,8 @@ const MenuSubTrigger = React.forwardRef<MenuSubTriggerElement, MenuSubTriggerPro
                   side,
                 });
 
-                window.clearTimeout(pointerGraceTimerRef.current);
-                pointerGraceTimerRef.current = window.setTimeout(
+                clearTimeout(pointerGraceTimerRef.current);
+                pointerGraceTimerRef.current = setTimeout(
                   () => contentContext.onPointerGraceIntentChange(null),
                   300
                 );
@@ -1237,13 +1250,13 @@ function getCheckedState(checked: CheckedState) {
   return isIndeterminate(checked) ? 'indeterminate' : checked ? 'checked' : 'unchecked';
 }
 
-function focusFirst(candidates: HTMLElement[]) {
-  const PREVIOUSLY_FOCUSED_ELEMENT = document.activeElement;
+function focusFirst(candidates: HTMLElement[], getActiveElement: () => HTMLElement | null) {
+  const PREVIOUSLY_FOCUSED_ELEMENT = getActiveElement();
   for (const candidate of candidates) {
     // if focus is already where we want to go, we don't want to keep going through the candidates
     if (candidate === PREVIOUSLY_FOCUSED_ELEMENT) return;
     candidate.focus();
-    if (document.activeElement !== PREVIOUSLY_FOCUSED_ELEMENT) return;
+    if (getActiveElement() !== PREVIOUSLY_FOCUSED_ELEMENT) return;
   }
 }
 
@@ -1321,22 +1334,7 @@ function whenMouse<E>(handler: React.PointerEventHandler<E>): React.PointerEvent
   return (event) => (event.pointerType === 'mouse' ? handler(event) : undefined);
 }
 
-const Root = Menu;
-const Anchor = MenuAnchor;
-const Portal = MenuPortal;
-const Content = MenuContent;
-const Group = MenuGroup;
-const Label = MenuLabel;
-const Item = MenuItem;
-const CheckboxItem = MenuCheckboxItem;
-const RadioGroup = MenuRadioGroup;
-const RadioItem = MenuRadioItem;
-const ItemIndicator = MenuItemIndicator;
-const Separator = MenuSeparator;
-const Arrow = MenuArrow;
-const Sub = MenuSub;
-const SubTrigger = MenuSubTrigger;
-const SubContent = MenuSubContent;
+type MenuVirtualRef = PopperPrimitive.PopperVirtualRef;
 
 export {
   createMenuScope,
@@ -1358,22 +1356,22 @@ export {
   MenuSubTrigger,
   MenuSubContent,
   //
-  Root,
-  Anchor,
-  Portal,
-  Content,
-  Group,
-  Label,
-  Item,
-  CheckboxItem,
-  RadioGroup,
-  RadioItem,
-  ItemIndicator,
-  Separator,
-  Arrow,
-  Sub,
-  SubTrigger,
-  SubContent,
+  Menu as Root,
+  MenuAnchor as Anchor,
+  MenuPortal as Portal,
+  MenuContent as Content,
+  MenuGroup as Group,
+  MenuLabel as Label,
+  MenuItem as Item,
+  MenuCheckboxItem as CheckboxItem,
+  MenuRadioGroup as RadioGroup,
+  MenuRadioItem as RadioItem,
+  MenuItemIndicator as ItemIndicator,
+  MenuSeparator as Separator,
+  MenuArrow as Arrow,
+  MenuSub as Sub,
+  MenuSubTrigger as SubTrigger,
+  MenuSubContent as SubContent,
 };
 export type {
   MenuProps,
@@ -1392,4 +1390,5 @@ export type {
   MenuSubProps,
   MenuSubTriggerProps,
   MenuSubContentProps,
+  MenuVirtualRef,
 };

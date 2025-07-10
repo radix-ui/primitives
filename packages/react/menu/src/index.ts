@@ -53,4 +53,5 @@ export type {
   MenuSubProps,
   MenuSubTriggerProps,
   MenuSubContentProps,
+  MenuVirtualRef,
 } from './menu';
