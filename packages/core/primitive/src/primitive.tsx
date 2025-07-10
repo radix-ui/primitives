@@ -22,21 +22,41 @@ export function composeEventHandlers<E extends { defaultPrevented: boolean }>(
   };
 }
 
-export function getOwnerWindow(element: Node | null | undefined) {
+/* eslint-disable no-restricted-globals */
+export function getOwnerWindow(element: Window | Document | Node | null | undefined) {
   if (!canUseDOM) {
     throw new Error('Cannot access window outside of the DOM');
   }
-  // eslint-disable-next-line no-restricted-globals
-  return element?.ownerDocument?.defaultView ?? window;
-}
 
-export function getOwnerDocument(element: Node | null | undefined) {
+  if (!element) {
+    return window;
+  }
+
+  if ('self' in element) {
+    return element.self;
+  }
+
+  return element.ownerDocument?.defaultView ?? window;
+}
+/* eslint-enable no-restricted-globals */
+
+/* eslint-disable no-restricted-globals */
+export function getOwnerDocument(element: Window | Document | Node | null | undefined) {
   if (!canUseDOM) {
     throw new Error('Cannot access document outside of the DOM');
   }
-  // eslint-disable-next-line no-restricted-globals
-  return element?.ownerDocument ?? document;
+
+  if (!element) {
+    return document;
+  }
+
+  if ('self' in element) {
+    return element.document;
+  }
+
+  return element.ownerDocument ?? document;
 }
+/* eslint-enable no-restricted-globals */
 
 /**
  * Lifted from https://github.com/ariakit/ariakit/blob/main/packages/ariakit-core/src/utils/dom.ts#L37
