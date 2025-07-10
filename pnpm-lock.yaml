@@ -3164,6 +3164,10 @@ importers:
         version: 5.8.3
 
   packages/react/use-layout-effect:
+    dependencies:
+      '@radix-ui/primitive':
+        specifier: workspace:*
+        version: link:../../core/primitive
     devDependencies:
       '@repo/builder':
         specifier: workspace:*
