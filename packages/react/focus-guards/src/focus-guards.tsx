@@ -3,7 +3,11 @@ import * as React from 'react';
 /** Number of components which have requested interest to have focus guards */
 let count = 0;
 
-function FocusGuards(props: any) {
+interface FocusGuardsProps {
+  children?: React.ReactNode;
+}
+
+function FocusGuards(props: FocusGuardsProps) {
   useFocusGuards();
   return props.children;
 }
@@ -13,6 +17,7 @@ function FocusGuards(props: any) {
  * to ensure `focusin` & `focusout` events can be caught consistently.
  */
 function useFocusGuards() {
+  /* eslint-disable no-restricted-globals */
   React.useEffect(() => {
     const edgeGuards = document.querySelectorAll('[data-radix-focus-guard]');
     document.body.insertAdjacentElement('afterbegin', edgeGuards[0] ?? createFocusGuard());
@@ -26,9 +31,11 @@ function useFocusGuards() {
       count--;
     };
   }, []);
+  /* eslint-enable no-restricted-globals */
 }
 
 function createFocusGuard() {
+  // eslint-disable-next-line no-restricted-globals
   const element = document.createElement('span');
   element.setAttribute('data-radix-focus-guard', '');
   element.tabIndex = 0;
@@ -39,12 +46,10 @@ function createFocusGuard() {
   return element;
 }
 
-const Root = FocusGuards;
-
 export {
   FocusGuards,
   //
-  Root,
+  FocusGuards as Root,
   //
   useFocusGuards,
 };

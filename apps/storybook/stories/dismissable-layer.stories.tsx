@@ -484,14 +484,13 @@ type DummyDialogProps = {
 
 function DummyDialog({ children, openLabel = 'Open', closeLabel = 'Close' }: DummyDialogProps) {
   const [open, setOpen] = React.useState(false);
-  const buttonRef = React.useRef<HTMLButtonElement>(null);
   return (
     <>
-      <button type="button" ref={buttonRef} onClick={() => setOpen((prevOpen) => !prevOpen)}>
+      <button type="button" onClick={() => setOpen((prevOpen) => !prevOpen)}>
         {openLabel}
       </button>
       {open ? (
-        <FocusGuards.Root domRef={buttonRef}>
+        <FocusGuards.Root>
           <Portal.Root asChild>
             <div
               style={{
