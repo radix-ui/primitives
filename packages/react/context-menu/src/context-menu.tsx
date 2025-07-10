@@ -1,12 +1,13 @@
 import * as React from 'react';
-import { composeEventHandlers } from '@radix-ui/primitive';
+import type { Timeout } from '@radix-ui/primitive';
+import { composeEventHandlers, getOwnerDocument } from '@radix-ui/primitive';
 import { createContextScope } from '@radix-ui/react-context';
 import { Primitive } from '@radix-ui/react-primitive';
 import * as MenuPrimitive from '@radix-ui/react-menu';
 import { createMenuScope } from '@radix-ui/react-menu';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
-
+import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import type { Scope } from '@radix-ui/react-context';
 
 type Direction = 'ltr' | 'rtl';
@@ -93,18 +94,22 @@ const ContextMenuTrigger = React.forwardRef<ContextMenuTriggerElement, ContextMe
     const { __scopeContextMenu, disabled = false, ...triggerProps } = props;
     const context = useContextMenuContext(TRIGGER_NAME, __scopeContextMenu);
     const menuScope = useMenuScope(__scopeContextMenu);
+
     const pointRef = React.useRef<Point>({ x: 0, y: 0 });
-    const virtualRef = React.useRef({
+    const triggerRef = React.useRef<HTMLSpanElement | null>(null);
+    const composedRefs = useComposedRefs(forwardedRef, triggerRef);
+    const virtualRef = React.useRef<MenuPrimitive.MenuVirtualRef>({
       getBoundingClientRect: () => DOMRect.fromRect({ width: 0, height: 0, ...pointRef.current }),
+      get ownerDocument() {
+        return getOwnerDocument(triggerRef.current);
+      },
     });
-    const longPressTimerRef = React.useRef(0);
-    const clearLongPress = React.useCallback(
-      () => window.clearTimeout(longPressTimerRef.current),
-      []
-    );
+    const longPressTimerRef = React.useRef<Timeout>(undefined);
+    const clearLongPress = React.useCallback(() => clearTimeout(longPressTimerRef.current), []);
     const handleOpen = (event: React.MouseEvent | React.PointerEvent) => {
       pointRef.current = { x: event.clientX, y: event.clientY };
       context.onOpenChange(true);
+      // did the user click inside of an iframe?
     };
 
     React.useEffect(() => clearLongPress, [clearLongPress]);
@@ -117,7 +122,7 @@ const ContextMenuTrigger = React.forwardRef<ContextMenuTriggerElement, ContextMe
           data-state={context.open ? 'open' : 'closed'}
           data-disabled={disabled ? '' : undefined}
           {...triggerProps}
-          ref={forwardedRef}
+          ref={composedRefs}
           // prevent iOS context menu from appearing
           style={{ WebkitTouchCallout: 'none', ...props.style }}
           // if trigger is disabled, enable the native Context Menu
@@ -140,7 +145,7 @@ const ContextMenuTrigger = React.forwardRef<ContextMenuTriggerElement, ContextMe
                   whenTouchOrPen((event) => {
                     // clear the long press here in case there's multiple touch points
                     clearLongPress();
-                    longPressTimerRef.current = window.setTimeout(() => handleOpen(event), 700);
+                    longPressTimerRef.current = setTimeout(() => handleOpen(event), 700);
                   })
                 )
           }

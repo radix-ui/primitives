@@ -64,10 +64,14 @@ Popper.displayName = POPPER_NAME;
 
 const ANCHOR_NAME = 'PopperAnchor';
 
+interface PopperVirtualRef extends Measurable {
+  ownerDocument: Document | null | undefined;
+}
+
 type PopperAnchorElement = React.ComponentRef<typeof Primitive.div>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface PopperAnchorProps extends PrimitiveDivProps {
-  virtualRef?: React.RefObject<Measurable>;
+  virtualRef?: React.RefObject<PopperVirtualRef>;
 }
 
 const PopperAnchor = React.forwardRef<PopperAnchorElement, PopperAnchorProps>(
@@ -403,11 +407,6 @@ function getSideAndAlignFromPlacement(placement: Placement) {
   return [side as Side, align as Align] as const;
 }
 
-const Root = Popper;
-const Anchor = PopperAnchor;
-const Content = PopperContent;
-const Arrow = PopperArrow;
-
 export {
   createPopperScope,
   //
@@ -416,12 +415,18 @@ export {
   PopperContent,
   PopperArrow,
   //
-  Root,
-  Anchor,
-  Content,
-  Arrow,
+  Popper as Root,
+  PopperAnchor as Anchor,
+  PopperContent as Content,
+  PopperArrow as Arrow,
   //
   SIDE_OPTIONS,
   ALIGN_OPTIONS,
 };
-export type { PopperProps, PopperAnchorProps, PopperContentProps, PopperArrowProps };
+export type {
+  PopperProps,
+  PopperAnchorProps,
+  PopperContentProps,
+  PopperArrowProps,
+  PopperVirtualRef,
+};

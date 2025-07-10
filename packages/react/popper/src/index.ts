@@ -20,4 +20,5 @@ export type {
   PopperAnchorProps,
   PopperContentProps,
   PopperArrowProps,
+  PopperVirtualRef,
 } from './popper';

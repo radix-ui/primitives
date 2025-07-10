@@ -870,6 +870,9 @@ importers:
       '@radix-ui/primitive':
         specifier: workspace:*
         version: link:../../core/primitive
+      '@radix-ui/react-compose-refs':
+        specifier: workspace:*
+        version: link:../compose-refs
       '@radix-ui/react-context':
         specifier: workspace:*
         version: link:../context
