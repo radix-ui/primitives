@@ -540,7 +540,7 @@ const SliderThumb = React.forwardRef<SliderThumbElement, SliderThumbProps>(
     const composedRefs = useComposedRefs(forwardedRef, (node) => setThumb(node));
     const index = React.useMemo(
       () => (thumb ? getItems().findIndex((item) => item.ref.current === thumb) : -1),
-      [getItems, thumb]
+      [getItems().length, thumb]
     );
     return <SliderThumbImpl {...props} ref={composedRefs} index={index} />;
   }
