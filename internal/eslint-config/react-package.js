@@ -11,6 +11,14 @@ export const configs = [
   base.overrides,
   {
     rules: {
+      'no-restricted-globals': [
+        'warn',
+        //
+        'globalThis',
+        'window',
+        'document',
+        'navigator',
+      ],
       'react/jsx-pascal-case': ['warn', { allowNamespace: true }],
       // TODO: enable this and fix all the errors
       'react/display-name': 'off',
