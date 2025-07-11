@@ -1,1 +1,2 @@
-export { composeEventHandlers } from './primitive';
+export * from './primitive';
+export type * from './types';

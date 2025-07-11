@@ -1,2 +1,3 @@
-export { Presence } from './Presence';
-export type { PresenceProps } from './Presence';
+'use client';
+export { Presence, Root } from './presence';
+export type { PresenceProps } from './presence';

@@ -1,3 +1,4 @@
+'use client';
 export {
   createSelectScope,
   //
@@ -34,7 +35,7 @@ export {
   ScrollDownButton,
   Separator,
   Arrow,
-} from './Select';
+} from './select';
 export type {
   SelectProps,
   SelectTriggerProps,
@@ -52,4 +53,4 @@ export type {
   SelectScrollDownButtonProps,
   SelectSeparatorProps,
   SelectArrowProps,
-} from './Select';
+} from './select';

@@ -1,3 +1,4 @@
+'use client';
 export {
   createPopoverScope,
   //
@@ -16,7 +17,7 @@ export {
   Content,
   Close,
   Arrow,
-} from './Popover';
+} from './popover';
 export type {
   PopoverProps,
   PopoverAnchorProps,
@@ -25,4 +26,4 @@ export type {
   PopoverContentProps,
   PopoverCloseProps,
   PopoverArrowProps,
-} from './Popover';
+} from './popover';

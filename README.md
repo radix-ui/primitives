@@ -10,35 +10,19 @@ Radix Primitives is a low-level UI component library with a focus on accessibili
 
 ## Documentation
 
-For full documentation, visit [radix-ui.com/docs/primitives](https://radix-ui.com/docs/primitives).
+For full documentation, visit [radix-ui.com/primitives/docs](https://www.radix-ui.com/primitives/docs).
 
 ## Releases
 
-For changelog, visit [radix-ui.com/docs/primitives/overview/releases](https://radix-ui.com/docs/primitives/overview/releases).
+For changelog, visit [radix-ui.com/primitives/docs/overview/releases](https://www.radix-ui.com/primitives/docs/overview/releases).
 
 ## Contributing
 
 Please follow our [contributing guidelines](./.github/CONTRIBUTING.md).
 
-## Authors
-
-- Benoit Grelard ([@benoitgrelard](https://twitter.com/benoitgrelard)) - [WorkOS](https://workos.com)
-- Jenna Smith ([@jjenzz](https://twitter.com/jjenzz))
-- Andy Hook ([@Andy_Hook](https://twitter.com/Andy_Hook)) - [WorkOS](https://workos.com)
-- Pedro Duarte ([@peduarte](https://twitter.com/peduarte))
-- Chance Strickland ([@chancethedev](https://twitter.com/chancethedev))
-
-## Contributors
-
-- Ar Nazeh ([@Nazeh](https://github.com/Nazeh))
-- Fabio Capucci ([@cappuc](https://github.com/cappuc))
-
 ---
 
 ## Community
-
-- Pedro Duarte ([@peduarte](https://twitter.com/peduarte))
-- Colm Tuite ([@colmtuite](https://twitter.com/colmtuite)) - [WorkOS](https://workos.com)
 
 - [Discord](https://discord.com/invite/7Xb99uG) - To get involved with the Radix community, ask questions and share tips.
 - [Twitter](https://twitter.com/radix_ui) - To receive updates, announcements, blog posts, and general Radix tips.
@@ -54,5 +38,3 @@ Thanks to [Chromatic](https://www.chromatic.com/) for providing the visual testi
 ## License
 
 Licensed under the MIT License, Copyright © 2022-present [WorkOS](https://workos.com).
-
-See [LICENSE](./LICENSE) for more information.

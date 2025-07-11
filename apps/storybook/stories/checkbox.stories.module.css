@@ -1,0 +1,90 @@
+.root {
+  /* better default alignment */
+  vertical-align: middle;
+  /* ------ */
+  border: 1px solid var(--gray-4);
+  width: 30px;
+  height: 30px;
+  padding: 4px;
+
+  &:focus {
+    outline: none;
+    border-color: var(--red-9);
+    box-shadow: 0 0 0 1px var(--red-9);
+  }
+
+  &[data-disabled] {
+    opacity: 0.3;
+  }
+}
+
+.indicator {
+  background-color: var(--red-9);
+  display: block;
+  width: 20px;
+  height: 4px;
+  &[data-state='checked'],
+  &[data-state='unchecked'] {
+    height: 20px;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.animatedIndicator {
+  transition: height 300ms;
+  &[data-state='checked'] {
+    animation: fadeIn 1000ms ease-out;
+  }
+  &[data-state='unchecked'] {
+    animation: fadeOut 1000ms ease-in;
+  }
+}
+
+.rootAttr,
+.indicatorAttr {
+  background-color: var(--blue-a12);
+  border: 2px solid var(--blue-9);
+  padding: 10px;
+  &[data-state='unchecked'] {
+    border-color: var(--red-9);
+  }
+  &[data-state='checked'] {
+    border-color: var(--green-9);
+  }
+  &[data-state='indeterminate'] {
+    border-color: var(--purple-9);
+  }
+  &[data-disabled] {
+    border-style: dashed;
+  }
+  &:disabled {
+    opacity: 0.5;
+  }
+}
+
+.label {
+  /* ensures it can receive vertical margins */
+  display: inline-block;
+  /* better default alignment */
+  vertical-align: middle;
+  /* mimics default `label` tag (as we render a `span`) */
+  cursor: default;
+  display: inline-block;
+}

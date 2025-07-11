@@ -1,3 +1,4 @@
+'use client';
 export {
   createTooltipScope,
   //
@@ -14,11 +15,12 @@ export {
   Portal,
   Content,
   Arrow,
-} from './Tooltip';
+} from './tooltip';
 export type {
   TooltipProps,
+  TooltipProviderProps,
   TooltipTriggerProps,
   TooltipPortalProps,
   TooltipContentProps,
   TooltipArrowProps,
-} from './Tooltip';
+} from './tooltip';

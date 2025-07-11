@@ -1,3 +1,4 @@
+'use client';
 export {
   createSliderScope,
   //
@@ -10,5 +11,5 @@ export {
   Track,
   Range,
   Thumb,
-} from './Slider';
-export type { SliderProps, SliderTrackProps, SliderRangeProps, SliderThumbProps } from './Slider';
+} from './slider';
+export type { SliderProps, SliderTrackProps, SliderRangeProps, SliderThumbProps } from './slider';

@@ -5,32 +5,36 @@ on:
     branches:
       - main
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
-      - name: Read Node version
-        id: node_version
-        run: echo "NVMRC=$(cat .nvmrc)" >> $GITHUB_OUTPUT
-      - name: Set Node version
-        uses: actions/setup-node@v2
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
         with:
-          node-version: '${{ steps.node_version.outputs.NVMRC }}'
+          run_install: false
 
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
-      - uses: actions/cache@v1
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          node-version-file: '.nvmrc'
+          cache: 'pnpm'
+
       - name: Install dependencies
-        if: steps.yarn-cache-dir-path.outputs.cache-hit != 'true'
-        run: yarn
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
       - name: Run build
-        run: yarn build
+        run: pnpm build
+
       - name: Run tests
-        run: yarn test:ci
+        run: pnpm test:ci

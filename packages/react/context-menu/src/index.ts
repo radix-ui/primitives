@@ -1,3 +1,4 @@
+'use client';
 export {
   createContextMenuScope,
   //
@@ -34,7 +35,7 @@ export {
   Sub,
   SubTrigger,
   SubContent,
-} from './ContextMenu';
+} from './context-menu';
 export type {
   ContextMenuProps,
   ContextMenuTriggerProps,
@@ -52,4 +53,4 @@ export type {
   ContextMenuSubProps,
   ContextMenuSubTriggerProps,
   ContextMenuSubContentProps,
-} from './ContextMenu';
+} from './context-menu';

@@ -1,0 +1,28 @@
+{
+  "name": "@repo/eslint-config",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "main": "./index.js",
+  "exports": {
+    ".": "./index.js",
+    "./react-package": "./react-package.js",
+    "./vite": "./vite.js"
+  },
+  "scripts": {
+    "lint": "eslint --max-warnings 0 ."
+  },
+  "dependencies": {
+    "@chance/eslint": "^1.1.0",
+    "eslint-plugin-react-refresh": "^0.4.19",
+    "eslint-plugin-storybook": "^0.11.2"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "eslint": "^9.18.0"
+  },
+  "peerDependencies": {
+    "eslint": ">=9.18"
+  }
+}

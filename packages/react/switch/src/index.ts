@@ -1,3 +1,4 @@
+'use client';
 export {
   createSwitchScope,
   //
@@ -6,5 +7,5 @@ export {
   //
   Root,
   Thumb,
-} from './Switch';
-export type { SwitchProps, SwitchThumbProps } from './Switch';
+} from './switch';
+export type { SwitchProps, SwitchThumbProps } from './switch';

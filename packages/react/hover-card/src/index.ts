@@ -1,3 +1,4 @@
+'use client';
 export {
   createHoverCardScope,
   //
@@ -12,11 +13,11 @@ export {
   Portal,
   Content,
   Arrow,
-} from './HoverCard';
+} from './hover-card';
 export type {
   HoverCardProps,
   HoverCardTriggerProps,
   HoverCardPortalProps,
   HoverCardContentProps,
   HoverCardArrowProps,
-} from './HoverCard';
+} from './hover-card';

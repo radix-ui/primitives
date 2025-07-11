@@ -1,0 +1,179 @@
+.trigger {
+  border: 1px solid $black;
+  border-radius: 6px;
+  background-color: transparent;
+  padding: 5px 10px;
+  font-family: apple-system, BlinkMacSystemFont, helvetica, arial, sans-serif;
+  font-size: 13px;
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgb(0 0 0 / 0.5);
+  }
+}
+
+.content {
+  display: inline-block;
+  box-sizing: border-box;
+  min-width: 130px;
+  background-color: var(--color-white);
+  border: 1px solid var(--color-gray100);
+  border-radius: 6px;
+  padding: 5px;
+  box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.1);
+  font-family: apple-system, BlinkMacSystemFont, helvetica, arial, sans-serif;
+  font-size: 13px;
+  &:focus-within {
+    border-color: var(--color-black);
+  }
+}
+
+.label,
+.item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  line-height: 1;
+  cursor: default;
+  user-select: none;
+  white-space: nowrap;
+  height: 25px;
+  padding: 0 10px;
+  color: var(--color-black);
+  border-radius: 3px;
+}
+
+.label {
+  color: var(--color-gray100);
+}
+
+.item {
+  outline: none;
+
+  &[data-highlighted] {
+    background-color: var(--color-black);
+    color: var(--color-white);
+  }
+
+  &[data-disabled] {
+    color: var(--color-gray100);
+  }
+}
+
+.subTrigger {
+  &:not([data-highlighted])[data-state='open'] {
+    background-color: var(--color-gray100);
+    color: var(--color-black);
+  }
+}
+
+.separator {
+  height: 1;
+  margin: 5px 10px;
+  background-color: var(--color-gray100);
+}
+
+@keyframes dropdownMenu-animateIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes dropdownMenu-animateOut {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+}
+
+.animatedContent {
+  &[data-state='open'] {
+    animation: dropdownMenu-animateIn 300ms ease;
+  }
+  &[data-state='closed'] {
+    animation: dropdownMenu-animateOut 300ms ease;
+  }
+}
+
+.animatedItemIndicator {
+  &[data-state='checked'] {
+    animation: dropdownMenu-animateIn 300ms ease;
+  }
+  &[data-state='unchecked'] {
+    animation: dropdownMenu-animateOut 300ms ease;
+  }
+}
+
+.grid {
+  display: inline-grid;
+  grid-template-columns: repeat(3, 50px);
+  column-gap: 150px;
+  row-gap: 100px;
+  padding: 100px;
+  border: 1px solid var(--color-black);
+}
+
+.dialog {
+  position: fixed;
+  background: white;
+  border: 1px solid black;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 30px;
+}
+
+.chromaticTrigger {
+  width: 30px;
+  height: 30px;
+  background-color: tomato;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+}
+.chromaticContent {
+  display: grid;
+  place-content: center;
+  width: 60px;
+  height: 60px;
+  background-color: royalblue;
+  color: var(--color-white);
+  font-size: 10px;
+  border: 1px solid rgb(0 0 0 / 0.3);
+}
+
+.chromaticArrow {
+  fill: var(--color-black);
+}
+
+.triggerAttr,
+.contentAttr,
+.itemAttr,
+.itemIndicatorAttr,
+.checkboxItemAttr,
+.radioGroupAttr,
+.radioItemAttr,
+.separatorAttr,
+.arrowAttr {
+  background-color: rgb(0 0 255 / 0.3);
+  border: 2px solid blue;
+  padding: 10px;
+
+  & [data-disabled] {
+    border-style: dashed;
+  }
+
+  &[data-state='closed'] {
+    border-color: red;
+  }
+  &[data-state='open'] {
+    border-color: green;
+  }
+}

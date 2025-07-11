@@ -1,3 +1,4 @@
+'use client';
 export {
   createFormScope,
   //
@@ -16,7 +17,7 @@ export {
   Message,
   ValidityState,
   Submit,
-} from './Form';
+} from './form';
 
 export type {
   FormProps,
@@ -26,4 +27,4 @@ export type {
   FormMessageProps,
   FormValidityStateProps,
   FormSubmitProps,
-} from './Form';
+} from './form';

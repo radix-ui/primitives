@@ -1,3 +1,4 @@
+'use client';
 export {
   createScrollAreaScope,
   //
@@ -12,11 +13,11 @@ export {
   Scrollbar,
   Thumb,
   Corner,
-} from './ScrollArea';
+} from './scroll-area';
 export type {
   ScrollAreaProps,
   ScrollAreaViewportProps,
   ScrollAreaScrollbarProps,
   ScrollAreaThumbProps,
   ScrollAreaCornerProps,
-} from './ScrollArea';
+} from './scroll-area';

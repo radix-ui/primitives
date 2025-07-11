@@ -1,1 +1,1 @@
-export { useLayoutEffect } from './useLayoutEffect';
+export { useLayoutEffect } from './use-layout-effect';

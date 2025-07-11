@@ -1,3 +1,4 @@
+'use client';
 export {
   createPopperScope,
   //
@@ -13,10 +14,10 @@ export {
   //
   SIDE_OPTIONS,
   ALIGN_OPTIONS,
-} from './Popper';
+} from './popper';
 export type {
   PopperProps,
   PopperAnchorProps,
   PopperContentProps,
   PopperArrowProps,
-} from './Popper';
+} from './popper';

@@ -1,35 +1,52 @@
 {
   "name": "@radix-ui/react-id",
-  "version": "1.0.1",
+  "version": "1.1.1",
   "license": "MIT",
-  "exports": {
-    ".": {
-      "import": {
-        "types": "./dist/index.d.mts",
-        "default": "./dist/index.mjs"
-      },
-      "require": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
+  "source": "./src/index.ts",
+  "main": "./src/index.ts",
+  "module": "./src/index.ts",
+  "publishConfig": {
+    "main": "./dist/index.js",
+    "module": "./dist/index.mjs",
+    "types": "./dist/index.d.ts",
+    "exports": {
+      ".": {
+        "import": {
+          "types": "./dist/index.d.mts",
+          "default": "./dist/index.mjs"
+        },
+        "require": {
+          "types": "./dist/index.d.ts",
+          "default": "./dist/index.js"
+        }
       }
     }
   },
-  "source": "./src/index.ts",
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
   "files": [
     "dist",
     "README.md"
   ],
   "sideEffects": false,
   "scripts": {
+    "lint": "eslint --max-warnings 0 src",
     "clean": "rm -rf dist",
-    "version": "yarn version"
+    "typecheck": "tsc --noEmit",
+    "build": "radix-build"
+  },
+  "devDependencies": {
+    "@repo/builder": "workspace:*",
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@types/react": "^19.0.7",
+    "@types/react-dom": "^19.0.3",
+    "eslint": "^9.18.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "typescript": "^5.7.3"
   },
   "peerDependencies": {
     "@types/react": "*",
-    "react": "^16.8 || ^17.0 || ^18.0"
+    "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
   },
   "peerDependenciesMeta": {
     "@types/react": {
@@ -45,7 +62,6 @@
     "url": "https://github.com/radix-ui/primitives/issues"
   },
   "dependencies": {
-    "@babel/runtime": "^7.13.10",
     "@radix-ui/react-use-layout-effect": "workspace:*"
   }
 }
