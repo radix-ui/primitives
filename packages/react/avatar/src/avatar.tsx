@@ -102,8 +102,8 @@ const AvatarFallback = React.forwardRef<AvatarFallbackElement, AvatarFallbackPro
 
     React.useEffect(() => {
       if (delayMs !== undefined) {
-        const timerId = window.setTimeout(() => setCanRender(true), delayMs);
-        return () => window.clearTimeout(timerId);
+        const timerId = setTimeout(() => setCanRender(true), delayMs);
+        return () => clearTimeout(timerId);
       }
     }, [delayMs]);
 
@@ -139,6 +139,7 @@ function useImageLoadingStatus(
   const image = (() => {
     if (!isHydrated) return null;
     if (!imageRef.current) {
+      // eslint-disable-next-line no-restricted-globals
       imageRef.current = new window.Image();
     }
     return imageRef.current;
