@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { composeEventHandlers } from '@radix-ui/primitive';
+import { composeEventHandlers, getOwnerDocument } from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
 import { Primitive } from '@radix-ui/react-primitive';
@@ -134,6 +134,7 @@ const RadioGroupItem = React.forwardRef<RadioGroupItemElement, RadioGroupItemPro
     const isArrowKeyPressedRef = React.useRef(false);
 
     React.useEffect(() => {
+      const document = getOwnerDocument(ref.current);
       const handleKeyDown = (event: KeyboardEvent) => {
         if (ARROW_KEYS.includes(event.key)) {
           isArrowKeyPressedRef.current = true;
