@@ -7,7 +7,8 @@ import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useDirection } from '@radix-ui/react-direction';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { clamp } from '@radix-ui/number';
-import { composeEventHandlers } from '@radix-ui/primitive';
+import type { Timeout } from '@radix-ui/primitive';
+import { composeEventHandlers, getOwnerDocument } from '@radix-ui/primitive';
 import { useStateMachine } from './use-state-machine';
 
 import type { Scope } from '@radix-ui/react-context';
@@ -247,19 +248,19 @@ const ScrollAreaScrollbarHover = React.forwardRef<
 
   React.useEffect(() => {
     const scrollArea = context.scrollArea;
-    let hideTimer = 0;
+    let hideTimer: Timeout | null = null;
     if (scrollArea) {
       const handlePointerEnter = () => {
-        window.clearTimeout(hideTimer);
+        clearTimeout(hideTimer!);
         setVisible(true);
       };
       const handlePointerLeave = () => {
-        hideTimer = window.setTimeout(() => setVisible(false), context.scrollHideDelay);
+        hideTimer = setTimeout(() => setVisible(false), context.scrollHideDelay);
       };
       scrollArea.addEventListener('pointerenter', handlePointerEnter);
       scrollArea.addEventListener('pointerleave', handlePointerLeave);
       return () => {
-        window.clearTimeout(hideTimer);
+        clearTimeout(hideTimer!);
         scrollArea.removeEventListener('pointerenter', handlePointerEnter);
         scrollArea.removeEventListener('pointerleave', handlePointerLeave);
       };
@@ -311,8 +312,8 @@ const ScrollAreaScrollbarScroll = React.forwardRef<
 
   React.useEffect(() => {
     if (state === 'idle') {
-      const hideTimer = window.setTimeout(() => send('HIDE'), context.scrollHideDelay);
-      return () => window.clearTimeout(hideTimer);
+      const hideTimer = setTimeout(() => send('HIDE'), context.scrollHideDelay);
+      return () => clearTimeout(hideTimer);
     }
   }, [state, context.scrollHideDelay, send]);
 
@@ -674,13 +675,20 @@ const ScrollAreaScrollbarImpl = React.forwardRef<
    * mode for document wheel event to allow it to be prevented
    */
   React.useEffect(() => {
+    if (!scrollbar) {
+      return;
+    }
+
+    const ownerDocument = getOwnerDocument(scrollbar);
     const handleWheel = (event: WheelEvent) => {
       const element = event.target as HTMLElement;
-      const isScrollbarWheel = scrollbar?.contains(element);
-      if (isScrollbarWheel) handleWheelScroll(event, maxScrollPos);
+      const isScrollbarWheel = scrollbar.contains(element);
+      if (isScrollbarWheel) {
+        handleWheelScroll(event, maxScrollPos);
+      }
     };
-    document.addEventListener('wheel', handleWheel, { passive: false });
-    return () => document.removeEventListener('wheel', handleWheel, { passive: false } as any);
+    ownerDocument.addEventListener('wheel', handleWheel, { passive: false });
+    return () => ownerDocument.removeEventListener('wheel', handleWheel, { passive: false } as any);
   }, [viewport, scrollbar, maxScrollPos, handleWheelScroll]);
 
   /**
@@ -709,6 +717,7 @@ const ScrollAreaScrollbarImpl = React.forwardRef<
           const mainPointer = 0;
           if (event.button === mainPointer) {
             const element = event.target as HTMLElement;
+            const document = getOwnerDocument(element);
             element.setPointerCapture(event.pointerId);
             rectRef.current = scrollbar!.getBoundingClientRect();
             // pointer capture doesn't prevent text selection in Safari
@@ -722,6 +731,7 @@ const ScrollAreaScrollbarImpl = React.forwardRef<
         onPointerMove={composeEventHandlers(props.onPointerMove, handleDragScroll)}
         onPointerUp={composeEventHandlers(props.onPointerUp, (event) => {
           const element = event.target as HTMLElement;
+          const document = getOwnerDocument(element);
           if (element.hasPointerCapture(event.pointerId)) {
             element.releasePointerCapture(event.pointerId);
           }
@@ -967,18 +977,18 @@ const addUnlinkedScrollListener = (node: HTMLElement, handler = () => {}) => {
     const isVerticalScroll = prevPosition.top !== position.top;
     if (isHorizontalScroll || isVerticalScroll) handler();
     prevPosition = position;
-    rAF = window.requestAnimationFrame(loop);
+    rAF = requestAnimationFrame(loop);
   })();
-  return () => window.cancelAnimationFrame(rAF);
+  return () => cancelAnimationFrame(rAF);
 };
 
 function useDebounceCallback(callback: () => void, delay: number) {
   const handleCallback = useCallbackRef(callback);
-  const debounceTimerRef = React.useRef(0);
-  React.useEffect(() => () => window.clearTimeout(debounceTimerRef.current), []);
+  const debounceTimerRef = React.useRef<Timeout | null>(null);
+  React.useEffect(() => () => clearTimeout(debounceTimerRef.current!), []);
   return React.useCallback(() => {
-    window.clearTimeout(debounceTimerRef.current);
-    debounceTimerRef.current = window.setTimeout(handleCallback, delay);
+    clearTimeout(debounceTimerRef.current!);
+    debounceTimerRef.current = setTimeout(handleCallback, delay);
   }, [handleCallback, delay]);
 }
 
@@ -996,11 +1006,11 @@ function useResizeObserver(element: HTMLElement | null, onResize: () => void) {
        */
       const resizeObserver = new ResizeObserver(() => {
         cancelAnimationFrame(rAF);
-        rAF = window.requestAnimationFrame(handleResize);
+        rAF = requestAnimationFrame(handleResize);
       });
       resizeObserver.observe(element);
       return () => {
-        window.cancelAnimationFrame(rAF);
+        cancelAnimationFrame(rAF);
         resizeObserver.unobserve(element);
       };
     }
