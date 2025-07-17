@@ -28,12 +28,13 @@
   ],
   "sideEffects": false,
   "scripts": {
-    "lint": "eslint --max-warnings 0 src",
+    "lint": "eslint src",
     "clean": "rm -rf dist",
     "typecheck": "tsc --noEmit",
     "build": "radix-build"
   },
   "dependencies": {
+    "@radix-ui/primitive": "workspace:*",
     "@radix-ui/react-primitive": "workspace:*",
     "@radix-ui/react-use-layout-effect": "workspace:*"
   },

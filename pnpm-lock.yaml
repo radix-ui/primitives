@@ -1864,6 +1864,9 @@ importers:
 
   packages/react/portal:
     dependencies:
+      '@radix-ui/primitive':
+        specifier: workspace:*
+        version: link:../../core/primitive
       '@radix-ui/react-primitive':
         specifier: workspace:*
         version: link:../primitive
