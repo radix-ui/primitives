@@ -164,7 +164,7 @@ const RadioBubbleInput = React.forwardRef<HTMLInputElement, RadioBubbleInputProp
       const input = ref.current;
       if (!input) return;
 
-      const inputProto = window.HTMLInputElement.prototype;
+      const inputProto = HTMLInputElement.prototype;
       const descriptor = Object.getOwnPropertyDescriptor(
         inputProto,
         'checked'
