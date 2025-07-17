@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { composeEventHandlers } from '@radix-ui/primitive';
+import { composeEventHandlers, getOwnerDocument } from '@radix-ui/primitive';
 import { createCollection } from '@radix-ui/react-collection';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
@@ -175,6 +175,7 @@ const RovingFocusGroupImpl = React.forwardRef<
             event.currentTarget.dispatchEvent(entryFocusEvent);
 
             if (!entryFocusEvent.defaultPrevented) {
+              const document = getOwnerDocument(event.currentTarget);
               const items = getItems().filter((item) => item.focusable);
               const activeItem = items.find((item) => item.active);
               const currentItem = items.find((item) => item.id === currentTabStopId);
@@ -182,7 +183,7 @@ const RovingFocusGroupImpl = React.forwardRef<
                 Boolean
               ) as typeof items;
               const candidateNodes = candidateItems.map((item) => item.ref.current!);
-              focusFirst(candidateNodes, preventScrollOnEntryFocus);
+              focusFirst(document, candidateNodes, preventScrollOnEntryFocus);
             }
           }
 
@@ -264,8 +265,8 @@ const RovingFocusGroupItem = React.forwardRef<RovingFocusItemElement, RovingFocu
 
             if (event.target !== event.currentTarget) return;
 
+            const document = getOwnerDocument(event.currentTarget);
             const focusIntent = getFocusIntent(event, context.orientation, context.dir);
-
             if (focusIntent !== undefined) {
               if (event.metaKey || event.ctrlKey || event.altKey || event.shiftKey) return;
               event.preventDefault();
@@ -285,7 +286,7 @@ const RovingFocusGroupItem = React.forwardRef<RovingFocusItemElement, RovingFocu
                * Imperative focus during keydown is risky so we prevent React's batching updates
                * to avoid potential bugs. See: https://github.com/facebook/react/issues/20332
                */
-              setTimeout(() => focusFirst(candidateNodes));
+              setTimeout(() => focusFirst(document, candidateNodes));
             }
           })}
         >
@@ -324,13 +325,13 @@ function getFocusIntent(event: React.KeyboardEvent, orientation?: Orientation, d
   return MAP_KEY_TO_FOCUS_INTENT[key];
 }
 
-function focusFirst(candidates: HTMLElement[], preventScroll = false) {
-  const PREVIOUSLY_FOCUSED_ELEMENT = document.activeElement;
+function focusFirst(ownerDocument: Document, candidates: HTMLElement[], preventScroll = false) {
+  const PREVIOUSLY_FOCUSED_ELEMENT = ownerDocument.activeElement;
   for (const candidate of candidates) {
     // if focus is already where we want to go, we don't want to keep going through the candidates
     if (candidate === PREVIOUSLY_FOCUSED_ELEMENT) return;
     candidate.focus({ preventScroll });
-    if (document.activeElement !== PREVIOUSLY_FOCUSED_ELEMENT) return;
+    if (ownerDocument.activeElement !== PREVIOUSLY_FOCUSED_ELEMENT) return;
   }
 }
 
