@@ -11,6 +11,7 @@ import type { Scope } from '@radix-ui/react-context';
 
 /* -------------------------------------------------------------------------------------------------
  * Switch
+
  * -----------------------------------------------------------------------------------------------*/
 
 const SWITCH_NAME = 'Switch';
@@ -164,7 +165,7 @@ const SwitchBubbleInput = React.forwardRef<HTMLInputElement, SwitchBubbleInputPr
       const input = ref.current;
       if (!input) return;
 
-      const inputProto = window.HTMLInputElement.prototype;
+      const inputProto = HTMLInputElement.prototype;
       const descriptor = Object.getOwnPropertyDescriptor(
         inputProto,
         'checked'
