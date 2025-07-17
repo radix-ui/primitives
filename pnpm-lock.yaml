@@ -1895,6 +1895,9 @@ importers:
 
   packages/react/presence:
     dependencies:
+      '@radix-ui/primitive':
+        specifier: workspace:*
+        version: link:../../core/primitive
       '@radix-ui/react-compose-refs':
         specifier: workspace:*
         version: link:../compose-refs
@@ -1932,6 +1935,9 @@ importers:
 
   packages/react/primitive:
     dependencies:
+      '@radix-ui/primitive':
+        specifier: workspace:*
+        version: link:../../core/primitive
       '@radix-ui/react-slot':
         specifier: workspace:*
         version: link:../slot

@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { useStateMachine } from './use-state-machine';
+import { getOwnerWindow } from '@radix-ui/primitive';
 
 interface PresenceProps {
   children: React.ReactElement | ((props: { present: boolean }) => React.ReactElement);
@@ -92,7 +93,7 @@ function usePresence(present: boolean) {
   useLayoutEffect(() => {
     if (node) {
       let timeoutId: number;
-      const ownerWindow = node.ownerDocument.defaultView ?? window;
+      const ownerWindow = getOwnerWindow(node);
       /**
        * Triggering an ANIMATION_OUT during an ANIMATION_IN will fire an `animationcancel`
        * event for ANIMATION_IN after we have entered `unmountSuspended` state. So, we
