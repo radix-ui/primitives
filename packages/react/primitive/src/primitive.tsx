@@ -1,6 +1,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { createSlot } from '@radix-ui/react-slot';
+import { canUseDOM } from '@radix-ui/primitive';
 
 const NODES = [
   'a',
@@ -40,7 +41,8 @@ const Primitive = NODES.reduce((primitive, node) => {
     const { asChild, ...primitiveProps } = props;
     const Comp: any = asChild ? Slot : node;
 
-    if (typeof window !== 'undefined') {
+    if (canUseDOM) {
+      // eslint-disable-next-line no-restricted-globals
       (window as any)[Symbol.for('radix-ui')] = true;
     }
 
