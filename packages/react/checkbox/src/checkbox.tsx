@@ -325,7 +325,7 @@ const CheckboxBubbleInput = React.forwardRef<HTMLInputElement, CheckboxBubbleInp
       const input = bubbleInput;
       if (!input) return;
 
-      const inputProto = window.HTMLInputElement.prototype;
+      const inputProto = HTMLInputElement.prototype;
       const descriptor = Object.getOwnPropertyDescriptor(
         inputProto,
         'checked'
