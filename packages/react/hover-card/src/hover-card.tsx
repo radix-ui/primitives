@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { composeEventHandlers } from '@radix-ui/primitive';
+import { composeEventHandlers, getOwnerDocument, type Timeout } from '@radix-ui/primitive';
 import { createContextScope } from '@radix-ui/react-context';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
@@ -59,8 +59,8 @@ const HoverCard: React.FC<HoverCardProps> = (props: ScopedProps<HoverCardProps>)
     closeDelay = 300,
   } = props;
   const popperScope = usePopperScope(__scopeHoverCard);
-  const openTimerRef = React.useRef(0);
-  const closeTimerRef = React.useRef(0);
+  const openTimerRef = React.useRef<Timeout | null>(null);
+  const closeTimerRef = React.useRef<Timeout | null>(null);
   const hasSelectionRef = React.useRef(false);
   const isPointerDownOnContentRef = React.useRef(false);
 
@@ -72,14 +72,14 @@ const HoverCard: React.FC<HoverCardProps> = (props: ScopedProps<HoverCardProps>)
   });
 
   const handleOpen = React.useCallback(() => {
-    clearTimeout(closeTimerRef.current);
-    openTimerRef.current = window.setTimeout(() => setOpen(true), openDelay);
+    clearTimeout(closeTimerRef.current!);
+    openTimerRef.current = setTimeout(() => setOpen(true), openDelay);
   }, [openDelay, setOpen]);
 
   const handleClose = React.useCallback(() => {
-    clearTimeout(openTimerRef.current);
+    clearTimeout(openTimerRef.current!);
     if (!hasSelectionRef.current && !isPointerDownOnContentRef.current) {
-      closeTimerRef.current = window.setTimeout(() => setOpen(false), closeDelay);
+      closeTimerRef.current = setTimeout(() => setOpen(false), closeDelay);
     }
   }, [closeDelay, setOpen]);
 
@@ -88,8 +88,8 @@ const HoverCard: React.FC<HoverCardProps> = (props: ScopedProps<HoverCardProps>)
   // cleanup any queued state updates on unmount
   React.useEffect(() => {
     return () => {
-      clearTimeout(openTimerRef.current);
-      clearTimeout(closeTimerRef.current);
+      clearTimeout(openTimerRef.current!);
+      clearTimeout(closeTimerRef.current!);
     };
   }, []);
 
@@ -274,6 +274,7 @@ const HoverCardContentImpl = React.forwardRef<
 
   React.useEffect(() => {
     if (containSelection) {
+      const document = getOwnerDocument(ref.current);
       const body = document.body;
 
       // Safari requires prefix
@@ -290,6 +291,7 @@ const HoverCardContentImpl = React.forwardRef<
 
   React.useEffect(() => {
     if (ref.current) {
+      const document = getOwnerDocument(ref.current);
       const handlePointerUp = () => {
         setContainSelection(false);
         context.isPointerDownOnContentRef.current = false;
@@ -393,6 +395,7 @@ function excludeTouch<E>(eventHandler: () => void) {
  */
 function getTabbableNodes(container: HTMLElement) {
   const nodes: HTMLElement[] = [];
+  const document = getOwnerDocument(container);
   const walker = document.createTreeWalker(container, NodeFilter.SHOW_ELEMENT, {
     acceptNode: (node: any) => {
       // `.tabIndex` is not the same as the `tabindex` attribute. It works on the
