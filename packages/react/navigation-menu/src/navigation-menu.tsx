@@ -1,7 +1,8 @@
 import * as React from 'react';
 import ReactDOM from 'react-dom';
 import { createContextScope } from '@radix-ui/react-context';
-import { composeEventHandlers } from '@radix-ui/primitive';
+import type { Timeout } from '@radix-ui/primitive';
+import { composeEventHandlers, getOwnerDocument } from '@radix-ui/primitive';
 import { Primitive, dispatchDiscreteCustomEvent } from '@radix-ui/react-primitive';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { composeRefs, useComposedRefs } from '@radix-ui/react-compose-refs';
@@ -111,9 +112,9 @@ const NavigationMenu = React.forwardRef<NavigationMenuElement, NavigationMenuPro
     const [navigationMenu, setNavigationMenu] = React.useState<NavigationMenuElement | null>(null);
     const composedRef = useComposedRefs(forwardedRef, (node) => setNavigationMenu(node));
     const direction = useDirection(dir);
-    const openTimerRef = React.useRef(0);
-    const closeTimerRef = React.useRef(0);
-    const skipDelayTimerRef = React.useRef(0);
+    const openTimerRef = React.useRef<Timeout | null>(null);
+    const closeTimerRef = React.useRef<Timeout | null>(null);
+    const skipDelayTimerRef = React.useRef<Timeout | null>(null);
     const [isOpenDelayed, setIsOpenDelayed] = React.useState(true);
     const [value, setValue] = useControllableState({
       prop: valueProp,
@@ -122,14 +123,11 @@ const NavigationMenu = React.forwardRef<NavigationMenuElement, NavigationMenuPro
         const hasSkipDelayDuration = skipDelayDuration > 0;
 
         if (isOpen) {
-          window.clearTimeout(skipDelayTimerRef.current);
+          clearTimeout(skipDelayTimerRef.current!);
           if (hasSkipDelayDuration) setIsOpenDelayed(false);
         } else {
-          window.clearTimeout(skipDelayTimerRef.current);
-          skipDelayTimerRef.current = window.setTimeout(
-            () => setIsOpenDelayed(true),
-            skipDelayDuration
-          );
+          clearTimeout(skipDelayTimerRef.current!);
+          skipDelayTimerRef.current = setTimeout(() => setIsOpenDelayed(true), skipDelayDuration);
         }
 
         onValueChange?.(value);
@@ -139,13 +137,13 @@ const NavigationMenu = React.forwardRef<NavigationMenuElement, NavigationMenuPro
     });
 
     const startCloseTimer = React.useCallback(() => {
-      window.clearTimeout(closeTimerRef.current);
-      closeTimerRef.current = window.setTimeout(() => setValue(''), 150);
+      clearTimeout(closeTimerRef.current!);
+      closeTimerRef.current = setTimeout(() => setValue(''), 150);
     }, [setValue]);
 
     const handleOpen = React.useCallback(
       (itemValue: string) => {
-        window.clearTimeout(closeTimerRef.current);
+        clearTimeout(closeTimerRef.current!);
         setValue(itemValue);
       },
       [setValue]
@@ -157,10 +155,10 @@ const NavigationMenu = React.forwardRef<NavigationMenuElement, NavigationMenuPro
         if (isOpenItem) {
           // If the item is already open (e.g. we're transitioning from the content to the trigger)
           // then we want to clear the close timer immediately.
-          window.clearTimeout(closeTimerRef.current);
+          clearTimeout(closeTimerRef.current!);
         } else {
-          openTimerRef.current = window.setTimeout(() => {
-            window.clearTimeout(closeTimerRef.current);
+          openTimerRef.current = setTimeout(() => {
+            clearTimeout(closeTimerRef.current!);
             setValue(itemValue);
           }, delayDuration);
         }
@@ -170,9 +168,9 @@ const NavigationMenu = React.forwardRef<NavigationMenuElement, NavigationMenuPro
 
     React.useEffect(() => {
       return () => {
-        window.clearTimeout(openTimerRef.current);
-        window.clearTimeout(closeTimerRef.current);
-        window.clearTimeout(skipDelayTimerRef.current);
+        clearTimeout(openTimerRef.current!);
+        clearTimeout(closeTimerRef.current!);
+        clearTimeout(skipDelayTimerRef.current!);
       };
     }, []);
 
@@ -185,15 +183,15 @@ const NavigationMenu = React.forwardRef<NavigationMenuElement, NavigationMenuPro
         orientation={orientation}
         rootNavigationMenu={navigationMenu}
         onTriggerEnter={(itemValue) => {
-          window.clearTimeout(openTimerRef.current);
+          clearTimeout(openTimerRef.current!);
           if (isOpenDelayed) handleDelayedOpen(itemValue);
           else handleOpen(itemValue);
         }}
         onTriggerLeave={() => {
-          window.clearTimeout(openTimerRef.current);
+          clearTimeout(openTimerRef.current!);
           startCloseTimer();
         }}
-        onContentEnter={() => window.clearTimeout(closeTimerRef.current)}
+        onContentEnter={() => clearTimeout(closeTimerRef.current!)}
         onContentLeave={startCloseTimer}
         onItemSelect={(itemValue) => {
           setValue((prevValue) => (prevValue === itemValue ? '' : itemValue));
@@ -431,7 +429,10 @@ const NavigationMenuItem = React.forwardRef<NavigationMenuItemElement, Navigatio
       if (contentRef.current) {
         restoreContentTabOrderRef.current();
         const candidates = getTabbableCandidates(contentRef.current);
-        if (candidates.length) focusFirst(side === 'start' ? candidates : candidates.reverse());
+        const document = getOwnerDocument(contentRef.current);
+        if (candidates.length) {
+          focusFirst(document, side === 'start' ? candidates : candidates.reverse());
+        }
       }
     }, []);
 
@@ -872,6 +873,7 @@ const NavigationMenuContentImpl = React.forwardRef<
 
     // Bubble dismiss to the root content node and focus its trigger
     if (context.isRootMenu && content) {
+      const document = getOwnerDocument(content);
       const handleClose = () => {
         onItemDismiss();
         onRootContentClose();
@@ -945,6 +947,7 @@ const NavigationMenuContentImpl = React.forwardRef<
           const isMetaKey = event.altKey || event.ctrlKey || event.metaKey;
           const isTabKey = event.key === 'Tab' && !isMetaKey;
           if (isTabKey) {
+            const document = getOwnerDocument(event.currentTarget);
             const candidates = getTabbableCandidates(event.currentTarget);
             const focusedElement = document.activeElement;
             const index = candidates.findIndex((candidate) => candidate === focusedElement);
@@ -953,7 +956,7 @@ const NavigationMenuContentImpl = React.forwardRef<
               ? candidates.slice(0, index).reverse()
               : candidates.slice(index + 1, candidates.length);
 
-            if (focusFirst(nextCandidates)) {
+            if (focusFirst(document, nextCandidates)) {
               // prevent browser tab keydown because we've handled focus
               event.preventDefault();
             } else {
@@ -1123,6 +1126,7 @@ const FocusGroupItem = React.forwardRef<FocusGroupItemElement, FocusGroupItemPro
             const isFocusNavigationKey = ['Home', 'End', ...ARROW_KEYS].includes(event.key);
             if (isFocusNavigationKey) {
               let candidateNodes = getItems().map((item) => item.ref.current!);
+              const document = getOwnerDocument(event.currentTarget);
               const prevItemKey = context.dir === 'rtl' ? 'ArrowRight' : 'ArrowLeft';
               const prevKeys = [prevItemKey, 'ArrowUp', 'End'];
               if (prevKeys.includes(event.key)) candidateNodes.reverse();
@@ -1134,7 +1138,7 @@ const FocusGroupItem = React.forwardRef<FocusGroupItemElement, FocusGroupItemPro
                * Imperative focus during keydown is risky so we prevent React's batching updates
                * to avoid potential bugs. See: https://github.com/facebook/react/issues/20332
                */
-              setTimeout(() => focusFirst(candidateNodes));
+              setTimeout(() => focusFirst(document, candidateNodes));
 
               // Prevent page scroll while navigating
               event.preventDefault();
@@ -1158,6 +1162,7 @@ const FocusGroupItem = React.forwardRef<FocusGroupItemElement, FocusGroupItemPro
  */
 function getTabbableCandidates(container: HTMLElement) {
   const nodes: HTMLElement[] = [];
+  const document = getOwnerDocument(container);
   const walker = document.createTreeWalker(container, NodeFilter.SHOW_ELEMENT, {
     acceptNode: (node: any) => {
       const isHiddenInput = node.tagName === 'INPUT' && node.type === 'hidden';
@@ -1174,13 +1179,13 @@ function getTabbableCandidates(container: HTMLElement) {
   return nodes;
 }
 
-function focusFirst(candidates: HTMLElement[]) {
-  const previouslyFocusedElement = document.activeElement;
+function focusFirst(ownerDocument: Document, candidates: HTMLElement[]) {
+  const previouslyFocusedElement = ownerDocument.activeElement;
   return candidates.some((candidate) => {
     // if focus is already where we want to go, we don't want to keep going through the candidates
     if (candidate === previouslyFocusedElement) return true;
     candidate.focus();
-    return document.activeElement !== previouslyFocusedElement;
+    return ownerDocument.activeElement !== previouslyFocusedElement;
   });
 }
 
@@ -1211,11 +1216,11 @@ function useResizeObserver(element: HTMLElement | null, onResize: () => void) {
        */
       const resizeObserver = new ResizeObserver(() => {
         cancelAnimationFrame(rAF);
-        rAF = window.requestAnimationFrame(handleResize);
+        rAF = requestAnimationFrame(handleResize);
       });
       resizeObserver.observe(element);
       return () => {
-        window.cancelAnimationFrame(rAF);
+        cancelAnimationFrame(rAF);
         resizeObserver.unobserve(element);
       };
     }
