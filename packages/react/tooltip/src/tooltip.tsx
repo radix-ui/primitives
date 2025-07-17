@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { composeEventHandlers } from '@radix-ui/primitive';
+import type { Timeout } from '@radix-ui/primitive';
+import { composeEventHandlers, getOwnerDocument, getOwnerWindow } from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
 import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
@@ -73,11 +74,11 @@ const TooltipProvider: React.FC<TooltipProviderProps> = (
   } = props;
   const isOpenDelayedRef = React.useRef(true);
   const isPointerInTransitRef = React.useRef(false);
-  const skipDelayTimerRef = React.useRef(0);
+  const skipDelayTimerRef = React.useRef<Timeout | null>(null);
 
   React.useEffect(() => {
     const skipDelayTimer = skipDelayTimerRef.current;
-    return () => window.clearTimeout(skipDelayTimer);
+    return () => clearTimeout(skipDelayTimer!);
   }, []);
 
   return (
@@ -86,12 +87,12 @@ const TooltipProvider: React.FC<TooltipProviderProps> = (
       isOpenDelayedRef={isOpenDelayedRef}
       delayDuration={delayDuration}
       onOpen={React.useCallback(() => {
-        window.clearTimeout(skipDelayTimerRef.current);
+        clearTimeout(skipDelayTimerRef.current!);
         isOpenDelayedRef.current = false;
       }, [])}
       onClose={React.useCallback(() => {
-        window.clearTimeout(skipDelayTimerRef.current);
-        skipDelayTimerRef.current = window.setTimeout(
+        clearTimeout(skipDelayTimerRef.current!);
+        skipDelayTimerRef.current = setTimeout(
           () => (isOpenDelayedRef.current = true),
           skipDelayDuration
         );
@@ -163,7 +164,7 @@ const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
   const popperScope = usePopperScope(__scopeTooltip);
   const [trigger, setTrigger] = React.useState<HTMLButtonElement | null>(null);
   const contentId = useId();
-  const openTimerRef = React.useRef(0);
+  const openTimerRef = React.useRef<Timeout | null>(null);
   const disableHoverableContent =
     disableHoverableContentProp ?? providerContext.disableHoverableContent;
   const delayDuration = delayDurationProp ?? providerContext.delayDuration;
@@ -172,6 +173,7 @@ const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
     prop: openProp,
     defaultProp: defaultOpen ?? false,
     onChange: (open) => {
+      const document = getOwnerDocument(trigger);
       if (open) {
         providerContext.onOpen();
 
@@ -190,32 +192,32 @@ const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
   }, [open]);
 
   const handleOpen = React.useCallback(() => {
-    window.clearTimeout(openTimerRef.current);
-    openTimerRef.current = 0;
+    clearTimeout(openTimerRef.current!);
+    openTimerRef.current = null;
     wasOpenDelayedRef.current = false;
     setOpen(true);
   }, [setOpen]);
 
   const handleClose = React.useCallback(() => {
-    window.clearTimeout(openTimerRef.current);
-    openTimerRef.current = 0;
+    clearTimeout(openTimerRef.current!);
+    openTimerRef.current = null;
     setOpen(false);
   }, [setOpen]);
 
   const handleDelayedOpen = React.useCallback(() => {
-    window.clearTimeout(openTimerRef.current);
-    openTimerRef.current = window.setTimeout(() => {
+    clearTimeout(openTimerRef.current!);
+    openTimerRef.current = setTimeout(() => {
       wasOpenDelayedRef.current = true;
       setOpen(true);
-      openTimerRef.current = 0;
+      openTimerRef.current = null;
     }, delayDuration);
   }, [delayDuration, setOpen]);
 
   React.useEffect(() => {
     return () => {
       if (openTimerRef.current) {
-        window.clearTimeout(openTimerRef.current);
-        openTimerRef.current = 0;
+        clearTimeout(openTimerRef.current);
+        openTimerRef.current = null;
       }
     };
   }, []);
@@ -238,8 +240,8 @@ const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
             handleClose();
           } else {
             // Clear the timer in case the pointer leaves the trigger before the tooltip is opened.
-            window.clearTimeout(openTimerRef.current);
-            openTimerRef.current = 0;
+            clearTimeout(openTimerRef.current!);
+            openTimerRef.current = null;
           }
         }, [handleClose, disableHoverableContent])}
         onOpen={handleOpen}
@@ -277,6 +279,8 @@ const TooltipTrigger = React.forwardRef<TooltipTriggerElement, TooltipTriggerPro
     const handlePointerUp = React.useCallback(() => (isPointerDownRef.current = false), []);
 
     React.useEffect(() => {
+      const element = ref.current;
+      const document = getOwnerDocument(element);
       return () => document.removeEventListener('pointerup', handlePointerUp);
     }, [handlePointerUp]);
 
@@ -303,11 +307,12 @@ const TooltipTrigger = React.forwardRef<TooltipTriggerElement, TooltipTriggerPro
             context.onTriggerLeave();
             hasPointerMoveOpenedRef.current = false;
           })}
-          onPointerDown={composeEventHandlers(props.onPointerDown, () => {
+          onPointerDown={composeEventHandlers(props.onPointerDown, (event) => {
             if (context.open) {
               context.onClose();
             }
             isPointerDownRef.current = true;
+            const document = getOwnerDocument(event.currentTarget);
             document.addEventListener('pointerup', handlePointerUp, { once: true });
           })}
           onFocus={composeEventHandlers(props.onFocus, () => {
@@ -456,6 +461,7 @@ const TooltipContentHoverable = React.forwardRef<
   }, [trigger, content, handleCreateGraceArea, handleRemoveGraceArea]);
 
   React.useEffect(() => {
+    const document = getOwnerDocument(trigger);
     if (pointerGraceArea) {
       const handleTrackPointerGrace = (event: PointerEvent) => {
         const target = event.target as HTMLElement;
@@ -520,13 +526,15 @@ const TooltipContentImpl = React.forwardRef<TooltipContentImplElement, TooltipCo
 
     // Close this tooltip if another one opens
     React.useEffect(() => {
+      const document = getOwnerDocument(context.trigger);
       document.addEventListener(TOOLTIP_OPEN, onClose);
       return () => document.removeEventListener(TOOLTIP_OPEN, onClose);
-    }, [onClose]);
+    }, [onClose, context.trigger]);
 
     // Close the tooltip if the trigger is scrolled
     React.useEffect(() => {
       if (context.trigger) {
+        const window = getOwnerWindow(context.trigger);
         const handleScroll = (event: Event) => {
           const target = event.target as HTMLElement;
           if (target?.contains(context.trigger)) onClose();
