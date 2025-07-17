@@ -1806,6 +1806,9 @@ importers:
       '@floating-ui/react-dom':
         specifier: ^2.0.0
         version: 2.1.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@radix-ui/primitive':
+        specifier: workspace:*
+        version: link:../../core/primitive
       '@radix-ui/react-arrow':
         specifier: workspace:*
         version: link:../arrow

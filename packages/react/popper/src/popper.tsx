@@ -21,6 +21,7 @@ import { useSize } from '@radix-ui/react-use-size';
 import type { Placement, Middleware } from '@floating-ui/react-dom';
 import type { Scope } from '@radix-ui/react-context';
 import type { Measurable } from '@radix-ui/rect';
+import { getOwnerWindow } from '@radix-ui/primitive';
 
 const SIDE_OPTIONS = ['top', 'right', 'bottom', 'left'] as const;
 const ALIGN_OPTIONS = ['start', 'center', 'end'] as const;
@@ -235,7 +236,10 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
 
     const [contentZIndex, setContentZIndex] = React.useState<string>();
     useLayoutEffect(() => {
-      if (content) setContentZIndex(window.getComputedStyle(content).zIndex);
+      if (content) {
+        const ownerWindow = getOwnerWindow(content);
+        setContentZIndex(ownerWindow.getComputedStyle(content).zIndex);
+      }
     }, [content]);
 
     return (

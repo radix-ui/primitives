@@ -35,6 +35,7 @@
   },
   "dependencies": {
     "@floating-ui/react-dom": "^2.0.0",
+    "@radix-ui/primitive": "workspace:*",
     "@radix-ui/react-arrow": "workspace:*",
     "@radix-ui/react-compose-refs": "workspace:*",
     "@radix-ui/react-context": "workspace:*",
