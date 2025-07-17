@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { Primitive } from '@radix-ui/react-primitive';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
+import { getOwnerDocument } from '@radix-ui/primitive';
 
 type RegionType = 'polite' | 'assertive' | 'off';
 type RegionRole = 'status' | 'alert' | 'log' | 'none';
@@ -94,17 +95,8 @@ const Announce = React.forwardRef<AnnounceElement, AnnounceProps>((props, forwar
 
   const ariaAtomic = ['true', true].includes(regionProps['aria-atomic'] as any);
 
-  // The region is appended to the root document node, which is usually the global `document` but in
-  // some contexts may be another node. After the Announce element ref is attached, we set the
-  // ownerDocumentRef to make sure we have the right root node. We should only need to do this once.
-  const ownerDocumentRef = React.useRef(document);
-  const setOwnerDocumentFromRef = React.useCallback((node: HTMLDivElement) => {
-    if (node) {
-      ownerDocumentRef.current = node.ownerDocument;
-    }
-  }, []);
   const ownRef = React.useRef<HTMLDivElement | null>(null);
-  const ref = useComposedRefs(forwardedRef, ownRef, setOwnerDocumentFromRef);
+  const ref = useComposedRefs(forwardedRef, ownRef);
 
   const [region, setRegion] = React.useState<HTMLElement>();
   const relevant = ariaRelevant
@@ -114,7 +106,7 @@ const Announce = React.forwardRef<AnnounceElement, AnnounceProps>((props, forwar
     : undefined;
 
   const getLiveRegionElement = React.useCallback(() => {
-    const ownerDocument = ownerDocumentRef.current;
+    const ownerDocument = getOwnerDocument(ownRef.current);
     const regionConfig = { type, role, relevant, id: regionIdentifier, atomic: ariaAtomic };
     const regionSelector = buildSelector(regionConfig);
     const element = ownerDocument.querySelector(regionSelector);
@@ -132,7 +124,7 @@ const Announce = React.forwardRef<AnnounceElement, AnnounceProps>((props, forwar
   // our region element to prevent that.
   // https://inclusive-components.design/notifications/#restrictingmessagestocontexts
   React.useEffect(() => {
-    const ownerDocument = ownerDocumentRef.current;
+    const ownerDocument = getOwnerDocument(ownRef.current);
     function updateAttributesOnVisibilityChange() {
       regionElement.setAttribute('role', ownerDocument.hidden ? 'none' : role);
       regionElement.setAttribute('aria-live', ownerDocument.hidden ? 'off' : type);
