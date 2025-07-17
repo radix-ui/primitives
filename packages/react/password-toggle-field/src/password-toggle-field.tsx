@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { flushSync } from 'react-dom';
-import { composeEventHandlers } from '@radix-ui/primitive';
+import { composeEventHandlers, getOwnerWindow } from '@radix-ui/primitive';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { Primitive } from '@radix-ui/react-primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
@@ -283,7 +283,7 @@ const PasswordToggleFieldToggle = React.forwardRef<
 
     React.useEffect(() => {
       let cleanup = () => {};
-      const ownerWindow = elementRef.current?.ownerDocument?.defaultView || window;
+      const ownerWindow = getOwnerWindow(elementRef.current);
       const reset = () => (focusState.current.clickTriggered = false);
       const handlePointerUp = () => (cleanup = requestIdleCallback(ownerWindow, reset));
       ownerWindow.addEventListener('pointerup', handlePointerUp);
