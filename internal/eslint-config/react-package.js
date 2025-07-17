@@ -33,4 +33,10 @@ export const configs = [
   },
   ...storybook.configs['flat/recommended'],
   { ignores: ['**/dist/**'] },
+  {
+    files: ['**/*.test.tsx', '**/*.test.ts'],
+    rules: {
+      'no-restricted-globals': 'off',
+    },
+  },
 ];

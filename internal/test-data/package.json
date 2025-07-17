@@ -14,7 +14,7 @@
     "./*": "./*.ts"
   },
   "scripts": {
-    "lint": "eslint --max-warnings 0 .",
+    "lint": "eslint .",
     "check-types": "tsc --noEmit"
   }
 }

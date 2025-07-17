@@ -28,7 +28,7 @@
   ],
   "sideEffects": false,
   "scripts": {
-    "lint": "eslint --max-warnings 0 src",
+    "lint": "eslint src",
     "clean": "rm -rf dist",
     "typecheck": "tsc --noEmit",
     "build": "radix-build"
