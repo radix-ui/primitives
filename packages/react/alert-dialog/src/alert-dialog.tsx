@@ -3,7 +3,7 @@ import { createContextScope } from '@radix-ui/react-context';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { createDialogScope } from '@radix-ui/react-dialog';
-import { composeEventHandlers } from '@radix-ui/primitive';
+import { composeEventHandlers, getOwnerDocument } from '@radix-ui/primitive';
 import { createSlottable } from '@radix-ui/react-slot';
 
 import type { Scope } from '@radix-ui/react-context';
@@ -253,6 +253,7 @@ Alternatively, you can use your own component as a description by assigning it a
 For more information, see https://radix-ui.com/primitives/docs/components/alert-dialog`;
 
   React.useEffect(() => {
+    const document = getOwnerDocument(contentRef.current);
     const hasDescription = document.getElementById(
       contentRef.current?.getAttribute('aria-describedby')!
     );
