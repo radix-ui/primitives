@@ -653,7 +653,7 @@ const SliderBubbleInput = React.forwardRef<HTMLInputElement, SliderBubbleInputPr
       const input = ref.current;
       if (!input) return;
 
-      const inputProto = window.HTMLInputElement.prototype;
+      const inputProto = HTMLInputElement.prototype;
       const descriptor = Object.getOwnPropertyDescriptor(inputProto, 'value') as PropertyDescriptor;
       const setValue = descriptor.set;
       if (prevValue !== value && setValue) {
