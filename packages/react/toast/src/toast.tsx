@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { composeEventHandlers } from '@radix-ui/primitive';
+import { composeEventHandlers, getOwnerDocument, getOwnerWindow } from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createCollection } from '@radix-ui/react-collection';
 import { createContextScope } from '@radix-ui/react-context';
@@ -31,7 +31,7 @@ type ToastProviderContextValue = {
   swipeThreshold: number;
   toastCount: number;
   viewport: ToastViewportElement | null;
-  onViewportChange(viewport: ToastViewportElement): void;
+  setViewport: React.Dispatch<React.SetStateAction<ToastViewportElement | null>>;
   onToastAdd(): void;
   onToastRemove(): void;
   isFocusedToastEscapeKeyDownRef: React.MutableRefObject<boolean>;
@@ -98,7 +98,7 @@ const ToastProvider: React.FC<ToastProviderProps> = (props: ScopedProps<ToastPro
         swipeThreshold={swipeThreshold}
         toastCount={toastCount}
         viewport={viewport}
-        onViewportChange={setViewport}
+        setViewport={setViewport}
         onToastAdd={React.useCallback(() => setToastCount((prevCount) => prevCount + 1), [])}
         onToastRemove={React.useCallback(() => setToastCount((prevCount) => prevCount - 1), [])}
         isFocusedToastEscapeKeyDownRef={isFocusedToastEscapeKeyDownRef}
@@ -151,11 +151,12 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
     const headFocusProxyRef = React.useRef<FocusProxyElement>(null);
     const tailFocusProxyRef = React.useRef<FocusProxyElement>(null);
     const ref = React.useRef<ToastViewportElement>(null);
-    const composedRefs = useComposedRefs(forwardedRef, ref, context.onViewportChange);
+    const composedRefs = useComposedRefs(forwardedRef, ref, context.setViewport);
     const hotkeyLabel = hotkey.join('+').replace(/Key/g, '').replace(/Digit/g, '');
     const hasToasts = context.toastCount > 0;
 
     React.useEffect(() => {
+      const document = getOwnerDocument(context.viewport);
       const handleKeyDown = (event: KeyboardEvent) => {
         // we use `event.code` as it is consistent regardless of meta keys that were pressed.
         // for example, `event.key` for `Control+Alt+t` is `†` and `t !== †`
@@ -165,11 +166,13 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
       };
       document.addEventListener('keydown', handleKeyDown);
       return () => document.removeEventListener('keydown', handleKeyDown);
-    }, [hotkey]);
+    }, [hotkey, context.viewport]);
 
     React.useEffect(() => {
       const wrapper = wrapperRef.current;
-      const viewport = ref.current;
+      const viewport = context.viewport;
+      const document = getOwnerDocument(viewport);
+      const window = getOwnerWindow(viewport);
       if (hasToasts && wrapper && viewport) {
         const handlePause = () => {
           if (!context.isClosePausedRef.current) {
@@ -213,7 +216,7 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
           window.removeEventListener('focus', handleResume);
         };
       }
-    }, [hasToasts, context.isClosePausedRef]);
+    }, [hasToasts, context.isClosePausedRef, context.viewport]);
 
     const getSortedTabbableCandidates = React.useCallback(
       ({ tabbingDirection }: { tabbingDirection: 'forwards' | 'backwards' }) => {
@@ -238,6 +241,7 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
       // the source order with portals, this allows us to reverse the
       // tab order so that it runs from most recent toast to least
       if (viewport) {
+        const document = getOwnerDocument(viewport);
         const handleKeyDown = (event: KeyboardEvent) => {
           const isMetaKey = event.altKey || event.ctrlKey || event.metaKey;
           const isTabKey = event.key === 'Tab' && !isMetaKey;
@@ -257,7 +261,7 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
             const tabbingDirection = isTabbingBackwards ? 'backwards' : 'forwards';
             const sortedCandidates = getSortedTabbableCandidates({ tabbingDirection });
             const index = sortedCandidates.findIndex((candidate) => candidate === focusedElement);
-            if (focusFirst(sortedCandidates.slice(index + 1))) {
+            if (focusFirst(document, sortedCandidates.slice(index + 1))) {
               event.preventDefault();
             } else {
               // If we can't focus that means we're at the edges so we
@@ -294,7 +298,8 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
               const tabbableCandidates = getSortedTabbableCandidates({
                 tabbingDirection: 'forwards',
               });
-              focusFirst(tabbableCandidates);
+              const document = getOwnerDocument(context.viewport);
+              focusFirst(document, tabbableCandidates);
             }}
           />
         )}
@@ -309,10 +314,11 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
           <FocusProxy
             ref={tailFocusProxyRef}
             onFocusFromOutsideViewport={() => {
+              const document = getOwnerDocument(context.viewport);
               const tabbableCandidates = getSortedTabbableCandidates({
                 tabbingDirection: 'backwards',
               });
-              focusFirst(tabbableCandidates);
+              focusFirst(document, tabbableCandidates);
             }}
           />
         )}
@@ -489,6 +495,7 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
     const closeTimerRef = React.useRef(0);
     const { onToastAdd, onToastRemove } = context;
     const handleClose = useCallbackRef(() => {
+      const document = getOwnerDocument(context.viewport);
       // focus viewport if focus is within toast to read the remaining toast
       // count to SR users and ensure focus isn't lost
       const isFocusInToast = node?.contains(document.activeElement);
@@ -499,16 +506,18 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
     const startTimer = React.useCallback(
       (duration: number) => {
         if (!duration || duration === Infinity) return;
+        const window = getOwnerWindow(context.viewport);
         window.clearTimeout(closeTimerRef.current);
         closeTimerStartTimeRef.current = new Date().getTime();
         closeTimerRef.current = window.setTimeout(handleClose, duration);
       },
-      [handleClose]
+      [handleClose, context.viewport]
     );
 
     React.useEffect(() => {
       const viewport = context.viewport;
       if (viewport) {
+        const window = getOwnerWindow(viewport);
         const handleResume = () => {
           startTimer(closeTimerRemainingTimeRef.current);
           onResume?.();
@@ -681,8 +690,8 @@ const ToastAnnounce: React.FC<ToastAnnounceProps> = (props: ScopedProps<ToastAnn
 
   // cleanup after announcing
   React.useEffect(() => {
-    const timer = window.setTimeout(() => setIsAnnounced(true), 1000);
-    return () => window.clearTimeout(timer);
+    const timer = setTimeout(() => setIsAnnounced(true), 1000);
+    return () => clearTimeout(timer);
   }, []);
 
   return isAnnounced ? null : (
@@ -894,10 +903,10 @@ function useNextFrame(callback = () => {}) {
   useLayoutEffect(() => {
     let raf1 = 0;
     let raf2 = 0;
-    raf1 = window.requestAnimationFrame(() => (raf2 = window.requestAnimationFrame(fn)));
+    raf1 = requestAnimationFrame(() => (raf2 = requestAnimationFrame(fn)));
     return () => {
-      window.cancelAnimationFrame(raf1);
-      window.cancelAnimationFrame(raf2);
+      cancelAnimationFrame(raf1);
+      cancelAnimationFrame(raf2);
     };
   }, [fn]);
 }
@@ -918,6 +927,7 @@ function isHTMLElement(node: any): node is HTMLElement {
  */
 function getTabbableCandidates(container: HTMLElement) {
   const nodes: HTMLElement[] = [];
+  const document = getOwnerDocument(container);
   const walker = document.createTreeWalker(container, NodeFilter.SHOW_ELEMENT, {
     acceptNode: (node: any) => {
       const isHiddenInput = node.tagName === 'INPUT' && node.type === 'hidden';
@@ -934,13 +944,13 @@ function getTabbableCandidates(container: HTMLElement) {
   return nodes;
 }
 
-function focusFirst(candidates: HTMLElement[]) {
-  const previouslyFocusedElement = document.activeElement;
+function focusFirst(ownerDocument: Document, candidates: HTMLElement[]) {
+  const previouslyFocusedElement = ownerDocument.activeElement;
   return candidates.some((candidate) => {
     // if focus is already where we want to go, we don't want to keep going through the candidates
     if (candidate === previouslyFocusedElement) return true;
     candidate.focus();
-    return document.activeElement !== previouslyFocusedElement;
+    return ownerDocument.activeElement !== previouslyFocusedElement;
   });
 }
 
