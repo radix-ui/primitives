@@ -510,19 +510,25 @@ export const Positions = () => (
 
 export const AriaLabel = () => (
   <Tooltip.Provider>
-    <p>The first button will display AND enunciate the label.</p>
-    <p>The second button will display the label, but enunciate the aria label.</p>
-    <div style={{ display: 'flex' }}>
+    <p>
+      In the first example, the <code>isLabelledBy</code> prop is set to <code>true</code> on the
+      Tooltip trigger. This means the Tooltip content is treated as a <strong>label</strong> for the
+      trigger element. In this scenario, screen readers will read only the Tooltip content as the
+      accessible name, replacing the trigger’s own content.
+    </p>
+    <p>
+      In the second example, the <code>isLabelledBy</code> prop is omitted, so the Tooltip content
+      is treated as a <strong>description</strong> instead. In this case, screen readers will first
+      announce the content of the trigger, followed by the Tooltip content as additional context.
+    </p>
+    <div className="flex">
       <SimpleTooltip label="Notifications">
-        <Tooltip.Trigger style={{ margin: 5 }}>
-          <span aria-hidden>🔔(3)</span>
+        <Tooltip.Trigger isLabelledBy style={{ margin: 5 }}>
+          🔔(3)
         </Tooltip.Trigger>
       </SimpleTooltip>
-
-      <SimpleTooltip label="Notifications" aria-label="3 notifications">
-        <Tooltip.Trigger style={{ margin: 5 }}>
-          <span aria-hidden>🔔(3)</span>
-        </Tooltip.Trigger>
+      <SimpleTooltip label="Notifications">
+        <Tooltip.Trigger style={{ margin: 5 }}>🔔(3)</Tooltip.Trigger>
       </SimpleTooltip>
     </div>
   </Tooltip.Provider>
