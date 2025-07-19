@@ -79,6 +79,17 @@ describe('given a default OneTimePasswordField', () => {
     await act(async () => await user.paste('1,2,3,4,5,6'));
     expect(getInputValues(inputs)).toBe('1,2,3,4,5,6');
   });
+
+  // TODO: userEvent paste not behaving as expected. Debug and unskip.
+  it.todo('should truncate pasted characters to the number of inputs', async () => {
+    const inputs = screen.getAllByRole<HTMLInputElement>('textbox', {
+      hidden: false,
+    });
+    const firstInput = inputs[0]!;
+    fireEvent.click(firstInput);
+    await act(async () => await user.paste('123456789'));
+    expect(getInputValues(inputs)).toBe('1,2,3,4,5,6');
+  });
 });
 
 function getInputValues(inputs: HTMLInputElement[]) {
