@@ -1,5 +1,9 @@
 # @radix-ui/react-roving-focus
 
+## 1.1.11
+
+- Updated dependencies: `@radix-ui/primitive@1.1.3`
+
 ## 1.1.10
 
 - Replace deprecated 'ElementRef' with 'ComponentRef' (#3426)

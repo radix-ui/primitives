@@ -1,5 +1,9 @@
 # @radix-ui/react-select
 
+## 2.2.6
+
+- Updated dependencies: `@radix-ui/react-popper@1.2.8`, `@radix-ui/react-focus-guards@1.1.3`, `@radix-ui/primitive@1.1.3`, `@radix-ui/react-dismissable-layer@1.1.11`
+
 ## 2.2.5
 
 - Replace deprecated 'ElementRef' with 'ComponentRef' (#3426)
