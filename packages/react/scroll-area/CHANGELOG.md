@@ -1,5 +1,9 @@
 # @radix-ui/react-scroll-area
 
+## 1.2.10
+
+- Updated dependencies: `@radix-ui/react-presence@1.1.5`, `@radix-ui/primitive@1.1.3`
+
 ## 1.2.9
 
 - Replace deprecated 'ElementRef' with 'ComponentRef' (#3426)

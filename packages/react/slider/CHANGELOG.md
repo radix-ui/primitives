@@ -1,5 +1,9 @@
 # @radix-ui/react-slider
 
+## 1.3.6
+
+- Updated dependencies: `@radix-ui/primitive@1.1.3`
+
 ## 1.3.5
 
 - Replace deprecated 'ElementRef' with 'ComponentRef' (#3426)
