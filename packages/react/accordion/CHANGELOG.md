@@ -1,5 +1,9 @@
 # @radix-ui/react-accordion
 
+## 1.2.12
+
+- Updated dependencies: `@radix-ui/primitive@1.1.3`, `@radix-ui/react-collapsible@1.1.12`
+
 ## 1.2.11
 
 - Replace deprecated 'ElementRef' with 'ComponentRef' (#3426)

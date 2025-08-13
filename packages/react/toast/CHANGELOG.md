@@ -1,5 +1,10 @@
 # @radix-ui/react-toast
 
+## 1.2.15
+
+- Fix accessibility issues: aria-hidden on focusable element & not allowed role=status on list item element
+- Updated dependencies: `@radix-ui/react-presence@1.1.5`, `@radix-ui/primitive@1.1.3`, `@radix-ui/react-dismissable-layer@1.1.11`
+
 ## 1.2.14
 
 - Replace deprecated 'ElementRef' with 'ComponentRef' (#3426)

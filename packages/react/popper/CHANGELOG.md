@@ -1,5 +1,9 @@
 # @radix-ui/react-popper
 
+## 1.2.8
+
+- Prevent render loop in Popper
+
 ## 1.2.7
 
 - Replace deprecated 'ElementRef' with 'ComponentRef' (#3426)
