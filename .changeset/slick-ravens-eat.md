@@ -2,4 +2,4 @@
 '@radix-ui/primitive': patch
 ---
 
-Added DOM utilities
+Added internal DOM utilities

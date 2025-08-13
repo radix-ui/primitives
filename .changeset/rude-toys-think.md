@@ -2,4 +2,4 @@
 '@radix-ui/react-popper': patch
 ---
 
-Prevent render loop in Popper
+Fixed a bug to prevent infinite render loops in
