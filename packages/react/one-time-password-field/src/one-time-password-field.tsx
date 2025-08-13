@@ -684,7 +684,7 @@ const OneTimePasswordFieldInput = React.forwardRef<
                   // additional input. Handle this the same as if a user were
                   // pasting a value.
                   event.preventDefault();
-                  userActionRef.current = { type: 'paste' };
+                  userActionRef.current = { type: 'autocomplete-paste' };
                   dispatch({ type: 'PASTE', value });
                   keyboardActionTimeoutRef.current = window.setTimeout(() => {
                     userActionRef.current = null;
@@ -705,7 +705,7 @@ const OneTimePasswordFieldInput = React.forwardRef<
                       // of just the value of the given input?
                       dispatch({ type: 'CLEAR_CHAR', index, reason: 'Cut' });
                       return;
-                    case 'paste':
+                    case 'autocomplete-paste':
                       // the PASTE handler will already set the value and focus the final
                       // input; we want to skip focusing the wrong element if the browser fires
                       // onChange for the first input. This sometimes happens during autocomplete.
@@ -940,7 +940,7 @@ type KeyboardActionDetails =
       ctrlKey: boolean;
     }
   | { type: 'cut' }
-  | { type: 'paste' };
+  | { type: 'autocomplete-paste' };
 
 type UpdateAction =
   | {
