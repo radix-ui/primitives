@@ -567,6 +567,7 @@ const OneTimePasswordFieldInput = React.forwardRef<
     __scopeOneTimePasswordField,
     onInvalidChange,
     index: indexProp,
+    maxLength = 1,
     ...props
   }: ScopedProps<OneTimePasswordFieldInputProps>,
   forwardedRef
@@ -647,7 +648,7 @@ const OneTimePasswordFieldInput = React.forwardRef<
               data-protonpass-ignore={supportsAutoComplete ? undefined : 'true'}
               data-bwignore={supportsAutoComplete ? undefined : 'true'}
               inputMode={validation?.inputMode}
-              maxLength={1}
+              maxLength={maxLength}
               pattern={validation?.pattern}
               readOnly={context.readOnly}
               value={char}
