@@ -39,7 +39,7 @@ Please follow our [contributing guidelines](./.github/CONTRIBUTING.md).
 ## Community
 
 - [Discord](https://discord.com/invite/7Xb99uG) - To get involved with the Radix community, ask questions and share tips.
-- [Twitter](https://twitter.com/radix_ui) - To receive updates, announcements, blog posts, and general Radix tips.
+- [X.com](https://x.com/radix_ui) - To receive updates, announcements, blog posts, and general Radix tips.
 
 ## Thanks
 
