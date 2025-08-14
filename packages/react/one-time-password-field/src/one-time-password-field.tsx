@@ -612,7 +612,9 @@ const OneTimePasswordFieldInput = React.forwardRef<
   const keyboardActionTimeoutRef = React.useRef<number | null>(null);
   React.useEffect(() => {
     return () => {
-      window.clearTimeout(keyboardActionTimeoutRef.current!);
+      if (keyboardActionTimeoutRef.current) {
+        window.clearTimeout(keyboardActionTimeoutRef.current);
+      }
     };
   }, []);
 
@@ -647,7 +649,7 @@ const OneTimePasswordFieldInput = React.forwardRef<
               data-protonpass-ignore={supportsAutoComplete ? undefined : 'true'}
               data-bwignore={supportsAutoComplete ? undefined : 'true'}
               inputMode={validation?.inputMode}
-              maxLength={1}
+              maxLength={supportsAutoComplete ? collection.size : 1}
               pattern={validation?.pattern}
               readOnly={context.readOnly}
               value={char}
@@ -664,11 +666,9 @@ const OneTimePasswordFieldInput = React.forwardRef<
                   // In this case the value will be cleared, but we don't want to
                   // set it directly because the user may want to prevent default
                   // behavior in the onChange handler. The userActionRef will
-                  // is set temporarily so the change handler can behave correctly
+                  // be set temporarily so the change handler can behave correctly
                   // in response to the action.
-                  userActionRef.current = {
-                    type: 'cut',
-                  };
+                  userActionRef.current = { type: 'cut' };
                   // Set a short timeout to clear the action tracker after the change
                   // handler has had time to complete.
                   keyboardActionTimeoutRef.current = window.setTimeout(() => {
@@ -684,7 +684,11 @@ const OneTimePasswordFieldInput = React.forwardRef<
                   // additional input. Handle this the same as if a user were
                   // pasting a value.
                   event.preventDefault();
+                  userActionRef.current = { type: 'autocomplete-paste' };
                   dispatch({ type: 'PASTE', value });
+                  keyboardActionTimeoutRef.current = window.setTimeout(() => {
+                    userActionRef.current = null;
+                  }, 10);
                 }
               })}
               onChange={composeEventHandlers(props.onChange, (event) => {
@@ -696,10 +700,15 @@ const OneTimePasswordFieldInput = React.forwardRef<
                 if (action) {
                   switch (action.type) {
                     case 'cut':
-                      // TODO: do we want to assume the user wantt to clear the
+                      // TODO: do we want to assume the user wants to clear the
                       // entire value here and copy the code to the clipboard instead
                       // of just the value of the given input?
                       dispatch({ type: 'CLEAR_CHAR', index, reason: 'Cut' });
+                      return;
+                    case 'autocomplete-paste':
+                      // the PASTE handler will already set the value and focus the final
+                      // input; we want to skip focusing the wrong element if the browser fires
+                      // onChange for the first input. This sometimes happens during autocomplete.
                       return;
                     case 'keydown': {
                       if (action.key === 'Char') {
@@ -718,6 +727,7 @@ const OneTimePasswordFieldInput = React.forwardRef<
                       return;
                     }
                     default:
+                      action satisfies never;
                       return;
                   }
                 }
@@ -929,7 +939,8 @@ type KeyboardActionDetails =
       metaKey: boolean;
       ctrlKey: boolean;
     }
-  | { type: 'cut' };
+  | { type: 'cut' }
+  | { type: 'autocomplete-paste' };
 
 type UpdateAction =
   | {
