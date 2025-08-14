@@ -17,7 +17,6 @@ function FocusGuards(props: FocusGuardsProps) {
  * to ensure `focusin` & `focusout` events can be caught consistently.
  */
 function useFocusGuards() {
-  /* eslint-disable no-restricted-globals */
   React.useEffect(() => {
     const edgeGuards = document.querySelectorAll('[data-radix-focus-guard]');
     document.body.insertAdjacentElement('afterbegin', edgeGuards[0] ?? createFocusGuard());
@@ -31,11 +30,9 @@ function useFocusGuards() {
       count--;
     };
   }, []);
-  /* eslint-enable no-restricted-globals */
 }
 
 function createFocusGuard() {
-  // eslint-disable-next-line no-restricted-globals
   const element = document.createElement('span');
   element.setAttribute('data-radix-focus-guard', '');
   element.tabIndex = 0;
