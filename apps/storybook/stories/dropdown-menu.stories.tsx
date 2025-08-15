@@ -366,6 +366,85 @@ export const Submenus = () => {
   );
 };
 
+export const InvertedWithSubmenus = () => (
+  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
+    <DropdownMenu.Root>
+      <DropdownMenu.Trigger className={styles.trigger}>Open</DropdownMenu.Trigger>
+      <DropdownMenu.Portal>
+        <DropdownMenu.Content className={styles.content} sideOffset={5} side="top">
+          <DropdownMenu.Item className={styles.item} onSelect={() => console.log('new-tab')}>
+            New Tab
+          </DropdownMenu.Item>
+          <DropdownMenu.Item className={styles.item} onSelect={() => console.log('new-window')}>
+            New Window
+          </DropdownMenu.Item>
+          <DropdownMenu.Separator className={styles.separator} />
+          <DropdownMenu.Sub>
+            <DropdownMenu.SubTrigger className={subTriggerClass}>
+              Bookmarks →
+            </DropdownMenu.SubTrigger>
+            <DropdownMenu.Portal>
+              <DropdownMenu.SubContent
+                className={styles.content}
+                sideOffset={12}
+                alignOffset={-6}
+                align="end"
+              >
+                <DropdownMenu.Item className={styles.item} onSelect={() => console.log('index')}>
+                  Inbox
+                </DropdownMenu.Item>
+                <DropdownMenu.Item className={styles.item} onSelect={() => console.log('calendar')}>
+                  Calendar
+                </DropdownMenu.Item>
+                <DropdownMenu.Separator className={styles.separator} />
+                <DropdownMenu.Sub>
+                  <DropdownMenu.SubTrigger className={subTriggerClass}>
+                    WorkOS →
+                  </DropdownMenu.SubTrigger>
+                  <DropdownMenu.Portal>
+                    <DropdownMenu.SubContent
+                      className={styles.content}
+                      sideOffset={12}
+                      alignOffset={-6}
+                      align="end"
+                    >
+                      <DropdownMenu.Item
+                        className={styles.item}
+                        onSelect={() => console.log('stitches')}
+                      >
+                        Stitches
+                      </DropdownMenu.Item>
+                      <DropdownMenu.Item
+                        className={styles.item}
+                        onSelect={() => console.log('composer')}
+                      >
+                        Composer
+                      </DropdownMenu.Item>
+                      <DropdownMenu.Item
+                        className={styles.item}
+                        onSelect={() => console.log('radix')}
+                      >
+                        Radix
+                      </DropdownMenu.Item>
+                      <DropdownMenu.Arrow />
+                    </DropdownMenu.SubContent>
+                  </DropdownMenu.Portal>
+                </DropdownMenu.Sub>
+                <DropdownMenu.Separator className={styles.separator} />
+                <DropdownMenu.Item className={styles.item} onSelect={() => console.log('notion')}>
+                  Notion
+                </DropdownMenu.Item>
+                <DropdownMenu.Arrow />
+              </DropdownMenu.SubContent>
+            </DropdownMenu.Portal>
+          </DropdownMenu.Sub>
+          <DropdownMenu.Arrow />
+        </DropdownMenu.Content>
+      </DropdownMenu.Portal>
+    </DropdownMenu.Root>
+  </div>
+);
+
 export const WithLabels = () => (
   <div style={{ textAlign: 'center', padding: 50 }}>
     <DropdownMenu.Root>

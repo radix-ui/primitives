@@ -1147,6 +1147,8 @@ MenuSubTrigger.displayName = SUB_TRIGGER_NAME;
 
 const SUB_CONTENT_NAME = 'MenuSubContent';
 
+type AlignSubContent = Exclude<(typeof PopperPrimitive.ALIGN_OPTIONS)[number], 'center'>;
+
 type MenuSubContentElement = MenuContentImplElement;
 interface MenuSubContentProps
   extends Omit<
@@ -1158,12 +1160,18 @@ interface MenuSubContentProps
    * controlling animation with React animation libraries.
    */
   forceMount?: true;
+
+  /**
+   * Controls the direction the subcontent appears from its anchor menu item
+   * Default: start
+   */
+  align?: AlignSubContent;
 }
 
 const MenuSubContent = React.forwardRef<MenuSubContentElement, MenuSubContentProps>(
   (props: ScopedProps<MenuSubContentProps>, forwardedRef) => {
     const portalContext = usePortalContext(CONTENT_NAME, props.__scopeMenu);
-    const { forceMount = portalContext.forceMount, ...subContentProps } = props;
+    const { forceMount = portalContext.forceMount, align = 'start', ...subContentProps } = props;
     const context = useMenuContext(CONTENT_NAME, props.__scopeMenu);
     const rootContext = useMenuRootContext(CONTENT_NAME, props.__scopeMenu);
     const subContext = useMenuSubContext(SUB_CONTENT_NAME, props.__scopeMenu);
@@ -1178,7 +1186,7 @@ const MenuSubContent = React.forwardRef<MenuSubContentElement, MenuSubContentPro
               aria-labelledby={subContext.triggerId}
               {...subContentProps}
               ref={composedRefs}
-              align="start"
+              align={align}
               side={rootContext.dir === 'rtl' ? 'left' : 'right'}
               disableOutsidePointerEvents={false}
               disableOutsideScroll={false}
