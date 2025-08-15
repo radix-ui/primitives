@@ -36,7 +36,7 @@ const SELECTION_KEYS = [' ', 'Enter'];
 
 const SELECT_NAME = 'Select';
 
-type ItemData = { value: string; disabled: boolean; textValue: string };
+type ItemData = { value: string; disabled: boolean; textValue: string; id: string };
 const [Collection, useCollection, createCollectionScope] = createCollection<
   SelectItemElement,
   ItemData
@@ -497,6 +497,8 @@ type SelectContentContextValue = {
   position?: SelectContentProps['position'];
   isPositioned?: boolean;
   searchRef?: React.RefObject<string>;
+  focusedItem?: SelectItemElement | null;
+  onItemFocus?: (node: SelectItemElement | null) => void;
 };
 
 const [SelectContentProvider, useSelectContentContext] =
@@ -565,6 +567,7 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
     const [selectedItemText, setSelectedItemText] = React.useState<SelectItemTextElement | null>(
       null
     );
+    const [focusedItem, setFocusedItem] = React.useState<SelectItemElement | null>(null);
     const getItems = useCollection(__scopeSelect);
     const [isPositioned, setIsPositioned] = React.useState(false);
     const firstValidItemFoundRef = React.useRef(false);
@@ -592,10 +595,14 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
           if (candidate === firstItem && viewport) viewport.scrollTop = 0;
           if (candidate === lastItem && viewport) viewport.scrollTop = viewport.scrollHeight;
           candidate?.focus();
-          if (document.activeElement !== PREVIOUSLY_FOCUSED_ELEMENT) return;
+
+          if (document.activeElement !== PREVIOUSLY_FOCUSED_ELEMENT) {
+            setFocusedItem(candidate as SelectItemElement);
+            return;
+          }
         }
       },
-      [getItems, viewport]
+      [getItems, viewport, setFocusedItem]
     );
 
     const focusSelectedItem = React.useCallback(
@@ -669,7 +676,10 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
          * Imperative focus during keydown is risky so we prevent React's batching updates
          * to avoid potential bugs. See: https://github.com/facebook/react/issues/20332
          */
-        setTimeout(() => (nextItem.ref.current as HTMLElement).focus());
+        setTimeout(() => {
+          (nextItem.ref.current as HTMLElement).focus();
+          setFocusedItem(nextItem.ref.current as SelectItemElement);
+        });
       }
     });
 
@@ -684,7 +694,10 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
       },
       [context.value]
     );
-    const handleItemLeave = React.useCallback(() => content?.focus(), [content]);
+    const handleItemLeave = React.useCallback(() => {
+      content?.focus();
+      setFocusedItem(null);
+    }, [content, setFocusedItem]);
     const itemTextRefCallback = React.useCallback(
       (node: SelectItemTextElement | null, value: string, disabled: boolean) => {
         const isFirstValidItem = !firstValidItemFoundRef.current && !disabled;
@@ -695,6 +708,10 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
       },
       [context.value]
     );
+
+    const handleItemFocus = React.useCallback((node: SelectItemElement | null) => {
+      setFocusedItem(node);
+    }, []);
 
     const SelectPosition = position === 'popper' ? SelectPopperPosition : SelectItemAlignedPosition;
 
@@ -730,6 +747,8 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
         position={position}
         isPositioned={isPositioned}
         searchRef={searchRef}
+        focusedItem={focusedItem}
+        onItemFocus={handleItemFocus}
       >
         <RemoveScroll as={Slot} allowPinchZoom>
           <FocusScope
@@ -759,6 +778,7 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
               <SelectPosition
                 role="listbox"
                 id={context.contentId}
+                aria-activedescendant={focusedItem?.id}
                 data-state={context.open ? 'open' : 'closed'}
                 dir={context.dir}
                 onContextMenu={(event) => event.preventDefault()}
@@ -1261,10 +1281,13 @@ const SelectItem = React.forwardRef<SelectItemElement, SelectItemProps>(
     const isSelected = context.value === value;
     const [textValue, setTextValue] = React.useState(textValueProp ?? '');
     const [isFocused, setIsFocused] = React.useState(false);
-    const composedRefs = useComposedRefs(forwardedRef, (node) =>
-      contentContext.itemRefCallback?.(node, value, disabled)
-    );
+    const itemRef = React.useRef<SelectItemElement | null>(null);
+    const composedRefs = useComposedRefs(forwardedRef, (node) => {
+      itemRef.current = node;
+      contentContext.itemRefCallback?.(node, value, disabled);
+    });
     const textId = useId();
+    const optionId = useId();
     const pointerTypeRef = React.useRef<React.PointerEvent['pointerType']>('touch');
 
     const handleSelect = () => {
@@ -1273,6 +1296,13 @@ const SelectItem = React.forwardRef<SelectItemElement, SelectItemProps>(
         context.onOpenChange(false);
       }
     };
+
+    React.useEffect(() => {
+      if (isFocused && itemRef.current) {
+        contentContext.onItemFocus?.(itemRef.current);
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isFocused, contentContext.onItemFocus]);
 
     if (value === '') {
       throw new Error(
@@ -1296,13 +1326,14 @@ const SelectItem = React.forwardRef<SelectItemElement, SelectItemProps>(
           value={value}
           disabled={disabled}
           textValue={textValue}
+          id={optionId}
         >
           <Primitive.div
+            id={optionId}
             role="option"
             aria-labelledby={textId}
             data-highlighted={isFocused ? '' : undefined}
-            // `isFocused` caveat fixes stuttering in VoiceOver
-            aria-selected={isSelected && isFocused}
+            aria-selected={isSelected}
             data-state={isSelected ? 'checked' : 'unchecked'}
             aria-disabled={disabled || undefined}
             data-disabled={disabled ? '' : undefined}
