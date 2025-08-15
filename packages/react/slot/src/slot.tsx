@@ -59,7 +59,7 @@ const Slot = createSlot('Slot');
  * SlotClone
  * -----------------------------------------------------------------------------------------------*/
 
-interface SlotCloneProps {
+interface SlotCloneProps extends React.HTMLAttributes<HTMLElement> {
   children: React.ReactNode;
 }
 
