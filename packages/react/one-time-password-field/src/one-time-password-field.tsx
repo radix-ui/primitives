@@ -13,6 +13,7 @@ import { createContextScope } from '@radix-ui/react-context';
 import { useDirection } from '@radix-ui/react-direction';
 import { clamp } from '@radix-ui/number';
 import { useEffectEvent } from '@radix-ui/react-use-effect-event';
+import { getDeepActiveElement } from '@radix-ui/deep-active-element'
 
 type InputValidationType = 'alpha' | 'numeric' | 'alphanumeric' | 'none';
 
@@ -752,7 +753,7 @@ const OneTimePasswordFieldInput = React.forwardRef<
                   const element = event.target;
                   onInvalidChange?.(element.value);
                   requestAnimationFrame(() => {
-                    if (element.ownerDocument.activeElement === element) {
+                    if (getDeepActiveElement() === element) {
                       element.select();
                     }
                   });
@@ -915,7 +916,7 @@ function removeWhitespace(value: string) {
 
 function focusInput(element: HTMLInputElement | null | undefined) {
   if (!element) return;
-  if (element.ownerDocument.activeElement === element) {
+  if (getDeepActiveElement() === element) {
     // if the element is already focused, select the value in the next
     // animation frame
     window.requestAnimationFrame(() => {
