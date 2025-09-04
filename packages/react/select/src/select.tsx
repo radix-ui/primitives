@@ -24,7 +24,7 @@ import { hideOthers } from 'aria-hidden';
 import { RemoveScroll } from 'react-remove-scroll';
 
 import type { Scope } from '@radix-ui/react-context';
-import { getDeepActiveElement } from '@radix-ui/deep-active-element'
+import { getDeepActiveElement } from '@radix-ui/deep-active-element';
 
 type Direction = 'ltr' | 'rtl';
 

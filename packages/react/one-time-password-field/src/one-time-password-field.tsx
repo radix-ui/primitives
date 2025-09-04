@@ -13,7 +13,7 @@ import { createContextScope } from '@radix-ui/react-context';
 import { useDirection } from '@radix-ui/react-direction';
 import { clamp } from '@radix-ui/number';
 import { useEffectEvent } from '@radix-ui/react-use-effect-event';
-import { getDeepActiveElement } from '@radix-ui/deep-active-element'
+import { getDeepActiveElement } from '@radix-ui/deep-active-element';
 
 type InputValidationType = 'alpha' | 'numeric' | 'alphanumeric' | 'none';
 

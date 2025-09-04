@@ -10,7 +10,7 @@ import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { useDirection } from '@radix-ui/react-direction';
 
 import type { Scope } from '@radix-ui/react-context';
-import { getDeepActiveElement } from '@radix-ui/deep-active-element'
+import { getDeepActiveElement } from '@radix-ui/deep-active-element';
 
 const ENTRY_FOCUS = 'rovingFocusGroup.onEntryFocus';
 const EVENT_OPTIONS = { bubbles: false, cancelable: true };

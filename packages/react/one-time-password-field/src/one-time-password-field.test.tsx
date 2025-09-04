@@ -63,7 +63,7 @@ describe('given a default OneTimePasswordField', () => {
     );
 
     const inputs = rendered.container.querySelectorAll('input:not([type="hidden"])');
-    inputs.forEach(input => {
+    inputs.forEach((input) => {
       expect(input).toBeDisabled();
     });
   });
