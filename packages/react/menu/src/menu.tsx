@@ -21,6 +21,7 @@ import { hideOthers } from 'aria-hidden';
 import { RemoveScroll } from 'react-remove-scroll';
 
 import type { Scope } from '@radix-ui/react-context';
+import { getDeepActiveElement } from '@radix-ui/deep-active-element'
 
 type Direction = 'ltr' | 'rtl';
 
@@ -397,7 +398,7 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
     const handleTypeaheadSearch = (key: string) => {
       const search = searchRef.current + key;
       const items = getItems().filter((item) => !item.disabled);
-      const currentItem = document.activeElement;
+      const currentItem = getDeepActiveElement();
       const currentMatch = items.find((item) => item.ref.current === currentItem)?.textValue;
       const values = items.map((item) => item.textValue);
       const nextMatch = getNextMatch(values, search, currentMatch);
@@ -1238,12 +1239,12 @@ function getCheckedState(checked: CheckedState) {
 }
 
 function focusFirst(candidates: HTMLElement[]) {
-  const PREVIOUSLY_FOCUSED_ELEMENT = document.activeElement;
+  const PREVIOUSLY_FOCUSED_ELEMENT = getDeepActiveElement();
   for (const candidate of candidates) {
     // if focus is already where we want to go, we don't want to keep going through the candidates
     if (candidate === PREVIOUSLY_FOCUSED_ELEMENT) return;
     candidate.focus();
-    if (document.activeElement !== PREVIOUSLY_FOCUSED_ELEMENT) return;
+    if (getDeepActiveElement() !== PREVIOUSLY_FOCUSED_ELEMENT) return;
   }
 }
 
