@@ -33,9 +33,7 @@
     "typecheck": "tsc --noEmit",
     "build": "radix-build"
   },
-  "dependencies": {
-    "@radix-ui/react-primitive": "workspace:*"
-  },
+  "dependencies": {},
   "peerDependencies": {
     "@types/react": "*",
     "@types/react-dom": "*",
