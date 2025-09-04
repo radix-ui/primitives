@@ -16,6 +16,7 @@ import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import * as VisuallyHiddenPrimitive from '@radix-ui/react-visually-hidden';
 
 import type { Scope } from '@radix-ui/react-context';
+import { getDeepActiveElement } from '@radix-ui/deep-active-element'
 
 type Orientation = 'vertical' | 'horizontal';
 type Direction = 'ltr' | 'rtl';
@@ -875,7 +876,7 @@ const NavigationMenuContentImpl = React.forwardRef<
       const handleClose = () => {
         onItemDismiss();
         onRootContentClose();
-        if (content.contains(document.activeElement)) triggerRef.current?.focus();
+        if (content.contains(getDeepActiveElement())) triggerRef.current?.focus();
       };
       content.addEventListener(ROOT_CONTENT_DISMISS, handleClose);
       return () => content.removeEventListener(ROOT_CONTENT_DISMISS, handleClose);
@@ -946,7 +947,7 @@ const NavigationMenuContentImpl = React.forwardRef<
           const isTabKey = event.key === 'Tab' && !isMetaKey;
           if (isTabKey) {
             const candidates = getTabbableCandidates(event.currentTarget);
-            const focusedElement = document.activeElement;
+            const focusedElement = getDeepActiveElement();
             const index = candidates.findIndex((candidate) => candidate === focusedElement);
             const isMovingBackwards = event.shiftKey;
             const nextCandidates = isMovingBackwards
@@ -1175,12 +1176,12 @@ function getTabbableCandidates(container: HTMLElement) {
 }
 
 function focusFirst(candidates: HTMLElement[]) {
-  const previouslyFocusedElement = document.activeElement;
+  const previouslyFocusedElement = getDeepActiveElement();
   return candidates.some((candidate) => {
     // if focus is already where we want to go, we don't want to keep going through the candidates
     if (candidate === previouslyFocusedElement) return true;
     candidate.focus();
-    return document.activeElement !== previouslyFocusedElement;
+    return getDeepActiveElement() !== previouslyFocusedElement;
   });
 }
 
