@@ -303,6 +303,40 @@ importers:
 
   internal/typescript-config: {}
 
+  packages/core/deep-active-element:
+    dependencies:
+      '@radix-ui/react-primitive':
+        specifier: workspace:*
+        version: link:../../react/primitive
+    devDependencies:
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../../../internal/eslint-config
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../../../internal/typescript-config
+      '@types/react':
+        specifier: ^19.0.7
+        version: 19.1.0
+      '@types/react-dom':
+        specifier: ^19.0.3
+        version: 19.1.1(@types/react@19.1.0)
+      eslint:
+        specifier: ^9.18.0
+        version: 9.24.0
+      react:
+        specifier: ^19.1.0
+        version: 19.1.0
+      react-dom:
+        specifier: ^19.1.0
+        version: 19.1.0(react@19.1.0)
+      typescript:
+        specifier: ^5.7.3
+        version: 5.8.3
+
   packages/core/number:
     devDependencies:
       '@repo/builder':
@@ -1156,6 +1190,9 @@ importers:
 
   packages/react/focus-scope:
     dependencies:
+      '@radix-ui/deep-active-element':
+        specifier: workspace:*
+        version: link:../../core/deep-active-element
       '@radix-ui/react-compose-refs':
         specifier: workspace:*
         version: link:../compose-refs
