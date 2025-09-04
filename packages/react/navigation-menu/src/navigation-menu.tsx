@@ -16,7 +16,7 @@ import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import * as VisuallyHiddenPrimitive from '@radix-ui/react-visually-hidden';
 
 import type { Scope } from '@radix-ui/react-context';
-import { getDeepActiveElement } from '@radix-ui/deep-active-element'
+import { getDeepActiveElement } from '@radix-ui/deep-active-element';
 
 type Orientation = 'vertical' | 'horizontal';
 type Direction = 'ltr' | 'rtl';

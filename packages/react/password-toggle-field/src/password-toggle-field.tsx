@@ -9,7 +9,7 @@ import { useIsHydrated } from '@radix-ui/react-use-is-hydrated';
 import { useEffectEvent } from '@radix-ui/react-use-effect-event';
 import type { Scope } from '@radix-ui/react-context';
 import { createContextScope } from '@radix-ui/react-context';
-import { getDeepActiveElement } from '@radix-ui/deep-active-element'
+import { getDeepActiveElement } from '@radix-ui/deep-active-element';
 
 const PASSWORD_TOGGLE_FIELD_NAME = 'PasswordToggleField';
 
