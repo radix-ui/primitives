@@ -2425,6 +2425,9 @@ importers:
 
   packages/react/select:
     dependencies:
+      '@radix-ui/deep-active-element':
+        specifier: workspace:*
+        version: link:../../core/deep-active-element
       '@radix-ui/number':
         specifier: workspace:*
         version: link:../../core/number
