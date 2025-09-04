@@ -2391,6 +2391,9 @@ importers:
 
   packages/react/toast:
     dependencies:
+      '@radix-ui/deep-active-element':
+        specifier: workspace:*
+        version: link:../../core/deep-active-element
       '@radix-ui/primitive':
         specifier: workspace:*
         version: link:../../core/primitive
