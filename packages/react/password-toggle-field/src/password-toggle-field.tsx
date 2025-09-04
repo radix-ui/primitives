@@ -9,6 +9,7 @@ import { useIsHydrated } from '@radix-ui/react-use-is-hydrated';
 import { useEffectEvent } from '@radix-ui/react-use-effect-event';
 import type { Scope } from '@radix-ui/react-context';
 import { createContextScope } from '@radix-ui/react-context';
+import { getDeepActiveElement } from '@radix-ui/deep-active-element'
 
 const PASSWORD_TOGGLE_FIELD_NAME = 'PasswordToggleField';
 
@@ -334,7 +335,7 @@ const PasswordToggleFieldToggle = React.forwardRef<
                 requestAnimationFrame(() => {
                   // make sure the input still has focus (developer may have
                   // programatically moved focus elsewhere)
-                  if (input.ownerDocument.activeElement === input) {
+                  if (getDeepActiveElement() === input) {
                     input.selectionStart = selectionStart;
                     input.selectionEnd = selectionEnd;
                   }
