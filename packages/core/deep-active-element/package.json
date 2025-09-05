@@ -33,30 +33,11 @@
     "typecheck": "tsc --noEmit",
     "build": "radix-build"
   },
-  "dependencies": {},
-  "peerDependencies": {
-    "@types/react": "*",
-    "@types/react-dom": "*",
-    "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc",
-    "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"
-  },
-  "peerDependenciesMeta": {
-    "@types/react": {
-      "optional": true
-    },
-    "@types/react-dom": {
-      "optional": true
-    }
-  },
   "devDependencies": {
     "@repo/builder": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@types/react": "^19.0.7",
-    "@types/react-dom": "^19.0.3",
     "eslint": "^9.18.0",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
     "typescript": "^5.7.3"
   },
   "homepage": "https://radix-ui.com/primitives",
