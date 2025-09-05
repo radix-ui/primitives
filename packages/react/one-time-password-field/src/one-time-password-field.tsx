@@ -1,7 +1,7 @@
 import * as Primitive from '@radix-ui/react-primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
-import { composeEventHandlers } from '@radix-ui/primitive';
+import { composeEventHandlers, getDeepActiveElement } from '@radix-ui/primitive';
 import { unstable_createCollection as createCollection } from '@radix-ui/react-collection';
 import * as RovingFocusGroup from '@radix-ui/react-roving-focus';
 import { createRovingFocusGroupScope } from '@radix-ui/react-roving-focus';
@@ -13,7 +13,6 @@ import { createContextScope } from '@radix-ui/react-context';
 import { useDirection } from '@radix-ui/react-direction';
 import { clamp } from '@radix-ui/number';
 import { useEffectEvent } from '@radix-ui/react-use-effect-event';
-import { getDeepActiveElement } from '@radix-ui/deep-active-element';
 
 type InputValidationType = 'alpha' | 'numeric' | 'alphanumeric' | 'none';
 

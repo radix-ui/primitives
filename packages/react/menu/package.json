@@ -34,7 +34,6 @@
     "build": "radix-build"
   },
   "dependencies": {
-    "@radix-ui/deep-active-element": "workspace:*",
     "@radix-ui/primitive": "workspace:*",
     "@radix-ui/react-collection": "workspace:*",
     "@radix-ui/react-compose-refs": "workspace:*",
