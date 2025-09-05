@@ -225,10 +225,6 @@ importers:
   internal/typescript-config: {}
 
   packages/core/deep-active-element:
-    dependencies:
-      '@radix-ui/react-primitive':
-        specifier: workspace:*
-        version: link:../../react/primitive
     devDependencies:
       '@repo/builder':
         specifier: workspace:*
@@ -236,18 +232,6 @@ importers:
       '@repo/typescript-config':
         specifier: workspace:*
         version: link:../../../internal/typescript-config
-      '@types/react':
-        specifier: ^19.0.7
-        version: 19.2.15
-      '@types/react-dom':
-        specifier: ^19.0.3
-        version: 19.2.3(@types/react@19.2.15)
-      react:
-        specifier: ^19.1.0
-        version: 19.2.6
-      react-dom:
-        specifier: ^19.1.0
-        version: 19.2.6(react@19.2.6)
       typescript:
         specifier: ^5.7.3
         version: 5.9.3
