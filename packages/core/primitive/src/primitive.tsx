@@ -78,10 +78,17 @@ export function isFrame(element: Element): element is HTMLIFrameElement {
  * Utility to get the currently focused element even across Shadow DOM boundaries
  */
 export function getDeepActiveElement(): Element | null {
+  if (!canUseDOM) {
+    return null;
+  }
+
   let activeElement = document.activeElement;
+  if (!activeElement) {
+    return null;
+  }
 
   // Traverse through shadow DOMs to find the deepest active element
-  while (activeElement && activeElement.shadowRoot && activeElement.shadowRoot.activeElement) {
+  while (activeElement.shadowRoot?.activeElement) {
     activeElement = activeElement.shadowRoot.activeElement;
   }
 
