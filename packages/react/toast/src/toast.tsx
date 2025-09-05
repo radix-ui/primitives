@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { composeEventHandlers } from '@radix-ui/primitive';
+import { composeEventHandlers, getDeepActiveElement } from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createCollection } from '@radix-ui/react-collection';
 import { createContextScope } from '@radix-ui/react-context';
@@ -14,7 +14,6 @@ import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 
 import type { Scope } from '@radix-ui/react-context';
-import { getDeepActiveElement } from '@radix-ui/deep-active-element';
 
 /* -------------------------------------------------------------------------------------------------
  * ToastProvider

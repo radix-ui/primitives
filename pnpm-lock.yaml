@@ -275,24 +275,6 @@ importers:
 
   internal/typescript-config: {}
 
-  packages/core/deep-active-element:
-    devDependencies:
-      '@repo/builder':
-        specifier: workspace:*
-        version: link:../../../internal/builder
-      '@repo/eslint-config':
-        specifier: workspace:*
-        version: link:../../../internal/eslint-config
-      '@repo/typescript-config':
-        specifier: workspace:*
-        version: link:../../../internal/typescript-config
-      eslint:
-        specifier: ^9.18.0
-        version: 9.24.0
-      typescript:
-        specifier: ^5.7.3
-        version: 5.8.3
-
   packages/core/number:
     devDependencies:
       '@repo/builder':
@@ -1146,9 +1128,9 @@ importers:
 
   packages/react/focus-scope:
     dependencies:
-      '@radix-ui/deep-active-element':
+      '@radix-ui/primitive':
         specifier: workspace:*
-        version: link:../../core/deep-active-element
+        version: link:../../core/primitive
       '@radix-ui/react-compose-refs':
         specifier: workspace:*
         version: link:../compose-refs
@@ -1364,9 +1346,6 @@ importers:
 
   packages/react/menu:
     dependencies:
-      '@radix-ui/deep-active-element':
-        specifier: workspace:*
-        version: link:../../core/deep-active-element
       '@radix-ui/primitive':
         specifier: workspace:*
         version: link:../../core/primitive
@@ -1519,9 +1498,6 @@ importers:
 
   packages/react/navigation-menu:
     dependencies:
-      '@radix-ui/deep-active-element':
-        specifier: workspace:*
-        version: link:../../core/deep-active-element
       '@radix-ui/primitive':
         specifier: workspace:*
         version: link:../../core/primitive
@@ -1595,9 +1571,6 @@ importers:
 
   packages/react/one-time-password-field:
     dependencies:
-      '@radix-ui/deep-active-element':
-        specifier: workspace:*
-        version: link:../../core/deep-active-element
       '@radix-ui/number':
         specifier: workspace:*
         version: link:../../core/number
@@ -1665,9 +1638,6 @@ importers:
 
   packages/react/password-toggle-field:
     dependencies:
-      '@radix-ui/deep-active-element':
-        specifier: workspace:*
-        version: link:../../core/deep-active-element
       '@radix-ui/primitive':
         specifier: workspace:*
         version: link:../../core/primitive
@@ -2262,9 +2232,6 @@ importers:
 
   packages/react/roving-focus:
     dependencies:
-      '@radix-ui/deep-active-element':
-        specifier: workspace:*
-        version: link:../../core/deep-active-element
       '@radix-ui/primitive':
         specifier: workspace:*
         version: link:../../core/primitive
@@ -2381,9 +2348,6 @@ importers:
 
   packages/react/select:
     dependencies:
-      '@radix-ui/deep-active-element':
-        specifier: workspace:*
-        version: link:../../core/deep-active-element
       '@radix-ui/number':
         specifier: workspace:*
         version: link:../../core/number
@@ -2720,9 +2684,6 @@ importers:
 
   packages/react/toast:
     dependencies:
-      '@radix-ui/deep-active-element':
-        specifier: workspace:*
-        version: link:../../core/deep-active-element
       '@radix-ui/primitive':
         specifier: workspace:*
         version: link:../../core/primitive

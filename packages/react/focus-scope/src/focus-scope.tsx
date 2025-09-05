@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { Primitive } from '@radix-ui/react-primitive';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
-import { getDeepActiveElement } from '@radix-ui/deep-active-element';
+import { getDeepActiveElement } from '@radix-ui/primitive'
 
 const AUTOFOCUS_ON_MOUNT = 'focusScope.autoFocusOnMount';
 const AUTOFOCUS_ON_UNMOUNT = 'focusScope.autoFocusOnUnmount';
