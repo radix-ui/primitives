@@ -1,6 +1,19 @@
 import * as React from 'react';
 import { composeRefs } from '@radix-ui/react-compose-refs';
 
+declare module 'react' {
+  interface ReactElement {
+    $$typeof?: symbol | string;
+  }
+}
+
+const REACT_LAZY_TYPE = Symbol.for('react.lazy');
+
+interface LazyReactElement extends React.ReactElement {
+  $$typeof: typeof REACT_LAZY_TYPE;
+  _payload: any;
+}
+
 /* -------------------------------------------------------------------------------------------------
  * Slot
  * -----------------------------------------------------------------------------------------------*/
@@ -9,10 +22,18 @@ interface SlotProps extends React.HTMLAttributes<HTMLElement> {
   children?: React.ReactNode;
 }
 
+function isLazyComponent(element: React.ReactNode): element is LazyReactElement {
+  // has to be done in a roundabout way unless we want to add a dependency on react-is
+  return React.isValidElement(element) && element.$$typeof === REACT_LAZY_TYPE;
+}
+
 /* @__NO_SIDE_EFFECTS__ */ export function createSlot(ownerName: string) {
   const SlotClone = createSlotClone(ownerName);
   const Slot = React.forwardRef<HTMLElement, SlotProps>((props, forwardedRef) => {
-    const { children, ...slotProps } = props;
+    let { children, ...slotProps } = props;
+    if (isLazyComponent(children)) {
+      children = React.use(children._payload);
+    }
     const childrenArray = React.Children.toArray(children);
     const slottable = childrenArray.find(isSlottable);
 
@@ -65,7 +86,10 @@ interface SlotCloneProps {
 
 /* @__NO_SIDE_EFFECTS__ */ function createSlotClone(ownerName: string) {
   const SlotClone = React.forwardRef<any, SlotCloneProps>((props, forwardedRef) => {
-    const { children, ...slotProps } = props;
+    let { children, ...slotProps } = props;
+    if (isLazyComponent(children)) {
+      children = React.use(children._payload);
+    }
 
     if (React.isValidElement(children)) {
       const childrenRef = getElementRef(children);
