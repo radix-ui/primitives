@@ -443,8 +443,7 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
             } else {
               // In shadow DOM, force close other submenus when entering any menu item
               const target = event.target as Element;
-              const isInShadowDOM = target && target.getRootNode() !== document && 'host' in target.getRootNode();
-              if (isInShadowDOM) {
+              if (isInShadowDOM(target)) {
                 const menuItem = event.currentTarget as HTMLElement;
 
                 // Clear grace intent
@@ -755,7 +754,6 @@ const MenuItemImpl = React.forwardRef<MenuItemImplElement, MenuItemImplProps>(
                   if (!event.defaultPrevented) {
                     const item = event.currentTarget;
                     item.focus({ preventScroll: true });
-
                   }
                 }
               })
@@ -1154,33 +1152,19 @@ const MenuSubTrigger = React.forwardRef<MenuSubTriggerElement, MenuSubTriggerPro
                 const contentNearEdge = contentRect[rightSide ? 'left' : 'right'];
                 const contentFarEdge = contentRect[rightSide ? 'right' : 'left'];
 
-                // In shadow DOM, we may need to adjust coordinates to ensure
-                // both the mouse position and rectangle are in the same coordinate system
-                let adjustedClientX = event.clientX;
-                let adjustedClientY = event.clientY;
-                const adjustedContentRect = contentRect;
-
+                // Check if we're in shadow DOM for adjusted behavior
                 const eventTarget = event.target as Element;
-                const isInShadowDOM = eventTarget && eventTarget.getRootNode() !== document && 'host' in eventTarget.getRootNode();
-
-                if (isInShadowDOM && context.content) {
-                  // Use native event coordinates for more reliable positioning in shadow DOM
-                  const nativeEvent = event.nativeEvent;
-                  if (nativeEvent) {
-                    adjustedClientX = nativeEvent.clientX;
-                    adjustedClientY = nativeEvent.clientY;
-                  }
-                }
+                const shadowDOM = isInShadowDOM(eventTarget);
 
                 contentContext.onPointerGraceIntentChange({
                   area: [
                     // Apply a bleed on clientX to ensure that our exit point is
                     // consistently within polygon bounds
-                    { x: adjustedClientX + bleed, y: adjustedClientY },
-                    { x: contentNearEdge, y: adjustedContentRect.top },
-                    { x: contentFarEdge, y: adjustedContentRect.top },
-                    { x: contentFarEdge, y: adjustedContentRect.bottom },
-                    { x: contentNearEdge, y: adjustedContentRect.bottom },
+                    { x: event.clientX + bleed, y: event.clientY },
+                    { x: contentNearEdge, y: contentRect.top },
+                    { x: contentFarEdge, y: contentRect.top },
+                    { x: contentFarEdge, y: contentRect.bottom },
+                    { x: contentNearEdge, y: contentRect.bottom },
                   ],
                   side,
                 });
@@ -1188,7 +1172,7 @@ const MenuSubTrigger = React.forwardRef<MenuSubTriggerElement, MenuSubTriggerPro
                 window.clearTimeout(pointerGraceTimerRef.current);
 
                 // Use longer grace period in shadow DOM since coordinate detection may be less reliable
-                const gracePeriod = isInShadowDOM ? 800 : 300;
+                const gracePeriod = shadowDOM ? 800 : 300;
 
                 pointerGraceTimerRef.current = window.setTimeout(
                   () => {
@@ -1196,7 +1180,7 @@ const MenuSubTrigger = React.forwardRef<MenuSubTriggerElement, MenuSubTriggerPro
 
                     // In shadow DOM, don't automatically close submenu on grace timer expiry
                     // Only close via explicit menu item selection logic
-                    if (!isInShadowDOM && context.open) {
+                    if (!shadowDOM && context.open) {
                       // Normal behavior for non-shadow DOM
                       context.onOpenChange(false);
                     }
@@ -1404,15 +1388,12 @@ function isPointInPolygon(point: Point, polygon: Polygon) {
 
 function isPointerInGraceArea(event: React.PointerEvent, area?: Polygon) {
   if (!area) return false;
-
-  // Use the most reliable coordinates available
-  const nativeEvent = event.nativeEvent;
-  const cursorPos = {
-    x: nativeEvent ? nativeEvent.clientX : event.clientX,
-    y: nativeEvent ? nativeEvent.clientY : event.clientY
-  };
-
+  const cursorPos = { x: event.clientX, y: event.clientY };
   return isPointInPolygon(cursorPos, area);
+}
+
+function isInShadowDOM(element: Element): boolean {
+  return element && element.getRootNode() !== document && 'host' in element.getRootNode();
 }
 
 function whenMouse<E>(handler: React.PointerEventHandler<E>): React.PointerEventHandler<E> {
