@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { composeEventHandlers, getDeepActiveElement } from '@radix-ui/primitive';
+import { composeEventHandlers, getDeepActiveElement, isInShadowDOM } from '@radix-ui/primitive';
 import { createCollection } from '@radix-ui/react-collection';
 import { useComposedRefs, composeRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
@@ -1390,10 +1390,6 @@ function isPointerInGraceArea(event: React.PointerEvent, area?: Polygon) {
   if (!area) return false;
   const cursorPos = { x: event.clientX, y: event.clientY };
   return isPointInPolygon(cursorPos, area);
-}
-
-function isInShadowDOM(element: Element): boolean {
-  return element && element.getRootNode() !== document && 'host' in element.getRootNode();
 }
 
 function whenMouse<E>(handler: React.PointerEventHandler<E>): React.PointerEventHandler<E> {
