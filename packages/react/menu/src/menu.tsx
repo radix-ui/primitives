@@ -36,6 +36,7 @@ const SUB_CLOSE_KEYS: Record<Direction, string[]> = {
   ltr: ['ArrowLeft'],
   rtl: ['ArrowRight'],
 };
+const FORCE_CLOSE_CUSTOM_EVENT_NAME = 'radix-force-close-submenu';
 
 /* -------------------------------------------------------------------------------------------------
  * Menu
@@ -452,7 +453,7 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
                 // Always close other submenus, regardless of whether this is a subtrigger or not
                 setTimeout(() => {
                   // Dispatch a custom event that submenu triggers can listen for
-                  const closeEvent = new CustomEvent('radix-force-close-submenu', {
+                  const closeEvent = new CustomEvent(FORCE_CLOSE_CUSTOM_EVENT_NAME, {
                     bubbles: true,
                     cancelable: false,
                     detail: { currentTrigger: menuItem } // Pass the current trigger to exclude it
@@ -1083,17 +1084,17 @@ const MenuSubTrigger = React.forwardRef<MenuSubTriggerElement, MenuSubTriggerPro
 
       const currentElement = subContext.trigger;
       if (currentElement) {
-        currentElement.addEventListener('radix-force-close-submenu', handleForceClose as EventListener);
+        currentElement.addEventListener(FORCE_CLOSE_CUSTOM_EVENT_NAME, handleForceClose as EventListener);
         // Also listen on parent elements since the event bubbles
         const menuContent = currentElement.closest('[data-radix-menu-content]');
         if (menuContent) {
-          menuContent.addEventListener('radix-force-close-submenu', handleForceClose as EventListener);
+          menuContent.addEventListener(FORCE_CLOSE_CUSTOM_EVENT_NAME, handleForceClose as EventListener);
         }
 
         return () => {
-          currentElement.removeEventListener('radix-force-close-submenu', handleForceClose as EventListener);
+          currentElement.removeEventListener(FORCE_CLOSE_CUSTOM_EVENT_NAME, handleForceClose as EventListener);
           if (menuContent) {
-            menuContent.removeEventListener('radix-force-close-submenu', handleForceClose as EventListener);
+            menuContent.removeEventListener(FORCE_CLOSE_CUSTOM_EVENT_NAME, handleForceClose as EventListener);
           }
         };
       }
