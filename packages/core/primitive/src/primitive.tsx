@@ -74,8 +74,16 @@ export function isFrame(element: Element): element is HTMLIFrameElement {
   return element.tagName === 'IFRAME';
 }
 
+
 /**
- * Utility to get the currently focused element even across Shadow DOM boundaries
+ * Utility to determine whether an element is within a shadow DOM
+ */
+export function isInShadowDOM(element: Element): boolean {
+  return element && element.getRootNode() !== document && 'host' in element.getRootNode();
+}
+
+/**
+ * Utility to get the currently focused element even across shadow DOM boundaries
  */
 export function getDeepActiveElement(): Element | null {
   if (!canUseDOM) {
