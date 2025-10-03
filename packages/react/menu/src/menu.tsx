@@ -1153,10 +1153,6 @@ const MenuSubTrigger = React.forwardRef<MenuSubTriggerElement, MenuSubTriggerPro
                 const contentNearEdge = contentRect[rightSide ? 'left' : 'right'];
                 const contentFarEdge = contentRect[rightSide ? 'right' : 'left'];
 
-                // Check if we're in shadow DOM for adjusted behavior
-                const eventTarget = event.target as Element;
-                const shadowDOM = isInShadowDOM(eventTarget);
-
                 contentContext.onPointerGraceIntentChange({
                   area: [
                     // Apply a bleed on clientX to ensure that our exit point is
@@ -1172,21 +1168,9 @@ const MenuSubTrigger = React.forwardRef<MenuSubTriggerElement, MenuSubTriggerPro
 
                 window.clearTimeout(pointerGraceTimerRef.current);
 
-                // Use longer grace period in shadow DOM since coordinate detection may be less reliable
-                const gracePeriod = shadowDOM ? 800 : 300;
-
                 pointerGraceTimerRef.current = window.setTimeout(
-                  () => {
-                    contentContext.onPointerGraceIntentChange(null);
-
-                    // In shadow DOM, don't automatically close submenu on grace timer expiry
-                    // Only close via explicit menu item selection logic
-                    if (!shadowDOM && context.open) {
-                      // Normal behavior for non-shadow DOM
-                      context.onOpenChange(false);
-                    }
-                  },
-                  gracePeriod
+                  () => contentContext.onPointerGraceIntentChange(null),
+                  300
                 );
               } else {
                 contentContext.onTriggerLeave(event);
