@@ -11,7 +11,7 @@ export default defineConfig({
     // and remove this config option.
     // Possibly related: https://github.com/cypress-io/cypress/issues/28527
     testIsolation: false,
-    setupNodeEvents(on, config) {},
+    setupNodeEvents(_on, _config) {},
     baseUrl: 'http://localhost:9009',
   },
 });
