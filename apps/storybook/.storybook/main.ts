@@ -6,6 +6,9 @@ const config: StorybookConfig = {
     '../stories/**/*.mdx',
     '../stories/**/*.stories.@(js|jsx|mjs|ts|tsx)',
   ],
+  features: {
+    experimentalRSC: true,
+  },
   addons: ['@storybook/addon-docs'],
   framework: {
     name: '@storybook/react-vite',
