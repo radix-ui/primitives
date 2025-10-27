@@ -1,4 +1,8 @@
 describe('Dialog', () => {
+  before(() => {
+    cy.visitStorybook();
+  });
+
   beforeEach(() => {
     cy.visitStory('dialog--cypress');
   });

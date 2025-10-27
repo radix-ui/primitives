@@ -24,6 +24,10 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
+Cypress.Commands.add('visitStorybook', (options) => {
+  return cy.visit('iframe.html', options);
+});
+
 Cypress.Commands.add('visitStory', (storyName, options) => {
   return cy.visit(`iframe.html?id=components-${storyName}`, options);
 });

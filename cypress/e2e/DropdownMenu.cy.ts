@@ -1,4 +1,8 @@
 describe('DropdownMenu', () => {
+  before(() => {
+    cy.visitStorybook();
+  });
+
   describe('given submenu user', () => {
     beforeEach(() => {
       cy.visitStory('dropdownmenu--submenus');
