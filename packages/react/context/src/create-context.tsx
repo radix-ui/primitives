@@ -5,6 +5,7 @@ function createContext<ContextValueType extends object | null>(
   defaultContext?: ContextValueType
 ) {
   const Context = React.createContext<ContextValueType | undefined>(defaultContext);
+  Context.displayName = rootComponentName + 'Context';
 
   const Provider: React.FC<ContextValueType & { children: React.ReactNode }> = (props) => {
     const { children, ...context } = props;
@@ -50,6 +51,7 @@ function createContextScope(scopeName: string, createContextScopeDeps: CreateSco
     defaultContext?: ContextValueType
   ) {
     const BaseContext = React.createContext<ContextValueType | undefined>(defaultContext);
+    BaseContext.displayName = rootComponentName + 'Context';
     const index = defaultContexts.length;
     defaultContexts = [...defaultContexts, defaultContext];
 
