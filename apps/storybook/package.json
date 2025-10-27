@@ -30,9 +30,9 @@
     "eslint": "^9.18.0",
     "storybook": "^9.1.15",
     "typescript": "^5.9.3",
-    "eslint-plugin-storybook": "9.1.15",
+    "eslint-plugin-storybook": "^9.1.15",
     "@storybook/addon-docs": "^9.1.15",
-    "@storybook/addon-vitest": "9.1.15"
+    "@storybook/addon-vitest": "^9.1.15"
   },
   "eslintConfig": {
     "extends": [

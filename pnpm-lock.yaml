@@ -200,7 +200,7 @@ importers:
         specifier: ^9.1.15
         version: 9.1.15(@types/react@19.2.2)(storybook@9.1.15(@testing-library/dom@10.4.0)(prettier@3.5.3)(vite@6.2.5(@types/node@22.14.0)(terser@5.39.0)))
       '@storybook/addon-vitest':
-        specifier: 9.1.15
+        specifier: ^9.1.15
         version: 9.1.15(@vitest/browser@3.1.1)(@vitest/runner@3.1.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(storybook@9.1.15(@testing-library/dom@10.4.0)(prettier@3.5.3)(vite@6.2.5(@types/node@22.14.0)(terser@5.39.0)))(vitest@3.1.1)
       '@storybook/addon-webpack5-compiler-swc':
         specifier: ^4.0.1
@@ -221,7 +221,7 @@ importers:
         specifier: ^9.18.0
         version: 9.24.0
       eslint-plugin-storybook:
-        specifier: 9.1.15
+        specifier: ^9.1.15
         version: 9.1.15(eslint@9.24.0)(storybook@9.1.15(@testing-library/dom@10.4.0)(prettier@3.5.3)(vite@6.2.5(@types/node@22.14.0)(terser@5.39.0)))(typescript@5.9.3)
       storybook:
         specifier: ^9.1.15
