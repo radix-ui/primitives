@@ -1,8 +1,5 @@
 import * as React from 'react';
-import { Slot as SlotPrimitive } from 'radix-ui';
-
-const Slot = SlotPrimitive.Root;
-const Slottable = SlotPrimitive.Slottable;
+import { Slot } from 'radix-ui';
 
 export default { title: 'Utilities/Slot' };
 
@@ -80,6 +77,25 @@ export const ButtonAsLink = () => (
     </Button>
   </>
 );
+
+const LazyButton = React.lazy(async () => {
+  await wait(1000);
+  return {
+    default: ({ children, ...props }: React.ComponentProps<'button'>) => (
+      <button {...props}>{children}</button>
+    ),
+  };
+});
+
+export const WithLazyComponent = () => {
+  return (
+    <React.Suspense fallback={<div>Loading...</div>}>
+      <Slot.Root data-slot-root onClick={() => console.log('click')}>
+        <LazyButton data-slot-lazy>Click me</LazyButton>
+      </Slot.Root>
+    </React.Suspense>
+  );
+};
 
 export const Chromatic = () => (
   <>
@@ -232,19 +248,19 @@ export const Chromatic = () => (
     <h1>With callback-dependent rendering</h1>
     <h2>Component not passing callback</h2>
     <p>Should NOT have delete button next to component</p>
-    <Slot>
+    <Slot.Root>
       <MockTag>Component</MockTag>
-    </Slot>
+    </Slot.Root>
     <h2>Component passing `undefined` callback</h2>
     <p>Should NOT have delete button next to component</p>
-    <Slot>
+    <Slot.Root>
       <MockTag onDelete={undefined}>Component</MockTag>
-    </Slot>
+    </Slot.Root>
     <h2>Component passing callback</h2>
     <p>Should have delete button next to component</p>
-    <Slot>
+    <Slot.Root>
       <MockTag onDelete={() => alert('Delete')}>Component</MockTag>
-    </Slot>
+    </Slot.Root>
   </>
 );
 Chromatic.parameters = { chromatic: { disable: false } };
@@ -271,26 +287,26 @@ class ErrorBoundary extends React.Component<any, { hasError: boolean }> {
 
 /* Also verifying that props and ref types don't error */
 const SlotWithoutSlottable = (props: React.ComponentPropsWithRef<'div'>) => (
-  <Slot {...props} className="test" />
+  <Slot.Root {...props} className="test" />
 );
 
 const SlotWithSlottable = ({ children, ...props }: any) => (
-  <Slot {...props}>
-    <Slottable>{children}</Slottable>
+  <Slot.Root {...props}>
+    <Slot.Slottable>{children}</Slot.Slottable>
     <span>world</span>
-  </Slot>
+  </Slot.Root>
 );
 
 const SlotWithFalseInternalChild = ({ children, ...props }: any) => (
-  <Slot {...props}>{false && children}</Slot>
+  <Slot.Root {...props}>{false && children}</Slot.Root>
 );
 
 const SlotWithNullInternalChild = ({ children, ...props }: any) => (
-  <Slot {...props}>{false ? children : null}</Slot>
+  <Slot.Root {...props}>{false ? children : null}</Slot.Root>
 );
 
 const SlotWithPreventableEvent = (props: any) => (
-  <Slot
+  <Slot.Root
     {...props}
     onClick={(event) => {
       props.onClick?.(event);
@@ -302,7 +318,7 @@ const SlotWithPreventableEvent = (props: any) => (
 );
 
 const SlotWithoutPreventableEvent = (props: any) => (
-  <Slot
+  <Slot.Root
     {...props}
     onClick={(event) => {
       props.onClick?.(event);
@@ -322,7 +338,7 @@ const Button = ({
   iconLeft?: React.ReactNode;
   iconRight?: React.ReactNode;
 }) => {
-  const Comp = asChild ? Slot : 'button';
+  const Comp = asChild ? Slot.Root : 'button';
   return (
     <Comp
       {...props}
@@ -340,7 +356,7 @@ const Button = ({
       }}
     >
       {iconLeft}
-      <Slottable>{children}</Slottable>
+      <Slot.Slottable>{children}</Slot.Slottable>
       {iconRight}
     </Comp>
   );
@@ -371,3 +387,7 @@ const MockTag = ({
     </div>
   );
 };
+
+async function wait(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
