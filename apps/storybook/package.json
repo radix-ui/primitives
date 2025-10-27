@@ -38,7 +38,7 @@
     "@types/react-dom": "^19.2.2",
     "eslint": "^9.18.0",
     "storybook": "^8.6.12",
-    "typescript": "^5.7.3"
+    "typescript": "^5.9.3"
   },
   "eslintConfig": {
     "extends": [
