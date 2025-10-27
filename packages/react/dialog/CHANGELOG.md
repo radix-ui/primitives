@@ -1,5 +1,9 @@
 # @radix-ui/react-dialog
 
+## 1.1.15
+
+- Updated dependencies: `@radix-ui/react-presence@1.1.5`, `@radix-ui/react-focus-guards@1.1.3`, `@radix-ui/primitive@1.1.3`, `@radix-ui/react-dismissable-layer@1.1.11`
+
 ## 1.1.14
 
 - Replace deprecated 'ElementRef' with 'ComponentRef' (#3426)

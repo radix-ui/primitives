@@ -1,7 +1,7 @@
 import React from 'react';
 import { axe } from 'vitest-axe';
 import type { RenderResult } from '@testing-library/react';
-import { render, fireEvent, cleanup } from '@testing-library/react';
+import { render, fireEvent, cleanup, act } from '@testing-library/react';
 import * as Dialog from './dialog';
 import type { Mock, MockInstance } from 'vitest';
 import { describe, it, afterEach, beforeEach, vi, expect } from 'vitest';
@@ -136,6 +136,23 @@ describe('given a default Dialog', () => {
       it('should close the content', () => {
         expect(closeButton).not.toBeInTheDocument();
       });
+    });
+  });
+
+  describe("it's aria-controls", () => {
+    it('should not be defined when the dialog is closed', async () => {
+      expect(rendered.queryByText(TITLE_TEXT)).not.toBeInTheDocument();
+      expect(trigger.getAttribute('aria-controls')).toBeNull();
+    });
+
+    it('should be valid when the dialog is open', () => {
+      act(() => trigger.click());
+      const ariaControls = trigger.getAttribute('aria-controls');
+      expect(ariaControls).not.toBeNull();
+
+      const dialog = rendered.getByRole('dialog');
+      expect(dialog).toBeInTheDocument();
+      expect(dialog.id).toBe(ariaControls);
     });
   });
 });

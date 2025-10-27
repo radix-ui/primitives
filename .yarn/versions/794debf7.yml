@@ -1,0 +1,15 @@
+releases:
+  "@radix-ui/react-accordion": minor
+  "@radix-ui/react-alert-dialog": minor
+  "@radix-ui/react-collapsible": minor
+  "@radix-ui/react-context-menu": minor
+  "@radix-ui/react-dialog": minor
+  "@radix-ui/react-dropdown-menu": minor
+  "@radix-ui/react-menu": minor
+  "@radix-ui/react-menubar": minor
+  "@radix-ui/react-navigation-menu": minor
+  "@radix-ui/react-popover": minor
+  "@radix-ui/react-select": minor
+
+declined:
+  - primitives
