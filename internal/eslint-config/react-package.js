@@ -1,6 +1,5 @@
 // @ts-check
 import * as react from '@chance/eslint/react';
-import storybook from 'eslint-plugin-storybook';
 import * as base from './index.js';
 
 /** @type {import("eslint").Linter.Config[]} */
@@ -23,6 +22,5 @@ export const configs = [
       ],
     },
   },
-  ...storybook.configs['flat/recommended'],
   { ignores: ['**/dist/**'] },
 ];

@@ -15,12 +15,11 @@
   },
   "dependencies": {
     "@chance/eslint": "^1.1.0",
-    "eslint-plugin-react-refresh": "^0.4.19",
-    "eslint-plugin-storybook": "^0.11.2"
+    "eslint-plugin-react-refresh": "^0.4.24"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
-    "eslint": "^9.18.0"
+    "eslint": "^9.38.0"
   },
   "peerDependencies": {
     "eslint": ">=9.18"
