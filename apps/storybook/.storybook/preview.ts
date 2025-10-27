@@ -1,4 +1,4 @@
-import type { Preview } from '@storybook/react';
+import type { Preview } from '@storybook/react-webpack5';
 import './preview.css';
 
 const preview: Preview = {
@@ -11,6 +11,9 @@ const preview: Preview = {
     },
     // disables Chromatic on a global level
     chromatic: { disable: true },
+    docs: {
+      codePanel: true,
+    },
   },
 };
 
