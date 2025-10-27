@@ -57,10 +57,11 @@ type SelectContextValue = {
   valueNodeHasChildren: boolean;
   onValueNodeHasChildrenChange(hasChildren: boolean): void;
   contentId: string;
-  value: string | undefined;
-  onValueChange(value: string): void;
+  value: string[] | string | undefined;
+  onValueChange(value: string[] | string): void;
   open: boolean;
   required?: boolean;
+  multiple?: boolean;
   onOpenChange(open: boolean): void;
   dir: SelectProps['dir'];
   triggerPointerDownPosRef: React.MutableRefObject<{ x: number; y: number } | null>;
@@ -79,23 +80,23 @@ const [SelectNativeOptionsProvider, useSelectNativeOptionsContext] =
   createSelectContext<SelectNativeOptionsContextValue>(SELECT_NAME);
 
 interface ControlledClearableSelectProps {
-  value: string | undefined;
+  value: string[] | string | undefined;
   defaultValue?: never;
-  onValueChange: (value: string | undefined) => void;
+  onValueChange: (value: string[] | string | undefined) => void;
 }
 
 interface ControlledUnclearableSelectProps {
-  value: string;
+  value: string[] | string;
   defaultValue?: never;
-  onValueChange: (value: string) => void;
+  onValueChange: (value: string[] | string) => void;
 }
 
 interface UncontrolledSelectProps {
   value?: never;
-  defaultValue?: string;
+  defaultValue?: string[] | string;
   onValueChange?: {
-    (value: string): void;
-    (value: string | undefined): void;
+    (value: string[] | string): void;
+    (value: string[] | string | undefined): void;
   };
 }
 
@@ -122,11 +123,21 @@ interface SelectSharedProps {
 // it works as expected and doesn't cause problems)
 type _FutureSelectProps = SelectSharedProps & SelectControlProps;
 
-type SelectProps = SelectSharedProps & {
-  value?: string;
-  defaultValue?: string;
-  onValueChange?(value: string): void;
-};
+type SelectProps = SelectSharedProps &
+  (
+    | {
+        value?: string;
+        defaultValue?: string;
+        onValueChange?(value: string): void;
+        multiple?: never | false;
+      }
+    | {
+        value?: string[];
+        defaultValue?: string[];
+        onValueChange?(value: string[]): void;
+        multiple: true;
+      }
+  );
 
 const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
   const {
@@ -144,6 +155,7 @@ const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
     disabled,
     required,
     form,
+    multiple,
   } = props;
   const popperScope = usePopperScope(__scopeSelect);
   const [trigger, setTrigger] = React.useState<SelectTriggerElement | null>(null);
@@ -196,6 +208,7 @@ const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
         dir={direction}
         triggerPointerDownPosRef={triggerPointerDownPosRef}
         disabled={disabled}
+        multiple={multiple}
       >
         <Collection.Provider scope={__scopeSelect}>
           <SelectNativeOptionsProvider
@@ -225,9 +238,18 @@ const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
             autoComplete={autoComplete}
             value={value}
             // enable form autofill
-            onChange={(event) => setValue(event.target.value)}
+            onChange={(event) => {
+              if (multiple) {
+                setValue(
+                  Array.from(event.currentTarget.selectedOptions).map((option) => option.value)
+                );
+              } else {
+                setValue(event.target.value);
+              }
+            }}
             disabled={disabled}
             form={form}
+            multiple={multiple}
           >
             {value === undefined ? <option value="" /> : null}
             {Array.from(nativeOptionsSet)}
@@ -1258,7 +1280,9 @@ const SelectItem = React.forwardRef<SelectItemElement, SelectItemProps>(
     } = props;
     const context = useSelectContext(ITEM_NAME, __scopeSelect);
     const contentContext = useSelectContentContext(ITEM_NAME, __scopeSelect);
-    const isSelected = context.value === value;
+    const isSelected = context.multiple
+      ? context.value?.includes(value) || false
+      : context.value === value;
     const [textValue, setTextValue] = React.useState(textValueProp ?? '');
     const [isFocused, setIsFocused] = React.useState(false);
     const composedRefs = useComposedRefs(forwardedRef, (node) =>
@@ -1268,7 +1292,17 @@ const SelectItem = React.forwardRef<SelectItemElement, SelectItemProps>(
     const pointerTypeRef = React.useRef<React.PointerEvent['pointerType']>('touch');
 
     const handleSelect = () => {
-      if (!disabled) {
+      if (disabled) {
+        return;
+      }
+
+      if (context.multiple) {
+        const initValue = (context.value as string[]) ?? [];
+        const newValue = isSelected
+          ? initValue.filter((item) => item !== value)
+          : [...(initValue as string[]), value];
+        context.onValueChange(newValue);
+      } else {
         context.onValueChange(value);
         context.onOpenChange(false);
       }
@@ -1638,6 +1672,15 @@ const BUBBLE_INPUT_NAME = 'SelectBubbleInput';
 type InputProps = React.ComponentPropsWithoutRef<typeof Primitive.select>;
 interface SwitchBubbleInputProps extends InputProps {}
 
+function doValuesMatch(a: SwitchBubbleInputProps['value'], b: SwitchBubbleInputProps['value']) {
+  if (Array.isArray(a) && Array.isArray(b)) {
+    if (a.length !== b.length) return false;
+    return a.every((item, index) => item === b[index]);
+  }
+  if (Array.isArray(a) || Array.isArray(b)) return false;
+  return a === b;
+}
+
 const SelectBubbleInput = React.forwardRef<HTMLSelectElement, SwitchBubbleInputProps>(
   ({ __scopeSelect, value, ...props }: ScopedProps<SwitchBubbleInputProps>, forwardedRef) => {
     const ref = React.useRef<HTMLSelectElement>(null);
@@ -1648,18 +1691,21 @@ const SelectBubbleInput = React.forwardRef<HTMLSelectElement, SwitchBubbleInputP
     React.useEffect(() => {
       const select = ref.current;
       if (!select) return;
+      if (doValuesMatch(prevValue, value)) return;
 
-      const selectProto = window.HTMLSelectElement.prototype;
-      const descriptor = Object.getOwnPropertyDescriptor(
-        selectProto,
-        'value'
-      ) as PropertyDescriptor;
-      const setValue = descriptor.set;
-      if (prevValue !== value && setValue) {
-        const event = new Event('change', { bubbles: true });
-        setValue.call(select, value);
-        select.dispatchEvent(event);
+      const setOptionSelected = Object.getOwnPropertyDescriptor(
+        window.HTMLOptionElement.prototype,
+        'selected'
+      )?.set;
+
+      if (setOptionSelected) {
+        const selectedValues = Array.isArray(value) ? value : [value];
+        for (const option of select.options) {
+          setOptionSelected.call(option, selectedValues.includes(option.value));
+        }
       }
+
+      select.dispatchEvent(new Event('change', { bubbles: true }));
     }, [prevValue, value]);
 
     /**
@@ -1689,7 +1735,10 @@ SelectBubbleInput.displayName = BUBBLE_INPUT_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
-function shouldShowPlaceholder(value?: string) {
+function shouldShowPlaceholder(value?: string[] | string) {
+  if (Array.isArray(value)) {
+    return value.length === 0 || value.every((v) => v === '');
+  }
   return value === '' || value === undefined;
 }
 
