@@ -35,3 +35,22 @@ exports[`given a Button with Slottable > without asChild > should render a butto
   </button>
 </div>
 `;
+
+exports[`given a Slot with React lazy components > with a lazy component in Button with Slottable > should render a lazy link with icon on the left/right 1`] = `
+<div>
+  <a
+    href="https://radix-ui.com"
+  >
+    <span>
+      left
+    </span>
+    Button 
+    <em>
+      text
+    </em>
+    <span>
+      right
+    </span>
+  </a>
+</div>
+`;
