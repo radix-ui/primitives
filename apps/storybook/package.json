@@ -19,26 +19,20 @@
     "react-remove-scroll": "^2.6.3"
   },
   "devDependencies": {
-    "@chromatic-com/storybook": "^3.2.6",
+    "@chromatic-com/storybook": "^4.1.1",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@storybook/addon-essentials": "^8.6.12",
-    "@storybook/addon-storysource": "^8.6.12",
-    "@storybook/addon-webpack5-compiler-swc": "^2.0.0",
-    "@storybook/blocks": "^8.6.12",
-    "@storybook/experimental-addon-test": "^8.6.12",
-    "@storybook/preview-api": "^8.6.12",
-    "@storybook/react": "^8.6.12",
-    "@storybook/react-webpack5": "^8.6.12",
-    "@storybook/manager-api": "^8.6.12",
-    "@storybook/test": "^8.6.12",
-    "@storybook/theming": "^8.6.12",
+    "@storybook/addon-webpack5-compiler-swc": "^4.0.1",
+    "@storybook/react-webpack5": "^9.1.15",
     "@types/form-serialize": "^0",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
     "eslint": "^9.18.0",
-    "storybook": "^8.6.12",
-    "typescript": "^5.9.3"
+    "storybook": "^9.1.15",
+    "typescript": "^5.9.3",
+    "eslint-plugin-storybook": "9.1.15",
+    "@storybook/addon-docs": "^9.1.15",
+    "@storybook/addon-vitest": "9.1.15"
   },
   "eslintConfig": {
     "extends": [

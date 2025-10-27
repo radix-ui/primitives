@@ -2,8 +2,8 @@ import * as React from 'react';
 import { unstable_OneTimePasswordField as OneTimePasswordField, Separator } from 'radix-ui';
 import { Dialog as DialogPrimitive } from 'radix-ui';
 import dialogStyles from './dialog.stories.module.css';
-import type { Meta, StoryObj } from '@storybook/react';
-import { userEvent, within, expect } from '@storybook/test';
+import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import { userEvent, within, expect } from 'storybook/test';
 import styles from './one-time-password-field.stories.module.css';
 
 export default {
