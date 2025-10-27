@@ -37,7 +37,7 @@
     "@repo/builder": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "eslint": "^9.18.0",
+    "eslint": "^9.38.0",
     "typescript": "^5.9.3"
   },
   "homepage": "https://radix-ui.com/primitives",
