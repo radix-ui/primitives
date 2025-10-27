@@ -1,4 +1,4 @@
-import type { Preview } from '@storybook/react-webpack5';
+import type { Preview } from '@storybook/react-vite';
 import './preview.css';
 
 const preview: Preview = {
