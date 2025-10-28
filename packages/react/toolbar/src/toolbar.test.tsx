@@ -10,7 +10,7 @@ const component = (props: any) => {
           Left
         </Toolbar.ToggleItem>
       </Toolbar.ToggleGroup>
-    </Toolbar.Root>
+    </Toolbar.Root>,
   );
 };
 
@@ -28,7 +28,7 @@ describe('given a default Toolbar', () => {
       new MouseEvent('click', {
         bubbles: true,
         cancelable: true,
-      })
+      }),
     );
 
     expect(spy).toHaveBeenCalledTimes(1);

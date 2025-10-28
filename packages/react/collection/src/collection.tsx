@@ -54,7 +54,7 @@ function createCollection<
       collectionRefObject: { current: null },
       itemMap: new OrderedDict(),
       setItemMap: () => void 0,
-    }
+    },
   );
 
   type CollectionState = [
@@ -92,7 +92,7 @@ function createCollection<
     const { scope, children, state } = props;
     const ref = React.useRef<CollectionElement>(null);
     const [collectionElement, setCollectionElement] = React.useState<CollectionElement | null>(
-      null
+      null,
     );
     const composeRefs = useComposedRefs(ref, setCollectionElement);
     const [itemMap, setItemMap] = state;
@@ -157,7 +157,7 @@ function createCollection<
       const context = useCollectionContext(COLLECTION_SLOT_NAME, scope);
       const composedRefs = useComposedRefs(forwardedRef, context.collectionRef);
       return <CollectionSlotImpl ref={composedRefs}>{children}</CollectionSlotImpl>;
-    }
+    },
   );
 
   CollectionSlot.displayName = COLLECTION_SLOT_NAME;
@@ -224,7 +224,7 @@ function createCollection<
           {children}
         </CollectionItemSlotImpl>
       );
-    }
+    },
   );
 
   CollectionItemSlot.displayName = ITEM_SLOT_NAME;
@@ -282,7 +282,7 @@ function isElementPreceding(a: Element, b: Element) {
 
 function sortByDocumentPosition<E extends HTMLElement, T extends BaseItemData>(
   a: EntryOf<ItemMap<E, T>>,
-  b: EntryOf<ItemMap<E, T>>
+  b: EntryOf<ItemMap<E, T>>,
 ) {
   return !a[1].element || !b[1].element
     ? 0

@@ -195,7 +195,7 @@ export class OrderedDict<K, V> extends Map<K, V> {
 
   find(
     predicate: (entry: [K, V], index: number, dictionary: OrderedDict<K, V>) => boolean,
-    thisArg?: any
+    thisArg?: any,
   ) {
     let index = 0;
     for (const entry of this) {
@@ -209,7 +209,7 @@ export class OrderedDict<K, V> extends Map<K, V> {
 
   findIndex(
     predicate: (entry: [K, V], index: number, dictionary: OrderedDict<K, V>) => boolean,
-    thisArg?: any
+    thisArg?: any,
   ) {
     let index = 0;
     for (const entry of this) {
@@ -223,17 +223,17 @@ export class OrderedDict<K, V> extends Map<K, V> {
 
   filter<KK extends K, VV extends V>(
     predicate: (entry: [K, V], index: number, dict: OrderedDict<K, V>) => entry is [KK, VV],
-    thisArg?: any
+    thisArg?: any,
   ): OrderedDict<KK, VV>;
 
   filter(
     predicate: (entry: [K, V], index: number, dictionary: OrderedDict<K, V>) => unknown,
-    thisArg?: any
+    thisArg?: any,
   ): OrderedDict<K, V>;
 
   filter(
     predicate: (entry: [K, V], index: number, dictionary: OrderedDict<K, V>) => unknown,
-    thisArg?: any
+    thisArg?: any,
   ) {
     const entries: Array<[K, V]> = [];
     let index = 0;
@@ -248,7 +248,7 @@ export class OrderedDict<K, V> extends Map<K, V> {
 
   map<U>(
     callbackfn: (entry: [K, V], index: number, dictionary: OrderedDict<K, V>) => U,
-    thisArg?: any
+    thisArg?: any,
   ): OrderedDict<K, U> {
     const entries: [K, U][] = [];
     let index = 0;
@@ -264,26 +264,26 @@ export class OrderedDict<K, V> extends Map<K, V> {
       previousValue: [K, V],
       currentEntry: [K, V],
       currentIndex: number,
-      dictionary: OrderedDict<K, V>
-    ) => [K, V]
+      dictionary: OrderedDict<K, V>,
+    ) => [K, V],
   ): [K, V];
   reduce(
     callbackfn: (
       previousValue: [K, V],
       currentEntry: [K, V],
       currentIndex: number,
-      dictionary: OrderedDict<K, V>
+      dictionary: OrderedDict<K, V>,
     ) => [K, V],
-    initialValue: [K, V]
+    initialValue: [K, V],
   ): [K, V];
   reduce<U>(
     callbackfn: (
       previousValue: U,
       currentEntry: [K, V],
       currentIndex: number,
-      dictionary: OrderedDict<K, V>
+      dictionary: OrderedDict<K, V>,
     ) => U,
-    initialValue: U
+    initialValue: U,
   ): U;
 
   reduce<U>(
@@ -292,7 +292,7 @@ export class OrderedDict<K, V> extends Map<K, V> {
         previousValue: U,
         currentEntry: [K, V],
         currentIndex: number,
-        dictionary: OrderedDict<K, V>
+        dictionary: OrderedDict<K, V>,
       ) => U,
       U?,
     ]
@@ -316,26 +316,26 @@ export class OrderedDict<K, V> extends Map<K, V> {
       previousValue: [K, V],
       currentEntry: [K, V],
       currentIndex: number,
-      dictionary: OrderedDict<K, V>
-    ) => [K, V]
+      dictionary: OrderedDict<K, V>,
+    ) => [K, V],
   ): [K, V];
   reduceRight(
     callbackfn: (
       previousValue: [K, V],
       currentEntry: [K, V],
       currentIndex: number,
-      dictionary: OrderedDict<K, V>
+      dictionary: OrderedDict<K, V>,
     ) => [K, V],
-    initialValue: [K, V]
+    initialValue: [K, V],
   ): [K, V];
   reduceRight<U>(
     callbackfn: (
       previousValue: [K, V],
       currentValue: U,
       currentIndex: number,
-      dictionary: OrderedDict<K, V>
+      dictionary: OrderedDict<K, V>,
     ) => U,
-    initialValue: U
+    initialValue: U,
   ): U;
 
   reduceRight<U>(
@@ -344,7 +344,7 @@ export class OrderedDict<K, V> extends Map<K, V> {
         previousValue: U,
         currentEntry: [K, V],
         currentIndex: number,
-        dictionary: OrderedDict<K, V>
+        dictionary: OrderedDict<K, V>,
       ) => U,
       U?,
     ]
@@ -412,7 +412,7 @@ export class OrderedDict<K, V> extends Map<K, V> {
 
   every(
     predicate: (entry: [K, V], index: number, dictionary: OrderedDict<K, V>) => unknown,
-    thisArg?: any
+    thisArg?: any,
   ) {
     let index = 0;
     for (const entry of this) {
@@ -426,7 +426,7 @@ export class OrderedDict<K, V> extends Map<K, V> {
 
   some(
     predicate: (entry: [K, V], index: number, dictionary: OrderedDict<K, V>) => unknown,
-    thisArg?: any
+    thisArg?: any,
   ) {
     let index = 0;
     for (const entry of this) {

@@ -117,7 +117,7 @@ const PopoverAnchor = React.forwardRef<PopoverAnchorElement, PopoverAnchorProps>
     }, [onCustomAnchorAdd, onCustomAnchorRemove]);
 
     return <PopperPrimitive.Anchor {...popperScope} {...anchorProps} ref={forwardedRef} />;
-  }
+  },
 );
 
 PopoverAnchor.displayName = ANCHOR_NAME;
@@ -159,7 +159,7 @@ const PopoverTrigger = React.forwardRef<PopoverTriggerElement, PopoverTriggerPro
         {trigger}
       </PopperPrimitive.Anchor>
     );
-  }
+  },
 );
 
 PopoverTrigger.displayName = TRIGGER_NAME;
@@ -233,7 +233,7 @@ const PopoverContent = React.forwardRef<PopoverContentTypeElement, PopoverConten
         )}
       </Presence>
     );
-  }
+  },
 );
 
 PopoverContent.displayName = CONTENT_NAME;
@@ -281,19 +281,19 @@ const PopoverContentModal = React.forwardRef<PopoverContentTypeElement, PopoverC
 
               isRightClickOutsideRef.current = isRightClick;
             },
-            { checkForDefaultPrevented: false }
+            { checkForDefaultPrevented: false },
           )}
           // When focus is trapped, a `focusout` event may still happen.
           // We make sure we don't trigger our `onDismiss` in such case.
           onFocusOutside={composeEventHandlers(
             props.onFocusOutside,
             (event) => event.preventDefault(),
-            { checkForDefaultPrevented: false }
+            { checkForDefaultPrevented: false },
           )}
         />
       </RemoveScroll>
     );
-  }
+  },
 );
 
 const PopoverContentNonModal = React.forwardRef<PopoverContentTypeElement, PopoverContentTypeProps>(
@@ -347,7 +347,7 @@ const PopoverContentNonModal = React.forwardRef<PopoverContentTypeElement, Popov
         }}
       />
     );
-  }
+  },
 );
 
 /* -----------------------------------------------------------------------------------------------*/
@@ -438,7 +438,7 @@ const PopoverContentImpl = React.forwardRef<PopoverContentImplElement, PopoverCo
         </DismissableLayer>
       </FocusScope>
     );
-  }
+  },
 );
 
 /* -------------------------------------------------------------------------------------------------
@@ -462,7 +462,7 @@ const PopoverClose = React.forwardRef<PopoverCloseElement, PopoverCloseProps>(
         onClick={composeEventHandlers(props.onClick, () => context.onOpenChange(false))}
       />
     );
-  }
+  },
 );
 
 PopoverClose.displayName = CLOSE_NAME;
@@ -482,7 +482,7 @@ const PopoverArrow = React.forwardRef<PopoverArrowElement, PopoverArrowProps>(
     const { __scopePopover, ...arrowProps } = props;
     const popperScope = usePopperScope(__scopePopover);
     return <PopperPrimitive.Arrow {...popperScope} {...arrowProps} ref={forwardedRef} />;
-  }
+  },
 );
 
 PopoverArrow.displayName = ARROW_NAME;

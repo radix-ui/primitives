@@ -51,7 +51,7 @@ const ContextMenu: React.FC<ContextMenuProps> = (props: ScopedProps<ContextMenuP
       setOpen(open);
       handleOpenChangeProp(open);
     },
-    [handleOpenChangeProp]
+    [handleOpenChangeProp],
   );
 
   return (
@@ -100,7 +100,7 @@ const ContextMenuTrigger = React.forwardRef<ContextMenuTriggerElement, ContextMe
     const longPressTimerRef = React.useRef(0);
     const clearLongPress = React.useCallback(
       () => window.clearTimeout(longPressTimerRef.current),
-      []
+      [],
     );
     const handleOpen = (event: React.MouseEvent | React.PointerEvent) => {
       pointRef.current = { x: event.clientX, y: event.clientY };
@@ -141,7 +141,7 @@ const ContextMenuTrigger = React.forwardRef<ContextMenuTriggerElement, ContextMe
                     // clear the long press here in case there's multiple touch points
                     clearLongPress();
                     longPressTimerRef.current = window.setTimeout(() => handleOpen(event), 700);
-                  })
+                  }),
                 )
           }
           onPointerMove={
@@ -162,7 +162,7 @@ const ContextMenuTrigger = React.forwardRef<ContextMenuTriggerElement, ContextMe
         />
       </>
     );
-  }
+  },
 );
 
 ContextMenuTrigger.displayName = TRIGGER_NAME;
@@ -177,7 +177,7 @@ type MenuPortalProps = React.ComponentPropsWithoutRef<typeof MenuPrimitive.Porta
 interface ContextMenuPortalProps extends MenuPortalProps {}
 
 const ContextMenuPortal: React.FC<ContextMenuPortalProps> = (
-  props: ScopedProps<ContextMenuPortalProps>
+  props: ScopedProps<ContextMenuPortalProps>,
 ) => {
   const { __scopeContextMenu, ...portalProps } = props;
   const menuScope = useMenuScope(__scopeContextMenu);
@@ -239,7 +239,7 @@ const ContextMenuContent = React.forwardRef<ContextMenuContentElement, ContextMe
         }}
       />
     );
-  }
+  },
 );
 
 ContextMenuContent.displayName = CONTENT_NAME;
@@ -259,7 +259,7 @@ const ContextMenuGroup = React.forwardRef<ContextMenuGroupElement, ContextMenuGr
     const { __scopeContextMenu, ...groupProps } = props;
     const menuScope = useMenuScope(__scopeContextMenu);
     return <MenuPrimitive.Group {...menuScope} {...groupProps} ref={forwardedRef} />;
-  }
+  },
 );
 
 ContextMenuGroup.displayName = GROUP_NAME;
@@ -279,7 +279,7 @@ const ContextMenuLabel = React.forwardRef<ContextMenuLabelElement, ContextMenuLa
     const { __scopeContextMenu, ...labelProps } = props;
     const menuScope = useMenuScope(__scopeContextMenu);
     return <MenuPrimitive.Label {...menuScope} {...labelProps} ref={forwardedRef} />;
-  }
+  },
 );
 
 ContextMenuLabel.displayName = LABEL_NAME;
@@ -299,7 +299,7 @@ const ContextMenuItem = React.forwardRef<ContextMenuItemElement, ContextMenuItem
     const { __scopeContextMenu, ...itemProps } = props;
     const menuScope = useMenuScope(__scopeContextMenu);
     return <MenuPrimitive.Item {...menuScope} {...itemProps} ref={forwardedRef} />;
-  }
+  },
 );
 
 ContextMenuItem.displayName = ITEM_NAME;
@@ -424,7 +424,7 @@ const ContextMenuArrow = React.forwardRef<ContextMenuArrowElement, ContextMenuAr
     const { __scopeContextMenu, ...arrowProps } = props;
     const menuScope = useMenuScope(__scopeContextMenu);
     return <MenuPrimitive.Arrow {...menuScope} {...arrowProps} ref={forwardedRef} />;
-  }
+  },
 );
 
 ContextMenuArrow.displayName = ARROW_NAME;

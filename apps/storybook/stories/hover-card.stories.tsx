@@ -562,7 +562,7 @@ export const Chromatic = () => (
               </HoverCard.Content>
             </HoverCard.Portal>
           </HoverCard.Root>
-        ))
+        )),
       )}
     </div>
 
@@ -590,7 +590,7 @@ export const Chromatic = () => (
               </HoverCard.Content>
             </HoverCard.Portal>
           </HoverCard.Root>
-        ))
+        )),
       )}
     </div>
     <h4>Negative</h4>
@@ -616,7 +616,7 @@ export const Chromatic = () => (
               </HoverCard.Content>
             </HoverCard.Portal>
           </HoverCard.Root>
-        ))
+        )),
       )}
     </div>
 
@@ -644,7 +644,7 @@ export const Chromatic = () => (
               </HoverCard.Content>
             </HoverCard.Portal>
           </HoverCard.Root>
-        ))
+        )),
       )}
     </div>
     <h4>Negative</h4>
@@ -670,7 +670,7 @@ export const Chromatic = () => (
               </HoverCard.Content>
             </HoverCard.Portal>
           </HoverCard.Root>
-        ))
+        )),
       )}
     </div>
 
@@ -709,7 +709,7 @@ export const Chromatic = () => (
             </HoverCard.Content>
           </HoverCard.Portal>
         </HoverCard.Root>
-      ))
+      )),
     )}
 
     <h2>Relative parent (non-portalled)</h2>

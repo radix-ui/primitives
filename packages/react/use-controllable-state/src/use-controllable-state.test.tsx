@@ -64,7 +64,7 @@ describe('useControllableState', () => {
         userEvent.click(clearButton);
         await waitFor(() => {
           expect(consoleMock).toHaveBeenLastCalledWith(
-            'Checkbox is changing from controlled to uncontrolled. Components should not switch from controlled to uncontrolled (or vice versa). Decide between using a controlled or uncontrolled value for the lifetime of the component.'
+            'Checkbox is changing from controlled to uncontrolled. Components should not switch from controlled to uncontrolled (or vice versa). Decide between using a controlled or uncontrolled value for the lifetime of the component.',
           );
         });
       });
@@ -77,7 +77,7 @@ describe('useControllableState', () => {
         userEvent.click(checkbox);
         await waitFor(() => {
           expect(consoleMock).toHaveBeenLastCalledWith(
-            'Checkbox is changing from uncontrolled to controlled. Components should not switch from controlled to uncontrolled (or vice versa). Decide between using a controlled or uncontrolled value for the lifetime of the component.'
+            'Checkbox is changing from uncontrolled to controlled. Components should not switch from controlled to uncontrolled (or vice versa). Decide between using a controlled or uncontrolled value for the lifetime of the component.',
           );
         });
       });

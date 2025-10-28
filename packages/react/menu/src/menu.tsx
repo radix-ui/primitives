@@ -149,7 +149,7 @@ const MenuAnchor = React.forwardRef<MenuAnchorElement, MenuAnchorProps>(
     const { __scopeMenu, ...anchorProps } = props;
     const popperScope = usePopperScope(__scopeMenu);
     return <PopperPrimitive.Anchor {...popperScope} {...anchorProps} ref={forwardedRef} />;
-  }
+  },
 );
 
 MenuAnchor.displayName = ANCHOR_NAME;
@@ -246,7 +246,7 @@ const MenuContent = React.forwardRef<MenuContentElement, MenuContentProps>(
         </Presence>
       </Collection.Provider>
     );
-  }
+  },
 );
 
 /* ---------------------------------------------------------------------------------------------- */
@@ -283,12 +283,12 @@ const MenuRootContentModal = React.forwardRef<MenuRootContentTypeElement, MenuRo
         onFocusOutside={composeEventHandlers(
           props.onFocusOutside,
           (event) => event.preventDefault(),
-          { checkForDefaultPrevented: false }
+          { checkForDefaultPrevented: false },
         )}
         onDismiss={() => context.onOpenChange(false)}
       />
     );
-  }
+  },
 );
 
 const MenuRootContentNonModal = React.forwardRef<
@@ -440,7 +440,7 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
           (event) => {
             if (isPointerMovingToSubmenu(event)) event.preventDefault();
           },
-          [isPointerMovingToSubmenu]
+          [isPointerMovingToSubmenu],
         )}
         onItemLeave={React.useCallback(
           (event) => {
@@ -448,13 +448,13 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
             contentRef.current?.focus();
             setCurrentItemId(null);
           },
-          [isPointerMovingToSubmenu]
+          [isPointerMovingToSubmenu],
         )}
         onTriggerLeave={React.useCallback(
           (event) => {
             if (isPointerMovingToSubmenu(event)) event.preventDefault();
           },
-          [isPointerMovingToSubmenu]
+          [isPointerMovingToSubmenu],
         )}
         pointerGraceTimerRef={pointerGraceTimerRef}
         onPointerGraceIntentChange={React.useCallback((intent) => {
@@ -548,7 +548,7 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
                         pointerDirRef.current = newDir;
                         lastPointerXRef.current = event.clientX;
                       }
-                    })
+                    }),
                   )}
                 />
               </RovingFocusGroup.Root>
@@ -557,7 +557,7 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
         </ScrollLockWrapper>
       </MenuContentProvider>
     );
-  }
+  },
 );
 
 MenuContent.displayName = CONTENT_NAME;
@@ -576,7 +576,7 @@ const MenuGroup = React.forwardRef<MenuGroupElement, MenuGroupProps>(
   (props: ScopedProps<MenuGroupProps>, forwardedRef) => {
     const { __scopeMenu, ...groupProps } = props;
     return <Primitive.div role="group" {...groupProps} ref={forwardedRef} />;
-  }
+  },
 );
 
 MenuGroup.displayName = GROUP_NAME;
@@ -594,7 +594,7 @@ const MenuLabel = React.forwardRef<MenuLabelElement, MenuLabelProps>(
   (props: ScopedProps<MenuLabelProps>, forwardedRef) => {
     const { __scopeMenu, ...labelProps } = props;
     return <Primitive.div {...labelProps} ref={forwardedRef} />;
-  }
+  },
 );
 
 MenuLabel.displayName = LABEL_NAME;
@@ -666,7 +666,7 @@ const MenuItem = React.forwardRef<MenuItemElement, MenuItemProps>(
         })}
       />
     );
-  }
+  },
 );
 
 MenuItem.displayName = ITEM_NAME;
@@ -734,11 +734,11 @@ const MenuItemImpl = React.forwardRef<MenuItemImplElement, MenuItemImplProps>(
                     item.focus({ preventScroll: true });
                   }
                 }
-              })
+              }),
             )}
             onPointerLeave={composeEventHandlers(
               props.onPointerLeave,
-              whenMouse((event) => contentContext.onItemLeave(event))
+              whenMouse((event) => contentContext.onItemLeave(event)),
             )}
             onFocus={composeEventHandlers(props.onFocus, () => setIsFocused(true))}
             onBlur={composeEventHandlers(props.onBlur, () => setIsFocused(false))}
@@ -746,7 +746,7 @@ const MenuItemImpl = React.forwardRef<MenuItemImplElement, MenuItemImplProps>(
         </RovingFocusGroup.Item>
       </Collection.ItemSlot>
     );
-  }
+  },
 );
 
 /* -------------------------------------------------------------------------------------------------
@@ -779,12 +779,12 @@ const MenuCheckboxItem = React.forwardRef<MenuCheckboxItemElement, MenuCheckboxI
           onSelect={composeEventHandlers(
             checkboxItemProps.onSelect,
             () => onCheckedChange?.(isIndeterminate(checked) ? true : !checked),
-            { checkForDefaultPrevented: false }
+            { checkForDefaultPrevented: false },
           )}
         />
       </ItemIndicatorProvider>
     );
-  }
+  },
 );
 
 MenuCheckboxItem.displayName = CHECKBOX_ITEM_NAME;
@@ -797,7 +797,7 @@ const RADIO_GROUP_NAME = 'MenuRadioGroup';
 
 const [RadioGroupProvider, useRadioGroupContext] = createMenuContext<MenuRadioGroupProps>(
   RADIO_GROUP_NAME,
-  { value: undefined, onValueChange: () => {} }
+  { value: undefined, onValueChange: () => {} },
 );
 
 type MenuRadioGroupElement = React.ComponentRef<typeof MenuGroup>;
@@ -815,7 +815,7 @@ const MenuRadioGroup = React.forwardRef<MenuRadioGroupElement, MenuRadioGroupPro
         <MenuGroup {...groupProps} ref={forwardedRef} />
       </RadioGroupProvider>
     );
-  }
+  },
 );
 
 MenuRadioGroup.displayName = RADIO_GROUP_NAME;
@@ -847,12 +847,12 @@ const MenuRadioItem = React.forwardRef<MenuRadioItemElement, MenuRadioItemProps>
           onSelect={composeEventHandlers(
             radioItemProps.onSelect,
             () => context.onValueChange?.(value),
-            { checkForDefaultPrevented: false }
+            { checkForDefaultPrevented: false },
           )}
         />
       </ItemIndicatorProvider>
     );
-  }
+  },
 );
 
 MenuRadioItem.displayName = RADIO_ITEM_NAME;
@@ -867,7 +867,7 @@ type CheckboxContextValue = { checked: CheckedState };
 
 const [ItemIndicatorProvider, useItemIndicatorContext] = createMenuContext<CheckboxContextValue>(
   ITEM_INDICATOR_NAME,
-  { checked: false }
+  { checked: false },
 );
 
 type MenuItemIndicatorElement = React.ComponentRef<typeof Primitive.span>;
@@ -899,7 +899,7 @@ const MenuItemIndicator = React.forwardRef<MenuItemIndicatorElement, MenuItemInd
         />
       </Presence>
     );
-  }
+  },
 );
 
 MenuItemIndicator.displayName = ITEM_INDICATOR_NAME;
@@ -924,7 +924,7 @@ const MenuSeparator = React.forwardRef<MenuSeparatorElement, MenuSeparatorProps>
         ref={forwardedRef}
       />
     );
-  }
+  },
 );
 
 MenuSeparator.displayName = SEPARATOR_NAME;
@@ -944,7 +944,7 @@ const MenuArrow = React.forwardRef<MenuArrowElement, MenuArrowProps>(
     const { __scopeMenu, ...arrowProps } = props;
     const popperScope = usePopperScope(__scopeMenu);
     return <PopperPrimitive.Arrow {...popperScope} {...arrowProps} ref={forwardedRef} />;
-  }
+  },
 );
 
 MenuArrow.displayName = ARROW_NAME;
@@ -1078,7 +1078,7 @@ const MenuSubTrigger = React.forwardRef<MenuSubTriggerElement, MenuSubTriggerPro
                   clearOpenTimer();
                 }, 100);
               }
-            })
+            }),
           )}
           onPointerLeave={composeEventHandlers(
             props.onPointerLeave,
@@ -1110,7 +1110,7 @@ const MenuSubTrigger = React.forwardRef<MenuSubTriggerElement, MenuSubTriggerPro
                 window.clearTimeout(pointerGraceTimerRef.current);
                 pointerGraceTimerRef.current = window.setTimeout(
                   () => contentContext.onPointerGraceIntentChange(null),
-                  300
+                  300,
                 );
               } else {
                 contentContext.onTriggerLeave(event);
@@ -1119,7 +1119,7 @@ const MenuSubTrigger = React.forwardRef<MenuSubTriggerElement, MenuSubTriggerPro
                 // There's 100ms where the user may leave an item before the submenu was opened.
                 contentContext.onPointerGraceIntentChange(null);
               }
-            })
+            }),
           )}
           onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
             const isTypingAhead = contentContext.searchRef.current !== '';
@@ -1136,7 +1136,7 @@ const MenuSubTrigger = React.forwardRef<MenuSubTriggerElement, MenuSubTriggerPro
         />
       </MenuAnchor>
     );
-  }
+  },
 );
 
 MenuSubTrigger.displayName = SUB_TRIGGER_NAME;
@@ -1218,7 +1218,7 @@ const MenuSubContent = React.forwardRef<MenuSubContentElement, MenuSubContentPro
         </Presence>
       </Collection.Provider>
     );
-  }
+  },
 );
 
 MenuSubContent.displayName = SUB_CONTENT_NAME;
@@ -1280,7 +1280,7 @@ function getNextMatch(values: string[], search: string, currentMatch?: string) {
   const excludeCurrentMatch = normalizedSearch.length === 1;
   if (excludeCurrentMatch) wrappedValues = wrappedValues.filter((v) => v !== currentMatch);
   const nextMatch = wrappedValues.find((value) =>
-    value.toLowerCase().startsWith(normalizedSearch.toLowerCase())
+    value.toLowerCase().startsWith(normalizedSearch.toLowerCase()),
   );
   return nextMatch !== currentMatch ? nextMatch : undefined;
 }

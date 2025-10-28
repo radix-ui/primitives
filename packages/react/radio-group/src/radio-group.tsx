@@ -104,7 +104,7 @@ const RadioGroup = React.forwardRef<RadioGroupElement, RadioGroupProps>(
         </RovingFocusGroup.Root>
       </RadioGroupProvider>
     );
-  }
+  },
 );
 
 RadioGroup.displayName = RADIO_GROUP_NAME;
@@ -179,7 +179,7 @@ const RadioGroupItem = React.forwardRef<RadioGroupItemElement, RadioGroupItemPro
         />
       </RovingFocusGroup.Item>
     );
-  }
+  },
 );
 
 RadioGroupItem.displayName = ITEM_NAME;
@@ -199,7 +199,7 @@ const RadioGroupIndicator = React.forwardRef<RadioGroupIndicatorElement, RadioGr
     const { __scopeRadioGroup, ...indicatorProps } = props;
     const radioScope = useRadioScope(__scopeRadioGroup);
     return <RadioIndicator {...radioScope} {...indicatorProps} ref={forwardedRef} />;
-  }
+  },
 );
 
 RadioGroupIndicator.displayName = INDICATOR_NAME;

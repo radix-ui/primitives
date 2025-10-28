@@ -887,7 +887,7 @@ export const Chromatic = () => (
                 </Tooltip.Content>
               </Tooltip.Portal>
             </Tooltip.Root>
-          ))
+          )),
         )}
       </div>
 
@@ -915,7 +915,7 @@ export const Chromatic = () => (
                 </Tooltip.Content>
               </Tooltip.Portal>
             </Tooltip.Root>
-          ))
+          )),
         )}
       </div>
       <h4>Negative</h4>
@@ -941,7 +941,7 @@ export const Chromatic = () => (
                 </Tooltip.Content>
               </Tooltip.Portal>
             </Tooltip.Root>
-          ))
+          )),
         )}
       </div>
 
@@ -969,7 +969,7 @@ export const Chromatic = () => (
                 </Tooltip.Content>
               </Tooltip.Portal>
             </Tooltip.Root>
-          ))
+          )),
         )}
       </div>
       <h4>Negative</h4>
@@ -995,7 +995,7 @@ export const Chromatic = () => (
                 </Tooltip.Content>
               </Tooltip.Portal>
             </Tooltip.Root>
-          ))
+          )),
         )}
       </div>
 
@@ -1034,7 +1034,7 @@ export const Chromatic = () => (
               </Tooltip.Content>
             </Tooltip.Portal>
           </Tooltip.Root>
-        ))
+        )),
       )}
 
       <h2 style={{ marginTop: 50, marginBottom: 60 }}>Relative parent (non-portalled)</h2>

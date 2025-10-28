@@ -42,7 +42,7 @@ const AspectRatio = React.forwardRef<AspectRatioElement, AspectRatioProps>(
         />
       </div>
     );
-  }
+  },
 );
 
 AspectRatio.displayName = NAME;

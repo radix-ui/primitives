@@ -190,7 +190,7 @@ describe('OrderedDict', () => {
         ['b', 2],
         ['c', 3],
         ['d', 4],
-      ]).first()
+      ]).first(),
     ).toEqual(['a', 1]);
     expect(new OrderedDict().first()).toBeUndefined();
   });
@@ -202,7 +202,7 @@ describe('OrderedDict', () => {
         ['b', 2],
         ['c', 3],
         ['d', 4],
-      ]).last()
+      ]).last(),
     ).toEqual(['d', 4]);
     expect(new OrderedDict().last()).toBeUndefined();
   });
@@ -419,7 +419,7 @@ describe('OrderedDict', () => {
         new OrderedDict([
           ['b', 2],
           ['c', 3],
-        ])
+        ]),
       );
 
       const result2 = dict.filter(([key]) => key === 'd');
@@ -471,7 +471,7 @@ describe('OrderedDict', () => {
       expect(() =>
         dict.some(function (this: unknown, [, value]) {
           return (this as any).get('b') === value;
-        })
+        }),
       ).toThrow();
     });
   });
@@ -514,7 +514,7 @@ describe('OrderedDict', () => {
       expect(() =>
         dict.every(function (this: unknown, [, value]) {
           return typeof (this as any).get('b') === typeof value;
-        })
+        }),
       ).toThrow();
     });
   });

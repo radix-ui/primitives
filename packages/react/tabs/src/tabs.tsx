@@ -99,7 +99,7 @@ const Tabs = React.forwardRef<TabsElement, TabsProps>(
         />
       </TabsProvider>
     );
-  }
+  },
 );
 
 Tabs.displayName = TABS_NAME;
@@ -136,7 +136,7 @@ const TabsList = React.forwardRef<TabsListElement, TabsListProps>(
         />
       </RovingFocusGroup.Root>
     );
-  }
+  },
 );
 
 TabsList.displayName = TAB_LIST_NAME;
@@ -203,7 +203,7 @@ const TabsTrigger = React.forwardRef<TabsTriggerElement, TabsTriggerProps>(
         />
       </RovingFocusGroup.Item>
     );
-  }
+  },
 );
 
 TabsTrigger.displayName = TRIGGER_NAME;
@@ -262,7 +262,7 @@ const TabsContent = React.forwardRef<TabsContentElement, TabsContentProps>(
         )}
       </Presence>
     );
-  }
+  },
 );
 
 TabsContent.displayName = CONTENT_NAME;

@@ -31,7 +31,7 @@ describe('Checkbox', () => {
           <Checkbox.unstable_Trigger aria-label="basic checkbox">
             <Checkbox.Indicator data-testid={INDICATOR_TEST_ID} />
           </Checkbox.unstable_Trigger>
-        </Checkbox.unstable_Provider>
+        </Checkbox.unstable_Provider>,
       );
     });
 
@@ -60,7 +60,7 @@ describe('Checkbox', () => {
           <Checkbox.unstable_Trigger aria-label="basic checkbox">
             <Checkbox.Indicator data-testid={INDICATOR_TEST_ID} />
           </Checkbox.unstable_Trigger>
-        </Checkbox.unstable_Provider>
+        </Checkbox.unstable_Provider>,
       );
     });
 
@@ -90,7 +90,7 @@ describe('Checkbox', () => {
           <Checkbox.unstable_Trigger aria-label="basic checkbox">
             <Checkbox.Indicator data-testid={INDICATOR_TEST_ID} />
           </Checkbox.unstable_Trigger>
-        </Checkbox.unstable_Provider>
+        </Checkbox.unstable_Provider>,
       );
     });
 
@@ -205,7 +205,7 @@ describe('Checkbox', () => {
             </Checkbox.unstable_Trigger>
             <Checkbox.unstable_BubbleInput />
           </Checkbox.unstable_Provider>
-        </form>
+        </form>,
       );
 
       const checkbox = screen.getByRole(CHECKBOX_ROLE);
@@ -229,7 +229,7 @@ describe('Checkbox', () => {
               </Checkbox.unstable_Trigger>
               <Checkbox.unstable_BubbleInput />
             </Checkbox.unstable_Provider>
-          </form>
+          </form>,
         );
 
         const checkbox = screen.getByRole(CHECKBOX_ROLE);
@@ -268,7 +268,7 @@ describe('Checkbox', () => {
           }}
         >
           <ControlledCheckbox />
-        </form>
+        </form>,
       );
 
       const checkbox = screen.getByRole(CHECKBOX_ROLE);
@@ -288,7 +288,7 @@ describe('Checkbox', () => {
           }}
         >
           <ControlledCheckbox />
-        </form>
+        </form>,
       );
 
       const toggleButton = screen.getByText('Toggle checkbox');
@@ -422,7 +422,7 @@ describe('Legacy Checkbox', () => {
               }}
             >
               <LegacyCheckbox defaultChecked />
-            </form>
+            </form>,
           );
           const checkbox = rendered.getByRole(CHECKBOX_ROLE);
           fireEvent.click(checkbox);
@@ -435,7 +435,7 @@ describe('Legacy Checkbox', () => {
               }}
             >
               <LegacyCheckbox defaultChecked={false} />
-            </form>
+            </form>,
           );
           fireEvent.click(checkbox);
         }));
@@ -456,7 +456,7 @@ describe('Legacy Checkbox', () => {
               }}
             >
               <LegacyCheckbox checked />
-            </form>
+            </form>,
           );
           const checkbox = rendered.getByRole(CHECKBOX_ROLE);
           fireEvent.click(checkbox);
@@ -469,7 +469,7 @@ describe('Legacy Checkbox', () => {
               }}
             >
               <LegacyCheckbox checked={false} />
-            </form>
+            </form>,
           );
           fireEvent.click(checkbox);
         }));

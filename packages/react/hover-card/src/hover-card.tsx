@@ -141,7 +141,7 @@ const HoverCardTrigger = React.forwardRef<HoverCardTriggerElement, HoverCardTrig
         />
       </PopperPrimitive.Anchor>
     );
-  }
+  },
 );
 
 HoverCardTrigger.displayName = TRIGGER_NAME;
@@ -172,7 +172,7 @@ interface HoverCardPortalProps {
 }
 
 const HoverCardPortal: React.FC<HoverCardPortalProps> = (
-  props: ScopedProps<HoverCardPortalProps>
+  props: ScopedProps<HoverCardPortalProps>,
 ) => {
   const { __scopeHoverCard, forceMount, children, container } = props;
   const context = useHoverCardContext(PORTAL_NAME, __scopeHoverCard);
@@ -220,7 +220,7 @@ const HoverCardContent = React.forwardRef<HoverCardContentElement, HoverCardCont
         />
       </Presence>
     );
-  }
+  },
 );
 
 HoverCardContent.displayName = CONTENT_NAME;
@@ -375,7 +375,7 @@ const HoverCardArrow = React.forwardRef<HoverCardArrowElement, HoverCardArrowPro
     const { __scopeHoverCard, ...arrowProps } = props;
     const popperScope = usePopperScope(__scopeHoverCard);
     return <PopperPrimitive.Arrow {...popperScope} {...arrowProps} ref={forwardedRef} />;
-  }
+  },
 );
 
 HoverCardArrow.displayName = ARROW_NAME;

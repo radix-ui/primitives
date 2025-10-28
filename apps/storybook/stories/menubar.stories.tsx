@@ -134,7 +134,7 @@ export const Styled = () => {
                       setCheckedSelection((current) =>
                         current.includes(option)
                           ? current.filter((el) => el !== option)
-                          : current.concat(option)
+                          : current.concat(option),
                       )
                     }
                   >

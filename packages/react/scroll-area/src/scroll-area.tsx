@@ -121,7 +121,7 @@ const ScrollArea = React.forwardRef<ScrollAreaElement, ScrollAreaProps>(
         />
       </ScrollAreaProvider>
     );
-  }
+  },
 );
 
 ScrollArea.displayName = SCROLL_AREA_NAME;
@@ -186,7 +186,7 @@ const ScrollAreaViewport = React.forwardRef<ScrollAreaViewportElement, ScrollAre
         </Primitive.div>
       </>
     );
-  }
+  },
 );
 
 ScrollAreaViewport.displayName = VIEWPORT_NAME;
@@ -225,7 +225,7 @@ const ScrollAreaScrollbar = React.forwardRef<ScrollAreaScrollbarElement, ScrollA
     ) : context.type === 'always' ? (
       <ScrollAreaScrollbarVisible {...scrollbarProps} ref={forwardedRef} />
     ) : null;
-  }
+  },
 );
 
 ScrollAreaScrollbar.displayName = SCROLLBAR_NAME;
@@ -758,7 +758,7 @@ const ScrollAreaThumb = React.forwardRef<ScrollAreaThumbElement, ScrollAreaThumb
         <ScrollAreaThumbImpl ref={forwardedRef} {...thumbProps} />
       </Presence>
     );
-  }
+  },
 );
 
 type ScrollAreaThumbImplElement = React.ComponentRef<typeof Primitive.div>;
@@ -771,7 +771,7 @@ const ScrollAreaThumbImpl = React.forwardRef<ScrollAreaThumbImplElement, ScrollA
     const scrollbarContext = useScrollbarContext(THUMB_NAME, __scopeScrollArea);
     const { onThumbPositionChange } = scrollbarContext;
     const composedRef = useComposedRefs(forwardedRef, (node) =>
-      scrollbarContext.onThumbChange(node)
+      scrollbarContext.onThumbChange(node),
     );
     const removeUnlinkedScrollListenerRef = React.useRef<() => void>(undefined);
     const debounceScrollEnd = useDebounceCallback(() => {
@@ -825,7 +825,7 @@ const ScrollAreaThumbImpl = React.forwardRef<ScrollAreaThumbImplElement, ScrollA
         onPointerUp={composeEventHandlers(props.onPointerUp, scrollbarContext.onThumbPointerUp)}
       />
     );
-  }
+  },
 );
 
 ScrollAreaThumb.displayName = THUMB_NAME;
@@ -845,7 +845,7 @@ const ScrollAreaCorner = React.forwardRef<ScrollAreaCornerElement, ScrollAreaCor
     const hasBothScrollbarsVisible = Boolean(context.scrollbarX && context.scrollbarY);
     const hasCorner = context.type !== 'scroll' && hasBothScrollbarsVisible;
     return hasCorner ? <ScrollAreaCornerImpl {...props} ref={forwardedRef} /> : null;
-  }
+  },
 );
 
 ScrollAreaCorner.displayName = CORNER_NAME;
@@ -917,7 +917,7 @@ function getScrollPositionFromPointer(
   pointerPos: number,
   pointerOffset: number,
   sizes: Sizes,
-  dir: Direction = 'ltr'
+  dir: Direction = 'ltr',
 ) {
   const thumbSizePx = getThumbSize(sizes);
   const thumbCenter = thumbSizePx / 2;

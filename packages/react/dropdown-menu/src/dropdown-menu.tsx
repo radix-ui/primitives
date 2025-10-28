@@ -21,7 +21,7 @@ const DROPDOWN_MENU_NAME = 'DropdownMenu';
 type ScopedProps<P> = P & { __scopeDropdownMenu?: Scope };
 const [createDropdownMenuContext, createDropdownMenuScope] = createContextScope(
   DROPDOWN_MENU_NAME,
-  [createMenuScope]
+  [createMenuScope],
 );
 const useMenuScope = createMenuScope();
 
@@ -135,7 +135,7 @@ const DropdownMenuTrigger = React.forwardRef<DropdownMenuTriggerElement, Dropdow
         />
       </MenuPrimitive.Anchor>
     );
-  }
+  },
 );
 
 DropdownMenuTrigger.displayName = TRIGGER_NAME;
@@ -150,7 +150,7 @@ type MenuPortalProps = React.ComponentPropsWithoutRef<typeof MenuPrimitive.Porta
 interface DropdownMenuPortalProps extends MenuPortalProps {}
 
 const DropdownMenuPortal: React.FC<DropdownMenuPortalProps> = (
-  props: ScopedProps<DropdownMenuPortalProps>
+  props: ScopedProps<DropdownMenuPortalProps>,
 ) => {
   const { __scopeDropdownMenu, ...portalProps } = props;
   const menuScope = useMenuScope(__scopeDropdownMenu);
@@ -210,7 +210,7 @@ const DropdownMenuContent = React.forwardRef<DropdownMenuContentElement, Dropdow
         }}
       />
     );
-  }
+  },
 );
 
 DropdownMenuContent.displayName = CONTENT_NAME;
@@ -230,7 +230,7 @@ const DropdownMenuGroup = React.forwardRef<DropdownMenuGroupElement, DropdownMen
     const { __scopeDropdownMenu, ...groupProps } = props;
     const menuScope = useMenuScope(__scopeDropdownMenu);
     return <MenuPrimitive.Group {...menuScope} {...groupProps} ref={forwardedRef} />;
-  }
+  },
 );
 
 DropdownMenuGroup.displayName = GROUP_NAME;
@@ -250,7 +250,7 @@ const DropdownMenuLabel = React.forwardRef<DropdownMenuLabelElement, DropdownMen
     const { __scopeDropdownMenu, ...labelProps } = props;
     const menuScope = useMenuScope(__scopeDropdownMenu);
     return <MenuPrimitive.Label {...menuScope} {...labelProps} ref={forwardedRef} />;
-  }
+  },
 );
 
 DropdownMenuLabel.displayName = LABEL_NAME;
@@ -270,7 +270,7 @@ const DropdownMenuItem = React.forwardRef<DropdownMenuItemElement, DropdownMenuI
     const { __scopeDropdownMenu, ...itemProps } = props;
     const menuScope = useMenuScope(__scopeDropdownMenu);
     return <MenuPrimitive.Item {...menuScope} {...itemProps} ref={forwardedRef} />;
-  }
+  },
 );
 
 DropdownMenuItem.displayName = ITEM_NAME;
@@ -395,7 +395,7 @@ const DropdownMenuArrow = React.forwardRef<DropdownMenuArrowElement, DropdownMen
     const { __scopeDropdownMenu, ...arrowProps } = props;
     const menuScope = useMenuScope(__scopeDropdownMenu);
     return <MenuPrimitive.Arrow {...menuScope} {...arrowProps} ref={forwardedRef} />;
-  }
+  },
 );
 
 DropdownMenuArrow.displayName = ARROW_NAME;
@@ -412,7 +412,7 @@ interface DropdownMenuSubProps {
 }
 
 const DropdownMenuSub: React.FC<DropdownMenuSubProps> = (
-  props: ScopedProps<DropdownMenuSubProps>
+  props: ScopedProps<DropdownMenuSubProps>,
 ) => {
   const { __scopeDropdownMenu, children, open: openProp, onOpenChange, defaultOpen } = props;
   const menuScope = useMenuScope(__scopeDropdownMenu);

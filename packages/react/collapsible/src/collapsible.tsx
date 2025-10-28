@@ -72,7 +72,7 @@ const Collapsible = React.forwardRef<CollapsibleElement, CollapsibleProps>(
         />
       </CollapsibleProvider>
     );
-  }
+  },
 );
 
 Collapsible.displayName = COLLAPSIBLE_NAME;
@@ -104,7 +104,7 @@ const CollapsibleTrigger = React.forwardRef<CollapsibleTriggerElement, Collapsib
         onClick={composeEventHandlers(props.onClick, context.onOpenToggle)}
       />
     );
-  }
+  },
 );
 
 CollapsibleTrigger.displayName = TRIGGER_NAME;
@@ -135,7 +135,7 @@ const CollapsibleContent = React.forwardRef<CollapsibleContentElement, Collapsib
         )}
       </Presence>
     );
-  }
+  },
 );
 
 CollapsibleContent.displayName = CONTENT_NAME;

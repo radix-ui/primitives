@@ -53,7 +53,7 @@ const Accordion = React.forwardRef<AccordionElement, AccordionSingleProps | Acco
         )}
       </Collection.Provider>
     );
-  }
+  },
 );
 
 Accordion.displayName = ACCORDION_NAME;
@@ -71,7 +71,7 @@ const [AccordionValueProvider, useAccordionValueContext] =
 
 const [AccordionCollapsibleProvider, useAccordionCollapsibleContext] = createAccordionContext(
   ACCORDION_NAME,
-  { collapsible: false }
+  { collapsible: false },
 );
 
 type AccordionImplSingleElement = AccordionImplElement;
@@ -125,7 +125,7 @@ const AccordionImplSingle = React.forwardRef<AccordionImplSingleElement, Accordi
         </AccordionCollapsibleProvider>
       </AccordionValueProvider>
     );
-  }
+  },
 );
 
 /* -----------------------------------------------------------------------------------------------*/
@@ -167,13 +167,13 @@ const AccordionImplMultiple = React.forwardRef<
 
   const handleItemOpen = React.useCallback(
     (itemValue: string) => setValue((prevValue = []) => [...prevValue, itemValue]),
-    [setValue]
+    [setValue],
   );
 
   const handleItemClose = React.useCallback(
     (itemValue: string) =>
       setValue((prevValue = []) => prevValue.filter((value) => value !== itemValue)),
-    [setValue]
+    [setValue],
   );
 
   return (
@@ -318,7 +318,7 @@ const AccordionImpl = React.forwardRef<AccordionImplElement, AccordionImplProps>
         </Collection.Slot>
       </AccordionImplProvider>
     );
-  }
+  },
 );
 
 /* -------------------------------------------------------------------------------------------------
@@ -385,7 +385,7 @@ const AccordionItem = React.forwardRef<AccordionItemElement, AccordionItemProps>
         />
       </AccordionItemProvider>
     );
-  }
+  },
 );
 
 AccordionItem.displayName = ITEM_NAME;
@@ -418,7 +418,7 @@ const AccordionHeader = React.forwardRef<AccordionHeaderElement, AccordionHeader
         ref={forwardedRef}
       />
     );
-  }
+  },
 );
 
 AccordionHeader.displayName = HEADER_NAME;
@@ -456,7 +456,7 @@ const AccordionTrigger = React.forwardRef<AccordionTriggerElement, AccordionTrig
         />
       </Collection.ItemSlot>
     );
-  }
+  },
 );
 
 AccordionTrigger.displayName = TRIGGER_NAME;
@@ -495,7 +495,7 @@ const AccordionContent = React.forwardRef<AccordionContentElement, AccordionCont
         }}
       />
     );
-  }
+  },
 );
 
 AccordionContent.displayName = CONTENT_NAME;

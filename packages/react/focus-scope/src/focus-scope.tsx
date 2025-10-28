@@ -197,7 +197,7 @@ const FocusScope = React.forwardRef<FocusScopeElement, FocusScopeProps>((props, 
         }
       }
     },
-    [loop, trapped, focusScope.paused]
+    [loop, trapped, focusScope.paused],
   );
 
   return (

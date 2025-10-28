@@ -219,7 +219,7 @@ const OneTimePasswordField = React.forwardRef<HTMLDivElement, OneTimePasswordFie
       sanitizeValue: sanitizeValueProp,
       ...domProps
     }: ScopedProps<OneTimePasswordFieldProps>,
-    forwardedRef
+    forwardedRef,
   ) {
     const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeOneTimePasswordField);
     const direction = useDirection(dir);
@@ -248,7 +248,7 @@ const OneTimePasswordField = React.forwardRef<HTMLDivElement, OneTimePasswordFie
 
         return value.split('');
       },
-      [validation, sanitizeValueProp]
+      [validation, sanitizeValueProp],
     );
 
     const controlledValue = React.useMemo(() => {
@@ -261,7 +261,7 @@ const OneTimePasswordField = React.forwardRef<HTMLDivElement, OneTimePasswordFie
       defaultProp: defaultValue != null ? sanitizeValue(defaultValue) : [],
       onChange: React.useCallback(
         (value: string[]) => onValueChange?.(value.join('')),
-        [onValueChange]
+        [onValueChange],
       ),
     });
 
@@ -469,7 +469,7 @@ const OneTimePasswordField = React.forwardRef<HTMLDivElement, OneTimePasswordFie
                     event.preventDefault();
                     const pastedValue = event.clipboardData.getData('Text');
                     dispatch({ type: 'PASTE', value: pastedValue });
-                  }
+                  },
                 )}
               >
                 {children}
@@ -479,7 +479,7 @@ const OneTimePasswordField = React.forwardRef<HTMLDivElement, OneTimePasswordFie
         </Collection.Provider>
       </OneTimePasswordFieldContext>
     );
-  }
+  },
 );
 
 /* -------------------------------------------------------------------------------------------------
@@ -504,11 +504,11 @@ const OneTimePasswordFieldHiddenInput = React.forwardRef<
   OneTimePasswordFieldHiddenInputProps
 >(function OneTimePasswordFieldHiddenInput(
   { __scopeOneTimePasswordField, ...props }: ScopedProps<OneTimePasswordFieldHiddenInputProps>,
-  forwardedRef
+  forwardedRef,
 ) {
   const { value, hiddenInputRef, name } = useOneTimePasswordFieldContext(
     'OneTimePasswordFieldHiddenInput',
-    __scopeOneTimePasswordField
+    __scopeOneTimePasswordField,
   );
   const ref = useComposedRefs(hiddenInputRef, forwardedRef);
   return (
@@ -569,7 +569,7 @@ const OneTimePasswordFieldInput = React.forwardRef<
     index: indexProp,
     ...props
   }: ScopedProps<OneTimePasswordFieldInputProps>,
-  forwardedRef
+  forwardedRef,
 ) {
   // TODO: warn if these values are passed
   const {
@@ -588,7 +588,7 @@ const OneTimePasswordFieldInput = React.forwardRef<
 
   const context = useOneTimePasswordFieldContext(
     'OneTimePasswordFieldInput',
-    __scopeOneTimePasswordField
+    __scopeOneTimePasswordField,
   );
   const { dispatch, userActionRef, validationType, isHydrated, disabled } = context;
   const collection = useCollection(__scopeOneTimePasswordField);

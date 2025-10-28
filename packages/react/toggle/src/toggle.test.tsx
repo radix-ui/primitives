@@ -34,7 +34,7 @@ describe('given a Toggle with text', () => {
       new MouseEvent('click', {
         bubbles: true,
         cancelable: true,
-      })
+      }),
     );
 
     expect(button).toHaveAttribute('aria-pressed', 'true');
@@ -66,7 +66,7 @@ describe('given a Toggle with text and defaultPressed="true"', () => {
       new MouseEvent('click', {
         bubbles: true,
         cancelable: true,
-      })
+      }),
     );
 
     expect(button).toHaveAttribute('aria-pressed', 'false');
@@ -95,7 +95,7 @@ describe('given a Toggle with text and disabled="true"', () => {
       new MouseEvent('click', {
         bubbles: true,
         cancelable: true,
-      })
+      }),
     );
 
     expect(button).toHaveAttribute('aria-pressed', 'false');
@@ -111,7 +111,7 @@ describe('given a controlled Toggle (with pressed and onPressedChange)', () => {
     rendered = render(
       <Toggle.Root pressed onPressedChange={onPressedChangeMock}>
         {TEXT_CHILD}
-      </Toggle.Root>
+      </Toggle.Root>,
     );
   });
 
@@ -128,7 +128,7 @@ describe('given a controlled Toggle (with pressed and onPressedChange)', () => {
       new MouseEvent('click', {
         bubbles: true,
         cancelable: true,
-      })
+      }),
     );
 
     expect(onPressedChangeMock).toHaveBeenCalledTimes(1);

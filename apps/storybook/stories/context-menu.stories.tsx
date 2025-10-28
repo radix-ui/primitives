@@ -478,7 +478,7 @@ export const CheckboxItems = () => {
                   setSelection((current) =>
                     current.includes(item)
                       ? current.filter((el) => el !== item)
-                      : current.concat(item)
+                      : current.concat(item),
                   )
                 }
               >
@@ -607,7 +607,7 @@ export const Multiple = () => {
                   checked={fadedIndexes.includes(i)}
                   onCheckedChange={(faded) =>
                     setFadedIndexes((indexes) =>
-                      faded ? [...indexes, i] : indexes.filter((index) => index !== i)
+                      faded ? [...indexes, i] : indexes.filter((index) => index !== i),
                     )
                   }
                 >

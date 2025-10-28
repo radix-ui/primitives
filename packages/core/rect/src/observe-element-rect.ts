@@ -12,7 +12,7 @@ function observeElementRect(
   /** The element whose rect to observe */
   elementToObserve: Measurable,
   /** The callback which will be called when the rect changes */
-  callback: CallbackFn
+  callback: CallbackFn,
 ) {
   const observedData = observedElements.get(elementToObserve);
 

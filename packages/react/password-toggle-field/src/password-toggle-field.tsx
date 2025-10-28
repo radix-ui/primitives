@@ -66,7 +66,7 @@ const PasswordToggleField: React.FC<PasswordToggleFieldProps> = ({
   const syncInputId = React.useCallback(
     (providedId: string | number | undefined) =>
       setInputIdState(providedId != null ? String(providedId) : null),
-    []
+    [],
   );
 
   const { visible: visibleProp, defaultVisible, onVisiblityChange, children } = props;
@@ -124,7 +124,7 @@ const PasswordToggleFieldInput = React.forwardRef<HTMLInputElement, PasswordTogg
       id: idProp,
       ...props
     }: ScopedProps<PasswordToggleFieldInputProps>,
-    forwardedRef
+    forwardedRef,
   ) => {
     const { visible, inputRef, inputId, syncInputId, setVisible, focusState } =
       usePasswordToggleFieldContext(PASSWORD_TOGGLE_FIELD_INPUT_NAME, __scopePasswordToggleField);
@@ -157,7 +157,7 @@ const PasswordToggleFieldInput = React.forwardRef<HTMLInputElement, PasswordTogg
             _setVisible(false);
           }
         },
-        { signal: controller.signal }
+        { signal: controller.signal },
       );
       form.addEventListener(
         'submit',
@@ -166,7 +166,7 @@ const PasswordToggleFieldInput = React.forwardRef<HTMLInputElement, PasswordTogg
           // default action is prevented
           _setVisible(false);
         },
-        { signal: controller.signal }
+        { signal: controller.signal },
       );
       return () => {
         controller.abort();
@@ -190,7 +190,7 @@ const PasswordToggleFieldInput = React.forwardRef<HTMLInputElement, PasswordTogg
         })}
       />
     );
-  }
+  },
 );
 PasswordToggleFieldInput.displayName = PASSWORD_TOGGLE_FIELD_INPUT_NAME;
 
@@ -223,11 +223,11 @@ const PasswordToggleFieldToggle = React.forwardRef<
       tabIndex,
       ...props
     }: ScopedProps<PasswordToggleFieldToggleProps>,
-    forwardedRef
+    forwardedRef,
   ) => {
     const { setVisible, visible, inputRef, inputId, focusState } = usePasswordToggleFieldContext(
       PASSWORD_TOGGLE_FIELD_TOGGLE_NAME,
-      __scopePasswordToggleField
+      __scopePasswordToggleField,
     );
     const [internalAriaLabel, setInternalAriaLabel] = React.useState<string | undefined>(undefined);
     const elementRef = React.useRef<HTMLButtonElement>(null);
@@ -358,7 +358,7 @@ const PasswordToggleFieldToggle = React.forwardRef<
         {children}
       </Primitive.button>
     );
-  }
+  },
 );
 PasswordToggleFieldToggle.displayName = PASSWORD_TOGGLE_FIELD_TOGGLE_NAME;
 
@@ -387,7 +387,7 @@ const PasswordToggleFieldSlot: React.FC<PasswordToggleFieldSlotProps> = ({
 }: ScopedProps<PasswordToggleFieldSlotProps>) => {
   const { visible } = usePasswordToggleFieldContext(
     PASSWORD_TOGGLE_FIELD_SLOT_NAME,
-    __scopePasswordToggleField
+    __scopePasswordToggleField,
   );
 
   return 'render' in props
@@ -420,11 +420,11 @@ const PasswordToggleFieldIcon = React.forwardRef<SVGSVGElement, PasswordToggleFi
       children,
       ...props
     }: ScopedProps<PasswordToggleFieldIconProps>,
-    forwardedRef
+    forwardedRef,
   ) => {
     const { visible } = usePasswordToggleFieldContext(
       PASSWORD_TOGGLE_FIELD_ICON_NAME,
-      __scopePasswordToggleField
+      __scopePasswordToggleField,
     );
     const { visible: visibleIcon, hidden: hiddenIcon, ...domProps } = props;
     return (
@@ -432,7 +432,7 @@ const PasswordToggleFieldIcon = React.forwardRef<SVGSVGElement, PasswordToggleFi
         {visible ? visibleIcon : hiddenIcon}
       </Primitive.svg>
     );
-  }
+  },
 );
 PasswordToggleFieldIcon.displayName = PASSWORD_TOGGLE_FIELD_ICON_NAME;
 
@@ -460,7 +460,7 @@ export type {
 function requestIdleCallback(
   window: Window,
   callback: IdleRequestCallback,
-  options?: IdleRequestOptions
+  options?: IdleRequestOptions,
 ): () => void {
   if ((window as any).requestIdleCallback) {
     const id = window.requestIdleCallback(callback, options);

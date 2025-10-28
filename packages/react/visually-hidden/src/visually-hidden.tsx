@@ -34,7 +34,7 @@ const VisuallyHidden = React.forwardRef<VisuallyHiddenElement, VisuallyHiddenPro
         style={{ ...VISUALLY_HIDDEN_STYLES, ...props.style }}
       />
     );
-  }
+  },
 );
 
 VisuallyHidden.displayName = NAME;

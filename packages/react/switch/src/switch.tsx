@@ -98,7 +98,7 @@ const Switch = React.forwardRef<SwitchElement, SwitchProps>(
         )}
       </SwitchProvider>
     );
-  }
+  },
 );
 
 Switch.displayName = SWITCH_NAME;
@@ -125,7 +125,7 @@ const SwitchThumb = React.forwardRef<SwitchThumbElement, SwitchThumbProps>(
         ref={forwardedRef}
       />
     );
-  }
+  },
 );
 
 SwitchThumb.displayName = THUMB_NAME;
@@ -152,7 +152,7 @@ const SwitchBubbleInput = React.forwardRef<HTMLInputElement, SwitchBubbleInputPr
       bubbles = true,
       ...props
     }: ScopedProps<SwitchBubbleInputProps>,
-    forwardedRef
+    forwardedRef,
   ) => {
     const ref = React.useRef<HTMLInputElement>(null);
     const composedRefs = useComposedRefs(ref, forwardedRef);
@@ -167,7 +167,7 @@ const SwitchBubbleInput = React.forwardRef<HTMLInputElement, SwitchBubbleInputPr
       const inputProto = window.HTMLInputElement.prototype;
       const descriptor = Object.getOwnPropertyDescriptor(
         inputProto,
-        'checked'
+        'checked',
       ) as PropertyDescriptor;
       const setChecked = descriptor.set;
       if (prevChecked !== checked && setChecked) {
@@ -195,7 +195,7 @@ const SwitchBubbleInput = React.forwardRef<HTMLInputElement, SwitchBubbleInputPr
         }}
       />
     );
-  }
+  },
 );
 
 SwitchBubbleInput.displayName = BUBBLE_INPUT_NAME;

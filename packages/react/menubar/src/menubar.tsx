@@ -94,7 +94,7 @@ const Menubar = React.forwardRef<MenubarElement, MenubarProps>(
             setValue(value);
             setCurrentTabStopId(value);
           },
-          [setValue]
+          [setValue],
         )}
         onMenuClose={React.useCallback(() => setValue(''), [setValue])}
         onMenuToggle={React.useCallback(
@@ -104,7 +104,7 @@ const Menubar = React.forwardRef<MenubarElement, MenubarProps>(
             // need to update the id in either case.
             setCurrentTabStopId(value);
           },
-          [setValue]
+          [setValue],
         )}
         dir={direction}
         loop={loop}
@@ -126,7 +126,7 @@ const Menubar = React.forwardRef<MenubarElement, MenubarProps>(
         </Collection.Provider>
       </MenubarContextProvider>
     );
-  }
+  },
 );
 
 Menubar.displayName = MENUBAR_NAME;
@@ -275,7 +275,7 @@ const MenubarTrigger = React.forwardRef<MenubarTriggerElement, MenubarTriggerPro
         </RovingFocusGroup.Item>
       </Collection.ItemSlot>
     );
-  }
+  },
 );
 
 MenubarTrigger.displayName = TRIGGER_NAME;
@@ -378,7 +378,7 @@ const MenubarContent = React.forwardRef<MenubarContentElement, MenubarContentPro
               if (nextValue) context.onMenuOpen(nextValue);
             }
           },
-          { checkForDefaultPrevented: false }
+          { checkForDefaultPrevented: false },
         )}
         style={{
           ...props.style,
@@ -393,7 +393,7 @@ const MenubarContent = React.forwardRef<MenubarContentElement, MenubarContentPro
         }}
       />
     );
-  }
+  },
 );
 
 MenubarContent.displayName = CONTENT_NAME;
@@ -413,7 +413,7 @@ const MenubarGroup = React.forwardRef<MenubarGroupElement, MenubarGroupProps>(
     const { __scopeMenubar, ...groupProps } = props;
     const menuScope = useMenuScope(__scopeMenubar);
     return <MenuPrimitive.Group {...menuScope} {...groupProps} ref={forwardedRef} />;
-  }
+  },
 );
 
 MenubarGroup.displayName = GROUP_NAME;
@@ -433,7 +433,7 @@ const MenubarLabel = React.forwardRef<MenubarLabelElement, MenubarLabelProps>(
     const { __scopeMenubar, ...labelProps } = props;
     const menuScope = useMenuScope(__scopeMenubar);
     return <MenuPrimitive.Label {...menuScope} {...labelProps} ref={forwardedRef} />;
-  }
+  },
 );
 
 MenubarLabel.displayName = LABEL_NAME;
@@ -453,7 +453,7 @@ const MenubarItem = React.forwardRef<MenubarItemElement, MenubarItemProps>(
     const { __scopeMenubar, ...itemProps } = props;
     const menuScope = useMenuScope(__scopeMenubar);
     return <MenuPrimitive.Item {...menuScope} {...itemProps} ref={forwardedRef} />;
-  }
+  },
 );
 
 MenubarItem.displayName = ITEM_NAME;
@@ -473,7 +473,7 @@ const MenubarCheckboxItem = React.forwardRef<MenubarCheckboxItemElement, Menubar
     const { __scopeMenubar, ...checkboxItemProps } = props;
     const menuScope = useMenuScope(__scopeMenubar);
     return <MenuPrimitive.CheckboxItem {...menuScope} {...checkboxItemProps} ref={forwardedRef} />;
-  }
+  },
 );
 
 MenubarCheckboxItem.displayName = CHECKBOX_ITEM_NAME;
@@ -493,7 +493,7 @@ const MenubarRadioGroup = React.forwardRef<MenubarRadioGroupElement, MenubarRadi
     const { __scopeMenubar, ...radioGroupProps } = props;
     const menuScope = useMenuScope(__scopeMenubar);
     return <MenuPrimitive.RadioGroup {...menuScope} {...radioGroupProps} ref={forwardedRef} />;
-  }
+  },
 );
 
 MenubarRadioGroup.displayName = RADIO_GROUP_NAME;
@@ -513,7 +513,7 @@ const MenubarRadioItem = React.forwardRef<MenubarRadioItemElement, MenubarRadioI
     const { __scopeMenubar, ...radioItemProps } = props;
     const menuScope = useMenuScope(__scopeMenubar);
     return <MenuPrimitive.RadioItem {...menuScope} {...radioItemProps} ref={forwardedRef} />;
-  }
+  },
 );
 
 MenubarRadioItem.displayName = RADIO_ITEM_NAME;
@@ -554,7 +554,7 @@ const MenubarSeparator = React.forwardRef<MenubarSeparatorElement, MenubarSepara
     const { __scopeMenubar, ...separatorProps } = props;
     const menuScope = useMenuScope(__scopeMenubar);
     return <MenuPrimitive.Separator {...menuScope} {...separatorProps} ref={forwardedRef} />;
-  }
+  },
 );
 
 MenubarSeparator.displayName = SEPARATOR_NAME;
@@ -574,7 +574,7 @@ const MenubarArrow = React.forwardRef<MenubarArrowElement, MenubarArrowProps>(
     const { __scopeMenubar, ...arrowProps } = props;
     const menuScope = useMenuScope(__scopeMenubar);
     return <MenuPrimitive.Arrow {...menuScope} {...arrowProps} ref={forwardedRef} />;
-  }
+  },
 );
 
 MenubarArrow.displayName = ARROW_NAME;
@@ -633,7 +633,7 @@ const MenubarSubTrigger = React.forwardRef<MenubarSubTriggerElement, MenubarSubT
         ref={forwardedRef}
       />
     );
-  }
+  },
 );
 
 MenubarSubTrigger.displayName = SUB_TRIGGER_NAME;
@@ -672,7 +672,7 @@ const MenubarSubContent = React.forwardRef<MenubarSubContentElement, MenubarSubC
         }}
       />
     );
-  }
+  },
 );
 
 MenubarSubContent.displayName = SUB_CONTENT_NAME;

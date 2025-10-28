@@ -4,7 +4,7 @@ declare namespace Cypress {
     visitStorybook(options?: Partial<Cypress.VisitOptions>): Cypress.Chainable<Cypress.AUTWindow>;
     visitStory(
       storyName: string,
-      options?: Partial<Cypress.VisitOptions>
+      options?: Partial<Cypress.VisitOptions>,
     ): Cypress.Chainable<Cypress.AUTWindow>;
   }
 }

@@ -48,7 +48,7 @@ describe('DropdownMenu', () => {
           cy.findByText('Radix').should('be.visible');
           pointerExitRightToLeft('WorkOS →');
           cy.findByText('Radix').should('be.visible');
-        }
+        },
       );
 
       it('should close open submenu when moving pointer to any item in parent menu', () => {
@@ -203,7 +203,7 @@ describe('DropdownMenu', () => {
           cy.findByText('Radix').should('be.visible');
           pointerExitLeftToRight('WorkOS →');
           cy.findByText('Radix').should('be.visible');
-        }
+        },
       );
     });
 

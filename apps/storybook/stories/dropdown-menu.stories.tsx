@@ -711,7 +711,7 @@ export const CheckboxItems = () => {
                     setSelection((current) =>
                       current.includes(option)
                         ? current.filter((el) => el !== option)
-                        : current.concat(option)
+                        : current.concat(option),
                     )
                   }
                 >
@@ -854,7 +854,7 @@ export const InPopupWindow = () => {
             </DropdownMenu.Item>
           </DropdownMenu.Content>
         </DropdownMenu.Portal>
-      </DropdownMenu.Root>
+      </DropdownMenu.Root>,
     );
   }, []);
   return (
@@ -1257,7 +1257,7 @@ export const Chromatic = () => {
                 </DropdownMenu.Content>
               </DropdownMenu.Portal>
             </DropdownMenu.Root>
-          ))
+          )),
         )}
       </div>
 
@@ -1285,7 +1285,7 @@ export const Chromatic = () => {
                 </DropdownMenu.Content>
               </DropdownMenu.Portal>
             </DropdownMenu.Root>
-          ))
+          )),
         )}
       </div>
       <h4>Negative</h4>
@@ -1311,7 +1311,7 @@ export const Chromatic = () => {
                 </DropdownMenu.Content>
               </DropdownMenu.Portal>
             </DropdownMenu.Root>
-          ))
+          )),
         )}
       </div>
 
@@ -1339,7 +1339,7 @@ export const Chromatic = () => {
                 </DropdownMenu.Content>
               </DropdownMenu.Portal>
             </DropdownMenu.Root>
-          ))
+          )),
         )}
       </div>
       <h4>Negative</h4>
@@ -1365,7 +1365,7 @@ export const Chromatic = () => {
                 </DropdownMenu.Content>
               </DropdownMenu.Portal>
             </DropdownMenu.Root>
-          ))
+          )),
         )}
       </div>
 
@@ -1404,7 +1404,7 @@ export const Chromatic = () => {
               </DropdownMenu.Content>
             </DropdownMenu.Portal>
           </DropdownMenu.Root>
-        ))
+        )),
       )}
 
       <h2>Relative parent (non-portalled)</h2>

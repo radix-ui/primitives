@@ -37,7 +37,7 @@ const [FocusGroupCollection, useFocusGroupCollection, createFocusGroupCollection
 type ScopedProps<P> = P & { __scopeNavigationMenu?: Scope };
 const [createNavigationMenuContext, createNavigationMenuScope] = createContextScope(
   NAVIGATION_MENU_NAME,
-  [createCollectionScope, createFocusGroupCollectionScope]
+  [createCollectionScope, createFocusGroupCollectionScope],
 );
 
 type ContentData = {
@@ -128,7 +128,7 @@ const NavigationMenu = React.forwardRef<NavigationMenuElement, NavigationMenuPro
           window.clearTimeout(skipDelayTimerRef.current);
           skipDelayTimerRef.current = window.setTimeout(
             () => setIsOpenDelayed(true),
-            skipDelayDuration
+            skipDelayDuration,
           );
         }
 
@@ -148,7 +148,7 @@ const NavigationMenu = React.forwardRef<NavigationMenuElement, NavigationMenuPro
         window.clearTimeout(closeTimerRef.current);
         setValue(itemValue);
       },
-      [setValue]
+      [setValue],
     );
 
     const handleDelayedOpen = React.useCallback(
@@ -165,7 +165,7 @@ const NavigationMenu = React.forwardRef<NavigationMenuElement, NavigationMenuPro
           }, delayDuration);
         }
       },
-      [value, setValue, delayDuration]
+      [value, setValue, delayDuration],
     );
 
     React.useEffect(() => {
@@ -209,7 +209,7 @@ const NavigationMenu = React.forwardRef<NavigationMenuElement, NavigationMenuPro
         />
       </NavigationMenuProvider>
     );
-  }
+  },
 );
 
 NavigationMenu.displayName = NAVIGATION_MENU_NAME;
@@ -264,7 +264,7 @@ const NavigationMenuSub = React.forwardRef<NavigationMenuSubElement, NavigationM
         <Primitive.div data-orientation={orientation} {...subProps} ref={forwardedRef} />
       </NavigationMenuProvider>
     );
-  }
+  },
 );
 
 NavigationMenuSub.displayName = SUB_NAME;
@@ -290,7 +290,7 @@ interface NavigationMenuProviderPrivateProps {
 interface NavigationMenuProviderProps extends NavigationMenuProviderPrivateProps {}
 
 const NavigationMenuProvider: React.FC<NavigationMenuProviderProps> = (
-  props: ScopedProps<NavigationMenuProviderProps>
+  props: ScopedProps<NavigationMenuProviderProps>,
 ) => {
   const {
     scope,
@@ -380,7 +380,7 @@ const NavigationMenuList = React.forwardRef<NavigationMenuListElement, Navigatio
         </Collection.Slot>
       </Primitive.div>
     );
-  }
+  },
 );
 
 NavigationMenuList.displayName = LIST_NAME;
@@ -458,7 +458,7 @@ const NavigationMenuItem = React.forwardRef<NavigationMenuItemElement, Navigatio
         <Primitive.li {...itemProps} ref={forwardedRef} />
       </NavigationMenuItemContextProvider>
     );
-  }
+  },
 );
 
 NavigationMenuItem.displayName = ITEM_NAME;
@@ -517,7 +517,7 @@ const NavigationMenuTrigger = React.forwardRef<
                   return;
                 context.onTriggerEnter(itemContext.value);
                 hasPointerMoveOpenedRef.current = true;
-              })
+              }),
             )}
             onPointerLeave={composeEventHandlers(
               props.onPointerLeave,
@@ -525,7 +525,7 @@ const NavigationMenuTrigger = React.forwardRef<
                 if (disabled) return;
                 context.onTriggerLeave();
                 hasPointerMoveOpenedRef.current = false;
-              })
+              }),
             )}
             onClick={composeEventHandlers(props.onClick, () => {
               context.onItemSelect(itemContext.value);
@@ -619,12 +619,12 @@ const NavigationMenuLink = React.forwardRef<NavigationMenuLinkElement, Navigatio
                 dispatchDiscreteCustomEvent(target, rootContentDismissEvent);
               }
             },
-            { checkForDefaultPrevented: false }
+            { checkForDefaultPrevented: false },
           )}
         />
       </FocusGroupItem>
     );
-  }
+  },
 );
 
 NavigationMenuLink.displayName = LINK_NAME;
@@ -657,7 +657,7 @@ const NavigationMenuIndicator = React.forwardRef<
         <Presence present={forceMount || isVisible}>
           <NavigationMenuIndicatorImpl {...indicatorProps} ref={forwardedRef} />
         </Presence>,
-        context.indicatorTrack
+        context.indicatorTrack,
       )
     : null;
 });
@@ -675,7 +675,7 @@ const NavigationMenuIndicatorImpl = React.forwardRef<
   const context = useNavigationMenuContext(INDICATOR_NAME, __scopeNavigationMenu);
   const getItems = useCollection(__scopeNavigationMenu);
   const [activeTrigger, setActiveTrigger] = React.useState<NavigationMenuTriggerElement | null>(
-    null
+    null,
   );
   const [position, setPosition] = React.useState<{ size: number; offset: number } | null>(null);
   const isHorizontal = context.orientation === 'horizontal';
@@ -774,7 +774,7 @@ const NavigationMenuContent = React.forwardRef<
         onPointerEnter={composeEventHandlers(props.onPointerEnter, context.onContentEnter)}
         onPointerLeave={composeEventHandlers(
           props.onPointerLeave,
-          whenMouse(context.onContentLeave)
+          whenMouse(context.onContentLeave),
         )}
         style={{
           // Prevent interaction when animating out
@@ -1021,7 +1021,7 @@ const NavigationMenuViewportImpl = React.forwardRef<
   const composedRefs = useComposedRefs(forwardedRef, context.onViewportChange);
   const viewportContentContext = useViewportContentContext(
     CONTENT_NAME,
-    props.__scopeNavigationMenu
+    props.__scopeNavigationMenu,
   );
   const [size, setSize] = React.useState<{ width: number; height: number } | null>(null);
   const [content, setContent] = React.useState<NavigationMenuContentElement | null>(null);
@@ -1097,7 +1097,7 @@ const FocusGroup = React.forwardRef<FocusGroupElement, FocusGroupProps>(
         </FocusGroupCollection.Slot>
       </FocusGroupCollection.Provider>
     );
-  }
+  },
 );
 
 /* -----------------------------------------------------------------------------------------------*/
@@ -1143,7 +1143,7 @@ const FocusGroupItem = React.forwardRef<FocusGroupItemElement, FocusGroupItemPro
         />
       </FocusGroupCollection.ItemSlot>
     );
-  }
+  },
 );
 
 /**
