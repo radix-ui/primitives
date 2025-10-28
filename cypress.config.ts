@@ -4,6 +4,7 @@ export default defineConfig({
   viewportWidth: 1024,
   viewportHeight: 768,
   fixturesFolder: false,
+  defaultCommandTimeout: 10_000,
   e2e: {
     // TODO There is a bug (I think) in Cypress that results in the page
     // navigating to `about:blank` after certain tests run. Unclear why at this
