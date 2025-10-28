@@ -12,8 +12,8 @@
     "radix-build": "./radix-build.js"
   },
   "dependencies": {
-    "esbuild": "0.24.2",
-    "tsup": "^8.3.6"
+    "esbuild": "^0.25.11",
+    "tsup": "^8.5.0"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
