@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Slot } from 'radix-ui';
-import type { Meta, StoryObj } from '@storybook/react-vite';
+import type { Meta, StoryObj } from '@storybook/react-webpack5';
 
 export default { title: 'Utilities/Slot' } satisfies Meta<typeof Slot.Root>;
 
