@@ -250,7 +250,7 @@ export const Typeahead = () => (
                         <TickIcon />
                       </Select.ItemIndicator>
                     </Select.Item>
-                  ))
+                  )),
                 )}
               </Select.Viewport>
               <Select.ScrollDownButton className={scrollDownButtonClass}>▼</Select.ScrollDownButton>

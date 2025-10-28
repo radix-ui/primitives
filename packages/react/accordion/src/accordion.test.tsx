@@ -138,7 +138,11 @@ describe('given a single Accordion', () => {
       beforeEach(() => {
         handleValueChange = vi.fn();
         rendered = render(
-          <AccordionTest type="single" orientation="horizontal" onValueChange={handleValueChange} />
+          <AccordionTest
+            type="single"
+            orientation="horizontal"
+            onValueChange={handleValueChange}
+          />,
         );
       });
 
@@ -217,7 +221,7 @@ describe('given a single Accordion', () => {
             dir="rtl"
             orientation="horizontal"
             onValueChange={handleValueChange}
-          />
+          />,
         );
       });
 

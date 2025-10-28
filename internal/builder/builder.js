@@ -57,7 +57,7 @@ export async function build(relativePath) {
         format: 'esm',
         outExtension: { '.js': '.mjs' },
       })
-      .then(() => console.log(`ESM: Built ${relativePath}`))
+      .then(() => console.log(`ESM: Built ${relativePath}`)),
   );
 
   // tsup is used to emit d.ts files only (esbuild can't do that).
@@ -77,7 +77,7 @@ export async function build(relativePath) {
         silent: true,
         external: [/@radix-ui\/.+/],
       })
-      .then(() => console.log(`TSC: Built ${relativePath}`))
+      .then(() => console.log(`TSC: Built ${relativePath}`)),
   );
 
   await Promise.all(tasks);

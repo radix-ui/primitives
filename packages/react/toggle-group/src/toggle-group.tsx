@@ -147,13 +147,13 @@ const ToggleGroupImplMultiple = React.forwardRef<
 
   const handleButtonActivate = React.useCallback(
     (itemValue: string) => setValue((prevValue = []) => [...prevValue, itemValue]),
-    [setValue]
+    [setValue],
   );
 
   const handleButtonDeactivate = React.useCallback(
     (itemValue: string) =>
       setValue((prevValue = []) => prevValue.filter((value) => value !== itemValue)),
-    [setValue]
+    [setValue],
   );
 
   return (
@@ -228,7 +228,7 @@ const ToggleGroupImpl = React.forwardRef<ToggleGroupImplElement, ToggleGroupImpl
         )}
       </ToggleGroupContext>
     );
-  }
+  },
 );
 
 /* -------------------------------------------------------------------------------------------------
@@ -262,7 +262,7 @@ const ToggleGroupItem = React.forwardRef<ToggleGroupItemElement, ToggleGroupItem
     ) : (
       <ToggleGroupItemImpl {...commonProps} ref={forwardedRef} />
     );
-  }
+  },
 );
 
 ToggleGroupItem.displayName = ITEM_NAME;
@@ -298,7 +298,7 @@ const ToggleGroupItemImpl = React.forwardRef<ToggleGroupItemImplElement, ToggleG
         }}
       />
     );
-  }
+  },
 );
 
 /* -----------------------------------------------------------------------------------------------*/

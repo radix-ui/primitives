@@ -29,7 +29,7 @@ const [Collection, useCollection, createCollectionScope] = createCollection<
 type ScopedProps<P> = P & { __scopeRovingFocusGroup?: Scope };
 const [createRovingFocusGroupContext, createRovingFocusGroupScope] = createContextScope(
   GROUP_NAME,
-  [createCollectionScope]
+  [createCollectionScope],
 );
 
 type Orientation = React.AriaAttributes['aria-orientation'];
@@ -75,7 +75,7 @@ const RovingFocusGroup = React.forwardRef<RovingFocusGroupElement, RovingFocusGr
         </Collection.Slot>
       </Collection.Provider>
     );
-  }
+  },
 );
 
 RovingFocusGroup.displayName = GROUP_NAME;
@@ -142,16 +142,16 @@ const RovingFocusGroupImpl = React.forwardRef<
       currentTabStopId={currentTabStopId}
       onItemFocus={React.useCallback(
         (tabStopId) => setCurrentTabStopId(tabStopId),
-        [setCurrentTabStopId]
+        [setCurrentTabStopId],
       )}
       onItemShiftTab={React.useCallback(() => setIsTabbingBackOut(true), [])}
       onFocusableItemAdd={React.useCallback(
         () => setFocusableItemsCount((prevCount) => prevCount + 1),
-        []
+        [],
       )}
       onFocusableItemRemove={React.useCallback(
         () => setFocusableItemsCount((prevCount) => prevCount - 1),
-        []
+        [],
       )}
     >
       <Primitive.div
@@ -179,7 +179,7 @@ const RovingFocusGroupImpl = React.forwardRef<
               const activeItem = items.find((item) => item.active);
               const currentItem = items.find((item) => item.id === currentTabStopId);
               const candidateItems = [activeItem, currentItem, ...items].filter(
-                Boolean
+                Boolean,
               ) as typeof items;
               const candidateNodes = candidateItems.map((item) => item.ref.current!);
               focusFirst(candidateNodes, preventScrollOnEntryFocus);
@@ -295,7 +295,7 @@ const RovingFocusGroupItem = React.forwardRef<RovingFocusItemElement, RovingFocu
         </Primitive.span>
       </Collection.ItemSlot>
     );
-  }
+  },
 );
 
 RovingFocusGroupItem.displayName = ITEM_NAME;

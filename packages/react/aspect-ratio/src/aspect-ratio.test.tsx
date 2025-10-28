@@ -17,7 +17,7 @@ describe('given a default Arrow', () => {
         <AspectRatio ratio={RATIO}>
           <span>Hello</span>
         </AspectRatio>
-      </div>
+      </div>,
     );
   });
 

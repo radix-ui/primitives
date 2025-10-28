@@ -90,7 +90,7 @@ const Radio = React.forwardRef<RadioElement, RadioProps>(
         )}
       </RadioProvider>
     );
-  }
+  },
 );
 
 Radio.displayName = RADIO_NAME;
@@ -125,7 +125,7 @@ const RadioIndicator = React.forwardRef<RadioIndicatorElement, RadioIndicatorPro
         />
       </Presence>
     );
-  }
+  },
 );
 
 RadioIndicator.displayName = INDICATOR_NAME;
@@ -152,7 +152,7 @@ const RadioBubbleInput = React.forwardRef<HTMLInputElement, RadioBubbleInputProp
       bubbles = true,
       ...props
     }: ScopedProps<RadioBubbleInputProps>,
-    forwardedRef
+    forwardedRef,
   ) => {
     const ref = React.useRef<HTMLInputElement>(null);
     const composedRefs = useComposedRefs(ref, forwardedRef);
@@ -167,7 +167,7 @@ const RadioBubbleInput = React.forwardRef<HTMLInputElement, RadioBubbleInputProp
       const inputProto = window.HTMLInputElement.prototype;
       const descriptor = Object.getOwnPropertyDescriptor(
         inputProto,
-        'checked'
+        'checked',
       ) as PropertyDescriptor;
       const setChecked = descriptor.set;
       if (prevChecked !== checked && setChecked) {
@@ -195,7 +195,7 @@ const RadioBubbleInput = React.forwardRef<HTMLInputElement, RadioBubbleInputProp
         }}
       />
     );
-  }
+  },
 );
 
 RadioBubbleInput.displayName = BUBBLE_INPUT_NAME;

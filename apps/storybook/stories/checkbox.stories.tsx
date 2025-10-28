@@ -95,7 +95,7 @@ export const Indeterminate = () => {
         type="button"
         onClick={() =>
           setChecked((prevIsChecked) =>
-            prevIsChecked === 'indeterminate' ? false : 'indeterminate'
+            prevIsChecked === 'indeterminate' ? false : 'indeterminate',
           )
         }
       >
@@ -276,7 +276,7 @@ export const LegacyIndeterminate = () => {
         type="button"
         onClick={() =>
           setChecked((prevIsChecked) =>
-            prevIsChecked === 'indeterminate' ? false : 'indeterminate'
+            prevIsChecked === 'indeterminate' ? false : 'indeterminate',
           )
         }
       >
@@ -374,7 +374,7 @@ export const LegacyAnimated = () => {
         type="button"
         onClick={() =>
           setChecked((prevIsChecked) =>
-            prevIsChecked === 'indeterminate' ? false : 'indeterminate'
+            prevIsChecked === 'indeterminate' ? false : 'indeterminate',
           )
         }
       >

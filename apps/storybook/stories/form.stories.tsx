@@ -7,7 +7,7 @@ export default { title: 'Components/Form' };
 export const Basic = () => {
   const [loading, setLoading] = React.useState(false);
   const [serverErrors, setServerErrors] = React.useState<{ email?: boolean; password?: boolean }>(
-    {}
+    {},
   );
 
   return (

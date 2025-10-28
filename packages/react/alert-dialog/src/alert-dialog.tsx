@@ -45,7 +45,7 @@ const AlertDialogTrigger = React.forwardRef<AlertDialogTriggerElement, AlertDial
     const { __scopeAlertDialog, ...triggerProps } = props;
     const dialogScope = useDialogScope(__scopeAlertDialog);
     return <DialogPrimitive.Trigger {...dialogScope} {...triggerProps} ref={forwardedRef} />;
-  }
+  },
 );
 
 AlertDialogTrigger.displayName = TRIGGER_NAME;
@@ -60,7 +60,7 @@ type DialogPortalProps = React.ComponentPropsWithoutRef<typeof DialogPrimitive.P
 interface AlertDialogPortalProps extends DialogPortalProps {}
 
 const AlertDialogPortal: React.FC<AlertDialogPortalProps> = (
-  props: ScopedProps<AlertDialogPortalProps>
+  props: ScopedProps<AlertDialogPortalProps>,
 ) => {
   const { __scopeAlertDialog, ...portalProps } = props;
   const dialogScope = useDialogScope(__scopeAlertDialog);
@@ -84,7 +84,7 @@ const AlertDialogOverlay = React.forwardRef<AlertDialogOverlayElement, AlertDial
     const { __scopeAlertDialog, ...overlayProps } = props;
     const dialogScope = useDialogScope(__scopeAlertDialog);
     return <DialogPrimitive.Overlay {...dialogScope} {...overlayProps} ref={forwardedRef} />;
-  }
+  },
 );
 
 AlertDialogOverlay.displayName = OVERLAY_NAME;
@@ -150,7 +150,7 @@ const AlertDialogContent = React.forwardRef<AlertDialogContentElement, AlertDial
         </AlertDialogContentProvider>
       </DialogPrimitive.WarningProvider>
     );
-  }
+  },
 );
 
 AlertDialogContent.displayName = CONTENT_NAME;
@@ -170,7 +170,7 @@ const AlertDialogTitle = React.forwardRef<AlertDialogTitleElement, AlertDialogTi
     const { __scopeAlertDialog, ...titleProps } = props;
     const dialogScope = useDialogScope(__scopeAlertDialog);
     return <DialogPrimitive.Title {...dialogScope} {...titleProps} ref={forwardedRef} />;
-  }
+  },
 );
 
 AlertDialogTitle.displayName = TITLE_NAME;
@@ -211,7 +211,7 @@ const AlertDialogAction = React.forwardRef<AlertDialogActionElement, AlertDialog
     const { __scopeAlertDialog, ...actionProps } = props;
     const dialogScope = useDialogScope(__scopeAlertDialog);
     return <DialogPrimitive.Close {...dialogScope} {...actionProps} ref={forwardedRef} />;
-  }
+  },
 );
 
 AlertDialogAction.displayName = ACTION_NAME;
@@ -232,7 +232,7 @@ const AlertDialogCancel = React.forwardRef<AlertDialogCancelElement, AlertDialog
     const dialogScope = useDialogScope(__scopeAlertDialog);
     const ref = useComposedRefs(forwardedRef, cancelRef);
     return <DialogPrimitive.Close {...dialogScope} {...cancelProps} ref={ref} />;
-  }
+  },
 );
 
 AlertDialogCancel.displayName = CANCEL_NAME;
@@ -254,7 +254,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/alert-
 
   React.useEffect(() => {
     const hasDescription = document.getElementById(
-      contentRef.current?.getAttribute('aria-describedby')!
+      contentRef.current?.getAttribute('aria-describedby')!,
     );
     if (!hasDescription) console.warn(MESSAGE);
   }, [MESSAGE, contentRef]);

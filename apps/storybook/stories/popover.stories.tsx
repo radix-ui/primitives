@@ -429,7 +429,7 @@ export const Chromatic = () => (
               </Popover.Content>
             </Popover.Portal>
           </Popover.Root>
-        ))
+        )),
       )}
     </div>
 
@@ -457,7 +457,7 @@ export const Chromatic = () => (
               </Popover.Content>
             </Popover.Portal>
           </Popover.Root>
-        ))
+        )),
       )}
     </div>
     <h4>Negative</h4>
@@ -483,7 +483,7 @@ export const Chromatic = () => (
               </Popover.Content>
             </Popover.Portal>
           </Popover.Root>
-        ))
+        )),
       )}
     </div>
 
@@ -511,7 +511,7 @@ export const Chromatic = () => (
               </Popover.Content>
             </Popover.Portal>
           </Popover.Root>
-        ))
+        )),
       )}
     </div>
     <h4>Negative</h4>
@@ -537,7 +537,7 @@ export const Chromatic = () => (
               </Popover.Content>
             </Popover.Portal>
           </Popover.Root>
-        ))
+        )),
       )}
     </div>
 
@@ -576,7 +576,7 @@ export const Chromatic = () => (
             </Popover.Content>
           </Popover.Portal>
         </Popover.Root>
-      ))
+      )),
     )}
 
     <h2>Relative parent (non-portalled)</h2>

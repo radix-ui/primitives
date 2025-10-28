@@ -42,7 +42,7 @@ const Avatar = React.forwardRef<AvatarElement, AvatarProps>(
         <Primitive.span {...avatarProps} ref={forwardedRef} />
       </AvatarProvider>
     );
-  }
+  },
 );
 
 Avatar.displayName = AVATAR_NAME;
@@ -78,7 +78,7 @@ const AvatarImage = React.forwardRef<AvatarImageElement, AvatarImageProps>(
     return imageLoadingStatus === 'loaded' ? (
       <Primitive.img {...imageProps} ref={forwardedRef} src={src} />
     ) : null;
-  }
+  },
 );
 
 AvatarImage.displayName = IMAGE_NAME;
@@ -110,7 +110,7 @@ const AvatarFallback = React.forwardRef<AvatarFallbackElement, AvatarFallbackPro
     return canRender && context.imageLoadingStatus !== 'loaded' ? (
       <Primitive.span {...fallbackProps} ref={forwardedRef} />
     ) : null;
-  }
+  },
 );
 
 AvatarFallback.displayName = FALLBACK_NAME;
@@ -132,7 +132,7 @@ function resolveLoadingStatus(image: HTMLImageElement | null, src?: string): Ima
 
 function useImageLoadingStatus(
   src: string | undefined,
-  { referrerPolicy, crossOrigin }: AvatarImageProps
+  { referrerPolicy, crossOrigin }: AvatarImageProps,
 ) {
   const isHydrated = useIsHydrated();
   const imageRef = React.useRef<HTMLImageElement | null>(null);
@@ -145,7 +145,7 @@ function useImageLoadingStatus(
   })();
 
   const [loadingStatus, setLoadingStatus] = React.useState<ImageLoadingStatus>(() =>
-    resolveLoadingStatus(image, src)
+    resolveLoadingStatus(image, src),
   );
 
   useLayoutEffect(() => {

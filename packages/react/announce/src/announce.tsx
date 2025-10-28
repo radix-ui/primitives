@@ -190,13 +190,13 @@ type LiveRegionOptions = {
 
 function buildLiveRegionElement(
   ownerDocument: Document,
-  { type, relevant, role, atomic, id }: LiveRegionOptions
+  { type, relevant, role, atomic, id }: LiveRegionOptions,
 ) {
   const element = ownerDocument.createElement('div');
   element.setAttribute(getLiveRegionPartDataAttr(id), '');
   element.setAttribute(
     'style',
-    'position: absolute; top: -1px; width: 1px; height: 1px; overflow: hidden;'
+    'position: absolute; top: -1px; width: 1px; height: 1px; overflow: hidden;',
   );
   ownerDocument.body.appendChild(element);
 

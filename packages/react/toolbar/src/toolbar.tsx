@@ -65,7 +65,7 @@ const Toolbar = React.forwardRef<ToolbarElement, ToolbarProps>(
         </RovingFocusGroup.Root>
       </ToolbarProvider>
     );
-  }
+  },
 );
 
 Toolbar.displayName = TOOLBAR_NAME;
@@ -91,7 +91,7 @@ const ToolbarSeparator = React.forwardRef<ToolbarSeparatorElement, ToolbarSepara
         ref={forwardedRef}
       />
     );
-  }
+  },
 );
 
 ToolbarSeparator.displayName = SEPARATOR_NAME;
@@ -115,7 +115,7 @@ const ToolbarButton = React.forwardRef<ToolbarButtonElement, ToolbarButtonProps>
         <Primitive.button type="button" {...buttonProps} ref={forwardedRef} />
       </RovingFocusGroup.Item>
     );
-  }
+  },
 );
 
 ToolbarButton.displayName = BUTTON_NAME;
@@ -145,7 +145,7 @@ const ToolbarLink = React.forwardRef<ToolbarLinkElement, ToolbarLinkProps>(
         />
       </RovingFocusGroup.Item>
     );
-  }
+  },
 );
 
 ToolbarLink.displayName = LINK_NAME;
@@ -167,7 +167,7 @@ const ToolbarToggleGroup = React.forwardRef<
 >(
   (
     props: ScopedProps<ToolbarToggleGroupSingleProps | ToolbarToggleGroupMultipleProps>,
-    forwardedRef
+    forwardedRef,
   ) => {
     const { __scopeToolbar, ...toggleGroupProps } = props;
     const context = useToolbarContext(TOGGLE_GROUP_NAME, __scopeToolbar);
@@ -182,7 +182,7 @@ const ToolbarToggleGroup = React.forwardRef<
         rovingFocus={false}
       />
     );
-  }
+  },
 );
 
 ToolbarToggleGroup.displayName = TOGGLE_GROUP_NAME;
@@ -208,7 +208,7 @@ const ToolbarToggleItem = React.forwardRef<ToolbarToggleItemElement, ToolbarTogg
         <ToggleGroupPrimitive.Item {...toggleGroupScope} {...toggleItemProps} ref={forwardedRef} />
       </ToolbarButton>
     );
-  }
+  },
 );
 
 ToolbarToggleItem.displayName = TOGGLE_ITEM_NAME;

@@ -62,7 +62,7 @@ interface TooltipProviderProps {
 }
 
 const TooltipProvider: React.FC<TooltipProviderProps> = (
-  props: ScopedProps<TooltipProviderProps>
+  props: ScopedProps<TooltipProviderProps>,
 ) => {
   const {
     __scopeTooltip,
@@ -93,7 +93,7 @@ const TooltipProvider: React.FC<TooltipProviderProps> = (
         window.clearTimeout(skipDelayTimerRef.current);
         skipDelayTimerRef.current = window.setTimeout(
           () => (isOpenDelayedRef.current = true),
-          skipDelayDuration
+          skipDelayDuration,
         );
       }, [skipDelayDuration])}
       isPointerInTransitRef={isPointerInTransitRef}
@@ -318,7 +318,7 @@ const TooltipTrigger = React.forwardRef<TooltipTriggerElement, TooltipTriggerPro
         />
       </PopperPrimitive.Anchor>
     );
-  }
+  },
 );
 
 TooltipTrigger.displayName = TRIGGER_NAME;
@@ -394,7 +394,7 @@ const TooltipContent = React.forwardRef<TooltipContentElement, TooltipContentPro
         )}
       </Presence>
     );
-  }
+  },
 );
 
 type Point = { x: number; y: number };
@@ -434,7 +434,7 @@ const TooltipContentHoverable = React.forwardRef<
       setPointerGraceArea(graceArea);
       onPointerInTransitChange(true);
     },
-    [onPointerInTransitChange]
+    [onPointerInTransitChange],
   );
 
   React.useEffect(() => {
@@ -571,7 +571,7 @@ const TooltipContentImpl = React.forwardRef<TooltipContentImplElement, TooltipCo
         </PopperPrimitive.Content>
       </DismissableLayer>
     );
-  }
+  },
 );
 
 TooltipContent.displayName = CONTENT_NAME;
@@ -592,14 +592,14 @@ const TooltipArrow = React.forwardRef<TooltipArrowElement, TooltipArrowProps>(
     const popperScope = usePopperScope(__scopeTooltip);
     const visuallyHiddenContentContext = useVisuallyHiddenContentContext(
       ARROW_NAME,
-      __scopeTooltip
+      __scopeTooltip,
     );
     // if the arrow is inside the `VisuallyHidden`, we don't want to render it all to
     // prevent issues in positioning the arrow due to the duplicate
     return visuallyHiddenContentContext.isInside ? null : (
       <PopperPrimitive.Arrow {...popperScope} {...arrowProps} ref={forwardedRef} />
     );
-  }
+  },
 );
 
 TooltipArrow.displayName = ARROW_NAME;
@@ -634,25 +634,25 @@ function getPaddedExitPoints(exitPoint: Point, exitSide: Side, padding = 5) {
     case 'top':
       paddedExitPoints.push(
         { x: exitPoint.x - padding, y: exitPoint.y + padding },
-        { x: exitPoint.x + padding, y: exitPoint.y + padding }
+        { x: exitPoint.x + padding, y: exitPoint.y + padding },
       );
       break;
     case 'bottom':
       paddedExitPoints.push(
         { x: exitPoint.x - padding, y: exitPoint.y - padding },
-        { x: exitPoint.x + padding, y: exitPoint.y - padding }
+        { x: exitPoint.x + padding, y: exitPoint.y - padding },
       );
       break;
     case 'left':
       paddedExitPoints.push(
         { x: exitPoint.x + padding, y: exitPoint.y - padding },
-        { x: exitPoint.x + padding, y: exitPoint.y + padding }
+        { x: exitPoint.x + padding, y: exitPoint.y + padding },
       );
       break;
     case 'right':
       paddedExitPoints.push(
         { x: exitPoint.x - padding, y: exitPoint.y - padding },
-        { x: exitPoint.x - padding, y: exitPoint.y + padding }
+        { x: exitPoint.x - padding, y: exitPoint.y + padding },
       );
       break;
   }

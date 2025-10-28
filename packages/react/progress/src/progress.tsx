@@ -66,7 +66,7 @@ const Progress = React.forwardRef<ProgressElement, ProgressProps>(
         />
       </ProgressProvider>
     );
-  }
+  },
 );
 
 Progress.displayName = PROGRESS_NAME;
@@ -93,7 +93,7 @@ const ProgressIndicator = React.forwardRef<ProgressIndicatorElement, ProgressInd
         ref={forwardedRef}
       />
     );
-  }
+  },
 );
 
 ProgressIndicator.displayName = INDICATOR_NAME;

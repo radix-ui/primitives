@@ -90,7 +90,7 @@ const PopperAnchor = React.forwardRef<PopperAnchorElement, PopperAnchorProps>(
     });
 
     return virtualRef ? null : <Primitive.div {...anchorProps} ref={composedRefs} />;
-  }
+  },
 );
 
 PopperAnchor.displayName = ANCHOR_NAME;
@@ -284,7 +284,7 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
         </PopperContentProvider>
       </div>
     );
-  }
+  },
 );
 
 PopperContent.displayName = CONTENT_NAME;
@@ -308,7 +308,7 @@ interface PopperArrowProps extends ArrowProps {}
 
 const PopperArrow = React.forwardRef<PopperArrowElement, PopperArrowProps>(function PopperArrow(
   props: ScopedProps<PopperArrowProps>,
-  forwardedRef
+  forwardedRef,
 ) {
   const { __scopePopper, ...arrowProps } = props;
   const contentContext = useContentContext(ARROW_NAME, __scopePopper);

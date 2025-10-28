@@ -18,7 +18,7 @@ describe('Tooltip', () => {
             </Tooltip.Content>
           </Tooltip.Portal>
         </Tooltip.Root>
-      </Tooltip.Provider>
+      </Tooltip.Provider>,
     );
 
     expect(screen.getByText('Tooltip Trigger')).toBeInTheDocument();
@@ -37,7 +37,7 @@ describe('Tooltip', () => {
             </Tooltip.Content>
           </Tooltip.Portal>
         </Tooltip.Root>
-      </Tooltip.Provider>
+      </Tooltip.Provider>,
     );
 
     const trigger = screen.getByText('Tooltip Trigger');
@@ -63,7 +63,7 @@ describe('Tooltip', () => {
             </Tooltip.Content>
           </Tooltip.Portal>
         </Tooltip.Root>
-      </Tooltip.Provider>
+      </Tooltip.Provider>,
     );
 
     const trigger = screen.getByText('Tooltip Trigger');

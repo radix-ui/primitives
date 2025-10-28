@@ -267,7 +267,7 @@ export const CheckboxItems = () => {
             setSelection((current) =>
               current.includes(option)
                 ? current.filter((el) => el !== option)
-                : current.concat(option)
+                : current.concat(option),
             )
           }
         >
@@ -386,7 +386,7 @@ const MenuWithAnchor: React.FC<MenuProps> = (props) => {
 };
 
 const Submenu: React.FC<MenuProps & { animated: boolean; disabled?: boolean; heading?: string }> = (
-  props
+  props,
 ) => {
   const {
     heading = 'Submenu',

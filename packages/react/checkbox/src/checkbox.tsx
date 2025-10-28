@@ -54,7 +54,7 @@ interface CheckboxProviderProps<State extends CheckedState = CheckedState> {
 }
 
 function CheckboxProvider<State extends CheckedState = CheckedState>(
-  props: ScopedProps<CheckboxProviderProps<State>>
+  props: ScopedProps<CheckboxProviderProps<State>>,
 ) {
   const {
     __scopeCheckbox,
@@ -129,7 +129,7 @@ interface CheckboxTriggerProps
 const CheckboxTrigger = React.forwardRef<HTMLButtonElement, CheckboxTriggerProps>(
   (
     { __scopeCheckbox, onKeyDown, onClick, ...checkboxProps }: ScopedProps<CheckboxTriggerProps>,
-    forwardedRef
+    forwardedRef,
   ) => {
     const {
       control,
@@ -185,7 +185,7 @@ const CheckboxTrigger = React.forwardRef<HTMLButtonElement, CheckboxTriggerProps
         })}
       />
     );
-  }
+  },
 );
 
 CheckboxTrigger.displayName = TRIGGER_NAME;
@@ -248,7 +248,7 @@ const Checkbox = React.forwardRef<CheckboxElement, CheckboxProps>(
         )}
       />
     );
-  }
+  },
 );
 
 Checkbox.displayName = CHECKBOX_NAME;
@@ -286,7 +286,7 @@ const CheckboxIndicator = React.forwardRef<CheckboxIndicatorElement, CheckboxInd
         />
       </Presence>
     );
-  }
+  },
 );
 
 CheckboxIndicator.displayName = INDICATOR_NAME;
@@ -328,7 +328,7 @@ const CheckboxBubbleInput = React.forwardRef<HTMLInputElement, CheckboxBubbleInp
       const inputProto = window.HTMLInputElement.prototype;
       const descriptor = Object.getOwnPropertyDescriptor(
         inputProto,
-        'checked'
+        'checked',
       ) as PropertyDescriptor;
       const setChecked = descriptor.set;
 
@@ -369,7 +369,7 @@ const CheckboxBubbleInput = React.forwardRef<HTMLInputElement, CheckboxBubbleInp
         }}
       />
     );
-  }
+  },
 );
 
 CheckboxBubbleInput.displayName = BUBBLE_INPUT_NAME;

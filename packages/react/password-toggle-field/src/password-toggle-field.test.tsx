@@ -22,7 +22,7 @@ describe('given a default PasswordToggleField', () => {
             <PasswordToggleField.Slot visible="Hide" hidden="Show" />
           </PasswordToggleField.Toggle>
         </PasswordToggleField.Root>
-      </>
+      </>,
     );
   });
 
@@ -102,7 +102,7 @@ describe('given a PasswordToggleField with an Icon', () => {
             />
           </PasswordToggleField.Toggle>
         </PasswordToggleField.Root>
-      </>
+      </>,
     );
   });
 
@@ -163,7 +163,7 @@ describe('given a PasswordToggleField in a form', () => {
           </PasswordToggleField.Toggle>
         </PasswordToggleField.Root>
         <button>Submit</button>
-      </form>
+      </form>,
     );
   });
 

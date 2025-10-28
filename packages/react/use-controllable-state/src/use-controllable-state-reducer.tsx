@@ -24,21 +24,21 @@ interface SyncStateAction<T> {
 export function useControllableStateReducer<T, S extends {}, A extends AnyAction>(
   reducer: (prevState: S & { state: T }, action: A) => S & { state: T },
   userArgs: UseControllableStateParams<T>,
-  initialState: S
+  initialState: S,
 ): [S & { state: T }, React.Dispatch<A>];
 
 export function useControllableStateReducer<T, S extends {}, I, A extends AnyAction>(
   reducer: (prevState: S & { state: T }, action: A) => S & { state: T },
   userArgs: UseControllableStateParams<T>,
   initialArg: I,
-  init: (i: I & { state: T }) => S
+  init: (i: I & { state: T }) => S,
 ): [S & { state: T }, React.Dispatch<A>];
 
 export function useControllableStateReducer<T, S extends {}, A extends AnyAction>(
   reducer: (prevState: S & { state: T }, action: A) => S & { state: T },
   userArgs: UseControllableStateParams<T>,
   initialArg: any,
-  init?: (i: any) => Omit<S, 'state'>
+  init?: (i: any) => Omit<S, 'state'>,
 ): [S & { state: T }, React.Dispatch<A>] {
   const { prop: controlledState, defaultProp, onChange: onChangeProp, caller } = userArgs;
   const isControlled = controlledState !== undefined;
@@ -57,7 +57,7 @@ export function useControllableStateReducer<T, S extends {}, A extends AnyAction
         const from = wasControlled ? 'controlled' : 'uncontrolled';
         const to = isControlled ? 'controlled' : 'uncontrolled';
         console.warn(
-          `${caller} is changing from ${from} to ${to}. Components should not switch from controlled to uncontrolled (or vice versa). Decide between using a controlled or uncontrolled value for the lifetime of the component.`
+          `${caller} is changing from ${from} to ${to}. Components should not switch from controlled to uncontrolled (or vice versa). Decide between using a controlled or uncontrolled value for the lifetime of the component.`,
         );
       }
       isControlledRef.current = isControlled;
@@ -84,7 +84,7 @@ export function useControllableStateReducer<T, S extends {}, A extends AnyAction
       }
       return next;
     },
-    ...args
+    ...args,
   );
 
   const uncontrolledState = internalState.state;

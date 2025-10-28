@@ -12,7 +12,7 @@ describe('Form', () => {
     cy.get('@control')
       .invoke('attr', 'aria-describedby')
       .then((ariaDescribedby) =>
-        cy.get('@message').invoke('attr', 'id').should('equal', ariaDescribedby)
+        cy.get('@message').invoke('attr', 'id').should('equal', ariaDescribedby),
       );
   }
 

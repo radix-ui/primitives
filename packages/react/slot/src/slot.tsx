@@ -149,7 +149,7 @@ const Slottable = createSlottable('Slottable');
 type AnyProps = Record<string, any>;
 
 function isSlottable(
-  child: React.ReactNode
+  child: React.ReactNode,
 ): child is React.ReactElement<SlottableProps, typeof Slottable> {
   return (
     React.isValidElement(child) &&

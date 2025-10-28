@@ -30,7 +30,7 @@ describe('FocusScope', () => {
           </FocusScope>
           <TestField label="other" />
           <button>some outer button</button>
-        </div>
+        </div>,
       );
       tabbableFirst = rendered.getByLabelText(INNER_NAME_INPUT_LABEL) as HTMLInputElement;
       tabbableSecond = rendered.getByLabelText(INNER_EMAIL_INPUT_LABEL) as HTMLInputElement;
@@ -73,7 +73,7 @@ describe('FocusScope', () => {
           </FocusScope>
           <TestField label="other" />
           <button>some outer button</button>
-        </div>
+        </div>,
       );
       tabbableSecond = rendered.getByLabelText(INNER_EMAIL_INPUT_LABEL) as HTMLInputElement;
       tabbableLast = rendered.getByText(INNER_SUBMIT_LABEL) as HTMLButtonElement;
@@ -105,7 +105,7 @@ describe('FocusScope', () => {
               <button onBlur={handleLastFocusableElementBlur}>{INNER_SUBMIT_LABEL}</button>
             </form>
           </FocusScope>
-        </div>
+        </div>,
       );
       tabbableFirst = rendered.getByLabelText(INNER_NAME_INPUT_LABEL) as HTMLInputElement;
     });

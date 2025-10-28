@@ -32,7 +32,7 @@ function createCollection<ItemElement extends HTMLElement, ItemData = {}>(name: 
 
   const [CollectionProviderImpl, useCollectionContext] = createCollectionContext<ContextValue>(
     PROVIDER_NAME,
-    { collectionRef: { current: null }, itemMap: new Map() }
+    { collectionRef: { current: null }, itemMap: new Map() },
   );
 
   const CollectionProvider: React.FC<{ children?: React.ReactNode; scope: any }> = (props) => {
@@ -61,7 +61,7 @@ function createCollection<ItemElement extends HTMLElement, ItemData = {}>(name: 
       const context = useCollectionContext(COLLECTION_SLOT_NAME, scope);
       const composedRefs = useComposedRefs(forwardedRef, context.collectionRef);
       return <CollectionSlotImpl ref={composedRefs}>{children}</CollectionSlotImpl>;
-    }
+    },
   );
 
   CollectionSlot.displayName = COLLECTION_SLOT_NAME;
@@ -96,7 +96,7 @@ function createCollection<ItemElement extends HTMLElement, ItemData = {}>(name: 
           {children}
         </CollectionItemSlotImpl>
       );
-    }
+    },
   );
 
   CollectionItemSlot.displayName = ITEM_SLOT_NAME;
@@ -114,7 +114,7 @@ function createCollection<ItemElement extends HTMLElement, ItemData = {}>(name: 
       const orderedNodes = Array.from(collectionNode.querySelectorAll(`[${ITEM_DATA_ATTR}]`));
       const items = Array.from(context.itemMap.values());
       const orderedItems = items.sort(
-        (a, b) => orderedNodes.indexOf(a.ref.current!) - orderedNodes.indexOf(b.ref.current!)
+        (a, b) => orderedNodes.indexOf(a.ref.current!) - orderedNodes.indexOf(b.ref.current!),
       );
       return orderedItems;
     }, [context.collectionRef, context.itemMap]);

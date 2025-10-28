@@ -192,7 +192,7 @@ const Slider = React.forwardRef<SliderElement, SliderProps>(
         </Collection.Provider>
       </SliderProvider>
     );
-  }
+  },
 );
 
 Slider.displayName = SLIDER_NAME;
@@ -302,7 +302,7 @@ const SliderHorizontal = React.forwardRef<SliderHorizontalElement, SliderHorizon
         />
       </SliderOrientationProvider>
     );
-  }
+  },
 );
 
 /* -------------------------------------------------------------------------------------------------
@@ -375,7 +375,7 @@ const SliderVertical = React.forwardRef<SliderVerticalElement, SliderVerticalPro
         />
       </SliderOrientationProvider>
     );
-  }
+  },
 );
 
 /* -------------------------------------------------------------------------------------------------
@@ -453,7 +453,7 @@ const SliderImpl = React.forwardRef<SliderImplElement, SliderImplProps>(
         })}
       />
     );
-  }
+  },
 );
 
 /* -------------------------------------------------------------------------------------------------
@@ -478,7 +478,7 @@ const SliderTrack = React.forwardRef<SliderTrackElement, SliderTrackProps>(
         ref={forwardedRef}
       />
     );
-  }
+  },
 );
 
 SliderTrack.displayName = TRACK_NAME;
@@ -501,7 +501,7 @@ const SliderRange = React.forwardRef<SliderRangeElement, SliderRangeProps>(
     const composedRefs = useComposedRefs(forwardedRef, ref);
     const valuesCount = context.values.length;
     const percentages = context.values.map((value) =>
-      convertValueToPercentage(value, context.min, context.max)
+      convertValueToPercentage(value, context.min, context.max),
     );
     const offsetStart = valuesCount > 1 ? Math.min(...percentages) : 0;
     const offsetEnd = 100 - Math.max(...percentages);
@@ -519,7 +519,7 @@ const SliderRange = React.forwardRef<SliderRangeElement, SliderRangeProps>(
         }}
       />
     );
-  }
+  },
 );
 
 SliderRange.displayName = RANGE_NAME;
@@ -540,10 +540,10 @@ const SliderThumb = React.forwardRef<SliderThumbElement, SliderThumbProps>(
     const composedRefs = useComposedRefs(forwardedRef, (node) => setThumb(node));
     const index = React.useMemo(
       () => (thumb ? getItems().findIndex((item) => item.ref.current === thumb) : -1),
-      [getItems, thumb]
+      [getItems, thumb],
     );
     return <SliderThumbImpl {...props} ref={composedRefs} index={index} />;
-  }
+  },
 );
 
 type SliderThumbImplElement = React.ComponentRef<typeof Primitive.span>;
@@ -628,7 +628,7 @@ const SliderThumbImpl = React.forwardRef<SliderThumbImplElement, SliderThumbImpl
         )}
       </span>
     );
-  }
+  },
 );
 
 SliderThumb.displayName = THUMB_NAME;
@@ -680,7 +680,7 @@ const SliderBubbleInput = React.forwardRef<HTMLInputElement, SliderBubbleInputPr
         defaultValue={value}
       />
     );
-  }
+  },
 );
 
 SliderBubbleInput.displayName = BUBBLE_INPUT_NAME;

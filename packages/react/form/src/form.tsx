@@ -63,7 +63,7 @@ const Form = React.forwardRef<FormElement, FormProps>(
     const [validityMap, setValidityMap] = React.useState<ValidityMap>({});
     const getFieldValidity: ValidationContextValue['getFieldValidity'] = React.useCallback(
       (fieldName) => validityMap[fieldName],
-      [validityMap]
+      [validityMap],
     );
     const handleFieldValidityChange: ValidationContextValue['onFieldValidityChange'] =
       React.useCallback(
@@ -72,7 +72,7 @@ const Form = React.forwardRef<FormElement, FormProps>(
             ...prevValidityMap,
             [fieldName]: { ...(prevValidityMap[fieldName] ?? {}), ...validity },
           })),
-        []
+        [],
       );
     const handleFieldValiditionClear: ValidationContextValue['onFieldValiditionClear'] =
       React.useCallback((fieldName) => {
@@ -86,7 +86,7 @@ const Form = React.forwardRef<FormElement, FormProps>(
     const getFieldCustomMatcherEntries: ValidationContextValue['getFieldCustomMatcherEntries'] =
       React.useCallback(
         (fieldName) => customMatcherEntriesMap[fieldName] ?? [],
-        [customMatcherEntriesMap]
+        [customMatcherEntriesMap],
       );
     const handleFieldCustomMatcherAdd: ValidationContextValue['onFieldCustomMatcherEntryAdd'] =
       React.useCallback((fieldName, matcherEntry) => {
@@ -100,7 +100,7 @@ const Form = React.forwardRef<FormElement, FormProps>(
         setCustomMatcherEntriesMap((prevCustomMatcherEntriesMap) => ({
           ...prevCustomMatcherEntriesMap,
           [fieldName]: (prevCustomMatcherEntriesMap[fieldName] ?? []).filter(
-            (matcherEntry) => matcherEntry.id !== matcherEntryId
+            (matcherEntry) => matcherEntry.id !== matcherEntryId,
           ),
         }));
       }, []);
@@ -109,7 +109,7 @@ const Form = React.forwardRef<FormElement, FormProps>(
     const [customErrorsMap, setCustomErrorsMap] = React.useState<CustomErrorsMap>({});
     const getFieldCustomErrors: ValidationContextValue['getFieldCustomErrors'] = React.useCallback(
       (fieldName) => customErrorsMap[fieldName] ?? {},
-      [customErrorsMap]
+      [customErrorsMap],
     );
     const handleFieldCustomErrorsChange: ValidationContextValue['onFieldCustomErrorsChange'] =
       React.useCallback((fieldName, customErrors) => {
@@ -139,7 +139,7 @@ const Form = React.forwardRef<FormElement, FormProps>(
     const getFieldDescription: AriaDescriptionContextValue['getFieldDescription'] =
       React.useCallback(
         (fieldName) => Array.from(messageIdsMap[fieldName] ?? []).join(' ') || undefined,
-        [messageIdsMap]
+        [messageIdsMap],
       );
 
     return (
@@ -181,7 +181,7 @@ const Form = React.forwardRef<FormElement, FormProps>(
         </AriaDescriptionProvider>
       </ValidationProvider>
     );
-  }
+  },
 );
 
 Form.displayName = FORM_NAME;
@@ -224,7 +224,7 @@ const FormField = React.forwardRef<FormFieldElement, FormFieldProps>(
         />
       </FormFieldProvider>
     );
-  }
+  },
 );
 
 FormField.displayName = FIELD_NAME;
@@ -256,7 +256,7 @@ const FormLabel = React.forwardRef<FormLabelElement, FormLabelProps>(
         htmlFor={htmlFor}
       />
     );
-  }
+  },
 );
 
 FormLabel.displayName = LABEL_NAME;
@@ -336,7 +336,7 @@ const FormControl = React.forwardRef<FormControlElement, FormControlProps>(
 
         if (!hasSyncCustomErrors && ayncCustomMatcherEntries.length > 0) {
           const promisedCustomErrors = ayncCustomMatcherEntries.map(({ id, match }) =>
-            match(...matcherArgs).then((matches) => [id, matches] as const)
+            match(...matcherArgs).then((matches) => [id, matches] as const),
           );
           const asyncCustomErrors = await Promise.all(promisedCustomErrors);
           const asyncCustomErrorsById = Object.fromEntries(asyncCustomErrors);
@@ -348,7 +348,7 @@ const FormControl = React.forwardRef<FormControlElement, FormControlProps>(
           onFieldCustomErrorsChange(name, asyncCustomErrorsById);
         }
       },
-      [customMatcherEntries, name, onFieldCustomErrorsChange, onFieldValidityChange]
+      [customMatcherEntries, name, onFieldCustomErrorsChange, onFieldValidityChange],
     );
 
     React.useEffect(() => {
@@ -413,7 +413,7 @@ const FormControl = React.forwardRef<FormControlElement, FormControlProps>(
         })}
       />
     );
-  }
+  },
 );
 
 FormControl.displayName = CONTROL_NAME;
@@ -476,7 +476,7 @@ const FormMessage = React.forwardRef<FormMessageElement, FormMessageProps>(
     } else {
       return <FormBuiltInMessage match={match} {...messageProps} ref={forwardedRef} name={name} />;
     }
-  }
+  },
 );
 
 FormMessage.displayName = MESSAGE_NAME;
@@ -504,7 +504,7 @@ const FormBuiltInMessage = React.forwardRef<FormBuiltInMessageElement, FormBuilt
     }
 
     return null;
-  }
+  },
 );
 
 type FormCustomMessageElement = React.ComponentRef<typeof FormMessageImpl>;
@@ -545,7 +545,7 @@ const FormCustomMessage = React.forwardRef<FormCustomMessageElement, FormCustomM
     }
 
     return null;
-  }
+  },
 );
 
 type FormMessageImplElement = React.ComponentRef<typeof Primitive.span>;
@@ -568,7 +568,7 @@ const FormMessageImpl = React.forwardRef<FormMessageImplElement, FormMessageImpl
     }, [name, id, onFieldMessageIdAdd, onFieldMessageIdRemove]);
 
     return <Primitive.span id={id} {...messageProps} ref={forwardedRef} />;
-  }
+  },
 );
 
 /* -------------------------------------------------------------------------------------------------
@@ -607,7 +607,7 @@ const FormSubmit = React.forwardRef<FormSubmitElement, FormSubmitProps>(
   (props: ScopedProps<FormSubmitProps>, forwardedRef) => {
     const { __scopeForm, ...submitProps } = props;
     return <Primitive.button type="submit" {...submitProps} ref={forwardedRef} />;
-  }
+  },
 );
 
 FormSubmit.displayName = SUBMIT_NAME;
@@ -654,7 +654,7 @@ function getFirstInvalidControl(form: HTMLFormElement): HTMLElement | undefined 
 
 function isAsyncCustomMatcherEntry(
   entry: CustomMatcherEntry,
-  args: CustomMatcherArgs
+  args: CustomMatcherArgs,
 ): entry is AsyncCustomMatcherEntry {
   return entry.match.constructor.name === 'AsyncFunction' || returnsPromise(entry.match, args);
 }

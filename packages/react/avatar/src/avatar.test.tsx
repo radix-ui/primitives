@@ -179,7 +179,7 @@ describe('given an Avatar with fallback and delayed render', () => {
     rendered = render(
       <Avatar.Root data-testid={ROOT_TEST_ID}>
         <Avatar.Fallback delayMs={DELAY}>{FALLBACK_TEXT}</Avatar.Fallback>
-      </Avatar.Root>
+      </Avatar.Root>,
     );
   });
 

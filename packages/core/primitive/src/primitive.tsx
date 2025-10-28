@@ -11,7 +11,7 @@ export const canUseDOM = !!(
 export function composeEventHandlers<E extends { defaultPrevented: boolean }>(
   originalEventHandler?: (event: E) => void,
   ourEventHandler?: (event: E) => void,
-  { checkForDefaultPrevented = true } = {}
+  { checkForDefaultPrevented = true } = {},
 ) {
   return function handleEvent(event: E) {
     originalEventHandler?.(event);
@@ -44,7 +44,7 @@ export function getOwnerDocument(element: Node | null | undefined) {
  */
 export function getActiveElement(
   node: Node | null | undefined,
-  activeDescendant = false
+  activeDescendant = false,
 ): HTMLElement | null {
   const { activeElement } = getOwnerDocument(node);
   if (!activeElement?.nodeName) {
