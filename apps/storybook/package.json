@@ -7,6 +7,7 @@
     "lint": "eslint --max-warnings 0 .",
     "dev": "storybook dev -p 6006",
     "build": "storybook build",
+    "serve": "serve storybook-static -l 6006",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -29,6 +30,7 @@
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
     "eslint": "^9.38.0",
+    "serve": "^14.2.5",
     "storybook": "^9.1.15",
     "typescript": "^5.9.3",
     "eslint-plugin-storybook": "^9.1.15",
