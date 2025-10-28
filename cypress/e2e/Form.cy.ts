@@ -1,6 +1,5 @@
 describe('Form', () => {
   before(() => {
-    cy.visitStorybook();
     cy.visitStory('form--cypress');
   });
 

@@ -1,8 +1,4 @@
 describe('Menubar', () => {
-  before(() => {
-    cy.visitStorybook();
-  });
-
   beforeEach(() => {
     cy.visitStory('menubar--cypress');
   });

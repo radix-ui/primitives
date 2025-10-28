@@ -1,8 +1,4 @@
 describe('Toast', () => {
-  before(() => {
-    cy.visitStorybook();
-  });
-
   beforeEach(() => {
     cy.visitStory('toast--cypress');
   });

@@ -1,8 +1,4 @@
 describe('Select', () => {
-  before(() => {
-    cy.visitStorybook();
-  });
-
   beforeEach(() => {
     cy.visitStory('select--cypress');
   });
