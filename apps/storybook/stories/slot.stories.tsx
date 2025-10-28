@@ -1,13 +1,18 @@
 import * as React from 'react';
 import { Slot } from 'radix-ui';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 
-export default { title: 'Utilities/Slot' };
+export default { title: 'Utilities/Slot' } satisfies Meta<typeof Slot.Root>;
 
-export const WithoutSlottable = () => (
-  <SlotWithoutSlottable>
-    <b data-slot-element>hello</b>
-  </SlotWithoutSlottable>
-);
+type Story = StoryObj<typeof Slot.Root>;
+
+export const WithoutSlottable = {
+  render: () => (
+    <SlotWithoutSlottable>
+      <b data-slot-element>hello</b>
+    </SlotWithoutSlottable>
+  ),
+} satisfies Story;
 
 export const WithSlottable = () => (
   <SlotWithSlottable>
