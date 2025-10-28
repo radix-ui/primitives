@@ -79,7 +79,7 @@
     "tsup": "^8.3.6",
     "typescript": "^5.9.3",
     "vite": "^7.1.12",
-    "vitest": "^4.0.4",
+    "vitest": "^3.2.4",
     "vitest-axe": "^1.0.0-pre.5"
   },
   "resolutions": {
