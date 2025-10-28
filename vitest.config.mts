@@ -5,5 +5,6 @@ export default defineConfig({
     setupFiles: ['./scripts/setup-tests.ts'],
     environment: 'jsdom',
     include: ['**/*.test.?(c|m)[jt]s?(x)'],
+    retry: 1,
   },
 });
