@@ -1,5 +1,9 @@
 # @radix-ui/react-visually-hidden
 
+## 1.2.4
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.4`
+
 ## 1.2.3
 
 - Replace deprecated 'ElementRef' with 'ComponentRef' (#3426)

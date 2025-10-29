@@ -1,5 +1,9 @@
 # @radix-ui/react-portal
 
+## 1.1.10
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.4`
+
 ## 1.1.9
 
 - Replace deprecated 'ElementRef' with 'ComponentRef' (#3426)
