@@ -15,11 +15,12 @@ import * as VisuallyHiddenPrimitive from '@radix-ui/react-visually-hidden';
 
 import type { Scope } from '@radix-ui/react-context';
 
-type ScopedProps<P = {}> = P & { __scopeTooltip?: Scope };
 const [createTooltipContext, createTooltipScope] = createContextScope('Tooltip', [
   createPopperScope,
 ]);
 const usePopperScope = createPopperScope();
+
+type ScopedProps<P = {}> = P & { __scopeTooltip?: Scope };
 
 /* -------------------------------------------------------------------------------------------------
  * TooltipProvider
