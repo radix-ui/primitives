@@ -2,4 +2,4 @@
 '@radix-ui/react-presence': patch
 ---
 
-Handle the `animationend` event correctly when keyframe has escapable characters (#2763)
+Ensured that the `animationend` event is handled correctly when the keyframe has escapable characters (#2763)
