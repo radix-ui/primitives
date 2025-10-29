@@ -465,8 +465,10 @@ Chromatic.parameters = { chromatic: { disable: false } };
 export const Cypress = () => {
   const [modal, setModal] = React.useState(true);
   const [animated, setAnimated] = React.useState(false);
+  const [blurValidationEnabled, setBlurValidationEnabled] = React.useState(false);
   const [count, setCount] = React.useState(0);
   const [hasDestroyButton, setHasDestroyButton] = React.useState(true);
+  const [invalid, setInvalid] = React.useState(true);
 
   return (
     <>
@@ -484,6 +486,27 @@ export const Cypress = () => {
           >
             <Dialog.Title>title</Dialog.Title>
             <Dialog.Description>description</Dialog.Description>
+            {blurValidationEnabled && (
+              <div>
+                <label style={{ display: 'block' }}>
+                  <span>My text field</span>
+                  <input
+                    type="text"
+                    onBlur={(e) => setInvalid(e.target.value === '')}
+                    aria-describedby={invalid ? 'error-text' : undefined}
+                  />
+                </label>
+                <label style={{ display: 'block' }}>
+                  <span>My second text field</span>
+                  <input type="text" />
+                </label>
+                {invalid && (
+                  <div id="error-text" style={{ color: 'red', fontSize: 12 }}>
+                    This field is required
+                  </div>
+                )}
+              </div>
+            )}
             <Dialog.Close className={styles.close}>close</Dialog.Close>
             {hasDestroyButton && (
               <div>
@@ -517,6 +540,17 @@ export const Cypress = () => {
           onChange={(event) => setAnimated(Boolean(event.target.checked))}
         />{' '}
         animated
+      </label>
+
+      <br />
+
+      <label>
+        <input
+          type="checkbox"
+          checked={blurValidationEnabled}
+          onChange={(event) => setBlurValidationEnabled(Boolean(event.target.checked))}
+        />{' '}
+        enable blur validation
       </label>
 
       <br />
