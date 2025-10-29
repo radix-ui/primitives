@@ -20,7 +20,7 @@
     "build-storybook": "pnpm --filter=@repo/storybook run build",
     "build": "pnpm -r --parallel --filter \"./packages/**/*\" run build",
     "clean": "pnpm -r run clean",
-    "reset": "pnpm run clean && rm -rf node_modules",
+    "reset": "rm -rf node_modules && pnpm -r run reset",
     "bump:stable": "changeset version",
     "bump:next": "changeset version --snapshot",
     "bump:check": "changeset status --since=main",

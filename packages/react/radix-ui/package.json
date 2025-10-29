@@ -45,6 +45,7 @@
   "scripts": {
     "lint": "eslint --max-warnings 0 src",
     "clean": "rm -rf dist",
+    "reset": "rm -rf dist node_modules",
     "typecheck": "tsc --noEmit",
     "build:esm": "tsc",
     "build:cjs": "tsc --module commonjs --moduleResolution node --outDir dist/cjs",

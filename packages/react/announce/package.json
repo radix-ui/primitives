@@ -30,6 +30,7 @@
   "scripts": {
     "lint": "eslint --max-warnings 0 src",
     "clean": "rm -rf dist",
+    "reset": "rm -rf dist node_modules",
     "typecheck": "tsc --noEmit",
     "build": "radix-build"
   },
