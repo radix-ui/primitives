@@ -1,5 +1,9 @@
 # @radix-ui/react-switch
 
+## 1.2.6
+
+- Updated dependencies: `@radix-ui/primitive@1.1.3`, `@radix-ui/react-context@1.1.3`, `@radix-ui/react-primitive@2.1.4`
+
 ## 1.2.5
 
 - Replace deprecated 'ElementRef' with 'ComponentRef' (#3426)

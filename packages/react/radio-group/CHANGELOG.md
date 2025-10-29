@@ -1,5 +1,9 @@
 # @radix-ui/react-radio-group
 
+## 1.3.8
+
+- Updated dependencies: `@radix-ui/react-presence@1.1.5`, `@radix-ui/primitive@1.1.3`, `@radix-ui/react-context@1.1.3`, `@radix-ui/react-primitive@2.1.4`, `@radix-ui/react-roving-focus@1.1.11`
+
 ## 1.3.7
 
 - Replace deprecated 'ElementRef' with 'ComponentRef' (#3426)

@@ -1,5 +1,9 @@
 # @radix-ui/react-slot
 
+## 1.2.4
+
+- Fixed an issue with how slot components interact with lazy React components. In the case of a lazy component instance, the resulting promise must be consumed to render the desired component.
+
 ## 1.2.3
 
 - Replace deprecated 'ElementRef' with 'ComponentRef' (#3426)

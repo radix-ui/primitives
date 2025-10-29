@@ -1,5 +1,9 @@
 # @radix-ui/react-aspect-ratio
 
+## 1.1.8
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.4`
+
 ## 1.1.7
 
 - Replace deprecated 'ElementRef' with 'ComponentRef' (#3426)
