@@ -1449,24 +1449,33 @@ const SelectScrollUpButton = React.forwardRef<
   const viewportContext = useSelectViewportContext(SCROLL_UP_BUTTON_NAME, props.__scopeSelect);
   const [canScrollUp, setCanScrollUp] = React.useState(false);
   const composedRefs = useComposedRefs(forwardedRef, viewportContext.onScrollButtonChange);
+  const getItems = useCollection(props.__scopeSelect);
 
   useLayoutEffect(() => {
     if (contentContext.viewport && contentContext.isPositioned) {
       const viewport = contentContext.viewport;
+
       function handleScroll() {
-        const canScrollUp = viewport.scrollTop > 0;
+        const items = getItems();
+        const firstItem = items[0]?.ref.current;
+        const firstItemHeight = firstItem?.offsetHeight ?? 0;
+
+        // we use Math.ceil here because if the UI is zoomed-in
+        // `scrollTop` is not always reported as an integer
+        const canScrollUp = Math.ceil(viewport.scrollTop) > firstItemHeight;
         setCanScrollUp(canScrollUp);
       }
       handleScroll();
       viewport.addEventListener('scroll', handleScroll);
       return () => viewport.removeEventListener('scroll', handleScroll);
     }
-  }, [contentContext.viewport, contentContext.isPositioned]);
+  }, [contentContext.viewport, contentContext.isPositioned, getItems]);
 
   return canScrollUp ? (
     <SelectScrollButtonImpl
       {...props}
       ref={composedRefs}
+      direction="up"
       onAutoScroll={() => {
         const { viewport, selectedItem } = contentContext;
         if (viewport && selectedItem) {
@@ -1496,27 +1505,33 @@ const SelectScrollDownButton = React.forwardRef<
   const viewportContext = useSelectViewportContext(SCROLL_DOWN_BUTTON_NAME, props.__scopeSelect);
   const [canScrollDown, setCanScrollDown] = React.useState(false);
   const composedRefs = useComposedRefs(forwardedRef, viewportContext.onScrollButtonChange);
+  const getItems = useCollection(props.__scopeSelect);
 
   useLayoutEffect(() => {
     if (contentContext.viewport && contentContext.isPositioned) {
       const viewport = contentContext.viewport;
+      const items = getItems();
+      const lastItem = items[items.length - 1]?.ref.current;
+      const lastItemHeight = lastItem?.offsetHeight ?? 0;
+
       function handleScroll() {
         const maxScroll = viewport.scrollHeight - viewport.clientHeight;
         // we use Math.ceil here because if the UI is zoomed-in
         // `scrollTop` is not always reported as an integer
-        const canScrollDown = Math.ceil(viewport.scrollTop) < maxScroll;
+        const canScrollDown = Math.ceil(viewport.scrollTop) <= maxScroll - lastItemHeight;
         setCanScrollDown(canScrollDown);
       }
       handleScroll();
       viewport.addEventListener('scroll', handleScroll);
       return () => viewport.removeEventListener('scroll', handleScroll);
     }
-  }, [contentContext.viewport, contentContext.isPositioned]);
+  }, [contentContext.viewport, contentContext.isPositioned, getItems]);
 
   return canScrollDown ? (
     <SelectScrollButtonImpl
       {...props}
       ref={composedRefs}
+      direction="down"
       onAutoScroll={() => {
         const { viewport, selectedItem } = contentContext;
         if (viewport && selectedItem) {
@@ -1532,13 +1547,14 @@ SelectScrollDownButton.displayName = SCROLL_DOWN_BUTTON_NAME;
 type SelectScrollButtonImplElement = React.ComponentRef<typeof Primitive.div>;
 interface SelectScrollButtonImplProps extends PrimitiveDivProps {
   onAutoScroll(): void;
+  direction?: 'up' | 'down';
 }
 
 const SelectScrollButtonImpl = React.forwardRef<
   SelectScrollButtonImplElement,
   SelectScrollButtonImplProps
 >((props: ScopedProps<SelectScrollButtonImplProps>, forwardedRef) => {
-  const { __scopeSelect, onAutoScroll, ...scrollIndicatorProps } = props;
+  const { __scopeSelect, onAutoScroll, direction = 'down', ...scrollIndicatorProps } = props;
   const contentContext = useSelectContentContext('SelectScrollButton', __scopeSelect);
   const autoScrollTimerRef = React.useRef<number | null>(null);
   const getItems = useCollection(__scopeSelect);
@@ -1568,7 +1584,15 @@ const SelectScrollButtonImpl = React.forwardRef<
       aria-hidden
       {...scrollIndicatorProps}
       ref={forwardedRef}
-      style={{ flexShrink: 0, ...scrollIndicatorProps.style }}
+      style={{
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        zIndex: 1,
+        pointerEvents: 'auto',
+        ...(direction === 'up' ? { top: 0 } : { bottom: 0 }),
+        ...scrollIndicatorProps.style
+      }}
       onPointerDown={composeEventHandlers(scrollIndicatorProps.onPointerDown, () => {
         if (autoScrollTimerRef.current === null) {
           autoScrollTimerRef.current = window.setInterval(onAutoScroll, 50);
