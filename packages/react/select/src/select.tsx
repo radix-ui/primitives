@@ -651,14 +651,27 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
     }, [content, onOpenChange, triggerPointerDownPosRef]);
 
     React.useEffect(() => {
+      if (!context.open) return;
+
+      let innerWidth = window.innerWidth;
+      let innerHeight = window.innerHeight;
       const close = () => onOpenChange(false);
+      const onResize = () => {
+        // only close if the screen size has changed
+        // to avoid closing when the mobile keyboard shows up
+        if (window.innerWidth !== innerWidth || window.innerHeight !== innerHeight) {
+          close();
+          innerWidth = window.innerWidth;
+          innerHeight = window.innerHeight;
+        }
+      };
       window.addEventListener('blur', close);
-      window.addEventListener('resize', close);
+      window.addEventListener('resize', onResize);
       return () => {
         window.removeEventListener('blur', close);
-        window.removeEventListener('resize', close);
+        window.removeEventListener('resize', onResize);
       };
-    }, [onOpenChange]);
+    }, [onOpenChange, context.open]);
 
     const [searchRef, handleTypeaheadSearch] = useTypeaheadSearch((search) => {
       const enabledItems = getItems().filter((item) => !item.disabled);
