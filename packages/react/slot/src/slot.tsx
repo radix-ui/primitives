@@ -31,7 +31,9 @@ function isPromiseLike(value: unknown): value is PromiseLike<unknown> {
 
 function isLazyComponent(element: React.ReactNode): element is LazyReactElement {
   return (
-    React.isValidElement(element) &&
+    element != null &&
+    typeof element === 'object' &&
+    '$$typeof' in element &&
     element.$$typeof === REACT_LAZY_TYPE &&
     '_payload' in element &&
     isPromiseLike(element._payload)
