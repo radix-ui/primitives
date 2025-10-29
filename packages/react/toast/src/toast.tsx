@@ -36,6 +36,7 @@ type ToastProviderContextValue = {
   onToastRemove(): void;
   isFocusedToastEscapeKeyDownRef: React.MutableRefObject<boolean>;
   isClosePausedRef: React.MutableRefObject<boolean>;
+  announcerContainer?: Element | DocumentFragment;
 };
 
 type ScopedProps<P> = P & { __scopeToast?: Scope };
@@ -66,6 +67,13 @@ interface ToastProviderProps {
    * @defaultValue 50
    */
   swipeThreshold?: number;
+  /**
+   * An optional container where the toast announcements should be appended.
+   * This is useful when working with focus traps or modal dialogs that make
+   * other elements inert.
+   * @defaultValue document.body
+   */
+  announcerContainer?: Element | DocumentFragment;
 }
 
 const ToastProvider: React.FC<ToastProviderProps> = (props: ScopedProps<ToastProviderProps>) => {
@@ -75,6 +83,7 @@ const ToastProvider: React.FC<ToastProviderProps> = (props: ScopedProps<ToastPro
     duration = 5000,
     swipeDirection = 'right',
     swipeThreshold = 50,
+    announcerContainer,
     children,
   } = props;
   const [viewport, setViewport] = React.useState<ToastViewportElement | null>(null);
@@ -103,6 +112,7 @@ const ToastProvider: React.FC<ToastProviderProps> = (props: ScopedProps<ToastPro
         onToastRemove={React.useCallback(() => setToastCount((prevCount) => prevCount - 1), [])}
         isFocusedToastEscapeKeyDownRef={isFocusedToastEscapeKeyDownRef}
         isClosePausedRef={isClosePausedRef}
+        announcerContainer={announcerContainer}
       >
         {children}
       </ToastProviderProvider>
@@ -686,7 +696,7 @@ const ToastAnnounce: React.FC<ToastAnnounceProps> = (props: ScopedProps<ToastAnn
   }, []);
 
   return isAnnounced ? null : (
-    <Portal asChild>
+    <Portal asChild container={context.announcerContainer || undefined}>
       <VisuallyHidden {...announceProps}>
         {renderAnnounceText && (
           <>
