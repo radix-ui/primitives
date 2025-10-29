@@ -430,6 +430,29 @@ const OneTimePasswordField = React.forwardRef<HTMLDivElement, OneTimePasswordFie
     }, [attemptSubmit, autoSubmit, currentValue, length, onAutoSubmit, value]);
     const isHydrated = useIsHydrated();
 
+    // Sync focus to controlled value changes when controlled or autoFocus is true
+    React.useEffect(() => {
+      // Run when:
+      // - autoFocus is true (explicit opt-in for uncontrolled), OR
+      // - component is controlled (valueProp provided) so external updates keep focus in sync
+      const isControlled = valueProp != null;
+      if (!autoFocus && !isControlled) {
+        return;
+      }
+      const totalValue = value.join('');
+      const nextIndex = clamp(totalValue.length, [0, collection.size - 1]);
+      const active = (rootRef.current?.ownerDocument ?? document).activeElement as Element | null;
+      const activeIndex = collection.indexOf(active as HTMLInputElement);
+      if (activeIndex === nextIndex) {
+        return;
+      }
+      const target = collection.at(nextIndex)?.element ?? null;
+      // Defer to the next frame to avoid click-to-blur conflicts (e.g. with virtual keyboards)
+      requestAnimationFrame(() => {
+        focusInput(target ?? undefined);
+      });
+    }, [autoFocus, collection, value, valueProp]);
+
     return (
       <OneTimePasswordFieldContext
         scope={__scopeOneTimePasswordField}
