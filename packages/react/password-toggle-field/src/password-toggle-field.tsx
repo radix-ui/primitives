@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { flushSync } from 'react-dom';
-import { composeEventHandlers } from '@radix-ui/primitive';
+import { composeEventHandlers, getDeepActiveElement } from '@radix-ui/primitive';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { Primitive } from '@radix-ui/react-primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
@@ -334,7 +334,7 @@ const PasswordToggleFieldToggle = React.forwardRef<
                 requestAnimationFrame(() => {
                   // make sure the input still has focus (developer may have
                   // programatically moved focus elsewhere)
-                  if (input.ownerDocument.activeElement === input) {
+                  if (getDeepActiveElement() === input) {
                     input.selectionStart = selectionStart;
                     input.selectionEnd = selectionEnd;
                   }

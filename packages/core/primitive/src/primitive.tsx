@@ -73,3 +73,32 @@ export function getActiveElement(
 export function isFrame(element: Element): element is HTMLIFrameElement {
   return element.tagName === 'IFRAME';
 }
+
+
+/**
+ * Utility to determine whether an element is within a shadow DOM
+ */
+export function isInShadowDOM(element: Element): boolean {
+  return element && element.getRootNode() !== document && 'host' in element.getRootNode();
+}
+
+/**
+ * Utility to get the currently focused element even across shadow DOM boundaries
+ */
+export function getDeepActiveElement(): Element | null {
+  if (!canUseDOM) {
+    return null;
+  }
+
+  let activeElement = document.activeElement;
+  if (!activeElement) {
+    return null;
+  }
+
+  // Traverse through shadow DOMs to find the deepest active element
+  while (activeElement.shadowRoot?.activeElement) {
+    activeElement = activeElement.shadowRoot.activeElement;
+  }
+
+  return activeElement;
+}
