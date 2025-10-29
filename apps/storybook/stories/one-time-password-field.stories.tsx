@@ -8,7 +8,6 @@ import styles from './one-time-password-field.stories.module.css';
 
 export default {
   title: 'Components/OneTimePasswordField',
-  component: OneTimePasswordField.Root,
 } satisfies Meta<typeof OneTimePasswordField.Root>;
 
 type Story = StoryObj<typeof OneTimePasswordField.Root>;
@@ -25,6 +24,9 @@ const sharedStoryProps = {
     validationType: {
       options: ['numeric', 'alphanumeric', 'alpha', 'none'],
       control: { type: 'select' },
+    },
+    autoFocus: {
+      control: { type: 'boolean' },
     },
     autoSubmit: {
       control: { type: 'boolean' },
@@ -72,7 +74,6 @@ function UncontrolledImpl(props: OneTimePasswordField.OneTimePasswordFieldProps)
           <OneTimePasswordField.Root
             data-state={formState.type}
             className={styles.otpRoot}
-            autoFocus
             ref={rootRef}
             {...props}
           >
@@ -148,7 +149,6 @@ function ControlledImpl(props: OneTimePasswordField.OneTimePasswordFieldProps) {
           <OneTimePasswordField.Root
             data-state={error || isInvalid ? 'invalid' : isValid ? 'valid' : undefined}
             className={styles.otpRoot}
-            autoFocus
             ref={rootRef}
             onValueChange={(value) => setCode(value)}
             value={code}
