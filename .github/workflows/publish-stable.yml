@@ -7,7 +7,7 @@ on:
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  NPM_TOKEN: ${{ secrets.NPM_AUTOMATION_FROM_CHANCE }}
+  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
