@@ -18,7 +18,6 @@ interface LazyReactElement extends React.ReactElement {
  * Slot
  * -----------------------------------------------------------------------------------------------*/
 
-export type Usable<T> = PromiseLike<T> | React.Context<T>;
 const use: typeof React.use | undefined = (React as any)[' use '.trim().toString()];
 
 interface SlotProps extends React.HTMLAttributes<HTMLElement> {
@@ -41,46 +40,56 @@ function isLazyComponent(element: React.ReactNode): element is LazyReactElement 
 }
 
 /* @__NO_SIDE_EFFECTS__ */ export function createSlot(ownerName: string) {
-  const SlotClone = createSlotClone(ownerName);
   const Slot = React.forwardRef<HTMLElement, SlotProps>((props, forwardedRef) => {
     let { children, ...slotProps } = props;
-    if (isLazyComponent(children) && typeof use === 'function') {
-      children = use(children._payload);
+    let slottableElement: React.ReactElement | null = null;
+    const newChildren: React.ReactNode[] = [];
+
+    if (isLazyComponent(children)) {
+      children = typeof use === 'function' ? use(children._payload) : null;
     }
-    const childrenArray = React.Children.toArray(children);
-    const slottable = childrenArray.find(isSlottable);
 
-    if (slottable) {
-      // the new element to render is the one passed as a child of `Slottable`
-      const newElement = slottable.props.children;
+    React.Children.forEach(children, (maybeSlottable) => {
+      if (isSlottable(maybeSlottable)) {
+        const slottable = maybeSlottable;
+        let child = 'child' in slottable.props ? slottable.props.child : slottable.props.children;
 
-      const newChildren = childrenArray.map((child) => {
-        if (child === slottable) {
-          // because the new element will be the one rendered, we are only interested
-          // in grabbing its children (`newElement.props.children`)
-          if (React.Children.count(newElement) > 1) return React.Children.only(null);
-          return React.isValidElement(newElement)
-            ? (newElement.props as { children: React.ReactNode }).children
-            : null;
-        } else {
-          return child;
+        if (isLazyComponent(child)) {
+          child = typeof use === 'function' ? use(child._payload) : null;
         }
-      });
 
-      return (
-        <SlotClone {...slotProps} ref={forwardedRef}>
-          {React.isValidElement(newElement)
-            ? React.cloneElement(newElement, undefined, newChildren)
-            : null}
-        </SlotClone>
-      );
+        slottableElement = getSlottableElementFromSlottable(slottable, child);
+        newChildren.push((slottableElement?.props as any)?.children);
+      } else {
+        newChildren.push(maybeSlottable);
+      }
+    });
+
+    if (slottableElement) {
+      slottableElement = React.cloneElement(slottableElement, undefined, newChildren);
+    } else if (React.Children.count(children) === 1 && React.isValidElement(children)) {
+      slottableElement = children;
     }
 
-    return (
-      <SlotClone {...slotProps} ref={forwardedRef}>
-        {children}
-      </SlotClone>
-    );
+    if (!slottableElement) {
+      // TODO: Conditionally warn only in development once our dev builds are set up.
+      if (children || children === 0) {
+        console.warn(createSlotWarning(ownerName));
+      }
+
+      return children;
+    }
+
+    const slottableElementRef = getElementRef(slottableElement);
+    const composedRefs = composeRefs(forwardedRef, slottableElementRef);
+    const mergedProps = mergeProps(slotProps, slottableElement.props ?? {});
+
+    // do not pass ref to React.Fragment for React 19 compatibility
+    if (slottableElement.type !== React.Fragment) {
+      mergedProps.ref = forwardedRef ? composedRefs : slottableElementRef;
+    }
+
+    return React.cloneElement(slottableElement, mergedProps);
   });
 
   Slot.displayName = `${ownerName}.Slot`;
@@ -90,55 +99,37 @@ function isLazyComponent(element: React.ReactNode): element is LazyReactElement 
 const Slot = createSlot('Slot');
 
 /* -------------------------------------------------------------------------------------------------
- * SlotClone
- * -----------------------------------------------------------------------------------------------*/
-
-interface SlotCloneProps {
-  children: React.ReactNode;
-}
-
-/* @__NO_SIDE_EFFECTS__ */ function createSlotClone(ownerName: string) {
-  const SlotClone = React.forwardRef<any, SlotCloneProps>((props, forwardedRef) => {
-    let { children, ...slotProps } = props;
-    if (isLazyComponent(children) && typeof use === 'function') {
-      children = use(children._payload);
-    }
-
-    if (React.isValidElement(children)) {
-      const childrenRef = getElementRef(children);
-      const props = mergeProps(slotProps, children.props as AnyProps);
-      // do not pass ref to React.Fragment for React 19 compatibility
-      if (children.type !== React.Fragment) {
-        props.ref = forwardedRef ? composeRefs(forwardedRef, childrenRef) : childrenRef;
-      }
-      return React.cloneElement(children, props);
-    }
-
-    return React.Children.count(children) > 1 ? React.Children.only(null) : null;
-  });
-
-  SlotClone.displayName = `${ownerName}.SlotClone`;
-  return SlotClone;
-}
-
-/* -------------------------------------------------------------------------------------------------
  * Slottable
  * -----------------------------------------------------------------------------------------------*/
 
-const SLOTTABLE_IDENTIFIER = Symbol('radix.slottable');
+const SLOTTABLE_IDENTIFIER = Symbol.for('radix.slottable');
 
-interface SlottableProps {
+interface SlottableChildrenProps {
   children: React.ReactNode;
 }
 
+interface SlottableRenderFnProps {
+  child: React.ReactNode;
+  children: (slottable: React.ReactNode) => React.ReactNode;
+}
+
+type SlottableProps = SlottableRenderFnProps | SlottableChildrenProps;
 interface SlottableComponent extends React.FC<SlottableProps> {
   __radixId: symbol;
 }
 
 /* @__NO_SIDE_EFFECTS__ */ export function createSlottable(ownerName: string) {
-  const Slottable: SlottableComponent = ({ children }) => {
-    return <>{children}</>;
+  const Slottable: SlottableComponent = (props) => {
+    if ('child' in props) {
+      if (typeof props.children !== 'function') {
+        throw new Error('Slottable children must be a function when `child` is provided');
+      }
+      return props.children(props.child);
+    }
+
+    return props.children;
   };
+
   Slottable.displayName = `${ownerName}.Slottable`;
   Slottable.__radixId = SLOTTABLE_IDENTIFIER;
   return Slottable;
@@ -148,11 +139,21 @@ const Slottable = createSlottable('Slottable');
 
 /* ---------------------------------------------------------------------------------------------- */
 
+type SlottableElement = React.ReactElement<SlottableProps, SlottableComponent>;
+
+function getSlottableElementFromSlottable(slottable: SlottableElement, child: React.ReactNode) {
+  if ('child' in slottable.props) {
+    const child = slottable.props.child;
+    if (!React.isValidElement<React.PropsWithChildren>(child)) return null;
+    return React.cloneElement(child, undefined, slottable.props.children(child.props.children));
+  }
+
+  return React.isValidElement(child) ? child : null;
+}
+
 type AnyProps = Record<string, any>;
 
-function isSlottable(
-  child: React.ReactNode,
-): child is React.ReactElement<SlottableProps, typeof Slottable> {
+function isSlottable(child: React.ReactNode): child is SlottableElement {
   return (
     React.isValidElement(child) &&
     typeof child.type === 'function' &&
@@ -217,6 +218,10 @@ function getElementRef(element: React.ReactElement) {
 
   // Not DEV
   return (element.props as { ref?: React.Ref<unknown> }).ref || (element as any).ref;
+}
+
+function createSlotWarning(ownerName: string) {
+  return `${ownerName} failed to slot onto its children. Expected a single React element child or \`Slottable\`.`;
 }
 
 export {
