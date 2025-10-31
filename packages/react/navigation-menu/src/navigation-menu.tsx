@@ -498,7 +498,7 @@ const NavigationMenuTrigger = React.forwardRef<
             data-disabled={disabled ? '' : undefined}
             data-state={getOpenState(open)}
             aria-expanded={open}
-            aria-controls={contentId}
+            aria-controls={open ? contentId : undefined}
             {...triggerProps}
             ref={composedRefs}
             onPointerEnter={composeEventHandlers(props.onPointerEnter, () => {
