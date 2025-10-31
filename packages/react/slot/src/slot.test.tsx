@@ -140,6 +140,57 @@ describe('given a Button with Slottable', () => {
   });
 });
 
+describe('given a Button with Slottable nesting', () => {
+  afterEach(cleanup);
+  describe('without asChild', () => {
+    it('should render a button with a span around its children', async () => {
+      const tree = render(
+        <ButtonNested>
+          Button <em>text</em>
+        </ButtonNested>
+      );
+
+      expect(tree.container).toMatchSnapshot();
+    });
+
+    it('should render a button with icon on the left/right and a span around its children', async () => {
+      const tree = render(
+        <ButtonNested iconLeft={<span>left</span>} iconRight={<span>right</span>}>
+          Button <em>text</em>
+        </ButtonNested>
+      );
+
+      expect(tree.container).toMatchSnapshot();
+    });
+  });
+
+  describe('with asChild', () => {
+    it('should render a link with a span around its children', async () => {
+      const tree = render(
+        <ButtonNested asChild>
+          <a href="https://radix-ui.com">
+            Button <em>text</em>
+          </a>
+        </ButtonNested>
+      );
+
+      expect(tree.container).toMatchSnapshot();
+    });
+
+    it('should render a link with icon on the left/right and a span around its children', async () => {
+      const tree = render(
+        <ButtonNested asChild iconLeft={<span>left</span>} iconRight={<span>right</span>}>
+          <a href="https://radix-ui.com">
+            Button <em>text</em>
+          </a>
+        </ButtonNested>
+      );
+
+      expect(tree.container).toMatchSnapshot();
+    });
+  });
+});
+
 // TODO: Unskip when underlying issue is resolved
 // Reverted in https://github.com/radix-ui/primitives/pull/3554
 describe.skip('given an Input', () => {
@@ -248,6 +299,24 @@ const Button = React.forwardRef<
     <Comp {...props} ref={forwardedRef}>
       {iconLeft}
       <Slottable>{children}</Slottable>
+      {iconRight}
+    </Comp>
+  );
+});
+
+const ButtonNested = React.forwardRef<
+  React.ComponentRef<'button'>,
+  React.ComponentProps<'button'> & {
+    asChild?: boolean;
+    iconLeft?: React.ReactNode;
+    iconRight?: React.ReactNode;
+  }
+>(({ children, asChild = false, iconLeft, iconRight, ...props }, forwardedRef) => {
+  const Comp = asChild ? Slot : 'button';
+  return (
+    <Comp {...props} ref={forwardedRef}>
+      {iconLeft}
+      <Slottable child={children}>{(slottable) => <span>{slottable}</span>}</Slottable>
       {iconRight}
     </Comp>
   );

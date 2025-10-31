@@ -36,6 +36,74 @@ exports[`given a Button with Slottable > without asChild > should render a butto
 </div>
 `;
 
+exports[`given a Button with Slottable nesting > with asChild > should render a link with a span around its children 1`] = `
+<div>
+  <a
+    href="https://radix-ui.com"
+  >
+    <span>
+      Button 
+      <em>
+        text
+      </em>
+    </span>
+  </a>
+</div>
+`;
+
+exports[`given a Button with Slottable nesting > with asChild > should render a link with icon on the left/right and a span around its children 1`] = `
+<div>
+  <a
+    href="https://radix-ui.com"
+  >
+    <span>
+      left
+    </span>
+    <span>
+      Button 
+      <em>
+        text
+      </em>
+    </span>
+    <span>
+      right
+    </span>
+  </a>
+</div>
+`;
+
+exports[`given a Button with Slottable nesting > without asChild > should render a button with a span around its children 1`] = `
+<div>
+  <button>
+    <span>
+      Button 
+      <em>
+        text
+      </em>
+    </span>
+  </button>
+</div>
+`;
+
+exports[`given a Button with Slottable nesting > without asChild > should render a button with icon on the left/right and a span around its children 1`] = `
+<div>
+  <button>
+    <span>
+      left
+    </span>
+    <span>
+      Button 
+      <em>
+        text
+      </em>
+    </span>
+    <span>
+      right
+    </span>
+  </button>
+</div>
+`;
+
 exports[`given a Slot with React lazy components > with a lazy component in Button with Slottable > should render a lazy link with icon on the left/right 1`] = `
 <div>
   <a
