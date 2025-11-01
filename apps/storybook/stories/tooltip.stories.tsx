@@ -668,6 +668,7 @@ export const KeepOpenOnActivation = () => {
           ref={triggerRef}
           className={styles.trigger}
           onClick={(event) => event.preventDefault()}
+          onPointerDown={(event) => event.preventDefault()}
         >
           Hover or Focus me
         </Tooltip.Trigger>
