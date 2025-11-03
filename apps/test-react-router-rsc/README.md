@@ -22,7 +22,7 @@ A modern template for exploring React Server Components (RSC) with React Router,
 Install the dependencies:
 
 ```bash
-npm install
+pnpm install
 ```
 
 ### Development
@@ -30,7 +30,9 @@ npm install
 Start the development server with HMR:
 
 ```bash
-npm run dev
+pnpm dev
+# or from the root of the repo
+pnpm dev:react-router-rsc
 ```
 
 Your application will be available at `http://localhost:5173`.
@@ -40,7 +42,7 @@ Your application will be available at `http://localhost:5173`.
 Create a production build:
 
 ```bash
-npm run build
+pnpm build
 ```
 
 ## Running Production Build
