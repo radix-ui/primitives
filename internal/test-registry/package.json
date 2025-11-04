@@ -1,0 +1,27 @@
+{
+  "name": "@repo/test-registry",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "@radix-ui/react-icons": "^1.3.2",
+    "@repo/test-data": "workspace:*",
+    "radix-ui": "workspace:*"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "eslint": "^9.38.0",
+    "typescript": "^5.9.3"
+  },
+  "exports": {
+    ".": "./test-registry.ts",
+    "./components/*": "./components/*.tsx",
+    "./*": "./*.ts"
+  },
+  "scripts": {
+    "lint": "eslint --max-warnings 0 .",
+    "check-types": "tsc --noEmit"
+  }
+}
