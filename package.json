@@ -24,6 +24,7 @@
     "dev:next": "pnpm --filter=test-next dev",
     "build-storybook": "pnpm --filter=@repo/storybook run build",
     "build": "pnpm -r --parallel --filter \"./packages/**/*\" run build",
+    "build:apps": "pnpm -r --parallel --filter \"@repo/test-*\" run build",
     "clean": "pnpm -r run clean",
     "reset": "rm -rf node_modules && pnpm -r run reset",
     "bump:stable": "changeset version",
