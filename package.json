@@ -16,7 +16,6 @@
     "cypress:run": "cypress run",
     "cypress:dev": "cypress open",
     "dev": "pnpm run storybook",
-    "dev:ssr": "pnpm --filter=@repo/ssr-testing dev",
     "dev:react-router": "pnpm --filter=test-react-router dev",
     "dev:react-router-rsc": "pnpm --filter=test-react-router-rsc dev",
     "dev:vite-react-17": "pnpm --filter=test-vite-react-17 dev",
