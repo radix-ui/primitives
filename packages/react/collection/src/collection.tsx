@@ -56,8 +56,8 @@ function createCollection<ItemElement extends HTMLElement, ItemData extends {} =
   );
 
   type CollectionState = [
-    ItemMap: ItemMap<ItemElement, ItemData>,
-    SetItemMap: React.Dispatch<React.SetStateAction<ItemMap<ItemElement, ItemData>>>,
+    ItemMap: ItemMap<ItemElement, AllItemData>,
+    SetItemMap: React.Dispatch<React.SetStateAction<ItemMap<ItemElement, AllItemData>>>,
   ];
 
   const CollectionProvider: React.FC<{
@@ -167,7 +167,7 @@ function createCollection<ItemElement extends HTMLElement, ItemData extends {} =
   const ITEM_SLOT_NAME = name + 'CollectionItemSlot';
   const ITEM_DATA_ATTR = 'data-radix-collection-item';
 
-  type CollectionItemSlotProps = ItemData & {
+  type CollectionItemSlotProps = AllItemData & {
     children: React.ReactNode;
     scope: any;
   };
@@ -197,12 +197,12 @@ function createCollection<ItemElement extends HTMLElement, ItemData extends {} =
           }
 
           if (!map.has(element)) {
-            map.set(element, { ...(itemData as unknown as ItemData), element });
+            map.set(element, { ...(itemData as unknown as AllItemData), element });
             return map.toSorted(sortByDocumentPosition);
           }
 
           return map
-            .set(element, { ...(itemData as unknown as ItemData), element })
+            .set(element, { ...(itemData as unknown as AllItemData), element })
             .toSorted(sortByDocumentPosition);
         });
 
@@ -232,7 +232,7 @@ function createCollection<ItemElement extends HTMLElement, ItemData extends {} =
    * ---------------------------------------------------------------------------------------------*/
 
   function useInitCollection() {
-    return React.useState<ItemMap<ItemElement, ItemData>>(new OrderedDict());
+    return React.useState<ItemMap<ItemElement, AllItemData>>(new OrderedDict());
   }
 
   /* -----------------------------------------------------------------------------------------------
