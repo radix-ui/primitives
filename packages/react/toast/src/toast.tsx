@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { composeEventHandlers } from '@radix-ui/primitive';
+import { composeEventHandlers, getDeepActiveElement } from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createCollection } from '@radix-ui/react-collection';
 import { createContextScope } from '@radix-ui/react-context';
@@ -193,7 +193,7 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
         };
 
         const handlePointerLeaveResume = () => {
-          const isFocusInside = wrapper.contains(document.activeElement);
+          const isFocusInside = wrapper.contains(getDeepActiveElement());
           if (!isFocusInside) handleResume();
         };
 
@@ -243,7 +243,7 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
           const isTabKey = event.key === 'Tab' && !isMetaKey;
 
           if (isTabKey) {
-            const focusedElement = document.activeElement;
+            const focusedElement = getDeepActiveElement();
             const isTabbingBackwards = event.shiftKey;
             const targetIsViewport = event.target === viewport;
 
@@ -491,7 +491,7 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
     const handleClose = useCallbackRef(() => {
       // focus viewport if focus is within toast to read the remaining toast
       // count to SR users and ensure focus isn't lost
-      const isFocusInToast = node?.contains(document.activeElement);
+      const isFocusInToast = node?.contains(getDeepActiveElement());
       if (isFocusInToast) context.viewport?.focus();
       onClose();
     });
@@ -935,12 +935,12 @@ function getTabbableCandidates(container: HTMLElement) {
 }
 
 function focusFirst(candidates: HTMLElement[]) {
-  const previouslyFocusedElement = document.activeElement;
+  const previouslyFocusedElement = getDeepActiveElement();
   return candidates.some((candidate) => {
     // if focus is already where we want to go, we don't want to keep going through the candidates
     if (candidate === previouslyFocusedElement) return true;
     candidate.focus();
-    return document.activeElement !== previouslyFocusedElement;
+    return getDeepActiveElement() !== previouslyFocusedElement;
   });
 }
 
