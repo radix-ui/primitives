@@ -10,7 +10,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test:
+  build-apps:
+    name: Build Test Apps
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
