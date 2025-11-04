@@ -1,5 +1,9 @@
 # @radix-ui/react-accessible-icon
 
+## 1.1.8
+
+- Updated dependencies: `@radix-ui/react-visually-hidden@1.2.4`
+
 ## 1.1.7
 
 - Updated dependencies: `@radix-ui/react-visually-hidden@1.2.3`

@@ -1,5 +1,9 @@
 # @radix-ui/react-checkbox
 
+## 1.3.3
+
+- Updated dependencies: `@radix-ui/react-presence@1.1.5`, `@radix-ui/primitive@1.1.3`, `@radix-ui/react-context@1.1.3`, `@radix-ui/react-primitive@2.1.4`
+
 ## 1.3.2
 
 - Replace deprecated 'ElementRef' with 'ComponentRef' (#3426)

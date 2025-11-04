@@ -1,5 +1,9 @@
 # @radix-ui/react-menubar
 
+## 1.1.16
+
+- Updated dependencies: `@radix-ui/primitive@1.1.3`, `@radix-ui/react-context@1.1.3`, `@radix-ui/react-menu@2.1.16`, `@radix-ui/react-collection@1.1.8`, `@radix-ui/react-primitive@2.1.4`, `@radix-ui/react-roving-focus@1.1.11`
+
 ## 1.1.15
 
 - Replace deprecated 'ElementRef' with 'ComponentRef' (#3426)
