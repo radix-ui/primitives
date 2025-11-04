@@ -1,0 +1,4 @@
+@import '@repo/test-styles/resets.css';
+@import '@repo/test-styles/colors.css';
+@import '@repo/test-styles/global.css';
+@import '@repo/test-styles/components.css';

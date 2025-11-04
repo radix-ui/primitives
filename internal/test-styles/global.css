@@ -1,0 +1,10 @@
+html,
+body {
+  min-height: 100vh;
+  min-height: 100svh;
+  height: 100%;
+  color-scheme: light dark;
+  @media (prefers-color-scheme: dark) {
+    color-scheme: dark;
+  }
+}
