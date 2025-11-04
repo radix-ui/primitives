@@ -1,5 +1,5 @@
 import * as VisuallyHidden from '@repo/test-registry/components/visually-hidden';
 
-export default function Page() {
+export async function ServerComponent() {
   return <VisuallyHidden.Basic />;
 }

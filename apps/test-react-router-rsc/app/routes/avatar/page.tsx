@@ -1,5 +1,5 @@
 import * as Avatar from '@repo/test-registry/components/avatar';
 
-export default function Page() {
+export async function ServerComponent() {
   return <Avatar.Basic />;
 }

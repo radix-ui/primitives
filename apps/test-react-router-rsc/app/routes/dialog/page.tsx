@@ -1,5 +1,5 @@
 import * as Dialog from '@repo/test-registry/components/dialog';
 
-export default function Page() {
+export async function ServerComponent() {
   return <Dialog.Basic />;
 }

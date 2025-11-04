@@ -1,5 +1,5 @@
 import * as Toast from '@repo/test-registry/components/toast';
 
-export default function Page() {
+export async function ServerComponent() {
   return <Toast.Basic />;
 }

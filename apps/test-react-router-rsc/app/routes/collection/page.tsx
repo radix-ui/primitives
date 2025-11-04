@@ -6,7 +6,7 @@ import {
   StableItem,
 } from '@repo/test-registry/components/collection';
 
-export default function Page() {
+export async function ServerComponent() {
   return (
     <div>
       <h2>Unstable Collection</h2>

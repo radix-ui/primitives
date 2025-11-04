@@ -1,5 +1,5 @@
 import * as Popover from '@repo/test-registry/components/popover';
 
-export default function Page() {
+export async function ServerComponent() {
   return <Popover.Basic />;
 }

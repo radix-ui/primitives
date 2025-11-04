@@ -1,5 +1,5 @@
 import * as Separator from '@repo/test-registry/components/separator';
 
-export default function Page() {
+export async function ServerComponent() {
   return <Separator.Basic />;
 }

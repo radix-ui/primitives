@@ -1,6 +1,6 @@
 import * as Portal from '@repo/test-registry/components/portal';
 
-export default function Page() {
+export async function ServerComponent() {
   return (
     <div>
       <Portal.Basic />

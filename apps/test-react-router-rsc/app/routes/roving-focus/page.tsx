@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as RovingFocus from '@repo/test-registry/components/roving-focus';
 
-export default function Page() {
+export async function ServerComponent() {
   return (
     <>
       <h1>Basic</h1>

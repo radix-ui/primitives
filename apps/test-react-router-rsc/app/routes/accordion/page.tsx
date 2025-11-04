@@ -1,5 +1,5 @@
 import * as Accordion from '@repo/test-registry/components/accordion';
 
-export default function Page() {
+export async function ServerComponent() {
   return <Accordion.Basic />;
 }

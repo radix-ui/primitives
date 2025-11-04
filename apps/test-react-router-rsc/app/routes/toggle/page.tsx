@@ -1,5 +1,5 @@
 import * as Toggle from '@repo/test-registry/components/toggle';
 
-export default function Page() {
+export async function ServerComponent() {
   return <Toggle.Basic />;
 }

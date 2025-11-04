@@ -1,5 +1,5 @@
 import * as Arrow from '@repo/test-registry/components/arrow';
 
-export default function Page() {
+export async function ServerComponent() {
   return <Arrow.Basic />;
 }

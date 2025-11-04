@@ -1,5 +1,5 @@
 import * as Checkbox from '@repo/test-registry/components/checkbox';
 
-export default function Page() {
+export async function ServerComponent() {
   return <Checkbox.Basic />;
 }

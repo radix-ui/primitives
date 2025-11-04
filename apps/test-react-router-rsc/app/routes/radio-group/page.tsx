@@ -1,5 +1,5 @@
 import * as RadioGroup from '@repo/test-registry/components/radio-group';
 
-export default function Page() {
+export async function ServerComponent() {
   return <RadioGroup.Basic />;
 }

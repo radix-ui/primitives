@@ -1,6 +1,6 @@
 import * as Menu from '@repo/test-registry/components/menu';
 
-export default function Page() {
+export async function ServerComponent() {
   return (
     <div>
       <Menu.Basic />

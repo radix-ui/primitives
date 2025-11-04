@@ -1,6 +1,6 @@
 import * as Popper from '@repo/test-registry/components/popper';
 
-export default function Page() {
+export async function ServerComponent() {
   return (
     <div>
       <Popper.Basic />

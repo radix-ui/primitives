@@ -1,5 +1,5 @@
 import * as Tooltip from '@repo/test-registry/components/tooltip';
 
-export default function Page() {
+export async function ServerComponent() {
   return <Tooltip.Basic />;
 }

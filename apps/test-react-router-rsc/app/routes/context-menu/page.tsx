@@ -1,5 +1,5 @@
 import * as ContextMenu from '@repo/test-registry/components/context-menu';
 
-export default function Page() {
+export async function ServerComponent() {
   return <ContextMenu.Basic />;
 }

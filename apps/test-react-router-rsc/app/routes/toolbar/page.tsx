@@ -1,5 +1,5 @@
 import * as Toolbar from '@repo/test-registry/components/toolbar';
 
-export default function Page() {
+export async function ServerComponent() {
   return <Toolbar.Basic />;
 }
