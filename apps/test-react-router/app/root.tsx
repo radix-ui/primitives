@@ -1,11 +1,13 @@
 import {
   isRouteErrorResponse,
+  NavLink,
   Links,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
 } from 'react-router';
+import { primitives } from '@repo/test-registry';
 import type { Route } from './+types/root';
 import './globals.css';
 
@@ -32,7 +34,25 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        {children}
+        <h1>React Router testing</h1>
+        <div style={{ display: 'flex', gap: '10em' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5em' }}>
+            <h2>Public APIs</h2>
+            {primitives.public.map((primitive) => (
+              <NavLink key={primitive.id} to={`/${primitive.id}`}>
+                {primitive.name}
+              </NavLink>
+            ))}
+            <hr />
+            <h2>Internal APIs</h2>
+            {primitives.internal.map((primitive) => (
+              <NavLink key={primitive.id} to={`/${primitive.id}`}>
+                {primitive.name}
+              </NavLink>
+            ))}
+          </div>
+          <div>{children}</div>
+        </div>
         <ScrollRestoration />
         <Scripts />
       </body>
