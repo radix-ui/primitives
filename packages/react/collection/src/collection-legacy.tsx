@@ -2,6 +2,7 @@ import React from 'react';
 import { createContextScope } from '@radix-ui/react-context';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createSlot, type Slot } from '@radix-ui/react-slot';
+import { OrderedDict } from './ordered-dictionary';
 
 type SlotProps = React.ComponentPropsWithoutRef<typeof Slot>;
 type CollectionElement = HTMLElement;
@@ -11,7 +12,7 @@ interface CollectionProps extends SlotProps {
 
 // We have resorted to returning slots directly rather than exposing primitives that can then
 // be slotted like `<CollectionItem as={Slot}>…</CollectionItem>`.
-// This is because we encountered issues with generic types that cannot be statically analysed
+// This is because we encountered issues with generic types that cannot be statically analyzed
 // due to creating them dynamically via createCollection.
 
 function createCollection<ItemElement extends HTMLElement, ItemData = {}>(name: string) {
@@ -22,23 +23,25 @@ function createCollection<ItemElement extends HTMLElement, ItemData = {}>(name: 
   const PROVIDER_NAME = name + 'CollectionProvider';
   const [createCollectionContext, createCollectionScope] = createContextScope(PROVIDER_NAME);
 
+  type ItemMap = OrderedDict<
+    React.RefObject<ItemElement | null>,
+    { ref: React.RefObject<ItemElement | null> } & ItemData
+  >;
+
   type ContextValue = {
     collectionRef: React.RefObject<CollectionElement | null>;
-    itemMap: Map<
-      React.RefObject<ItemElement | null>,
-      { ref: React.RefObject<ItemElement | null> } & ItemData
-    >;
+    itemMap: React.RefObject<ItemMap>;
   };
 
   const [CollectionProviderImpl, useCollectionContext] = createCollectionContext<ContextValue>(
     PROVIDER_NAME,
-    { collectionRef: { current: null }, itemMap: new Map() },
+    { collectionRef: { current: null }, itemMap: { current: new OrderedDict() } },
   );
 
   const CollectionProvider: React.FC<{ children?: React.ReactNode; scope: any }> = (props) => {
     const { scope, children } = props;
     const ref = React.useRef<CollectionElement>(null);
-    const itemMap = React.useRef<ContextValue['itemMap']>(new Map()).current;
+    const itemMap = React.useRef<ItemMap>(new OrderedDict());
     return (
       <CollectionProviderImpl scope={scope} itemMap={itemMap} collectionRef={ref}>
         {children}
@@ -87,8 +90,8 @@ function createCollection<ItemElement extends HTMLElement, ItemData = {}>(name: 
       const context = useCollectionContext(ITEM_SLOT_NAME, scope);
 
       React.useEffect(() => {
-        context.itemMap.set(ref, { ref, ...(itemData as unknown as ItemData) });
-        return () => void context.itemMap.delete(ref);
+        context.itemMap.current.set(ref, { ref, ...(itemData as unknown as ItemData) });
+        return () => void context.itemMap.current.delete(ref);
       });
 
       return (
@@ -112,11 +115,10 @@ function createCollection<ItemElement extends HTMLElement, ItemData = {}>(name: 
       const collectionNode = context.collectionRef.current;
       if (!collectionNode) return [];
       const orderedNodes = Array.from(collectionNode.querySelectorAll(`[${ITEM_DATA_ATTR}]`));
-      const items = Array.from(context.itemMap.values());
-      const orderedItems = items.sort(
-        (a, b) => orderedNodes.indexOf(a.ref.current!) - orderedNodes.indexOf(b.ref.current!),
+      const items = context.itemMap.current.toSorted(
+        (a, b) => orderedNodes.indexOf(a[0].current!) - orderedNodes.indexOf(b[0].current!),
       );
-      return orderedItems;
+      return Array.from(items.values());
     }, [context.collectionRef, context.itemMap]);
 
     return getItems;
