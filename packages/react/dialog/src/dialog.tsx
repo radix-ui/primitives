@@ -229,6 +229,11 @@ interface DialogContentProps extends DialogContentTypeProps {
    * controlling animation with React animation libraries.
    */
   forceMount?: true;
+
+  /**
+  * Specify a container element to portal the content into.
+  */
+  portalContainer?: Element | DocumentFragment | null;
 }
 
 const DialogContent = React.forwardRef<DialogContentElement, DialogContentProps>(
