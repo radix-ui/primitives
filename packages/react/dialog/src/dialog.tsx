@@ -533,9 +533,14 @@ type DescriptionWarningProps = {
 
 const DescriptionWarning: React.FC<DescriptionWarningProps> = ({ contentRef, descriptionId }) => {
   const descriptionWarningContext = useWarningContext(DESCRIPTION_WARNING_NAME);
-  const MESSAGE = `Warning: Missing \`Description\` or \`aria-describedby={undefined}\` for {${descriptionWarningContext.contentName}}.`;
+  const MESSAGE = `Warning: Missing \`Description\` or \`aria-description\` or \`aria-describedby={undefined}\` for {${descriptionWarningContext.contentName}}.`;
 
   React.useEffect(() => {
+    if (contentRef.current?.getAttribute('aria-description')) {
+      // the dialog is described by the aria-description attribute
+      return;
+    }
+
     const describedById = contentRef.current?.getAttribute('aria-describedby');
     // if we have an id and the user hasn't set aria-describedby={undefined}
     if (descriptionId && describedById) {
