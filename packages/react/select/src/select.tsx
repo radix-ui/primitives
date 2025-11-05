@@ -104,7 +104,7 @@ type SelectControlProps =
   | ControlledUnclearableSelectProps
   | UncontrolledSelectProps;
 
-interface SelectSharedProps {
+export interface SelectSharedProps {
   children?: React.ReactNode;
   open?: boolean;
   defaultOpen?: boolean;
