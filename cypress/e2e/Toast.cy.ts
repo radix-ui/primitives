@@ -95,5 +95,78 @@ describe('Toast', () => {
       cy.realPress(['Shift', 'Tab']);
       cy.findByText('Focusable before viewport').should('be.focused');
     });
+
+    it('should render announcements in document body by default', () => {
+      // Add a toast to trigger announcement
+      cy.findByText('Add toast').click();
+
+      // Verify announcement is rendered in document body (default behavior)
+      cy.get('body').within(() => {
+        cy.get('[role="status"]')
+          .should('exist')
+          .and('contain.text', 'Notification')
+          .and('contain.text', 'Toast 1 title')
+          .and('contain.text', 'Toast 1 description');
+      });
+
+      // Wait for announcement cleanup
+      cy.wait(1100);
+
+      // Verify announcement is cleaned up
+      cy.get('body [role="status"]').should('not.exist');
+    });
   });
+
+  describe('given custom announcer container', () => {
+    beforeEach(() => {
+      cy.visitStory('toast--custom-announcer-container');
+    });
+
+    it('should render announcements in the custom container', () => {
+      // Initially, no announcements should be present
+      cy.findByTestId('custom-announcer-container')
+        .should('exist')
+        .within(() => {
+          cy.get('[role="status"]').should('not.exist');
+        });
+
+      // Open a toast
+      cy.findByTestId('open-toast-button').click();
+
+      // Verify the toast is visible
+      cy.findByTestId('custom-container-toast').should('be.visible');
+
+      // Verify the announcement is rendered in the custom container
+      cy.findByTestId('custom-announcer-container').within(() => {
+        cy.get('[role="status"]')
+          .should('exist')
+          .and('contain.text', 'Notification')
+          .and('contain.text', 'Custom Container Toast')
+          .and('contain.text', 'This toast\'s announcements are rendered in a custom container');
+      });
+
+      // Verify the announcement is NOT directly in the document body (default behavior)
+      cy.get('body > [role="status"]').should('not.exist');
+    });
+
+    it('should clean up announcements after timeout', () => {
+      // Open a toast
+      cy.findByTestId('open-toast-button').click();
+
+      // Verify announcement exists initially
+      cy.findByTestId('custom-announcer-container').within(() => {
+        cy.get('[role="status"]').should('exist');
+      });
+
+      // Wait for announcement cleanup (1000ms timeout)
+      cy.wait(1100);
+
+      // Verify announcement is cleaned up
+      cy.findByTestId('custom-announcer-container').within(() => {
+        cy.get('[role="status"]').should('not.exist');
+      });
+    });
+
+  });
+
 });
