@@ -536,8 +536,8 @@ const Slot = createSlot('SelectContent.RemoveScroll');
 
 const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectContentImplProps>(
   (props: ScopedProps<SelectContentImplProps>, forwardedRef) => {
+    const { __scopeSelect } = props
     const {
-      __scopeSelect,
       position = 'item-aligned',
       onCloseAutoFocus,
       onEscapeKeyDown,
