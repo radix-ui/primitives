@@ -1,6 +1,6 @@
 import { axe } from 'vitest-axe';
 import type { RenderResult } from '@testing-library/react';
-import { act, cleanup, render, screen, fireEvent } from '@testing-library/react';
+import { act, cleanup, render, screen, fireEvent, waitFor } from '@testing-library/react';
 import * as OneTimePasswordField from './one-time-password-field';
 import { afterEach, describe, it, beforeEach, expect } from 'vitest';
 import { userEvent, type UserEvent } from '@testing-library/user-event';
@@ -78,6 +78,60 @@ describe('given a default OneTimePasswordField', () => {
     fireEvent.click(firstInput);
     await act(async () => await user.paste('1,2,3,4,5,6'));
     expect(getInputValues(inputs)).toBe('1,2,3,4,5,6');
+  });
+});
+
+describe('given a controlled value to OneTimePasswordField', () => {
+  afterEach(cleanup);
+
+  it('focuses the input at clamp(value.length, 0, lastIndex) as value grows', async () => {
+    const Test = ({ value }: { value: string }) => (
+      <OneTimePasswordField.Root value={value} onValueChange={() => {}} autoFocus>
+        <OneTimePasswordField.Input />
+        <OneTimePasswordField.Input />
+        <OneTimePasswordField.Input />
+        <OneTimePasswordField.Input />
+        <OneTimePasswordField.Input />
+        <OneTimePasswordField.Input />
+        <OneTimePasswordField.HiddenInput />
+      </OneTimePasswordField.Root>
+    );
+
+    const { rerender } = render(<Test value="" />);
+    const inputs = screen.getAllByRole<HTMLInputElement>('textbox', { hidden: false });
+
+    rerender(<Test value="0" />);
+    await waitFor(() => {
+      expect(inputs[1]).toHaveFocus();
+    });
+
+    rerender(<Test value="012" />);
+    await waitFor(() => {
+      expect(inputs[3]).toHaveFocus();
+    });
+  });
+
+  it('clamps focus to the last input when value length exceeds inputs', async () => {
+    const Test = ({ value }: { value: string }) => (
+      <OneTimePasswordField.Root value={value} onValueChange={() => {}} autoFocus>
+        <OneTimePasswordField.Input />
+        <OneTimePasswordField.Input />
+        <OneTimePasswordField.Input />
+        <OneTimePasswordField.Input />
+        <OneTimePasswordField.Input />
+        <OneTimePasswordField.Input />
+        <OneTimePasswordField.HiddenInput />
+      </OneTimePasswordField.Root>
+    );
+
+    const { rerender } = render(<Test value="" />);
+    const inputs = screen.getAllByRole<HTMLInputElement>('textbox', { hidden: false });
+    const lastIndex = inputs.length - 1;
+
+    rerender(<Test value="0123456" />);
+    await waitFor(() => {
+      expect(inputs[lastIndex]).toHaveFocus();
+    });
   });
 });
 
