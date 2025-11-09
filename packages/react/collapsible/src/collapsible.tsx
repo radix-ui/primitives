@@ -21,6 +21,7 @@ const [createCollapsibleContext, createCollapsibleScope] = createContextScope(CO
 
 type CollapsibleContextValue = {
   contentId: string;
+  keepChildrenMounted?: boolean;
   disabled?: boolean;
   open: boolean;
   onOpenToggle(): void;
@@ -33,6 +34,11 @@ type CollapsibleElement = React.ComponentRef<typeof Primitive.div>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface CollapsibleProps extends PrimitiveDivProps {
   defaultOpen?: boolean;
+  /**
+   * When set to true, children of content will remain mounted when content is
+   * collapsed.
+   */
+  keepChildrenMounted?: boolean;
   open?: boolean;
   disabled?: boolean;
   onOpenChange?(open: boolean): void;
@@ -44,6 +50,7 @@ const Collapsible = React.forwardRef<CollapsibleElement, CollapsibleProps>(
       __scopeCollapsible,
       open: openProp,
       defaultOpen,
+      keepChildrenMounted,
       disabled,
       onOpenChange,
       ...collapsibleProps
@@ -59,6 +66,7 @@ const Collapsible = React.forwardRef<CollapsibleElement, CollapsibleProps>(
     return (
       <CollapsibleProvider
         scope={__scopeCollapsible}
+        keepChildrenMounted={keepChildrenMounted}
         disabled={disabled}
         contentId={useId()}
         open={open}
@@ -217,7 +225,7 @@ const CollapsibleContentImpl = React.forwardRef<
         ...props.style,
       }}
     >
-      {isOpen && children}
+      {(isOpen || context.keepChildrenMounted) && children}
     </Primitive.div>
   );
 });
