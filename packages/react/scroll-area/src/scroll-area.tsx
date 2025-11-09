@@ -223,7 +223,7 @@ const ScrollAreaScrollbar = React.forwardRef<ScrollAreaScrollbarElement, ScrollA
     ) : context.type === 'auto' ? (
       <ScrollAreaScrollbarAuto {...scrollbarProps} ref={forwardedRef} forceMount={forceMount} />
     ) : context.type === 'always' ? (
-      <ScrollAreaScrollbarVisible {...scrollbarProps} ref={forwardedRef} />
+      <ScrollAreaScrollbarVisible {...scrollbarProps} ref={forwardedRef} data-state="visible" />
     ) : null;
   },
 );
