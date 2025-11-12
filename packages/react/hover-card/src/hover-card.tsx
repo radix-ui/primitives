@@ -119,7 +119,7 @@ const TRIGGER_NAME = 'HoverCardTrigger';
 
 type HoverCardTriggerElement = React.ComponentRef<typeof Primitive.a>;
 type PrimitiveLinkProps = React.ComponentPropsWithoutRef<typeof Primitive.a>;
-interface HoverCardTriggerProps extends PrimitiveLinkProps { }
+interface HoverCardTriggerProps extends PrimitiveLinkProps {}
 
 const HoverCardTrigger = React.forwardRef<HoverCardTriggerElement, HoverCardTriggerProps>(
   (props: ScopedProps<HoverCardTriggerProps>, forwardedRef) => {
@@ -376,7 +376,7 @@ const ARROW_NAME = 'HoverCardArrow';
 
 type HoverCardArrowElement = React.ComponentRef<typeof PopperPrimitive.Arrow>;
 type PopperArrowProps = React.ComponentPropsWithoutRef<typeof PopperPrimitive.Arrow>;
-interface HoverCardArrowProps extends PopperArrowProps { }
+interface HoverCardArrowProps extends PopperArrowProps {}
 
 const HoverCardArrow = React.forwardRef<HoverCardArrowElement, HoverCardArrowProps>(
   (props: ScopedProps<HoverCardArrowProps>, forwardedRef) => {
