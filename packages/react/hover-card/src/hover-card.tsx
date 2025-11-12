@@ -119,7 +119,7 @@ const TRIGGER_NAME = 'HoverCardTrigger';
 
 type HoverCardTriggerElement = React.ComponentRef<typeof Primitive.a>;
 type PrimitiveLinkProps = React.ComponentPropsWithoutRef<typeof Primitive.a>;
-interface HoverCardTriggerProps extends PrimitiveLinkProps {}
+interface HoverCardTriggerProps extends PrimitiveLinkProps { }
 
 const HoverCardTrigger = React.forwardRef<HoverCardTriggerElement, HoverCardTriggerProps>(
   (props: ScopedProps<HoverCardTriggerProps>, forwardedRef) => {
@@ -137,7 +137,15 @@ const HoverCardTrigger = React.forwardRef<HoverCardTriggerElement, HoverCardTrig
           onFocus={composeEventHandlers(props.onFocus, context.onOpen)}
           onBlur={composeEventHandlers(props.onBlur, context.onClose)}
           // prevent focus event on touch devices
-          onTouchStart={composeEventHandlers(props.onTouchStart, (event) => event.preventDefault())}
+          onTouchStart={composeEventHandlers(
+            props.onTouchStart,
+            (event) => {
+              if (event.cancelable) {
+                event.preventDefault();
+              }
+            }
+          )}
+
         />
       </PopperPrimitive.Anchor>
     );
@@ -368,7 +376,7 @@ const ARROW_NAME = 'HoverCardArrow';
 
 type HoverCardArrowElement = React.ComponentRef<typeof PopperPrimitive.Arrow>;
 type PopperArrowProps = React.ComponentPropsWithoutRef<typeof PopperPrimitive.Arrow>;
-interface HoverCardArrowProps extends PopperArrowProps {}
+interface HoverCardArrowProps extends PopperArrowProps { }
 
 const HoverCardArrow = React.forwardRef<HoverCardArrowElement, HoverCardArrowProps>(
   (props: ScopedProps<HoverCardArrowProps>, forwardedRef) => {
