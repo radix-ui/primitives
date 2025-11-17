@@ -242,7 +242,7 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
           ...floatingStyles,
           transform: isPositioned ? floatingStyles.transform : 'translate(0, -200%)', // keep off the page when measuring
           minWidth: 'max-content',
-          zIndex: contentZIndex,
+          zIndex: contentZIndex, ?? 1000,
           ['--radix-popper-transform-origin' as any]: [
             middlewareData.transformOrigin?.x,
             middlewareData.transformOrigin?.y,
