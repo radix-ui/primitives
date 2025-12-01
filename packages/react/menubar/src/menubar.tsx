@@ -354,6 +354,7 @@ const MenubarContent = React.forwardRef<MenubarContentElement, MenubarContentPro
         onKeyDown={composeEventHandlers(
           props.onKeyDown,
           (event) => {
+            // Prevent navigation when orientation is vertical and menubar content is triggered.
             if (context.orientation !== 'vertical' && ['ArrowRight', 'ArrowLeft'].includes(event.key)) {
               const target = event.target as HTMLElement;
               const targetIsSubTrigger = target.hasAttribute('data-radix-menubar-subtrigger');
