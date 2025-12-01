@@ -14,6 +14,7 @@ import { useControllableState } from '@radix-ui/react-use-controllable-state';
 
 import type { Scope } from '@radix-ui/react-context';
 
+type Orientation = 'vertical' | 'horizontal';
 type Direction = 'ltr' | 'rtl';
 
 /* -------------------------------------------------------------------------------------------------
@@ -41,6 +42,7 @@ type MenubarContextValue = {
   value: string;
   dir: Direction;
   loop: boolean;
+  orientation: Orientation;
   onMenuOpen(value: string): void;
   onMenuClose(): void;
   onMenuToggle(value: string): void;
@@ -57,6 +59,7 @@ interface MenubarProps extends PrimitiveDivProps {
   defaultValue?: string;
   onValueChange?: (value: string) => void;
   loop?: RovingFocusGroupProps['loop'];
+  orientation?: Orientation;
   dir?: RovingFocusGroupProps['dir'];
 }
 
@@ -68,6 +71,7 @@ const Menubar = React.forwardRef<MenubarElement, MenubarProps>(
       onValueChange,
       defaultValue,
       loop = true,
+      orientation = 'horizontal',
       dir,
       ...menubarProps
     } = props;
@@ -108,13 +112,14 @@ const Menubar = React.forwardRef<MenubarElement, MenubarProps>(
         )}
         dir={direction}
         loop={loop}
+        orientation={orientation}
       >
         <Collection.Provider scope={__scopeMenubar}>
           <Collection.Slot scope={__scopeMenubar}>
             <RovingFocusGroup.Root
               asChild
               {...rovingFocusGroupScope}
-              orientation="horizontal"
+              orientation={orientation}
               loop={loop}
               dir={direction}
               currentTabStopId={currentTabStopId}
@@ -260,10 +265,10 @@ const MenubarTrigger = React.forwardRef<MenubarTriggerElement, MenubarTriggerPro
               onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
                 if (disabled) return;
                 if (['Enter', ' '].includes(event.key)) context.onMenuToggle(menuContext.value);
-                if (event.key === 'ArrowDown') context.onMenuOpen(menuContext.value);
+                if (event.key === (context.orientation === 'vertical' ? 'ArrowRight' : 'ArrowDown')) context.onMenuOpen(menuContext.value);
                 // prevent keydown from scrolling window / first focused item to execute
                 // that keydown (inadvertently closing the menu)
-                if (['Enter', ' ', 'ArrowDown'].includes(event.key)) {
+                if (['Enter', ' ', context.orientation === 'vertical' ? 'ArrowRight' : 'ArrowDown'].includes(event.key)) {
                   menuContext.wasKeyboardTriggerOpenRef.current = true;
                   event.preventDefault();
                 }
@@ -349,7 +354,7 @@ const MenubarContent = React.forwardRef<MenubarContentElement, MenubarContentPro
         onKeyDown={composeEventHandlers(
           props.onKeyDown,
           (event) => {
-            if (['ArrowRight', 'ArrowLeft'].includes(event.key)) {
+            if (context.orientation !== 'vertical' && ['ArrowRight', 'ArrowLeft'].includes(event.key)) {
               const target = event.target as HTMLElement;
               const targetIsSubTrigger = target.hasAttribute('data-radix-menubar-subtrigger');
               const isKeyDownInsideSubMenu =

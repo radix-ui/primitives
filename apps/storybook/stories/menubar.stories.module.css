@@ -4,6 +4,11 @@
   padding: 2px;
 }
 
+.rootVertical {
+  display: flex;
+  flex-direction: column;
+}
+
 .trigger {
   padding: 6px 16px;
   border: 0;

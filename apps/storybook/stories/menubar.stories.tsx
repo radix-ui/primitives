@@ -10,7 +10,10 @@ export default { title: 'Components/Menubar' };
 export const Styled = () => {
   const [loop, setLoop] = React.useState(false);
   const [rtl, setRtl] = React.useState(false);
+  const [vertical, setVertical] = React.useState(false);
   const dir = rtl ? 'rtl' : 'ltr';
+  const orientation = vertical ? 'vertical' : 'horizontal';
+  const menubarContentSide = vertical ? 'right' : 'bottom';
   const checkOptions = [
     'Always Show Bookmarks Bar',
     'Always Show Toolbar in Fullscreen',
@@ -49,14 +52,24 @@ export const Styled = () => {
           />
           Loop
         </label>
+
+        <label>
+          <input
+            type="checkbox"
+            checked={vertical}
+            onChange={(event) => setVertical(event.currentTarget.checked)}
+          />
+          Vertical
+        </label>
       </div>
 
       <div dir={dir}>
-        <Menubar.Root className={styles.root} loop={loop} dir={dir}>
+        <Menubar.Root className={`${styles.root} ${orientation === 'vertical' ? styles.rootVertical : ''}`}
+          loop={loop} dir={dir} orientation={orientation}>
           <Menubar.Menu>
             <Menubar.Trigger className={styles.trigger}>File</Menubar.Trigger>
             <Menubar.Portal>
-              <Menubar.Content className={styles.content} sideOffset={2}>
+              <Menubar.Content className={styles.content} sideOffset={2} side={menubarContentSide}>
                 <Menubar.Item className={styles.item}>New Tab</Menubar.Item>
                 <Menubar.Item className={styles.item}>New Window</Menubar.Item>
                 <Menubar.Item className={styles.item}>New Incognito Window</Menubar.Item>
@@ -82,7 +95,7 @@ export const Styled = () => {
           <Menubar.Menu>
             <Menubar.Trigger className={styles.trigger}>Edit</Menubar.Trigger>
             <Menubar.Portal>
-              <Menubar.Content className={styles.content} sideOffset={2}>
+              <Menubar.Content className={styles.content} sideOffset={2} side={menubarContentSide}>
                 <Menubar.Item className={styles.item}>Undo</Menubar.Item>
                 <Menubar.Item className={styles.item}>Redo</Menubar.Item>
                 <Menubar.Separator className={styles.separator} />
@@ -124,7 +137,7 @@ export const Styled = () => {
           <Menubar.Menu>
             <Menubar.Trigger className={styles.trigger}>View</Menubar.Trigger>
             <Menubar.Portal>
-              <Menubar.Content className={styles.content} sideOffset={2}>
+              <Menubar.Content className={styles.content} sideOffset={2} side={menubarContentSide}>
                 {checkOptions.map((option) => (
                   <Menubar.CheckboxItem
                     key={option}
@@ -158,7 +171,7 @@ export const Styled = () => {
           <Menubar.Menu>
             <Menubar.Trigger className={styles.trigger}>Profiles</Menubar.Trigger>
             <Menubar.Portal>
-              <Menubar.Content className={styles.content} sideOffset={2}>
+              <Menubar.Content className={styles.content} sideOffset={2} side={menubarContentSide}>
                 <Menubar.RadioGroup value={radioSelection} onValueChange={setRadioSelection}>
                   {radioOptions.map((option) => (
                     <Menubar.RadioItem key={option} className={styles.item} value={option}>
@@ -176,7 +189,7 @@ export const Styled = () => {
           <Menubar.Menu>
             <Menubar.Trigger className={styles.trigger}>History</Menubar.Trigger>
             <Menubar.Portal>
-              <Menubar.Content className={styles.content} sideOffset={2}>
+              <Menubar.Content className={styles.content} sideOffset={2} side={menubarContentSide}>
                 <Menubar.Label className={styles.label}>Work</Menubar.Label>
                 <Menubar.Item className={styles.item}>Radix</Menubar.Item>
                 <Menubar.Item className={styles.item}>Github</Menubar.Item>
@@ -197,7 +210,10 @@ export const Styled = () => {
 export const Cypress = () => {
   const [loop, setLoop] = React.useState(false);
   const [rtl, setRtl] = React.useState(false);
+  const [vertical, setVertical] = React.useState(false);
   const [portalled, setPortalled] = React.useState(false);
+  const orientation = vertical ? 'vertical' : 'horizontal';
+  const menubarContentSide = vertical ? 'right' : 'bottom';
 
   const dir = rtl ? 'rtl' : 'ltr';
   const Portal = portalled ? Menubar.Portal : React.Fragment;
@@ -234,6 +250,15 @@ export const Cypress = () => {
         <label>
           <input
             type="checkbox"
+            checked={vertical}
+            onChange={(event) => setVertical(event.currentTarget.checked)}
+          />
+          Vertical
+        </label>
+
+        <label>
+          <input
+            type="checkbox"
             checked={portalled}
             onChange={(event) => setPortalled(event.currentTarget.checked)}
           />
@@ -241,11 +266,12 @@ export const Cypress = () => {
         </label>
       </div>
       <div dir={dir}>
-        <Menubar.Root className={styles.root} loop={loop} dir={dir}>
+        <Menubar.Root className={`${styles.root} ${orientation === 'vertical' ? styles.rootVertical : ''}`}
+          loop={loop} dir={dir} orientation={orientation}>
           <Menubar.Menu>
             <Menubar.Trigger className={styles.trigger}>File</Menubar.Trigger>
             <Portal>
-              <Menubar.Content className={styles.content} sideOffset={2}>
+              <Menubar.Content className={styles.content} sideOffset={2} side={menubarContentSide}>
                 <Menubar.Item className={styles.item}>New Tab</Menubar.Item>
                 <Menubar.Item className={styles.item}>New Window</Menubar.Item>
                 <Menubar.Item className={styles.item}>New Incognito Window</Menubar.Item>
@@ -269,7 +295,7 @@ export const Cypress = () => {
           <Menubar.Menu>
             <Menubar.Trigger className={styles.trigger}>Edit</Menubar.Trigger>
             <Portal>
-              <Menubar.Content className={styles.content} sideOffset={2}>
+              <Menubar.Content className={styles.content} sideOffset={2} side={menubarContentSide}>
                 <Menubar.Item className={styles.item} disabled>
                   Undo
                 </Menubar.Item>
@@ -336,7 +362,7 @@ export const Cypress = () => {
           <Menubar.Menu>
             <Menubar.Trigger className={styles.trigger}>History</Menubar.Trigger>
             <Portal>
-              <Menubar.Content className={styles.content} sideOffset={2}>
+              <Menubar.Content className={styles.content} sideOffset={2} side={menubarContentSide}>
                 <Menubar.Item className={styles.item}>Radix</Menubar.Item>
                 <Menubar.Item className={styles.item}>Github</Menubar.Item>
                 <Menubar.Item className={styles.item}>WorkOS</Menubar.Item>
