@@ -359,6 +359,8 @@ const CheckboxBubbleInput = React.forwardRef<HTMLInputElement, CheckboxBubbleInp
           ...props.style,
           ...controlSize,
           position: 'absolute',
+          top: 0,
+          left: 0,
           pointerEvents: 'none',
           opacity: 0,
           margin: 0,
