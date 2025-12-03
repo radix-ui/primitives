@@ -565,7 +565,7 @@ const TooltipContentImpl = React.forwardRef<TooltipContentImplElement, TooltipCo
           <Slottable>{children}</Slottable>
           <VisuallyHiddenContentContextProvider scope={__scopeTooltip} isInside={true}>
             <VisuallyHiddenPrimitive.Root id={context.contentId} role="tooltip">
-              {ariaLabel || children}
+              {ariaLabel}
             </VisuallyHiddenPrimitive.Root>
           </VisuallyHiddenContentContextProvider>
         </PopperPrimitive.Content>
