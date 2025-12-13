@@ -99,22 +99,28 @@ interface SlotCloneProps {
 
 /* @__NO_SIDE_EFFECTS__ */ function createSlotClone(ownerName: string) {
   const SlotClone = React.forwardRef<any, SlotCloneProps>((props, forwardedRef) => {
-    let { children, ...slotProps } = props;
-    if (isLazyComponent(children) && typeof use === 'function') {
-      children = use(children._payload);
+    const { children, ...slotProps } = props;
+
+    // Multiple children is an error
+    if (React.Children.count(children) > 1) {
+      return React.Children.only(null);
     }
 
-    if (React.isValidElement(children)) {
-      const childrenRef = getElementRef(children);
-      const props = mergeProps(slotProps, children.props as AnyProps);
+    // Use Children.toArray to properly unwrap RSC lazy references
+    // (which may have non-PromiseLike payloads that bypass isLazyComponent)
+    const childrenArray = React.Children.toArray(children);
+    if (childrenArray.length === 1 && React.isValidElement(childrenArray[0])) {
+      const child = childrenArray[0];
+      const childRef = getElementRef(child);
+      const mergedProps = mergeProps(slotProps, child.props as AnyProps);
       // do not pass ref to React.Fragment for React 19 compatibility
-      if (children.type !== React.Fragment) {
-        props.ref = forwardedRef ? composeRefs(forwardedRef, childrenRef) : childrenRef;
+      if (child.type !== React.Fragment) {
+        mergedProps.ref = forwardedRef ? composeRefs(forwardedRef, childRef) : childRef;
       }
-      return React.cloneElement(children, props);
+      return React.cloneElement(child, mergedProps);
     }
 
-    return React.Children.count(children) > 1 ? React.Children.only(null) : null;
+    return null;
   });
 
   SlotClone.displayName = `${ownerName}.SlotClone`;
