@@ -265,10 +265,12 @@ const MenubarTrigger = React.forwardRef<MenubarTriggerElement, MenubarTriggerPro
               onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
                 if (disabled) return;
                 if (['Enter', ' '].includes(event.key)) context.onMenuToggle(menuContext.value);
-                if (event.key === (context.orientation === 'vertical' ? 'ArrowRight' : 'ArrowDown')) context.onMenuOpen(menuContext.value);
+                const verticalOpenMenuKey = context.dir === 'rtl' ? 'ArrowLeft' : 'ArrowRight';
+                const openMenuKey = context.orientation === 'vertical' ? verticalOpenMenuKey : 'ArrowDown';
+                if (event.key === openMenuKey) context.onMenuOpen(menuContext.value);
                 // prevent keydown from scrolling window / first focused item to execute
                 // that keydown (inadvertently closing the menu)
-                if (['Enter', ' ', context.orientation === 'vertical' ? 'ArrowRight' : 'ArrowDown'].includes(event.key)) {
+                if (['Enter', ' ', openMenuKey].includes(event.key)) {
                   menuContext.wasKeyboardTriggerOpenRef.current = true;
                   event.preventDefault();
                 }
@@ -354,12 +356,13 @@ const MenubarContent = React.forwardRef<MenubarContentElement, MenubarContentPro
         onKeyDown={composeEventHandlers(
           props.onKeyDown,
           (event) => {
+            const target = event.target as HTMLElement;
+            const isKeyDownInsideSubMenu =
+              target.closest('[data-radix-menubar-content]') !== event.currentTarget;
+            
             // Prevent navigation when orientation is vertical and menubar content is triggered.
             if (context.orientation !== 'vertical' && ['ArrowRight', 'ArrowLeft'].includes(event.key)) {
-              const target = event.target as HTMLElement;
               const targetIsSubTrigger = target.hasAttribute('data-radix-menubar-subtrigger');
-              const isKeyDownInsideSubMenu =
-                target.closest('[data-radix-menubar-content]') !== event.currentTarget;
 
               const prevMenuKey = context.dir === 'rtl' ? 'ArrowRight' : 'ArrowLeft';
               const isPrevKey = prevMenuKey === event.key;
@@ -382,6 +385,11 @@ const MenubarContent = React.forwardRef<MenubarContentElement, MenubarContentPro
 
               const [nextValue] = candidateValues;
               if (nextValue) context.onMenuOpen(nextValue);
+            } else if (context.orientation === 'vertical' && !isKeyDownInsideSubMenu) {
+              if (event.key === (context.dir === 'rtl' ? 'ArrowRight' : 'ArrowLeft')) {
+                context.onMenuClose();
+                event.preventDefault();
+              }
             }
           },
           { checkForDefaultPrevented: false },

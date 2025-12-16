@@ -13,7 +13,7 @@ export const Styled = () => {
   const [vertical, setVertical] = React.useState(false);
   const dir = rtl ? 'rtl' : 'ltr';
   const orientation = vertical ? 'vertical' : 'horizontal';
-  const menubarContentSide = vertical ? 'right' : 'bottom';
+  const menubarContentSide = vertical ? (rtl ? 'left' : 'right'): 'bottom';
   const checkOptions = [
     'Always Show Bookmarks Bar',
     'Always Show Toolbar in Fullscreen',
@@ -213,10 +213,10 @@ export const Cypress = () => {
   const [vertical, setVertical] = React.useState(false);
   const [portalled, setPortalled] = React.useState(false);
   const orientation = vertical ? 'vertical' : 'horizontal';
-  const menubarContentSide = vertical ? 'right' : 'bottom';
 
   const dir = rtl ? 'rtl' : 'ltr';
   const Portal = portalled ? Menubar.Portal : React.Fragment;
+  const menubarContentSide = vertical ? (rtl ? 'left' : 'right'): 'bottom';
 
   return (
     <div
