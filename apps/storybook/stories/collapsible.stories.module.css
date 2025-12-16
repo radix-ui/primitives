@@ -82,20 +82,20 @@
 
 .animatedContent {
   overflow: hidden;
-  &[data-state='open'] {
+  &[data-state='open'][data-animating='true'] {
     animation: collapsible-slideDown 300ms ease-out;
   }
-  &[data-state='closed'] {
+  &[data-state='closed'][data-animating='true'] {
     animation: collapsible-slideUp 300ms ease-in;
   }
 }
 
 .animatedWidthContent {
   overflow: hidden;
-  &[data-state='open'] {
+  &[data-state='open'][data-animating='true'] {
     animation: collapsible-openRight 300ms ease-out;
   }
-  &[data-state='closed'] {
+  &[data-state='closed'][data-animating='true'] {
     animation: collapsible-closeRight 300ms ease-in;
   }
 }

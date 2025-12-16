@@ -151,6 +151,7 @@ const CollapsibleContentImpl = React.forwardRef<
   CollapsibleContentImplElement,
   CollapsibleContentImplProps
 >((props: ScopedProps<CollapsibleContentImplProps>, forwardedRef) => {
+  const [isAnimating, setIsAnimating] = React.useState(false);
   const { __scopeCollapsible, present, children, ...contentProps } = props;
   const context = useCollapsibleContext(CONTENT_NAME, __scopeCollapsible);
   const [isPresent, setIsPresent] = React.useState(present);
@@ -167,6 +168,7 @@ const CollapsibleContentImpl = React.forwardRef<
   const originalStylesRef = React.useRef<Record<string, string>>(undefined);
 
   React.useEffect(() => {
+    setIsAnimating(false);
     const rAF = requestAnimationFrame(() => (isMountAnimationPreventedRef.current = false));
     return () => cancelAnimationFrame(rAF);
   }, []);
@@ -193,6 +195,7 @@ const CollapsibleContentImpl = React.forwardRef<
         node.style.animationName = originalStylesRef.current.animationName!;
       }
 
+      setIsAnimating(true);
       setIsPresent(present);
     }
     /**
@@ -207,6 +210,7 @@ const CollapsibleContentImpl = React.forwardRef<
     <Primitive.div
       data-state={getState(context.open)}
       data-disabled={context.disabled ? '' : undefined}
+      data-animating={isAnimating ? 'true' : 'false'}
       id={context.contentId}
       hidden={!isOpen}
       {...contentProps}
