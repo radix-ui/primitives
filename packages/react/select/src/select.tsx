@@ -387,7 +387,7 @@ const SelectValue = React.forwardRef<SelectValueElement, SelectValueProps>(
     }, [onValueNodeHasChildrenChange, hasChildren]);
 
     const safeChildren =
-      !isHydrated && context.prerenderedValue ? context.prerenderedValue : children;
+      !isHydrated && context.prerenderedValue && !children ? context.prerenderedValue : children;
 
     return (
       <Primitive.span
