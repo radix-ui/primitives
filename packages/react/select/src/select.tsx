@@ -1,9 +1,8 @@
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
 import { clamp } from '@radix-ui/number';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { createCollection } from '@radix-ui/react-collection';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
+import type { Scope } from '@radix-ui/react-context';
 import { createContextScope } from '@radix-ui/react-context';
 import { useDirection } from '@radix-ui/react-direction';
 import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
@@ -17,13 +16,14 @@ import { Primitive } from '@radix-ui/react-primitive';
 import { createSlot } from '@radix-ui/react-slot';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
+import { useIsHydrated } from '@radix-ui/react-use-is-hydrated';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { usePrevious } from '@radix-ui/react-use-previous';
 import { VISUALLY_HIDDEN_STYLES } from '@radix-ui/react-visually-hidden';
 import { hideOthers } from 'aria-hidden';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 import { RemoveScroll } from 'react-remove-scroll';
-
-import type { Scope } from '@radix-ui/react-context';
 
 type Direction = 'ltr' | 'rtl';
 
@@ -52,6 +52,7 @@ const usePopperScope = createPopperScope();
 type SelectContextValue = {
   trigger: SelectTriggerElement | null;
   onTriggerChange(node: SelectTriggerElement | null): void;
+  prerenderedValue?: string;
   valueNode: SelectValueElement | null;
   onValueNodeChange(node: SelectValueElement): void;
   valueNodeHasChildren: boolean;
@@ -126,6 +127,7 @@ type SelectProps = SelectSharedProps & {
   value?: string;
   defaultValue?: string;
   onValueChange?(value: string): void;
+  ssr?: boolean;
 };
 
 const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
@@ -144,6 +146,7 @@ const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
     disabled,
     required,
     form,
+    ssr = true,
   } = props;
   const popperScope = usePopperScope(__scopeSelect);
   const [trigger, setTrigger] = React.useState<SelectTriggerElement | null>(null);
@@ -177,9 +180,14 @@ const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
     .map((option) => option.props.value)
     .join(';');
 
+  const isHydrated = useIsHydrated();
+
   return (
     <PopperPrimitive.Root {...popperScope}>
       <SelectProvider
+        prerenderedValue={
+          ssr && !isHydrated ? getSelectItemTextForSSR(children, value ?? defaultValue) : undefined
+        }
         required={required}
         scope={__scopeSelect}
         trigger={trigger}
@@ -371,10 +379,14 @@ const SelectValue = React.forwardRef<SelectValueElement, SelectValueProps>(
     const { onValueNodeHasChildrenChange } = context;
     const hasChildren = children !== undefined;
     const composedRefs = useComposedRefs(forwardedRef, context.onValueNodeChange);
+    const isHydrated = useIsHydrated();
 
     useLayoutEffect(() => {
       onValueNodeHasChildrenChange(hasChildren);
     }, [onValueNodeHasChildrenChange, hasChildren]);
+
+    const safeChildren =
+      !isHydrated && context.prerenderedValue ? context.prerenderedValue : children;
 
     return (
       <Primitive.span
@@ -384,7 +396,7 @@ const SelectValue = React.forwardRef<SelectValueElement, SelectValueProps>(
         // through the item they came from
         style={{ pointerEvents: 'none' }}
       >
-        {shouldShowPlaceholder(context.value) ? <>{placeholder}</> : children}
+        {shouldShowPlaceholder(context.value) ? <>{placeholder}</> : safeChildren}
       </Primitive.span>
     );
   },
@@ -430,6 +442,19 @@ interface SelectPortalProps {
 }
 
 const SelectPortal: React.FC<SelectPortalProps> = (props: ScopedProps<SelectPortalProps>) => {
+  const hydrated = useIsHydrated();
+
+  if (!hydrated) {
+    return (
+      <Primitive.div
+        asChild
+        {...props}
+        style={{ display: 'none', visibility: 'hidden' }}
+        aria-hidden="true"
+      />
+    );
+  }
+
   return <PortalPrimitive asChild {...props} />;
 };
 
@@ -453,6 +478,18 @@ const SelectContent = React.forwardRef<SelectContentElement, SelectContentProps>
     useLayoutEffect(() => {
       setFragment(new DocumentFragment());
     }, []);
+
+    const isHydrated = useIsHydrated();
+
+    if (!isHydrated) {
+      return (
+        <SelectContentProvider scope={props.__scopeSelect}>
+          <div style={{ display: 'none', visibility: 'hidden' }} aria-hidden="true">
+            {props.children}
+          </div>
+        </SelectContentProvider>
+      );
+    }
 
     if (!context.open) {
       const frag = fragment as Element | undefined;
@@ -1765,6 +1802,139 @@ function findNextItem<T extends { textValue: string }>(
  */
 function wrapArray<T>(array: T[], startIndex: number) {
   return array.map<T>((_, index) => array[(startIndex + index) % array.length]!);
+}
+
+/* -------------------------------------------------------------------------------------------------
+ * Server Side Rendering Helpers
+ * -----------------------------------------------------------------------------------------------*/
+
+const SELECT_ITEM_NAME = 'SelectItem';
+const SELECT_ITEM_TEXT_NAME = 'SelectItemText';
+const REACT_LAZY_TYPE = Symbol.for('react.lazy');
+
+const lazyResolve: typeof React.use | undefined = (React as any)[' use '.trim().toString()];
+
+interface LazyReactElement extends React.ReactElement {
+  $$typeof: typeof REACT_LAZY_TYPE;
+  _payload: PromiseLike<Exclude<React.ReactNode, PromiseLike<any>>>;
+}
+
+function isPromiseLike(value: unknown): value is PromiseLike<unknown> {
+  return typeof value === 'object' && value !== null && 'then' in value;
+}
+
+function isLazyComponent(element: React.ReactNode): element is LazyReactElement {
+  return (
+    element != null &&
+    typeof element === 'object' &&
+    '$$typeof' in element &&
+    element.$$typeof === REACT_LAZY_TYPE &&
+    '_payload' in element &&
+    isPromiseLike(element._payload)
+  );
+}
+
+function getComponentName(type: any, lazyCache: WeakMap<any, any>): string | undefined {
+  if (!type) return undefined;
+
+  let resolved = type;
+
+  if (isLazyComponent(type) && typeof lazyResolve === 'function') {
+    const cached = lazyCache.get(type);
+    if (cached) {
+      resolved = cached;
+    } else {
+      resolved = lazyResolve(type._payload);
+      lazyCache.set(type, resolved);
+    }
+  }
+
+  return resolved?.displayName ?? resolved?.name;
+}
+
+function extractText(node: React.ReactNode): string | undefined {
+  if (typeof node === 'string' || typeof node === 'number') {
+    return String(node);
+  }
+
+  if (Array.isArray(node)) {
+    return node.map(extractText).join('');
+  }
+
+  if (React.isValidElement(node)) {
+    const props = node.props as { children?: React.ReactNode };
+    return props?.children ? extractText(props.children) : undefined;
+  }
+
+  return undefined;
+}
+
+function findSelectItem(
+  node: React.ReactNode,
+  selectValue: any,
+  lazyCache: WeakMap<any, any>,
+): React.ReactElement | null {
+  const children = React.Children.toArray(node);
+
+  for (const child of children) {
+    if (!React.isValidElement(child)) continue;
+
+    const name = getComponentName(child.type, lazyCache);
+    if (name === SELECT_ITEM_NAME) {
+      const props = child.props as { value?: string | number };
+      if (props?.value === selectValue) {
+        return child;
+      }
+    }
+
+    const props = child.props as { children?: React.ReactNode };
+    if (props?.children) {
+      const found = findSelectItem(props.children, selectValue, lazyCache);
+      if (found) return found;
+    }
+  }
+
+  return null;
+}
+
+function findItemTextInNode(
+  node: React.ReactNode,
+  lazyCache: WeakMap<any, any>,
+): string | undefined {
+  const children = React.Children.toArray(node);
+
+  for (const child of children) {
+    if (!React.isValidElement(child)) continue;
+
+    const name = getComponentName(child.type, lazyCache);
+    if (name === SELECT_ITEM_TEXT_NAME) {
+      const props = child.props as { children?: React.ReactNode };
+      if (props?.children) {
+        return extractText(props.children);
+      }
+    }
+
+    const props = child.props as { children?: React.ReactNode };
+    if (props?.children) {
+      const result = findItemTextInNode(props.children, lazyCache);
+      if (result) return result;
+    }
+  }
+
+  return undefined;
+}
+
+function getSelectItemTextForSSR(children: React.ReactNode, selectValue: any) {
+  if (shouldShowPlaceholder(selectValue)) return undefined;
+
+  const lazyCache = new WeakMap<any, any>();
+  const targetItem = findSelectItem(children, selectValue, lazyCache);
+
+  if (!targetItem) return undefined;
+
+  const itemProps = (targetItem as React.ReactElement<{ children?: React.ReactNode }>).props;
+
+  return itemProps?.children ? findItemTextInNode(itemProps.children, lazyCache) : undefined;
 }
 
 const Root = Select;
