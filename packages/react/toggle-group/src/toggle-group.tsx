@@ -76,7 +76,7 @@ interface ToggleGroupImplSingleProps extends ToggleGroupImplProps {
   /**
    * The callback that fires when the value of the toggle group changes.
    */
-  onValueChange?(value: string): void;
+  onValueChange?(value: string | undefined): void;
 }
 
 const ToggleGroupImplSingle = React.forwardRef<
