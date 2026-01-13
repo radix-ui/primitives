@@ -19,6 +19,7 @@ import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { usePrevious } from '@radix-ui/react-use-previous';
+
 import { VISUALLY_HIDDEN_STYLES } from '@radix-ui/react-visually-hidden';
 import { hideOthers } from 'aria-hidden';
 import { RemoveScroll } from 'react-remove-scroll';
@@ -248,17 +249,50 @@ const TRIGGER_NAME = 'SelectTrigger';
 
 type SelectTriggerElement = React.ComponentRef<typeof Primitive.button>;
 type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
-interface SelectTriggerProps extends PrimitiveButtonProps {}
+interface SelectTriggerProps extends PrimitiveButtonProps {
+  /**
+   * When `true`, the Select will open when a label for the trigger is clicked
+   * even if the pointer type is `mouse`.
+   */
+  syntheticClick?: boolean;
+}
+
+import { useEffect, useRef } from 'react';
+
+const usePointerType = () => {
+  const pointerTypeRef = useRef<PointerEvent['pointerType']>('touch');
+  const updatePointerType = React.useEffectEvent((event: PointerEvent) => {
+    pointerTypeRef.current = event.pointerType;
+  });
+
+  useEffect(() => {
+    const abortController = new AbortController();
+    document.addEventListener('pointermove', updatePointerType, {
+      once: true,
+      signal: abortController.signal,
+    });
+    // this is just incase the mouse is already on the user's target
+    document.addEventListener('pointerdown', updatePointerType, {
+      once: true,
+      signal: abortController.signal,
+    });
+    return () => {
+      abortController.abort();
+    };
+  }, []);
+
+  return pointerTypeRef;
+};
 
 const SelectTrigger = React.forwardRef<SelectTriggerElement, SelectTriggerProps>(
   (props: ScopedProps<SelectTriggerProps>, forwardedRef) => {
+    const pointerTypeRef = usePointerType();
     const { __scopeSelect, disabled = false, ...triggerProps } = props;
     const popperScope = usePopperScope(__scopeSelect);
     const context = useSelectContext(TRIGGER_NAME, __scopeSelect);
     const isDisabled = context.disabled || disabled;
     const composedRefs = useComposedRefs(forwardedRef, context.onTriggerChange);
     const getItems = useCollection(__scopeSelect);
-    const pointerTypeRef = React.useRef<React.PointerEvent['pointerType']>('touch');
 
     const [searchRef, handleTypeaheadSearch, resetTypeahead] = useTypeaheadSearch((search) => {
       const enabledItems = getItems().filter((item) => !item.disabled);
@@ -310,13 +344,11 @@ const SelectTrigger = React.forwardRef<SelectTriggerElement, SelectTriggerProps>
             event.currentTarget.focus();
 
             // Open on click when using a touch or pen device
-            if (pointerTypeRef.current !== 'mouse') {
+            if (props.syntheticClick || pointerTypeRef.current !== 'mouse') {
               handleOpen(event);
             }
           })}
           onPointerDown={composeEventHandlers(triggerProps.onPointerDown, (event) => {
-            pointerTypeRef.current = event.pointerType;
-
             // prevent implicit pointer capture
             // https://www.w3.org/TR/pointerevents3/#implicit-pointer-capture
             const target = event.target as HTMLElement;
