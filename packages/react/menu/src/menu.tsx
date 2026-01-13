@@ -629,7 +629,8 @@ const MenuItem = React.forwardRef<MenuItemElement, MenuItemProps>(
         if (itemSelectEvent.defaultPrevented) {
           isPointerDownRef.current = false;
         } else {
-          rootContext.onClose();
+          // Defer `onClose` to allow native element behavior to complete
+          setTimeout(() => rootContext.onClose(), 0);
         }
       }
     };

@@ -1637,3 +1637,23 @@ const TickIcon = () => (
     <path d="M2 20 L12 28 30 4" />
   </svg>
 );
+
+export const WithNativeFormSubmit = () => {
+  return (
+    <div
+      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '200vh' }}
+    >
+      <DropdownMenu.Root>
+        <DropdownMenu.Trigger>Open</DropdownMenu.Trigger>
+        <DropdownMenu.Portal>
+        <DropdownMenu.Content>
+          <DropdownMenu.Item asChild>
+            <button type="submit" form="my-form">Submit</button> 
+          </DropdownMenu.Item>
+        </DropdownMenu.Content>
+        </DropdownMenu.Portal>
+      </DropdownMenu.Root>
+       <form id="my-form" action="/submit" method="post" />
+    </div>
+  );
+};
