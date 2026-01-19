@@ -1,3 +1,6 @@
+// Adapted from https://github.com/reach/observe-rect/tree
+// MIT license, React Training
+
 type Measurable = { getBoundingClientRect(): DOMRect };
 
 /**
@@ -9,7 +12,7 @@ function observeElementRect(
   /** The element whose rect to observe */
   elementToObserve: Measurable,
   /** The callback which will be called when the rect changes */
-  callback: CallbackFn
+  callback: CallbackFn,
 ) {
   const observedData = observedElements.get(elementToObserve);
 

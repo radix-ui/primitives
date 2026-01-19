@@ -3,7 +3,11 @@ import * as React from 'react';
 /** Number of components which have requested interest to have focus guards */
 let count = 0;
 
-function FocusGuards(props: any) {
+interface FocusGuardsProps {
+  children?: React.ReactNode;
+}
+
+function FocusGuards(props: FocusGuardsProps) {
   useFocusGuards();
   return props.children;
 }
@@ -39,12 +43,10 @@ function createFocusGuard() {
   return element;
 }
 
-const Root = FocusGuards;
-
 export {
   FocusGuards,
   //
-  Root,
+  FocusGuards as Root,
   //
   useFocusGuards,
 };

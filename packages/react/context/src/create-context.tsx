@@ -2,9 +2,10 @@ import * as React from 'react';
 
 function createContext<ContextValueType extends object | null>(
   rootComponentName: string,
-  defaultContext?: ContextValueType
+  defaultContext?: ContextValueType,
 ) {
   const Context = React.createContext<ContextValueType | undefined>(defaultContext);
+  Context.displayName = rootComponentName + 'Context';
 
   const Provider: React.FC<ContextValueType & { children: React.ReactNode }> = (props) => {
     const { children, ...context } = props;
@@ -47,9 +48,10 @@ function createContextScope(scopeName: string, createContextScopeDeps: CreateSco
 
   function createContext<ContextValueType extends object | null>(
     rootComponentName: string,
-    defaultContext?: ContextValueType
+    defaultContext?: ContextValueType,
   ) {
     const BaseContext = React.createContext<ContextValueType | undefined>(defaultContext);
+    BaseContext.displayName = rootComponentName + 'Context';
     const index = defaultContexts.length;
     defaultContexts = [...defaultContexts, defaultContext];
 
@@ -90,7 +92,7 @@ function createContextScope(scopeName: string, createContextScopeDeps: CreateSco
       const contexts = scope?.[scopeName] || scopeContexts;
       return React.useMemo(
         () => ({ [`__scope${scopeName}`]: { ...scope, [scopeName]: contexts } }),
-        [scope, contexts]
+        [scope, contexts],
       );
     };
   };
@@ -103,7 +105,7 @@ function createContextScope(scopeName: string, createContextScopeDeps: CreateSco
  * composeContextScopes
  * -----------------------------------------------------------------------------------------------*/
 
-function composeContextScopes(...scopes: CreateScope[]) {
+function composeContextScopes(...scopes: [CreateScope, ...CreateScope[]]): CreateScope {
   const baseScope = scopes[0];
   if (scopes.length === 1) return baseScope;
 

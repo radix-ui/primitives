@@ -64,7 +64,7 @@ Popper.displayName = POPPER_NAME;
 
 const ANCHOR_NAME = 'PopperAnchor';
 
-type PopperAnchorElement = React.ElementRef<typeof Primitive.div>;
+type PopperAnchorElement = React.ComponentRef<typeof Primitive.div>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface PopperAnchorProps extends PrimitiveDivProps {
   virtualRef?: React.RefObject<Measurable>;
@@ -77,15 +77,20 @@ const PopperAnchor = React.forwardRef<PopperAnchorElement, PopperAnchorProps>(
     const ref = React.useRef<PopperAnchorElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, ref);
 
+    const anchorRef = React.useRef<Measurable | null>(null);
     React.useEffect(() => {
-      // Consumer can anchor the popper to something that isn't
-      // a DOM node e.g. pointer position, so we override the
-      // `anchorRef` with their virtual ref in this case.
-      context.onAnchorChange(virtualRef?.current || ref.current);
+      const previousAnchor = anchorRef.current;
+      anchorRef.current = virtualRef?.current || ref.current;
+      if (previousAnchor !== anchorRef.current) {
+        // Consumer can anchor the popper to something that isn't
+        // a DOM node e.g. pointer position, so we override the
+        // `anchorRef` with their virtual ref in this case.
+        context.onAnchorChange(anchorRef.current);
+      }
     });
 
     return virtualRef ? null : <Primitive.div {...anchorProps} ref={composedRefs} />;
-  }
+  },
 );
 
 PopperAnchor.displayName = ANCHOR_NAME;
@@ -109,7 +114,7 @@ const [PopperContentProvider, useContentContext] =
 
 type Boundary = Element | null;
 
-type PopperContentElement = React.ElementRef<typeof Primitive.div>;
+type PopperContentElement = React.ComponentRef<typeof Primitive.div>;
 interface PopperContentProps extends PrimitiveDivProps {
   side?: Side;
   sideOffset?: number;
@@ -279,7 +284,7 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
         </PopperContentProvider>
       </div>
     );
-  }
+  },
 );
 
 PopperContent.displayName = CONTENT_NAME;
@@ -297,13 +302,13 @@ const OPPOSITE_SIDE: Record<Side, Side> = {
   left: 'right',
 };
 
-type PopperArrowElement = React.ElementRef<typeof ArrowPrimitive.Root>;
+type PopperArrowElement = React.ComponentRef<typeof ArrowPrimitive.Root>;
 type ArrowProps = React.ComponentPropsWithoutRef<typeof ArrowPrimitive.Root>;
 interface PopperArrowProps extends ArrowProps {}
 
 const PopperArrow = React.forwardRef<PopperArrowElement, PopperArrowProps>(function PopperArrow(
   props: ScopedProps<PopperArrowProps>,
-  forwardedRef
+  forwardedRef,
 ) {
   const { __scopePopper, ...arrowProps } = props;
   const contentContext = useContentContext(ARROW_NAME, __scopePopper);

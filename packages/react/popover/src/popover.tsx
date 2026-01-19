@@ -11,7 +11,7 @@ import { createPopperScope } from '@radix-ui/react-popper';
 import { Portal as PortalPrimitive } from '@radix-ui/react-portal';
 import { Presence } from '@radix-ui/react-presence';
 import { Primitive } from '@radix-ui/react-primitive';
-import { Slot } from '@radix-ui/react-slot';
+import { createSlot } from '@radix-ui/react-slot';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { hideOthers } from 'aria-hidden';
 import { RemoveScroll } from 'react-remove-scroll';
@@ -65,10 +65,11 @@ const Popover: React.FC<PopoverProps> = (props: ScopedProps<PopoverProps>) => {
   const popperScope = usePopperScope(__scopePopover);
   const triggerRef = React.useRef<HTMLButtonElement>(null);
   const [hasCustomAnchor, setHasCustomAnchor] = React.useState(false);
-  const [open = false, setOpen] = useControllableState({
+  const [open, setOpen] = useControllableState({
     prop: openProp,
-    defaultProp: defaultOpen,
+    defaultProp: defaultOpen ?? false,
     onChange: onOpenChange,
+    caller: POPOVER_NAME,
   });
 
   return (
@@ -99,7 +100,7 @@ Popover.displayName = POPOVER_NAME;
 
 const ANCHOR_NAME = 'PopoverAnchor';
 
-type PopoverAnchorElement = React.ElementRef<typeof PopperPrimitive.Anchor>;
+type PopoverAnchorElement = React.ComponentRef<typeof PopperPrimitive.Anchor>;
 type PopperAnchorProps = React.ComponentPropsWithoutRef<typeof PopperPrimitive.Anchor>;
 interface PopoverAnchorProps extends PopperAnchorProps {}
 
@@ -116,7 +117,7 @@ const PopoverAnchor = React.forwardRef<PopoverAnchorElement, PopoverAnchorProps>
     }, [onCustomAnchorAdd, onCustomAnchorRemove]);
 
     return <PopperPrimitive.Anchor {...popperScope} {...anchorProps} ref={forwardedRef} />;
-  }
+  },
 );
 
 PopoverAnchor.displayName = ANCHOR_NAME;
@@ -127,7 +128,7 @@ PopoverAnchor.displayName = ANCHOR_NAME;
 
 const TRIGGER_NAME = 'PopoverTrigger';
 
-type PopoverTriggerElement = React.ElementRef<typeof Primitive.button>;
+type PopoverTriggerElement = React.ComponentRef<typeof Primitive.button>;
 type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
 interface PopoverTriggerProps extends PrimitiveButtonProps {}
 
@@ -158,7 +159,7 @@ const PopoverTrigger = React.forwardRef<PopoverTriggerElement, PopoverTriggerPro
         {trigger}
       </PopperPrimitive.Anchor>
     );
-  }
+  },
 );
 
 PopoverTrigger.displayName = TRIGGER_NAME;
@@ -232,12 +233,14 @@ const PopoverContent = React.forwardRef<PopoverContentTypeElement, PopoverConten
         )}
       </Presence>
     );
-  }
+  },
 );
 
 PopoverContent.displayName = CONTENT_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
+
+const Slot = createSlot('PopoverContent.RemoveScroll');
 
 type PopoverContentTypeElement = PopoverContentImplElement;
 interface PopoverContentTypeProps
@@ -278,19 +281,19 @@ const PopoverContentModal = React.forwardRef<PopoverContentTypeElement, PopoverC
 
               isRightClickOutsideRef.current = isRightClick;
             },
-            { checkForDefaultPrevented: false }
+            { checkForDefaultPrevented: false },
           )}
           // When focus is trapped, a `focusout` event may still happen.
           // We make sure we don't trigger our `onDismiss` in such case.
           onFocusOutside={composeEventHandlers(
             props.onFocusOutside,
             (event) => event.preventDefault(),
-            { checkForDefaultPrevented: false }
+            { checkForDefaultPrevented: false },
           )}
         />
       </RemoveScroll>
     );
-  }
+  },
 );
 
 const PopoverContentNonModal = React.forwardRef<PopoverContentTypeElement, PopoverContentTypeProps>(
@@ -344,12 +347,12 @@ const PopoverContentNonModal = React.forwardRef<PopoverContentTypeElement, Popov
         }}
       />
     );
-  }
+  },
 );
 
 /* -----------------------------------------------------------------------------------------------*/
 
-type PopoverContentImplElement = React.ElementRef<typeof PopperPrimitive.Content>;
+type PopoverContentImplElement = React.ComponentRef<typeof PopperPrimitive.Content>;
 type FocusScopeProps = React.ComponentPropsWithoutRef<typeof FocusScope>;
 type DismissableLayerProps = React.ComponentPropsWithoutRef<typeof DismissableLayer>;
 type PopperContentProps = React.ComponentPropsWithoutRef<typeof PopperPrimitive.Content>;
@@ -435,7 +438,7 @@ const PopoverContentImpl = React.forwardRef<PopoverContentImplElement, PopoverCo
         </DismissableLayer>
       </FocusScope>
     );
-  }
+  },
 );
 
 /* -------------------------------------------------------------------------------------------------
@@ -444,7 +447,7 @@ const PopoverContentImpl = React.forwardRef<PopoverContentImplElement, PopoverCo
 
 const CLOSE_NAME = 'PopoverClose';
 
-type PopoverCloseElement = React.ElementRef<typeof Primitive.button>;
+type PopoverCloseElement = React.ComponentRef<typeof Primitive.button>;
 interface PopoverCloseProps extends PrimitiveButtonProps {}
 
 const PopoverClose = React.forwardRef<PopoverCloseElement, PopoverCloseProps>(
@@ -459,7 +462,7 @@ const PopoverClose = React.forwardRef<PopoverCloseElement, PopoverCloseProps>(
         onClick={composeEventHandlers(props.onClick, () => context.onOpenChange(false))}
       />
     );
-  }
+  },
 );
 
 PopoverClose.displayName = CLOSE_NAME;
@@ -470,7 +473,7 @@ PopoverClose.displayName = CLOSE_NAME;
 
 const ARROW_NAME = 'PopoverArrow';
 
-type PopoverArrowElement = React.ElementRef<typeof PopperPrimitive.Arrow>;
+type PopoverArrowElement = React.ComponentRef<typeof PopperPrimitive.Arrow>;
 type PopperArrowProps = React.ComponentPropsWithoutRef<typeof PopperPrimitive.Arrow>;
 interface PopoverArrowProps extends PopperArrowProps {}
 
@@ -479,7 +482,7 @@ const PopoverArrow = React.forwardRef<PopoverArrowElement, PopoverArrowProps>(
     const { __scopePopover, ...arrowProps } = props;
     const popperScope = usePopperScope(__scopePopover);
     return <PopperPrimitive.Arrow {...popperScope} {...arrowProps} ref={forwardedRef} />;
-  }
+  },
 );
 
 PopoverArrow.displayName = ARROW_NAME;

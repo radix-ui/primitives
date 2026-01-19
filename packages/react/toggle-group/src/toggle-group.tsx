@@ -92,15 +92,16 @@ const ToggleGroupImplSingle = React.forwardRef<
 
   const [value, setValue] = useControllableState({
     prop: valueProp,
-    defaultProp: defaultValue,
+    defaultProp: defaultValue ?? '',
     onChange: onValueChange,
+    caller: TOGGLE_GROUP_NAME,
   });
 
   return (
     <ToggleGroupValueProvider
       scope={props.__scopeToggleGroup}
       type="single"
-      value={value ? [value] : []}
+      value={React.useMemo(() => (value ? [value] : []), [value])}
       onItemActivate={setValue}
       onItemDeactivate={React.useCallback(() => setValue(''), [setValue])}
     >
@@ -137,21 +138,22 @@ const ToggleGroupImplMultiple = React.forwardRef<
     ...toggleGroupMultipleProps
   } = props;
 
-  const [value = [], setValue] = useControllableState({
+  const [value, setValue] = useControllableState({
     prop: valueProp,
-    defaultProp: defaultValue,
+    defaultProp: defaultValue ?? [],
     onChange: onValueChange,
+    caller: TOGGLE_GROUP_NAME,
   });
 
   const handleButtonActivate = React.useCallback(
     (itemValue: string) => setValue((prevValue = []) => [...prevValue, itemValue]),
-    [setValue]
+    [setValue],
   );
 
   const handleButtonDeactivate = React.useCallback(
     (itemValue: string) =>
       setValue((prevValue = []) => prevValue.filter((value) => value !== itemValue)),
-    [setValue]
+    [setValue],
   );
 
   return (
@@ -177,7 +179,7 @@ const [ToggleGroupContext, useToggleGroupContext] =
   createToggleGroupContext<ToggleGroupContextValue>(TOGGLE_GROUP_NAME);
 
 type RovingFocusGroupProps = React.ComponentPropsWithoutRef<typeof RovingFocusGroup.Root>;
-type ToggleGroupImplElement = React.ElementRef<typeof Primitive.div>;
+type ToggleGroupImplElement = React.ComponentRef<typeof Primitive.div>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface ToggleGroupImplProps extends PrimitiveDivProps {
   /**
@@ -226,7 +228,7 @@ const ToggleGroupImpl = React.forwardRef<ToggleGroupImplElement, ToggleGroupImpl
         )}
       </ToggleGroupContext>
     );
-  }
+  },
 );
 
 /* -------------------------------------------------------------------------------------------------
@@ -260,14 +262,14 @@ const ToggleGroupItem = React.forwardRef<ToggleGroupItemElement, ToggleGroupItem
     ) : (
       <ToggleGroupItemImpl {...commonProps} ref={forwardedRef} />
     );
-  }
+  },
 );
 
 ToggleGroupItem.displayName = ITEM_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
-type ToggleGroupItemImplElement = React.ElementRef<typeof Toggle>;
+type ToggleGroupItemImplElement = React.ComponentRef<typeof Toggle>;
 type ToggleProps = React.ComponentPropsWithoutRef<typeof Toggle>;
 interface ToggleGroupItemImplProps extends Omit<ToggleProps, 'defaultPressed' | 'onPressedChange'> {
   /**
@@ -296,7 +298,7 @@ const ToggleGroupItemImpl = React.forwardRef<ToggleGroupItemImplElement, ToggleG
         }}
       />
     );
-  }
+  },
 );
 
 /* -----------------------------------------------------------------------------------------------*/

@@ -22,7 +22,7 @@ const DismissableLayerContext = React.createContext({
   branches: new Set<DismissableLayerBranchElement>(),
 });
 
-type DismissableLayerElement = React.ElementRef<typeof Primitive.div>;
+type DismissableLayerElement = React.ComponentRef<typeof Primitive.div>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface DismissableLayerProps extends PrimitiveDivProps {
   /**
@@ -76,7 +76,7 @@ const DismissableLayer = React.forwardRef<DismissableLayerElement, DismissableLa
     const composedRefs = useComposedRefs(forwardedRef, (node) => setNode(node));
     const layers = Array.from(context.layers);
     const [highestLayerWithOutsidePointerEventsDisabled] = [...context.layersWithOutsidePointerEventsDisabled].slice(-1); // prettier-ignore
-    const highestLayerWithOutsidePointerEventsDisabledIndex = layers.indexOf(highestLayerWithOutsidePointerEventsDisabled); // prettier-ignore
+    const highestLayerWithOutsidePointerEventsDisabledIndex = layers.indexOf(highestLayerWithOutsidePointerEventsDisabled!); // prettier-ignore
     const index = node ? layers.indexOf(node) : -1;
     const isBodyPointerEventsDisabled = context.layersWithOutsidePointerEventsDisabled.size > 0;
     const isPointerEventsEnabled = index >= highestLayerWithOutsidePointerEventsDisabledIndex;
@@ -167,11 +167,11 @@ const DismissableLayer = React.forwardRef<DismissableLayerElement, DismissableLa
         onBlurCapture={composeEventHandlers(props.onBlurCapture, focusOutside.onBlurCapture)}
         onPointerDownCapture={composeEventHandlers(
           props.onPointerDownCapture,
-          pointerDownOutside.onPointerDownCapture
+          pointerDownOutside.onPointerDownCapture,
         )}
       />
     );
-  }
+  },
 );
 
 DismissableLayer.displayName = DISMISSABLE_LAYER_NAME;
@@ -182,7 +182,7 @@ DismissableLayer.displayName = DISMISSABLE_LAYER_NAME;
 
 const BRANCH_NAME = 'DismissableLayerBranch';
 
-type DismissableLayerBranchElement = React.ElementRef<typeof Primitive.div>;
+type DismissableLayerBranchElement = React.ComponentRef<typeof Primitive.div>;
 interface DismissableLayerBranchProps extends PrimitiveDivProps {}
 
 const DismissableLayerBranch = React.forwardRef<
@@ -220,7 +220,7 @@ type FocusOutsideEvent = CustomEvent<{ originalEvent: FocusEvent }>;
  */
 function usePointerDownOutside(
   onPointerDownOutside?: (event: PointerDownOutsideEvent) => void,
-  ownerDocument: Document = globalThis?.document
+  ownerDocument: Document = globalThis?.document,
 ) {
   const handlePointerDownOutside = useCallbackRef(onPointerDownOutside) as EventListener;
   const isPointerInsideReactTreeRef = React.useRef(false);
@@ -236,7 +236,7 @@ function usePointerDownOutside(
             POINTER_DOWN_OUTSIDE,
             handlePointerDownOutside,
             eventDetail,
-            { discrete: true }
+            { discrete: true },
           );
         }
 
@@ -301,7 +301,7 @@ function usePointerDownOutside(
  */
 function useFocusOutside(
   onFocusOutside?: (event: FocusOutsideEvent) => void,
-  ownerDocument: Document = globalThis?.document
+  ownerDocument: Document = globalThis?.document,
 ) {
   const handleFocusOutside = useCallbackRef(onFocusOutside) as EventListener;
   const isFocusInsideReactTreeRef = React.useRef(false);
@@ -334,7 +334,7 @@ function handleAndDispatchCustomEvent<E extends CustomEvent, OriginalEvent exten
   name: string,
   handler: ((event: E) => void) | undefined,
   detail: { originalEvent: OriginalEvent } & (E extends CustomEvent<infer D> ? D : never),
-  { discrete }: { discrete: boolean }
+  { discrete }: { discrete: boolean },
 ) {
   const target = detail.originalEvent.target;
   const event = new CustomEvent(name, { bubbles: false, cancelable: true, detail });

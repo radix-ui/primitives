@@ -33,7 +33,7 @@ type ToolbarContextValue = {
 const [ToolbarProvider, useToolbarContext] =
   createToolbarContext<ToolbarContextValue>(TOOLBAR_NAME);
 
-type ToolbarElement = React.ElementRef<typeof Primitive.div>;
+type ToolbarElement = React.ComponentRef<typeof Primitive.div>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface ToolbarProps extends PrimitiveDivProps {
   orientation?: RovingFocusGroupProps['orientation'];
@@ -65,7 +65,7 @@ const Toolbar = React.forwardRef<ToolbarElement, ToolbarProps>(
         </RovingFocusGroup.Root>
       </ToolbarProvider>
     );
-  }
+  },
 );
 
 Toolbar.displayName = TOOLBAR_NAME;
@@ -76,7 +76,7 @@ Toolbar.displayName = TOOLBAR_NAME;
 
 const SEPARATOR_NAME = 'ToolbarSeparator';
 
-type ToolbarSeparatorElement = React.ElementRef<typeof SeparatorPrimitive.Root>;
+type ToolbarSeparatorElement = React.ComponentRef<typeof SeparatorPrimitive.Root>;
 type SeparatorProps = React.ComponentPropsWithoutRef<typeof SeparatorPrimitive.Root>;
 interface ToolbarSeparatorProps extends SeparatorProps {}
 
@@ -91,7 +91,7 @@ const ToolbarSeparator = React.forwardRef<ToolbarSeparatorElement, ToolbarSepara
         ref={forwardedRef}
       />
     );
-  }
+  },
 );
 
 ToolbarSeparator.displayName = SEPARATOR_NAME;
@@ -102,7 +102,7 @@ ToolbarSeparator.displayName = SEPARATOR_NAME;
 
 const BUTTON_NAME = 'ToolbarButton';
 
-type ToolbarButtonElement = React.ElementRef<typeof Primitive.button>;
+type ToolbarButtonElement = React.ComponentRef<typeof Primitive.button>;
 type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
 interface ToolbarButtonProps extends PrimitiveButtonProps {}
 
@@ -115,7 +115,7 @@ const ToolbarButton = React.forwardRef<ToolbarButtonElement, ToolbarButtonProps>
         <Primitive.button type="button" {...buttonProps} ref={forwardedRef} />
       </RovingFocusGroup.Item>
     );
-  }
+  },
 );
 
 ToolbarButton.displayName = BUTTON_NAME;
@@ -126,7 +126,7 @@ ToolbarButton.displayName = BUTTON_NAME;
 
 const LINK_NAME = 'ToolbarLink';
 
-type ToolbarLinkElement = React.ElementRef<typeof Primitive.a>;
+type ToolbarLinkElement = React.ComponentRef<typeof Primitive.a>;
 type PrimitiveLinkProps = React.ComponentPropsWithoutRef<typeof Primitive.a>;
 interface ToolbarLinkProps extends PrimitiveLinkProps {}
 
@@ -145,7 +145,7 @@ const ToolbarLink = React.forwardRef<ToolbarLinkElement, ToolbarLinkProps>(
         />
       </RovingFocusGroup.Item>
     );
-  }
+  },
 );
 
 ToolbarLink.displayName = LINK_NAME;
@@ -156,7 +156,7 @@ ToolbarLink.displayName = LINK_NAME;
 
 const TOGGLE_GROUP_NAME = 'ToolbarToggleGroup';
 
-type ToolbarToggleGroupElement = React.ElementRef<typeof ToggleGroupPrimitive.Root>;
+type ToolbarToggleGroupElement = React.ComponentRef<typeof ToggleGroupPrimitive.Root>;
 type ToggleGroupProps = React.ComponentPropsWithoutRef<typeof ToggleGroupPrimitive.Root>;
 interface ToolbarToggleGroupSingleProps extends Extract<ToggleGroupProps, { type: 'single' }> {}
 interface ToolbarToggleGroupMultipleProps extends Extract<ToggleGroupProps, { type: 'multiple' }> {}
@@ -167,7 +167,7 @@ const ToolbarToggleGroup = React.forwardRef<
 >(
   (
     props: ScopedProps<ToolbarToggleGroupSingleProps | ToolbarToggleGroupMultipleProps>,
-    forwardedRef
+    forwardedRef,
   ) => {
     const { __scopeToolbar, ...toggleGroupProps } = props;
     const context = useToolbarContext(TOGGLE_GROUP_NAME, __scopeToolbar);
@@ -182,7 +182,7 @@ const ToolbarToggleGroup = React.forwardRef<
         rovingFocus={false}
       />
     );
-  }
+  },
 );
 
 ToolbarToggleGroup.displayName = TOGGLE_GROUP_NAME;
@@ -193,7 +193,7 @@ ToolbarToggleGroup.displayName = TOGGLE_GROUP_NAME;
 
 const TOGGLE_ITEM_NAME = 'ToolbarToggleItem';
 
-type ToolbarToggleItemElement = React.ElementRef<typeof ToggleGroupPrimitive.Item>;
+type ToolbarToggleItemElement = React.ComponentRef<typeof ToggleGroupPrimitive.Item>;
 type ToggleGroupItemProps = React.ComponentPropsWithoutRef<typeof ToggleGroupPrimitive.Item>;
 interface ToolbarToggleItemProps extends ToggleGroupItemProps {}
 
@@ -208,7 +208,7 @@ const ToolbarToggleItem = React.forwardRef<ToolbarToggleItemElement, ToolbarTogg
         <ToggleGroupPrimitive.Item {...toggleGroupScope} {...toggleItemProps} ref={forwardedRef} />
       </ToolbarButton>
     );
-  }
+  },
 );
 
 ToolbarToggleItem.displayName = TOGGLE_ITEM_NAME;

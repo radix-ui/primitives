@@ -1,27 +1,18 @@
 import * as React from 'react';
-import {
-  Dialog,
-  DialogTitle,
-  DialogDescription,
-  DialogTrigger,
-  DialogPortal,
-  DialogOverlay,
-  DialogContent,
-  DialogClose,
-} from '@radix-ui/react-dialog';
+import { Dialog } from 'radix-ui';
 
 export default function Page() {
   return (
-    <Dialog defaultOpen>
-      <DialogTrigger>open</DialogTrigger>
-      <DialogPortal>
-        <DialogOverlay />
-        <DialogContent>
-          <DialogTitle>Title</DialogTitle>
-          <DialogDescription>Description</DialogDescription>
-          <DialogClose>close</DialogClose>
-        </DialogContent>
-      </DialogPortal>
-    </Dialog>
+    <Dialog.Root defaultOpen>
+      <Dialog.Trigger>open</Dialog.Trigger>
+      <Dialog.Portal>
+        <Dialog.Overlay />
+        <Dialog.Content>
+          <Dialog.Title>Title</Dialog.Title>
+          <Dialog.Description>Description</Dialog.Description>
+          <Dialog.Close>close</Dialog.Close>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
 }

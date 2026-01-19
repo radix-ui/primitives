@@ -16,16 +16,25 @@ jobs:
   chromatic-deployment:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Set Node version
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
+          cache: 'pnpm'
+
       - name: Install dependencies
-        run: yarn
+        run: pnpm install --frozen-lockfile
+
       - name: Publish to Chromatic
         uses: chromaui/action@v1
         with:

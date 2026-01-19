@@ -29,7 +29,7 @@ const [Collection, useCollection, createCollectionScope] = createCollection<
 type ScopedProps<P> = P & { __scopeRovingFocusGroup?: Scope };
 const [createRovingFocusGroupContext, createRovingFocusGroupScope] = createContextScope(
   GROUP_NAME,
-  [createCollectionScope]
+  [createCollectionScope],
 );
 
 type Orientation = React.AriaAttributes['aria-orientation'];
@@ -75,14 +75,14 @@ const RovingFocusGroup = React.forwardRef<RovingFocusGroupElement, RovingFocusGr
         </Collection.Slot>
       </Collection.Provider>
     );
-  }
+  },
 );
 
 RovingFocusGroup.displayName = GROUP_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
-type RovingFocusGroupImplElement = React.ElementRef<typeof Primitive.div>;
+type RovingFocusGroupImplElement = React.ComponentRef<typeof Primitive.div>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface RovingFocusGroupImplProps
   extends Omit<PrimitiveDivProps, 'dir'>,
@@ -113,10 +113,11 @@ const RovingFocusGroupImpl = React.forwardRef<
   const ref = React.useRef<RovingFocusGroupImplElement>(null);
   const composedRefs = useComposedRefs(forwardedRef, ref);
   const direction = useDirection(dir);
-  const [currentTabStopId = null, setCurrentTabStopId] = useControllableState({
+  const [currentTabStopId, setCurrentTabStopId] = useControllableState({
     prop: currentTabStopIdProp,
-    defaultProp: defaultCurrentTabStopId,
+    defaultProp: defaultCurrentTabStopId ?? null,
     onChange: onCurrentTabStopIdChange,
+    caller: GROUP_NAME,
   });
   const [isTabbingBackOut, setIsTabbingBackOut] = React.useState(false);
   const handleEntryFocus = useCallbackRef(onEntryFocus);
@@ -141,16 +142,16 @@ const RovingFocusGroupImpl = React.forwardRef<
       currentTabStopId={currentTabStopId}
       onItemFocus={React.useCallback(
         (tabStopId) => setCurrentTabStopId(tabStopId),
-        [setCurrentTabStopId]
+        [setCurrentTabStopId],
       )}
       onItemShiftTab={React.useCallback(() => setIsTabbingBackOut(true), [])}
       onFocusableItemAdd={React.useCallback(
         () => setFocusableItemsCount((prevCount) => prevCount + 1),
-        []
+        [],
       )}
       onFocusableItemRemove={React.useCallback(
         () => setFocusableItemsCount((prevCount) => prevCount - 1),
-        []
+        [],
       )}
     >
       <Primitive.div
@@ -178,7 +179,7 @@ const RovingFocusGroupImpl = React.forwardRef<
               const activeItem = items.find((item) => item.active);
               const currentItem = items.find((item) => item.id === currentTabStopId);
               const candidateItems = [activeItem, currentItem, ...items].filter(
-                Boolean
+                Boolean,
               ) as typeof items;
               const candidateNodes = candidateItems.map((item) => item.ref.current!);
               focusFirst(candidateNodes, preventScrollOnEntryFocus);
@@ -199,12 +200,15 @@ const RovingFocusGroupImpl = React.forwardRef<
 
 const ITEM_NAME = 'RovingFocusGroupItem';
 
-type RovingFocusItemElement = React.ElementRef<typeof Primitive.span>;
+type RovingFocusItemElement = React.ComponentRef<typeof Primitive.span>;
 type PrimitiveSpanProps = React.ComponentPropsWithoutRef<typeof Primitive.span>;
-interface RovingFocusItemProps extends PrimitiveSpanProps {
+interface RovingFocusItemProps extends Omit<PrimitiveSpanProps, 'children'> {
   tabStopId?: string;
   focusable?: boolean;
   active?: boolean;
+  children?:
+    | React.ReactNode
+    | ((props: { hasTabStop: boolean; isCurrentTabStop: boolean }) => React.ReactNode);
 }
 
 const RovingFocusGroupItem = React.forwardRef<RovingFocusItemElement, RovingFocusItemProps>(
@@ -214,6 +218,7 @@ const RovingFocusGroupItem = React.forwardRef<RovingFocusItemElement, RovingFocu
       focusable = true,
       active = false,
       tabStopId,
+      children,
       ...itemProps
     } = props;
     const autoId = useId();
@@ -222,7 +227,7 @@ const RovingFocusGroupItem = React.forwardRef<RovingFocusItemElement, RovingFocu
     const isCurrentTabStop = context.currentTabStopId === id;
     const getItems = useCollection(__scopeRovingFocusGroup);
 
-    const { onFocusableItemAdd, onFocusableItemRemove } = context;
+    const { onFocusableItemAdd, onFocusableItemRemove, currentTabStopId } = context;
 
     React.useEffect(() => {
       if (focusable) {
@@ -283,10 +288,14 @@ const RovingFocusGroupItem = React.forwardRef<RovingFocusItemElement, RovingFocu
               setTimeout(() => focusFirst(candidateNodes));
             }
           })}
-        />
+        >
+          {typeof children === 'function'
+            ? children({ isCurrentTabStop, hasTabStop: currentTabStopId != null })
+            : children}
+        </Primitive.span>
       </Collection.ItemSlot>
     );
-  }
+  },
 );
 
 RovingFocusGroupItem.displayName = ITEM_NAME;
@@ -330,7 +339,7 @@ function focusFirst(candidates: HTMLElement[], preventScroll = false) {
  * Example: `wrapArray(['a', 'b', 'c', 'd'], 2) === ['c', 'd', 'a', 'b']`
  */
 function wrapArray<T>(array: T[], startIndex: number) {
-  return array.map((_, index) => array[(startIndex + index) % array.length]);
+  return array.map<T>((_, index) => array[(startIndex + index) % array.length]!);
 }
 
 const Root = RovingFocusGroup;

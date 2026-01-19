@@ -1,8 +1,11 @@
-import { render, screen, waitFor } from '@testing-library/react';
-import * as Tooltip from '@radix-ui/react-tooltip';
+import { cleanup, render, screen, waitFor } from '@testing-library/react';
+import * as Tooltip from './tooltip';
 import userEvent from '@testing-library/user-event';
+import { afterEach, describe, it, expect } from 'vitest';
 
 describe('Tooltip', () => {
+  afterEach(cleanup);
+
   it('renders tooltip trigger', () => {
     render(
       <Tooltip.Provider>
@@ -15,7 +18,7 @@ describe('Tooltip', () => {
             </Tooltip.Content>
           </Tooltip.Portal>
         </Tooltip.Root>
-      </Tooltip.Provider>
+      </Tooltip.Provider>,
     );
 
     expect(screen.getByText('Tooltip Trigger')).toBeInTheDocument();
@@ -34,7 +37,7 @@ describe('Tooltip', () => {
             </Tooltip.Content>
           </Tooltip.Portal>
         </Tooltip.Root>
-      </Tooltip.Provider>
+      </Tooltip.Provider>,
     );
 
     const trigger = screen.getByText('Tooltip Trigger');
@@ -60,7 +63,7 @@ describe('Tooltip', () => {
             </Tooltip.Content>
           </Tooltip.Portal>
         </Tooltip.Root>
-      </Tooltip.Provider>
+      </Tooltip.Provider>,
     );
 
     const trigger = screen.getByText('Tooltip Trigger');

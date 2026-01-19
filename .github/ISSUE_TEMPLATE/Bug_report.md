@@ -36,5 +36,5 @@ about: 'Create a bug report'
 | Browser          |         |         |
 | Assistive tech   |         |         |
 | Node             | n/a     |         |
-| npm/yarn         |         |         |
+| npm/yarn/pnpm    |         |         |
 | Operating System |         |         |

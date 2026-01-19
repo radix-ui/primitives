@@ -1,5 +1,3 @@
-/// <reference types="resize-observer-browser" />
-
 import * as React from 'react';
 import { Primitive } from '@radix-ui/react-primitive';
 import { Presence } from '@radix-ui/react-presence';
@@ -58,7 +56,7 @@ type ScrollAreaContextValue = {
 const [ScrollAreaProvider, useScrollAreaContext] =
   createScrollAreaContext<ScrollAreaContextValue>(SCROLL_AREA_NAME);
 
-type ScrollAreaElement = React.ElementRef<typeof Primitive.div>;
+type ScrollAreaElement = React.ComponentRef<typeof Primitive.div>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface ScrollAreaProps extends PrimitiveDivProps {
   type?: ScrollAreaContextValue['type'];
@@ -123,7 +121,7 @@ const ScrollArea = React.forwardRef<ScrollAreaElement, ScrollAreaProps>(
         />
       </ScrollAreaProvider>
     );
-  }
+  },
 );
 
 ScrollArea.displayName = SCROLL_AREA_NAME;
@@ -134,7 +132,7 @@ ScrollArea.displayName = SCROLL_AREA_NAME;
 
 const VIEWPORT_NAME = 'ScrollAreaViewport';
 
-type ScrollAreaViewportElement = React.ElementRef<typeof Primitive.div>;
+type ScrollAreaViewportElement = React.ComponentRef<typeof Primitive.div>;
 interface ScrollAreaViewportProps extends PrimitiveDivProps {
   nonce?: string;
 }
@@ -188,7 +186,7 @@ const ScrollAreaViewport = React.forwardRef<ScrollAreaViewportElement, ScrollAre
         </Primitive.div>
       </>
     );
-  }
+  },
 );
 
 ScrollAreaViewport.displayName = VIEWPORT_NAME;
@@ -227,7 +225,7 @@ const ScrollAreaScrollbar = React.forwardRef<ScrollAreaScrollbarElement, ScrollA
     ) : context.type === 'always' ? (
       <ScrollAreaScrollbarVisible {...scrollbarProps} ref={forwardedRef} />
     ) : null;
-  }
+  },
 );
 
 ScrollAreaScrollbar.displayName = SCROLLBAR_NAME;
@@ -619,7 +617,7 @@ type ScrollbarContext = {
 const [ScrollbarProvider, useScrollbarContext] =
   createScrollAreaContext<ScrollbarContext>(SCROLLBAR_NAME);
 
-type ScrollAreaScrollbarImplElement = React.ElementRef<typeof Primitive.div>;
+type ScrollAreaScrollbarImplElement = React.ComponentRef<typeof Primitive.div>;
 type ScrollAreaScrollbarImplPrivateProps = {
   sizes: Sizes;
   hasThumb: boolean;
@@ -760,10 +758,10 @@ const ScrollAreaThumb = React.forwardRef<ScrollAreaThumbElement, ScrollAreaThumb
         <ScrollAreaThumbImpl ref={forwardedRef} {...thumbProps} />
       </Presence>
     );
-  }
+  },
 );
 
-type ScrollAreaThumbImplElement = React.ElementRef<typeof Primitive.div>;
+type ScrollAreaThumbImplElement = React.ComponentRef<typeof Primitive.div>;
 interface ScrollAreaThumbImplProps extends PrimitiveDivProps {}
 
 const ScrollAreaThumbImpl = React.forwardRef<ScrollAreaThumbImplElement, ScrollAreaThumbImplProps>(
@@ -773,7 +771,7 @@ const ScrollAreaThumbImpl = React.forwardRef<ScrollAreaThumbImplElement, ScrollA
     const scrollbarContext = useScrollbarContext(THUMB_NAME, __scopeScrollArea);
     const { onThumbPositionChange } = scrollbarContext;
     const composedRef = useComposedRefs(forwardedRef, (node) =>
-      scrollbarContext.onThumbChange(node)
+      scrollbarContext.onThumbChange(node),
     );
     const removeUnlinkedScrollListenerRef = React.useRef<() => void>(undefined);
     const debounceScrollEnd = useDebounceCallback(() => {
@@ -827,7 +825,7 @@ const ScrollAreaThumbImpl = React.forwardRef<ScrollAreaThumbImplElement, ScrollA
         onPointerUp={composeEventHandlers(props.onPointerUp, scrollbarContext.onThumbPointerUp)}
       />
     );
-  }
+  },
 );
 
 ScrollAreaThumb.displayName = THUMB_NAME;
@@ -847,14 +845,14 @@ const ScrollAreaCorner = React.forwardRef<ScrollAreaCornerElement, ScrollAreaCor
     const hasBothScrollbarsVisible = Boolean(context.scrollbarX && context.scrollbarY);
     const hasCorner = context.type !== 'scroll' && hasBothScrollbarsVisible;
     return hasCorner ? <ScrollAreaCornerImpl {...props} ref={forwardedRef} /> : null;
-  }
+  },
 );
 
 ScrollAreaCorner.displayName = CORNER_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
-type ScrollAreaCornerImplElement = React.ElementRef<typeof Primitive.div>;
+type ScrollAreaCornerImplElement = React.ComponentRef<typeof Primitive.div>;
 interface ScrollAreaCornerImplProps extends PrimitiveDivProps {}
 
 const ScrollAreaCornerImpl = React.forwardRef<
@@ -919,7 +917,7 @@ function getScrollPositionFromPointer(
   pointerPos: number,
   pointerOffset: number,
   sizes: Sizes,
-  dir: Direction = 'ltr'
+  dir: Direction = 'ltr',
 ) {
   const thumbSizePx = getThumbSize(sizes);
   const thumbCenter = thumbSizePx / 2;

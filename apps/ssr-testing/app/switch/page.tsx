@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as Switch from '@radix-ui/react-switch';
+import { Switch } from 'radix-ui';
 
 export default function Page() {
   return (

@@ -1,5 +1,6 @@
-import { render, fireEvent, getByText } from '@testing-library/react';
-import * as Toolbar from '@radix-ui/react-toolbar';
+import { cleanup, render, fireEvent, getByText } from '@testing-library/react';
+import * as Toolbar from './toolbar';
+import { afterEach, describe, it, vi, expect } from 'vitest';
 
 const component = (props: any) => {
   return render(
@@ -9,11 +10,12 @@ const component = (props: any) => {
           Left
         </Toolbar.ToggleItem>
       </Toolbar.ToggleGroup>
-    </Toolbar.Root>
+    </Toolbar.Root>,
   );
 };
 
 describe('given a default Toolbar', () => {
+  afterEach(cleanup);
   it('Click event should be called just once', async () => {
     const spy = vi.fn();
 
@@ -26,7 +28,7 @@ describe('given a default Toolbar', () => {
       new MouseEvent('click', {
         bubbles: true,
         cancelable: true,
-      })
+      }),
     );
 
     expect(spy).toHaveBeenCalledTimes(1);

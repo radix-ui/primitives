@@ -12,7 +12,7 @@ import { Primitive } from '@radix-ui/react-primitive';
 import { useFocusGuards } from '@radix-ui/react-focus-guards';
 import { RemoveScroll } from 'react-remove-scroll';
 import { hideOthers } from 'aria-hidden';
-import { Slot } from '@radix-ui/react-slot';
+import { createSlot } from '@radix-ui/react-slot';
 
 import type { Scope } from '@radix-ui/react-context';
 
@@ -58,10 +58,11 @@ const Dialog: React.FC<DialogProps> = (props: ScopedProps<DialogProps>) => {
   } = props;
   const triggerRef = React.useRef<HTMLButtonElement>(null);
   const contentRef = React.useRef<DialogContentElement>(null);
-  const [open = false, setOpen] = useControllableState({
+  const [open, setOpen] = useControllableState({
     prop: openProp,
-    defaultProp: defaultOpen,
+    defaultProp: defaultOpen ?? false,
     onChange: onOpenChange,
+    caller: DIALOG_NAME,
   });
 
   return (
@@ -90,7 +91,7 @@ Dialog.displayName = DIALOG_NAME;
 
 const TRIGGER_NAME = 'DialogTrigger';
 
-type DialogTriggerElement = React.ElementRef<typeof Primitive.button>;
+type DialogTriggerElement = React.ComponentRef<typeof Primitive.button>;
 type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
 interface DialogTriggerProps extends PrimitiveButtonProps {}
 
@@ -111,7 +112,7 @@ const DialogTrigger = React.forwardRef<DialogTriggerElement, DialogTriggerProps>
         onClick={composeEventHandlers(props.onClick, context.onOpenToggle)}
       />
     );
-  }
+  },
 );
 
 DialogTrigger.displayName = TRIGGER_NAME;
@@ -184,14 +185,16 @@ const DialogOverlay = React.forwardRef<DialogOverlayElement, DialogOverlayProps>
         <DialogOverlayImpl {...overlayProps} ref={forwardedRef} />
       </Presence>
     ) : null;
-  }
+  },
 );
 
 DialogOverlay.displayName = OVERLAY_NAME;
 
-type DialogOverlayImplElement = React.ElementRef<typeof Primitive.div>;
+type DialogOverlayImplElement = React.ComponentRef<typeof Primitive.div>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface DialogOverlayImplProps extends PrimitiveDivProps {}
+
+const Slot = createSlot('DialogOverlay.RemoveScroll');
 
 const DialogOverlayImpl = React.forwardRef<DialogOverlayImplElement, DialogOverlayImplProps>(
   (props: ScopedProps<DialogOverlayImplProps>, forwardedRef) => {
@@ -210,7 +213,7 @@ const DialogOverlayImpl = React.forwardRef<DialogOverlayImplElement, DialogOverl
         />
       </RemoveScroll>
     );
-  }
+  },
 );
 
 /* -------------------------------------------------------------------------------------------------
@@ -242,7 +245,7 @@ const DialogContent = React.forwardRef<DialogContentElement, DialogContentProps>
         )}
       </Presence>
     );
-  }
+  },
 );
 
 DialogContent.displayName = CONTENT_NAME;
@@ -289,11 +292,11 @@ const DialogContentModal = React.forwardRef<DialogContentTypeElement, DialogCont
         // When focus is trapped, a `focusout` event may still happen.
         // We make sure we don't trigger our `onDismiss` in such case.
         onFocusOutside={composeEventHandlers(props.onFocusOutside, (event) =>
-          event.preventDefault()
+          event.preventDefault(),
         )}
       />
     );
-  }
+  },
 );
 
 /* -----------------------------------------------------------------------------------------------*/
@@ -349,12 +352,12 @@ const DialogContentNonModal = React.forwardRef<DialogContentTypeElement, DialogC
         }}
       />
     );
-  }
+  },
 );
 
 /* -----------------------------------------------------------------------------------------------*/
 
-type DialogContentImplElement = React.ElementRef<typeof DismissableLayer>;
+type DialogContentImplElement = React.ComponentRef<typeof DismissableLayer>;
 type DismissableLayerProps = React.ComponentPropsWithoutRef<typeof DismissableLayer>;
 type FocusScopeProps = React.ComponentPropsWithoutRef<typeof FocusScope>;
 interface DialogContentImplProps extends Omit<DismissableLayerProps, 'onDismiss'> {
@@ -417,7 +420,7 @@ const DialogContentImpl = React.forwardRef<DialogContentImplElement, DialogConte
         )}
       </>
     );
-  }
+  },
 );
 
 /* -------------------------------------------------------------------------------------------------
@@ -426,7 +429,7 @@ const DialogContentImpl = React.forwardRef<DialogContentImplElement, DialogConte
 
 const TITLE_NAME = 'DialogTitle';
 
-type DialogTitleElement = React.ElementRef<typeof Primitive.h2>;
+type DialogTitleElement = React.ComponentRef<typeof Primitive.h2>;
 type PrimitiveHeading2Props = React.ComponentPropsWithoutRef<typeof Primitive.h2>;
 interface DialogTitleProps extends PrimitiveHeading2Props {}
 
@@ -435,7 +438,7 @@ const DialogTitle = React.forwardRef<DialogTitleElement, DialogTitleProps>(
     const { __scopeDialog, ...titleProps } = props;
     const context = useDialogContext(TITLE_NAME, __scopeDialog);
     return <Primitive.h2 id={context.titleId} {...titleProps} ref={forwardedRef} />;
-  }
+  },
 );
 
 DialogTitle.displayName = TITLE_NAME;
@@ -446,7 +449,7 @@ DialogTitle.displayName = TITLE_NAME;
 
 const DESCRIPTION_NAME = 'DialogDescription';
 
-type DialogDescriptionElement = React.ElementRef<typeof Primitive.p>;
+type DialogDescriptionElement = React.ComponentRef<typeof Primitive.p>;
 type PrimitiveParagraphProps = React.ComponentPropsWithoutRef<typeof Primitive.p>;
 interface DialogDescriptionProps extends PrimitiveParagraphProps {}
 
@@ -455,7 +458,7 @@ const DialogDescription = React.forwardRef<DialogDescriptionElement, DialogDescr
     const { __scopeDialog, ...descriptionProps } = props;
     const context = useDialogContext(DESCRIPTION_NAME, __scopeDialog);
     return <Primitive.p id={context.descriptionId} {...descriptionProps} ref={forwardedRef} />;
-  }
+  },
 );
 
 DialogDescription.displayName = DESCRIPTION_NAME;
@@ -466,7 +469,7 @@ DialogDescription.displayName = DESCRIPTION_NAME;
 
 const CLOSE_NAME = 'DialogClose';
 
-type DialogCloseElement = React.ElementRef<typeof Primitive.button>;
+type DialogCloseElement = React.ComponentRef<typeof Primitive.button>;
 interface DialogCloseProps extends PrimitiveButtonProps {}
 
 const DialogClose = React.forwardRef<DialogCloseElement, DialogCloseProps>(
@@ -481,7 +484,7 @@ const DialogClose = React.forwardRef<DialogCloseElement, DialogCloseProps>(
         onClick={composeEventHandlers(props.onClick, () => context.onOpenChange(false))}
       />
     );
-  }
+  },
 );
 
 DialogClose.displayName = CLOSE_NAME;

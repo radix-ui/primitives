@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { Separator } from '@radix-ui/react-separator';
+import { Separator } from 'radix-ui';
 
 export default function Page() {
-  return <Separator>***</Separator>;
+  return <Separator.Root>***</Separator.Root>;
 }

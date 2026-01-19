@@ -2,8 +2,9 @@ import React from 'react';
 import { axe } from 'vitest-axe';
 import type { RenderResult } from '@testing-library/react';
 import { render, fireEvent, cleanup } from '@testing-library/react';
-import * as Dialog from '@radix-ui/react-dialog';
+import * as Dialog from './dialog';
 import type { Mock, MockInstance } from 'vitest';
+import { describe, it, afterEach, beforeEach, vi, expect } from 'vitest';
 
 const OPEN_TEXT = 'Open';
 const CLOSE_TEXT = 'Close';
@@ -68,6 +69,7 @@ describe('given a default Dialog', () => {
   });
 
   afterEach(() => {
+    cleanup();
     consoleWarnMock.mockRestore();
     consoleWarnMockFunction.mockClear();
     consoleErrorMock.mockRestore();

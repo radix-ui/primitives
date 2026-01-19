@@ -3,7 +3,6 @@ import * as react from '@chance/eslint/react';
 import * as js from '@chance/eslint';
 import * as typescript from '@chance/eslint/typescript';
 import { globals } from '@chance/eslint/globals';
-import storybook from 'eslint-plugin-storybook';
 import pluginCypress from 'eslint-plugin-cypress/flat';
 
 /** @type {import("eslint").Linter.Config[]} */
@@ -27,8 +26,7 @@ export default [
       ],
     },
   },
-  ...storybook.configs['flat/recommended'],
-  { ...pluginCypress.configs.recommended, files: ['cypress/**/*.cy.ts'] },
+  { ...pluginCypress.configs.recommended, files: ['cypress/**/*.{ts,js}'] },
   {
     ignores: ['dist/**', '.next/**'],
     rules: {

@@ -9,7 +9,7 @@ import { createPopperScope } from '@radix-ui/react-popper';
 import { Portal as PortalPrimitive } from '@radix-ui/react-portal';
 import { Presence } from '@radix-ui/react-presence';
 import { Primitive } from '@radix-ui/react-primitive';
-import { Slottable } from '@radix-ui/react-slot';
+import { createSlottable } from '@radix-ui/react-slot';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import * as VisuallyHiddenPrimitive from '@radix-ui/react-visually-hidden';
 
@@ -62,7 +62,7 @@ interface TooltipProviderProps {
 }
 
 const TooltipProvider: React.FC<TooltipProviderProps> = (
-  props: ScopedProps<TooltipProviderProps>
+  props: ScopedProps<TooltipProviderProps>,
 ) => {
   const {
     __scopeTooltip,
@@ -93,7 +93,7 @@ const TooltipProvider: React.FC<TooltipProviderProps> = (
         window.clearTimeout(skipDelayTimerRef.current);
         skipDelayTimerRef.current = window.setTimeout(
           () => (isOpenDelayedRef.current = true),
-          skipDelayDuration
+          skipDelayDuration,
         );
       }, [skipDelayDuration])}
       isPointerInTransitRef={isPointerInTransitRef}
@@ -154,7 +154,7 @@ const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
     __scopeTooltip,
     children,
     open: openProp,
-    defaultOpen = false,
+    defaultOpen,
     onOpenChange,
     disableHoverableContent: disableHoverableContentProp,
     delayDuration: delayDurationProp,
@@ -168,9 +168,9 @@ const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
     disableHoverableContentProp ?? providerContext.disableHoverableContent;
   const delayDuration = delayDurationProp ?? providerContext.delayDuration;
   const wasOpenDelayedRef = React.useRef(false);
-  const [open = false, setOpen] = useControllableState({
+  const [open, setOpen] = useControllableState({
     prop: openProp,
-    defaultProp: defaultOpen,
+    defaultProp: defaultOpen ?? false,
     onChange: (open) => {
       if (open) {
         providerContext.onOpen();
@@ -183,6 +183,7 @@ const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
       }
       onOpenChange?.(open);
     },
+    caller: TOOLTIP_NAME,
   });
   const stateAttribute = React.useMemo(() => {
     return open ? (wasOpenDelayedRef.current ? 'delayed-open' : 'instant-open') : 'closed';
@@ -259,7 +260,7 @@ Tooltip.displayName = TOOLTIP_NAME;
 
 const TRIGGER_NAME = 'TooltipTrigger';
 
-type TooltipTriggerElement = React.ElementRef<typeof Primitive.button>;
+type TooltipTriggerElement = React.ComponentRef<typeof Primitive.button>;
 type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
 interface TooltipTriggerProps extends PrimitiveButtonProps {}
 
@@ -317,7 +318,7 @@ const TooltipTrigger = React.forwardRef<TooltipTriggerElement, TooltipTriggerPro
         />
       </PopperPrimitive.Anchor>
     );
-  }
+  },
 );
 
 TooltipTrigger.displayName = TRIGGER_NAME;
@@ -393,7 +394,7 @@ const TooltipContent = React.forwardRef<TooltipContentElement, TooltipContentPro
         )}
       </Presence>
     );
-  }
+  },
 );
 
 type Point = { x: number; y: number };
@@ -433,7 +434,7 @@ const TooltipContentHoverable = React.forwardRef<
       setPointerGraceArea(graceArea);
       onPointerInTransitChange(true);
     },
-    [onPointerInTransitChange]
+    [onPointerInTransitChange],
   );
 
   React.useEffect(() => {
@@ -480,7 +481,7 @@ const TooltipContentHoverable = React.forwardRef<
 const [VisuallyHiddenContentContextProvider, useVisuallyHiddenContentContext] =
   createTooltipContext(TOOLTIP_NAME, { isInside: false });
 
-type TooltipContentImplElement = React.ElementRef<typeof PopperPrimitive.Content>;
+type TooltipContentImplElement = React.ComponentRef<typeof PopperPrimitive.Content>;
 type DismissableLayerProps = React.ComponentPropsWithoutRef<typeof DismissableLayer>;
 type PopperContentProps = React.ComponentPropsWithoutRef<typeof PopperPrimitive.Content>;
 interface TooltipContentImplProps extends Omit<PopperContentProps, 'onPlaced'> {
@@ -500,6 +501,8 @@ interface TooltipContentImplProps extends Omit<PopperContentProps, 'onPlaced'> {
    */
   onPointerDownOutside?: DismissableLayerProps['onPointerDownOutside'];
 }
+
+const Slottable = createSlottable('TooltipContent');
 
 const TooltipContentImpl = React.forwardRef<TooltipContentImplElement, TooltipContentImplProps>(
   (props: ScopedProps<TooltipContentImplProps>, forwardedRef) => {
@@ -568,7 +571,7 @@ const TooltipContentImpl = React.forwardRef<TooltipContentImplElement, TooltipCo
         </PopperPrimitive.Content>
       </DismissableLayer>
     );
-  }
+  },
 );
 
 TooltipContent.displayName = CONTENT_NAME;
@@ -579,7 +582,7 @@ TooltipContent.displayName = CONTENT_NAME;
 
 const ARROW_NAME = 'TooltipArrow';
 
-type TooltipArrowElement = React.ElementRef<typeof PopperPrimitive.Arrow>;
+type TooltipArrowElement = React.ComponentRef<typeof PopperPrimitive.Arrow>;
 type PopperArrowProps = React.ComponentPropsWithoutRef<typeof PopperPrimitive.Arrow>;
 interface TooltipArrowProps extends PopperArrowProps {}
 
@@ -589,14 +592,14 @@ const TooltipArrow = React.forwardRef<TooltipArrowElement, TooltipArrowProps>(
     const popperScope = usePopperScope(__scopeTooltip);
     const visuallyHiddenContentContext = useVisuallyHiddenContentContext(
       ARROW_NAME,
-      __scopeTooltip
+      __scopeTooltip,
     );
     // if the arrow is inside the `VisuallyHidden`, we don't want to render it all to
     // prevent issues in positioning the arrow due to the duplicate
     return visuallyHiddenContentContext.isInside ? null : (
       <PopperPrimitive.Arrow {...popperScope} {...arrowProps} ref={forwardedRef} />
     );
-  }
+  },
 );
 
 TooltipArrow.displayName = ARROW_NAME;
@@ -631,25 +634,25 @@ function getPaddedExitPoints(exitPoint: Point, exitSide: Side, padding = 5) {
     case 'top':
       paddedExitPoints.push(
         { x: exitPoint.x - padding, y: exitPoint.y + padding },
-        { x: exitPoint.x + padding, y: exitPoint.y + padding }
+        { x: exitPoint.x + padding, y: exitPoint.y + padding },
       );
       break;
     case 'bottom':
       paddedExitPoints.push(
         { x: exitPoint.x - padding, y: exitPoint.y - padding },
-        { x: exitPoint.x + padding, y: exitPoint.y - padding }
+        { x: exitPoint.x + padding, y: exitPoint.y - padding },
       );
       break;
     case 'left':
       paddedExitPoints.push(
         { x: exitPoint.x + padding, y: exitPoint.y - padding },
-        { x: exitPoint.x + padding, y: exitPoint.y + padding }
+        { x: exitPoint.x + padding, y: exitPoint.y + padding },
       );
       break;
     case 'right':
       paddedExitPoints.push(
         { x: exitPoint.x - padding, y: exitPoint.y - padding },
-        { x: exitPoint.x - padding, y: exitPoint.y + padding }
+        { x: exitPoint.x - padding, y: exitPoint.y + padding },
       );
       break;
   }
@@ -672,10 +675,12 @@ function isPointInPolygon(point: Point, polygon: Polygon) {
   const { x, y } = point;
   let inside = false;
   for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
-    const xi = polygon[i].x;
-    const yi = polygon[i].y;
-    const xj = polygon[j].x;
-    const yj = polygon[j].y;
+    const ii = polygon[i]!;
+    const jj = polygon[j]!;
+    const xi = ii.x;
+    const yi = ii.y;
+    const xj = jj.x;
+    const yj = jj.y;
 
     // prettier-ignore
     const intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
@@ -705,10 +710,10 @@ function getHullPresorted<P extends Point>(points: Readonly<Array<P>>): Array<P>
 
   const upperHull: Array<P> = [];
   for (let i = 0; i < points.length; i++) {
-    const p = points[i];
+    const p = points[i]!;
     while (upperHull.length >= 2) {
-      const q = upperHull[upperHull.length - 1];
-      const r = upperHull[upperHull.length - 2];
+      const q = upperHull[upperHull.length - 1]!;
+      const r = upperHull[upperHull.length - 2]!;
       if ((q.x - r.x) * (p.y - r.y) >= (q.y - r.y) * (p.x - r.x)) upperHull.pop();
       else break;
     }
@@ -718,10 +723,10 @@ function getHullPresorted<P extends Point>(points: Readonly<Array<P>>): Array<P>
 
   const lowerHull: Array<P> = [];
   for (let i = points.length - 1; i >= 0; i--) {
-    const p = points[i];
+    const p = points[i]!;
     while (lowerHull.length >= 2) {
-      const q = lowerHull[lowerHull.length - 1];
-      const r = lowerHull[lowerHull.length - 2];
+      const q = lowerHull[lowerHull.length - 1]!;
+      const r = lowerHull[lowerHull.length - 2]!;
       if ((q.x - r.x) * (p.y - r.y) >= (q.y - r.y) * (p.x - r.x)) lowerHull.pop();
       else break;
     }
@@ -732,8 +737,8 @@ function getHullPresorted<P extends Point>(points: Readonly<Array<P>>): Array<P>
   if (
     upperHull.length === 1 &&
     lowerHull.length === 1 &&
-    upperHull[0].x === lowerHull[0].x &&
-    upperHull[0].y === lowerHull[0].y
+    upperHull[0]!.x === lowerHull[0]!.x &&
+    upperHull[0]!.y === lowerHull[0]!.y
   ) {
     return upperHull;
   } else {

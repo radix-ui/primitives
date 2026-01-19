@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { Label } from '@radix-ui/react-label';
+import { Label } from 'radix-ui';
 
 export default function Page() {
-  return <Label>Label</Label>;
+  return <Label.Root>Label</Label.Root>;
 }

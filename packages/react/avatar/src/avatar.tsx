@@ -3,6 +3,7 @@ import { createContextScope } from '@radix-ui/react-context';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { Primitive } from '@radix-ui/react-primitive';
+import { useIsHydrated } from '@radix-ui/react-use-is-hydrated';
 
 import type { Scope } from '@radix-ui/react-context';
 
@@ -24,7 +25,7 @@ type AvatarContextValue = {
 
 const [AvatarProvider, useAvatarContext] = createAvatarContext<AvatarContextValue>(AVATAR_NAME);
 
-type AvatarElement = React.ElementRef<typeof Primitive.span>;
+type AvatarElement = React.ComponentRef<typeof Primitive.span>;
 type PrimitiveSpanProps = React.ComponentPropsWithoutRef<typeof Primitive.span>;
 interface AvatarProps extends PrimitiveSpanProps {}
 
@@ -41,7 +42,7 @@ const Avatar = React.forwardRef<AvatarElement, AvatarProps>(
         <Primitive.span {...avatarProps} ref={forwardedRef} />
       </AvatarProvider>
     );
-  }
+  },
 );
 
 Avatar.displayName = AVATAR_NAME;
@@ -52,7 +53,7 @@ Avatar.displayName = AVATAR_NAME;
 
 const IMAGE_NAME = 'AvatarImage';
 
-type AvatarImageElement = React.ElementRef<typeof Primitive.img>;
+type AvatarImageElement = React.ComponentRef<typeof Primitive.img>;
 type PrimitiveImageProps = React.ComponentPropsWithoutRef<typeof Primitive.img>;
 interface AvatarImageProps extends PrimitiveImageProps {
   onLoadingStatusChange?: (status: ImageLoadingStatus) => void;
@@ -77,7 +78,7 @@ const AvatarImage = React.forwardRef<AvatarImageElement, AvatarImageProps>(
     return imageLoadingStatus === 'loaded' ? (
       <Primitive.img {...imageProps} ref={forwardedRef} src={src} />
     ) : null;
-  }
+  },
 );
 
 AvatarImage.displayName = IMAGE_NAME;
@@ -88,7 +89,7 @@ AvatarImage.displayName = IMAGE_NAME;
 
 const FALLBACK_NAME = 'AvatarFallback';
 
-type AvatarFallbackElement = React.ElementRef<typeof Primitive.span>;
+type AvatarFallbackElement = React.ComponentRef<typeof Primitive.span>;
 interface AvatarFallbackProps extends PrimitiveSpanProps {
   delayMs?: number;
 }
@@ -109,50 +110,75 @@ const AvatarFallback = React.forwardRef<AvatarFallbackElement, AvatarFallbackPro
     return canRender && context.imageLoadingStatus !== 'loaded' ? (
       <Primitive.span {...fallbackProps} ref={forwardedRef} />
     ) : null;
-  }
+  },
 );
 
 AvatarFallback.displayName = FALLBACK_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
+function resolveLoadingStatus(image: HTMLImageElement | null, src?: string): ImageLoadingStatus {
+  if (!image) {
+    return 'idle';
+  }
+  if (!src) {
+    return 'error';
+  }
+  if (image.src !== src) {
+    image.src = src;
+  }
+  return image.complete && image.naturalWidth > 0 ? 'loaded' : 'loading';
+}
+
 function useImageLoadingStatus(
   src: string | undefined,
-  { referrerPolicy, crossOrigin }: AvatarImageProps
+  { referrerPolicy, crossOrigin }: AvatarImageProps,
 ) {
-  const [loadingStatus, setLoadingStatus] = React.useState<ImageLoadingStatus>('idle');
+  const isHydrated = useIsHydrated();
+  const imageRef = React.useRef<HTMLImageElement | null>(null);
+  const image = (() => {
+    if (!isHydrated) return null;
+    if (!imageRef.current) {
+      imageRef.current = new window.Image();
+    }
+    return imageRef.current;
+  })();
+
+  const [loadingStatus, setLoadingStatus] = React.useState<ImageLoadingStatus>(() =>
+    resolveLoadingStatus(image, src),
+  );
 
   useLayoutEffect(() => {
-    if (!src) {
-      setLoadingStatus('error');
-      return;
-    }
+    setLoadingStatus(resolveLoadingStatus(image, src));
+  }, [image, src]);
 
-    let isMounted = true;
-    const image = new window.Image();
-
+  useLayoutEffect(() => {
     const updateStatus = (status: ImageLoadingStatus) => () => {
-      if (!isMounted) return;
       setLoadingStatus(status);
     };
 
-    setLoadingStatus('loading');
-    image.onload = updateStatus('loaded');
-    image.onerror = updateStatus('error');
+    if (!image) return;
+
+    const handleLoad = updateStatus('loaded');
+    const handleError = updateStatus('error');
+    image.addEventListener('load', handleLoad);
+    image.addEventListener('error', handleError);
     if (referrerPolicy) {
       image.referrerPolicy = referrerPolicy;
     }
     if (typeof crossOrigin === 'string') {
       image.crossOrigin = crossOrigin;
     }
-    image.src = src;
+
     return () => {
-      isMounted = false;
+      image.removeEventListener('load', handleLoad);
+      image.removeEventListener('error', handleError);
     };
-  }, [src, referrerPolicy, crossOrigin]);
+  }, [image, crossOrigin, referrerPolicy]);
 
   return loadingStatus;
 }
+
 const Root = Avatar;
 const Image = AvatarImage;
 const Fallback = AvatarFallback;

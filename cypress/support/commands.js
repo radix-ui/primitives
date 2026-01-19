@@ -1,3 +1,7 @@
+// @ts-check
+/// <reference types="cypress" />
+/// <reference types="./index.d.ts" />
+
 // ***********************************************
 // This example commands.js shows you how to
 // create various custom commands and overwrite
@@ -24,7 +28,10 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
+Cypress.Commands.add('visitStorybook', (options) => {
+  return cy.visit('iframe.html', options);
+});
+
 Cypress.Commands.add('visitStory', (storyName, options) => {
-  // eslint-disable-next-line cypress/no-unnecessary-waiting
-  return cy.visit(`iframe.html?id=components-${storyName}`, options).wait(0);
+  return cy.visit(`iframe.html?id=components-${storyName}`, options);
 });

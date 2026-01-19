@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { Slot } from '@radix-ui/react-slot';
+import { createSlot } from '@radix-ui/react-slot';
 
 const NODES = [
   'a',
@@ -16,6 +16,7 @@ const NODES = [
   'nav',
   'ol',
   'p',
+  'select',
   'span',
   'svg',
   'ul',
@@ -34,6 +35,7 @@ interface PrimitiveForwardRefComponent<E extends React.ElementType>
  * -----------------------------------------------------------------------------------------------*/
 
 const Primitive = NODES.reduce((primitive, node) => {
+  const Slot = createSlot(`Primitive.${node}`);
   const Node = React.forwardRef((props: PrimitivePropsWithRef<typeof node>, forwardedRef: any) => {
     const { asChild, ...primitiveProps } = props;
     const Comp: any = asChild ? Slot : node;

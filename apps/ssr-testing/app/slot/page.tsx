@@ -1,13 +1,13 @@
 import * as React from 'react';
-import { Slot, Slottable } from '@radix-ui/react-slot';
+import { Slot } from 'radix-ui';
 
 export default function Page() {
   return (
-    <Slot>
+    <Slot.Root>
       <span>I'm in a </span>
-      <Slottable>
+      <Slot.Slottable>
         <em>Slot!?</em>
-      </Slottable>
-    </Slot>
+      </Slot.Slottable>
+    </Slot.Root>
   );
 }

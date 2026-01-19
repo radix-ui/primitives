@@ -29,7 +29,7 @@ type CollapsibleContextValue = {
 const [CollapsibleProvider, useCollapsibleContext] =
   createCollapsibleContext<CollapsibleContextValue>(COLLAPSIBLE_NAME);
 
-type CollapsibleElement = React.ElementRef<typeof Primitive.div>;
+type CollapsibleElement = React.ComponentRef<typeof Primitive.div>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface CollapsibleProps extends PrimitiveDivProps {
   defaultOpen?: boolean;
@@ -49,10 +49,11 @@ const Collapsible = React.forwardRef<CollapsibleElement, CollapsibleProps>(
       ...collapsibleProps
     } = props;
 
-    const [open = false, setOpen] = useControllableState({
+    const [open, setOpen] = useControllableState({
       prop: openProp,
-      defaultProp: defaultOpen,
+      defaultProp: defaultOpen ?? false,
       onChange: onOpenChange,
+      caller: COLLAPSIBLE_NAME,
     });
 
     return (
@@ -71,7 +72,7 @@ const Collapsible = React.forwardRef<CollapsibleElement, CollapsibleProps>(
         />
       </CollapsibleProvider>
     );
-  }
+  },
 );
 
 Collapsible.displayName = COLLAPSIBLE_NAME;
@@ -82,7 +83,7 @@ Collapsible.displayName = COLLAPSIBLE_NAME;
 
 const TRIGGER_NAME = 'CollapsibleTrigger';
 
-type CollapsibleTriggerElement = React.ElementRef<typeof Primitive.button>;
+type CollapsibleTriggerElement = React.ComponentRef<typeof Primitive.button>;
 type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
 interface CollapsibleTriggerProps extends PrimitiveButtonProps {}
 
@@ -103,7 +104,7 @@ const CollapsibleTrigger = React.forwardRef<CollapsibleTriggerElement, Collapsib
         onClick={composeEventHandlers(props.onClick, context.onOpenToggle)}
       />
     );
-  }
+  },
 );
 
 CollapsibleTrigger.displayName = TRIGGER_NAME;
@@ -134,14 +135,14 @@ const CollapsibleContent = React.forwardRef<CollapsibleContentElement, Collapsib
         )}
       </Presence>
     );
-  }
+  },
 );
 
 CollapsibleContent.displayName = CONTENT_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
-type CollapsibleContentImplElement = React.ElementRef<typeof Primitive.div>;
+type CollapsibleContentImplElement = React.ComponentRef<typeof Primitive.div>;
 interface CollapsibleContentImplProps extends PrimitiveDivProps {
   present: boolean;
 }
@@ -188,8 +189,8 @@ const CollapsibleContentImpl = React.forwardRef<
 
       // kick off any animations/transitions that were originally set up if it isn't the initial mount
       if (!isMountAnimationPreventedRef.current) {
-        node.style.transitionDuration = originalStylesRef.current.transitionDuration;
-        node.style.animationName = originalStylesRef.current.animationName;
+        node.style.transitionDuration = originalStylesRef.current.transitionDuration!;
+        node.style.animationName = originalStylesRef.current.animationName!;
       }
 
       setIsPresent(present);

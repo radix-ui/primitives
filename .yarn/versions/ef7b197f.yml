@@ -1,6 +1,0 @@
-releases:
-  "@radix-ui/react-tooltip": patch
-  radix-ui: patch
-
-declined:
-  - primitives
