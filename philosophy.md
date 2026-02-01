@@ -82,7 +82,15 @@ Our goal is to create a well-funded open-source component library that the commu
 
 ### Documentation
 
-TODO
+- Documentation should be comprehensive yet concise, explaining the "why" behind design decisions
+- Every component should have clear examples demonstrating common use cases
+- API references should include type information, default values, and accessibility notes
+- Include migration guides when introducing breaking changes
+- Provide copy-pasteable code snippets that work out of the box
+- Document known limitations and edge cases transparently
+- Keep examples focused on one concept at a time to reduce cognitive load
+- Include interactive playgrounds where possible for hands-on exploration
+- Accessibility documentation should explain both what the component does automatically and what the developer is responsible for
 
 ### Misc
 
