@@ -60,7 +60,7 @@
     "react-dom": "^19.2.0",
     "react-test-renderer": "^19.2.0",
     "react-is": "^19.2.0",
-    "react-remove-scroll": "^2.6.3",
+    "react-remove-scroll": "^2.7.2",
     "replace-in-files": "^3.0.0",
     "start-server-and-test": "^2.1.2",
     "typescript": "^5.9.3",

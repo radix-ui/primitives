@@ -17,7 +17,7 @@
     "radix-ui": "workspace:*",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "react-remove-scroll": "^2.6.3"
+    "react-remove-scroll": "^2.7.2"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^4.1.1",
