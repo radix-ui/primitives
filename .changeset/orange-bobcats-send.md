@@ -5,3 +5,5 @@
 '@radix-ui/react-select': patch
 '@radix-ui/react-menu': patch
 ---
+
+Fixed a bug where iOS text selection and editing on HTML inputs within `react-dialog` were broken.
