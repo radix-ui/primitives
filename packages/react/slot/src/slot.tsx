@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { composeRefs } from '@radix-ui/react-compose-refs';
+import { composeRefs, useComposedRefs } from '@radix-ui/react-compose-refs';
 
 declare module 'react' {
   interface ReactElement {
@@ -104,12 +104,23 @@ interface SlotCloneProps {
       children = use(children._payload);
     }
 
+    const childrenRef = React.isValidElement(children)
+      ? getElementRef(children)
+      : undefined;
+
+    // useComposedRefs memoizes the composed callback so that ref identity is
+    // stable across renders.  The previous raw `composeRefs()` call created a
+    // new function every render, which in React 19 causes an unmount/remount
+    // cycle (because React treats a new callback-ref-with-cleanup as a
+    // different ref), leading to infinite re-render loops when a state setter
+    // is passed as one of the refs (e.g. SelectTrigger's onTriggerChange).
+    const composedRef = useComposedRefs(forwardedRef, childrenRef);
+
     if (React.isValidElement(children)) {
-      const childrenRef = getElementRef(children);
       const props = mergeProps(slotProps, children.props as AnyProps);
       // do not pass ref to React.Fragment for React 19 compatibility
       if (children.type !== React.Fragment) {
-        props.ref = forwardedRef ? composeRefs(forwardedRef, childrenRef) : childrenRef;
+        props.ref = composedRef;
       }
       return React.cloneElement(children, props);
     }
