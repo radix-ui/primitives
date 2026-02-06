@@ -528,8 +528,9 @@ const TooltipContentImpl = React.forwardRef<TooltipContentImplElement, TooltipCo
     React.useEffect(() => {
       if (context.trigger) {
         const handleScroll = (event: Event) => {
-          const target = event.target as HTMLElement;
-          if (target?.contains(context.trigger)) onClose();
+          const target = event.target;
+          // event.target can be Window when scrolling, which doesn't have .contains()
+          if (target instanceof Node && target.contains(context.trigger)) onClose();
         };
         window.addEventListener('scroll', handleScroll, { capture: true });
         return () => window.removeEventListener('scroll', handleScroll, { capture: true });
