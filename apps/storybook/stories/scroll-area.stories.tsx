@@ -113,7 +113,7 @@ export const ContentProps = () => {
         {Array.from({ length: 20 }).map((_, index) => (
           <div
             key={index}
-            style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}
+            style={{ padding: '8px 12px', borderBottom: '1px solid #eee', whiteSpace: 'nowrap' }}
           >
             Item {index + 1} - This is a long text that should be constrained by the container width
           </div>
