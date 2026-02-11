@@ -135,11 +135,21 @@ const VIEWPORT_NAME = 'ScrollAreaViewport';
 type ScrollAreaViewportElement = React.ComponentRef<typeof Primitive.div>;
 interface ScrollAreaViewportProps extends PrimitiveDivProps {
   nonce?: string;
+  /**
+   * Optional props to pass to the inner content wrapper `div`.
+   * Useful for overriding the default `display: table` layout when it conflicts
+   * with your content's sizing needs (e.g. flex or grid layouts).
+   *
+   * Note: The content wrapper uses `display: table` by default to ensure accurate
+   * scroll width/height measurement for thumb sizing. Overriding `display` may
+   * affect thumb size accuracy for horizontally-scrolling content.
+   */
+  contentProps?: React.HTMLAttributes<HTMLDivElement>;
 }
 
 const ScrollAreaViewport = React.forwardRef<ScrollAreaViewportElement, ScrollAreaViewportProps>(
   (props: ScopedProps<ScrollAreaViewportProps>, forwardedRef) => {
-    const { __scopeScrollArea, children, nonce, ...viewportProps } = props;
+    const { __scopeScrollArea, children, nonce, contentProps, ...viewportProps } = props;
     const context = useScrollAreaContext(VIEWPORT_NAME, __scopeScrollArea);
     const ref = React.useRef<ScrollAreaViewportElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, ref, context.onViewportChange);
@@ -180,7 +190,11 @@ const ScrollAreaViewport = React.forwardRef<ScrollAreaViewportElement, ScrollAre
            * widths that change. We'll wait to see what use-cases consumers come up with there
            * before trying to resolve it.
            */}
-          <div ref={context.onContentChange} style={{ minWidth: '100%', display: 'table' }}>
+          <div
+            {...contentProps}
+            ref={context.onContentChange}
+            style={{ minWidth: '100%', display: 'table', ...contentProps?.style }}
+          >
             {children}
           </div>
         </Primitive.div>
