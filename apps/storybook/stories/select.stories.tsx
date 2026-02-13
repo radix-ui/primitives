@@ -923,6 +923,84 @@ export const Cypress = () => {
   );
 };
 
+/**
+ * This story demonstrates the fix for #3135: Controlled Select in a form
+ * should not call onValueChange with empty string when value is updated externally.
+ *
+ * Steps to verify:
+ * 1. Click "Set to Apple" - value should change to "apple" and onValueChange count stays at 1
+ * 2. Before fix: onValueChange would be called twice (once with "apple", once with "")
+ * 3. After fix: onValueChange is only called once with "apple"
+ */
+export const ControlledInFormExternalUpdate = () => {
+  const [value, setValue] = React.useState<string>('');
+  const [changeCount, setChangeCount] = React.useState(0);
+  const [lastValue, setLastValue] = React.useState<string>('');
+
+  const handleValueChange = (newValue: string) => {
+    setChangeCount((c) => c + 1);
+    setLastValue(newValue);
+    setValue(newValue);
+  };
+
+  return (
+    <form style={{ padding: 50 }}>
+      <div style={{ marginBottom: 20 }}>
+        <strong>Test for #3135 fix:</strong>
+        <p>onValueChange call count: {changeCount}</p>
+        <p>Last onValueChange value: "{lastValue}"</p>
+        <p>Current value: "{value}"</p>
+      </div>
+
+      <div style={{ marginBottom: 20 }}>
+        <button type="button" onClick={() => setValue('apple')} style={{ marginRight: 10 }}>
+          Set to Apple (external update)
+        </button>
+        <button type="button" onClick={() => setValue('banana')} style={{ marginRight: 10 }}>
+          Set to Banana (external update)
+        </button>
+        <button type="button" onClick={() => setValue('')}>
+          Clear value
+        </button>
+      </div>
+
+      <Label>
+        Select a fruit:
+        <Select.Root value={value} onValueChange={handleValueChange}>
+          <Select.Trigger className={styles.trigger}>
+            <Select.Value placeholder="Pick a fruit" />
+            <Select.Icon />
+          </Select.Trigger>
+          <Select.Portal>
+            <Select.Content className={styles.content}>
+              <Select.Viewport className={styles.viewport}>
+                <Select.Item className={styles.item} value="apple">
+                  <Select.ItemText>Apple</Select.ItemText>
+                  <Select.ItemIndicator className={styles.indicator}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+                <Select.Item className={styles.item} value="banana">
+                  <Select.ItemText>Banana</Select.ItemText>
+                  <Select.ItemIndicator className={styles.indicator}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+                <Select.Item className={styles.item} value="orange">
+                  <Select.ItemText>Orange</Select.ItemText>
+                  <Select.ItemIndicator className={styles.indicator}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+              </Select.Viewport>
+            </Select.Content>
+          </Select.Portal>
+        </Select.Root>
+      </Label>
+    </form>
+  );
+};
+
 type PaddedElement = 'content' | 'viewport';
 
 interface ChromaticSelectProps extends React.ComponentProps<typeof Select.Trigger> {
