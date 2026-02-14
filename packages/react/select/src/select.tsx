@@ -669,7 +669,7 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
          * Imperative focus during keydown is risky so we prevent React's batching updates
          * to avoid potential bugs. See: https://github.com/facebook/react/issues/20332
          */
-        setTimeout(() => (nextItem.ref.current as HTMLElement).focus());
+        setTimeout(() => (nextItem.ref.current as HTMLElement)?.focus());
       }
     });
 
