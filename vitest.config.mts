@@ -1,4 +1,5 @@
 import { defineConfig } from 'vitest/config';
+import { alias } from './scripts/test-alias';
 
 export default defineConfig({
   test: {
@@ -6,5 +7,6 @@ export default defineConfig({
     environment: 'jsdom',
     include: ['**/*.test.?(c|m)[jt]s?(x)'],
     retry: 1,
+    alias,
   },
 });
