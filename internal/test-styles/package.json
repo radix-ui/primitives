@@ -1,0 +1,12 @@
+{
+  "name": "@repo/test-styles",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "@radix-ui/colors": "^3.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {}
+}
