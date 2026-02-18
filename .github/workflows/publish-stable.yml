@@ -11,6 +11,8 @@ env:
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
+permissions: {}
+
 jobs:
   publish-stable:
     if: github.repository == 'radix-ui/primitives'

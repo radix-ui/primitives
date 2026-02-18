@@ -20,6 +20,8 @@ env:
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
+permissions: {}
+
 jobs:
   publish-snapshot:
     if: github.repository == 'radix-ui/primitives'
