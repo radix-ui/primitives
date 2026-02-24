@@ -33,7 +33,8 @@
           "types": "./dist/*.d.ts",
           "default": "./dist/*.js"
         }
-      }
+      },
+      "./package.json": "./package.json"
     }
   },
   "files": [
