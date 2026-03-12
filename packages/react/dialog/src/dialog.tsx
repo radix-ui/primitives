@@ -33,7 +33,7 @@ type DialogContextValue = {
   descriptionId: string;
   open: boolean;
   onOpenChange(open: boolean): void;
-  onOpenToggle(): void;
+  onOpenToggle(event: React.MouseEvent): void;
   modal: boolean;
 };
 
@@ -75,7 +75,13 @@ const Dialog: React.FC<DialogProps> = (props: ScopedProps<DialogProps>) => {
       descriptionId={useId()}
       open={open}
       onOpenChange={setOpen}
-      onOpenToggle={React.useCallback(() => setOpen((prevOpen) => !prevOpen), [setOpen])}
+      onOpenToggle={React.useCallback(
+        (e) => {
+          e.stopPropagation();
+          setOpen((prevOpen) => !prevOpen);
+        },
+        [setOpen],
+      )}
       modal={modal}
     >
       {children}
@@ -278,9 +284,11 @@ const DialogContentModal = React.forwardRef<DialogContentTypeElement, DialogCont
         disableOutsidePointerEvents
         onCloseAutoFocus={composeEventHandlers(props.onCloseAutoFocus, (event) => {
           event.preventDefault();
+          event.stopPropagation();
           context.triggerRef.current?.focus();
         })}
         onPointerDownOutside={composeEventHandlers(props.onPointerDownOutside, (event) => {
+          event.stopPropagation();
           const originalEvent = event.detail.originalEvent;
           const ctrlLeftClick = originalEvent.button === 0 && originalEvent.ctrlKey === true;
           const isRightClick = originalEvent.button === 2 || ctrlLeftClick;
@@ -291,9 +299,10 @@ const DialogContentModal = React.forwardRef<DialogContentTypeElement, DialogCont
         })}
         // When focus is trapped, a `focusout` event may still happen.
         // We make sure we don't trigger our `onDismiss` in such case.
-        onFocusOutside={composeEventHandlers(props.onFocusOutside, (event) =>
-          event.preventDefault(),
-        )}
+        onFocusOutside={composeEventHandlers(props.onFocusOutside, (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+        })}
       />
     );
   },
@@ -481,7 +490,10 @@ const DialogClose = React.forwardRef<DialogCloseElement, DialogCloseProps>(
         type="button"
         {...closeProps}
         ref={forwardedRef}
-        onClick={composeEventHandlers(props.onClick, () => context.onOpenChange(false))}
+        onClick={composeEventHandlers(props.onClick, (event) => {
+          event.stopPropagation();
+          context.onOpenChange(false);
+        })}
       />
     );
   },
