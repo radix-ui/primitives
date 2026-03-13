@@ -119,9 +119,8 @@ const Slider = React.forwardRef<SliderElement, SliderProps>(
     }
 
     function handleSlideEnd() {
-      const prevValue = valuesBeforeSlideStartRef.current[valueIndexToChangeRef.current];
-      const nextValue = values[valueIndexToChangeRef.current];
-      const hasChanged = nextValue !== prevValue;
+      const prevValues = valuesBeforeSlideStartRef.current;
+      const hasChanged = String(values) !== String(prevValues);
       if (hasChanged) onValueCommit(values);
     }
 
