@@ -68,6 +68,30 @@ describe('given a default OneTimePasswordField', () => {
     });
   });
 
+  it('should type digits and advance focus', async () => {
+    const inputs = screen.getAllByRole<HTMLInputElement>('textbox', { hidden: false });
+    await user.click(inputs[0]!);
+    await user.keyboard('1');
+    expect(inputs[0]!.value).toBe('1');
+    // focus should have moved to second input
+    expect(document.activeElement).toBe(inputs[1]);
+    await user.keyboard('2');
+    expect(inputs[1]!.value).toBe('2');
+    expect(document.activeElement).toBe(inputs[2]);
+  });
+
+  it('should navigate with arrow keys', async () => {
+    const inputs = screen.getAllByRole<HTMLInputElement>('textbox', { hidden: false });
+    await user.click(inputs[0]!);
+    await user.keyboard('1');
+    // now on input 1
+    expect(document.activeElement).toBe(inputs[1]);
+    await user.keyboard('{ArrowLeft}');
+    expect(document.activeElement).toBe(inputs[0]);
+    await user.keyboard('{ArrowRight}');
+    expect(document.activeElement).toBe(inputs[1]);
+  });
+
   // TODO: userEvent paste not behaving as expected. Debug and unskip.
   // Replicated in storybook for now.
   it.todo('pastes the code into the input', async () => {
