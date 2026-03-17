@@ -12,7 +12,6 @@ import type { Scope } from '@radix-ui/react-context';
 import { createContextScope } from '@radix-ui/react-context';
 import { useDirection } from '@radix-ui/react-direction';
 import { clamp } from '@radix-ui/number';
-import { useEffectEvent } from '@radix-ui/react-use-effect-event';
 
 type InputValidationType = 'alpha' | 'numeric' | 'alphanumeric' | 'none';
 
@@ -265,8 +264,15 @@ const OneTimePasswordField = React.forwardRef<HTMLDivElement, OneTimePasswordFie
       ),
     });
 
+    // Use a ref so dispatch always reads the latest value without needing
+    // value in its dependency array (which would change its identity every
+    // keystroke and cause cascading effect re-runs).
+    const latestValueRef = React.useRef(value);
+    latestValueRef.current = value;
+
     // Update function *specifically* for event handlers.
-    const dispatch = useEffectEvent<Dispatcher>((action) => {
+    const dispatch = React.useCallback<Dispatcher>((action) => {
+      const value = latestValueRef.current;
       switch (action.type) {
         case 'SET_CHAR': {
           const { index, char } = action;
@@ -361,7 +367,7 @@ const OneTimePasswordField = React.forwardRef<HTMLDivElement, OneTimePasswordFie
           return;
         }
       }
-    });
+    }, [collection, sanitizeValue, setValue, validation]);
 
     // re-validate when the validation type changes
     const validationTypeRef = React.useRef(validation);
