@@ -514,8 +514,34 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
                     const isModifierKey = event.ctrlKey || event.altKey || event.metaKey;
                     const isCharacterKey = event.key.length === 1;
                     if (isKeyDownInside) {
-                      // menus should not be navigated using tab key so we prevent it
-                      if (event.key === 'Tab') event.preventDefault();
+                      if (event.key === 'Tab') {
+                        // Allow Tab to navigate to other interactive elements within the menu
+                        // content (e.g. footer buttons). Close the menu when focus would leave.
+                        const content = contentRef.current;
+                        if (content) {
+                          const tabbables = getTabbableCandidates(content);
+                          const focusedElement = document.activeElement as HTMLElement;
+                          const currentIndex = tabbables.indexOf(focusedElement);
+                    
+                          if (!event.shiftKey) {
+                            // Forward Tab: close menu if at the last tabbable element or no tabbables
+                            const isAtEnd =
+                              tabbables.length === 0 ||
+                              (currentIndex !== -1 && currentIndex >= tabbables.length - 1);
+                            if (isAtEnd) {
+                              event.preventDefault();
+                              rootContext.onClose();
+                            }
+                          } else {
+                            // Shift+Tab: close menu if at the first tabbable element
+                            const isAtStart = currentIndex <= 0;
+                            if (isAtStart) {
+                              event.preventDefault();
+                              rootContext.onClose();
+                            }
+                          }
+                        }
+                      }      
                       if (!isModifierKey && isCharacterKey) handleTypeaheadSearch(event.key);
                     }
                     // focus first/last item based on key pressed
@@ -1246,6 +1272,24 @@ function focusFirst(candidates: HTMLElement[]) {
     if (document.activeElement !== PREVIOUSLY_FOCUSED_ELEMENT) return;
   }
 }
+
+/**
+ * Returns a list of tabbable candidates within a container.
+ * Tabbable elements are those with tabIndex >= 0 that are not disabled or hidden.
+ */
+function getTabbableCandidates(container: HTMLElement) {
+  const nodes: HTMLElement[] = [];
+  const walker = document.createTreeWalker(container, NodeFilter.SHOW_ELEMENT, {
+    acceptNode: (node: any) => {
+      const isHiddenInput = node.tagName === 'INPUT' && node.type === 'hidden';
+      if (node.disabled || node.hidden || isHiddenInput) return NodeFilter.FILTER_SKIP;
+      return node.tabIndex >= 0 ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP;
+    },
+  });
+  while (walker.nextNode()) nodes.push(walker.currentNode as HTMLElement);
+  return nodes;
+}
+
 
 /**
  * Wraps an array around itself at a given start index

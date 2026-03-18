@@ -149,6 +149,34 @@
   border: 1px solid rgb(0 0 0 / 0.3);
 }
 
+.footer {
+  display: flex;
+  gap: 5px;
+  padding: 5px 10px;
+  border-top: 1px solid var(--color-gray100);
+  margin-top: 5px;
+}
+
+.footerButton {
+  flex: 1;
+  padding: 4px 8px;
+  border: 1px solid var(--color-gray100);
+  border-radius: 4px;
+  background-color: var(--color-white);
+  cursor: pointer;
+  font-size: 12px;
+  font-family: apple-system, BlinkMacSystemFont, helvetica, arial, sans-serif;
+
+  &:hover {
+    background-color: var(--color-gray100);
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgb(0 0 0 / 0.5);
+  }
+}
+
 .chromaticArrow {
   fill: var(--color-black);
 }
