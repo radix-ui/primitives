@@ -178,6 +178,46 @@ describe('FocusScope', () => {
     });
   });
 
+  describe('given a FocusScope with shadow DOM elements', () => {
+    let rendered: RenderResult;
+    let tabbableFirst: HTMLButtonElement;
+    let tabbableLast: HTMLInputElement;
+
+    beforeEach(async () => {
+      rendered = render(
+        <div>
+          <FocusScope asChild loop trapped>
+            <form>
+              <button>Close</button>
+              <ShadowHostField />
+            </form>
+          </FocusScope>
+        </div>,
+      );
+      tabbableFirst = rendered.getByText('Close') as HTMLButtonElement;
+      // Wait for the useEffect inside ShadowHostField to attach the shadow root
+      await waitFor(() => {
+        const host = rendered.container.querySelector('[data-shadow-host]');
+        expect(host?.shadowRoot?.querySelector('input')).not.toBeNull();
+      });
+      tabbableLast = rendered.container
+        .querySelector('[data-shadow-host]')!
+        .shadowRoot!.querySelector('input') as HTMLInputElement;
+    });
+
+    it('should focus the first element in scope on tab from the last shadow DOM element', () => {
+      tabbableLast.focus();
+      userEvent.tab();
+      waitFor(() => expect(tabbableFirst).toHaveFocus());
+    });
+
+    it('should focus the last shadow DOM element on shift+tab from the first element in scope', () => {
+      tabbableFirst.focus();
+      userEvent.tab({ shift: true });
+      waitFor(() => expect(tabbableLast).toHaveFocus());
+    });
+  });
+
   describe('given a FocusScope with internal focus handlers', () => {
     const handleLastFocusableElementBlur = vi.fn();
     let rendered: RenderResult;
@@ -213,4 +253,17 @@ function TestField({ label, ...props }: { label: string } & React.ComponentProps
       <input type="text" name={label.toLowerCase()} {...props} />
     </label>
   );
+}
+
+function ShadowHostField() {
+  const ref = React.useRef<HTMLDivElement>(null);
+  React.useEffect(() => {
+    const el = ref.current;
+    if (!el || el.shadowRoot) return;
+    const shadow = el.attachShadow({ mode: 'open' });
+    const input = document.createElement('input');
+    input.type = 'text';
+    shadow.appendChild(input);
+  }, []);
+  return <div ref={ref} data-shadow-host="" />;
 }
