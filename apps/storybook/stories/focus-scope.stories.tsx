@@ -51,6 +51,75 @@ export const Basic = () => {
   );
 };
 
+function ShadowDOMFields() {
+  const ref = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    const el = ref.current;
+    if (!el || el.shadowRoot) return;
+    const shadow = el.attachShadow({ mode: 'open' });
+
+    const style = document.createElement('style');
+    style.textContent = `
+      div { display: flex; flex-direction: column; gap: 8px; padding: 12px; border: 1px dashed #aaa; }
+      label { display: flex; flex-direction: column; gap: 4px; font-family: sans-serif; font-size: 14px; }
+    `;
+    shadow.appendChild(style);
+
+    const wrapper = document.createElement('div');
+    for (const label of ['Shadow field 1', 'Shadow field 2', 'Shadow field 3']) {
+      const labelEl = document.createElement('label');
+      labelEl.textContent = label;
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.placeholder = label;
+      labelEl.appendChild(input);
+      wrapper.appendChild(labelEl);
+    }
+    shadow.appendChild(wrapper);
+  }, []);
+
+  return <div ref={ref} />;
+}
+
+export const WithShadowDOM = () => {
+  const [trapped, setTrapped] = React.useState(false);
+
+  return (
+    <>
+      <div>
+        <button type="button" onClick={() => setTrapped(true)}>
+          Trap
+        </button>{' '}
+        <input /> <input />
+      </div>
+      {trapped ? (
+        <FocusScope.Root asChild loop={trapped} trapped={trapped}>
+          <form
+            style={{
+              display: 'inline-flex',
+              flexDirection: 'column',
+              gap: 20,
+              padding: 20,
+              margin: 50,
+              maxWidth: 500,
+              border: '2px solid',
+            }}
+          >
+            <button type="button" onClick={() => setTrapped(false)}>
+              Close
+            </button>
+            <ShadowDOMFields />
+          </form>
+        </FocusScope.Root>
+      ) : null}
+      <div>
+        <input /> <input />
+      </div>
+    </>
+  );
+};
+
 export const Multiple = () => {
   const [trapped1, setTrapped1] = React.useState(false);
   const [trapped2, setTrapped2] = React.useState(false);
