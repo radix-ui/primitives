@@ -1,7 +1,7 @@
 import * as React from 'react';
 import userEvent from '@testing-library/user-event';
 import { cleanup, render, waitFor } from '@testing-library/react';
-import { FocusScope } from './focus-scope';
+import { FocusScope, getTabbableCandidates } from './focus-scope';
 import type { RenderResult } from '@testing-library/react';
 import { afterEach, describe, it, beforeEach, vi, expect } from 'vitest';
 
@@ -89,6 +89,92 @@ describe('FocusScope', () => {
       tabbableSecond.focus();
       await userEvent.tab({ shift: true });
       await waitFor(() => expect(tabbableLast).toHaveFocus());
+    });
+  });
+
+  describe('getTabbableCandidates', () => {
+    it('should find tabbable elements inside shadow DOM', () => {
+      const container = document.createElement('div');
+      document.body.appendChild(container);
+
+      // Regular input
+      const regularInput = document.createElement('input');
+      regularInput.type = 'text';
+      container.appendChild(regularInput);
+
+      // Shadow host with an input inside
+      const shadowHost = document.createElement('div');
+      container.appendChild(shadowHost);
+      const shadow = shadowHost.attachShadow({ mode: 'open' });
+      const shadowInput = document.createElement('input');
+      shadowInput.type = 'text';
+      shadow.appendChild(shadowInput);
+
+      const candidates = getTabbableCandidates(container);
+      expect(candidates).toContain(regularInput);
+      expect(candidates).toContain(shadowInput);
+      expect(candidates).toHaveLength(2);
+
+      document.body.removeChild(container);
+    });
+
+    it('should find tabbable elements in nested shadow DOMs', () => {
+      const container = document.createElement('div');
+      document.body.appendChild(container);
+
+      // Outer shadow host
+      const outerHost = document.createElement('div');
+      container.appendChild(outerHost);
+      const outerShadow = outerHost.attachShadow({ mode: 'open' });
+
+      const outerInput = document.createElement('input');
+      outerInput.type = 'text';
+      outerShadow.appendChild(outerInput);
+
+      // Inner shadow host inside outer shadow
+      const innerHost = document.createElement('div');
+      outerShadow.appendChild(innerHost);
+      const innerShadow = innerHost.attachShadow({ mode: 'open' });
+      const innerInput = document.createElement('input');
+      innerInput.type = 'text';
+      innerShadow.appendChild(innerInput);
+
+      const candidates = getTabbableCandidates(container);
+      expect(candidates).toContain(outerInput);
+      expect(candidates).toContain(innerInput);
+      expect(candidates).toHaveLength(2);
+
+      document.body.removeChild(container);
+    });
+
+    it('should skip disabled and hidden elements inside shadow DOM', () => {
+      const container = document.createElement('div');
+      document.body.appendChild(container);
+
+      const shadowHost = document.createElement('div');
+      container.appendChild(shadowHost);
+      const shadow = shadowHost.attachShadow({ mode: 'open' });
+
+      const disabledInput = document.createElement('input');
+      disabledInput.type = 'text';
+      disabledInput.disabled = true;
+      shadow.appendChild(disabledInput);
+
+      const hiddenInput = document.createElement('input');
+      hiddenInput.type = 'hidden';
+      shadow.appendChild(hiddenInput);
+
+      const visibleInput = document.createElement('input');
+      visibleInput.type = 'text';
+      shadow.appendChild(visibleInput);
+
+      const candidates = getTabbableCandidates(container);
+      expect(candidates).not.toContain(disabledInput);
+      expect(candidates).not.toContain(hiddenInput);
+      expect(candidates).toContain(visibleInput);
+      expect(candidates).toHaveLength(1);
+
+      document.body.removeChild(container);
     });
   });
 
