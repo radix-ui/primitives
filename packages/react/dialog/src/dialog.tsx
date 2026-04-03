@@ -196,10 +196,69 @@ interface DialogOverlayImplProps extends PrimitiveDivProps {}
 
 const Slot = createSlot('DialogOverlay.RemoveScroll');
 
+/**
+ * The attribute set on `document.body` by `react-remove-scroll-bar` to lock scroll.
+ * We reference it here to ensure synchronous cleanup on forced unmount.
+ */
+const SCROLL_LOCK_ATTRIBUTE = 'data-scroll-locked';
+
 const DialogOverlayImpl = React.forwardRef<DialogOverlayImplElement, DialogOverlayImplProps>(
   (props: ScopedProps<DialogOverlayImplProps>, forwardedRef) => {
     const { __scopeDialog, ...overlayProps } = props;
     const context = useDialogContext(OVERLAY_NAME, __scopeDialog);
+
+    /**
+     * Ensure the scroll lock is released synchronously when the overlay is forcefully
+     * unmounted (e.g. when a router Link inside the Dialog triggers navigation while
+     * the Dialog is still open).
+     *
+     * `react-remove-scroll` manages `data-scroll-locked` via `useEffect`, which is
+     * asynchronous. In certain SPA router scenarios the old route's async effect
+     * cleanups may be deferred or skipped, leaving `overflow: hidden` on the body
+     * and preventing scrolling on the destination or return page.
+     *
+     * By using `useLayoutEffect` (synchronous, fires during the commit phase) we
+     * guarantee the attribute is decremented and removed as soon as the overlay
+     * leaves the React tree when the Dialog was still open at the time of unmount
+     * (i.e. a forced unmount, not a user-initiated close).
+     *
+     * We only run the cleanup when `context.open` is still `true` at unmount time.
+     * When the Dialog is closed normally, `context.open` transitions to `false`
+     * before the overlay unmounts (via Presence), so we defer to `react-remove-scroll`'s
+     * own cleanup to avoid double-decrementing the lock counter.
+     *
+     * Counter coordination: `react-remove-scroll-bar` stores the number of active
+     * locks as an integer in the attribute value.  We read and write that same
+     * counter so nested / stacked dialogs continue to work correctly. Because our
+     * `useLayoutEffect` cleanup runs *before* `react-remove-scroll`'s `useEffect`
+     * cleanup, the subsequent async decrement will read 0 and call
+     * `removeAttribute`, which is a safe no-op on an already-absent attribute.
+     */
+    // Track the latest `open` state in a ref so the cleanup function below can
+    // read it without needing to be in the effect's dependency array.
+    const isOpenRef = React.useRef(context.open);
+    isOpenRef.current = context.open;
+
+    React.useLayoutEffect(() => {
+      return () => {
+        // Only perform synchronous cleanup for forced unmounts (navigation while dialog is open).
+        // When the dialog closes normally, `context.open` is already `false` before this
+        // component unmounts, so we leave cleanup to `react-remove-scroll` to avoid
+        // double-decrementing the scroll lock counter.
+        if (!isOpenRef.current) return;
+
+        const raw = document.body.getAttribute(SCROLL_LOCK_ATTRIBUTE);
+        if (raw === null) return; // already cleaned up
+        const current = parseInt(raw, 10);
+        const next = isFinite(current) ? current - 1 : 0;
+        if (next <= 0) {
+          document.body.removeAttribute(SCROLL_LOCK_ATTRIBUTE);
+        } else {
+          document.body.setAttribute(SCROLL_LOCK_ATTRIBUTE, String(next));
+        }
+      };
+    }, []);
+
     return (
       // Make sure `Content` is scrollable even when it doesn't live inside `RemoveScroll`
       // ie. when `Overlay` and `Content` are siblings

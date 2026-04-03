@@ -139,3 +139,62 @@ describe('given a default Dialog', () => {
     });
   });
 });
+
+describe('scroll lock cleanup on forced unmount', () => {
+  /**
+   * Regression test for: https://github.com/radix-ui/primitives/issues/3797
+   *
+   * When a Dialog is open and its parent component is forcefully unmounted
+   * (e.g. during SPA route navigation), the `data-scroll-locked` attribute
+   * should be removed from `document.body` synchronously, preventing the
+   * page from remaining in a non-scrollable state.
+   *
+   * We use ReactDOM.createRoot directly to avoid @testing-library/react's
+   * dependency on the deprecated ReactDOM.act from react-dom/test-utils.
+   */
+  let container: HTMLDivElement;
+  let root: import('react-dom/client').Root;
+
+  beforeEach(() => {
+    container = document.createElement('div');
+    document.body.appendChild(container);
+  });
+
+  afterEach(() => {
+    // Ensure no leftover attributes between tests
+    document.body.removeAttribute('data-scroll-locked');
+    if (root) {
+      root.unmount();
+    }
+    container.remove();
+  });
+
+  it('should remove data-scroll-locked when the open Dialog is force-unmounted', async () => {
+    const { createRoot } = await import('react-dom/client');
+    root = createRoot(container);
+
+    // Render a dialog in open state (simulating a route with open dialog)
+    await new Promise<void>((resolve) => {
+      root.render(
+        React.createElement(Dialog.Root, { open: true },
+          React.createElement(Dialog.Overlay),
+          React.createElement(Dialog.Content, null,
+            React.createElement(Dialog.Title, null, 'Title')
+          )
+        )
+      );
+      // Allow layout effects and async effects to run
+      setTimeout(resolve, 50);
+    });
+
+    // The dialog is open, scroll should be locked
+    expect(document.body).toHaveAttribute('data-scroll-locked');
+
+    // Simulate router navigation: forcefully unmount the entire tree
+    // while the dialog is still open (no onOpenChange(false) was called)
+    root.unmount();
+
+    // Scroll lock should be cleared synchronously (via useLayoutEffect)
+    expect(document.body).not.toHaveAttribute('data-scroll-locked');
+  });
+});
