@@ -414,7 +414,7 @@ const DialogContentImpl = React.forwardRef<DialogContentImplElement, DialogConte
         </FocusScope>
         {process.env.NODE_ENV !== 'production' && (
           <>
-            <TitleWarning titleId={context.titleId} />
+            <TitleWarning contentRef={contentRef} titleId={context.titleId} />
             <DescriptionWarning contentRef={contentRef} descriptionId={context.descriptionId} />
           </>
         )}
@@ -503,9 +503,12 @@ const [WarningProvider, useWarningContext] = createContext(TITLE_WARNING_NAME, {
   docsSlug: 'dialog',
 });
 
-type TitleWarningProps = { titleId?: string };
+type TitleWarningProps = {
+  contentRef: React.RefObject<DialogContentElement | null>;
+  titleId?: string;
+};
 
-const TitleWarning: React.FC<TitleWarningProps> = ({ titleId }) => {
+const TitleWarning: React.FC<TitleWarningProps> = ({ contentRef, titleId }) => {
   const titleWarningContext = useWarningContext(TITLE_WARNING_NAME);
 
   const MESSAGE = `\`${titleWarningContext.contentName}\` requires a \`${titleWarningContext.titleName}\` for the component to be accessible for screen reader users.
@@ -516,10 +519,13 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
 
   React.useEffect(() => {
     if (titleId) {
-      const hasTitle = document.getElementById(titleId);
+      // Use getRootNode() to support Shadow DOM contexts where document.getElementById
+      // would fail to find elements rendered inside a shadow root.
+      const rootNode = contentRef.current?.getRootNode() ?? document;
+      const hasTitle = (rootNode as Document | ShadowRoot).getElementById(titleId);
       if (!hasTitle) console.error(MESSAGE);
     }
-  }, [MESSAGE, titleId]);
+  }, [MESSAGE, contentRef, titleId]);
 
   return null;
 };
@@ -539,7 +545,10 @@ const DescriptionWarning: React.FC<DescriptionWarningProps> = ({ contentRef, des
     const describedById = contentRef.current?.getAttribute('aria-describedby');
     // if we have an id and the user hasn't set aria-describedby={undefined}
     if (descriptionId && describedById) {
-      const hasDescription = document.getElementById(descriptionId);
+      // Use getRootNode() to support Shadow DOM contexts where document.getElementById
+      // would fail to find elements rendered inside a shadow root.
+      const rootNode = contentRef.current?.getRootNode() ?? document;
+      const hasDescription = (rootNode as Document | ShadowRoot).getElementById(descriptionId);
       if (!hasDescription) console.warn(MESSAGE);
     }
   }, [MESSAGE, contentRef, descriptionId]);
