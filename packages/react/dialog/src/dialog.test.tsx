@@ -1,7 +1,7 @@
 import React from 'react';
 import { axe } from 'vitest-axe';
 import type { RenderResult } from '@testing-library/react';
-import { render, fireEvent, cleanup } from '@testing-library/react';
+import { render, fireEvent, cleanup, act } from '@testing-library/react';
 import * as Dialog from './dialog';
 import type { Mock, MockInstance } from 'vitest';
 import { describe, it, afterEach, beforeEach, vi, expect } from 'vitest';
@@ -137,5 +137,49 @@ describe('given a default Dialog', () => {
         expect(closeButton).not.toBeInTheDocument();
       });
     });
+  });
+});
+
+describe('given a Dialog rendered inside a Shadow DOM', () => {
+  let shadowHost: HTMLElement;
+  let shadowRoot: ShadowRoot;
+  let consoleErrorMock: ReturnType<typeof vi.spyOn>;
+  let consoleErrorMockFunction: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    consoleErrorMockFunction = vi.fn();
+    consoleErrorMock = vi.spyOn(console, 'error').mockImplementation(consoleErrorMockFunction);
+
+    // Create a shadow host and attach a shadow root
+    shadowHost = document.createElement('div');
+    document.body.appendChild(shadowHost);
+    shadowRoot = shadowHost.attachShadow({ mode: 'open' });
+  });
+
+  afterEach(() => {
+    consoleErrorMock.mockRestore();
+    consoleErrorMockFunction.mockClear();
+    document.body.removeChild(shadowHost);
+  });
+
+  it('should not fire accessibility warning when DialogTitle is present inside Shadow DOM', async () => {
+    const container = document.createElement('div');
+    shadowRoot.appendChild(container);
+
+    render(
+      <Dialog.Root open>
+        <Dialog.Content>
+          <Dialog.Title>Shadow Dialog Title</Dialog.Title>
+          <Dialog.Description>Shadow Dialog Description</Dialog.Description>
+          <Dialog.Close>Close</Dialog.Close>
+        </Dialog.Content>
+      </Dialog.Root>,
+      { container }
+    );
+
+    // Wait for effects to run
+    await act(async () => {});
+
+    expect(consoleErrorMockFunction).not.toHaveBeenCalled();
   });
 });
