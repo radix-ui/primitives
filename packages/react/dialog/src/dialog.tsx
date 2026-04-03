@@ -3,6 +3,7 @@ import { composeEventHandlers } from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContext, createContextScope } from '@radix-ui/react-context';
 import { useId } from '@radix-ui/react-id';
+import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
 import { FocusScope } from '@radix-ui/react-focus-scope';
@@ -239,7 +240,7 @@ const DialogOverlayImpl = React.forwardRef<DialogOverlayImplElement, DialogOverl
     const isOpenRef = React.useRef(context.open);
     isOpenRef.current = context.open;
 
-    React.useLayoutEffect(() => {
+    useLayoutEffect(() => {
       return () => {
         // Only perform synchronous cleanup for forced unmounts (navigation while dialog is open).
         // When the dialog closes normally, `context.open` is already `false` before this
@@ -580,8 +581,15 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     if (titleId) {
       // Use getRootNode() to support Shadow DOM contexts where document.getElementById
       // would fail to find elements rendered inside a shadow root.
+      // Guard: getRootNode() may return a DocumentFragment or other Node without
+      // getElementById (e.g. portal into a DocumentFragment). Fall back to
+      // ownerDocument ?? document in those cases.
       const rootNode = contentRef.current?.getRootNode() ?? document;
-      const hasTitle = (rootNode as Document | ShadowRoot).getElementById(titleId);
+      const searchRoot =
+        rootNode instanceof Document || rootNode instanceof ShadowRoot
+          ? rootNode
+          : (contentRef.current?.ownerDocument ?? document);
+      const hasTitle = searchRoot.getElementById(titleId);
       if (!hasTitle) console.error(MESSAGE);
     }
   }, [MESSAGE, contentRef, titleId]);
@@ -606,8 +614,15 @@ const DescriptionWarning: React.FC<DescriptionWarningProps> = ({ contentRef, des
     if (descriptionId && describedById) {
       // Use getRootNode() to support Shadow DOM contexts where document.getElementById
       // would fail to find elements rendered inside a shadow root.
+      // Guard: getRootNode() may return a DocumentFragment or other Node without
+      // getElementById (e.g. portal into a DocumentFragment). Fall back to
+      // ownerDocument ?? document in those cases.
       const rootNode = contentRef.current?.getRootNode() ?? document;
-      const hasDescription = (rootNode as Document | ShadowRoot).getElementById(descriptionId);
+      const searchRoot =
+        rootNode instanceof Document || rootNode instanceof ShadowRoot
+          ? rootNode
+          : (contentRef.current?.ownerDocument ?? document);
+      const hasDescription = searchRoot.getElementById(descriptionId);
       if (!hasDescription) console.warn(MESSAGE);
     }
   }, [MESSAGE, contentRef, descriptionId]);
