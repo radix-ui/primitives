@@ -8,6 +8,40 @@ export const canUseDOM = !!(
 );
 /* eslint-enable no-restricted-globals */
 
+/**
+ * Composes event handlers without checking for defaultPrevented.
+ * Both the original and our handler are always called.
+ */
+export function composeEvent<E extends { defaultPrevented: boolean }>(
+  originalEventHandler?: (event: E) => void,
+  ourEventHandler?: (event: E) => void,
+) {
+  return function handleEvent(event: E) {
+    originalEventHandler?.(event);
+    ourEventHandler?.(event);
+  };
+}
+
+/**
+ * Composes event handlers where our handler is only called if
+ * default was not prevented by the original handler.
+ */
+export function composePreventableEvent<E extends { defaultPrevented: boolean }>(
+  originalEventHandler?: (event: E) => void,
+  ourEventHandler?: (event: E) => void,
+) {
+  return function handleEvent(event: E) {
+    originalEventHandler?.(event);
+    if (!event.defaultPrevented) {
+      return ourEventHandler?.(event);
+    }
+  };
+}
+
+/**
+ * @deprecated Use `composeEvent` or `composePreventableEvent` instead.
+ * This function is kept for backward compatibility.
+ */
 export function composeEventHandlers<E extends { defaultPrevented: boolean }>(
   originalEventHandler?: (event: E) => void,
   ourEventHandler?: (event: E) => void,
@@ -49,7 +83,7 @@ export function getActiveElement(
   const { activeElement } = getOwnerDocument(node);
   if (!activeElement?.nodeName) {
     // `activeElement` might be an empty object if we're interacting with elements
-    // inside of an iframe.
+    // inside of iframes.
     return null;
   }
 
