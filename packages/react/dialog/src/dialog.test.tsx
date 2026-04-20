@@ -87,8 +87,8 @@ describe('given a default Dialog', () => {
     });
 
     describe('when no description has been provided', () => {
-      it('should warn to the console', () => {
-        expect(consoleWarnMockFunction).toHaveBeenCalledTimes(1);
+      it('should not warn to the console', () => {
+        expect(consoleWarnMockFunction).not.toHaveBeenCalled();
       });
     });
 
