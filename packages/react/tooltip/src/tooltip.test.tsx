@@ -129,6 +129,31 @@ describe('Tooltip', () => {
     });
   });
 
+  it('opens on focus even when onlyShowOnOverflow is true and not overflowing', async () => {
+    render(
+      <Tooltip.Provider>
+        <Tooltip.Root delayDuration={0}>
+          <Tooltip.Trigger onlyShowOnOverflow>Tooltip Trigger</Tooltip.Trigger>
+          <Tooltip.Portal>
+            <Tooltip.Content>
+              Tooltip Content
+              <Tooltip.Arrow />
+            </Tooltip.Content>
+          </Tooltip.Portal>
+        </Tooltip.Root>
+      </Tooltip.Provider>,
+    );
+
+    const trigger = screen.getByText('Tooltip Trigger');
+    mockElementOverflowSize(trigger, { clientWidth: 100, scrollWidth: 102 });
+
+    await trigger.focus();
+
+    await waitFor(() => {
+      expect(screen.queryAllByText('Tooltip Content')[0]).toBeVisible();
+    });
+  });
+
   it('opens when onlyShowOnOverflow is true and the trigger is overflowing', async () => {
     render(
       <Tooltip.Provider>

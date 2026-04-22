@@ -695,7 +695,7 @@ function isElementOverflowing(element?: HTMLElement | null, tolerance = 0) {
   return element
     ? element.scrollWidth - element.clientWidth > tolerance ||
         element.scrollHeight - element.clientHeight > tolerance
-    : false;
+    : true; // preserve default behavior if no element provided
 }
 
 function getPointsFromRect(rect: DOMRect) {
