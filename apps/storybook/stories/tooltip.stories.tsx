@@ -21,6 +21,67 @@ export const Styled = () => (
   </Tooltip.Provider>
 );
 
+export const OverflowOnly = () => (
+  <Tooltip.Provider delayDuration={0}>
+    <div className={styles.overflowStoryGrid}>
+      <div className={styles.overflowStoryRow}>
+        <span className={styles.overflowStoryLabel}>
+          Opens: overflowing trigger with `onlyShowOnOverflow`
+        </span>
+        <Tooltip.Root>
+          <Tooltip.Trigger className={styles.overflowTrigger} onlyShowOnOverflow>
+            A very long label that overflows the trigger and reveals the full value in a tooltip
+          </Tooltip.Trigger>
+          <Tooltip.Portal>
+            <Tooltip.Content className={styles.content} sideOffset={5}>
+              A very long label that overflows the trigger and reveals the full value in a tooltip
+              <Tooltip.Arrow className={styles.arrow} offset={10} />
+            </Tooltip.Content>
+          </Tooltip.Portal>
+        </Tooltip.Root>
+      </div>
+
+      <div className={styles.overflowStoryRow}>
+        <span className={styles.overflowStoryLabel}>
+          Stays closed: text fits, so `onlyShowOnOverflow` blocks hover open
+        </span>
+        <Tooltip.Root>
+          <Tooltip.Trigger className={styles.overflowTrigger} onlyShowOnOverflow>
+            Short label
+          </Tooltip.Trigger>
+          <Tooltip.Portal>
+            <Tooltip.Content className={styles.content} sideOffset={5}>
+              This should stay closed on hover because the trigger does not overflow
+              <Tooltip.Arrow className={styles.arrow} offset={10} />
+            </Tooltip.Content>
+          </Tooltip.Portal>
+        </Tooltip.Root>
+      </div>
+
+      <div className={styles.overflowStoryRow}>
+        <span className={styles.overflowStoryLabel}>
+          Custom tolerance: small overflow is ignored with `overflowTolerance=20`
+        </span>
+        <Tooltip.Root>
+          <Tooltip.Trigger
+            className={styles.overflowTrigger}
+            onlyShowOnOverflow
+            overflowTolerance={20}
+          >
+            A label that clips a little
+          </Tooltip.Trigger>
+          <Tooltip.Portal>
+            <Tooltip.Content className={styles.content} sideOffset={5}>
+              This should stay closed unless the overflow exceeds the custom tolerance
+              <Tooltip.Arrow className={styles.arrow} offset={10} />
+            </Tooltip.Content>
+          </Tooltip.Portal>
+        </Tooltip.Root>
+      </div>
+    </div>
+  </Tooltip.Provider>
+);
+
 export const Controlled = () => {
   const [open, setOpen] = React.useState(true);
   return (

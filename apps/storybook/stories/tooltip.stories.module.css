@@ -7,6 +7,28 @@
 .trigger {
 }
 
+.overflowStoryGrid {
+  display: grid;
+  gap: 24px;
+  max-width: 720px;
+}
+
+.overflowStoryRow {
+  display: grid;
+  gap: 8px;
+}
+
+.overflowStoryLabel {
+  font-size: 13px;
+}
+
+.overflowTrigger {
+  width: 180px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
 .content {
   transform-origin: var(--radix-tooltip-content-transform-origin);
   /* ensures content isn't selectable */
