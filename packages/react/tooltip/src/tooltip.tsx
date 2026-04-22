@@ -259,14 +259,42 @@ Tooltip.displayName = TOOLTIP_NAME;
  * -----------------------------------------------------------------------------------------------*/
 
 const TRIGGER_NAME = 'TooltipTrigger';
+const DEFAULT_OVERFLOW_TOLERANCE = 2;
 
 type TooltipTriggerElement = React.ComponentRef<typeof Primitive.button>;
 type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
-interface TooltipTriggerProps extends PrimitiveButtonProps {}
+interface TooltipTriggerProps extends PrimitiveButtonProps {
+  /**
+   * When `true`, the tooltip will only open on hover if the trigger's content is overflowing.
+   *
+   * ⚠️ Accessibility:
+   * This prop only gates **pointer (hover)** interactions.
+   * Focus-triggered tooltips are always allowed to ensure assistive technologies
+   * (e.g. screen readers, keyboard navigation) can access the tooltip content.
+   *
+   * This prop is intended for truncated/ellipsis content, not for semantic tooltips.
+   *
+   * @defaultValue false
+   */
+  onlyShowOnOverflow?: boolean;
+
+  /**
+   * Tolerance in pixels used when determining overflow.
+   * Helps avoid false positives due to sub-pixel rounding.
+   *
+   * @defaultValue 2
+   */
+  overflowTolerance?: number;
+}
 
 const TooltipTrigger = React.forwardRef<TooltipTriggerElement, TooltipTriggerProps>(
   (props: ScopedProps<TooltipTriggerProps>, forwardedRef) => {
-    const { __scopeTooltip, ...triggerProps } = props;
+    const {
+      __scopeTooltip,
+      onlyShowOnOverflow = false,
+      overflowTolerance = DEFAULT_OVERFLOW_TOLERANCE,
+      ...triggerProps
+    } = props;
     const context = useTooltipContext(TRIGGER_NAME, __scopeTooltip);
     const providerContext = useTooltipProviderContext(TRIGGER_NAME, __scopeTooltip);
     const popperScope = usePopperScope(__scopeTooltip);
@@ -275,6 +303,10 @@ const TooltipTrigger = React.forwardRef<TooltipTriggerElement, TooltipTriggerPro
     const isPointerDownRef = React.useRef(false);
     const hasPointerMoveOpenedRef = React.useRef(false);
     const handlePointerUp = React.useCallback(() => (isPointerDownRef.current = false), []);
+    const handleTriggerEnter = React.useCallback(() => {
+      if (onlyShowOnOverflow && !isElementOverflowing(ref.current, overflowTolerance)) return;
+      context.onTriggerEnter();
+    }, [context, overflowTolerance, onlyShowOnOverflow]);
 
     React.useEffect(() => {
       return () => document.removeEventListener('pointerup', handlePointerUp);
@@ -295,7 +327,7 @@ const TooltipTrigger = React.forwardRef<TooltipTriggerElement, TooltipTriggerPro
               !hasPointerMoveOpenedRef.current &&
               !providerContext.isPointerInTransitRef.current
             ) {
-              context.onTriggerEnter();
+              handleTriggerEnter();
               hasPointerMoveOpenedRef.current = true;
             }
           })}
@@ -657,6 +689,13 @@ function getPaddedExitPoints(exitPoint: Point, exitSide: Side, padding = 5) {
       break;
   }
   return paddedExitPoints;
+}
+
+function isElementOverflowing(element?: HTMLElement | null, tolerance = 0) {
+  return element
+    ? element.scrollWidth - element.clientWidth > tolerance ||
+        element.scrollHeight - element.clientHeight > tolerance
+    : false;
 }
 
 function getPointsFromRect(rect: DOMRect) {
