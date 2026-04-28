@@ -20,7 +20,11 @@ const DirectionProvider: React.FC<DirectionProviderProps> = (props) => {
 
 function useDirection(localDir?: Direction) {
   const globalDir = React.useContext(DirectionContext);
-  return localDir || globalDir || 'ltr';
+  const documentDir =
+    typeof document !== 'undefined'
+      ? document.documentElement.dir === 'rtl' ? 'rtl' : 'ltr'
+      : 'ltr';
+  return localDir || globalDir || documentDir;
 }
 
 const Provider = DirectionProvider;
