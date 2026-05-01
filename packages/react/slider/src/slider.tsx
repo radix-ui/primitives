@@ -47,6 +47,7 @@ type SliderContextValue = {
   values: number[];
   valueIndexToChangeRef: React.MutableRefObject<number>;
   thumbs: Set<SliderThumbElement>;
+  thumbIndexCounterRef: React.MutableRefObject<number>;
   orientation: SliderProps['orientation'];
   form: string | undefined;
 };
@@ -94,6 +95,7 @@ const Slider = React.forwardRef<SliderElement, SliderProps>(
       ...sliderProps
     } = props;
     const thumbRefs = React.useRef<SliderContextValue['thumbs']>(new Set());
+    const thumbIndexCounterRef = React.useRef<number>(0);
     const valueIndexToChangeRef = React.useRef<number>(0);
     const isHorizontal = orientation === 'horizontal';
     const SliderOrientation = isHorizontal ? SliderHorizontal : SliderVertical;
@@ -152,10 +154,12 @@ const Slider = React.forwardRef<SliderElement, SliderProps>(
         max={max}
         valueIndexToChangeRef={valueIndexToChangeRef}
         thumbs={thumbRefs.current}
+        thumbIndexCounterRef={thumbIndexCounterRef}
         values={values}
         orientation={orientation}
         form={form}
       >
+        {(thumbIndexCounterRef.current = 0, null)}
         <Collection.Provider scope={props.__scopeSlider}>
           <Collection.Slot scope={props.__scopeSlider}>
             <SliderOrientation
@@ -535,14 +539,13 @@ interface SliderThumbProps extends Omit<SliderThumbImplProps, 'index'> {}
 
 const SliderThumb = React.forwardRef<SliderThumbElement, SliderThumbProps>(
   (props: ScopedProps<SliderThumbProps>, forwardedRef) => {
-    const getItems = useCollection(props.__scopeSlider);
-    const [thumb, setThumb] = React.useState<SliderThumbImplElement | null>(null);
-    const composedRefs = useComposedRefs(forwardedRef, (node) => setThumb(node));
-    const index = React.useMemo(
-      () => (thumb ? getItems().findIndex((item) => item.ref.current === thumb) : -1),
-      [getItems, thumb],
-    );
-    return <SliderThumbImpl {...props} ref={composedRefs} index={index} />;
+    const context = useSliderContext(THUMB_NAME, props.__scopeSlider);
+    // Assign thumb index synchronously during render using a counter that the Slider
+    // root resets to 0 before each render cycle. This ensures the index is correct
+    // on the very first paint, fixing the "thumb hidden on hard reload" bug (#3793).
+    // eslint-disable-next-line no-plusplus
+    const index = context.thumbIndexCounterRef.current++;
+    return <SliderThumbImpl {...props} ref={forwardedRef} index={index} />;
   },
 );
 
