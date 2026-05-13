@@ -117,7 +117,7 @@ interface OneTimePasswordFieldOwnProps {
    */
   dir?: RovingFocusGroupProps['dir'];
   /**
-   * Whether or not the the field's input elements are disabled.
+   * Whether or not the field's input elements are disabled.
    */
   disabled?: boolean;
   /**

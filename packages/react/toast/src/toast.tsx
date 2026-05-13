@@ -299,7 +299,7 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
           />
         )}
         {/**
-         * tabindex on the the list so that it can be focused when items are removed. we focus
+         * tabindex on the list so that it can be focused when items are removed. we focus
          * the list instead of the viewport so it announces number of items remaining.
          */}
         <Collection.Slot scope={__scopeToast}>
