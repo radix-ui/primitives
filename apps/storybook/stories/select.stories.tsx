@@ -59,6 +59,119 @@ export const Styled = () => (
   </div>
 );
 
+export const MultiSelectStyled = () => {
+  const [value, setValue] = React.useState<string[]>(['two']);
+  const labels = { one: 'One 👍', two: 'Two 👌', three: 'Three 🤘' };
+  const triggerLabel =
+    value.length === 0
+      ? null
+      : value.map((v) => labels[v as keyof typeof labels]).join(', ');
+  return (
+  <div style={{ display: 'flex', gap: 20, padding: 50 }}>
+    <Label>
+      Choose some numbers:
+      <Select.Root value={value} onValueChange={setValue} multiple>
+        <Select.Trigger className={styles.trigger}>
+          <Select.Value placeholder="Pick one or more">{triggerLabel}</Select.Value>
+          <Select.Icon />
+        </Select.Trigger>
+        <Select.Portal>
+          <Select.Content className={styles.content} sideOffset={5}>
+            <Select.Viewport className={styles.viewport}>
+              <Select.Item className={styles.item} value="one">
+                <Select.ItemText>
+                  One<span aria-hidden> 👍</span>
+                </Select.ItemText>
+                <Select.ItemIndicator className={styles.indicator}>
+                  <TickIcon />
+                </Select.ItemIndicator>
+              </Select.Item>
+              <Select.Item className={styles.item} value="two">
+                <Select.ItemText>
+                  Two<span aria-hidden> 👌</span>
+                </Select.ItemText>
+                <Select.ItemIndicator className={styles.indicator}>
+                  <TickIcon />
+                </Select.ItemIndicator>
+              </Select.Item>
+              <Select.Item className={styles.item} value="three">
+                <Select.ItemText>
+                  Three<span aria-hidden> 🤘</span>
+                </Select.ItemText>
+                <Select.ItemIndicator className={styles.indicator}>
+                  <TickIcon />
+                </Select.ItemIndicator>
+              </Select.Item>
+            </Select.Viewport>
+            <Select.Arrow />
+          </Select.Content>
+        </Select.Portal>
+      </Select.Root>
+    </Label>
+  </div>
+  );
+};
+
+export const MultiSelectControlled = () => {
+  const LABELS: Record<string, [string, string]> = {
+    fr: ['🇫🇷', 'France'],
+    uk: ['🇬🇧', 'United Kingdom'],
+    es: ['🇪🇸', 'Spain'],
+  };
+  const [value, setValue] = React.useState<string[]>(['uk']);
+
+  const flags = value.map((v) => LABELS[v]?.[0] ?? '').join(' ');
+  const countries = value.map((v) => LABELS[v]?.[1] ?? '').join(', ');
+
+  return (
+    <div style={{ display: 'flex', gap: 20, padding: 50 }}>
+      <Label>
+        Choose countries:
+        <Select.Root value={value} onValueChange={setValue} multiple>
+          <Select.Trigger className={styles.trigger}>
+            <Select.Value aria-label={countries} placeholder="Pick countries">
+              {flags || null}
+            </Select.Value>
+            <Select.Icon />
+          </Select.Trigger>
+          <Select.Portal>
+            <Select.Content className={styles.content} sideOffset={5}>
+              <Select.Viewport className={styles.viewport}>
+                <Select.Item className={styles.item} value="fr">
+                  <Select.ItemText>
+                    France<span aria-hidden> 🇫🇷</span>
+                  </Select.ItemText>
+                  <Select.ItemIndicator className={styles.indicator}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+                <Select.Item className={styles.item} value="uk">
+                  <Select.ItemText>
+                    United Kingdom<span aria-hidden> 🇬🇧</span>
+                  </Select.ItemText>
+                  <Select.ItemIndicator className={styles.indicator}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+                <Select.Item className={styles.item} value="es">
+                  <Select.ItemText>
+                    Spain<span aria-hidden> 🇪🇸</span>
+                  </Select.ItemText>
+                  <Select.ItemIndicator className={styles.indicator}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+              </Select.Viewport>
+              <Select.Arrow />
+            </Select.Content>
+          </Select.Portal>
+        </Select.Root>
+      </Label>
+      <pre style={{ alignSelf: 'center' }}>{JSON.stringify(value)}</pre>
+    </div>
+  );
+};
+
 export const Controlled = () => {
   const [value, setValue] = React.useState('uk');
   return (
@@ -474,6 +587,96 @@ export const WithinForm = () => {
         <Select.Root name="country" autoComplete="country" defaultValue="fr">
           <Select.Trigger className={styles.trigger}>
             <Select.Value />
+            <Select.Icon />
+          </Select.Trigger>
+          <Select.Portal>
+            <Select.Content className={styles.content}>
+              <Select.Viewport className={styles.viewport}>
+                <Select.Item className={styles.item} value="fr">
+                  <Select.ItemText>France</Select.ItemText>
+                  <Select.ItemIndicator className={styles.indicator}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+                <Select.Item className={styles.item} value="uk">
+                  <Select.ItemText>United Kingdom</Select.ItemText>
+                  <Select.ItemIndicator className={styles.indicator}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+                <Select.Item className={styles.item} value="es">
+                  <Select.ItemText>Spain</Select.ItemText>
+                  <Select.ItemIndicator className={styles.indicator}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+              </Select.Viewport>
+            </Select.Content>
+          </Select.Portal>
+        </Select.Root>
+      </Label>
+      <br />
+      <button type="submit">Submit</button>
+      <br />
+      <pre>{JSON.stringify(data, null, 2)}</pre>
+    </form>
+  );
+};
+
+export const MultiSelectWithinForm = () => {
+  const [data, setData] = React.useState<Record<string, FormDataEntryValue | FormDataEntryValue[]>>(
+    {},
+  );
+  const [countries, setCountries] = React.useState<string[]>(['fr', 'uk']);
+  const COUNTRY_LABELS: Record<string, string> = {
+    fr: 'France',
+    uk: 'United Kingdom',
+    es: 'Spain',
+  };
+  const triggerLabel =
+    countries.length === 0
+      ? null
+      : countries.map((c) => COUNTRY_LABELS[c] ?? c).join(', ');
+
+  function handleChange(event: React.FormEvent<HTMLFormElement>) {
+    const formData = new FormData(event.currentTarget);
+    const next: Record<string, FormDataEntryValue | FormDataEntryValue[]> = {};
+    for (const [key, value] of formData.entries()) {
+      if (key in next) {
+        const existing = next[key];
+        next[key] = Array.isArray(existing) ? [...existing, value] : [existing!, value];
+      } else {
+        next[key] = value;
+      }
+    }
+    setData(next);
+  }
+
+  return (
+    <form
+      style={{ padding: 50 }}
+      onSubmit={(event) => {
+        handleChange(event);
+        event.preventDefault();
+      }}
+      onChange={handleChange}
+    >
+      <Label style={{ display: 'block' }}>
+        Name
+        <input name="name" autoComplete="name" style={{ display: 'block' }} />
+      </Label>
+      <br />
+      <Label style={{ display: 'block' }}>
+        Countries
+        <Select.Root
+          name="countries"
+          autoComplete="country"
+          value={countries}
+          onValueChange={setCountries}
+          multiple
+        >
+          <Select.Trigger className={styles.trigger}>
+            <Select.Value placeholder="Pick countries">{triggerLabel}</Select.Value>
             <Select.Icon />
           </Select.Trigger>
           <Select.Portal>
