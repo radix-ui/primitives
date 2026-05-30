@@ -529,3 +529,51 @@ export const Chromatic = () => (
   </>
 );
 Chromatic.parameters = { chromatic: { disable: false } };
+
+export const ThumbAlignment = () => (
+  <React.StrictMode>
+    <h1>Thumb Alignment</h1>
+    <h2>Contained within slider (default)</h2>
+    <div style={{ padding: 20 }}>
+      <Slider.Root className={styles.root}>
+        <Slider.Track className={styles.track}>
+          <Slider.Range className={styles.range} />
+        </Slider.Track>
+        <Slider.Thumb className={styles.thumb} />
+      </Slider.Root>
+    </div>
+
+    <h2>Extending beyond slider edges</h2>
+    <div style={{ padding: 20 }}>
+      <Slider.Root className={styles.root} thumbAlignment="overflow">
+        <Slider.Track className={styles.track}>
+          <Slider.Range className={styles.range} />
+        </Slider.Track>
+        <Slider.Thumb className={styles.thumb} />
+      </Slider.Root>
+    </div>
+
+    <h2>Vertical</h2>
+    <div style={{ display: 'flex', gap: 50 }}>
+      <div style={{ flex: 1 }}>
+        <h3>Contained within slider (default)</h3>
+        <Slider.Root className={styles.root} orientation="vertical">
+          <Slider.Track className={styles.track}>
+            <Slider.Range className={styles.range} />
+          </Slider.Track>
+          <Slider.Thumb className={styles.thumb} />
+        </Slider.Root>
+      </div>
+
+      <div style={{ flex: 1 }}>
+        <h3>Extending beyond slider edges</h3>
+        <Slider.Root className={styles.root} orientation="vertical" thumbAlignment="overflow">
+          <Slider.Track className={styles.track}>
+            <Slider.Range className={styles.range} />
+          </Slider.Track>
+          <Slider.Thumb className={styles.thumb} />
+        </Slider.Root>
+      </div>
+    </div>
+  </React.StrictMode>
+);
