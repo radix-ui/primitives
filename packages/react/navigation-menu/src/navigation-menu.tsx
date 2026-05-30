@@ -528,6 +528,10 @@ const NavigationMenuTrigger = React.forwardRef<
               }),
             )}
             onClick={composeEventHandlers(props.onClick, () => {
+              if (open && hasPointerMoveOpenedRef.current) {
+                hasPointerMoveOpenedRef.current = false;
+                return;
+              }
               context.onItemSelect(itemContext.value);
               wasClickCloseRef.current = open;
             })}
