@@ -34,6 +34,7 @@ jobs:
     name: Publish snapshot release
     needs: detect-snapshot-changes
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: read
       pull-requests: read

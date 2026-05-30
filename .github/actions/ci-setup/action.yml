@@ -25,6 +25,16 @@ runs:
         node-version-file: .nvmrc
         cache: pnpm
 
+    # `pnpm publish` shells out to the npm CLI, and OIDC trusted publishing
+    # requires npm >= 11.5.1. The npm bundled with Node isn't guaranteed to meet
+    # that, so pin a known-good version explicitly.
+    - name: Ensure npm supports OIDC trusted publishing
+      shell: bash
+      run: |
+        npm install -g npm@latest
+        node -v
+        npm -v
+
     - name: Install dependencies
       shell: bash
       run: pnpm install --frozen-lockfile
