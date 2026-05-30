@@ -37,6 +37,7 @@ export const Submenus = () => {
   const [open4, setOpen4] = React.useState(false);
   const [rtl, setRtl] = React.useState(false);
   const [animated, setAnimated] = React.useState(false);
+  const [scrollable, setScrollable] = React.useState(false);
 
   React.useEffect(() => {
     if (rtl) {
@@ -64,12 +65,38 @@ export const Submenus = () => {
           />
           Animated
         </label>
+        <label>
+          <input
+            type="checkbox"
+            checked={scrollable}
+            onChange={(event) => setScrollable(event.currentTarget.checked)}
+          />
+          Scrollable
+        </label>
       </div>
-      <MenuWithAnchor>
+      <MenuWithAnchor className={scrollable ? styles.scrollableMenu : undefined}>
         <Menu.Item className={styles.item} onSelect={() => window.alert('undo')}>
           Undo
         </Menu.Item>
-        <Submenu open={open1} onOpenChange={setOpen1} animated={animated}>
+
+        <Menu.Separator className={styles.separator} />
+        <Menu.Item className={styles.item} disabled onSelect={() => window.alert('cut')}>
+          Cut
+        </Menu.Item>
+        <Menu.Item className={styles.item} onSelect={() => window.alert('copy')}>
+          Copy
+        </Menu.Item>
+        <Menu.Item className={styles.item} onSelect={() => window.alert('paste')}>
+          Paste
+        </Menu.Item>
+
+        <Menu.Separator className={styles.separator} />
+        <Submenu
+          open={open1}
+          onOpenChange={setOpen1}
+          animated={animated}
+          hideWhenDetached={scrollable}
+        >
           <Menu.Item className={styles.item} disabled>
             Disabled
           </Menu.Item>
@@ -125,17 +152,6 @@ export const Submenus = () => {
             Three
           </Menu.Item>
         </Submenu>
-
-        <Menu.Separator className={styles.separator} />
-        <Menu.Item className={styles.item} disabled onSelect={() => window.alert('cut')}>
-          Cut
-        </Menu.Item>
-        <Menu.Item className={styles.item} onSelect={() => window.alert('copy')}>
-          Copy
-        </Menu.Item>
-        <Menu.Item className={styles.item} onSelect={() => window.alert('paste')}>
-          Paste
-        </Menu.Item>
       </MenuWithAnchor>
     </Direction.Provider>
   );
