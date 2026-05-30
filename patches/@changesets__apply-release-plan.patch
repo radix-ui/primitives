@@ -1,8 +1,8 @@
 diff --git a/dist/changesets-apply-release-plan.cjs.js b/dist/changesets-apply-release-plan.cjs.js
-index 7fbefa0dc2a851433de7d245f4b832ea3ad85a6c..7a8a0b5ae55ce3c71d0ce4f16040d468b1a28c77 100644
+index e71b99fa922361c1d91d591ec15b4ed9c3689779..a013da83fde9acfef0c6b605f0589933643dde0a 100644
 --- a/dist/changesets-apply-release-plan.cjs.js
 +++ b/dist/changesets-apply-release-plan.cjs.js
-@@ -194,6 +194,15 @@ async function getChangelogEntry(release, releases, changesets, changelogFuncs,
+@@ -208,6 +208,15 @@ async function getChangelogEntry(cwd, release, releases, changesets, changelogFu
    });
    let relevantChangesets = changesets.filter(cs => relevantChangesetIds.has(cs.id));
    changelogLines.patch.push(changelogFuncs.getDependencyReleaseLine(relevantChangesets, dependentReleases, changelogOpts));
@@ -19,10 +19,10 @@ index 7fbefa0dc2a851433de7d245f4b832ea3ad85a6c..7a8a0b5ae55ce3c71d0ce4f16040d468
  }
  
 diff --git a/dist/changesets-apply-release-plan.esm.js b/dist/changesets-apply-release-plan.esm.js
-index d362c5ae0dc4f6ddd85307a18302f2e038033fe9..a3875d8d98535bdba36348f23772aa629ecffe3a 100644
+index eab5122f9005b06b49589041bfb750e07bb0dcaa..bbb1e379e696c111445a0c2030f7ee5e70d99fec 100644
 --- a/dist/changesets-apply-release-plan.esm.js
 +++ b/dist/changesets-apply-release-plan.esm.js
-@@ -157,6 +157,15 @@ async function getChangelogEntry(release, releases, changesets, changelogFuncs,
+@@ -170,6 +170,15 @@ async function getChangelogEntry(cwd, release, releases, changesets, changelogFu
    });
    let relevantChangesets = changesets.filter(cs => relevantChangesetIds.has(cs.id));
    changelogLines.patch.push(changelogFuncs.getDependencyReleaseLine(relevantChangesets, dependentReleases, changelogOpts));

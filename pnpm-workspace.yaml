@@ -2,3 +2,10 @@ packages:
   - 'apps/*'
   - 'internal/*'
   - 'packages/*/*'
+allowBuilds:
+  '@swc/core': true
+  cypress: true
+  esbuild: true
+  sharp: true
+patchedDependencies:
+  '@changesets/apply-release-plan': patches/@changesets__apply-release-plan.patch
