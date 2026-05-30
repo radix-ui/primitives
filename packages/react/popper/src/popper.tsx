@@ -40,6 +40,8 @@ const [createPopperContext, createPopperScope] = createContextScope(POPPER_NAME)
 type PopperContextValue = {
   anchor: Measurable | null;
   onAnchorChange(anchor: Measurable | null): void;
+  placementState: Placement | undefined;
+  setPlacementState: React.Dispatch<React.SetStateAction<Placement | undefined>>;
 };
 const [PopperProvider, usePopperContext] = createPopperContext<PopperContextValue>(POPPER_NAME);
 
@@ -49,8 +51,15 @@ interface PopperProps {
 const Popper: React.FC<PopperProps> = (props: ScopedProps<PopperProps>) => {
   const { __scopePopper, children } = props;
   const [anchor, setAnchor] = React.useState<Measurable | null>(null);
+  const [placementState, setPlacementState] = React.useState<Placement | undefined>(undefined);
   return (
-    <PopperProvider scope={__scopePopper} anchor={anchor} onAnchorChange={setAnchor}>
+    <PopperProvider
+      scope={__scopePopper}
+      anchor={anchor}
+      onAnchorChange={setAnchor}
+      placementState={placementState}
+      setPlacementState={setPlacementState}
+    >
       {children}
     </PopperProvider>
   );
@@ -89,7 +98,19 @@ const PopperAnchor = React.forwardRef<PopperAnchorElement, PopperAnchorProps>(
       }
     });
 
-    return virtualRef ? null : <Primitive.div {...anchorProps} ref={composedRefs} />;
+    const sideAndAlign =
+      context.placementState && getSideAndAlignFromPlacement(context.placementState);
+    const placedSide = sideAndAlign?.[0];
+    const placedAlign = sideAndAlign?.[1];
+
+    return virtualRef ? null : (
+      <Primitive.div
+        data-side={placedSide}
+        data-align={placedAlign}
+        {...anchorProps}
+        ref={composedRefs}
+      />
+    );
   },
 );
 
@@ -103,6 +124,7 @@ const CONTENT_NAME = 'PopperContent';
 
 type PopperContentContextValue = {
   placedSide: Side;
+  placedAlign: Align;
   onArrowChange(arrow: HTMLSpanElement | null): void;
   arrowX?: number;
   arrowY?: number;
@@ -216,6 +238,11 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
       ],
     });
 
+    const setPlacementState = context.setPlacementState;
+    useLayoutEffect(() => {
+      setPlacementState(placement);
+    }, [placement, setPlacementState]);
+
     const [placedSide, placedAlign] = getSideAndAlignFromPlacement(placement);
 
     const handlePlaced = useCallbackRef(onPlaced);
@@ -264,6 +291,7 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
         <PopperContentProvider
           scope={__scopePopper}
           placedSide={placedSide}
+          placedAlign={placedAlign}
           onArrowChange={setArrow}
           arrowX={arrowX}
           arrowY={arrowY}
