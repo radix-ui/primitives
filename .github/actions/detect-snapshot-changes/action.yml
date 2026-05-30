@@ -1,0 +1,39 @@
+name: Detect snapshot changes
+description: Determine whether a main-branch push should trigger a snapshot publish
+outputs:
+  should_publish:
+    description: Whether the push includes publish-worthy changes
+    value: ${{ steps.filter.outputs.should_publish }}
+runs:
+  using: composite
+  steps:
+    - name: Check changed files
+      id: filter
+      shell: bash
+      run: |
+        BEFORE="${{ github.event.before }}"
+        AFTER="${{ github.sha }}"
+        # Publish unconditionally when there is no usable base commit to diff
+        # against: manual `workflow_dispatch` (empty `before`), the first push to
+        # a new branch (all-zero `before`), or a base commit that is no longer
+        # reachable (e.g. after a force-push).
+        if [ -z "$BEFORE" ] \
+          || [ "$BEFORE" = "0000000000000000000000000000000000000000" ] \
+          || ! git cat-file -e "$BEFORE^{commit}" 2>/dev/null; then
+          echo "should_publish=true" >> "$GITHUB_OUTPUT"
+          exit 0
+        fi
+        SHOULD_PUBLISH=false
+        while IFS= read -r file; do
+          [ -z "$file" ] && continue
+          case "$file" in
+            package.json|.changeset/*|apps/*|internal/*|cypress/*|*.test.ts|*.test.tsx|*.stories.ts|*.stories.tsx|*.stories.css|*.stories.module.css|*.md)
+              ;;
+            *)
+              echo "Relevant file changed: $file"
+              SHOULD_PUBLISH=true
+              break
+              ;;
+          esac
+        done < <(git diff --name-only "$BEFORE" "$AFTER")
+        echo "should_publish=$SHOULD_PUBLISH" >> "$GITHUB_OUTPUT"

@@ -1,0 +1,20 @@
+name: Publish snapshot
+description: Build, version, and publish snapshot packages
+
+runs:
+  using: composite
+  steps:
+    - name: CI Setup
+      uses: ./.github/actions/ci-setup
+
+    - name: Build packages
+      shell: bash
+      run: pnpm build
+
+    - name: Update snapshot version
+      shell: bash
+      run: pnpm run bump:next
+
+    - name: Publish snapshot
+      shell: bash
+      run: pnpm run release:next --provenance --no-git-checks

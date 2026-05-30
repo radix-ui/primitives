@@ -1,0 +1,30 @@
+name: Setup CI
+
+runs:
+  using: composite
+  steps:
+    # Read the pinned pnpm version from `packageManager` ourselves and pass it
+    # explicitly. pnpm/action-setup@v6 currently ignores the version declared in
+    # package.json and always installs the latest v11.
+    # https://github.com/pnpm/action-setup/issues/225
+    - name: Resolve pnpm version
+      id: pnpm-version
+      shell: bash
+      run: echo "version=$(jq --raw-output '.packageManager | split("@")[1] | split("+")[0]' package.json)" >> "$GITHUB_OUTPUT"
+
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v6
+      with:
+        version: ${{ steps.pnpm-version.outputs.version }}
+        run_install: false
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v6
+      with:
+        registry-url: 'https://registry.npmjs.org'
+        node-version-file: .nvmrc
+        cache: pnpm
+
+    - name: Install dependencies
+      shell: bash
+      run: pnpm install --frozen-lockfile
