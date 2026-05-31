@@ -172,7 +172,7 @@ const PasswordToggleFieldInput = React.forwardRef<HTMLInputElement, PasswordTogg
       return () => {
         controller.abort();
       };
-    }, [inputRef, _setVisible]);
+    }, [inputRef]);
 
     return (
       <Primitive.input

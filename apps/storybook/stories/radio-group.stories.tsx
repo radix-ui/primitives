@@ -81,7 +81,7 @@ export const LegacyWithinForm = () => {
     <form
       onSubmit={(event) => event.preventDefault()}
       onChange={(event) => {
-        const radio = event.target as HTMLInputElement;
+        const radio = event.target as unknown as HTMLInputElement;
         setData((prevData) => ({ ...prevData, [radio.name]: radio.value }));
       }}
     >

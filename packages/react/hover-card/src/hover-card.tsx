@@ -304,7 +304,9 @@ const HoverCardContentImpl = React.forwardRef<
       document.addEventListener('pointerup', handlePointerUp);
       return () => {
         document.removeEventListener('pointerup', handlePointerUp);
+        // oxlint-disable-next-line react-hooks/exhaustive-deps
         context.hasSelectionRef.current = false;
+        // oxlint-disable-next-line react-hooks/exhaustive-deps
         context.isPointerDownOnContentRef.current = false;
       };
     }

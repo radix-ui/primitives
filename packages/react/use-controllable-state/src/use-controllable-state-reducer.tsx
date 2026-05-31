@@ -96,7 +96,7 @@ export function useControllableStateReducer<T, S extends {}, A extends AnyAction
         onChange(uncontrolledState);
       }
     }
-  }, [onChange, uncontrolledState, prevValueRef, isControlled]);
+  }, [uncontrolledState, prevValueRef, isControlled]);
 
   const state = React.useMemo(() => {
     const isControlled = controlledState !== undefined;

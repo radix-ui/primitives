@@ -23,6 +23,12 @@ type Sizes = {
   };
 };
 
+declare module 'react' {
+  interface CSSProperties {
+    [varName: `--radix-${string}`]: string | number | undefined | null;
+  }
+}
+
 /* -------------------------------------------------------------------------------------------------
  * ScrollArea
  * -----------------------------------------------------------------------------------------------*/
@@ -114,8 +120,8 @@ const ScrollArea = React.forwardRef<ScrollAreaElement, ScrollAreaProps>(
           style={{
             position: 'relative',
             // Pass corner sizes as CSS vars to reduce re-renders of context consumers
-            ['--radix-scroll-area-corner-width' as any]: cornerWidth + 'px',
-            ['--radix-scroll-area-corner-height' as any]: cornerHeight + 'px',
+            '--radix-scroll-area-corner-width': cornerWidth + 'px',
+            '--radix-scroll-area-corner-height': cornerHeight + 'px',
             ...props.style,
           }}
         />
@@ -517,7 +523,7 @@ const ScrollAreaScrollbarX = React.forwardRef<
         bottom: 0,
         left: context.dir === 'rtl' ? 'var(--radix-scroll-area-corner-width)' : 0,
         right: context.dir === 'ltr' ? 'var(--radix-scroll-area-corner-width)' : 0,
-        ['--radix-scroll-area-thumb-width' as any]: getThumbSize(sizes) + 'px',
+        '--radix-scroll-area-thumb-width': getThumbSize(sizes) + 'px',
         ...props.style,
       }}
       onThumbPointerDown={(pointerPos) => props.onThumbPointerDown(pointerPos.x)}
@@ -574,7 +580,7 @@ const ScrollAreaScrollbarY = React.forwardRef<
         right: context.dir === 'ltr' ? 0 : undefined,
         left: context.dir === 'rtl' ? 0 : undefined,
         bottom: 'var(--radix-scroll-area-corner-height)',
-        ['--radix-scroll-area-thumb-height' as any]: getThumbSize(sizes) + 'px',
+        '--radix-scroll-area-thumb-height': getThumbSize(sizes) + 'px',
         ...props.style,
       }}
       onThumbPointerDown={(pointerPos) => props.onThumbPointerDown(pointerPos.y)}
