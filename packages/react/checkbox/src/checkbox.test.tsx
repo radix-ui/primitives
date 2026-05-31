@@ -195,7 +195,7 @@ describe('Checkbox', () => {
       render(
         <form
           onChange={(event) => {
-            const target = event.target as HTMLInputElement;
+            const target = event.target as unknown as HTMLInputElement;
             onChange(target.checked);
           }}
         >
@@ -219,7 +219,7 @@ describe('Checkbox', () => {
         render(
           <form
             onChange={(event) => {
-              const target = event.target as HTMLInputElement;
+              const target = event.target as unknown as HTMLInputElement;
               onChange(target.checked);
             }}
           >
@@ -263,7 +263,7 @@ describe('Checkbox', () => {
       render(
         <form
           onChange={(event) => {
-            const target = event.target as HTMLInputElement;
+            const target = event.target as unknown as HTMLInputElement;
             onChange(target.checked);
           }}
         >
@@ -283,7 +283,7 @@ describe('Checkbox', () => {
       render(
         <form
           onChange={(event) => {
-            const target = event.target as HTMLInputElement;
+            const target = event.target as unknown as HTMLInputElement;
             onChange(target.checked);
           }}
         >
@@ -417,7 +417,7 @@ describe('Legacy Checkbox', () => {
           const rendered = render(
             <form
               onChange={(event) => {
-                const target = event.target as HTMLInputElement;
+                const target = event.target as unknown as HTMLInputElement;
                 expect(target.defaultChecked).toBe(true);
               }}
             >
@@ -429,7 +429,7 @@ describe('Legacy Checkbox', () => {
           rendered.rerender(
             <form
               onChange={(event) => {
-                const target = event.target as HTMLInputElement;
+                const target = event.target as unknown as HTMLInputElement;
                 expect(target.defaultChecked).toBe(false);
                 done(null);
               }}
@@ -451,7 +451,7 @@ describe('Legacy Checkbox', () => {
           const rendered = render(
             <form
               onChange={(event) => {
-                const target = event.target as HTMLInputElement;
+                const target = event.target as unknown as HTMLInputElement;
                 expect(target.defaultChecked).toBe(true);
               }}
             >
@@ -463,7 +463,7 @@ describe('Legacy Checkbox', () => {
           rendered.rerender(
             <form
               onChange={(event) => {
-                const target = event.target as HTMLInputElement;
+                const target = event.target as unknown as HTMLInputElement;
                 expect(target.defaultChecked).toBe(true);
                 done(null);
               }}

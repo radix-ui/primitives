@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "lint": "pnpm -r --no-bail run lint",
-    "types:check": "pnpm -r --parallel run typecheck",
+    "types:check": "pnpm -r --no-bail --parallel run typecheck",
     "test": "vitest",
     "test:ci": "vitest run && pnpm cypress:ci",
     "storybook": "BROWSER=none pnpm --filter=@repo/storybook run dev -p 9009",

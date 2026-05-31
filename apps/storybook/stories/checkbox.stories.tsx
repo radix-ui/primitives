@@ -113,7 +113,7 @@ export const WithinForm = () => {
     <form
       onSubmit={(event) => event.preventDefault()}
       onChange={(event) => {
-        const input = event.target as HTMLInputElement;
+        const input = event.target as unknown as HTMLInputElement;
         setData((prevData) => ({ ...prevData, [input.name]: input.checked }));
       }}
     >
@@ -294,7 +294,7 @@ export const LegacyWithinForm = () => {
     <form
       onSubmit={(event) => event.preventDefault()}
       onChange={(event) => {
-        const input = event.target as HTMLInputElement;
+        const input = event.target as unknown as HTMLInputElement;
         setData((prevData) => ({ ...prevData, [input.name]: input.checked }));
       }}
     >
