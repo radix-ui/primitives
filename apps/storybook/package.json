@@ -29,6 +29,7 @@
     "@types/form-serialize": "^0",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
+    "clsx": "^2.1.1",
     "eslint": "^9.38.0",
     "eslint-plugin-storybook": "^9.1.15",
     "serve": "^14.2.5",

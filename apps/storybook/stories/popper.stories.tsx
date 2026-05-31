@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Portal } from 'radix-ui';
+import cx from 'clsx';
 import { Popper } from 'radix-ui/internal';
 import styles from './popper.stories.module.css';
 
@@ -94,6 +95,55 @@ export const WithPortal = () => {
     </Scrollable>
   );
 };
+
+export const WithSideBasedAnchorStyling = () => {
+  const [open, setOpen] = React.useState(false);
+  const [preferredSide, setPreferredSide] = React.useState<'top' | 'right' | 'bottom' | 'left'>('top');
+  const [preferredAlign, setPreferredAlign] = React.useState<'start' | 'center' | 'end'>('start');
+  return (
+    <Scrollable>
+      <div style={{ display: 'flex', gap: '4rem', flexDirection: 'column' }}>
+        <div style={{ display: 'flex', gap: '1rem' }}>
+          <label>
+            <span>Side</span>
+            <select value={preferredSide} onChange={(e) => setPreferredSide(e.target.value as 'top' | 'right' | 'bottom' | 'left')}>
+              <option value="top">Top</option>
+              <option value="right">Right</option>
+              <option value="bottom">Bottom</option>
+              <option value="left">Left</option>
+            </select>
+          </label>
+          <label>
+            <span>Align</span>
+            <select value={preferredAlign} onChange={(e) => setPreferredAlign(e.target.value as 'start' | 'center' | 'end')}>
+              <option value="start">Start</option>
+              <option value="center">Center</option>
+              <option value="end">End</option>
+            </select>
+          </label>
+        </div>
+        <Popper.Root>
+          <Popper.Anchor className={cx(styles.anchor, styles.anchorFancy)} onClick={() => setOpen(true)}>
+            open
+          </Popper.Anchor>
+          {open && (
+            <Portal.Root asChild>
+              <Popper.Content
+                className={[styles.content, styles.animatedContent].join(' ')}
+                sideOffset={5}
+                side={preferredSide}
+                align={preferredAlign}
+              >
+                <button onClick={() => setOpen(false)}>close</button>
+                <Popper.Arrow className={styles.arrow} width={20} height={10} offset={25} />
+              </Popper.Content>
+            </Portal.Root>
+          )}
+        </Popper.Root>
+      </div>
+    </Scrollable>
+  );
+}
 
 export const WithUpdatePositionStrategyAlways = () => {
   const [open, setOpen] = React.useState(false);

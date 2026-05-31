@@ -105,8 +105,8 @@ const PopperAnchor = React.forwardRef<PopperAnchorElement, PopperAnchorProps>(
 
     return virtualRef ? null : (
       <Primitive.div
-        data-side={placedSide}
-        data-align={placedAlign}
+        data-radix-popper-side={placedSide}
+        data-radix-popper-align={placedAlign}
         {...anchorProps}
         ref={composedRefs}
       />
@@ -245,6 +245,9 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
     const setPlacementState = context.setPlacementState;
     useLayoutEffect(() => {
       setPlacementState(placement);
+      return () => {
+        setPlacementState(undefined);
+      }
     }, [placement, setPlacementState]);
 
     const [placedSide, placedAlign] = getSideAndAlignFromPlacement(placement);
