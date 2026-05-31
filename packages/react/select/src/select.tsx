@@ -223,8 +223,7 @@ const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
             tabIndex={-1}
             name={name}
             autoComplete={autoComplete}
-            value={value}
-            // enable form autofill
+            value={value ?? ""}
             onChange={(event) => setValue(event.target.value)}
             disabled={disabled}
             form={form}
