@@ -2,4 +2,4 @@
 '@radix-ui/react-dialog': patch
 ---
 
-Fix disabled pointer events in closed dialogs
+Fixed disabled pointer events in closed dialogs
