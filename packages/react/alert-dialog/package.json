@@ -28,7 +28,7 @@
   ],
   "sideEffects": false,
   "scripts": {
-    "lint": "eslint --max-warnings 0 src",
+    "lint": "oxlint --max-warnings 0 src",
     "clean": "rm -rf dist",
     "reset": "rm -rf dist node_modules",
     "typecheck": "tsc --noEmit",
@@ -44,11 +44,9 @@
   },
   "devDependencies": {
     "@repo/builder": "workspace:*",
-    "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
-    "eslint": "^9.38.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "typescript": "^5.9.3"
