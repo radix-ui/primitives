@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "license": "MIT",
   "scripts": {
-    "lint": "pnpm -r run lint",
+    "lint": "pnpm -r --no-bail run lint",
     "types:check": "pnpm -r --parallel run typecheck",
     "test": "vitest",
     "test:ci": "vitest run && pnpm cypress:ci",

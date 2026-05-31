@@ -25,6 +25,12 @@ const BACK_KEYS: Record<SlideDirection, string[]> = {
   'from-top': ['Home', 'PageDown', 'ArrowUp', 'ArrowLeft'],
 };
 
+declare module 'react' {
+  interface CSSProperties {
+    [varName: `--radix-${string}`]: string | number | undefined | null;
+  }
+}
+
 /* -------------------------------------------------------------------------------------------------
  * Slider
  * -----------------------------------------------------------------------------------------------*/
@@ -278,7 +284,7 @@ const SliderHorizontal = React.forwardRef<SliderHorizontalElement, SliderHorizon
           ref={composedRefs}
           style={{
             ...sliderProps.style,
-            ['--radix-slider-thumb-transform' as any]: 'translateX(-50%)',
+            '--radix-slider-thumb-transform': 'translateX(-50%)',
           }}
           onSlideStart={(event) => {
             const value = getValueFromPointer(event.clientX);
@@ -351,7 +357,7 @@ const SliderVertical = React.forwardRef<SliderVerticalElement, SliderVerticalPro
           ref={ref}
           style={{
             ...sliderProps.style,
-            ['--radix-slider-thumb-transform' as any]: 'translateY(50%)',
+            '--radix-slider-thumb-transform': 'translateY(50%)',
           }}
           onSlideStart={(event) => {
             const value = getValueFromPointer(event.clientY);

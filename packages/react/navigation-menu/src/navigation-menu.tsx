@@ -20,6 +20,12 @@ import type { Scope } from '@radix-ui/react-context';
 type Orientation = 'vertical' | 'horizontal';
 type Direction = 'ltr' | 'rtl';
 
+declare module 'react' {
+  interface CSSProperties {
+    [varName: `--radix-${string}`]: string | number | undefined | null;
+  }
+}
+
 /* -------------------------------------------------------------------------------------------------
  * NavigationMenu
  * -----------------------------------------------------------------------------------------------*/
@@ -1059,8 +1065,8 @@ const NavigationMenuViewportImpl = React.forwardRef<
       style={{
         // Prevent interaction when animating out
         pointerEvents: !open && context.isRootMenu ? 'none' : undefined,
-        ['--radix-navigation-menu-viewport-width' as any]: viewportWidth,
-        ['--radix-navigation-menu-viewport-height' as any]: viewportHeight,
+        '--radix-navigation-menu-viewport-width': viewportWidth,
+        '--radix-navigation-menu-viewport-height': viewportHeight,
         ...viewportImplProps.style,
       }}
       onPointerEnter={composeEventHandlers(props.onPointerEnter, context.onContentEnter)}

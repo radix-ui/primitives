@@ -14,6 +14,12 @@ import { useDirection } from '@radix-ui/react-direction';
 
 type Direction = 'ltr' | 'rtl';
 
+declare module 'react' {
+  interface CSSProperties {
+    [varName: `--radix-${string}`]: string | number | undefined | null;
+  }
+}
+
 /* -------------------------------------------------------------------------------------------------
  * Accordion
  * -----------------------------------------------------------------------------------------------*/
@@ -491,8 +497,8 @@ const AccordionContent = React.forwardRef<AccordionContentElement, AccordionCont
         {...contentProps}
         ref={forwardedRef}
         style={{
-          ['--radix-accordion-content-height' as any]: 'var(--radix-collapsible-content-height)',
-          ['--radix-accordion-content-width' as any]: 'var(--radix-collapsible-content-width)',
+          '--radix-accordion-content-height': 'var(--radix-collapsible-content-height)',
+          '--radix-accordion-content-width': 'var(--radix-collapsible-content-width)',
           ...props.style,
         }}
       />
