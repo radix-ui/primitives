@@ -27,8 +27,9 @@ type PrimitivePropsWithRef<E extends React.ElementType> = React.ComponentPropsWi
   asChild?: boolean;
 };
 
-interface PrimitiveForwardRefComponent<E extends React.ElementType>
-  extends React.ForwardRefExoticComponent<PrimitivePropsWithRef<E>> {}
+interface PrimitiveForwardRefComponent<
+  E extends React.ElementType,
+> extends React.ForwardRefExoticComponent<PrimitivePropsWithRef<E>> {}
 
 /* -------------------------------------------------------------------------------------------------
  * Primitive

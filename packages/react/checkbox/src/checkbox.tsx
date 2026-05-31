@@ -118,11 +118,10 @@ function CheckboxProvider<State extends CheckedState = CheckedState>(
 
 const TRIGGER_NAME = 'CheckboxTrigger';
 
-interface CheckboxTriggerProps
-  extends Omit<
-    React.ComponentPropsWithoutRef<typeof Primitive.button>,
-    keyof CheckboxProviderProps
-  > {
+interface CheckboxTriggerProps extends Omit<
+  React.ComponentPropsWithoutRef<typeof Primitive.button>,
+  keyof CheckboxProviderProps
+> {
   children?: React.ReactNode;
 }
 

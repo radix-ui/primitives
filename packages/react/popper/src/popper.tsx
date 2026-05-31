@@ -247,7 +247,7 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
       setPlacementState(placement);
       return () => {
         setPlacementState(undefined);
-      }
+      };
     }, [placement, setPlacementState]);
 
     const [placedSide, placedAlign] = getSideAndAlignFromPlacement(placement);

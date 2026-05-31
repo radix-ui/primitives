@@ -252,8 +252,10 @@ const MenuContent = React.forwardRef<MenuContentElement, MenuContentProps>(
 /* ---------------------------------------------------------------------------------------------- */
 
 type MenuRootContentTypeElement = MenuContentImplElement;
-interface MenuRootContentTypeProps
-  extends Omit<MenuContentImplProps, keyof MenuContentImplPrivateProps> {}
+interface MenuRootContentTypeProps extends Omit<
+  MenuContentImplProps,
+  keyof MenuContentImplPrivateProps
+> {}
 
 const MenuRootContentModal = React.forwardRef<MenuRootContentTypeElement, MenuRootContentTypeProps>(
   (props: ScopedProps<MenuRootContentTypeProps>, forwardedRef) => {
@@ -333,8 +335,7 @@ type MenuContentImplPrivateProps = {
   trapFocus?: FocusScopeProps['trapped'];
 };
 interface MenuContentImplProps
-  extends MenuContentImplPrivateProps,
-    Omit<PopperContentProps, 'dir' | 'onPlaced'> {
+  extends MenuContentImplPrivateProps, Omit<PopperContentProps, 'dir' | 'onPlaced'> {
   /**
    * Event handler called when auto-focusing on close.
    * Can be prevented.
@@ -1148,11 +1149,10 @@ MenuSubTrigger.displayName = SUB_TRIGGER_NAME;
 const SUB_CONTENT_NAME = 'MenuSubContent';
 
 type MenuSubContentElement = MenuContentImplElement;
-interface MenuSubContentProps
-  extends Omit<
-    MenuContentImplProps,
-    keyof MenuContentImplPrivateProps | 'onCloseAutoFocus' | 'onEntryFocus' | 'side' | 'align'
-  > {
+interface MenuSubContentProps extends Omit<
+  MenuContentImplProps,
+  keyof MenuContentImplPrivateProps | 'onCloseAutoFocus' | 'onEntryFocus' | 'side' | 'align'
+> {
   /**
    * Used to force mounting when more control is needed. Useful when
    * controlling animation with React animation libraries.

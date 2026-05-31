@@ -104,8 +104,10 @@ const [AlertDialogContentProvider, useAlertDialogContentContext] =
 
 type AlertDialogContentElement = React.ComponentRef<typeof DialogPrimitive.Content>;
 type DialogContentProps = React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>;
-interface AlertDialogContentProps
-  extends Omit<DialogContentProps, 'onPointerDownOutside' | 'onInteractOutside'> {}
+interface AlertDialogContentProps extends Omit<
+  DialogContentProps,
+  'onPointerDownOutside' | 'onInteractOutside'
+> {}
 
 const Slottable = createSlottable('AlertDialogContent');
 

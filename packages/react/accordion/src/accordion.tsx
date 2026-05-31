@@ -333,8 +333,10 @@ const [AccordionItemProvider, useAccordionItemContext] =
 
 type AccordionItemElement = React.ComponentRef<typeof CollapsiblePrimitive.Root>;
 type CollapsibleProps = React.ComponentPropsWithoutRef<typeof CollapsiblePrimitive.Root>;
-interface AccordionItemProps
-  extends Omit<CollapsibleProps, 'open' | 'defaultOpen' | 'onOpenChange'> {
+interface AccordionItemProps extends Omit<
+  CollapsibleProps,
+  'open' | 'defaultOpen' | 'onOpenChange'
+> {
   /**
    * Whether or not an accordion item is disabled from user interaction.
    *

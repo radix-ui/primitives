@@ -190,7 +190,8 @@ interface OneTimePasswordFieldOwnProps {
 type ScopedProps<P> = P & { __scopeOneTimePasswordField?: Scope };
 
 interface OneTimePasswordFieldProps
-  extends OneTimePasswordFieldOwnProps,
+  extends
+    OneTimePasswordFieldOwnProps,
     Omit<Primitive.PrimitivePropsWithRef<'div'>, keyof OneTimePasswordFieldOwnProps> {}
 
 const OneTimePasswordField = React.forwardRef<HTMLDivElement, OneTimePasswordFieldProps>(
@@ -486,18 +487,17 @@ const OneTimePasswordField = React.forwardRef<HTMLDivElement, OneTimePasswordFie
  * OneTimePasswordFieldHiddenInput
  * -----------------------------------------------------------------------------------------------*/
 
-interface OneTimePasswordFieldHiddenInputProps
-  extends Omit<
-    React.ComponentProps<'input'>,
-    | keyof 'value'
-    | 'defaultValue'
-    | 'type'
-    | 'onChange'
-    | 'readOnly'
-    | 'disabled'
-    | 'autoComplete'
-    | 'autoFocus'
-  > {}
+interface OneTimePasswordFieldHiddenInputProps extends Omit<
+  React.ComponentProps<'input'>,
+  | keyof 'value'
+  | 'defaultValue'
+  | 'type'
+  | 'onChange'
+  | 'readOnly'
+  | 'disabled'
+  | 'autoComplete'
+  | 'autoFocus'
+> {}
 
 const OneTimePasswordFieldHiddenInput = React.forwardRef<
   HTMLInputElement,
@@ -533,20 +533,19 @@ const OneTimePasswordFieldHiddenInput = React.forwardRef<
  * OneTimePasswordFieldInput
  * -----------------------------------------------------------------------------------------------*/
 
-interface OneTimePasswordFieldInputProps
-  extends Omit<
-    Primitive.PrimitivePropsWithRef<'input'>,
-    | 'value'
-    | 'defaultValue'
-    | 'disabled'
-    | 'readOnly'
-    | 'autoComplete'
-    | 'autoFocus'
-    | 'form'
-    | 'name'
-    | 'placeholder'
-    | 'type'
-  > {
+interface OneTimePasswordFieldInputProps extends Omit<
+  Primitive.PrimitivePropsWithRef<'input'>,
+  | 'value'
+  | 'defaultValue'
+  | 'disabled'
+  | 'readOnly'
+  | 'autoComplete'
+  | 'autoFocus'
+  | 'form'
+  | 'name'
+  | 'placeholder'
+  | 'type'
+> {
   /**
    * Callback fired when the user input fails native HTML input validation.
    */

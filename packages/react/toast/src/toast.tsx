@@ -667,7 +667,8 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
 /* -----------------------------------------------------------------------------------------------*/
 
 interface ToastAnnounceProps
-  extends Omit<React.ComponentPropsWithoutRef<'div'>, 'children'>,
+  extends
+    Omit<React.ComponentPropsWithoutRef<'div'>, 'children'>,
     ScopedProps<{ children: string[] }> {}
 
 const ToastAnnounce: React.FC<ToastAnnounceProps> = (props: ScopedProps<ToastAnnounceProps>) => {

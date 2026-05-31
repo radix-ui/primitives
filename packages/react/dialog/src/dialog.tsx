@@ -253,8 +253,10 @@ DialogContent.displayName = CONTENT_NAME;
 /* -----------------------------------------------------------------------------------------------*/
 
 type DialogContentTypeElement = DialogContentImplElement;
-interface DialogContentTypeProps
-  extends Omit<DialogContentImplProps, 'trapFocus' | 'disableOutsidePointerEvents'> {}
+interface DialogContentTypeProps extends Omit<
+  DialogContentImplProps,
+  'trapFocus' | 'disableOutsidePointerEvents'
+> {}
 
 const DialogContentModal = React.forwardRef<DialogContentTypeElement, DialogContentTypeProps>(
   (props: ScopedProps<DialogContentTypeProps>, forwardedRef) => {

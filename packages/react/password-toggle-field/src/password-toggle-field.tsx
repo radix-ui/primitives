@@ -109,7 +109,8 @@ interface PasswordToggleFieldOwnProps {
 }
 
 interface PasswordToggleFieldInputProps
-  extends PasswordToggleFieldOwnProps,
+  extends
+    PasswordToggleFieldOwnProps,
     Omit<PrimitiveInputProps, keyof PasswordToggleFieldOwnProps | 'type'> {
   autoComplete?: 'current-password' | 'new-password';
 }

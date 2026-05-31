@@ -511,7 +511,8 @@ type FocusScopeProps = React.ComponentPropsWithoutRef<typeof FocusScope>;
 type SelectPopperPrivateProps = { onPlaced?: PopperContentProps['onPlaced'] };
 
 interface SelectContentImplProps
-  extends Omit<SelectPopperPositionProps, keyof SelectPopperPrivateProps>,
+  extends
+    Omit<SelectPopperPositionProps, keyof SelectPopperPrivateProps>,
     Omit<SelectItemAlignedPositionProps, keyof SelectPopperPrivateProps> {
   /**
    * Event handler called when auto-focusing on close.

@@ -387,8 +387,10 @@ const ScrollAreaScrollbarAuto = React.forwardRef<
 /* -----------------------------------------------------------------------------------------------*/
 
 type ScrollAreaScrollbarVisibleElement = ScrollAreaScrollbarAxisElement;
-interface ScrollAreaScrollbarVisibleProps
-  extends Omit<ScrollAreaScrollbarAxisProps, keyof ScrollAreaScrollbarAxisPrivateProps> {
+interface ScrollAreaScrollbarVisibleProps extends Omit<
+  ScrollAreaScrollbarAxisProps,
+  keyof ScrollAreaScrollbarAxisPrivateProps
+> {
   orientation?: 'horizontal' | 'vertical';
 }
 
@@ -487,7 +489,8 @@ type ScrollAreaScrollbarAxisPrivateProps = {
 
 type ScrollAreaScrollbarAxisElement = ScrollAreaScrollbarImplElement;
 interface ScrollAreaScrollbarAxisProps
-  extends Omit<ScrollAreaScrollbarImplProps, keyof ScrollAreaScrollbarImplPrivateProps>,
+  extends
+    Omit<ScrollAreaScrollbarImplProps, keyof ScrollAreaScrollbarImplPrivateProps>,
     ScrollAreaScrollbarAxisPrivateProps {}
 
 const ScrollAreaScrollbarX = React.forwardRef<
@@ -630,7 +633,8 @@ type ScrollAreaScrollbarImplPrivateProps = {
   onResize(): void;
 };
 interface ScrollAreaScrollbarImplProps
-  extends Omit<PrimitiveDivProps, keyof ScrollAreaScrollbarImplPrivateProps>,
+  extends
+    Omit<PrimitiveDivProps, keyof ScrollAreaScrollbarImplPrivateProps>,
     ScrollAreaScrollbarImplPrivateProps {}
 
 const ScrollAreaScrollbarImpl = React.forwardRef<
