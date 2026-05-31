@@ -23,7 +23,7 @@ jobs:
         run: pnpm lint
 
       - name: Run build
-        run: pnpm build
+        run: pnpm build:ci
 
       - name: Run tests
         run: pnpm test:ci
