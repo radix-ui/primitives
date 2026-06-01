@@ -2,4 +2,4 @@
 '@radix-ui/react-select': patch
 ---
 
-Fix slider focus in scrollable context
+Fixed Slider focus bugs in scrollable context
