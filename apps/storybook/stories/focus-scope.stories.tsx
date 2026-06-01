@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { FocusScope } from 'radix-ui/internal';
 
 export default { title: 'Utilities/FocusScope' };

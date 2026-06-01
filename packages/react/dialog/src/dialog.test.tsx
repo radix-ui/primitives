@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { axe } from 'vitest-axe';
 import type { RenderResult } from '@testing-library/react';
 import { render, fireEvent, cleanup } from '@testing-library/react';
