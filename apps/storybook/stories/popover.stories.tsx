@@ -267,6 +267,38 @@ export const CustomAnchor = () => (
   </Popover.Root>
 );
 
+export const CustomAnchorSibling = () => (
+  <Popover.Root>
+    <Popover.Anchor
+      style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        width: 250,
+        padding: 20,
+        margin: 100,
+        backgroundColor: '#eee',
+      }}
+    >
+      Item
+    </Popover.Anchor>
+    <Popover.Trigger className={styles.trigger} style={{ margin: '0 100px' }}>
+      open
+    </Popover.Trigger>
+    <Popover.Portal>
+      <Popover.Content
+        className={styles.content}
+        side="right"
+        sideOffset={1}
+        align="start"
+        style={{ borderRadius: 0, width: 200, height: 100 }}
+      >
+        <Popover.Close>close</Popover.Close>
+      </Popover.Content>
+    </Popover.Portal>
+  </Popover.Root>
+);
+
 export const WithSlottedTrigger = () => {
   return (
     <Popover.Root>
