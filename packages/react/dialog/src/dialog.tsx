@@ -3,6 +3,7 @@ import { composeEventHandlers } from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContext, createContextScope } from '@radix-ui/react-context';
 import { useId } from '@radix-ui/react-id';
+import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
 import { FocusScope } from '@radix-ui/react-focus-scope';
@@ -196,10 +197,69 @@ interface DialogOverlayImplProps extends PrimitiveDivProps {}
 
 const Slot = createSlot('DialogOverlay.RemoveScroll');
 
+/**
+ * The attribute set on `document.body` by `react-remove-scroll-bar` to lock scroll.
+ * We reference it here to ensure synchronous cleanup on forced unmount.
+ */
+const SCROLL_LOCK_ATTRIBUTE = 'data-scroll-locked';
+
 const DialogOverlayImpl = React.forwardRef<DialogOverlayImplElement, DialogOverlayImplProps>(
   (props: ScopedProps<DialogOverlayImplProps>, forwardedRef) => {
     const { __scopeDialog, ...overlayProps } = props;
     const context = useDialogContext(OVERLAY_NAME, __scopeDialog);
+
+    /**
+     * Ensure the scroll lock is released synchronously when the overlay is forcefully
+     * unmounted (e.g. when a router Link inside the Dialog triggers navigation while
+     * the Dialog is still open).
+     *
+     * `react-remove-scroll` manages `data-scroll-locked` via `useEffect`, which is
+     * asynchronous. In certain SPA router scenarios the old route's async effect
+     * cleanups may be deferred or skipped, leaving `overflow: hidden` on the body
+     * and preventing scrolling on the destination or return page.
+     *
+     * By using `useLayoutEffect` (synchronous, fires during the commit phase) we
+     * guarantee the attribute is decremented and removed as soon as the overlay
+     * leaves the React tree when the Dialog was still open at the time of unmount
+     * (i.e. a forced unmount, not a user-initiated close).
+     *
+     * We only run the cleanup when `context.open` is still `true` at unmount time.
+     * When the Dialog is closed normally, `context.open` transitions to `false`
+     * before the overlay unmounts (via Presence), so we defer to `react-remove-scroll`'s
+     * own cleanup to avoid double-decrementing the lock counter.
+     *
+     * Counter coordination: `react-remove-scroll-bar` stores the number of active
+     * locks as an integer in the attribute value.  We read and write that same
+     * counter so nested / stacked dialogs continue to work correctly. Because our
+     * `useLayoutEffect` cleanup runs *before* `react-remove-scroll`'s `useEffect`
+     * cleanup, the subsequent async decrement will read 0 and call
+     * `removeAttribute`, which is a safe no-op on an already-absent attribute.
+     */
+    // Track the latest `open` state in a ref so the cleanup function below can
+    // read it without needing to be in the effect's dependency array.
+    const isOpenRef = React.useRef(context.open);
+    isOpenRef.current = context.open;
+
+    useLayoutEffect(() => {
+      return () => {
+        // Only perform synchronous cleanup for forced unmounts (navigation while dialog is open).
+        // When the dialog closes normally, `context.open` is already `false` before this
+        // component unmounts, so we leave cleanup to `react-remove-scroll` to avoid
+        // double-decrementing the scroll lock counter.
+        if (!isOpenRef.current) return;
+
+        const raw = document.body.getAttribute(SCROLL_LOCK_ATTRIBUTE);
+        if (raw === null) return; // already cleaned up
+        const current = parseInt(raw, 10);
+        const next = isFinite(current) ? current - 1 : 0;
+        if (next <= 0) {
+          document.body.removeAttribute(SCROLL_LOCK_ATTRIBUTE);
+        } else {
+          document.body.setAttribute(SCROLL_LOCK_ATTRIBUTE, String(next));
+        }
+      };
+    }, []);
+
     return (
       // Make sure `Content` is scrollable even when it doesn't live inside `RemoveScroll`
       // ie. when `Overlay` and `Content` are siblings
@@ -416,7 +476,7 @@ const DialogContentImpl = React.forwardRef<DialogContentImplElement, DialogConte
         </FocusScope>
         {process.env.NODE_ENV !== 'production' && (
           <>
-            <TitleWarning titleId={context.titleId} />
+            <TitleWarning contentRef={contentRef} titleId={context.titleId} />
             <DescriptionWarning contentRef={contentRef} descriptionId={context.descriptionId} />
           </>
         )}
@@ -505,9 +565,12 @@ const [WarningProvider, useWarningContext] = createContext(TITLE_WARNING_NAME, {
   docsSlug: 'dialog',
 });
 
-type TitleWarningProps = { titleId?: string };
+type TitleWarningProps = {
+  contentRef: React.RefObject<DialogContentElement | null>;
+  titleId?: string;
+};
 
-const TitleWarning: React.FC<TitleWarningProps> = ({ titleId }) => {
+const TitleWarning: React.FC<TitleWarningProps> = ({ contentRef, titleId }) => {
   const titleWarningContext = useWarningContext(TITLE_WARNING_NAME);
 
   const MESSAGE = `\`${titleWarningContext.contentName}\` requires a \`${titleWarningContext.titleName}\` for the component to be accessible for screen reader users.
@@ -518,10 +581,20 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
 
   React.useEffect(() => {
     if (titleId) {
-      const hasTitle = document.getElementById(titleId);
+      // Use getRootNode() to support Shadow DOM contexts where document.getElementById
+      // would fail to find elements rendered inside a shadow root.
+      // Guard: getRootNode() may return a DocumentFragment or other Node without
+      // getElementById (e.g. portal into a DocumentFragment). Fall back to
+      // ownerDocument ?? document in those cases.
+      const rootNode = contentRef.current?.getRootNode() ?? document;
+      const searchRoot =
+        rootNode instanceof Document || rootNode instanceof ShadowRoot
+          ? rootNode
+          : (contentRef.current?.ownerDocument ?? document);
+      const hasTitle = searchRoot.getElementById(titleId);
       if (!hasTitle) console.error(MESSAGE);
     }
-  }, [MESSAGE, titleId]);
+  }, [MESSAGE, contentRef, titleId]);
 
   return null;
 };
@@ -541,7 +614,17 @@ const DescriptionWarning: React.FC<DescriptionWarningProps> = ({ contentRef, des
     const describedById = contentRef.current?.getAttribute('aria-describedby');
     // if we have an id and the user hasn't set aria-describedby={undefined}
     if (descriptionId && describedById) {
-      const hasDescription = document.getElementById(descriptionId);
+      // Use getRootNode() to support Shadow DOM contexts where document.getElementById
+      // would fail to find elements rendered inside a shadow root.
+      // Guard: getRootNode() may return a DocumentFragment or other Node without
+      // getElementById (e.g. portal into a DocumentFragment). Fall back to
+      // ownerDocument ?? document in those cases.
+      const rootNode = contentRef.current?.getRootNode() ?? document;
+      const searchRoot =
+        rootNode instanceof Document || rootNode instanceof ShadowRoot
+          ? rootNode
+          : (contentRef.current?.ownerDocument ?? document);
+      const hasDescription = searchRoot.getElementById(descriptionId);
       if (!hasDescription) console.warn(MESSAGE);
     }
   }, [MESSAGE, contentRef, descriptionId]);
