@@ -1716,3 +1716,40 @@ const TickIcon = () => (
     <path d="M2 20 L12 28 30 4" />
   </svg>
 );
+
+export const WithFooterActions = () => (
+  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '50vh' }}>
+    <DropdownMenu.Root>
+      <DropdownMenu.Trigger className={styles.trigger}>Open</DropdownMenu.Trigger>
+      <DropdownMenu.Portal>
+        <DropdownMenu.Content className={styles.content} sideOffset={5}>
+          <DropdownMenu.Item className={styles.item} onSelect={() => console.log('cut')}>
+            Cut
+          </DropdownMenu.Item>
+          <DropdownMenu.Item className={styles.item} onSelect={() => console.log('copy')}>
+            Copy
+          </DropdownMenu.Item>
+          <DropdownMenu.Item className={styles.item} onSelect={() => console.log('paste')}>
+            Paste
+          </DropdownMenu.Item>
+          <DropdownMenu.Separator className={styles.separator} />
+          <DropdownMenu.Item className={styles.item} onSelect={() => console.log('delete')}>
+            Delete
+          </DropdownMenu.Item>
+
+          <div className={styles.footer}>
+            <button className={styles.footerButton} onClick={() => console.log('apply')}>
+              Apply
+            </button>
+            <button className={styles.footerButton} onClick={() => console.log('create new')}>
+              Create New
+            </button>
+          </div>
+
+          <DropdownMenu.Arrow />
+        </DropdownMenu.Content>
+      </DropdownMenu.Portal>
+    </DropdownMenu.Root>
+  </div>
+);
+
