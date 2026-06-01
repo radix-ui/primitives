@@ -60,6 +60,53 @@ export const Styled = () => (
   </div>
 );
 
+export const SyntheticClick = () => (
+  <div style={{ display: 'flex', gap: 20, padding: 50 }}>
+    {POSITIONS.map((position) => (
+      <Label key={position}>
+        Choose a number:
+        <Select.Root defaultValue="two">
+          <Select.Trigger className={styles.trigger} syntheticClick={true}>
+            <Select.Value />
+            <Select.Icon />
+          </Select.Trigger>
+          <Select.Portal>
+            <Select.Content className={styles.content} position={position} sideOffset={5}>
+              <Select.Viewport className={styles.viewport}>
+                <Select.Item className={styles.item} value="one">
+                  <Select.ItemText>
+                    One<span aria-hidden> 👍</span>
+                  </Select.ItemText>
+                  <Select.ItemIndicator className={styles.indicator}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+                <Select.Item className={styles.item} value="two">
+                  <Select.ItemText>
+                    Two<span aria-hidden> 👌</span>
+                  </Select.ItemText>
+                  <Select.ItemIndicator className={styles.indicator}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+                <Select.Item className={styles.item} value="three">
+                  <Select.ItemText>
+                    Three<span aria-hidden> 🤘</span>
+                  </Select.ItemText>
+                  <Select.ItemIndicator className={styles.indicator}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+              </Select.Viewport>
+              <Select.Arrow />
+            </Select.Content>
+          </Select.Portal>
+        </Select.Root>
+      </Label>
+    ))}
+  </div>
+);
+
 export const Controlled = () => {
   const [value, setValue] = React.useState('uk');
   return (
