@@ -223,7 +223,7 @@ const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
             tabIndex={-1}
             name={name}
             autoComplete={autoComplete}
-            value={value ?? ""}
+            value={value ?? ''}
             onChange={(event) => setValue(event.target.value)}
             disabled={disabled}
             form={form}
@@ -536,7 +536,7 @@ const Slot = createSlot('SelectContent.RemoveScroll');
 
 const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectContentImplProps>(
   (props: ScopedProps<SelectContentImplProps>, forwardedRef) => {
-    const { __scopeSelect } = props
+    const { __scopeSelect } = props;
     const {
       position = 'item-aligned',
       onCloseAutoFocus,
