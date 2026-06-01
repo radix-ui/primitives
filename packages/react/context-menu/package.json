@@ -39,7 +39,6 @@
     "@radix-ui/react-context": "workspace:*",
     "@radix-ui/react-menu": "workspace:*",
     "@radix-ui/react-primitive": "workspace:*",
-    "@radix-ui/react-use-callback-ref": "workspace:*",
     "@radix-ui/react-use-controllable-state": "workspace:*"
   },
   "devDependencies": {

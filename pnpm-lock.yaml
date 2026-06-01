@@ -710,9 +710,6 @@ importers:
       '@radix-ui/react-primitive':
         specifier: workspace:*
         version: link:../primitive
-      '@radix-ui/react-use-callback-ref':
-        specifier: workspace:*
-        version: link:../use-callback-ref
       '@radix-ui/react-use-controllable-state':
         specifier: workspace:*
         version: link:../use-controllable-state
