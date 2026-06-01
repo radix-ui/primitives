@@ -2084,6 +2084,9 @@ importers:
       '@radix-ui/react-portal':
         specifier: workspace:*
         version: link:../portal
+      '@radix-ui/react-presence':
+        specifier: workspace:*
+        version: link:../presence
       '@radix-ui/react-primitive':
         specifier: workspace:*
         version: link:../primitive

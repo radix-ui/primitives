@@ -13,6 +13,7 @@ import { useId } from '@radix-ui/react-id';
 import * as PopperPrimitive from '@radix-ui/react-popper';
 import { createPopperScope } from '@radix-ui/react-popper';
 import { Portal as PortalPrimitive } from '@radix-ui/react-portal';
+import { Presence } from '@radix-ui/react-presence';
 import { Primitive } from '@radix-ui/react-primitive';
 import { createSlot } from '@radix-ui/react-slot';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
@@ -419,6 +420,11 @@ SelectIcon.displayName = ICON_NAME;
 
 const PORTAL_NAME = 'SelectPortal';
 
+type PortalContextValue = { forceMount?: true };
+const [PortalProvider, usePortalContext] = createSelectContext<PortalContextValue>(PORTAL_NAME, {
+  forceMount: undefined,
+});
+
 type PortalProps = React.ComponentPropsWithoutRef<typeof PortalPrimitive>;
 interface SelectPortalProps {
   children?: React.ReactNode;
@@ -426,10 +432,20 @@ interface SelectPortalProps {
    * Specify a container element to portal the content into.
    */
   container?: PortalProps['container'];
+  /**
+   * Used to force mounting when more control is needed. Useful when controlling
+   * animation with React animation libraries.
+   */
+  forceMount?: true;
 }
 
 const SelectPortal: React.FC<SelectPortalProps> = (props: ScopedProps<SelectPortalProps>) => {
-  return <PortalPrimitive asChild {...props} />;
+  const { __scopeSelect, forceMount, ...portalProps } = props;
+  return (
+    <PortalProvider scope={props.__scopeSelect} forceMount={forceMount}>
+      <PortalPrimitive asChild {...portalProps} />
+    </PortalProvider>
+  );
 };
 
 SelectPortal.displayName = PORTAL_NAME;
@@ -441,10 +457,18 @@ SelectPortal.displayName = PORTAL_NAME;
 const CONTENT_NAME = 'SelectContent';
 
 type SelectContentElement = SelectContentImplElement;
-interface SelectContentProps extends SelectContentImplProps {}
+interface SelectContentProps extends SelectContentImplProps {
+  /**
+   * Used to force mounting when more control is needed. Useful when
+   * controlling animation with React animation libraries.
+   */
+  forceMount?: true;
+}
 
 const SelectContent = React.forwardRef<SelectContentElement, SelectContentProps>(
   (props: ScopedProps<SelectContentProps>, forwardedRef) => {
+    const portalContext = usePortalContext(CONTENT_NAME, props.__scopeSelect);
+    const { forceMount = portalContext.forceMount, ...contentProps } = props;
     const context = useSelectContext(CONTENT_NAME, props.__scopeSelect);
     const [fragment, setFragment] = React.useState<DocumentFragment>();
 
@@ -453,25 +477,54 @@ const SelectContent = React.forwardRef<SelectContentElement, SelectContentProps>
       setFragment(new DocumentFragment());
     }, []);
 
-    if (!context.open) {
-      const frag = fragment as Element | undefined;
-      return frag
-        ? ReactDOM.createPortal(
-            <SelectContentProvider scope={props.__scopeSelect}>
-              <Collection.Slot scope={props.__scopeSelect}>
-                <div>{props.children}</div>
-              </Collection.Slot>
-            </SelectContentProvider>,
-            frag,
+    // The `Select` items collect their data (e.g. to build the native `option`s
+    // and to display the selected value) by mounting their children. We keep
+    // them mounted in a detached fragment whenever the content isn't present so
+    // that this data stays up to date even while the select is closed (or
+    // animating out).
+    return (
+      <Presence present={forceMount || context.open}>
+        {({ present }) =>
+          present ? (
+            <SelectContentImpl {...contentProps} ref={forwardedRef} />
+          ) : (
+            <SelectContentFragment {...contentProps} fragment={fragment} />
           )
-        : null;
-    }
-
-    return <SelectContentImpl {...props} ref={forwardedRef} />;
+        }
+      </Presence>
+    );
   },
 );
 
 SelectContent.displayName = CONTENT_NAME;
+
+/* -------------------------------------------------------------------------------------------------
+ * SelectContentFragment
+ * -----------------------------------------------------------------------------------------------*/
+
+type SelectContentFragmentElement = React.ComponentRef<typeof Primitive.div>;
+interface SelectContentFragmentProps extends SelectContentImplProps {
+  fragment?: DocumentFragment;
+}
+
+const SelectContentFragment = React.forwardRef<
+  SelectContentFragmentElement,
+  SelectContentFragmentProps
+>((props: ScopedProps<SelectContentFragmentProps>, forwardedRef) => {
+  const { __scopeSelect, children, fragment } = props;
+  if (!fragment) return null;
+
+  return ReactDOM.createPortal(
+    <SelectContentProvider scope={__scopeSelect}>
+      <Collection.Slot scope={__scopeSelect}>
+        <div ref={forwardedRef}>{children}</div>
+      </Collection.Slot>
+    </SelectContentProvider>,
+    fragment,
+  );
+});
+
+SelectContentFragment.displayName = 'SelectContentFragment';
 
 /* -------------------------------------------------------------------------------------------------
  * SelectContentImpl
@@ -1622,9 +1675,8 @@ const SelectArrow = React.forwardRef<SelectArrowElement, SelectArrowProps>(
   (props: ScopedProps<SelectArrowProps>, forwardedRef) => {
     const { __scopeSelect, ...arrowProps } = props;
     const popperScope = usePopperScope(__scopeSelect);
-    const context = useSelectContext(ARROW_NAME, __scopeSelect);
     const contentContext = useSelectContentContext(ARROW_NAME, __scopeSelect);
-    return context.open && contentContext.position === 'popper' ? (
+    return contentContext.position === 'popper' ? (
       <PopperPrimitive.Arrow {...popperScope} {...arrowProps} ref={forwardedRef} />
     ) : null;
   },
