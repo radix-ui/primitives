@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { createPortal } from 'react-dom';
 import { Dialog, Select, Label as LabelPrimitive } from 'radix-ui';
 import { foodGroups } from '@repo/test-data/foods';
 import styles from './select.stories.module.css';
@@ -920,6 +921,76 @@ export const Cypress = () => {
         </button>
       </div>
     </>
+  );
+};
+
+/**
+ * Renders children inside a shadow root, mirroring all styles from the
+ * document head so that CSS module classes work inside the shadow DOM.
+ * Passes the shadow container element to children via a render prop so it
+ * can be forwarded to Select.Portal (or similar) as the portal target.
+ */
+function ShadowHost({ children }: { children: (container: HTMLElement) => React.ReactNode }) {
+  const hostRef = React.useRef<HTMLDivElement>(null);
+  const [container, setContainer] = React.useState<HTMLElement | null>(null);
+
+  React.useLayoutEffect(() => {
+    if (!hostRef.current || hostRef.current.shadowRoot) return;
+    const shadow = hostRef.current.attachShadow({ mode: 'open' });
+
+    // CSS modules are injected into document.head by style-loader; shadow DOM
+    // does not inherit those styles, so we clone them in.
+    for (const node of document.head.querySelectorAll('style, link[rel="stylesheet"]')) {
+      shadow.appendChild(node.cloneNode(true));
+    }
+
+    const div = document.createElement('div');
+    shadow.appendChild(div);
+    setContainer(div);
+  }, []);
+
+  return (
+    <div ref={hostRef} className="shadow-host">
+      {container !== null ? createPortal(children(container), container) : null}
+    </div>
+  );
+}
+
+export const CypressShadowDom = () => {
+  const [value, setValue] = React.useState<string | undefined>('');
+
+  return (
+    <ShadowHost>
+      {(shadowContainer) => (
+        <div style={{ padding: 50 }}>
+          <Select.Root value={value} onValueChange={setValue}>
+            <Select.Trigger className={styles.trigger} aria-label="pick a food">
+              <Select.Value placeholder="Pick a food" />
+              <Select.Icon />
+            </Select.Trigger>
+            <Select.Portal container={shadowContainer}>
+              <Select.Content position="popper" side="bottom" className={styles.content}>
+                {/* Constrain height so the viewport is scrollable, making it
+                easier to test the shadow DOM pointer up bug. */}
+                <Select.Viewport className={styles.viewport} style={{ maxHeight: '100px' }}>
+                  {foodGroups.map((foodGroup) =>
+                    foodGroup.foods.map((food) => (
+                      <Select.Item key={food.value} className={styles.item} value={food.value}>
+                        <Select.ItemText>{food.label}</Select.ItemText>
+                        <Select.ItemIndicator className={styles.indicator}>
+                          <TickIcon />
+                        </Select.ItemIndicator>
+                      </Select.Item>
+                    )),
+                  )}
+                </Select.Viewport>
+              </Select.Content>
+            </Select.Portal>
+          </Select.Root>
+          {value && <p>food: {value}</p>}
+        </div>
+      )}
+    </ShadowHost>
   );
 };
 
