@@ -17,6 +17,7 @@
     "yarn.lock",
     "*.log*",
     ".DS_Store",
-    "*.pem"
+    "*.pem",
+    ".changeset/*.md"
   ]
 }
