@@ -1,5 +1,6 @@
 ---
-'@radix-ui/react-select': major
+'@radix-ui/react-select': minor
+'radix-ui': minor
 ---
 
-Fix Select hidden input so it submits empty string when no value is selected
+Fixed Select hidden input so it submits empty string when no value is selected
