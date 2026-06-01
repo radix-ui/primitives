@@ -98,24 +98,37 @@ interface SlotCloneProps {
 }
 
 /* @__NO_SIDE_EFFECTS__ */ function createSlotClone(ownerName: string) {
-  const SlotClone = React.forwardRef<any, SlotCloneProps>((props, forwardedRef) => {
-    let { children, ...slotProps } = props;
-    if (isLazyComponent(children) && typeof use === 'function') {
-      children = use(children._payload);
-    }
+    const SlotClone = React.forwardRef<any, SlotCloneProps>((props, forwardedRef) => {                                                                                           
+      let { children, ...slotProps } = props;
+      if (isLazyComponent(children) && typeof use === 'function') {                                                                                                              
+        children = use(children._payload);                  
+      }                                                                                                                                                                          
+                                                            
+      // Memoize the composed ref to maintain stable identity across renders.                                                                                                    
+      // In React 19, ref identity changes trigger cleanup + re-attach cycles.
+      // Without memoization, composeRefs creates a new function every render,                                                                                                   
+      // which causes infinite loops when a state setter is used as a ref                                                                                                        
+      // (e.g. Tooltip's setTrigger). See: https://github.com/radix-ui/primitives/issues/3799                                                                                    
+      const childrenRef = React.isValidElement(children) ? getElementRef(children) : null;                                                                                       
+      const composedRef = React.useMemo(                                                                                                                                         
+        () =>                                                                                                                                                                    
+          forwardedRef && childrenRef                       
+            ? composeRefs(forwardedRef, childrenRef)                                                                                                                             
+            : forwardedRef || childrenRef || null,
+        [forwardedRef, childrenRef]                                                                                                                                              
+      );                                                    
 
-    if (React.isValidElement(children)) {
-      const childrenRef = getElementRef(children);
-      const props = mergeProps(slotProps, children.props as AnyProps);
-      // do not pass ref to React.Fragment for React 19 compatibility
-      if (children.type !== React.Fragment) {
-        props.ref = forwardedRef ? composeRefs(forwardedRef, childrenRef) : childrenRef;
-      }
-      return React.cloneElement(children, props);
-    }
-
-    return React.Children.count(children) > 1 ? React.Children.only(null) : null;
-  });
+      if (React.isValidElement(children)) {
+        const props = mergeProps(slotProps, children.props as AnyProps);
+        // do not pass ref to React.Fragment for React 19 compatibility                                                                                                          
+        if (children.type !== React.Fragment) {
+          props.ref = composedRef;                                                                                                                                               
+        }                                                   
+        return React.cloneElement(children, props);
+      }                                                                                                                                                                          
+   
+      return React.Children.count(children) > 1 ? React.Children.only(null) : null;                                                                                              
+    });
 
   SlotClone.displayName = `${ownerName}.SlotClone`;
   return SlotClone;
