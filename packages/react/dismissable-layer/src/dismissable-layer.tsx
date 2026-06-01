@@ -22,6 +22,15 @@ const DismissableLayerContext = React.createContext({
   branches: new Set<DismissableLayerBranchElement>(),
 });
 
+function restoreBodyPointerEvents(
+  ownerDocument: Document,
+  context: React.ContextType<typeof DismissableLayerContext>,
+) {
+  if (context.layersWithOutsidePointerEventsDisabled.size === 0) {
+    ownerDocument.body.style.pointerEvents = originalBodyPointerEvents;
+  }
+}
+
 type DismissableLayerElement = React.ComponentRef<typeof Primitive.div>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface DismissableLayerProps extends PrimitiveDivProps {
@@ -121,11 +130,10 @@ const DismissableLayer = React.forwardRef<DismissableLayerElement, DismissableLa
       context.layers.add(node);
       dispatchUpdate();
       return () => {
-        if (
-          disableOutsidePointerEvents &&
-          context.layersWithOutsidePointerEventsDisabled.size === 1
-        ) {
-          ownerDocument.body.style.pointerEvents = originalBodyPointerEvents;
+        if (disableOutsidePointerEvents) {
+          context.layersWithOutsidePointerEventsDisabled.delete(node);
+          restoreBodyPointerEvents(ownerDocument, context);
+          dispatchUpdate();
         }
       };
     }, [node, ownerDocument, disableOutsidePointerEvents, context]);
@@ -141,9 +149,10 @@ const DismissableLayer = React.forwardRef<DismissableLayerElement, DismissableLa
         if (!node) return;
         context.layers.delete(node);
         context.layersWithOutsidePointerEventsDisabled.delete(node);
+        restoreBodyPointerEvents(ownerDocument, context);
         dispatchUpdate();
       };
-    }, [node, context]);
+    }, [node, ownerDocument, context]);
 
     React.useEffect(() => {
       const handleUpdate = () => force({});
