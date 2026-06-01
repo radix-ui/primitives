@@ -121,11 +121,17 @@ const DismissableLayer = React.forwardRef<DismissableLayerElement, DismissableLa
       context.layers.add(node);
       dispatchUpdate();
       return () => {
-        if (
-          disableOutsidePointerEvents &&
-          context.layersWithOutsidePointerEventsDisabled.size === 1
-        ) {
-          ownerDocument.body.style.pointerEvents = originalBodyPointerEvents;
+        // We must remove this layer from the disabled set whenever
+        // `disableOutsidePointerEvents` becomes `false` (eg, when a modal
+        // closes but stays mounted during an exit animation) and not only on
+        // unmount. Otherwise the `body` `pointer-events` could be left as
+        // `none` when multiple layers overlap.
+        // See: https://github.com/radix-ui/primitives/issues/3645
+        if (disableOutsidePointerEvents) {
+          context.layersWithOutsidePointerEventsDisabled.delete(node);
+          if (context.layersWithOutsidePointerEventsDisabled.size === 0) {
+            ownerDocument.body.style.pointerEvents = originalBodyPointerEvents;
+          }
         }
       };
     }, [node, ownerDocument, disableOutsidePointerEvents, context]);

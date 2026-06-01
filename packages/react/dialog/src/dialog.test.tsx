@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { axe } from 'vitest-axe';
 import type { RenderResult } from '@testing-library/react';
-import { render, fireEvent, cleanup } from '@testing-library/react';
+import { render, fireEvent, cleanup, screen } from '@testing-library/react';
 import * as Dialog from './dialog';
 import type { Mock, MockInstance } from 'vitest';
 import { describe, it, afterEach, beforeEach, vi, expect } from 'vitest';
@@ -137,5 +137,70 @@ describe('given a default Dialog', () => {
         expect(closeButton).not.toBeInTheDocument();
       });
     });
+  });
+});
+
+describe('given a modal Dialog', () => {
+  afterEach(() => {
+    cleanup();
+    document.body.style.pointerEvents = '';
+  });
+
+  it('should restore `body` pointer-events after closing', () => {
+    const { getByText } = render(<DialogTest />);
+    expect(document.body.style.pointerEvents).toBe('');
+    fireEvent.click(getByText(OPEN_TEXT));
+    expect(document.body.style.pointerEvents).toBe('none');
+    fireEvent.click(getByText(CLOSE_TEXT));
+    expect(document.body.style.pointerEvents).toBe('');
+  });
+});
+
+describe('given two overlapping modal Dialogs (forceMount)', () => {
+  // Forcing mount keeps the content (and its `DismissableLayer`) mounted while
+  // `open` toggles, which mirrors what happens during exit animations or when
+  // controlling presence with an animation library. This is the scenario that
+  // leaks `pointer-events: none` on the `body` when multiple layers overlap.
+  // https://github.com/radix-ui/primitives/issues/3645
+  const TwoDialogsTest = () => {
+    const [openA, setOpenA] = React.useState(true);
+    const [openB, setOpenB] = React.useState(true);
+    return (
+      <>
+        <Dialog.Root open={openA} onOpenChange={setOpenA}>
+          <Dialog.Portal forceMount>
+            <Dialog.Overlay />
+            <Dialog.Content forceMount>
+              <Dialog.Title>A</Dialog.Title>
+              <Dialog.Description>A</Dialog.Description>
+              <button onClick={() => setOpenA(false)}>close-a</button>
+            </Dialog.Content>
+          </Dialog.Portal>
+        </Dialog.Root>
+        <Dialog.Root open={openB} onOpenChange={setOpenB}>
+          <Dialog.Portal forceMount>
+            <Dialog.Overlay />
+            <Dialog.Content forceMount>
+              <Dialog.Title>B</Dialog.Title>
+              <Dialog.Description>B</Dialog.Description>
+              <button onClick={() => setOpenB(false)}>close-b</button>
+            </Dialog.Content>
+          </Dialog.Portal>
+        </Dialog.Root>
+      </>
+    );
+  };
+
+  afterEach(() => {
+    cleanup();
+    document.body.style.pointerEvents = '';
+  });
+
+  it('should restore `body` pointer-events after both close', () => {
+    render(<TwoDialogsTest />);
+    expect(document.body.style.pointerEvents).toBe('none');
+    fireEvent.click(screen.getByText('close-a'));
+    fireEvent.click(screen.getByText('close-b'));
+    expect(document.body.style.pointerEvents).toBe('');
   });
 });
