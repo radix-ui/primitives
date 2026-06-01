@@ -351,15 +351,15 @@ export const InScrollableContext = () => {
   return (
     <div style={{ width: '40vw', overflowX: 'scroll', border: '1px' }}>
       <Slider.Root
-        className={rootClass()}
+        className={styles.root}
         style={{ width: '100vw' }}
         value={[value]}
         onValueChange={([newValue]: [number]) => setValue(newValue)}
       >
-        <Slider.Track className={trackClass()}>
-          <Slider.Range className={rangeClass()} />
+        <Slider.Track className={styles.track}>
+          <Slider.Range className={styles.range} />
         </Slider.Track>
-        <Slider.Thumb className={thumbClass()} />
+        <Slider.Thumb className={styles.thumb} />
       </Slider.Root>
     </div>
   );

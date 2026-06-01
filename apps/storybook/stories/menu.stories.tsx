@@ -401,9 +401,15 @@ const MenuWithAnchor: React.FC<MenuProps> = (props) => {
   );
 };
 
-const Submenu: React.FC<MenuProps & { animated: boolean; disabled?: boolean; heading?: string }> = (
-  props,
-) => {
+const Submenu: React.FC<
+  Menu.MenuSubContentProps & {
+    animated: boolean;
+    disabled?: boolean;
+    heading?: string;
+    open?: boolean;
+    onOpenChange?: (open: boolean) => void;
+  }
+> = (props) => {
   const {
     heading = 'Submenu',
     open = true,
