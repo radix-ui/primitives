@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { composeRefs } from '@radix-ui/react-compose-refs';
+import { useComposedRefs } from '@radix-ui/react-compose-refs';
 
 declare module 'react' {
   interface ReactElement {
@@ -59,6 +59,9 @@ interface SlotProps extends React.HTMLAttributes<HTMLElement> {
       slottableElement = children;
     }
 
+    const slottableElementRef = slottableElement ? getElementRef(slottableElement) : undefined;
+    const composedRef = useComposedRefs(forwardedRef, slottableElementRef);
+
     if (!slottableElement) {
       // Empty/falsy children (`null`, `undefined`, `false`, no children, etc.) are valid and
       // render nothing. Anything else is content we couldn't slot onto a single element, which
@@ -71,13 +74,11 @@ interface SlotProps extends React.HTMLAttributes<HTMLElement> {
       return children;
     }
 
-    const slottableElementRef = getElementRef(slottableElement);
-    const composedRefs = composeRefs(forwardedRef, slottableElementRef);
     const mergedProps = mergeProps(slotProps, slottableElement.props ?? {});
 
     // do not pass ref to React.Fragment for React 19 compatibility
     if (slottableElement.type !== React.Fragment) {
-      mergedProps.ref = forwardedRef ? composedRefs : slottableElementRef;
+      mergedProps.ref = forwardedRef ? composedRef : slottableElementRef;
     }
 
     return React.cloneElement(slottableElement, mergedProps);
