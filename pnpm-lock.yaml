@@ -160,7 +160,7 @@ importers:
         specifier: ^19.2.0
         version: 19.2.6(react@19.2.6)
       react-remove-scroll:
-        specifier: ^2.6.3
+        specifier: ^2.7.2
         version: 2.7.2(@types/react@19.2.15)(react@19.2.6)
     devDependencies:
       '@chromatic-com/storybook':
@@ -784,7 +784,7 @@ importers:
         specifier: ^1.2.4
         version: 1.2.6
       react-remove-scroll:
-        specifier: ^2.6.3
+        specifier: ^2.7.2
         version: 2.7.2(@types/react@19.2.15)(react@19.2.6)
     devDependencies:
       '@repo/builder':
@@ -870,7 +870,7 @@ importers:
         specifier: ^19.2.0
         version: 19.2.6(react@19.2.6)
       react-remove-scroll:
-        specifier: ^2.6.3
+        specifier: ^2.7.2
         version: 2.7.2(@types/react@19.2.15)(react@19.2.6)
       typescript:
         specifier: ^5.9.3
@@ -1188,7 +1188,7 @@ importers:
         specifier: ^1.2.4
         version: 1.2.6
       react-remove-scroll:
-        specifier: ^2.6.3
+        specifier: ^2.7.2
         version: 2.7.2(@types/react@19.2.15)(react@19.2.6)
     devDependencies:
       '@repo/builder':
@@ -1496,7 +1496,7 @@ importers:
         specifier: ^1.2.4
         version: 1.2.6
       react-remove-scroll:
-        specifier: ^2.6.3
+        specifier: ^2.7.2
         version: 2.7.2(@types/react@19.2.15)(react@19.2.6)
     devDependencies:
       '@repo/builder':
@@ -2109,7 +2109,7 @@ importers:
         specifier: ^1.2.4
         version: 1.2.6
       react-remove-scroll:
-        specifier: ^2.6.3
+        specifier: ^2.7.2
         version: 2.7.2(@types/react@19.2.15)(react@19.2.6)
     devDependencies:
       '@repo/builder':
