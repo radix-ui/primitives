@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { cleanup, render, screen, waitFor } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import * as Tooltip from './tooltip';
 import userEvent from '@testing-library/user-event';
-import { afterEach, describe, it, expect } from 'vitest';
+import { afterEach, describe, it, expect, vi } from 'vitest';
 
 describe('Tooltip', () => {
   afterEach(cleanup);
@@ -129,5 +129,80 @@ describe('Tooltip', () => {
     // The unrelated tooltips must not re-render at all.
     expect(commitCounts.b! - initial.b!).toBe(0);
     expect(commitCounts.c! - initial.c!).toBe(0);
+  });
+
+  describe('skipDelayDuration', () => {
+    function renderTwoTriggers(providerProps: Omit<Tooltip.TooltipProviderProps, 'children'>) {
+      render(
+        <Tooltip.Provider {...providerProps}>
+          <Tooltip.Root>
+            <Tooltip.Trigger>Trigger A</Tooltip.Trigger>
+            <Tooltip.Portal>
+              <Tooltip.Content>Content A</Tooltip.Content>
+            </Tooltip.Portal>
+          </Tooltip.Root>
+          <Tooltip.Root>
+            <Tooltip.Trigger>Trigger B</Tooltip.Trigger>
+            <Tooltip.Portal>
+              <Tooltip.Content>Content B</Tooltip.Content>
+            </Tooltip.Portal>
+          </Tooltip.Root>
+        </Tooltip.Provider>,
+      );
+      return {
+        triggerA: screen.getByText('Trigger A'),
+        triggerB: screen.getByText('Trigger B'),
+      };
+    }
+
+    it('skips the delay when moving between triggers within skipDelayDuration', () => {
+      vi.useFakeTimers();
+      try {
+        const { triggerA, triggerB } = renderTwoTriggers({
+          delayDuration: 100,
+          skipDelayDuration: 300,
+        });
+
+        // Hovering the first trigger opens it only after the delay elapses
+        act(() => void fireEvent.pointerMove(triggerA));
+        expect(triggerA).toHaveAttribute('data-state', 'closed');
+        act(() => void vi.advanceTimersByTime(100));
+        expect(triggerA).toHaveAttribute('data-state', 'delayed-open');
+
+        act(() => void fireEvent.click(triggerA));
+
+        // Moving to the second trigger within the skip window opens instantly
+        act(() => void fireEvent.pointerMove(triggerB));
+        expect(triggerB).toHaveAttribute('data-state', 'instant-open');
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+
+    // Regression test for https://github.com/radix-ui/primitives/issues/3873
+    it('does not skip the delay when skipDelayDuration is 0', () => {
+      vi.useFakeTimers();
+      try {
+        const { triggerA, triggerB } = renderTwoTriggers({
+          delayDuration: 100,
+          skipDelayDuration: 0,
+        });
+
+
+        act(() => void fireEvent.pointerMove(triggerA));
+        act(() => void vi.advanceTimersByTime(100));
+        expect(triggerA).toHaveAttribute('data-state', 'delayed-open');
+        act(() => void fireEvent.click(triggerA));
+
+        // Moving to the second trigger must NOT open it instantly
+        act(() => void fireEvent.pointerMove(triggerB));
+        expect(triggerB).toHaveAttribute('data-state', 'closed');
+
+        act(() => void vi.advanceTimersByTime(100));
+        expect(triggerB).toHaveAttribute('data-state', 'delayed-open');
+      } finally {
+        vi.useRealTimers();
+      }
+    });
   });
 });
