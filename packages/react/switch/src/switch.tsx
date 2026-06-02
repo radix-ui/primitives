@@ -9,21 +9,166 @@ import { Primitive } from '@radix-ui/react-primitive';
 
 import type { Scope } from '@radix-ui/react-context';
 
-/* -------------------------------------------------------------------------------------------------
- * Switch
- * -----------------------------------------------------------------------------------------------*/
-
 const SWITCH_NAME = 'Switch';
 
 type ScopedProps<P> = P & { __scopeSwitch?: Scope };
 const [createSwitchContext, createSwitchScope] = createContextScope(SWITCH_NAME);
 
-type SwitchContextValue = { checked: boolean; disabled?: boolean };
-const [SwitchProvider, useSwitchContext] = createSwitchContext<SwitchContextValue>(SWITCH_NAME);
+type SwitchContextValue = {
+  checked: boolean;
+  setChecked: React.Dispatch<React.SetStateAction<boolean>>;
+  disabled: boolean | undefined;
+  control: HTMLButtonElement | null;
+  setControl: React.Dispatch<React.SetStateAction<HTMLButtonElement | null>>;
+  name: string | undefined;
+  form: string | undefined;
+  value: string | number | readonly string[];
+  hasConsumerStoppedPropagationRef: React.RefObject<boolean>;
+  required: boolean | undefined;
+  defaultChecked: boolean | undefined;
+  isFormControl: boolean;
+  bubbleInput: HTMLInputElement | null;
+  setBubbleInput: React.Dispatch<React.SetStateAction<HTMLInputElement | null>>;
+};
+
+const [SwitchProviderImpl, useSwitchContext] = createSwitchContext<SwitchContextValue>(SWITCH_NAME);
+
+/* -------------------------------------------------------------------------------------------------
+ * SwitchProvider
+ * -----------------------------------------------------------------------------------------------*/
+
+interface SwitchProviderProps {
+  checked?: boolean;
+  defaultChecked?: boolean;
+  required?: boolean;
+  onCheckedChange?(checked: boolean): void;
+  name?: string;
+  form?: string;
+  disabled?: boolean;
+  value?: string | number | readonly string[];
+  children?: React.ReactNode;
+}
+
+function SwitchProvider(props: ScopedProps<SwitchProviderProps>) {
+  const {
+    __scopeSwitch,
+    checked: checkedProp,
+    children,
+    defaultChecked,
+    disabled,
+    form,
+    name,
+    onCheckedChange,
+    required,
+    value = 'on',
+    // @ts-expect-error
+    internal_do_not_use_render,
+  } = props;
+
+  const [checked, setChecked] = useControllableState({
+    prop: checkedProp,
+    defaultProp: defaultChecked ?? false,
+    onChange: onCheckedChange,
+    caller: SWITCH_NAME,
+  });
+  const [control, setControl] = React.useState<HTMLButtonElement | null>(null);
+  const [bubbleInput, setBubbleInput] = React.useState<HTMLInputElement | null>(null);
+  const hasConsumerStoppedPropagationRef = React.useRef(false);
+  const isFormControl = control
+    ? !!form || !!control.closest('form')
+    : // We set this to true by default so that events bubble to forms without JS (SSR)
+      true;
+
+  const context: SwitchContextValue = {
+    checked,
+    setChecked,
+    disabled,
+    control,
+    setControl,
+    name,
+    form,
+    value,
+    hasConsumerStoppedPropagationRef,
+    required,
+    defaultChecked,
+    isFormControl,
+    bubbleInput,
+    setBubbleInput,
+  };
+
+  return (
+    <SwitchProviderImpl scope={__scopeSwitch} {...context}>
+      {isFunction(internal_do_not_use_render) ? internal_do_not_use_render(context) : children}
+    </SwitchProviderImpl>
+  );
+}
+
+/* -------------------------------------------------------------------------------------------------
+ * SwitchTrigger
+ * -----------------------------------------------------------------------------------------------*/
+
+const TRIGGER_NAME = 'SwitchTrigger';
+
+interface SwitchTriggerProps extends Omit<
+  React.ComponentPropsWithoutRef<typeof Primitive.button>,
+  keyof SwitchProviderProps
+> {
+  children?: React.ReactNode;
+}
+
+const SwitchTrigger = React.forwardRef<HTMLButtonElement, SwitchTriggerProps>(
+  ({ __scopeSwitch, onClick, ...switchProps }: ScopedProps<SwitchTriggerProps>, forwardedRef) => {
+    const {
+      value,
+      disabled,
+      checked,
+      required,
+      setControl,
+      setChecked,
+      hasConsumerStoppedPropagationRef,
+      isFormControl,
+      bubbleInput,
+    } = useSwitchContext(TRIGGER_NAME, __scopeSwitch);
+    const composedRefs = useComposedRefs(forwardedRef, setControl);
+
+    return (
+      <Primitive.button
+        type="button"
+        role="switch"
+        aria-checked={checked}
+        aria-required={required}
+        data-state={getState(checked)}
+        data-disabled={disabled ? '' : undefined}
+        disabled={disabled}
+        value={value}
+        {...switchProps}
+        ref={composedRefs}
+        onClick={composeEventHandlers(onClick, (event) => {
+          setChecked((prevChecked) => !prevChecked);
+          if (bubbleInput && isFormControl) {
+            hasConsumerStoppedPropagationRef.current = event.isPropagationStopped();
+            // if switch has a bubble input and is a form control, stop
+            // propagation from the button so that we only propagate one click
+            // event (from the input). We propagate changes from an input so
+            // that native form validation works and form events reflect switch
+            // updates.
+            if (!hasConsumerStoppedPropagationRef.current) event.stopPropagation();
+          }
+        })}
+      />
+    );
+  },
+);
+
+SwitchTrigger.displayName = TRIGGER_NAME;
+
+/* -------------------------------------------------------------------------------------------------
+ * Switch
+ * -----------------------------------------------------------------------------------------------*/
 
 type SwitchElement = React.ComponentRef<typeof Primitive.button>;
 type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
-interface SwitchProps extends PrimitiveButtonProps {
+interface SwitchProps extends Omit<PrimitiveButtonProps, 'checked' | 'defaultChecked'> {
   checked?: boolean;
   defaultChecked?: boolean;
   required?: boolean;
@@ -35,68 +180,45 @@ const Switch = React.forwardRef<SwitchElement, SwitchProps>(
     const {
       __scopeSwitch,
       name,
-      checked: checkedProp,
+      checked,
       defaultChecked,
       required,
       disabled,
-      value = 'on',
+      value,
       onCheckedChange,
       form,
       ...switchProps
     } = props;
-    const [button, setButton] = React.useState<HTMLButtonElement | null>(null);
-    const composedRefs = useComposedRefs(forwardedRef, (node) => setButton(node));
-    const hasConsumerStoppedPropagationRef = React.useRef(false);
-    // We set this to true by default so that events bubble to forms without JS (SSR)
-    const isFormControl = button ? form || !!button.closest('form') : true;
-    const [checked, setChecked] = useControllableState({
-      prop: checkedProp,
-      defaultProp: defaultChecked ?? false,
-      onChange: onCheckedChange,
-      caller: SWITCH_NAME,
-    });
 
     return (
-      <SwitchProvider scope={__scopeSwitch} checked={checked} disabled={disabled}>
-        <Primitive.button
-          type="button"
-          role="switch"
-          aria-checked={checked}
-          aria-required={required}
-          data-state={getState(checked)}
-          data-disabled={disabled ? '' : undefined}
-          disabled={disabled}
-          value={value}
-          {...switchProps}
-          ref={composedRefs}
-          onClick={composeEventHandlers(props.onClick, (event) => {
-            setChecked((prevChecked) => !prevChecked);
-            if (isFormControl) {
-              hasConsumerStoppedPropagationRef.current = event.isPropagationStopped();
-              // if switch is in a form, stop propagation from the button so that we only propagate
-              // one click event (from the input). We propagate changes from an input so that native
-              // form validation works and form events reflect switch updates.
-              if (!hasConsumerStoppedPropagationRef.current) event.stopPropagation();
-            }
-          })}
-        />
-        {isFormControl && (
-          <SwitchBubbleInput
-            control={button}
-            bubbles={!hasConsumerStoppedPropagationRef.current}
-            name={name}
-            value={value}
-            checked={checked}
-            required={required}
-            disabled={disabled}
-            form={form}
-            // We transform because the input is absolutely positioned but we have
-            // rendered it **after** the button. This pulls it back to sit on top
-            // of the button.
-            style={{ transform: 'translateX(-100%)' }}
-          />
+      <SwitchProvider
+        __scopeSwitch={__scopeSwitch}
+        checked={checked}
+        defaultChecked={defaultChecked}
+        disabled={disabled}
+        required={required}
+        onCheckedChange={onCheckedChange}
+        name={name}
+        form={form}
+        value={value}
+        // @ts-expect-error
+        internal_do_not_use_render={({ isFormControl }: SwitchContextValue) => (
+          <>
+            <SwitchTrigger
+              {...switchProps}
+              ref={forwardedRef}
+              // @ts-expect-error
+              __scopeSwitch={__scopeSwitch}
+            />
+            {isFormControl && (
+              <SwitchBubbleInput
+                // @ts-expect-error
+                __scopeSwitch={__scopeSwitch}
+              />
+            )}
+          </>
         )}
-      </SwitchProvider>
+      />
     );
   },
 );
@@ -137,31 +259,31 @@ SwitchThumb.displayName = THUMB_NAME;
 const BUBBLE_INPUT_NAME = 'SwitchBubbleInput';
 
 type InputProps = React.ComponentPropsWithoutRef<typeof Primitive.input>;
-interface SwitchBubbleInputProps extends Omit<InputProps, 'checked'> {
-  checked: boolean;
-  control: HTMLElement | null;
-  bubbles: boolean;
-}
+interface SwitchBubbleInputProps extends Omit<InputProps, 'checked'> {}
 
 const SwitchBubbleInput = React.forwardRef<HTMLInputElement, SwitchBubbleInputProps>(
-  (
-    {
-      __scopeSwitch,
+  ({ __scopeSwitch, ...props }: ScopedProps<SwitchBubbleInputProps>, forwardedRef) => {
+    const {
       control,
+      hasConsumerStoppedPropagationRef,
       checked,
-      bubbles = true,
-      ...props
-    }: ScopedProps<SwitchBubbleInputProps>,
-    forwardedRef,
-  ) => {
-    const ref = React.useRef<HTMLInputElement>(null);
-    const composedRefs = useComposedRefs(ref, forwardedRef);
+      defaultChecked,
+      required,
+      disabled,
+      name,
+      value,
+      form,
+      bubbleInput,
+      setBubbleInput,
+    } = useSwitchContext(BUBBLE_INPUT_NAME, __scopeSwitch);
+
+    const composedRefs = useComposedRefs(forwardedRef, setBubbleInput);
     const prevChecked = usePrevious(checked);
     const controlSize = useSize(control);
 
     // Bubble checked change to parents (e.g form change event)
     React.useEffect(() => {
-      const input = ref.current;
+      const input = bubbleInput;
       if (!input) return;
 
       const inputProto = window.HTMLInputElement.prototype;
@@ -170,18 +292,26 @@ const SwitchBubbleInput = React.forwardRef<HTMLInputElement, SwitchBubbleInputPr
         'checked',
       ) as PropertyDescriptor;
       const setChecked = descriptor.set;
+
+      const bubbles = !hasConsumerStoppedPropagationRef.current;
       if (prevChecked !== checked && setChecked) {
         const event = new Event('click', { bubbles });
         setChecked.call(input, checked);
         input.dispatchEvent(event);
       }
-    }, [prevChecked, checked, bubbles]);
+    }, [bubbleInput, prevChecked, checked, hasConsumerStoppedPropagationRef]);
 
+    const defaultCheckedRef = React.useRef(checked);
     return (
-      <input
+      <Primitive.input
         type="checkbox"
         aria-hidden
-        defaultChecked={checked}
+        defaultChecked={defaultChecked ?? defaultCheckedRef.current}
+        required={required}
+        disabled={disabled}
+        name={name}
+        value={value}
+        form={form}
         {...props}
         tabIndex={-1}
         ref={composedRefs}
@@ -192,6 +322,10 @@ const SwitchBubbleInput = React.forwardRef<HTMLInputElement, SwitchBubbleInputPr
           pointerEvents: 'none',
           opacity: 0,
           margin: 0,
+          // We transform because the input is absolutely positioned but we have
+          // rendered it **after** the button. This pulls it back to sit on top
+          // of the button.
+          transform: 'translateX(-100%)',
         }}
       />
     );
@@ -202,20 +336,33 @@ SwitchBubbleInput.displayName = BUBBLE_INPUT_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
+function isFunction(value: unknown): value is (...args: any[]) => any {
+  return typeof value === 'function';
+}
+
 function getState(checked: boolean) {
   return checked ? 'checked' : 'unchecked';
 }
-
-const Root = Switch;
-const Thumb = SwitchThumb;
 
 export {
   createSwitchScope,
   //
   Switch,
+  SwitchProvider,
+  SwitchTrigger,
   SwitchThumb,
+  SwitchBubbleInput,
   //
-  Root,
-  Thumb,
+  Switch as Root,
+  SwitchProvider as Provider,
+  SwitchTrigger as Trigger,
+  SwitchThumb as Thumb,
+  SwitchBubbleInput as BubbleInput,
 };
-export type { SwitchProps, SwitchThumbProps };
+export type {
+  SwitchProps,
+  SwitchProviderProps,
+  SwitchTriggerProps,
+  SwitchThumbProps,
+  SwitchBubbleInputProps,
+};
