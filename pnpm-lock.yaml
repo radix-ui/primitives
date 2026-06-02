@@ -1606,9 +1606,6 @@ importers:
 
   packages/react/presence:
     dependencies:
-      '@radix-ui/react-compose-refs':
-        specifier: workspace:*
-        version: link:../compose-refs
       '@radix-ui/react-use-layout-effect':
         specifier: workspace:*
         version: link:../use-layout-effect

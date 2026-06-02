@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { useStateMachine } from './use-state-machine';
 
@@ -18,7 +17,7 @@ const Presence: React.FC<PresenceProps> = (props) => {
       : React.Children.only(children)
   ) as React.ReactElement<{ ref?: React.Ref<HTMLElement> }>;
 
-  const ref = useComposedRefs(presence.ref, getElementRef(child));
+  const ref = useStableComposedRefs(presence.ref, getElementRef(child));
   const forceMount = typeof children === 'function';
   return forceMount || presence.isPresent ? React.cloneElement(child, { ref }) : null;
 };
@@ -162,6 +161,62 @@ function usePresence(present: boolean) {
 }
 
 /* -----------------------------------------------------------------------------------------------*/
+
+type PossibleRef<T> = React.Ref<T> | undefined;
+
+function setRef<T>(ref: PossibleRef<T>, value: T | null) {
+  if (typeof ref === 'function') {
+    return ref(value);
+  } else if (ref !== null && ref !== undefined) {
+    ref.current = value;
+  }
+}
+
+/**
+ * Unlike `useComposedRefs`, the returned callback never changes identity, even
+ * when the composed refs do. This matters in React 19: when a callback ref's
+ * identity changes between renders, React detaches the previous ref (calls it
+ * with `null`) and attaches the new one on every commit. Because `Presence`
+ * calls `setNode` from its own ref, an unstable consumer ref would otherwise
+ * cause React to re-run that update on every commit, resulting in a "Maximum
+ * update depth exceeded" loop.
+ *
+ * The latest refs are always read at attach/detach time, so the most recent
+ * consumer ref still receives the node when it mounts or unmounts.
+ *
+ * @see https://github.com/radix-ui/primitives/issues/3664
+ */
+function useStableComposedRefs<T>(...refs: PossibleRef<T>[]): React.RefCallback<T> {
+  // Keep the latest refs without changing the callback identity. Assigning during render is
+  // safe here because we only ever read `.current` later (at commit time, in the ref callback).
+  const refsRef = React.useRef(refs);
+  refsRef.current = refs;
+
+  return React.useCallback((node: T | null) => {
+    const currentRefs = refsRef.current;
+    let hasCleanup = false;
+    const cleanups = currentRefs.map((ref) => {
+      const cleanup = setRef(ref, node);
+      if (!hasCleanup && typeof cleanup === 'function') {
+        hasCleanup = true;
+      }
+      return cleanup;
+    });
+
+    if (hasCleanup) {
+      return () => {
+        for (let i = 0; i < cleanups.length; i++) {
+          const cleanup = cleanups[i];
+          if (typeof cleanup === 'function') {
+            cleanup();
+          } else {
+            setRef(currentRefs[i], null);
+          }
+        }
+      };
+    }
+  }, []);
+}
 
 function getAnimationName(styles: CSSStyleDeclaration | null) {
   return styles?.animationName || 'none';
