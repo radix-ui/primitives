@@ -784,19 +784,19 @@ function linearScale(input: readonly [number, number], output: readonly [number,
   };
 }
 
-// function getDecimalCount(value: number) {
-//   return (String(value).split('.')[1] || '').length;
-// }
 function getDecimalCount(value: number) {
   if (!Number.isFinite(value)) return 0;
 
   const str = value.toString();
 
+  // Numbers with a magnitude below 1e-6 (or very large numbers) are serialized
+  // in scientific notation (e.g. `1e-7`), so we can't just count the digits
+  // after the decimal point.
+  // https://github.com/radix-ui/primitives/issues/3852
   if (str.includes('e')) {
     const [coefficient, exponent] = str.split('e');
-    const decimalPart = coefficient.split('.')[1] || '';
+    const decimalPart = coefficient!.split('.')[1] || '';
     const exponentNum = Number(exponent);
-
     return Math.max(0, decimalPart.length - exponentNum);
   }
 
