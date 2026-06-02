@@ -4,9 +4,7 @@ import { createContextScope } from '@radix-ui/react-context';
 import { Primitive } from '@radix-ui/react-primitive';
 import * as MenuPrimitive from '@radix-ui/react-menu';
 import { createMenuScope } from '@radix-ui/react-menu';
-import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
-
 import type { Scope } from '@radix-ui/react-context';
 
 type Direction = 'ltr' | 'rtl';
@@ -24,50 +22,68 @@ const [createContextMenuContext, createContextMenuScope] = createContextScope(CO
 ]);
 const useMenuScope = createMenuScope();
 
-type ContextMenuContextValue = {
+interface ContextMenuContextValue {
   open: boolean;
   onOpenChange(open: boolean): void;
   modal: boolean;
-};
+  hasInteractedRef: React.RefObject<boolean>;
+}
 
 const [ContextMenuProvider, useContextMenuContext] =
   createContextMenuContext<ContextMenuContextValue>(CONTEXT_MENU_NAME);
 
 interface ContextMenuProps {
   children?: React.ReactNode;
+  open?: boolean;
   onOpenChange?(open: boolean): void;
   dir?: Direction;
   modal?: boolean;
 }
 
 const ContextMenu: React.FC<ContextMenuProps> = (props: ScopedProps<ContextMenuProps>) => {
-  const { __scopeContextMenu, children, onOpenChange, dir, modal = true } = props;
-  const [open, setOpen] = React.useState(false);
-  const menuScope = useMenuScope(__scopeContextMenu);
-  const handleOpenChangeProp = useCallbackRef(onOpenChange);
+  const { __scopeContextMenu, children, onOpenChange, open: openProp, dir, modal = true } = props;
 
-  const handleOpenChange = React.useCallback(
-    (open: boolean) => {
-      setOpen(open);
-      handleOpenChangeProp(open);
-    },
-    [handleOpenChangeProp],
-  );
+  // OK to disable conditionally calling hooks here because they will always run
+  // consistently in the same environment. Bundlers should be able to remove the
+  // code block entirely in production.
+  /* eslint-disable react-hooks/rules-of-hooks */
+  const hasInteractedRef = React.useRef(false);
+  if (process.env.NODE_ENV !== 'production') {
+    const hasWarnedRef = React.useRef(false);
+    React.useEffect(() => {
+      if (openProp === true && !hasInteractedRef.current && !hasWarnedRef.current) {
+        hasWarnedRef.current = true;
+        // dev warning: open prop is controllable but its position has not been set
+        // because the user has not interacted with the trigger. The controllable
+        // state is only enabled so that the user can read or programatically close
+        // the menu. Programatically opening the menu will anchor it to the most
+        // recently interacted position.
+        console.warn(
+          'ContextMenu: The `open` prop has been set to `true` before the user has interacted with the trigger, so its position is indeterminate. This is likely unintended and will result in the menu being anchored to the top-left corner of the viewport.',
+        );
+      }
+    }, [openProp]);
+  }
+  /* eslint-enable react-hooks/rules-of-hooks */
+
+  const [open, setOpen] = useControllableState({
+    prop: openProp,
+    defaultProp: false,
+    onChange: onOpenChange,
+    caller: CONTEXT_MENU_NAME,
+  });
+
+  const menuScope = useMenuScope(__scopeContextMenu);
 
   return (
     <ContextMenuProvider
       scope={__scopeContextMenu}
       open={open}
-      onOpenChange={handleOpenChange}
+      onOpenChange={setOpen}
       modal={modal}
+      hasInteractedRef={hasInteractedRef}
     >
-      <MenuPrimitive.Root
-        {...menuScope}
-        dir={dir}
-        open={open}
-        onOpenChange={handleOpenChange}
-        modal={modal}
-      >
+      <MenuPrimitive.Root {...menuScope} dir={dir} open={open} onOpenChange={setOpen} modal={modal}>
         {children}
       </MenuPrimitive.Root>
     </ContextMenuProvider>
@@ -103,6 +119,7 @@ const ContextMenuTrigger = React.forwardRef<ContextMenuTriggerElement, ContextMe
       [],
     );
     const handleOpen = (event: React.MouseEvent | React.PointerEvent) => {
+      context.hasInteractedRef.current = true;
       pointRef.current = { x: event.clientX, y: event.clientY };
       context.onOpenChange(true);
     };

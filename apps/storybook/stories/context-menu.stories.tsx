@@ -42,6 +42,64 @@ export const Styled = () => (
   </div>
 );
 
+export const Controlled = () => {
+  const [open, setOpen] = React.useState(false);
+
+  return (
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '150vh',
+        maxWidth: 400,
+        gap: 16,
+        justifySelf: 'center',
+      }}
+    >
+      <p>
+        The menu is currently <strong>{open ? 'open' : 'closed'}</strong>.
+      </p>
+      <p>
+        The <code>open</code> state is controllable so you can read the state and close the menu
+        programmatically. We advise only opening the menu in response to user interaction, which is
+        managed internally in Radix in response to right click / long press, so the menu can be
+        positioned at the pointer.
+      </p>
+      <ContextMenu.Root open={open} onOpenChange={setOpen}>
+        <ContextMenu.Trigger className={styles.trigger}>Right click here</ContextMenu.Trigger>
+        <ContextMenu.Portal>
+          <ContextMenu.Content className={styles.content} alignOffset={-5}>
+            <div style={{ display: 'flex', gap: 6 }}>
+              <button type="button">Noop</button>
+              <button type="button" onClick={() => setOpen(false)}>
+                Close
+              </button>
+            </div>
+            <ContextMenu.Item className={styles.item} onSelect={() => console.log('undo')}>
+              Undo
+            </ContextMenu.Item>
+            <ContextMenu.Item className={styles.item} onSelect={() => console.log('redo')}>
+              Redo
+            </ContextMenu.Item>
+            <ContextMenu.Separator className={styles.separator} />
+            <ContextMenu.Item className={styles.item} onSelect={() => console.log('cut')}>
+              Cut
+            </ContextMenu.Item>
+            <ContextMenu.Item className={styles.item} onSelect={() => console.log('copy')}>
+              Copy
+            </ContextMenu.Item>
+            <ContextMenu.Item className={styles.item} onSelect={() => console.log('paste')}>
+              Paste
+            </ContextMenu.Item>
+          </ContextMenu.Content>
+        </ContextMenu.Portal>
+      </ContextMenu.Root>
+    </div>
+  );
+};
+
 export const Modality = () => (
   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '110vh' }}>
     <div style={{ display: 'grid', gap: 50 }}>
