@@ -188,7 +188,6 @@ describe('Tooltip', () => {
           skipDelayDuration: 0,
         });
 
-
         act(() => void fireEvent.pointerMove(triggerA));
         act(() => void vi.advanceTimersByTime(100));
         expect(triggerA).toHaveAttribute('data-state', 'delayed-open');
