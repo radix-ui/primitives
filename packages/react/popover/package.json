@@ -77,7 +77,8 @@
   "homepage": "https://radix-ui.com/primitives",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/radix-ui/primitives.git"
+    "url": "git+https://github.com/radix-ui/primitives.git",
+    "directory": "packages/react/popover"
   },
   "bugs": {
     "url": "https://github.com/radix-ui/primitives/issues"
