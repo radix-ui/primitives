@@ -90,17 +90,35 @@ const PopperAnchor = React.forwardRef<PopperAnchorElement, PopperAnchorProps>(
     const { __scopePopper, virtualRef, ...anchorProps } = props;
     const context = usePopperContext(ANCHOR_NAME, __scopePopper);
     const ref = React.useRef<PopperAnchorElement>(null);
-    const composedRefs = useComposedRefs(forwardedRef, ref);
+    const onAnchorChange = context.onAnchorChange;
+
+    // For DOM anchors, set the anchor from a callback ref rather than an
+    // effect. React invokes callback refs during the commit phase which does
+    // not count toward the nested update depth limit, so mounting many
+    // Popper-based components at once doesn't trigger "Maximum update depth
+    // exceeded"
+    // see https://github.com/radix-ui/primitives/issues/3858
+    const callbackRef = React.useCallback(
+      (node: PopperAnchorElement | null) => {
+        ref.current = node;
+        if (node) {
+          onAnchorChange(node);
+        }
+      },
+      [onAnchorChange],
+    );
+    const composedRefs = useComposedRefs(forwardedRef, callbackRef);
 
     const anchorRef = React.useRef<Measurable | null>(null);
     React.useEffect(() => {
+      if (!virtualRef) {
+        return;
+      }
+
       const previousAnchor = anchorRef.current;
-      anchorRef.current = virtualRef?.current || ref.current;
+      anchorRef.current = virtualRef.current;
       if (previousAnchor !== anchorRef.current) {
-        // Consumer can anchor the popper to something that isn't
-        // a DOM node e.g. pointer position, so we override the
-        // `anchorRef` with their virtual ref in this case.
-        context.onAnchorChange(anchorRef.current);
+        onAnchorChange(anchorRef.current);
       }
     });
 
