@@ -1,16 +1,24 @@
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
+import * as React from 'react';
+import { useIsHydrated as useIsHydratedLegacy } from './use-is-hydrated-legacy';
+
+const useReactSyncExternalStore: typeof React.useSyncExternalStore | undefined = (React as any)[
+  ' useSyncExternalStore '.trim().toString()
+];
+
+function subscribe() {
+  return () => {};
+}
 
 /**
  * Determines whether or not the component tree has been hydrated.
  */
-export function useIsHydrated() {
-  return useSyncExternalStore(
+function useIsHydratedModern() {
+  return useReactSyncExternalStore!(
     subscribe,
     () => true,
     () => false,
   );
 }
 
-function subscribe() {
-  return () => {};
-}
+export const useIsHydrated =
+  typeof useReactSyncExternalStore === 'function' ? useIsHydratedModern : useIsHydratedLegacy;
