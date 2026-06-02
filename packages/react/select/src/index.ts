@@ -3,6 +3,7 @@ export {
   createSelectScope,
   //
   Select,
+  SelectProvider as unstable_SelectProvider,
   SelectTrigger,
   SelectValue,
   SelectIcon,
@@ -18,8 +19,10 @@ export {
   SelectScrollDownButton,
   SelectSeparator,
   SelectArrow,
+  SelectBubbleInput as unstable_SelectBubbleInput,
   //
   Root,
+  Provider as unstable_Provider,
   Trigger,
   Value,
   Icon,
@@ -35,9 +38,11 @@ export {
   ScrollDownButton,
   Separator,
   Arrow,
+  BubbleInput as unstable_BubbleInput,
 } from './select';
 export type {
   SelectProps,
+  SelectProviderProps as unstable_SelectProviderProps,
   SelectSharedProps,
   SelectTriggerProps,
   SelectValueProps,
@@ -54,4 +59,5 @@ export type {
   SelectScrollDownButtonProps,
   SelectSeparatorProps,
   SelectArrowProps,
+  SelectBubbleInputProps as unstable_SelectBubbleInputProps,
 } from './select';

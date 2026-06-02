@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-pascal-case */
 import * as React from 'react';
 import { createPortal } from 'react-dom';
 import { Dialog, Select, Label as LabelPrimitive } from 'radix-ui';
@@ -533,7 +534,7 @@ export const RightToLeft = () => (
 export const WithinForm = () => {
   const [data, setData] = React.useState({});
 
-  function handleChange(event: React.FormEvent<HTMLFormElement>) {
+  function handleChange(event: React.ChangeEvent<HTMLFormElement>) {
     const formData = new FormData(event.currentTarget);
     setData(Object.fromEntries((formData as any).entries()));
   }
@@ -596,7 +597,7 @@ export const WithinForm = () => {
 export const DisabledWithinForm = () => {
   const [data, setData] = React.useState({});
 
-  function handleChange(event: React.FormEvent<HTMLFormElement>) {
+  function handleChange(event: React.ChangeEvent<HTMLFormElement>) {
     const formData = new FormData(event.currentTarget);
     setData(Object.fromEntries((formData as any).entries()));
   }
@@ -659,7 +660,7 @@ export const DisabledWithinForm = () => {
 export const RequiredWithinForm = () => {
   const [data, setData] = React.useState({});
 
-  function handleChange(event: React.FormEvent<HTMLFormElement>) {
+  function handleChange(event: React.ChangeEvent<HTMLFormElement>) {
     const formData = new FormData(event.currentTarget);
     setData(Object.fromEntries((formData as any).entries()));
   }
@@ -710,6 +711,70 @@ export const RequiredWithinForm = () => {
             </Select.Content>
           </Select.Portal>
         </Select.Root>
+      </Label>
+      <br />
+      <button type="submit">Submit</button>
+      <br />
+      <pre>{JSON.stringify(data, null, 2)}</pre>
+    </form>
+  );
+};
+
+export const Parts = () => {
+  const [data, setData] = React.useState({});
+
+  function handleChange(event: React.ChangeEvent<HTMLFormElement>) {
+    const formData = new FormData(event.currentTarget);
+    setData(Object.fromEntries((formData as any).entries()));
+  }
+
+  return (
+    <form
+      style={{ padding: 50 }}
+      onSubmit={(event) => {
+        handleChange(event);
+        event.preventDefault();
+      }}
+      onChange={handleChange}
+    >
+      <p>
+        Composed from the unstable parts. Unlike `Select.Root`, `Select.unstable_Provider` does not
+        render a hidden native control implicitly — `Select.unstable_BubbleInput` is rendered
+        explicitly to integrate with the form.
+      </p>
+      <Label style={{ display: 'block' }}>
+        Country
+        <Select.unstable_Provider name="country" autoComplete="country" defaultValue="fr">
+          <Select.Trigger className={styles.trigger}>
+            <Select.Value placeholder="Pick an option" />
+            <Select.Icon />
+          </Select.Trigger>
+          <Select.Portal>
+            <Select.Content className={styles.content}>
+              <Select.Viewport className={styles.viewport}>
+                <Select.Item className={styles.item} value="fr">
+                  <Select.ItemText>France</Select.ItemText>
+                  <Select.ItemIndicator className={styles.indicator}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+                <Select.Item className={styles.item} value="uk">
+                  <Select.ItemText>United Kingdom</Select.ItemText>
+                  <Select.ItemIndicator className={styles.indicator}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+                <Select.Item className={styles.item} value="es">
+                  <Select.ItemText>Spain</Select.ItemText>
+                  <Select.ItemIndicator className={styles.indicator}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+              </Select.Viewport>
+            </Select.Content>
+          </Select.Portal>
+          <Select.unstable_BubbleInput />
+        </Select.unstable_Provider>
       </Label>
       <br />
       <button type="submit">Submit</button>
@@ -903,7 +968,7 @@ export const Cypress = () => {
   const [openColor, setOpenColor] = React.useState(false);
   const [color, setColor] = React.useState<string | undefined>('green');
 
-  function handleChange(event: React.FormEvent<HTMLFormElement>) {
+  function handleChange(event: React.ChangeEvent<HTMLFormElement>) {
     const formData = new FormData(event.currentTarget);
     setData({
       size: formData.get('size')?.toString(),
