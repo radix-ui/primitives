@@ -784,8 +784,24 @@ function linearScale(input: readonly [number, number], output: readonly [number,
   };
 }
 
+// function getDecimalCount(value: number) {
+//   return (String(value).split('.')[1] || '').length;
+// }
 function getDecimalCount(value: number) {
-  return (String(value).split('.')[1] || '').length;
+  if (!Number.isFinite(value)) return 0;
+
+  const str = value.toString();
+
+  if (str.includes('e')) {
+    const [coefficient, exponent] = str.split('e');
+    const decimalPart = coefficient.split('.')[1] || '';
+    const exponentNum = Number(exponent);
+
+    return Math.max(0, decimalPart.length - exponentNum);
+  }
+
+  const decimalPart = str.split('.')[1];
+  return decimalPart ? decimalPart.length : 0;
 }
 
 function roundValue(value: number, decimalCount: number) {
