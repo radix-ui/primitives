@@ -92,6 +92,45 @@ describe('FocusScope', () => {
     });
   });
 
+  describe('given a trapped FocusScope with branches', () => {
+    function BranchHarness({ withBranch }: { withBranch: boolean }) {
+      const [branch, setBranch] = React.useState<HTMLElement | null>(null);
+      return (
+        <div>
+          <FocusScope asChild loop trapped branches={withBranch && branch ? [branch] : []}>
+            <form>
+              <TestField label={INNER_NAME_INPUT_LABEL} />
+              <button>{INNER_SUBMIT_LABEL}</button>
+            </form>
+          </FocusScope>
+          {/* Simulates portalled content of a nested layer living outside the scope's subtree */}
+          <div ref={setBranch}>
+            <input aria-label="branch-input" />
+          </div>
+        </div>
+      );
+    }
+
+    it('reclaims focus moved into an unregistered outside node', async () => {
+      const rendered = render(<BranchHarness withBranch={false} />);
+      const inner = rendered.getByLabelText(INNER_NAME_INPUT_LABEL) as HTMLInputElement;
+      const branchInput = rendered.getByLabelText('branch-input') as HTMLInputElement;
+      inner.focus();
+      branchInput.focus();
+      await waitFor(() => expect(inner).toHaveFocus());
+      expect(branchInput).not.toHaveFocus();
+    });
+
+    it('keeps focus when it moves into a registered branch', async () => {
+      const rendered = render(<BranchHarness withBranch />);
+      const inner = rendered.getByLabelText(INNER_NAME_INPUT_LABEL) as HTMLInputElement;
+      const branchInput = rendered.getByLabelText('branch-input') as HTMLInputElement;
+      inner.focus();
+      branchInput.focus();
+      await waitFor(() => expect(branchInput).toHaveFocus());
+    });
+  });
+
   describe('given a FocusScope with internal focus handlers', () => {
     const handleLastFocusableElementBlur = vi.fn();
     let rendered: RenderResult;
