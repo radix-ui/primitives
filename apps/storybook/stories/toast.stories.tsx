@@ -263,6 +263,49 @@ export const Cypress = () => {
   );
 };
 
+export const CustomAnnouncerContainer = () => {
+  const [open, setOpen] = React.useState(false);
+  const containerRef = React.useRef<HTMLDivElement>(null);
+
+  return (
+    <div>
+      <div
+        ref={containerRef}
+        data-testid="custom-announcer-container"
+        style={{
+          border: '2px dashed #ccc',
+          padding: '10px',
+          margin: '10px 0',
+          minHeight: '50px',
+        }}
+      >
+        <p>Custom announcer container (announcements will be rendered here)</p>
+      </div>
+
+      <Toast.Provider announcerContainer={containerRef.current || undefined}>
+        <button onClick={() => setOpen(true)} data-testid="open-toast-button">
+          Open toast with custom announcer container
+        </button>
+
+        <Toast.Root
+          open={open}
+          onOpenChange={setOpen}
+          className={styles.root}
+          data-testid="custom-container-toast"
+        >
+          <Toast.Title className={styles.title}>Custom Container Toast</Toast.Title>
+          <Toast.Description className={styles.description}>
+            This toast's announcements are rendered in a custom container
+          </Toast.Description>
+          <Toast.Close className={styles.button}>Close</Toast.Close>
+        </Toast.Root>
+
+        <Toast.Viewport className={styles.viewport} />
+      </Toast.Provider>
+    </div>
+  );
+};
+
 const SNAPSHOT_DELAY = 300;
 
 export const Chromatic = () => {
