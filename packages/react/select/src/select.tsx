@@ -229,7 +229,7 @@ const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
             disabled={disabled}
             form={form}
           >
-            {value === undefined ? <option value="" /> : null}
+            {shouldShowPlaceholder(value) ? <option value="" /> : null}
             {Array.from(nativeOptionsSet)}
           </SelectBubbleInput>
         ) : null}
@@ -380,6 +380,7 @@ const SelectValue = React.forwardRef<SelectValueElement, SelectValueProps>(
 
     return (
       <Primitive.span
+        key={showPlaceholder ? 'placeholder' : 'value'}
         {...valueProps}
         asChild={showPlaceholder ? false : valueProps.asChild}
         ref={composedRefs}
