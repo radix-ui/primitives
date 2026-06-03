@@ -434,7 +434,7 @@ const SelectValue = /* @__PURE__ */ React.forwardRef<SelectValueElement, SelectV
         style={{ pointerEvents: 'none' }}
       >
         <React.Fragment key={showPlaceholder ? 'placeholder' : 'value'}>
-          {showPlaceholder ? placeholder : children}
+          {showPlaceholder ? <>{placeholder}</> : children}
         </React.Fragment>
       </Primitive.span>
     );
