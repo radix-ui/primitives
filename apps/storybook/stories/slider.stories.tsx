@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-pascal-case */
 import * as React from 'react';
 import { Direction, Slider } from 'radix-ui';
 import serialize from 'form-serialize';
@@ -320,6 +321,98 @@ export const WithinForm = () => {
         </Slider.Root>
       </fieldset>
 
+      <button type="submit">Submit</button>
+    </form>
+  );
+};
+
+export const BubbleInputWithinForm = () => {
+  const [data, setData] = React.useState<any>({ single: [25], price: { min: 30, max: 70 } });
+  return (
+    <form
+      onSubmit={(event) => {
+        event.preventDefault();
+        console.log(serialize(event.currentTarget, { hash: true }));
+      }}
+      onChange={(event) => {
+        setData(serialize(event.currentTarget, { hash: true }));
+      }}
+    >
+      <p>
+        Each thumb renders a hidden native control — the `Slider.unstable_BubbleInput` part — that
+        is submitted within the form.
+      </p>
+
+      <fieldset>
+        <legend>Single value: {String(data.single)}</legend>
+        <Slider.Root name="single" defaultValue={data.single} className={styles.root}>
+          <Slider.Track className={styles.track}>
+            <Slider.Range className={styles.range} />
+          </Slider.Track>
+          <Slider.Thumb className={styles.thumb} />
+        </Slider.Root>
+      </fieldset>
+
+      <br />
+      <br />
+
+      <fieldset>
+        <legend>Named thumbs: {JSON.stringify(data.price)}</legend>
+        <Slider.Root defaultValue={[data.price.min, data.price.max]} className={styles.root}>
+          <Slider.Track className={styles.track}>
+            <Slider.Range className={styles.range} />
+          </Slider.Track>
+          <Slider.Thumb className={styles.thumb} name="price[min]" />
+          <Slider.Thumb className={styles.thumb} name="price[max]" />
+        </Slider.Root>
+      </fieldset>
+
+      <br />
+      <button type="submit">Submit</button>
+    </form>
+  );
+};
+
+export const Parts = () => {
+  const [data, setData] = React.useState<any>({ price: { min: 30, max: 70 } });
+  return (
+    <form
+      onSubmit={(event) => {
+        event.preventDefault();
+        console.log(serialize(event.currentTarget, { hash: true }));
+      }}
+      onChange={(event) => {
+        setData(serialize(event.currentTarget, { hash: true }));
+      }}
+    >
+      <p>
+        Each thumb is composed from its individual parts. `Slider.unstable_ThumbProvider` exposes the
+        per-thumb context, `Slider.unstable_ThumbTrigger` renders the draggable thumb, and
+        `Slider.unstable_BubbleInput` renders the hidden native control. This lets you decouple the
+        bubble input from the thumb (e.g. render it elsewhere or customize it) instead of relying on
+        `Slider.Thumb` to render it implicitly.
+      </p>
+
+      <fieldset>
+        <legend>Named thumbs: {JSON.stringify(data.price)}</legend>
+        <Slider.Root defaultValue={[data.price.min, data.price.max]} className={styles.root}>
+          <Slider.Track className={styles.track}>
+            <Slider.Range className={styles.range} />
+          </Slider.Track>
+
+          <Slider.unstable_ThumbProvider name="price[min]">
+            <Slider.unstable_ThumbTrigger className={styles.thumb} />
+            <Slider.unstable_BubbleInput />
+          </Slider.unstable_ThumbProvider>
+
+          <Slider.unstable_ThumbProvider name="price[max]">
+            <Slider.unstable_ThumbTrigger className={styles.thumb} />
+            <Slider.unstable_BubbleInput />
+          </Slider.unstable_ThumbProvider>
+        </Slider.Root>
+      </fieldset>
+
+      <br />
       <button type="submit">Submit</button>
     </form>
   );

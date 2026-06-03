@@ -567,56 +567,111 @@ SliderRange.displayName = RANGE_NAME;
 
 const THUMB_NAME = 'SliderThumb';
 
-type SliderThumbElement = SliderThumbImplElement;
-interface SliderThumbProps extends Omit<SliderThumbImplProps, 'index'> {}
-
-const SliderThumb = React.forwardRef<SliderThumbElement, SliderThumbProps>(
-  (props: ScopedProps<SliderThumbProps>, forwardedRef) => {
-    const getItems = useCollection(props.__scopeSlider);
-    const [thumb, setThumb] = React.useState<SliderThumbImplElement | null>(null);
-    const composedRefs = useComposedRefs(forwardedRef, (node) => setThumb(node));
-    const index = React.useMemo(
-      () => (thumb ? getItems().findIndex((item) => item.ref.current === thumb) : -1),
-      [getItems, thumb],
-    );
-    return <SliderThumbImpl {...props} ref={composedRefs} index={index} />;
-  },
-);
-
-type SliderThumbImplElement = React.ComponentRef<typeof Primitive.span>;
-interface SliderThumbImplProps extends PrimitiveSpanProps {
+type SliderThumbContextValue = {
+  value: number | undefined;
+  name: string | undefined;
+  form: string | undefined;
+  isFormControl: boolean;
   index: number;
+  thumb: SliderThumbTriggerElement | null;
+  onThumbChange(thumb: SliderThumbTriggerElement | null): void;
+  percent: number;
+  size: ReturnType<typeof useSize>;
+};
+
+const [SliderThumbContextProvider, useSliderThumbContext] =
+  createSliderContext<SliderThumbContextValue>(THUMB_NAME);
+
+/* -------------------------------------------------------------------------------------------------
+ * SliderThumbProvider
+ * -----------------------------------------------------------------------------------------------*/
+
+const THUMB_PROVIDER_NAME = 'SliderThumbProvider';
+
+interface SliderThumbProviderProps {
   name?: string;
+  children?: React.ReactNode;
 }
 
-const SliderThumbImpl = React.forwardRef<SliderThumbImplElement, SliderThumbImplProps>(
-  (props: ScopedProps<SliderThumbImplProps>, forwardedRef) => {
-    const { __scopeSlider, index, name, ...thumbProps } = props;
-    const context = useSliderContext(THUMB_NAME, __scopeSlider);
-    const orientation = useSliderOrientationContext(THUMB_NAME, __scopeSlider);
-    const [thumb, setThumb] = React.useState<HTMLSpanElement | null>(null);
-    const composedRefs = useComposedRefs(forwardedRef, (node) => setThumb(node));
-    // We set this to true by default so that events bubble to forms without JS (SSR)
-    const isFormControl = thumb ? context.form || !!thumb.closest('form') : true;
-    const size = useSize(thumb);
-    // We cast because index could be `-1` which would return undefined
-    const value = context.values[index] as number | undefined;
-    const percent =
-      value === undefined ? 0 : convertValueToPercentage(value, context.min, context.max);
+function SliderThumbProvider(props: ScopedProps<SliderThumbProviderProps>) {
+  const {
+    __scopeSlider,
+    name,
+    children,
+    // @ts-expect-error internal render prop
+    internal_do_not_use_render,
+  } = props;
+  const context = useSliderContext(THUMB_PROVIDER_NAME, __scopeSlider);
+  const getItems = useCollection(__scopeSlider);
+  const [thumb, setThumb] = React.useState<SliderThumbTriggerElement | null>(null);
+  const index = React.useMemo(
+    () => (thumb ? getItems().findIndex((item) => item.ref.current === thumb) : -1),
+    [getItems, thumb],
+  );
+  const size = useSize(thumb);
+  // We set this to true by default so that events bubble to forms without JS (SSR)
+  const isFormControl = thumb ? !!context.form || !!thumb.closest('form') : true;
+  // We cast because index could be `-1` which would return undefined
+  const value = context.values[index] as number | undefined;
+  const resolvedName =
+    name ?? (context.name ? context.name + (context.values.length > 1 ? '[]' : '') : undefined);
+  const percent =
+    value === undefined ? 0 : convertValueToPercentage(value, context.min, context.max);
+
+  React.useEffect(() => {
+    if (thumb) {
+      context.thumbs.add(thumb);
+      return () => {
+        context.thumbs.delete(thumb);
+      };
+    }
+  }, [thumb, context.thumbs]);
+
+  const thumbContext: SliderThumbContextValue = {
+    value,
+    name: resolvedName,
+    form: context.form,
+    isFormControl,
+    index,
+    thumb,
+    onThumbChange: setThumb,
+    percent,
+    size,
+  };
+
+  return (
+    <SliderThumbContextProvider scope={__scopeSlider} {...thumbContext}>
+      {isFunction(internal_do_not_use_render) ? internal_do_not_use_render(thumbContext) : children}
+    </SliderThumbContextProvider>
+  );
+}
+
+SliderThumbProvider.displayName = THUMB_PROVIDER_NAME;
+
+/* -------------------------------------------------------------------------------------------------
+ * SliderThumbTrigger
+ * -----------------------------------------------------------------------------------------------*/
+
+const THUMB_TRIGGER_NAME = 'SliderThumbTrigger';
+
+type SliderThumbTriggerElement = React.ComponentRef<typeof Primitive.span>;
+interface SliderThumbTriggerProps extends PrimitiveSpanProps {}
+
+const SliderThumbTrigger = React.forwardRef<SliderThumbTriggerElement, SliderThumbTriggerProps>(
+  (props: ScopedProps<SliderThumbTriggerProps>, forwardedRef) => {
+    const { __scopeSlider, ...thumbProps } = props;
+    const context = useSliderContext(THUMB_TRIGGER_NAME, __scopeSlider);
+    const orientation = useSliderOrientationContext(THUMB_TRIGGER_NAME, __scopeSlider);
+    const { index, value, percent, size, onThumbChange } = useSliderThumbContext(
+      THUMB_TRIGGER_NAME,
+      __scopeSlider,
+    );
+    const composedRefs = useComposedRefs(forwardedRef, (node) => onThumbChange(node));
     const label = getLabel(index, context.values.length);
     const orientationSize = size?.[orientation.size];
     const thumbInBoundsOffset = orientationSize
       ? getThumbInBoundsOffset(orientationSize, percent, orientation.direction)
       : 0;
-
-    React.useEffect(() => {
-      if (thumb) {
-        context.thumbs.add(thumb);
-        return () => {
-          context.thumbs.delete(thumb);
-        };
-      }
-    }, [thumb, context.thumbs]);
 
     return (
       <span
@@ -626,7 +681,7 @@ const SliderThumbImpl = React.forwardRef<SliderThumbImplElement, SliderThumbImpl
           [orientation.startEdge]: `calc(${percent}% + ${thumbInBoundsOffset}px)`,
         }}
       >
-        <Collection.ItemSlot scope={props.__scopeSlider}>
+        <Collection.ItemSlot scope={__scopeSlider}>
           <Primitive.span
             role="slider"
             aria-label={props['aria-label'] || label}
@@ -651,19 +706,46 @@ const SliderThumbImpl = React.forwardRef<SliderThumbImplElement, SliderThumbImpl
             })}
           />
         </Collection.ItemSlot>
-
-        {isFormControl && (
-          <SliderBubbleInput
-            key={index}
-            name={
-              name ??
-              (context.name ? context.name + (context.values.length > 1 ? '[]' : '') : undefined)
-            }
-            form={context.form}
-            value={value}
-          />
-        )}
       </span>
+    );
+  },
+);
+
+SliderThumbTrigger.displayName = THUMB_TRIGGER_NAME;
+
+/* -----------------------------------------------------------------------------------------------*/
+
+type SliderThumbElement = SliderThumbTriggerElement;
+interface SliderThumbProps extends SliderThumbTriggerProps {
+  name?: string;
+}
+
+const SliderThumb = React.forwardRef<SliderThumbElement, SliderThumbProps>(
+  (props: ScopedProps<SliderThumbProps>, forwardedRef) => {
+    const { __scopeSlider, name, ...thumbProps } = props;
+    return (
+      <SliderThumbProvider
+        __scopeSlider={__scopeSlider}
+        name={name}
+        // @ts-expect-error internal render prop
+        internal_do_not_use_render={({ index, isFormControl }: SliderThumbContextValue) => (
+          <>
+            <SliderThumbTrigger
+              {...thumbProps}
+              ref={forwardedRef}
+              // @ts-expect-error
+              __scopeSlider={__scopeSlider}
+            />
+            {isFormControl ? (
+              <SliderBubbleInput
+                key={index}
+                // @ts-expect-error
+                __scopeSlider={__scopeSlider}
+              />
+            ) : null}
+          </>
+        )}
+      />
     );
   },
 );
@@ -674,14 +756,16 @@ SliderThumb.displayName = THUMB_NAME;
  * SliderBubbleInput
  * -----------------------------------------------------------------------------------------------*/
 
-const BUBBLE_INPUT_NAME = 'RadioBubbleInput';
+const BUBBLE_INPUT_NAME = 'SliderBubbleInput';
 
-type InputProps = React.ComponentPropsWithoutRef<typeof Primitive.input>;
-interface SliderBubbleInputProps extends InputProps {}
+type SliderBubbleInputElement = React.ComponentRef<typeof Primitive.input>;
+type PrimitiveInputProps = React.ComponentPropsWithoutRef<typeof Primitive.input>;
+interface SliderBubbleInputProps extends Omit<PrimitiveInputProps, 'value'> {}
 
-const SliderBubbleInput = React.forwardRef<HTMLInputElement, SliderBubbleInputProps>(
-  ({ __scopeSlider, value, ...props }: ScopedProps<SliderBubbleInputProps>, forwardedRef) => {
-    const ref = React.useRef<HTMLInputElement>(null);
+const SliderBubbleInput = React.forwardRef<SliderBubbleInputElement, SliderBubbleInputProps>(
+  ({ __scopeSlider, ...props }: ScopedProps<SliderBubbleInputProps>, forwardedRef) => {
+    const { value, name, form } = useSliderThumbContext(BUBBLE_INPUT_NAME, __scopeSlider);
+    const ref = React.useRef<SliderBubbleInputElement>(null);
     const composedRefs = useComposedRefs(ref, forwardedRef);
     const prevValue = usePrevious(value);
 
@@ -712,6 +796,8 @@ const SliderBubbleInput = React.forwardRef<HTMLInputElement, SliderBubbleInputPr
     return (
       <Primitive.input
         style={{ display: 'none' }}
+        name={name}
+        form={form}
         {...props}
         ref={composedRefs}
         defaultValue={value}
@@ -842,10 +928,9 @@ function roundValue(value: number, decimalCount: number) {
   return Math.round(value * rounder) / rounder;
 }
 
-const Root = Slider;
-const Track = SliderTrack;
-const Range = SliderRange;
-const Thumb = SliderThumb;
+function isFunction(value: unknown): value is (...args: any[]) => any {
+  return typeof value === 'function';
+}
 
 export {
   createSliderScope,
@@ -854,10 +939,24 @@ export {
   SliderTrack,
   SliderRange,
   SliderThumb,
+  SliderThumbProvider,
+  SliderThumbTrigger,
+  SliderBubbleInput,
   //
-  Root,
-  Track,
-  Range,
-  Thumb,
+  Slider as Root,
+  SliderTrack as Track,
+  SliderRange as Range,
+  SliderThumb as Thumb,
+  SliderThumbProvider as ThumbProvider,
+  SliderThumbTrigger as ThumbTrigger,
+  SliderBubbleInput as BubbleInput,
 };
-export type { SliderProps, SliderTrackProps, SliderRangeProps, SliderThumbProps };
+export type {
+  SliderProps,
+  SliderTrackProps,
+  SliderRangeProps,
+  SliderThumbProps,
+  SliderThumbProviderProps,
+  SliderThumbTriggerProps,
+  SliderBubbleInputProps,
+};
