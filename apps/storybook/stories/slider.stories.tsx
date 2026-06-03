@@ -386,8 +386,8 @@ export const Parts = () => {
       }}
     >
       <p>
-        Each thumb is composed from its individual parts. `Slider.unstable_ThumbProvider` exposes the
-        per-thumb context, `Slider.unstable_ThumbTrigger` renders the draggable thumb, and
+        Each thumb is composed from its individual parts. `Slider.unstable_ThumbProvider` exposes
+        the per-thumb context, `Slider.unstable_ThumbTrigger` renders the draggable thumb, and
         `Slider.unstable_BubbleInput` renders the hidden native control. This lets you decouple the
         bubble input from the thumb (e.g. render it elsewhere or customize it) instead of relying on
         `Slider.Thumb` to render it implicitly.

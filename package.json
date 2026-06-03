@@ -28,7 +28,7 @@
     "release:stable": "pnpm publish -r --access public",
     "release:stable:ci": "pnpm publish -r --access public --publish-branch stable",
     "release:next": "pnpm publish -r --access public --tag next",
-    "format": "oxfmt",
+    "format": "oxfmt --write",
     "format:check": "oxfmt --check"
   },
   "devDependencies": {
