@@ -66,9 +66,15 @@ type SelectContextValue = {
   dir: SelectProps['dir'];
   triggerPointerDownPosRef: React.MutableRefObject<{ x: number; y: number } | null>;
   disabled?: boolean;
+  name?: string;
+  autoComplete?: string;
+  form?: string;
+  nativeOptions: Set<NativeOption>;
+  nativeSelectKey: string;
+  isFormControl: boolean;
 };
 
-const [SelectProvider, useSelectContext] = createSelectContext<SelectContextValue>(SELECT_NAME);
+const [SelectProviderImpl, useSelectContext] = createSelectContext<SelectContextValue>(SELECT_NAME);
 
 type NativeOption = React.ReactElement<React.ComponentProps<'option'>>;
 
@@ -129,7 +135,19 @@ type SelectProps = SelectSharedProps & {
   onValueChange?(value: string): void;
 };
 
-const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
+/* -------------------------------------------------------------------------------------------------
+ * SelectProvider
+ * -----------------------------------------------------------------------------------------------*/
+
+const PROVIDER_NAME = 'SelectProvider';
+
+interface SelectProviderProps extends SelectSharedProps {
+  value?: string;
+  defaultValue?: string;
+  onValueChange?(value: string): void;
+}
+
+function SelectProvider(props: ScopedProps<SelectProviderProps>) {
   const {
     __scopeSelect,
     children,
@@ -145,6 +163,8 @@ const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
     disabled,
     required,
     form,
+    // @ts-expect-error internal render prop used by `Select` to compose its default parts
+    internal_do_not_use_render,
   } = props;
   const popperScope = usePopperScope(__scopeSelect);
   const [trigger, setTrigger] = React.useState<SelectTriggerElement | null>(null);
@@ -166,8 +186,9 @@ const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
   const triggerPointerDownPosRef = React.useRef<{ x: number; y: number } | null>(null);
 
   // We set this to true by default so that events bubble to forms without JS (SSR)
-  const isFormControl = trigger ? form || !!trigger.closest('form') : true;
+  const isFormControl = trigger ? !!form || !!trigger.closest('form') : true;
   const [nativeOptionsSet, setNativeOptionsSet] = React.useState(new Set<NativeOption>());
+  const contentId = useId();
 
   // The native `select` only associates the correct default value if the corresponding
   // `option` is rendered as a child **at the same time** as itself.
@@ -178,63 +199,86 @@ const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
     .map((option) => option.props.value)
     .join(';');
 
+  const handleNativeOptionAdd = React.useCallback((option: NativeOption) => {
+    setNativeOptionsSet((prev) => new Set(prev).add(option));
+  }, []);
+
+  const handleNativeOptionRemove = React.useCallback((option: NativeOption) => {
+    setNativeOptionsSet((prev) => {
+      const optionsSet = new Set(prev);
+      optionsSet.delete(option);
+      return optionsSet;
+    });
+  }, []);
+
+  const context: SelectContextValue = {
+    required,
+    trigger,
+    onTriggerChange: setTrigger,
+    valueNode,
+    onValueNodeChange: setValueNode,
+    valueNodeHasChildren,
+    onValueNodeHasChildrenChange: setValueNodeHasChildren,
+    contentId,
+    value,
+    onValueChange: setValue,
+    open,
+    onOpenChange: setOpen,
+    dir: direction,
+    triggerPointerDownPosRef,
+    disabled,
+    name,
+    autoComplete,
+    form,
+    nativeOptions: nativeOptionsSet,
+    nativeSelectKey,
+    isFormControl,
+  };
+
   return (
     <PopperPrimitive.Root {...popperScope}>
-      <SelectProvider
-        required={required}
-        scope={__scopeSelect}
-        trigger={trigger}
-        onTriggerChange={setTrigger}
-        valueNode={valueNode}
-        onValueNodeChange={setValueNode}
-        valueNodeHasChildren={valueNodeHasChildren}
-        onValueNodeHasChildrenChange={setValueNodeHasChildren}
-        contentId={useId()}
-        value={value}
-        onValueChange={setValue}
-        open={open}
-        onOpenChange={setOpen}
-        dir={direction}
-        triggerPointerDownPosRef={triggerPointerDownPosRef}
-        disabled={disabled}
-      >
+      <SelectProviderImpl scope={__scopeSelect} {...context}>
         <Collection.Provider scope={__scopeSelect}>
           <SelectNativeOptionsProvider
-            scope={props.__scopeSelect}
-            onNativeOptionAdd={React.useCallback((option) => {
-              setNativeOptionsSet((prev) => new Set(prev).add(option));
-            }, [])}
-            onNativeOptionRemove={React.useCallback((option) => {
-              setNativeOptionsSet((prev) => {
-                const optionsSet = new Set(prev);
-                optionsSet.delete(option);
-                return optionsSet;
-              });
-            }, [])}
+            scope={__scopeSelect}
+            onNativeOptionAdd={handleNativeOptionAdd}
+            onNativeOptionRemove={handleNativeOptionRemove}
           >
-            {children}
+            {isFunction(internal_do_not_use_render)
+              ? internal_do_not_use_render(context)
+              : children}
           </SelectNativeOptionsProvider>
         </Collection.Provider>
-
-        {isFormControl ? (
-          <SelectBubbleInput
-            key={nativeSelectKey}
-            aria-hidden
-            required={required}
-            tabIndex={-1}
-            name={name}
-            autoComplete={autoComplete}
-            value={value ?? ''}
-            onChange={(event) => setValue(event.target.value)}
-            disabled={disabled}
-            form={form}
-          >
-            {shouldShowPlaceholder(value) ? <option value="" /> : null}
-            {Array.from(nativeOptionsSet)}
-          </SelectBubbleInput>
-        ) : null}
-      </SelectProvider>
+      </SelectProviderImpl>
     </PopperPrimitive.Root>
+  );
+}
+
+SelectProvider.displayName = PROVIDER_NAME;
+
+/* -------------------------------------------------------------------------------------------------
+ * Select
+ * -----------------------------------------------------------------------------------------------*/
+
+const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
+  const { __scopeSelect, children, ...providerProps } = props;
+  return (
+    <SelectProvider
+      __scopeSelect={__scopeSelect}
+      {...providerProps}
+      // @ts-expect-error internal render prop
+      internal_do_not_use_render={({ isFormControl }: SelectContextValue) => (
+        <>
+          {children}
+          {isFormControl ? (
+            <SelectBubbleInput
+              // @ts-expect-error
+              __scopeSelect={__scopeSelect}
+            />
+          ) : null}
+        </>
+      )}
+    />
   );
 };
 
@@ -1695,14 +1739,19 @@ SelectArrow.displayName = ARROW_NAME;
 
 const BUBBLE_INPUT_NAME = 'SelectBubbleInput';
 
-type InputProps = React.ComponentPropsWithoutRef<typeof Primitive.select>;
-interface SwitchBubbleInputProps extends InputProps {}
+type SelectBubbleInputElement = React.ComponentRef<typeof Primitive.select>;
+type PrimitiveSelectProps = React.ComponentPropsWithoutRef<typeof Primitive.select>;
+interface SelectBubbleInputProps extends Omit<PrimitiveSelectProps, 'value'> {}
 
-const SelectBubbleInput = React.forwardRef<HTMLSelectElement, SwitchBubbleInputProps>(
-  ({ __scopeSelect, value, ...props }: ScopedProps<SwitchBubbleInputProps>, forwardedRef) => {
-    const ref = React.useRef<HTMLSelectElement>(null);
+const SelectBubbleInput = React.forwardRef<SelectBubbleInputElement, SelectBubbleInputProps>(
+  ({ __scopeSelect, ...props }: ScopedProps<SelectBubbleInputProps>, forwardedRef) => {
+    const context = useSelectContext(BUBBLE_INPUT_NAME, __scopeSelect);
+    const { value, onValueChange, required, disabled, name, autoComplete, form } = context;
+    const { nativeOptions, nativeSelectKey } = context;
+    const ref = React.useRef<SelectBubbleInputElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, ref);
-    const prevValue = usePrevious(value);
+    const selectValue = value ?? '';
+    const prevValue = usePrevious(selectValue);
 
     // Bubble value change to parents (e.g form change event)
     React.useEffect(() => {
@@ -1715,12 +1764,12 @@ const SelectBubbleInput = React.forwardRef<HTMLSelectElement, SwitchBubbleInputP
         'value',
       ) as PropertyDescriptor;
       const setValue = descriptor.set;
-      if (prevValue !== value && setValue) {
+      if (prevValue !== selectValue && setValue) {
         const event = new Event('change', { bubbles: true });
-        setValue.call(select, value);
+        setValue.call(select, selectValue);
         select.dispatchEvent(event);
       }
-    }, [prevValue, value]);
+    }, [prevValue, selectValue]);
 
     /**
      * We purposefully use a `select` here to support form autofill as much as
@@ -1733,14 +1782,32 @@ const SelectBubbleInput = React.forwardRef<HTMLSelectElement, SwitchBubbleInputP
      *
      * We use visually hidden styles rather than `display: "none"` because
      * Safari autofill won't work otherwise.
+     *
+     * The native `select` only associates the correct default value if the
+     * corresponding `option` is rendered as a child **at the same time** as
+     * itself. Because it might take a few renders for our items to gather the
+     * information to build the native `option`(s), we key the `select` to make
+     * sure React re-builds it each time the options change.
      */
     return (
       <Primitive.select
+        key={nativeSelectKey}
+        aria-hidden
+        required={required}
+        tabIndex={-1}
+        name={name}
+        autoComplete={autoComplete}
+        disabled={disabled}
+        form={form}
+        onChange={(event) => onValueChange(event.target.value)}
         {...props}
         style={{ ...VISUALLY_HIDDEN_STYLES, ...props.style }}
         ref={composedRefs}
-        defaultValue={value}
-      />
+        defaultValue={selectValue}
+      >
+        {shouldShowPlaceholder(value) ? <option value="" /> : null}
+        {Array.from(nativeOptions)}
+      </Primitive.select>
     );
   },
 );
@@ -1748,6 +1815,10 @@ const SelectBubbleInput = React.forwardRef<HTMLSelectElement, SwitchBubbleInputP
 SelectBubbleInput.displayName = BUBBLE_INPUT_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
+
+function isFunction(value: unknown): value is (...args: any[]) => any {
+  return typeof value === 'function';
+}
 
 function shouldShowPlaceholder(value?: string) {
   return value === '' || value === undefined;
@@ -1827,27 +1898,11 @@ function wrapArray<T>(array: T[], startIndex: number) {
   return array.map<T>((_, index) => array[(startIndex + index) % array.length]!);
 }
 
-const Root = Select;
-const Trigger = SelectTrigger;
-const Value = SelectValue;
-const Icon = SelectIcon;
-const Portal = SelectPortal;
-const Content = SelectContent;
-const Viewport = SelectViewport;
-const Group = SelectGroup;
-const Label = SelectLabel;
-const Item = SelectItem;
-const ItemText = SelectItemText;
-const ItemIndicator = SelectItemIndicator;
-const ScrollUpButton = SelectScrollUpButton;
-const ScrollDownButton = SelectScrollDownButton;
-const Separator = SelectSeparator;
-const Arrow = SelectArrow;
-
 export {
   createSelectScope,
   //
   Select,
+  SelectProvider,
   SelectTrigger,
   SelectValue,
   SelectIcon,
@@ -1863,26 +1918,30 @@ export {
   SelectScrollDownButton,
   SelectSeparator,
   SelectArrow,
+  SelectBubbleInput,
   //
-  Root,
-  Trigger,
-  Value,
-  Icon,
-  Portal,
-  Content,
-  Viewport,
-  Group,
-  Label,
-  Item,
-  ItemText,
-  ItemIndicator,
-  ScrollUpButton,
-  ScrollDownButton,
-  Separator,
-  Arrow,
+  Select as Root,
+  SelectProvider as Provider,
+  SelectTrigger as Trigger,
+  SelectValue as Value,
+  SelectIcon as Icon,
+  SelectPortal as Portal,
+  SelectContent as Content,
+  SelectViewport as Viewport,
+  SelectGroup as Group,
+  SelectLabel as Label,
+  SelectItem as Item,
+  SelectItemText as ItemText,
+  SelectItemIndicator as ItemIndicator,
+  SelectScrollUpButton as ScrollUpButton,
+  SelectScrollDownButton as ScrollDownButton,
+  SelectSeparator as Separator,
+  SelectArrow as Arrow,
+  SelectBubbleInput as BubbleInput,
 };
 export type {
   SelectProps,
+  SelectProviderProps,
   SelectTriggerProps,
   SelectValueProps,
   SelectIconProps,
@@ -1898,4 +1957,5 @@ export type {
   SelectScrollDownButtonProps,
   SelectSeparatorProps,
   SelectArrowProps,
+  SelectBubbleInputProps,
 };
