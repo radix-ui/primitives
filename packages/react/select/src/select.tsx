@@ -376,15 +376,18 @@ const SelectValue = React.forwardRef<SelectValueElement, SelectValueProps>(
       onValueNodeHasChildrenChange(hasChildren);
     }, [onValueNodeHasChildrenChange, hasChildren]);
 
+    const showPlaceholder = shouldShowPlaceholder(context.value);
+
     return (
       <Primitive.span
         {...valueProps}
+        asChild={showPlaceholder ? false : valueProps.asChild}
         ref={composedRefs}
         // we don't want events from the portalled `SelectValue` children to bubble
         // through the item they came from
         style={{ pointerEvents: 'none' }}
       >
-        {shouldShowPlaceholder(context.value) ? <>{placeholder}</> : children}
+        {showPlaceholder ? placeholder : children}
       </Primitive.span>
     );
   },
