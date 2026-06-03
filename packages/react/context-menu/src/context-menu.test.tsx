@@ -298,6 +298,37 @@ describe('submenus', () => {
     expect(subTrigger).toHaveAttribute('aria-expanded', 'true');
   });
 
+  it('associates the sub trigger with its content via `aria-controls` only while open', async () => {
+    render(
+      <ContextMenu.Root>
+        <ContextMenu.Trigger>{TRIGGER_TEXT}</ContextMenu.Trigger>
+        <ContextMenu.Portal>
+          <ContextMenu.Content>
+            <ContextMenu.Sub>
+              <ContextMenu.SubTrigger>Bookmarks</ContextMenu.SubTrigger>
+              <ContextMenu.Portal>
+                <ContextMenu.SubContent>
+                  <ContextMenu.Item>Inbox</ContextMenu.Item>
+                </ContextMenu.SubContent>
+              </ContextMenu.Portal>
+            </ContextMenu.Sub>
+          </ContextMenu.Content>
+        </ContextMenu.Portal>
+      </ContextMenu.Root>,
+    );
+
+    fireEvent.contextMenu(screen.getByText(TRIGGER_TEXT));
+    const subTrigger = await screen.findByText('Bookmarks');
+    expect(subTrigger).not.toHaveAttribute('aria-controls');
+
+    fireEvent.keyDown(subTrigger, { key: 'ArrowRight' });
+    const subContent = await waitFor(() => screen.getByText('Inbox').closest('[role="menu"]')!);
+    expect(subContent).toBeTruthy();
+    expect((subContent as HTMLElement).id).toBeTruthy();
+    expect(subTrigger).toHaveAttribute('aria-controls', (subContent as HTMLElement).id);
+    expect(document.getElementById((subContent as HTMLElement).id)).toBe(subContent);
+  });
+
   it('does not open a disabled submenu', async () => {
     render(
       <ContextMenu.Root>

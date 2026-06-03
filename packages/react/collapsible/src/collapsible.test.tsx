@@ -53,6 +53,27 @@ describe('given a default Collapsible', () => {
   });
 });
 
+describe('aria-controls', () => {
+  afterEach(cleanup);
+
+  it('should not reference a non-existent element while closed', () => {
+    const rendered = render(<CollapsibleTest />);
+    const trigger = rendered.getByText(TRIGGER_TEXT);
+
+    expect(rendered.queryByText(CONTENT_TEXT)).not.toBeInTheDocument();
+    expect(trigger).not.toHaveAttribute('aria-controls');
+  });
+
+  it('should reference the rendered content while open', () => {
+    const rendered = render(<CollapsibleTest defaultOpen />);
+    const trigger = rendered.getByText(TRIGGER_TEXT);
+    const content = rendered.getByText(CONTENT_TEXT);
+    expect(content.id).toBeTruthy();
+    expect(trigger).toHaveAttribute('aria-controls', content.id);
+    expect(document.getElementById(content.id)).toBe(content);
+  });
+});
+
 describe('given an open uncontrolled Collapsible', () => {
   let rendered: RenderResult;
   let content: HTMLElement | null;
