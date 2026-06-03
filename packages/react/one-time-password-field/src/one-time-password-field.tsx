@@ -272,105 +272,108 @@ const OneTimePasswordField = React.forwardRef<HTMLDivElement, OneTimePasswordFie
     latestValueRef.current = value;
 
     // Update function *specifically* for event handlers.
-    const dispatch = React.useCallback<Dispatcher>((action) => {
-      const value = latestValueRef.current;
-      switch (action.type) {
-        case 'SET_CHAR': {
-          const { index, char } = action;
-          const currentTarget = collection.at(index)?.element;
-          if (value[index] === char) {
-            const next = currentTarget && collection.from(currentTarget, 1)?.element;
-            focusInput(next);
-            return;
-          }
-
-          // empty values should be handled in the CLEAR_CHAR action
-          if (char === '') {
-            return;
-          }
-
-          if (validation) {
-            const regexp = new RegExp(validation.regexp);
-            const clean = char.replace(regexp, '');
-            if (clean !== char) {
-              // not valid; ignore
+    const dispatch = React.useCallback<Dispatcher>(
+      (action) => {
+        const value = latestValueRef.current;
+        switch (action.type) {
+          case 'SET_CHAR': {
+            const { index, char } = action;
+            const currentTarget = collection.at(index)?.element;
+            if (value[index] === char) {
+              const next = currentTarget && collection.from(currentTarget, 1)?.element;
+              focusInput(next);
               return;
             }
-          }
 
-          // no more space
-          if (value.length >= collection.size) {
-            // replace current value; move to next input
+            // empty values should be handled in the CLEAR_CHAR action
+            if (char === '') {
+              return;
+            }
+
+            if (validation) {
+              const regexp = new RegExp(validation.regexp);
+              const clean = char.replace(regexp, '');
+              if (clean !== char) {
+                // not valid; ignore
+                return;
+              }
+            }
+
+            // no more space
+            if (value.length >= collection.size) {
+              // replace current value; move to next input
+              const newValue = [...value];
+              newValue[index] = char;
+              flushSync(() => setValue(newValue));
+              const next = currentTarget && collection.from(currentTarget, 1)?.element;
+              focusInput(next);
+              return;
+            }
+
             const newValue = [...value];
             newValue[index] = char;
+
+            const lastElement = collection.at(-1)?.element;
             flushSync(() => setValue(newValue));
-            const next = currentTarget && collection.from(currentTarget, 1)?.element;
-            focusInput(next);
+            if (currentTarget !== lastElement) {
+              const next = currentTarget && collection.from(currentTarget, 1)?.element;
+              focusInput(next);
+            } else {
+              currentTarget?.select();
+            }
             return;
           }
 
-          const newValue = [...value];
-          newValue[index] = char;
+          case 'CLEAR_CHAR': {
+            const { index, reason } = action;
+            if (!value[index]) {
+              return;
+            }
 
-          const lastElement = collection.at(-1)?.element;
-          flushSync(() => setValue(newValue));
-          if (currentTarget !== lastElement) {
-            const next = currentTarget && collection.from(currentTarget, 1)?.element;
-            focusInput(next);
-          } else {
-            currentTarget?.select();
-          }
-          return;
-        }
+            const newValue = value.filter((_, i) => i !== index);
+            const currentTarget = collection.at(index)?.element;
+            const previous = currentTarget && collection.from(currentTarget, -1)?.element;
 
-        case 'CLEAR_CHAR': {
-          const { index, reason } = action;
-          if (!value[index]) {
+            flushSync(() => setValue(newValue));
+            if (reason === 'Backspace') {
+              focusInput(previous);
+            } else if (reason === 'Delete' || reason === 'Cut') {
+              focusInput(currentTarget);
+            }
             return;
           }
 
-          const newValue = value.filter((_, i) => i !== index);
-          const currentTarget = collection.at(index)?.element;
-          const previous = currentTarget && collection.from(currentTarget, -1)?.element;
+          case 'CLEAR': {
+            if (value.length === 0) {
+              return;
+            }
 
-          flushSync(() => setValue(newValue));
-          if (reason === 'Backspace') {
-            focusInput(previous);
-          } else if (reason === 'Delete' || reason === 'Cut') {
-            focusInput(currentTarget);
-          }
-          return;
-        }
-
-        case 'CLEAR': {
-          if (value.length === 0) {
+            if (action.reason === 'Backspace' || action.reason === 'Delete') {
+              flushSync(() => setValue([]));
+              focusInput(collection.at(0)?.element);
+            } else {
+              setValue([]);
+            }
             return;
           }
 
-          if (action.reason === 'Backspace' || action.reason === 'Delete') {
-            flushSync(() => setValue([]));
-            focusInput(collection.at(0)?.element);
-          } else {
-            setValue([]);
-          }
-          return;
-        }
+          case 'PASTE': {
+            const { value: pastedValue } = action;
+            const sanitizedValue = sanitizeValue(pastedValue);
+            if (!sanitizedValue) {
+              return;
+            }
 
-        case 'PASTE': {
-          const { value: pastedValue } = action;
-          const sanitizedValue = sanitizeValue(pastedValue);
-          if (!sanitizedValue) {
+            const value = sanitizedValue.slice(0, collection.size);
+
+            flushSync(() => setValue(value));
+            focusInput(collection.at(value.length - 1)?.element);
             return;
           }
-
-          const value = sanitizedValue.slice(0, collection.size);
-
-          flushSync(() => setValue(value));
-          focusInput(collection.at(value.length - 1)?.element);
-          return;
         }
-      }
-    }, [collection, sanitizeValue, setValue, validation]);
+      },
+      [collection, sanitizeValue, setValue, validation],
+    );
 
     // re-validate when the validation type changes
     const validationTypeRef = React.useRef(validation);
@@ -420,7 +423,7 @@ const OneTimePasswordField = React.forwardRef<HTMLDivElement, OneTimePasswordFie
         form.addEventListener('reset', reset);
         return () => form.removeEventListener('reset', reset);
       }
-    }, [locateForm]);
+    }, [dispatch, locateForm]);
 
     const currentValue = value.join('');
     const valueRef = React.useRef(currentValue);
@@ -476,7 +479,7 @@ const OneTimePasswordField = React.forwardRef<HTMLDivElement, OneTimePasswordFie
                   onPaste,
                   (event: React.ClipboardEvent<HTMLDivElement>) => {
                     event.preventDefault();
-                    const pastedValue = event.clipboardData.getData('Text');
+                    const pastedValue = event.clipboardData.getData('text/plain');
                     dispatch({ type: 'PASTE', value: pastedValue });
                   },
                 )}
