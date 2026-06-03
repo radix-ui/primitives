@@ -142,7 +142,7 @@ describe('Toast', () => {
           .should('exist')
           .and('contain.text', 'Notification')
           .and('contain.text', 'Custom Container Toast')
-          .and('contain.text', 'This toast\'s announcements are rendered in a custom container');
+          .and('contain.text', "This toast's announcements are rendered in a custom container");
       });
 
       // Verify the announcement is NOT directly in the document body (default behavior)
@@ -166,7 +166,5 @@ describe('Toast', () => {
         cy.get('[role="status"]').should('not.exist');
       });
     });
-
   });
-
 });

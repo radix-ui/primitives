@@ -229,7 +229,7 @@ const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
             disabled={disabled}
             form={form}
           >
-            {value === undefined ? <option value="" /> : null}
+            {shouldShowPlaceholder(value) ? <option value="" /> : null}
             {Array.from(nativeOptionsSet)}
           </SelectBubbleInput>
         ) : null}
@@ -387,7 +387,9 @@ const SelectValue = React.forwardRef<SelectValueElement, SelectValueProps>(
         // through the item they came from
         style={{ pointerEvents: 'none' }}
       >
-        {showPlaceholder ? placeholder : children}
+        <React.Fragment key={showPlaceholder ? 'placeholder' : 'value'}>
+          {showPlaceholder ? placeholder : children}
+        </React.Fragment>
       </Primitive.span>
     );
   },
