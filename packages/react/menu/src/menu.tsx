@@ -6,7 +6,12 @@ import { createContextScope } from '@radix-ui/react-context';
 import { useDirection } from '@radix-ui/react-direction';
 import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
 import { useFocusGuards } from '@radix-ui/react-focus-guards';
-import { FocusScope } from '@radix-ui/react-focus-scope';
+import {
+  FocusScope,
+  FocusScopeBranchProvider,
+  useFocusScopeBranch,
+  useFocusScopeBranchRegistry,
+} from '@radix-ui/react-focus-scope';
 import { useId } from '@radix-ui/react-id';
 import * as PopperPrimitive from '@radix-ui/react-popper';
 import { createPopperScope } from '@radix-ui/react-popper';
@@ -386,6 +391,7 @@ const MenuContentImpl = /* @__PURE__ */ React.forwardRef<
       onInteractOutside,
       onDismiss,
       disableOutsideScroll,
+      children,
       ...contentProps
     } = props;
     const context = useMenuContext(CONTENT_NAME, __scopeMenu);
@@ -395,7 +401,24 @@ const MenuContentImpl = /* @__PURE__ */ React.forwardRef<
     const getItems = useCollection(__scopeMenu);
     const [currentItemId, setCurrentItemId] = React.useState<string | null>(null);
     const contentRef = React.useRef<HTMLDivElement>(null);
-    const composedRefs = useComposedRefs(forwardedRef, contentRef, context.onContentChange);
+
+    // When this `Menu` is nested inside a modal layer (eg. a `Dialog`) but portalled outside of it,
+    // register its content with the ancestor layer so focus isn't reclaimed and scroll isn't locked
+    // for it (only relevant for non-modal menus, which don't trap focus / lock scroll themselves).
+    // It also exposes its own registry so nested, portalled layers can do the same against it.
+    // See: https://github.com/radix-ui/primitives/issues/3423
+    const [branchNode, setBranchNode] = React.useState<HTMLElement | null>(null);
+    useFocusScopeBranch(branchNode);
+    const { nodes: branchNodes, registry: branchRegistry } = useFocusScopeBranchRegistry();
+    // Only modal menus trap focus / lock scroll, so only they need to host branches. Non-modal
+    // menus stay transparent and let nested layers register against the next modal ancestor.
+    const isModal = Boolean(trapFocus || disableOutsideScroll);
+    const composedRefs = useComposedRefs(
+      forwardedRef,
+      contentRef,
+      context.onContentChange,
+      setBranchNode,
+    );
     const timerRef = React.useRef(0);
     const searchRef = React.useRef('');
     const pointerGraceTimerRef = React.useRef(0);
@@ -405,7 +428,11 @@ const MenuContentImpl = /* @__PURE__ */ React.forwardRef<
 
     const ScrollLockWrapper = disableOutsideScroll ? RemoveScroll : React.Fragment;
     const scrollLockWrapperProps = disableOutsideScroll
-      ? { as: Slot, allowPinchZoom: true }
+      ? {
+          as: Slot,
+          allowPinchZoom: true,
+          shards: [contentRef, ...branchNodes.map((node) => ({ current: node }))],
+        }
       : undefined;
 
     const handleTypeaheadSearch = (key: string) => {
@@ -479,6 +506,7 @@ const MenuContentImpl = /* @__PURE__ */ React.forwardRef<
           <FocusScope
             asChild
             trapped={trapFocus}
+            branches={branchNodes}
             onMountAutoFocus={composeEventHandlers(onOpenAutoFocus, (event) => {
               // when opening, explicitly focus the content area only and leave
               // `onEntryFocus` in  control of focusing first item
@@ -564,7 +592,16 @@ const MenuContentImpl = /* @__PURE__ */ React.forwardRef<
                       }
                     }),
                   )}
-                />
+                >
+                  {/* Lets nested, portalled layers register themselves as branches of this menu. */}
+                  {isModal ? (
+                    <FocusScopeBranchProvider value={branchRegistry}>
+                      {children}
+                    </FocusScopeBranchProvider>
+                  ) : (
+                    children
+                  )}
+                </PopperPrimitive.Content>
               </RovingFocusGroup.Root>
             </DismissableLayer>
           </FocusScope>
