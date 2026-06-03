@@ -33,6 +33,16 @@ interface FocusScopeProps extends PrimitiveDivProps {
   trapped?: boolean;
 
   /**
+   * A list of nodes that should be treated as part of the focus scope even
+   * though they don't live within the scope's DOM subtree (eg. portalled
+   * content of a nested, non-modal layer). When the scope is `trapped`, focus
+   * is allowed to move into these branches without being reclaimed.
+   *
+   * See: https://github.com/radix-ui/primitives/issues/3423
+   */
+  branches?: HTMLElement[];
+
+  /**
    * Event handler called when auto-focusing on mount.
    * Can be prevented.
    */
@@ -49,6 +59,7 @@ const FocusScope = React.forwardRef<FocusScopeElement, FocusScopeProps>((props, 
   const {
     loop = false,
     trapped = false,
+    branches,
     onMountAutoFocus: onMountAutoFocusProp,
     onUnmountAutoFocus: onUnmountAutoFocusProp,
     ...scopeProps
@@ -58,6 +69,24 @@ const FocusScope = React.forwardRef<FocusScopeElement, FocusScopeProps>((props, 
   const onUnmountAutoFocus = useCallbackRef(onUnmountAutoFocusProp);
   const lastFocusedElementRef = React.useRef<HTMLElement | null>(null);
   const composedRefs = useComposedRefs(forwardedRef, (node) => setContainer(node));
+
+  // Keep the latest branches in a ref so the trap effect below doesn't need to resubscribe its
+  // listeners whenever the branch list updates. We sync it in the commit phase (not during render)
+  // to stay safe under concurrent rendering, where a render can be discarded or replayed. The trap's
+  // focus event handlers only run in response to user interaction (well after commit), so reading
+  // the ref from them always sees the committed branch list.
+  const branchesRef = React.useRef(branches);
+  React.useEffect(() => {
+    branchesRef.current = branches;
+  });
+  const isTargetInScope = React.useCallback(
+    (target: HTMLElement | null) => {
+      if (!target) return false;
+      if (container?.contains(target)) return true;
+      return Boolean(branchesRef.current?.some((branch) => branch.contains(target)));
+    },
+    [container],
+  );
 
   const focusScope = React.useRef({
     paused: false,
@@ -75,7 +104,7 @@ const FocusScope = React.forwardRef<FocusScopeElement, FocusScopeProps>((props, 
       function handleFocusIn(event: FocusEvent) {
         if (focusScope.paused || !container) return;
         const target = event.target as HTMLElement | null;
-        if (container.contains(target)) {
+        if (isTargetInScope(target)) {
           lastFocusedElementRef.current = target;
         } else {
           focus(lastFocusedElementRef.current, { select: true });
@@ -99,8 +128,9 @@ const FocusScope = React.forwardRef<FocusScopeElement, FocusScopeProps>((props, 
         if (relatedTarget === null) return;
 
         // If the focus has moved to an actual legitimate element (`relatedTarget !== null`)
-        // that is outside the container, we move focus to the last valid focused element inside.
-        if (!container.contains(relatedTarget)) {
+        // that is outside the container (and any registered branches), we move focus to the last
+        // valid focused element inside.
+        if (!isTargetInScope(relatedTarget)) {
           focus(lastFocusedElementRef.current, { select: true });
         }
       }
@@ -127,7 +157,7 @@ const FocusScope = React.forwardRef<FocusScopeElement, FocusScopeProps>((props, 
         mutationObserver.disconnect();
       };
     }
-  }, [trapped, container, focusScope.paused]);
+  }, [trapped, container, focusScope.paused, isTargetInScope]);
 
   React.useEffect(() => {
     if (container) {
@@ -206,6 +236,56 @@ const FocusScope = React.forwardRef<FocusScopeElement, FocusScopeProps>((props, 
 });
 
 FocusScope.displayName = FOCUS_SCOPE_NAME;
+
+/* -------------------------------------------------------------------------------------------------
+ * FocusScope branch registry
+ * -----------------------------------------------------------------------------------------------*/
+
+/**
+ * Lets portalled content that is a React descendant of a (modal) layer — but rendered outside of
+ * that layer's DOM subtree — register itself as a "branch" of the layer's focus scope.
+ *
+ * A modal container (eg. `Dialog`) creates a registry via `useFocusScopeBranchRegistry`, renders a
+ * `FocusScopeBranchProvider` around its children, and passes the collected `nodes` to its trapped
+ * `FocusScope` (so focus isn't reclaimed from the branch) and, if applicable, to its `RemoveScroll`
+ * `shards` (so the branch remains scrollable). Nested layers (eg. a non-modal `Popover`) register
+ * their content node with `useFocusScopeBranch`.
+ *
+ * See: https://github.com/radix-ui/primitives/issues/3423
+ */
+interface FocusScopeBranchRegistry {
+  add: (node: HTMLElement) => void;
+  remove: (node: HTMLElement) => void;
+}
+
+const FocusScopeBranchContext = React.createContext<FocusScopeBranchRegistry | null>(null);
+
+const FocusScopeBranchProvider = FocusScopeBranchContext.Provider;
+
+function useFocusScopeBranchRegistry() {
+  const [nodes, setNodes] = React.useState<HTMLElement[]>([]);
+  const registry = React.useMemo<FocusScopeBranchRegistry>(
+    () => ({
+      add: (node) => setNodes((prev) => (prev.includes(node) ? prev : [...prev, node])),
+      remove: (node) => setNodes((prev) => prev.filter((current) => current !== node)),
+    }),
+    [],
+  );
+  return { nodes, registry } as const;
+}
+
+/**
+ * Registers `node` as a branch of the nearest ancestor `FocusScopeBranchProvider`. No-ops when
+ * there is no ancestor registry (eg. the layer isn't nested inside a modal layer).
+ */
+function useFocusScopeBranch(node: HTMLElement | null) {
+  const registry = React.useContext(FocusScopeBranchContext);
+  React.useEffect(() => {
+    if (!node || !registry) return;
+    registry.add(node);
+    return () => registry.remove(node);
+  }, [node, registry]);
+}
 
 /* -------------------------------------------------------------------------------------------------
  * Utils
@@ -346,7 +426,10 @@ const Root = FocusScope;
 
 export {
   FocusScope,
+  FocusScopeBranchProvider,
+  useFocusScopeBranchRegistry,
+  useFocusScopeBranch,
   //
   Root,
 };
-export type { FocusScopeProps };
+export type { FocusScopeProps, FocusScopeBranchRegistry };

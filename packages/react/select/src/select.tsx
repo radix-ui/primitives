@@ -387,7 +387,7 @@ const SelectValue = React.forwardRef<SelectValueElement, SelectValueProps>(
         // through the item they came from
         style={{ pointerEvents: 'none' }}
       >
-        {showPlaceholder ? placeholder : children}
+        {showPlaceholder ? <>{placeholder}</> : children}
       </Primitive.span>
     );
   },
