@@ -423,7 +423,7 @@ const OneTimePasswordField = React.forwardRef<HTMLDivElement, OneTimePasswordFie
         form.addEventListener('reset', reset);
         return () => form.removeEventListener('reset', reset);
       }
-    }, [locateForm]);
+    }, [dispatch, locateForm]);
 
     const currentValue = value.join('');
     const valueRef = React.useRef(currentValue);
