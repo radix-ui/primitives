@@ -1,6 +1,6 @@
 import { axe } from 'vitest-axe';
 import type { RenderResult } from '@testing-library/react';
-import { act, cleanup, render, screen, fireEvent } from '@testing-library/react';
+import { act, cleanup, render, screen } from '@testing-library/react';
 import * as OneTimePasswordField from './one-time-password-field';
 import { afterEach, describe, it, beforeEach, expect } from 'vitest';
 import { userEvent, type UserEvent } from '@testing-library/user-event';
@@ -92,25 +92,22 @@ describe('given a default OneTimePasswordField', () => {
     expect(document.activeElement).toBe(inputs[1]);
   });
 
-  // TODO: userEvent paste not behaving as expected. Debug and unskip.
-  // Replicated in storybook for now.
-  it.todo('pastes the code into the input', async () => {
+  it('pastes the code into the input', async () => {
     const inputs = screen.getAllByRole<HTMLInputElement>('textbox', {
       hidden: false,
     });
     const firstInput = inputs[0]!;
-    fireEvent.click(firstInput);
+    await user.click(firstInput);
     await act(async () => await user.paste('1,2,3,4,5,6'));
     expect(getInputValues(inputs)).toBe('1,2,3,4,5,6');
   });
 
-  // TODO: userEvent paste not behaving as expected. Debug and unskip.
-  it.todo('should truncate pasted characters to the number of inputs', async () => {
+  it('should truncate pasted characters to the number of inputs', async () => {
     const inputs = screen.getAllByRole<HTMLInputElement>('textbox', {
       hidden: false,
     });
     const firstInput = inputs[0]!;
-    fireEvent.click(firstInput);
+    await user.click(firstInput);
     await act(async () => await user.paste('123456789'));
     expect(getInputValues(inputs)).toBe('1,2,3,4,5,6');
   });
