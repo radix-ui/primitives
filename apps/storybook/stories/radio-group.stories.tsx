@@ -1,8 +1,94 @@
+/* eslint-disable react/jsx-pascal-case */
 import * as React from 'react';
 import { Direction, Label as LabelPrimitive, RadioGroup } from 'radix-ui';
 import styles from './radio-group.stories.module.css';
 
 export default { title: 'Components/RadioGroup' };
+
+export const Parts = () => (
+  <Label>
+    Favourite pet
+    <RadioGroup.Root className={styles.root} defaultValue="1">
+      <Label>
+        <RadioGroup.unstable_ItemProvider value="1">
+          <RadioGroup.unstable_ItemTrigger className={styles.item}>
+            <RadioGroup.Indicator className={styles.indicator} />
+          </RadioGroup.unstable_ItemTrigger>
+        </RadioGroup.unstable_ItemProvider>
+        Cat
+      </Label>{' '}
+      <Label>
+        <RadioGroup.unstable_ItemProvider value="2">
+          <RadioGroup.unstable_ItemTrigger className={styles.item}>
+            <RadioGroup.Indicator className={styles.indicator} />
+          </RadioGroup.unstable_ItemTrigger>
+        </RadioGroup.unstable_ItemProvider>
+        Dog
+      </Label>{' '}
+      <Label>
+        <RadioGroup.unstable_ItemProvider value="3">
+          <RadioGroup.unstable_ItemTrigger className={styles.item}>
+            <RadioGroup.Indicator className={styles.indicator} />
+          </RadioGroup.unstable_ItemTrigger>
+        </RadioGroup.unstable_ItemProvider>
+        Rabbit
+      </Label>
+    </RadioGroup.Root>
+  </Label>
+);
+
+export const PartsWithinForm = () => {
+  const [data, setData] = React.useState({ required: '', stopprop: '' });
+
+  return (
+    <form
+      onSubmit={(event) => event.preventDefault()}
+      onChange={(event) => {
+        const radio = event.target as unknown as HTMLInputElement;
+        setData((prevData) => ({ ...prevData, [radio.name]: radio.value }));
+      }}
+    >
+      <fieldset>
+        <legend>required value: {data.required}</legend>
+        <RadioGroup.Root className={styles.root} name="required" required>
+          {['1', '2', '3'].map((value) => (
+            <RadioGroup.unstable_ItemProvider key={value} value={value}>
+              <RadioGroup.unstable_ItemTrigger className={styles.item}>
+                <RadioGroup.Indicator className={styles.indicator} />
+              </RadioGroup.unstable_ItemTrigger>
+              <RadioGroup.unstable_ItemBubbleInput />
+            </RadioGroup.unstable_ItemProvider>
+          ))}
+        </RadioGroup.Root>
+      </fieldset>
+
+      <br />
+      <br />
+
+      <fieldset>
+        <legend>stop propagation value: {data.stopprop}</legend>
+        <RadioGroup.Root className={styles.root} name="stopprop">
+          {['1', '2', '3'].map((value) => (
+            <RadioGroup.unstable_ItemProvider key={value} value={value}>
+              <RadioGroup.unstable_ItemTrigger
+                className={styles.item}
+                onClick={(event) => event.stopPropagation()}
+              >
+                <RadioGroup.Indicator className={styles.indicator} />
+              </RadioGroup.unstable_ItemTrigger>
+              <RadioGroup.unstable_ItemBubbleInput />
+            </RadioGroup.unstable_ItemProvider>
+          ))}
+        </RadioGroup.Root>
+      </fieldset>
+
+      <br />
+      <br />
+
+      <button>Submit</button>
+    </form>
+  );
+};
 
 export const LegacyStyled = () => (
   <Label>

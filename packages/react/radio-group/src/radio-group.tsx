@@ -7,7 +7,15 @@ import * as RovingFocusGroup from '@radix-ui/react-roving-focus';
 import { createRovingFocusGroupScope } from '@radix-ui/react-roving-focus';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { useDirection } from '@radix-ui/react-direction';
-import { Radio, RadioIndicator, createRadioScope } from './radio';
+import {
+  type Radio,
+  RadioProvider,
+  RadioTrigger,
+  RadioBubbleInput,
+  RadioIndicator,
+  createRadioScope,
+  useRadioContext,
+} from './radio';
 
 import type { Scope } from '@radix-ui/react-context';
 
@@ -110,10 +118,121 @@ const RadioGroup = React.forwardRef<RadioGroupElement, RadioGroupProps>(
 RadioGroup.displayName = RADIO_GROUP_NAME;
 
 /* -------------------------------------------------------------------------------------------------
- * RadioGroupItem
+ * RadioGroupItemProvider
  * -----------------------------------------------------------------------------------------------*/
 
 const ITEM_NAME = 'RadioGroupItem';
+const ITEM_PROVIDER_NAME = 'RadioGroupItemProvider';
+const ITEM_TRIGGER_NAME = 'RadioGroupItemTrigger';
+const ITEM_BUBBLE_INPUT_NAME = 'RadioGroupItemBubbleInput';
+
+interface RadioGroupItemProviderProps {
+  value: string;
+  disabled?: boolean;
+  children?: React.ReactNode;
+}
+
+function RadioGroupItemProvider(props: ScopedProps<RadioGroupItemProviderProps>) {
+  const {
+    __scopeRadioGroup,
+    value,
+    disabled,
+    children,
+    // @ts-expect-error
+    internal_do_not_use_render,
+  } = props;
+  const context = useRadioGroupContext(ITEM_PROVIDER_NAME, __scopeRadioGroup);
+  const radioScope = useRadioScope(__scopeRadioGroup);
+  const isDisabled = context.disabled || disabled;
+
+  return (
+    <RadioProvider
+      {...radioScope}
+      checked={context.value === value}
+      disabled={isDisabled}
+      required={context.required}
+      name={context.name}
+      value={value}
+      onCheck={() => context.onValueChange(value)}
+      // @ts-expect-error
+      internal_do_not_use_render={internal_do_not_use_render}
+    >
+      {children}
+    </RadioProvider>
+  );
+}
+
+/* -------------------------------------------------------------------------------------------------
+ * RadioGroupItemTrigger
+ * -----------------------------------------------------------------------------------------------*/
+
+type RadioGroupItemTriggerElement = React.ComponentRef<typeof RadioTrigger>;
+interface RadioGroupItemTriggerProps extends React.ComponentPropsWithoutRef<typeof RadioTrigger> {}
+
+const RadioGroupItemTrigger = React.forwardRef<
+  RadioGroupItemTriggerElement,
+  RadioGroupItemTriggerProps
+>((props: ScopedProps<RadioGroupItemTriggerProps>, forwardedRef) => {
+  const { __scopeRadioGroup, ...triggerProps } = props;
+  const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeRadioGroup);
+  const radioScope = useRadioScope(__scopeRadioGroup);
+  const { checked, disabled } = useRadioContext(ITEM_TRIGGER_NAME, radioScope.__scopeRadio);
+  const ref = React.useRef<RadioGroupItemTriggerElement>(null);
+  const composedRefs = useComposedRefs(forwardedRef, ref);
+  const isArrowKeyPressedRef = React.useRef(false);
+
+  React.useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (ARROW_KEYS.includes(event.key)) {
+        isArrowKeyPressedRef.current = true;
+      }
+    };
+    const handleKeyUp = () => (isArrowKeyPressedRef.current = false);
+    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('keyup', handleKeyUp);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('keyup', handleKeyUp);
+    };
+  }, []);
+
+  return (
+    <RovingFocusGroup.Item
+      asChild
+      {...rovingFocusGroupScope}
+      focusable={!disabled}
+      active={checked}
+    >
+      <RadioTrigger
+        {...radioScope}
+        {...triggerProps}
+        ref={composedRefs}
+        onKeyDown={composeEventHandlers(triggerProps.onKeyDown, (event) => {
+          // According to WAI ARIA, radio groups don't activate items on enter
+          // keypress
+          if (event.key === 'Enter') event.preventDefault();
+        })}
+        onFocus={composeEventHandlers(triggerProps.onFocus, () => {
+          /**
+           * Our `RovingFocusGroup` will focus the radio when navigating with
+           * arrow keys and we need to "check" it in that case. We click it to
+           * "check" it (instead of updating `context.value`) so that the radio
+           * change event fires.
+           */
+          if (isArrowKeyPressedRef.current) {
+            ref.current?.click();
+          }
+        })}
+      />
+    </RovingFocusGroup.Item>
+  );
+});
+
+RadioGroupItemTrigger.displayName = ITEM_TRIGGER_NAME;
+
+/* -------------------------------------------------------------------------------------------------
+ * RadioGroupItem
+ * -----------------------------------------------------------------------------------------------*/
 
 type RadioGroupItemElement = React.ComponentRef<typeof Radio>;
 type RadioProps = React.ComponentPropsWithoutRef<typeof Radio>;
@@ -123,66 +242,56 @@ interface RadioGroupItemProps extends Omit<RadioProps, 'onCheck' | 'name'> {
 
 const RadioGroupItem = React.forwardRef<RadioGroupItemElement, RadioGroupItemProps>(
   (props: ScopedProps<RadioGroupItemProps>, forwardedRef) => {
-    const { __scopeRadioGroup, disabled, ...itemProps } = props;
-    const context = useRadioGroupContext(ITEM_NAME, __scopeRadioGroup);
-    const isDisabled = context.disabled || disabled;
-    const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeRadioGroup);
-    const radioScope = useRadioScope(__scopeRadioGroup);
-    const ref = React.useRef<React.ComponentRef<typeof Radio>>(null);
-    const composedRefs = useComposedRefs(forwardedRef, ref);
-    const checked = context.value === itemProps.value;
-    const isArrowKeyPressedRef = React.useRef(false);
-
-    React.useEffect(() => {
-      const handleKeyDown = (event: KeyboardEvent) => {
-        if (ARROW_KEYS.includes(event.key)) {
-          isArrowKeyPressedRef.current = true;
-        }
-      };
-      const handleKeyUp = () => (isArrowKeyPressedRef.current = false);
-      document.addEventListener('keydown', handleKeyDown);
-      document.addEventListener('keyup', handleKeyUp);
-      return () => {
-        document.removeEventListener('keydown', handleKeyDown);
-        document.removeEventListener('keyup', handleKeyUp);
-      };
-    }, []);
+    const { __scopeRadioGroup, value, disabled, ...itemProps } = props;
 
     return (
-      <RovingFocusGroup.Item
-        asChild
-        {...rovingFocusGroupScope}
-        focusable={!isDisabled}
-        active={checked}
-      >
-        <Radio
-          disabled={isDisabled}
-          required={context.required}
-          checked={checked}
-          {...radioScope}
-          {...itemProps}
-          name={context.name}
-          ref={composedRefs}
-          onCheck={() => context.onValueChange(itemProps.value)}
-          onKeyDown={composeEventHandlers((event) => {
-            // According to WAI ARIA, radio groups don't activate items on enter keypress
-            if (event.key === 'Enter') event.preventDefault();
-          })}
-          onFocus={composeEventHandlers(itemProps.onFocus, () => {
-            /**
-             * Our `RovingFocusGroup` will focus the radio when navigating with arrow keys
-             * and we need to "check" it in that case. We click it to "check" it (instead
-             * of updating `context.value`) so that the radio change event fires.
-             */
-            if (isArrowKeyPressedRef.current) ref.current?.click();
-          })}
-        />
-      </RovingFocusGroup.Item>
+      <RadioGroupItemProvider
+        __scopeRadioGroup={__scopeRadioGroup}
+        value={value}
+        disabled={disabled}
+        // @ts-expect-error
+        internal_do_not_use_render={({ isFormControl }: { isFormControl: boolean }) => (
+          <>
+            <RadioGroupItemTrigger
+              {...itemProps}
+              ref={forwardedRef}
+              // @ts-expect-error
+              __scopeRadioGroup={__scopeRadioGroup}
+            />
+            {isFormControl && (
+              <RadioGroupItemBubbleInput
+                // @ts-expect-error
+                __scopeRadioGroup={__scopeRadioGroup}
+              />
+            )}
+          </>
+        )}
+      />
     );
   },
 );
 
 RadioGroupItem.displayName = ITEM_NAME;
+
+/* -------------------------------------------------------------------------------------------------
+ * RadioGroupItemBubbleInput
+ * -----------------------------------------------------------------------------------------------*/
+
+type RadioGroupItemBubbleInputElement = React.ComponentRef<typeof RadioBubbleInput>;
+interface RadioGroupItemBubbleInputProps extends React.ComponentPropsWithoutRef<
+  typeof RadioBubbleInput
+> {}
+
+const RadioGroupItemBubbleInput = React.forwardRef<
+  RadioGroupItemBubbleInputElement,
+  RadioGroupItemBubbleInputProps
+>((props: ScopedProps<RadioGroupItemBubbleInputProps>, forwardedRef) => {
+  const { __scopeRadioGroup, ...bubbleProps } = props;
+  const radioScope = useRadioScope(__scopeRadioGroup);
+  return <RadioBubbleInput {...radioScope} {...bubbleProps} ref={forwardedRef} />;
+});
+
+RadioGroupItemBubbleInput.displayName = ITEM_BUBBLE_INPUT_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * RadioGroupIndicator
@@ -206,19 +315,28 @@ RadioGroupIndicator.displayName = INDICATOR_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
-const Root = RadioGroup;
-const Item = RadioGroupItem;
-const Indicator = RadioGroupIndicator;
-
 export {
   createRadioGroupScope,
   //
   RadioGroup,
   RadioGroupItem,
+  RadioGroupItemProvider,
+  RadioGroupItemTrigger,
+  RadioGroupItemBubbleInput,
   RadioGroupIndicator,
   //
-  Root,
-  Item,
-  Indicator,
+  RadioGroup as Root,
+  RadioGroupItem as Item,
+  RadioGroupItemProvider as ItemProvider,
+  RadioGroupItemTrigger as ItemTrigger,
+  RadioGroupItemBubbleInput as ItemBubbleInput,
+  RadioGroupIndicator as Indicator,
 };
-export type { RadioGroupProps, RadioGroupItemProps, RadioGroupIndicatorProps };
+export type {
+  RadioGroupProps,
+  RadioGroupItemProps,
+  RadioGroupItemProviderProps,
+  RadioGroupItemTriggerProps,
+  RadioGroupItemBubbleInputProps,
+  RadioGroupIndicatorProps,
+};
