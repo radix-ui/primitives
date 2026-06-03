@@ -380,7 +380,6 @@ const SelectValue = React.forwardRef<SelectValueElement, SelectValueProps>(
 
     return (
       <Primitive.span
-        key={showPlaceholder ? 'placeholder' : 'value'}
         {...valueProps}
         asChild={showPlaceholder ? false : valueProps.asChild}
         ref={composedRefs}
@@ -388,7 +387,9 @@ const SelectValue = React.forwardRef<SelectValueElement, SelectValueProps>(
         // through the item they came from
         style={{ pointerEvents: 'none' }}
       >
-        {showPlaceholder ? placeholder : children}
+        <React.Fragment key={showPlaceholder ? 'placeholder' : 'value'}>
+          {showPlaceholder ? placeholder : children}
+        </React.Fragment>
       </Primitive.span>
     );
   },

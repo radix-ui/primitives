@@ -22,12 +22,44 @@ describe('Select', () => {
     });
 
     it('can be reset to the placeholder', () => {
+      cy.findByLabelText(/choose a model/).as('modelTrigger');
+      cy.get('@modelTrigger').click();
+      cy.findByRole('option', { name: /model x/i }).click();
+      cy.findByRole('listbox').should('not.exist');
+      cy.get('@modelTrigger').should('include.text', 'Model X');
+      cy.findByText('unset').click();
+      cy.get('@modelTrigger').should('include.text', '…').and('not.include.text', 'Model X');
+    });
+
+    it('submits an empty value after being reset to the placeholder', () => {
       cy.findByLabelText(/choose a model/).click();
       cy.findByRole('option', { name: /model x/i }).click();
-      cy.findByText(/model y/i).should('not.exist');
-      cy.findByText(/model x/i).should('exist');
       cy.findByText('unset').click();
-      cy.findByText('…').should('exist');
+      cy.findByText('submit model').click();
+      cy.findByText('Submitted model: empty').should('exist');
+    });
+  });
+
+  describe('given an open select whose value changes externally', () => {
+    it('keeps the positioned content stable', () => {
+      cy.findByLabelText(/choose an open color/).as('colorTrigger');
+      cy.get('@colorTrigger').click();
+      cy.findByRole('listbox').then(($content) => {
+        const before = $content[0].parentElement!.getBoundingClientRect();
+
+        cy.findByText('toggle open color value').then(($button) => {
+          $button[0].click();
+        });
+
+        cy.findByRole('listbox').should('exist');
+        cy.get('@colorTrigger').should('include.text', 'Pick a color');
+        cy.findByRole('listbox').then(($updatedContent) => {
+          const after = $updatedContent[0].parentElement!.getBoundingClientRect();
+
+          expect(Math.abs(after.left - before.left)).to.be.lessThan(1);
+          expect(Math.abs(after.top - before.top)).to.be.lessThan(1);
+        });
+      });
     });
   });
 });

@@ -898,12 +898,17 @@ export const ChromaticNoDefaultValue = () => (
 ChromaticNoDefaultValue.parameters = { chromatic: { disable: false } };
 
 export const Cypress = () => {
-  const [data, setData] = React.useState<{ size?: 'S' | 'M' | 'L' }>({});
+  const [data, setData] = React.useState<{ size?: string; model?: string }>({});
   const [model, setModel] = React.useState<string | undefined>('');
+  const [openColor, setOpenColor] = React.useState(false);
+  const [color, setColor] = React.useState<string | undefined>('green');
 
   function handleChange(event: React.FormEvent<HTMLFormElement>) {
     const formData = new FormData(event.currentTarget);
-    setData(Object.fromEntries((formData as any).entries()));
+    setData({
+      size: formData.get('size')?.toString(),
+      model: formData.get('model')?.toString(),
+    });
   }
 
   return (
@@ -957,7 +962,13 @@ export const Cypress = () => {
 
       <hr />
 
-      <div style={{ padding: 50 }}>
+      <form
+        style={{ padding: 50 }}
+        onSubmit={(event) => {
+          handleChange(event);
+          event.preventDefault();
+        }}
+      >
         <Label>
           choose a model
           <Select.Root name="model" value={model} onValueChange={setModel}>
@@ -1000,6 +1011,61 @@ export const Cypress = () => {
 
         <button type="button" style={{ width: 100, height: 50 }} onClick={() => setModel('')}>
           unset
+        </button>
+        <button type="submit" style={{ width: 100, height: 50 }}>
+          submit model
+        </button>
+        {data.model !== undefined ? (
+          <p>Submitted model: {data.model === '' ? 'empty' : data.model}</p>
+        ) : null}
+      </form>
+
+      <div style={{ padding: 50 }}>
+        <Label>
+          choose an open color
+          <Select.Root
+            open={openColor}
+            onOpenChange={setOpenColor}
+            value={color}
+            onValueChange={setColor}
+          >
+            <Select.Trigger className={styles.trigger}>
+              <Select.Value placeholder="Pick a color" />
+              <Select.Icon />
+            </Select.Trigger>
+            <Select.Portal>
+              <Select.Content className={styles.content}>
+                <Select.Viewport className={styles.viewport}>
+                  <Select.Item className={styles.item} value="red">
+                    <Select.ItemText>Red</Select.ItemText>
+                    <Select.ItemIndicator className={styles.indicator}>
+                      <TickIcon />
+                    </Select.ItemIndicator>
+                  </Select.Item>
+                  <Select.Item className={styles.item} value="green">
+                    <Select.ItemText>Green</Select.ItemText>
+                    <Select.ItemIndicator className={styles.indicator}>
+                      <TickIcon />
+                    </Select.ItemIndicator>
+                  </Select.Item>
+                  <Select.Item className={styles.item} value="blue">
+                    <Select.ItemText>Blue</Select.ItemText>
+                    <Select.ItemIndicator className={styles.indicator}>
+                      <TickIcon />
+                    </Select.ItemIndicator>
+                  </Select.Item>
+                </Select.Viewport>
+              </Select.Content>
+            </Select.Portal>
+          </Select.Root>
+        </Label>
+
+        <button
+          type="button"
+          style={{ width: 160, height: 50 }}
+          onClick={() => setColor((value) => (value === '' ? 'green' : ''))}
+        >
+          toggle open color value
         </button>
       </div>
     </>
