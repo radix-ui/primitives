@@ -31,6 +31,21 @@ declare module 'react' {
   }
 }
 
+declare global {
+  interface FocusOptions {
+    /**
+     * A boolean value that should be set to `true` to force, or `false` to prevent
+     * visible indication that the element is focused. If the property is not
+     * specified, a browser will provide visible indication if it determines
+     * that this would improve accessibility for users.
+     *
+     * @see
+     * https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus#focusvisible
+     */
+    focusVisible?: boolean;
+  }
+}
+
 /* -------------------------------------------------------------------------------------------------
  * Slider
  * -----------------------------------------------------------------------------------------------*/
@@ -100,6 +115,7 @@ const Slider = React.forwardRef<SliderElement, SliderProps>(
     } = props;
     const thumbRefs = React.useRef<SliderContextValue['thumbs']>(new Set());
     const valueIndexToChangeRef = React.useRef<number>(0);
+    const isKeyboardInteractionRef = React.useRef(false);
     const isHorizontal = orientation === 'horizontal';
     const SliderOrientation = isHorizontal ? SliderHorizontal : SliderVertical;
 
@@ -108,7 +124,11 @@ const Slider = React.forwardRef<SliderElement, SliderProps>(
       defaultProp: defaultValue,
       onChange: (value) => {
         const thumbs = [...thumbRefs.current];
-        thumbs[valueIndexToChangeRef.current]?.focus({ preventScroll: true });
+        thumbs[valueIndexToChangeRef.current]?.focus({
+          preventScroll: true,
+          focusVisible: isKeyboardInteractionRef.current,
+        });
+        isKeyboardInteractionRef.current = false;
         onValueChange(value);
       },
     });
@@ -169,7 +189,10 @@ const Slider = React.forwardRef<SliderElement, SliderProps>(
               {...sliderProps}
               ref={forwardedRef}
               onPointerDown={composeEventHandlers(sliderProps.onPointerDown, () => {
-                if (!disabled) valuesBeforeSlideStartRef.current = values;
+                if (!disabled) {
+                  valuesBeforeSlideStartRef.current = values;
+                  isKeyboardInteractionRef.current = false;
+                }
               })}
               min={min}
               max={max}
@@ -177,12 +200,21 @@ const Slider = React.forwardRef<SliderElement, SliderProps>(
               onSlideStart={disabled ? undefined : handleSlideStart}
               onSlideMove={disabled ? undefined : handleSlideMove}
               onSlideEnd={disabled ? undefined : handleSlideEnd}
-              onHomeKeyDown={() => !disabled && updateValues(min, 0, { commit: true })}
-              onEndKeyDown={() =>
-                !disabled && updateValues(max, values.length - 1, { commit: true })
-              }
+              onHomeKeyDown={() => {
+                if (!disabled) {
+                  isKeyboardInteractionRef.current = true;
+                  updateValues(min, 0, { commit: true });
+                }
+              }}
+              onEndKeyDown={() => {
+                if (!disabled) {
+                  isKeyboardInteractionRef.current = true;
+                  updateValues(max, values.length - 1, { commit: true });
+                }
+              }}
               onStepKeyDown={({ event, direction: stepDirection }) => {
                 if (!disabled) {
+                  isKeyboardInteractionRef.current = true;
                   const isPageKey = PAGE_KEYS.includes(event.key);
                   const isSkipKey = isPageKey || (event.shiftKey && ARROW_KEYS.includes(event.key));
                   const multiplier = isSkipKey ? 10 : 1;
@@ -439,7 +471,8 @@ const SliderImpl = React.forwardRef<SliderImplElement, SliderImplProps>(
           // Touch devices have a delay before focusing so won't focus if touch immediately moves
           // away from target (sliding). We want thumb to focus regardless.
           if (context.thumbs.has(target)) {
-            target.focus({ preventScroll: true });
+            // Pointer interaction, so avoid showing the focus ring (`:focus-visible`).
+            target.focus({ preventScroll: true, focusVisible: false });
           } else {
             onSlideStart(event);
           }
