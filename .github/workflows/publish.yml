@@ -15,10 +15,13 @@ concurrency: ${{ github.workflow }}-${{ github.ref }}
 jobs:
   detect-snapshot-changes:
     if: github.repository == 'radix-ui/primitives' && github.ref == 'refs/heads/main'
-    name: Detect snapshot-worthy changes
+    name: Detect snapshot changes
     runs-on: ubuntu-latest
     outputs:
       should_publish: ${{ steps.detect.outputs.should_publish }}
+      reason: ${{ steps.detect.outputs.reason }}
+      last_snapshot_version: ${{ steps.detect.outputs.last_snapshot_version }}
+      last_snapshot_published_at: ${{ steps.detect.outputs.last_snapshot_published_at }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
