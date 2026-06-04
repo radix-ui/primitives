@@ -2,27 +2,91 @@ name: Detect snapshot changes
 description: Determine whether a main-branch push should trigger a snapshot publish
 outputs:
   should_publish:
-    description: Whether the push includes publish-worthy changes
-    value: ${{ steps.filter.outputs.should_publish }}
+    description: Whether the latest main branch state should publish a snapshot
+    value: ${{ steps.detect.outputs.should_publish }}
+  reason:
+    description: Why a snapshot should or should not publish
+    value: ${{ steps.detect.outputs.reason }}
+  last_snapshot_version:
+    description: The current npm next version used as the snapshot baseline
+    value: ${{ steps.detect.outputs.last_snapshot_version }}
+  last_snapshot_published_at:
+    description: When the current npm next version was published
+    value: ${{ steps.detect.outputs.last_snapshot_published_at }}
 runs:
   using: composite
   steps:
-    - name: Check changed files
-      id: filter
+    - name: Detect daily snapshot changes
+      id: detect
       shell: bash
+      env:
+        SNAPSHOT_PACKAGE: radix-ui
+        SNAPSHOT_TAG: next
       run: |
-        BEFORE="${{ github.event.before }}"
+        set -euo pipefail
+
         AFTER="${{ github.sha }}"
-        # Publish unconditionally when there is no usable base commit to diff
-        # against: manual `workflow_dispatch` (empty `before`), the first push to
-        # a new branch (all-zero `before`), or a base commit that is no longer
-        # reachable (e.g. after a force-push).
-        if [ -z "$BEFORE" ] \
-          || [ "$BEFORE" = "0000000000000000000000000000000000000000" ] \
-          || ! git cat-file -e "$BEFORE^{commit}" 2>/dev/null; then
-          echo "should_publish=true" >> "$GITHUB_OUTPUT"
+        CURRENT_DAY="$(date -u +%F)"
+
+        set_outputs() {
+          echo "$2"
+          echo "should_publish=$1" >> "$GITHUB_OUTPUT"
+          echo "reason=$2" >> "$GITHUB_OUTPUT"
+          echo "last_snapshot_version=${LAST_SNAPSHOT_VERSION:-}" >> "$GITHUB_OUTPUT"
+          echo "last_snapshot_published_at=${LAST_SNAPSHOT_PUBLISHED_AT:-}" >> "$GITHUB_OUTPUT"
+        }
+
+        if ! REGISTRY_METADATA="$(npm view "${SNAPSHOT_PACKAGE}@${SNAPSHOT_TAG}" version time --json)"; then
+          echo "Failed to read ${SNAPSHOT_PACKAGE}@${SNAPSHOT_TAG} metadata from npm." >&2
+          exit 1
+        fi
+
+        LAST_SNAPSHOT_VERSION=""
+        LAST_SNAPSHOT_PUBLISHED_AT=""
+        if [ -n "$REGISTRY_METADATA" ]; then
+          LAST_SNAPSHOT_VERSION="$(REGISTRY_METADATA="$REGISTRY_METADATA" node <<'NODE'
+        const metadata = JSON.parse(process.env.REGISTRY_METADATA || '{}');
+        process.stdout.write(typeof metadata.version === 'string' ? metadata.version : '');
+        NODE
+          )"
+          LAST_SNAPSHOT_PUBLISHED_AT="$(REGISTRY_METADATA="$REGISTRY_METADATA" LAST_SNAPSHOT_VERSION="$LAST_SNAPSHOT_VERSION" node <<'NODE'
+        const metadata = JSON.parse(process.env.REGISTRY_METADATA || '{}');
+        const version = process.env.LAST_SNAPSHOT_VERSION || '';
+        const time = metadata.time && typeof metadata.time === 'object' ? metadata.time : {};
+        process.stdout.write(version && typeof time[version] === 'string' ? time[version] : '');
+        NODE
+          )"
+        fi
+
+        if [ -z "$LAST_SNAPSHOT_VERSION" ] || [ -z "$LAST_SNAPSHOT_PUBLISHED_AT" ]; then
+          echo "Unable to determine the latest ${SNAPSHOT_PACKAGE}@${SNAPSHOT_TAG} snapshot release." >&2
+          exit 1
+        fi
+
+        LAST_SNAPSHOT_DAY="$(LAST_SNAPSHOT_PUBLISHED_AT="$LAST_SNAPSHOT_PUBLISHED_AT" node <<'NODE'
+        const publishedAt = new Date(process.env.LAST_SNAPSHOT_PUBLISHED_AT || '');
+        if (Number.isNaN(publishedAt.getTime())) {
+          process.exit(1);
+        }
+        process.stdout.write(publishedAt.toISOString().slice(0, 10));
+        NODE
+        )"
+        if [ "$LAST_SNAPSHOT_DAY" = "$CURRENT_DAY" ]; then
+          set_outputs false "${SNAPSHOT_PACKAGE}@${SNAPSHOT_TAG} was already published today."
           exit 0
         fi
+
+        BASE_COMMIT="$(git rev-list -n 1 --before="$LAST_SNAPSHOT_PUBLISHED_AT" "$AFTER" || true)"
+        if [ -z "$BASE_COMMIT" ]; then
+          set_outputs true "No local commit exists at or before the last snapshot publish time."
+          exit 0
+        fi
+
+        if [ "$BASE_COMMIT" = "$AFTER" ]; then
+          set_outputs false "No commits have landed since the last snapshot release."
+          exit 0
+        fi
+
         SHOULD_PUBLISH=false
         while IFS= read -r file; do
           [ -z "$file" ] && continue
@@ -30,10 +94,15 @@ runs:
             package.json|.changeset/*|apps/*|internal/*|cypress/*|*.test.ts|*.test.tsx|*.stories.ts|*.stories.tsx|*.stories.css|*.stories.module.css|*.md)
               ;;
             *)
-              echo "Relevant file changed: $file"
+              echo "Qualified file changed: $file"
               SHOULD_PUBLISH=true
               break
               ;;
           esac
-        done < <(git diff --name-only "$BEFORE" "$AFTER")
-        echo "should_publish=$SHOULD_PUBLISH" >> "$GITHUB_OUTPUT"
+        done < <(git diff --name-only "$BASE_COMMIT" "$AFTER")
+
+        if [ "$SHOULD_PUBLISH" = "true" ]; then
+          set_outputs true "Qualified changes were detected since ${SNAPSHOT_PACKAGE}@${SNAPSHOT_TAG} ${LAST_SNAPSHOT_VERSION}."
+        else
+          set_outputs false "Only non-qualified changes were detected since ${SNAPSHOT_PACKAGE}@${SNAPSHOT_TAG} ${LAST_SNAPSHOT_VERSION}."
+        fi
