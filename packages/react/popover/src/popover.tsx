@@ -416,6 +416,7 @@ const PopoverContentImpl = React.forwardRef<PopoverContentImplElement, PopoverCo
           onPointerDownOutside={onPointerDownOutside}
           onFocusOutside={onFocusOutside}
           onDismiss={() => context.onOpenChange(false)}
+          deferPointerDownOutside
         >
           <PopperPrimitive.Content
             data-state={getState(context.open)}

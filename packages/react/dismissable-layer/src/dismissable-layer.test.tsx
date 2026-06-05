@@ -79,6 +79,17 @@ describe('DismissableLayer', () => {
     expect(onDismiss).toHaveBeenCalledTimes(1);
   });
 
+  it('dismisses immediately on pointer down outside by default', async () => {
+    const onDismiss = vi.fn();
+
+    renderDismissableLayer({ onDismiss });
+    await waitForDocumentPointerDownListener();
+
+    fireEvent.pointerDown(screen.getByText('outside'));
+
+    expect(onDismiss).toHaveBeenCalledTimes(1);
+  });
+
   it('does not dismiss on pointer down inside', async () => {
     const onDismiss = vi.fn();
 
@@ -161,7 +172,7 @@ describe('DismissableLayer', () => {
   it('defers touch pointer down outside dismissal until click', async () => {
     const onDismiss = vi.fn();
 
-    renderDismissableLayer({ onDismiss });
+    renderDismissableLayer({ deferPointerDownOutside: true, onDismiss });
     await waitForDocumentPointerDownListener();
 
     fireEvent.pointerDown(screen.getByText('outside'), { pointerType: 'touch' });
@@ -197,7 +208,7 @@ describe('DismissableLayer', () => {
   it('cancels pending touch outside dismissal when pointer down moves back inside', async () => {
     const onDismiss = vi.fn();
 
-    renderDismissableLayer({ onDismiss });
+    renderDismissableLayer({ deferPointerDownOutside: true, onDismiss });
     await waitForDocumentPointerDownListener();
 
     fireEvent.pointerDown(screen.getByText('outside'), { pointerType: 'touch' });
@@ -230,7 +241,7 @@ describe('DismissableLayer', () => {
     expect(onDismiss).not.toHaveBeenCalled();
   });
 
-  it('does not dismiss when a later outside interaction event is stopped', async () => {
+  it('dismisses when a later outside interaction event is stopped by default', async () => {
     const onDismiss = vi.fn();
 
     renderDismissableLayer({ onDismiss });
@@ -244,6 +255,47 @@ describe('DismissableLayer', () => {
 
     fireEvent.pointerDown(outside);
     fireEvent.mouseDown(outside);
+    fireEvent.mouseUp(outside);
+    fireEvent.click(outside);
+
+    expect(onDismiss).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not dismiss when a later outside interaction event is stopped and pointer down outside is deferred', async () => {
+    const onDismiss = vi.fn();
+
+    renderDismissableLayer({ deferPointerDownOutside: true, onDismiss });
+    await waitForDocumentPointerDownListener();
+
+    const outside = screen.getByText('outside');
+    const stopPropagation = (event: Event) => event.stopPropagation();
+    outside.addEventListener('mousedown', stopPropagation);
+    outside.addEventListener('mouseup', stopPropagation);
+    outside.addEventListener('click', stopPropagation);
+
+    fireEvent.pointerDown(outside);
+    fireEvent.mouseDown(outside);
+    fireEvent.mouseUp(outside);
+    fireEvent.click(outside);
+
+    expect(onDismiss).not.toHaveBeenCalled();
+  });
+
+  it('does not dismiss when focus moves outside during a deferred stopped interaction', async () => {
+    const onDismiss = vi.fn();
+
+    renderDismissableLayer({ deferPointerDownOutside: true, onDismiss });
+    await waitForDocumentPointerDownListener();
+
+    const outside = screen.getByText('outside');
+    const stopPropagation = (event: Event) => event.stopPropagation();
+    outside.addEventListener('mousedown', stopPropagation);
+    outside.addEventListener('mouseup', stopPropagation);
+    outside.addEventListener('click', stopPropagation);
+
+    fireEvent.pointerDown(outside);
+    fireEvent.mouseDown(outside);
+    fireEvent.focusIn(outside);
     fireEvent.mouseUp(outside);
     fireEvent.click(outside);
 

@@ -32,6 +32,12 @@ interface DismissableLayerProps extends PrimitiveDivProps {
    */
   disableOutsidePointerEvents?: boolean;
   /**
+   * When `true`, a `'pointerdown'` event outside of the layered element will
+   * wait for the interaction's click event before dispatching, allowing
+   * third-party code to stop propagation of later events and cancel dismissal.
+   */
+  deferPointerDownOutside?: boolean;
+  /**
    * Event handler called when the escape key is down.
    * Can be prevented.
    */
@@ -62,6 +68,7 @@ const DismissableLayer = React.forwardRef<DismissableLayerElement, DismissableLa
   (props, forwardedRef) => {
     const {
       disableOutsidePointerEvents = false,
+      deferPointerDownOutside = false,
       onEscapeKeyDown,
       onPointerDownOutside,
       onFocusOutside,
@@ -80,17 +87,35 @@ const DismissableLayer = React.forwardRef<DismissableLayerElement, DismissableLa
     const index = node ? layers.indexOf(node) : -1;
     const isBodyPointerEventsDisabled = context.layersWithOutsidePointerEventsDisabled.size > 0;
     const isPointerEventsEnabled = index >= highestLayerWithOutsidePointerEventsDisabledIndex;
+    const isDeferredPointerDownOutsideRef = React.useRef(false);
 
-    const pointerDownOutside = usePointerDownOutside((event) => {
-      const target = event.target as HTMLElement;
-      const isPointerDownOnBranch = [...context.branches].some((branch) => branch.contains(target));
-      if (!isPointerEventsEnabled || isPointerDownOnBranch) return;
-      onPointerDownOutside?.(event);
-      onInteractOutside?.(event);
-      if (!event.defaultPrevented) onDismiss?.();
-    }, ownerDocument);
+    const pointerDownOutside = usePointerDownOutside(
+      (event) => {
+        const target = event.target;
+        if (!(target instanceof Node)) {
+          return;
+        }
+
+        const isPointerDownOnBranch = [...context.branches].some((branch) =>
+          branch.contains(target),
+        );
+        if (!isPointerEventsEnabled || isPointerDownOnBranch) return;
+        onPointerDownOutside?.(event);
+        onInteractOutside?.(event);
+        if (!event.defaultPrevented) onDismiss?.();
+      },
+      {
+        ownerDocument,
+        deferPointerDownOutside,
+        isDeferredPointerDownOutsideRef,
+      },
+    );
 
     const focusOutside = useFocusOutside((event) => {
+      if (deferPointerDownOutside && isDeferredPointerDownOutsideRef.current) {
+        return;
+      }
+
       const target = event.target as HTMLElement;
       const isFocusInBranch = [...context.branches].some((branch) => branch.contains(target));
       if (isFocusInBranch) return;
@@ -225,9 +250,18 @@ type FocusOutsideEvent = CustomEvent<{ originalEvent: FocusEvent }>;
  * Returns props to pass to the node we want to check for outside events.
  */
 function usePointerDownOutside(
-  onPointerDownOutside?: (event: PointerDownOutsideEvent) => void,
-  ownerDocument: Document = globalThis?.document,
+  onPointerDownOutside: ((event: PointerDownOutsideEvent) => void) | undefined,
+  args: {
+    ownerDocument: Document | undefined;
+    deferPointerDownOutside: boolean;
+    isDeferredPointerDownOutsideRef: React.RefObject<boolean>;
+  },
 ) {
+  const {
+    ownerDocument = globalThis?.document,
+    deferPointerDownOutside = false,
+    isDeferredPointerDownOutsideRef,
+  } = args;
   const handlePointerDownOutside = useCallbackRef(onPointerDownOutside) as EventListener;
   const isPointerInsideReactTreeRef = React.useRef(false);
   const isPointerDownOutsideRef = React.useRef(false);
@@ -237,6 +271,7 @@ function usePointerDownOutside(
   React.useEffect(() => {
     function resetOutsideInteraction() {
       isPointerDownOutsideRef.current = false;
+      isDeferredPointerDownOutsideRef.current = false;
       interceptedOutsideInteractionEventsRef.current.clear();
     }
 
@@ -268,6 +303,7 @@ function usePointerDownOutside(
       if (event.target && !isPointerInsideReactTreeRef.current) {
         const eventDetail = { originalEvent: event };
         isPointerDownOutsideRef.current = true;
+        isDeferredPointerDownOutsideRef.current = deferPointerDownOutside && event.button === 0;
         interceptedOutsideInteractionEventsRef.current.clear();
 
         function handleAndDispatchPointerDownOutsideEvent() {
@@ -286,7 +322,7 @@ function usePointerDownOutside(
         }
 
         /**
-         * We need to wait for a click event because:
+         * When deferring, we need to wait for a click event because:
          *
          * 1. On touch devices, browsers implement a ~350ms delay between the
          *    time the user stops touching the display and when the browser
@@ -311,7 +347,7 @@ function usePointerDownOutside(
          * For non-primary buttons, we dispatch the event immediately because we
          * cannot be certain that the event was canceled.
          */
-        if (event.button !== 0) {
+        if (!deferPointerDownOutside || event.button !== 0) {
           handleAndDispatchPointerDownOutsideEvent();
         } else {
           ownerDocument.removeEventListener('click', handleClickRef.current);
@@ -366,7 +402,12 @@ function usePointerDownOutside(
         ownerDocument.removeEventListener(eventName, handleInteractionBubble);
       }
     };
-  }, [ownerDocument, handlePointerDownOutside]);
+  }, [
+    ownerDocument,
+    handlePointerDownOutside,
+    deferPointerDownOutside,
+    isDeferredPointerDownOutsideRef,
+  ]);
 
   return {
     // ensures we check React component tree (not just DOM tree)
