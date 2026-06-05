@@ -34,6 +34,14 @@ function dispatchComposedPointerDown(target: Element) {
   );
 }
 
+function firePointerMouseClick(target: Element) {
+  fireEvent.pointerDown(target, { pointerType: 'mouse' });
+  fireEvent.mouseDown(target);
+  fireEvent.pointerUp(target, { pointerType: 'mouse' });
+  fireEvent.mouseUp(target);
+  fireEvent.click(target);
+}
+
 function ShadowButton() {
   const hostRef = React.useRef<HTMLDivElement>(null);
 
@@ -56,7 +64,7 @@ function ShadowButton() {
 describe('DismissableLayer', () => {
   afterEach(cleanup);
 
-  it('dismisses on pointer down outside', async () => {
+  it('dismisses on an outside pointer interaction', async () => {
     const onPointerDownOutside = vi.fn();
     const onInteractOutside = vi.fn();
     const onDismiss = vi.fn();
@@ -64,7 +72,7 @@ describe('DismissableLayer', () => {
     renderDismissableLayer({ onPointerDownOutside, onInteractOutside, onDismiss });
     await waitForDocumentPointerDownListener();
 
-    fireEvent.pointerDown(screen.getByText('outside'));
+    firePointerMouseClick(screen.getByText('outside'));
 
     expect(onPointerDownOutside).toHaveBeenCalledTimes(1);
     expect(onInteractOutside).toHaveBeenCalledTimes(1);
@@ -91,7 +99,7 @@ describe('DismissableLayer', () => {
     });
     await waitForDocumentPointerDownListener();
 
-    fireEvent.pointerDown(screen.getByText('outside'));
+    firePointerMouseClick(screen.getByText('outside'));
 
     expect(onDismiss).not.toHaveBeenCalled();
   });
@@ -105,7 +113,7 @@ describe('DismissableLayer', () => {
     });
     await waitForDocumentPointerDownListener();
 
-    fireEvent.pointerDown(screen.getByText('outside'));
+    firePointerMouseClick(screen.getByText('outside'));
 
     expect(onDismiss).not.toHaveBeenCalled();
   });
@@ -200,7 +208,7 @@ describe('DismissableLayer', () => {
     expect(onDismiss).not.toHaveBeenCalled();
   });
 
-  it('currently dismisses on outside pointer down even when later mouse events are stopped', async () => {
+  it('does not dismiss when a later outside interaction event is stopped', async () => {
     const onDismiss = vi.fn();
 
     renderDismissableLayer({ onDismiss });
@@ -217,6 +225,6 @@ describe('DismissableLayer', () => {
     fireEvent.mouseUp(outside);
     fireEvent.click(outside);
 
-    expect(onDismiss).toHaveBeenCalledTimes(1);
+    expect(onDismiss).not.toHaveBeenCalled();
   });
 });

@@ -220,8 +220,8 @@ type PointerDownOutsideEvent = CustomEvent<{ originalEvent: PointerEvent }>;
 type FocusOutsideEvent = CustomEvent<{ originalEvent: FocusEvent }>;
 
 /**
- * Listens for `pointerdown` outside a react subtree. We use `pointerdown` rather than `pointerup`
- * to mimic layer dismissing behaviour present in OS.
+ * Listens for `pointerdown` outside a react subtree. We detect the start of the interaction on
+ * `pointerdown`, then wait for `click` so external code can intercept later mouse events.
  * Returns props to pass to the node we want to check for outside events.
  */
 function usePointerDownOutside(
@@ -230,27 +230,72 @@ function usePointerDownOutside(
 ) {
   const handlePointerDownOutside = useCallbackRef(onPointerDownOutside) as EventListener;
   const isPointerInsideReactTreeRef = React.useRef(false);
+  const isPointerDownOutsideRef = React.useRef(false);
+  const interceptedOutsideInteractionEventsRef = React.useRef<Map<string, boolean>>(new Map());
   const handleClickRef = React.useRef(() => {});
 
   React.useEffect(() => {
+    function resetOutsideInteraction() {
+      isPointerDownOutsideRef.current = false;
+      interceptedOutsideInteractionEventsRef.current.clear();
+    }
+
+    function isOutsideInteractionIntercepted() {
+      return Array.from(interceptedOutsideInteractionEventsRef.current.values()).some(Boolean);
+    }
+
+    function handleInteractionCapture(event: Event) {
+      if (isPointerDownOutsideRef.current) {
+        interceptedOutsideInteractionEventsRef.current.set(event.type, true);
+
+        if (event.type === 'click') {
+          window.setTimeout(() => {
+            if (isPointerDownOutsideRef.current) {
+              handleClickRef.current();
+            }
+          }, 0);
+        }
+      }
+    }
+
+    function handleInteractionBubble(event: Event) {
+      if (isPointerDownOutsideRef.current) {
+        interceptedOutsideInteractionEventsRef.current.set(event.type, false);
+      }
+    }
+
     const handlePointerDown = (event: PointerEvent) => {
       if (event.target && !isPointerInsideReactTreeRef.current) {
         const eventDetail = { originalEvent: event };
+        isPointerDownOutsideRef.current = true;
+        interceptedOutsideInteractionEventsRef.current.clear();
 
         function handleAndDispatchPointerDownOutsideEvent() {
-          handleAndDispatchCustomEvent(
-            POINTER_DOWN_OUTSIDE,
-            handlePointerDownOutside,
-            eventDetail,
-            { discrete: true },
-          );
+          ownerDocument.removeEventListener('click', handleClickRef.current);
+          const wasOutsideInteractionIntercepted = isOutsideInteractionIntercepted();
+          resetOutsideInteraction();
+
+          if (!wasOutsideInteractionIntercepted) {
+            handleAndDispatchCustomEvent(
+              POINTER_DOWN_OUTSIDE,
+              handlePointerDownOutside,
+              eventDetail,
+              { discrete: true },
+            );
+          }
         }
 
         /**
-         * On touch devices, we need to wait for a click event because browsers implement
-         * a ~350ms delay between the time the user stops touching the display and when the
-         * browser executres events. We need to ensure we don't reactivate pointer-events within
-         * this timeframe otherwise the browser may execute events that should have been prevented.
+         * We need to wait for a click event because:
+         *
+         * 1. On touch devices, browsers implement a ~350ms delay between the time the user stops
+         * touching the display and when the browser executes events. We need to ensure we don't
+         * reactivate pointer-events within this timeframe otherwise the browser may execute events
+         * that should have been prevented.
+         *
+         * 2. Browser extensions and other third-party code may call `stopPropagation` on later mouse
+         * events like `mousedown`, `mouseup`, or `click`. Waiting lets those intercepted events
+         * cancel the outside interaction before we dismiss the layer. See https://github.com/radix-ui/primitives/issues/2055
          *
          * Additionally, this also lets us deal automatically with cancellations when a click event
          * isn't raised because the page was considered scrolled/drag-scrolled, long-pressed, etc.
@@ -258,20 +303,32 @@ function usePointerDownOutside(
          * This is why we also continuously remove the previous listener, because we cannot be
          * certain that it was raised, and therefore cleaned-up.
          */
-        if (event.pointerType === 'touch') {
-          ownerDocument.removeEventListener('click', handleClickRef.current);
-          handleClickRef.current = handleAndDispatchPointerDownOutsideEvent;
-          ownerDocument.addEventListener('click', handleClickRef.current, { once: true });
-        } else {
-          handleAndDispatchPointerDownOutsideEvent();
-        }
+        ownerDocument.removeEventListener('click', handleClickRef.current);
+        handleClickRef.current = handleAndDispatchPointerDownOutsideEvent;
+        ownerDocument.addEventListener('click', handleClickRef.current, { once: true });
       } else {
         // We need to remove the event listener in case the outside click has been canceled.
         // See: https://github.com/radix-ui/primitives/issues/2171
         ownerDocument.removeEventListener('click', handleClickRef.current);
+        resetOutsideInteraction();
       }
       isPointerInsideReactTreeRef.current = false;
     };
+
+    const outsideInteractionEvents = [
+      'pointerup',
+      'mousedown',
+      'mouseup',
+      'touchstart',
+      'touchend',
+      'click',
+    ];
+
+    for (const eventName of outsideInteractionEvents) {
+      ownerDocument.addEventListener(eventName, handleInteractionCapture, true);
+      ownerDocument.addEventListener(eventName, handleInteractionBubble);
+    }
+
     /**
      * if this hook executes in a component that mounts via a `pointerdown` event, the event
      * would bubble up to the document and trigger a `pointerDownOutside` event. We avoid
@@ -292,6 +349,10 @@ function usePointerDownOutside(
       window.clearTimeout(timerId);
       ownerDocument.removeEventListener('pointerdown', handlePointerDown);
       ownerDocument.removeEventListener('click', handleClickRef.current);
+      for (const eventName of outsideInteractionEvents) {
+        ownerDocument.removeEventListener(eventName, handleInteractionCapture, true);
+        ownerDocument.removeEventListener(eventName, handleInteractionBubble);
+      }
     };
   }, [ownerDocument, handlePointerDownOutside]);
 

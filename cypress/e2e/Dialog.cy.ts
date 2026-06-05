@@ -225,12 +225,12 @@ describe('Dialog extension overlay interactions', () => {
     cy.findByTestId('dialog-state').should('have.text', 'open');
   });
 
-  it('currently closes the dialog when an outside overlay stops later mouse events', () => {
+  it('keeps the dialog open when an outside overlay stops later mouse events', () => {
     cy.findByText('open').click();
     cy.findByTestId('dialog-state').should('have.text', 'open');
 
     cy.findByTestId('extension-overlay').realClick();
 
-    cy.findByTestId('dialog-state').should('have.text', 'closed');
+    cy.findByTestId('dialog-state').should('have.text', 'open');
   });
 });
