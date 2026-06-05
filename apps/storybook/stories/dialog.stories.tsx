@@ -536,3 +536,84 @@ export const Cypress = () => {
     </>
   );
 };
+
+export const ExtensionOverlay = () => {
+  const [open, setOpen] = React.useState(false);
+
+  return (
+    <>
+      <Dialog.Root open={open} onOpenChange={setOpen}>
+        <Dialog.Trigger className={styles.trigger}>open</Dialog.Trigger>
+        <Dialog.Portal>
+          <Dialog.Overlay className={styles.overlay} />
+          <Dialog.Content className={styles.contentDefault}>
+            <Dialog.Title>title</Dialog.Title>
+            <Dialog.Description>
+              Simulates extension UI interacting with a dialog.
+            </Dialog.Description>
+            <Dialog.Close className={styles.close}>close</Dialog.Close>
+            <InsideShadowSuggestion />
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
+
+      <ExtensionOverlayButton />
+      <div data-testid="dialog-state">{open ? 'open' : 'closed'}</div>
+    </>
+  );
+};
+
+function InsideShadowSuggestion() {
+  const hostRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    const host = hostRef.current;
+    if (!host || host.shadowRoot) return;
+
+    const shadowRoot = host.attachShadow({ mode: 'open' });
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.textContent = 'inside shadow suggestion';
+    button.style.marginTop = '16px';
+    shadowRoot.append(button);
+  }, []);
+
+  return <div data-testid="inside-shadow-host" ref={hostRef} />;
+}
+
+function ExtensionOverlayButton() {
+  const ref = React.useRef<HTMLButtonElement>(null);
+
+  React.useEffect(() => {
+    const button = ref.current;
+    if (!button) return;
+
+    const stopPropagation = (event: Event) => event.stopPropagation();
+    button.addEventListener('mousedown', stopPropagation);
+    button.addEventListener('mouseup', stopPropagation);
+    button.addEventListener('click', stopPropagation);
+
+    return () => {
+      button.removeEventListener('mousedown', stopPropagation);
+      button.removeEventListener('mouseup', stopPropagation);
+      button.removeEventListener('click', stopPropagation);
+    };
+  }, []);
+
+  return (
+    <button
+      ref={ref}
+      type="button"
+      data-testid="extension-overlay"
+      style={{
+        position: 'fixed',
+        top: 12,
+        right: 12,
+        zIndex: 2147483647,
+        pointerEvents: 'auto',
+      }}
+    >
+      simulated extension overlay
+    </button>
+  );
+}

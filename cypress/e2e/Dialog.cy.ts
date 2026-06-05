@@ -206,3 +206,31 @@ describe('Dialog', () => {
     });
   });
 });
+
+describe('Dialog extension overlay interactions', () => {
+  beforeEach(() => {
+    cy.visitStory('dialog--extension-overlay');
+  });
+
+  it('keeps the dialog open when interacting with a shadow tree inside the dialog', () => {
+    cy.findByText('open').click();
+    cy.findByTestId('dialog-state').should('have.text', 'open');
+
+    cy.get('[data-testid="inside-shadow-host"]')
+      .shadow()
+      .find('button')
+      .should('have.text', 'inside shadow suggestion')
+      .realClick();
+
+    cy.findByTestId('dialog-state').should('have.text', 'open');
+  });
+
+  it('currently closes the dialog when an outside overlay stops later mouse events', () => {
+    cy.findByText('open').click();
+    cy.findByTestId('dialog-state').should('have.text', 'open');
+
+    cy.findByTestId('extension-overlay').realClick();
+
+    cy.findByTestId('dialog-state').should('have.text', 'closed');
+  });
+});
