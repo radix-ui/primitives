@@ -140,6 +140,37 @@ describe('given a default Dialog', () => {
   });
 });
 
+describe('aria-controls', () => {
+  let consoleWarnMock: MockInstance;
+
+  beforeEach(() => {
+    consoleWarnMock = vi.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    cleanup();
+    consoleWarnMock.mockRestore();
+  });
+
+  it('should not reference a non-existent element while closed', () => {
+    const rendered = render(<DialogTest />);
+    const trigger = rendered.getByText(OPEN_TEXT);
+
+    expect(rendered.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(trigger).not.toHaveAttribute('aria-controls');
+  });
+
+  it('should reference the rendered content while open', () => {
+    const rendered = render(<DialogTest />);
+    const trigger = rendered.getByText(OPEN_TEXT);
+    fireEvent.click(trigger);
+    const content = rendered.getByRole('dialog');
+    expect(content.id).toBeTruthy();
+    expect(trigger).toHaveAttribute('aria-controls', content.id);
+    expect(document.getElementById(content.id)).toBe(content);
+  });
+});
+
 describe('given a modal Dialog', () => {
   afterEach(() => {
     cleanup();
