@@ -31,6 +31,8 @@ type DialogContextValue = {
   contentId: string;
   titleId: string;
   descriptionId: string;
+  hasDescription: boolean;
+  setHasDescription(value: boolean): void;
   open: boolean;
   onOpenChange(open: boolean): void;
   onOpenToggle(): void;
@@ -58,6 +60,7 @@ const Dialog: React.FC<DialogProps> = (props: ScopedProps<DialogProps>) => {
   } = props;
   const triggerRef = React.useRef<HTMLButtonElement>(null);
   const contentRef = React.useRef<DialogContentElement>(null);
+  const [hasDescription, setHasDescription] = React.useState(false);
   const [open, setOpen] = useControllableState({
     prop: openProp,
     defaultProp: defaultOpen ?? false,
@@ -73,6 +76,8 @@ const Dialog: React.FC<DialogProps> = (props: ScopedProps<DialogProps>) => {
       contentId={useId()}
       titleId={useId()}
       descriptionId={useId()}
+      hasDescription={hasDescription}
+      setHasDescription={setHasDescription}
       open={open}
       onOpenChange={setOpen}
       onOpenToggle={React.useCallback(() => setOpen((prevOpen) => !prevOpen), [setOpen])}
@@ -406,7 +411,7 @@ const DialogContentImpl = React.forwardRef<DialogContentImplElement, DialogConte
           <DismissableLayer
             role="dialog"
             id={context.contentId}
-            aria-describedby={context.descriptionId}
+            aria-describedby={context.hasDescription ? context.descriptionId : undefined}
             aria-labelledby={context.titleId}
             data-state={getState(context.open)}
             {...contentProps}
@@ -417,7 +422,7 @@ const DialogContentImpl = React.forwardRef<DialogContentImplElement, DialogConte
         {process.env.NODE_ENV !== 'production' && (
           <>
             <TitleWarning titleId={context.titleId} />
-            <DescriptionWarning contentRef={contentRef} descriptionId={context.descriptionId} />
+
           </>
         )}
       </>
@@ -459,6 +464,11 @@ const DialogDescription = React.forwardRef<DialogDescriptionElement, DialogDescr
   (props: ScopedProps<DialogDescriptionProps>, forwardedRef) => {
     const { __scopeDialog, ...descriptionProps } = props;
     const context = useDialogContext(DESCRIPTION_NAME, __scopeDialog);
+    React.useEffect(() => {
+      context.setHasDescription(true);
+      return () => context.setHasDescription(false);
+    }, [context]);
+
     return <Primitive.p id={context.descriptionId} {...descriptionProps} ref={forwardedRef} />;
   },
 );
