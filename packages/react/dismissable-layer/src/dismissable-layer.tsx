@@ -303,9 +303,13 @@ function usePointerDownOutside(
          * This is why we also continuously remove the previous listener, because we cannot be
          * certain that it was raised, and therefore cleaned-up.
          */
-        ownerDocument.removeEventListener('click', handleClickRef.current);
-        handleClickRef.current = handleAndDispatchPointerDownOutsideEvent;
-        ownerDocument.addEventListener('click', handleClickRef.current, { once: true });
+        if (event.pointerType === 'mouse' && event.button !== 0) {
+          handleAndDispatchPointerDownOutsideEvent();
+        } else {
+          ownerDocument.removeEventListener('click', handleClickRef.current);
+          handleClickRef.current = handleAndDispatchPointerDownOutsideEvent;
+          ownerDocument.addEventListener('click', handleClickRef.current, { once: true });
+        }
       } else {
         // We need to remove the event listener in case the outside click has been canceled.
         // See: https://github.com/radix-ui/primitives/issues/2171
