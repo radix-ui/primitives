@@ -14,6 +14,23 @@ describe('ContextMenu', () => {
         cy.findByText('Inbox').should('not.exist');
       });
 
+      it('should open the root menu with a long touch interaction', () => {
+        cy.findByText('New Tab').click();
+        cy.findByText('New Tab').should('not.exist');
+
+        longTouch('Right Click Here');
+
+        cy.findByText('New Tab').should('be.visible');
+      });
+
+      it('should close open submenus and reopen the root menu when long touching trigger', () => {
+        pointerOver('Bookmarks →');
+        cy.findByText('Inbox').should('be.visible');
+        longTouch('Right Click Here');
+        cy.findByText('New Tab').should('be.visible');
+        cy.findByText('Inbox').should('not.exist');
+      });
+
       it('should open submenu and not focus first item when moving pointer over trigger', () => {
         pointerOver('Bookmarks →');
         cy.findByText('Inbox').should('not.be.focused');
@@ -257,5 +274,23 @@ describe('ContextMenu', () => {
 
   function pointerOver(elementText: string) {
     return cy.findByText(elementText).should('be.visible').realHover();
+  }
+
+  function longTouch(elementText: string) {
+    return cy
+      .findByText(elementText)
+      .should('be.visible')
+      .trigger('pointerdown', {
+        button: 0,
+        buttons: 1,
+        clientX: 100,
+        clientY: 100,
+        eventConstructor: 'PointerEvent',
+        force: true,
+        isPrimary: true,
+        pointerId: 1,
+        pointerType: 'touch',
+      })
+      .wait(750);
   }
 });
