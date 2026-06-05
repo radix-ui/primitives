@@ -1,5 +1,11 @@
 # @radix-ui/react-collapsible
 
+## 1.1.13
+
+- Fixed triggers referencing a non-existent element via `aria-controls` when their content is removed from the DOM
+- Added repository.directory to all package.json files
+- Updated dependencies: `@radix-ui/react-presence@1.1.6`, `@radix-ui/primitive@1.1.4`, `@radix-ui/react-compose-refs@1.1.3`, `@radix-ui/react-context@1.1.4`, `@radix-ui/react-id@1.1.2`, `@radix-ui/react-primitive@2.1.5`, `@radix-ui/react-use-controllable-state@1.2.3`, `@radix-ui/react-use-layout-effect@1.1.2`
+
 ## 1.1.12
 
 - Updated dependencies: `@radix-ui/react-presence@1.1.5`, `@radix-ui/primitive@1.1.3`, `@radix-ui/react-context@1.1.3`, `@radix-ui/react-primitive@2.1.4`

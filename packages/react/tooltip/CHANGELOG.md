@@ -1,5 +1,12 @@
 # @radix-ui/react-tooltip
 
+## 1.2.9
+
+- Fixed runtime error when event target is non-Node
+- Fixed a Tooltip bug so that `skipDelayDuration={0}` works as expected. Previously, the open delay could still be skipped when moving between triggers.
+- Added repository.directory to all package.json files
+- Updated dependencies: `@radix-ui/react-presence@1.1.6`, `@radix-ui/react-popper@1.3.0`, `@radix-ui/react-slot@1.2.5`, `@radix-ui/react-dismissable-layer@1.1.12`, `@radix-ui/primitive@1.1.4`, `@radix-ui/react-compose-refs@1.1.3`, `@radix-ui/react-context@1.1.4`, `@radix-ui/react-id@1.1.2`, `@radix-ui/react-portal@1.1.11`, `@radix-ui/react-primitive@2.1.5`, `@radix-ui/react-use-controllable-state@1.2.3`, `@radix-ui/react-visually-hidden@1.2.5`
+
 ## 1.2.8
 
 - Updated dependencies: `@radix-ui/react-presence@1.1.5`, `@radix-ui/react-slot@1.2.4`, `@radix-ui/react-popper@1.2.8`, `@radix-ui/primitive@1.1.3`, `@radix-ui/react-context@1.1.3`, `@radix-ui/react-primitive@2.1.4`, `@radix-ui/react-dismissable-layer@1.1.11`, `@radix-ui/react-portal@1.1.10`, `@radix-ui/react-visually-hidden@1.2.4`

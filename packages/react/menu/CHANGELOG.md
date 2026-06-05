@@ -1,5 +1,13 @@
 # @radix-ui/react-menu
 
+## 2.1.17
+
+- Fixed a bug where iOS text selection and editing on HTML inputs within `react-dialog` were broken
+- Fixed triggers referencing a non-existent element via `aria-controls` when their content is removed from the DOM
+- Added repository.directory to all package.json files
+- Added `align` prop to `Menu.SubContent`
+- Updated dependencies: `@radix-ui/react-presence@1.1.6`, `@radix-ui/react-popper@1.3.0`, `@radix-ui/react-slot@1.2.5`, `@radix-ui/react-focus-guards@1.1.4`, `@radix-ui/react-dismissable-layer@1.1.12`, `@radix-ui/react-collection@1.1.9`, `@radix-ui/react-direction@1.1.2`, `@radix-ui/primitive@1.1.4`, `@radix-ui/react-compose-refs@1.1.3`, `@radix-ui/react-context@1.1.4`, `@radix-ui/react-focus-scope@1.1.9`, `@radix-ui/react-id@1.1.2`, `@radix-ui/react-portal@1.1.11`, `@radix-ui/react-primitive@2.1.5`, `@radix-ui/react-roving-focus@1.1.12`, `@radix-ui/react-use-callback-ref@1.1.2`
+
 ## 2.1.16
 
 - Updated dependencies: `@radix-ui/react-presence@1.1.5`, `@radix-ui/react-slot@1.2.4`, `@radix-ui/react-popper@1.2.8`, `@radix-ui/react-focus-guards@1.1.3`, `@radix-ui/primitive@1.1.3`, `@radix-ui/react-context@1.1.3`, `@radix-ui/react-collection@1.1.8`, `@radix-ui/react-primitive@2.1.4`, `@radix-ui/react-dismissable-layer@1.1.11`, `@radix-ui/react-roving-focus@1.1.11`, `@radix-ui/react-focus-scope@1.1.8`, `@radix-ui/react-portal@1.1.10`

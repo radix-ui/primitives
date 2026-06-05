@@ -1,5 +1,10 @@
 # @radix-ui/react-avatar
 
+## 1.1.12
+
+- Added repository.directory to all package.json files
+- Updated dependencies: `@radix-ui/react-context@1.1.4`, `@radix-ui/react-primitive@2.1.5`, `@radix-ui/react-use-callback-ref@1.1.2`, `@radix-ui/react-use-is-hydrated@0.1.1`, `@radix-ui/react-use-layout-effect@1.1.2`
+
 ## 1.1.11
 
 - Updated dependencies: `@radix-ui/react-context@1.1.3`, `@radix-ui/react-primitive@2.1.4`
