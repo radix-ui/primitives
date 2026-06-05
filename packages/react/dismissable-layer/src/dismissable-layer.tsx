@@ -288,22 +288,30 @@ function usePointerDownOutside(
         /**
          * We need to wait for a click event because:
          *
-         * 1. On touch devices, browsers implement a ~350ms delay between the time the user stops
-         * touching the display and when the browser executes events. We need to ensure we don't
-         * reactivate pointer-events within this timeframe otherwise the browser may execute events
-         * that should have been prevented.
+         * 1. On touch devices, browsers implement a ~350ms delay between the
+         *    time the user stops touching the display and when the browser
+         *    executes events. We need to ensure we don't reactivate
+         *    pointer-events within this timeframe otherwise the browser may
+         *    execute events that should have been prevented.
          *
-         * 2. Browser extensions and other third-party code may call `stopPropagation` on later mouse
-         * events like `mousedown`, `mouseup`, or `click`. Waiting lets those intercepted events
-         * cancel the outside interaction before we dismiss the layer. See https://github.com/radix-ui/primitives/issues/2055
+         * 2. Browser extensions and other third-party code may call
+         *    `stopPropagation` on later mouse events like `mousedown`,
+         *    `mouseup`, or `click`. Waiting lets those intercepted events
+         *    cancel the outside interaction before we dismiss the layer. See
+         *    https://github.com/radix-ui/primitives/issues/2055
          *
-         * Additionally, this also lets us deal automatically with cancellations when a click event
-         * isn't raised because the page was considered scrolled/drag-scrolled, long-pressed, etc.
+         * Additionally, this also lets us deal automatically with cancellations
+         * when a click event isn't raised because the page was considered
+         * scrolled/drag-scrolled, long-pressed, etc.
          *
-         * This is why we also continuously remove the previous listener, because we cannot be
-         * certain that it was raised, and therefore cleaned-up.
+         * This is why we also continuously remove the previous listener,
+         * because we cannot be certain that it was raised, and therefore
+         * cleaned-up.
+         *
+         * For non-primary buttons, we dispatch the event immediately because we
+         * cannot be certain that the event was canceled.
          */
-        if (event.pointerType === 'mouse' && event.button !== 0) {
+        if (event.button !== 0) {
           handleAndDispatchPointerDownOutsideEvent();
         } else {
           ownerDocument.removeEventListener('click', handleClickRef.current);

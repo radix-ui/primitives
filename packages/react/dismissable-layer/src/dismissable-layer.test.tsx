@@ -183,6 +183,17 @@ describe('DismissableLayer', () => {
     expect(onDismiss).toHaveBeenCalledTimes(1);
   });
 
+  it('dismisses immediately on non-primary pen pointer down outside', async () => {
+    const onDismiss = vi.fn();
+
+    renderDismissableLayer({ onDismiss });
+    await waitForDocumentPointerDownListener();
+
+    fireEvent.pointerDown(screen.getByText('outside'), { button: 2, pointerType: 'pen' });
+
+    expect(onDismiss).toHaveBeenCalledTimes(1);
+  });
+
   it('cancels pending touch outside dismissal when pointer down moves back inside', async () => {
     const onDismiss = vi.fn();
 
