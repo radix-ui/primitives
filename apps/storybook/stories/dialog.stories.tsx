@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Dialog } from 'radix-ui';
 import styles from './dialog.stories.module.css';
+import { ExternalOverlayTrigger } from './external-overlay';
 
 export default { title: 'Components/Dialog' };
 
@@ -551,9 +552,7 @@ export const WithExtensionOverlay = () => {
             <Dialog.Description>
               Simulates extension UI interacting with a dialog.
             </Dialog.Description>
-            <button type="button" onClick={triggerOverlay}>
-              Trigger overlay
-            </button>
+            <ExternalOverlayTrigger />
             <Dialog.Close className={styles.close}>close</Dialog.Close>
             <InsideShadowSuggestion />
           </Dialog.Content>
@@ -580,54 +579,4 @@ function InsideShadowSuggestion() {
   }, []);
 
   return <div data-testid="inside-shadow-host" ref={hostRef} />;
-}
-
-function triggerOverlay() {
-  const container = document.createElement('div');
-  container.dataset.testid = 'extension-overlay';
-  container.style.position = 'fixed';
-  container.style.top = '12px';
-  container.style.right = '12px';
-  container.style.zIndex = '2147483647';
-  container.style.pointerEvents = 'auto';
-  container.style.backgroundColor = 'hsl(0 0 100%)';
-  container.style.border = '1px solid hsl(0 0 80%)';
-  container.style.borderRadius = '4px';
-  container.style.padding = '8px';
-  container.style.boxShadow = '0 2px 8px hsl(0 0 0 / 0.1)';
-
-  const button = document.createElement('button');
-  button.type = 'button';
-  button.dataset.testid = 'extension-overlay-button';
-  button.textContent = 'simulated extension overlay';
-
-  const dismissButton = document.createElement('button');
-  dismissButton.type = 'button';
-  dismissButton.dataset.testid = 'extension-overlay-dismiss-button';
-  dismissButton.textContent = 'dismiss';
-
-  const handleDismiss = (event: Event) => {
-    stopPropagation(event);
-    cleanup();
-  };
-
-  const stopPropagation = (event: Event) => event.stopPropagation();
-  button.addEventListener('mousedown', stopPropagation);
-  button.addEventListener('mouseup', stopPropagation);
-  button.addEventListener('click', stopPropagation);
-  dismissButton.addEventListener('click', handleDismiss);
-
-  container.append(button);
-  container.append(dismissButton);
-  document.body.append(container);
-
-  const cleanup = () => {
-    button.removeEventListener('mousedown', stopPropagation);
-    button.removeEventListener('mouseup', stopPropagation);
-    button.removeEventListener('click', stopPropagation);
-    dismissButton.removeEventListener('click', handleDismiss);
-    container.remove();
-  };
-
-  return cleanup;
 }

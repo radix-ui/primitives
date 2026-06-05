@@ -2,6 +2,7 @@ import * as React from 'react';
 import { ContextMenu } from 'radix-ui';
 import { foodGroups } from '@repo/test-data/foods';
 import styles from './context-menu.stories.module.css';
+import { ExternalOverlayTrigger } from './external-overlay';
 
 export default { title: 'Components/ContextMenu' };
 
@@ -469,6 +470,26 @@ export const Submenus = () => {
           </ContextMenu.Portal>
         </ContextMenu.Root>
       </div>
+    </div>
+  );
+};
+
+export const WithExtensionOverlay = () => {
+  const [open, setOpen] = React.useState(false);
+
+  return (
+    <div style={{ display: 'grid', gap: 20, padding: 50, justifyItems: 'start' }}>
+      <ExternalOverlayTrigger />
+      <ContextMenu.Root open={open} onOpenChange={setOpen}>
+        <ContextMenu.Trigger className={styles.trigger}>Right Click Here</ContextMenu.Trigger>
+        <ContextMenu.Portal>
+          <ContextMenu.Content className={styles.content}>
+            <ContextMenu.Item className={styles.item}>New Tab</ContextMenu.Item>
+            <ContextMenu.Item className={styles.item}>New Window</ContextMenu.Item>
+          </ContextMenu.Content>
+        </ContextMenu.Portal>
+      </ContextMenu.Root>
+      <div data-testid="context-menu-state">{open ? 'open' : 'closed'}</div>
     </div>
   );
 };

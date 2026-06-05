@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Menubar } from 'radix-ui';
 import { foodGroups } from '@repo/test-data/foods';
 import styles from './menubar.stories.module.css';
+import { ExternalOverlayTrigger } from './external-overlay';
 
 const subTriggerClass = [styles.item, styles.subTrigger].join(' ');
 
@@ -190,6 +191,28 @@ export const Styled = () => {
           </Menubar.Menu>
         </Menubar.Root>
       </div>
+    </div>
+  );
+};
+
+export const WithExtensionOverlay = () => {
+  const [value, setValue] = React.useState('');
+
+  return (
+    <div style={{ display: 'grid', gap: 20, padding: 50, justifyItems: 'start' }}>
+      <ExternalOverlayTrigger />
+      <Menubar.Root className={styles.root} value={value} onValueChange={setValue}>
+        <Menubar.Menu value="edit">
+          <Menubar.Trigger className={styles.trigger}>Edit</Menubar.Trigger>
+          <Menubar.Portal>
+            <Menubar.Content className={styles.content} sideOffset={2}>
+              <Menubar.Item className={styles.item}>Undo</Menubar.Item>
+              <Menubar.Item className={styles.item}>Redo</Menubar.Item>
+            </Menubar.Content>
+          </Menubar.Portal>
+        </Menubar.Menu>
+      </Menubar.Root>
+      <div data-testid="menubar-state">{value === '' ? 'closed' : 'open'}</div>
     </div>
   );
 };

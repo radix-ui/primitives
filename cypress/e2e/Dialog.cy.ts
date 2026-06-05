@@ -229,9 +229,9 @@ describe('Dialog extension overlay interactions', () => {
     cy.findByText('open').click();
     cy.findByTestId('dialog-state').should('have.text', 'open');
     cy.findByText('Trigger overlay').click();
-    cy.findByTestId('extension-overlay').should('exist');
+    cy.findByTestId('external-overlay').should('exist');
 
-    cy.findByTestId('extension-overlay-button').realClick();
+    cy.findByTestId('external-overlay-button').realClick();
 
     cy.findByTestId('dialog-state').should('have.text', 'open');
   });
