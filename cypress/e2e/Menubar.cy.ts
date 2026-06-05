@@ -271,3 +271,20 @@ describe('Menubar', () => {
     return cy.findByText(elementText).should('be.visible').realHover();
   }
 });
+
+describe('Menubar extension overlay interactions', () => {
+  beforeEach(() => {
+    cy.visitStory('menubar--with-extension-overlay');
+  });
+
+  it('should close when an external overlay stops later mouse events', () => {
+    cy.findByText('Trigger overlay').click();
+    cy.findByTestId('external-overlay').should('exist');
+    cy.findByText('Edit').click();
+    cy.findByText('Redo').should('be.visible');
+
+    cy.findByTestId('external-overlay-button').realClick();
+
+    cy.findByText('Redo').should('not.exist');
+  });
+});
