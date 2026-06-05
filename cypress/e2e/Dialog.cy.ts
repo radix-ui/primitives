@@ -209,7 +209,7 @@ describe('Dialog', () => {
 
 describe('Dialog extension overlay interactions', () => {
   beforeEach(() => {
-    cy.visitStory('dialog--extension-overlay');
+    cy.visitStory('dialog--with-extension-overlay');
   });
 
   it('keeps the dialog open when interacting with a shadow tree inside the dialog', () => {
@@ -228,8 +228,10 @@ describe('Dialog extension overlay interactions', () => {
   it('keeps the dialog open when an outside overlay stops later mouse events', () => {
     cy.findByText('open').click();
     cy.findByTestId('dialog-state').should('have.text', 'open');
+    cy.findByText('Trigger overlay').click();
+    cy.findByTestId('extension-overlay').should('exist');
 
-    cy.findByTestId('extension-overlay').realClick();
+    cy.findByTestId('extension-overlay-button').realClick();
 
     cy.findByTestId('dialog-state').should('have.text', 'open');
   });
