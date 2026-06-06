@@ -1,5 +1,10 @@
 # @radix-ui/react-portal
 
+## 1.1.11
+
+- Added repository.directory to all package.json files
+- Updated dependencies: `@radix-ui/react-primitive@2.1.5`, `@radix-ui/react-use-layout-effect@1.1.2`
+
 ## 1.1.10
 
 - Updated dependencies: `@radix-ui/react-primitive@2.1.4`

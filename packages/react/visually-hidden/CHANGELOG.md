@@ -1,5 +1,10 @@
 # @radix-ui/react-visually-hidden
 
+## 1.2.5
+
+- Added repository.directory to all package.json files
+- Updated dependencies: `@radix-ui/react-primitive@2.1.5`
+
 ## 1.2.4
 
 - Updated dependencies: `@radix-ui/react-primitive@2.1.4`

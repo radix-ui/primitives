@@ -1,5 +1,10 @@
 # @radix-ui/react-alert-dialog
 
+## 1.1.16
+
+- Added repository.directory to all package.json files
+- Updated dependencies: `@radix-ui/react-dialog@1.1.16`, `@radix-ui/react-slot@1.2.5`, `@radix-ui/primitive@1.1.4`, `@radix-ui/react-compose-refs@1.1.3`, `@radix-ui/react-context@1.1.4`, `@radix-ui/react-primitive@2.1.5`
+
 ## 1.1.15
 
 - Updated dependencies: `@radix-ui/react-slot@1.2.4`, `@radix-ui/primitive@1.1.3`, `@radix-ui/react-context@1.1.3`, `@radix-ui/react-dialog@1.1.15`, `@radix-ui/react-primitive@2.1.4`
