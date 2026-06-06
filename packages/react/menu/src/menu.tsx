@@ -109,6 +109,19 @@ const Menu: React.FC<MenuProps> = (props: ScopedProps<MenuProps>) => {
     };
   }, []);
 
+  // Close the menu (and any open submenus) when the window loses focus, e.g. when
+  // switching to another browser tab or application. Without this, submenus would
+  // remain open when the page is re-focused, leaving the menu in an inconsistent state.
+  // See: https://github.com/radix-ui/primitives/issues/3257
+  React.useEffect(() => {
+    if (!open) {
+      return;
+    }
+    const handleBlur = () => handleOpenChange(false);
+    window.addEventListener('blur', handleBlur);
+    return () => window.removeEventListener('blur', handleBlur);
+  }, [open, handleOpenChange]);
+
   return (
     <PopperPrimitive.Root {...popperScope}>
       <MenuProvider
