@@ -2,11 +2,10 @@
 
 ## 2.3.0
 
-- Add unstable `Provider` and `BubbleInput` parts to Select. `Select.unstable_Provider` sets up Select's context and state without implicitly rendering the hidden native `select`, and `Select.unstable_BubbleInput` exposes that previously internal native `select` so consumers can recompose it explicitly. `Select` continues to render both by default.
+- Added unstable `Provider` and `BubbleInput` parts to Select. `Select.unstable_Provider` sets up Select's context and state without implicitly rendering the hidden native `select`, and `Select.unstable_BubbleInput` exposes that previously internal native `select` so consumers can recompose it explicitly. `Select` continues to render both by default.
 - Added support for presence-based exit animations in Select
 - Fixed Select hidden input so it submits empty string when no value is selected
-- Fixed Slider focus bugs in scrollable context
-- Fix placeholder rendering when a controlled select is reset to an empty value.
+- Fixed placeholder rendering when a controlled Select is reset to an empty value
 - Added missing `__selectScope` prop to `PopperContent` component
 - Fixed `Select` closing unexpectedly after touch-scrolling its content when rendered inside an open shadow DOM
 - Fixed a bug where iOS text selection and editing on HTML inputs within `react-dialog` were broken

@@ -3,7 +3,7 @@
 ## 2.3.0
 
 - Added support for a controlled `open` prop on `ContextMenu.Root`. This is intended for reading the open state and closing the menu programmatically, though we discourage opening the menu programmatically since opening the menu depends on user interaction to position the menu.
-- Fixed bug in context menu where submenu's stayed expanded after re-opening on long-press touch events
+- Fixed bug in context menu where submenus stayed expanded after re-opening on long-press touch events
 - Added repository.directory to all package.json files
 - Updated dependencies: `@radix-ui/react-menu@2.1.17`, `@radix-ui/primitive@1.1.4`, `@radix-ui/react-context@1.1.4`, `@radix-ui/react-primitive@2.1.5`, `@radix-ui/react-use-controllable-state@1.2.3`
 

@@ -2,8 +2,8 @@
 
 ## 0.1.9
 
-- Fixed OTP field dispatch using stale value/collection state in React 19.2.
-- truncate values ​​that exceed the length when pasting
+- Fixed OTP field dispatch using stale value/collection state in React 19.2+.
+- Truncate pasted values that exceed the field length
 - Added repository.directory to all package.json files
 - Fixed pasting into One-Time Password Field in environments that do not support the legacy `"Text"` clipboard format by reading the pasted value as `"text/plain"`
 - Updated dependencies: `@radix-ui/react-collection@1.1.9`, `@radix-ui/react-direction@1.1.2`, `@radix-ui/number@1.1.2`, `@radix-ui/primitive@1.1.4`, `@radix-ui/react-compose-refs@1.1.3`, `@radix-ui/react-context@1.1.4`, `@radix-ui/react-primitive@2.1.5`, `@radix-ui/react-roving-focus@1.1.12`, `@radix-ui/react-use-controllable-state@1.2.3`, `@radix-ui/react-use-effect-event@0.0.3`, `@radix-ui/react-use-is-hydrated@0.1.1`, `@radix-ui/react-use-layout-effect@1.1.2`
@@ -24,7 +24,7 @@
 
 ## 0.1.5
 
-- - Update default input type to `text` and pass to the underlying input element ([#3510](https://github.com/radix-ui/primitives/pull/3510))
+- Update default input type to `text` and pass to the underlying input element ([#3510](https://github.com/radix-ui/primitives/pull/3510))
 - Updated dependencies: `@radix-ui/react-collection@1.1.5`, `@radix-ui/react-primitive@2.1.1`, `@radix-ui/react-roving-focus@1.1.8`
 
 ## 0.1.4
