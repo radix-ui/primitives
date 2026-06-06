@@ -15,7 +15,7 @@ about: 'Create a bug report'
 
 ### Reproducible example
 
-[CodeSandbox Template](https://codesandbox.io/s/2r30e)
+[StackBlitz Template](https://stackblitz.com/edit/vitejs-vite-xhtqnjwy)
 
 ### Suggested solution
 
