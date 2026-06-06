@@ -242,6 +242,28 @@ describe('RadioGroup', () => {
       await act(async () => fireEvent.keyDown(radios[0]!, { key: 'Enter' }));
       expect(radios[0]).toHaveAttribute('aria-checked', 'false');
     });
+
+    it('should call a consumer `onKeyDown` handler passed to an item', async () => {
+      const onKeyDown = vi.fn();
+      render(
+        <RadioGroup.Root aria-label="pets">
+          {VALUES.map((value) => (
+            <RadioGroup.Item
+              key={value}
+              value={value}
+              aria-label={LABELS[value]}
+              onKeyDown={onKeyDown}
+            >
+              <RadioGroup.Indicator data-testid={`${INDICATOR_TEST_ID}-${value}`} />
+            </RadioGroup.Item>
+          ))}
+        </RadioGroup.Root>,
+      );
+      const radios = screen.getAllByRole(RADIO_ROLE);
+      await act(async () => radios[0]!.focus());
+      await act(async () => fireEvent.keyDown(radios[0]!, { key: 'Enter' }));
+      expect(onKeyDown).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('given an uncontrolled RadioGroup in a form', () => {
