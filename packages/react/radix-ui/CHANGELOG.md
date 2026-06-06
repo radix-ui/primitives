@@ -161,7 +161,7 @@
 ### Other changes
 
 - Use React's built-in `useSyncExternalStore` (React 18+) instead of importing the CJS-only `use-sync-external-store/shim`, with a fallback for React < 18. The shim called `require("react")` at module-evaluation time, which crashed ESM-only browser bundles when importing some components from the `radix-ui` package.
-- Fixed triggers referencing a non-existent elements via `aria-controls` when their content is removed from the DOM.
+- Fixed triggers referencing a non-existent elements via `aria-controls` when their content is removed from the DOM (credit to [@dodomorandi](https://github.com/dodomorandi) for the [original PR](https://github.com/radix-ui/primitives/pull/3243)).
 - Fixed a performance bottleneck where opening an overlay re-scanned the document and re-inserted the focus guards on every mount, forcing a synchronous reflow. The shared guard pair is now cached and only written to the DOM when their edge position actually changes.
 - Added missing `use client` directives to modules causing errors in RSC modules.
 - Added `align` prop to `Menu.SubContent`.
