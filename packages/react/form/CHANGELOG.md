@@ -1,5 +1,10 @@
 # @radix-ui/react-form
 
+## 0.1.9
+
+- Added repository.directory to all package.json files
+- Updated dependencies: `@radix-ui/primitive@1.1.4`, `@radix-ui/react-compose-refs@1.1.3`, `@radix-ui/react-context@1.1.4`, `@radix-ui/react-id@1.1.2`, `@radix-ui/react-label@2.1.9`, `@radix-ui/react-primitive@2.1.5`
+
 ## 0.1.8
 
 - Updated dependencies: `@radix-ui/primitive@1.1.3`, `@radix-ui/react-context@1.1.3`, `@radix-ui/react-primitive@2.1.4`, `@radix-ui/react-label@2.1.8`

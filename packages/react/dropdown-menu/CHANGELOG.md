@@ -1,5 +1,10 @@
 # @radix-ui/react-dropdown-menu
 
+## 2.1.17
+
+- Added repository.directory to all package.json files
+- Updated dependencies: `@radix-ui/react-menu@2.1.17`, `@radix-ui/primitive@1.1.4`, `@radix-ui/react-compose-refs@1.1.3`, `@radix-ui/react-context@1.1.4`, `@radix-ui/react-id@1.1.2`, `@radix-ui/react-primitive@2.1.5`, `@radix-ui/react-use-controllable-state@1.2.3`
+
 ## 2.1.16
 
 - Updated dependencies: `@radix-ui/primitive@1.1.3`, `@radix-ui/react-context@1.1.3`, `@radix-ui/react-menu@2.1.16`, `@radix-ui/react-primitive@2.1.4`
