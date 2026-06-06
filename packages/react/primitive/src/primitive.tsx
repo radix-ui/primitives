@@ -2,6 +2,12 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { createSlot } from '@radix-ui/react-slot';
 
+declare module 'react' {
+  interface CSSProperties {
+    [varName: `--radix-${string}`]: string | number | undefined | null;
+  }
+}
+
 const NODES = [
   'a',
   'button',

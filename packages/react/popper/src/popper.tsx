@@ -28,12 +28,6 @@ const ALIGN_OPTIONS = ['start', 'center', 'end'] as const;
 type Side = (typeof SIDE_OPTIONS)[number];
 type Align = (typeof ALIGN_OPTIONS)[number];
 
-declare module 'react' {
-  interface CSSProperties {
-    [varName: `--radix-${string}`]: string | number | undefined | null;
-  }
-}
-
 /* -------------------------------------------------------------------------------------------------
  * Popper
  * -----------------------------------------------------------------------------------------------*/

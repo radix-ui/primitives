@@ -20,12 +20,6 @@ import type { Scope } from '@radix-ui/react-context';
 type Orientation = 'vertical' | 'horizontal';
 type Direction = 'ltr' | 'rtl';
 
-declare module 'react' {
-  interface CSSProperties {
-    [varName: `--radix-${string}`]: string | number | undefined | null;
-  }
-}
-
 /* -------------------------------------------------------------------------------------------------
  * NavigationMenu
  * -----------------------------------------------------------------------------------------------*/

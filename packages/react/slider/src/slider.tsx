@@ -25,12 +25,6 @@ const BACK_KEYS: Record<SlideDirection, string[]> = {
   'from-top': ['Home', 'PageDown', 'ArrowUp', 'ArrowLeft'],
 };
 
-declare module 'react' {
-  interface CSSProperties {
-    [varName: `--radix-${string}`]: string | number | undefined | null;
-  }
-}
-
 declare global {
   interface FocusOptions {
     /**

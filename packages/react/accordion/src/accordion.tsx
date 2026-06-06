@@ -14,12 +14,6 @@ import { useDirection } from '@radix-ui/react-direction';
 
 type Direction = 'ltr' | 'rtl';
 
-declare module 'react' {
-  interface CSSProperties {
-    [varName: `--radix-${string}`]: string | number | undefined | null;
-  }
-}
-
 /* -------------------------------------------------------------------------------------------------
  * Accordion
  * -----------------------------------------------------------------------------------------------*/
