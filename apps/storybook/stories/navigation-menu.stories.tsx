@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { NavigationMenu, Direction } from 'radix-ui';
+import { Dialog, NavigationMenu, Direction } from 'radix-ui';
 import styles from './navigation-menu.stories.module.css';
+import dialogStyles from './dialog.stories.module.css';
 
 export default { title: 'Components/NavigationMenu' };
 
@@ -365,6 +366,203 @@ export const Submenus = () => {
         <NavigationMenu.Viewport className={styles.submenusViewport} />
       </NavigationMenu.Root>
     </StoryFrame>
+  );
+};
+
+export const InsideDialog = () => {
+  return (
+    <Dialog.Root>
+      <Dialog.Trigger className={dialogStyles.trigger}>open</Dialog.Trigger>
+      <Dialog.Portal>
+        <Dialog.Overlay className={dialogStyles.overlay} />
+        <Dialog.Content className={dialogStyles.contentDefault}>
+          <Dialog.Title>Booking info</Dialog.Title>
+          <Dialog.Description>Please enter the info for your booking below.</Dialog.Description>
+          <div>
+            <NavigationMenu.Root>
+              <NavigationMenu.List className={styles.mainList}>
+                <NavigationMenu.Item>
+                  <TriggerWithIndicator>Products</TriggerWithIndicator>
+                  <NavigationMenu.Content className={styles.submenusContent}>
+                    <NavigationMenu.Sub className={styles.submenusRoot} defaultValue="security">
+                      <NavigationMenu.List className={styles.mainList}>
+                        <NavigationMenu.Item value="extensibility">
+                          <NavigationMenu.Trigger className={styles.submenusSubTrigger}>
+                            Extensibility
+                          </NavigationMenu.Trigger>
+
+                          <NavigationMenu.Content
+                            className={styles.submenusSubContent}
+                            style={{
+                              gridTemplateColumns: '1.5fr 1fr 1fr',
+                            }}
+                          >
+                            <LinkGroup items={['Donec quis dui', 'Vestibulum', 'Nunc dignissim']} />
+                            <LinkGroup
+                              items={['Fusce pellentesque', 'Aliquam porttitor', 'Pellentesque']}
+                            />
+                            <LinkGroup
+                              items={['Fusce pellentesque', 'Aliquam porttitor', 'Pellentesque']}
+                            />
+                          </NavigationMenu.Content>
+                        </NavigationMenu.Item>
+
+                        <NavigationMenu.Item value="security">
+                          <NavigationMenu.Trigger className={styles.submenusSubTrigger}>
+                            Security
+                          </NavigationMenu.Trigger>
+                          <NavigationMenu.Content
+                            className={styles.submenusSubContent}
+                            style={{
+                              gridTemplateColumns: '1fr 1fr 1fr',
+                            }}
+                          >
+                            <LinkGroup
+                              items={[
+                                'Fusce pellentesque',
+                                'Aliquam porttitor',
+                                'Pellentesque',
+                                'Vestibulum',
+                              ]}
+                            />
+                            <LinkGroup
+                              items={['Fusce pellentesque', 'Aliquam porttitor', 'Pellentesque']}
+                            />
+                            <LinkGroup items={['Fusce pellentesque', 'Aliquam porttitor']} />
+                          </NavigationMenu.Content>
+                        </NavigationMenu.Item>
+
+                        <NavigationMenu.Item value="authentication">
+                          <NavigationMenu.Trigger className={styles.submenusSubTrigger}>
+                            Authentication
+                          </NavigationMenu.Trigger>
+
+                          <NavigationMenu.Content
+                            className={styles.submenusSubContent}
+                            style={{
+                              gridTemplateColumns: '1.5fr 1fr 1fr',
+                            }}
+                          >
+                            <LinkGroup items={['Donec quis dui', 'Vestibulum', 'Nunc dignissim']} />
+                            <LinkGroup
+                              items={['Fusce pellentesque', 'Aliquam porttitor', 'Pellentesque']}
+                            />
+                            <LinkGroup
+                              items={['Fusce pellentesque', 'Aliquam porttitor', 'Pellentesque']}
+                            />
+                          </NavigationMenu.Content>
+                        </NavigationMenu.Item>
+
+                        <NavigationMenu.Indicator className={styles.submenusSubIndicator} />
+                      </NavigationMenu.List>
+
+                      <NavigationMenu.Viewport className={styles.submenusSubViewport} />
+                    </NavigationMenu.Sub>
+                  </NavigationMenu.Content>
+                </NavigationMenu.Item>
+
+                <NavigationMenu.Item>
+                  <TriggerWithIndicator>Company</TriggerWithIndicator>
+                  <NavigationMenu.Content className={styles.submenusContent}>
+                    <NavigationMenu.Sub
+                      className={styles.submenusRoot}
+                      orientation="vertical"
+                      defaultValue="customers"
+                    >
+                      <NavigationMenu.List className={styles.mainList}>
+                        <NavigationMenu.Item value="customers">
+                          <NavigationMenu.Trigger className={styles.submenusSubTrigger}>
+                            Customers
+                          </NavigationMenu.Trigger>
+
+                          <NavigationMenu.Content
+                            className={styles.submenusSubContent}
+                            style={{
+                              gridTemplateColumns: '1.5fr 1fr',
+                            }}
+                          >
+                            <LinkGroup items={['Donec quis dui', 'Vestibulum', 'Nunc dignissim']} />
+                            <LinkGroup
+                              items={['Fusce pellentesque', 'Aliquam porttitor', 'Pellentesque']}
+                            />
+                          </NavigationMenu.Content>
+                        </NavigationMenu.Item>
+
+                        <NavigationMenu.Item value="partners">
+                          <NavigationMenu.Trigger className={styles.submenusSubTrigger}>
+                            Partners
+                          </NavigationMenu.Trigger>
+                          <NavigationMenu.Content
+                            className={styles.submenusSubContent}
+                            style={{
+                              gridTemplateColumns: '1fr 1fr',
+                            }}
+                          >
+                            <LinkGroup
+                              items={[
+                                'Fusce pellentesque',
+                                'Aliquam porttitor',
+                                'Pellentesque',
+                                'Vestibulum',
+                              ]}
+                            />
+                            <LinkGroup
+                              items={['Fusce pellentesque', 'Aliquam porttitor', 'Pellentesque']}
+                            />
+                          </NavigationMenu.Content>
+                        </NavigationMenu.Item>
+
+                        <NavigationMenu.Item value="enterprise">
+                          <NavigationMenu.Trigger className={styles.submenusSubTrigger}>
+                            Enterprise
+                          </NavigationMenu.Trigger>
+
+                          <NavigationMenu.Content
+                            className={styles.submenusSubContent}
+                            style={{
+                              gridTemplateColumns: '1.5fr 1fr',
+                            }}
+                          >
+                            <LinkGroup items={['Donec quis dui', 'Vestibulum', 'Nunc dignissim']} />
+                            <LinkGroup
+                              items={['Fusce pellentesque', 'Aliquam porttitor', 'Pellentesque']}
+                            />
+                          </NavigationMenu.Content>
+                        </NavigationMenu.Item>
+
+                        <NavigationMenu.Indicator className={styles.submenusSubIndicator} />
+                      </NavigationMenu.List>
+
+                      <NavigationMenu.Viewport className={styles.submenusSubViewport} />
+                    </NavigationMenu.Sub>
+                  </NavigationMenu.Content>
+                </NavigationMenu.Item>
+
+                <NavigationMenu.Item>
+                  <TriggerWithIndicator disabled>Developers</TriggerWithIndicator>
+                  <NavigationMenu.Content
+                    className={styles.submenusSubContent}
+                    style={{ gridTemplateColumns: '1fr 1fr' }}
+                  >
+                    <LinkGroup items={['Donec quis dui', 'Vestibulum']} />
+                    <LinkGroup items={['Fusce pellentesque', 'Aliquam porttitor']} />
+                  </NavigationMenu.Content>
+                </NavigationMenu.Item>
+
+                <NavigationMenu.Item>
+                  <NavigationMenu.Link href="#example" className={styles.link}>
+                    Link
+                  </NavigationMenu.Link>
+                </NavigationMenu.Item>
+              </NavigationMenu.List>
+
+              <NavigationMenu.Viewport className={styles.submenusViewport} />
+            </NavigationMenu.Root>
+          </div>
+          <Dialog.Close className={dialogStyles.close}>close</Dialog.Close>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
 };
 
