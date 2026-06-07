@@ -3,7 +3,6 @@ import { createContextScope } from '@radix-ui/react-context';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { Primitive } from '@radix-ui/react-primitive';
-import { useIsHydrated } from '@radix-ui/react-use-is-hydrated';
 
 import type { Scope } from '@radix-ui/react-context';
 
@@ -20,8 +19,15 @@ type ImageLoadingStatus = 'idle' | 'loading' | 'loaded' | 'error';
 
 type AvatarContextValue = {
   imageLoadingStatus: ImageLoadingStatus;
-  onImageLoadingStatusChange(status: ImageLoadingStatus): void;
+  setImageLoadingStatus: React.Dispatch<React.SetStateAction<ImageLoadingStatus>>;
+  imageCount: number;
+  setImageCount: React.Dispatch<React.SetStateAction<number>>;
 };
+
+const STATIC_IMAGE_COUNT_STATE: [number, React.Dispatch<React.SetStateAction<number>>] = [
+  0,
+  () => void 0,
+];
 
 const [AvatarProvider, useAvatarContext] = createAvatarContext<AvatarContextValue>(AVATAR_NAME);
 
@@ -33,11 +39,15 @@ const Avatar = React.forwardRef<AvatarElement, AvatarProps>(
   (props: ScopedProps<AvatarProps>, forwardedRef) => {
     const { __scopeAvatar, ...avatarProps } = props;
     const [imageLoadingStatus, setImageLoadingStatus] = React.useState<ImageLoadingStatus>('idle');
+    const [imageCount, setImageCount] = useImageCount();
+
     return (
       <AvatarProvider
         scope={__scopeAvatar}
         imageLoadingStatus={imageLoadingStatus}
-        onImageLoadingStatusChange={setImageLoadingStatus}
+        setImageLoadingStatus={setImageLoadingStatus}
+        imageCount={imageCount}
+        setImageCount={setImageCount}
       >
         <Primitive.span {...avatarProps} ref={forwardedRef} />
       </AvatarProvider>
@@ -61,16 +71,27 @@ interface AvatarImageProps extends PrimitiveImageProps {
 
 const AvatarImage = React.forwardRef<AvatarImageElement, AvatarImageProps>(
   (props: ScopedProps<AvatarImageProps>, forwardedRef) => {
-    const { __scopeAvatar, src, onLoadingStatusChange = () => {}, ...imageProps } = props;
+    const { __scopeAvatar, src, onLoadingStatusChange, ...imageProps } = props;
     const context = useAvatarContext(IMAGE_NAME, __scopeAvatar);
-    const imageLoadingStatus = useImageLoadingStatus(src, imageProps);
+    useUpdateImageCount(context.setImageCount);
+
+    const imageLoadingStatus = useImageLoadingStatus(src, {
+      referrerPolicy: imageProps.referrerPolicy,
+      crossOrigin: imageProps.crossOrigin,
+      loadingStatus: context.imageLoadingStatus,
+      setLoadingStatus: context.setImageLoadingStatus,
+    });
     const handleLoadingStatusChange = useCallbackRef((status: ImageLoadingStatus) => {
-      onLoadingStatusChange(status);
-      context.onImageLoadingStatusChange(status);
+      onLoadingStatusChange?.(status);
     });
 
+    const loadingStatusRef = React.useRef<ImageLoadingStatus>(imageLoadingStatus);
+
     useLayoutEffect(() => {
-      if (imageLoadingStatus !== 'idle') {
+      const previousLoadingStatus = loadingStatusRef.current;
+      loadingStatusRef.current = imageLoadingStatus;
+
+      if (imageLoadingStatus !== previousLoadingStatus) {
         handleLoadingStatusChange(imageLoadingStatus);
       }
     }, [imageLoadingStatus, handleLoadingStatusChange]);
@@ -117,71 +138,90 @@ AvatarFallback.displayName = FALLBACK_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
-function resolveLoadingStatus(image: HTMLImageElement | null, src?: string): ImageLoadingStatus {
-  if (!image) {
-    return 'idle';
-  }
-  if (!src) {
-    return 'error';
-  }
-  if (image.src !== src) {
-    image.src = src;
-  }
-  return image.complete && image.naturalWidth > 0 ? 'loaded' : 'loading';
-}
-
 function useImageLoadingStatus(
   src: string | undefined,
-  { referrerPolicy, crossOrigin }: AvatarImageProps,
+  {
+    loadingStatus,
+    setLoadingStatus,
+    referrerPolicy,
+    crossOrigin,
+  }: {
+    referrerPolicy: React.HTMLAttributeReferrerPolicy | undefined;
+    crossOrigin: string | undefined;
+    loadingStatus: ImageLoadingStatus;
+    setLoadingStatus: React.Dispatch<React.SetStateAction<ImageLoadingStatus>>;
+  },
 ) {
-  const isHydrated = useIsHydrated();
-  const imageRef = React.useRef<HTMLImageElement | null>(null);
-  const image = (() => {
-    if (!isHydrated) return null;
-    if (!imageRef.current) {
-      imageRef.current = new window.Image();
+  useLayoutEffect(() => {
+    if (!src) {
+      setLoadingStatus('error');
+      return;
     }
-    return imageRef.current;
-  })();
 
-  const [loadingStatus, setLoadingStatus] = React.useState<ImageLoadingStatus>(() =>
-    resolveLoadingStatus(image, src),
-  );
-
-  useLayoutEffect(() => {
-    setLoadingStatus(resolveLoadingStatus(image, src));
-  }, [image, src]);
-
-  useLayoutEffect(() => {
-    const updateStatus = (status: ImageLoadingStatus) => () => {
-      setLoadingStatus(status);
+    const image = new window.Image();
+    const handleLoad = (event: Event) => {
+      const image = event.currentTarget as HTMLImageElement;
+      setLoadingStatus(getImageLoadingStatus(image));
     };
-
-    if (!image) return;
-
-    const handleLoad = updateStatus('loaded');
-    const handleError = updateStatus('error');
+    const handleError = () => setLoadingStatus('error');
     image.addEventListener('load', handleLoad);
     image.addEventListener('error', handleError);
     if (referrerPolicy) {
       image.referrerPolicy = referrerPolicy;
     }
-    if (typeof crossOrigin === 'string') {
-      image.crossOrigin = crossOrigin;
-    }
+    image.crossOrigin = crossOrigin ?? null;
+    image.src = src;
 
+    setLoadingStatus(getImageLoadingStatus(image));
     return () => {
       image.removeEventListener('load', handleLoad);
       image.removeEventListener('error', handleError);
+      setLoadingStatus('idle');
     };
-  }, [image, crossOrigin, referrerPolicy]);
+  }, [src, crossOrigin, referrerPolicy, setLoadingStatus]);
 
   return loadingStatus;
 }
 
-const Root = Avatar;
-const Image = AvatarImage;
-const Fallback = AvatarFallback;
+function getImageLoadingStatus(image: HTMLImageElement) {
+  return image.complete ? (image.naturalWidth > 0 ? 'loaded' : 'error') : 'loading';
+}
+
+// Image count is only used in development to warn about multiple images, which
+// is unsupported. Gating behind a development flag to avoid performance
+// overhead in production is safe because useState is guaranteed to run
+// consistently in the same environment.
+// oxlint-disable react-hooks/rules-of-hooks
+function useImageCount() {
+  let state = STATIC_IMAGE_COUNT_STATE;
+  if (process.env.NODE_ENV === 'development') {
+    state = React.useState(0);
+    const [imageCount] = state;
+    const hasWarnedRef = React.useRef(false);
+    React.useEffect(() => {
+      if (imageCount > 1 && !hasWarnedRef.current) {
+        hasWarnedRef.current = true;
+        console.warn(
+          'Avatar: Only one `Avatar.Image` component should be rendered per `Avatar.Root`, but multiple were detected. This will lead to unexpected behavior.',
+        );
+      }
+    }, [imageCount]);
+  }
+
+  return state;
+}
+
+function useUpdateImageCount(setImageCount: React.Dispatch<React.SetStateAction<number>>) {
+  if (process.env.NODE_ENV === 'development') {
+    React.useEffect(() => {
+      setImageCount((imageCount) => imageCount + 1);
+      return () => {
+        setImageCount((imageCount) => imageCount - 1);
+      };
+    }, [setImageCount]);
+  }
+}
+// oxlint-enable react-hooks/rules-of-hooks
 
 export {
   createAvatarScope,
@@ -190,8 +230,8 @@ export {
   AvatarImage,
   AvatarFallback,
   //
-  Root,
-  Image,
-  Fallback,
+  Avatar as Root,
+  AvatarImage as Image,
+  AvatarFallback as Fallback,
 };
 export type { AvatarProps, AvatarImageProps, AvatarFallbackProps };
