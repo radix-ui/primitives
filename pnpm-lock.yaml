@@ -357,9 +357,6 @@ importers:
       '@radix-ui/react-primitive':
         specifier: workspace:*
         version: link:../primitive
-      '@radix-ui/react-slot':
-        specifier: workspace:*
-        version: link:../slot
     devDependencies:
       '@repo/builder':
         specifier: workspace:*

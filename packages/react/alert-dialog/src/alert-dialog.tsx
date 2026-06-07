@@ -4,7 +4,6 @@ import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { createDialogScope } from '@radix-ui/react-dialog';
 import { composeEventHandlers } from '@radix-ui/primitive';
-import { createSlottable } from '@radix-ui/react-slot';
 
 import type { Scope } from '@radix-ui/react-context';
 
@@ -109,8 +108,6 @@ interface AlertDialogContentProps extends Omit<
   'onPointerDownOutside' | 'onInteractOutside'
 > {}
 
-const Slottable = createSlottable('AlertDialogContent');
-
 const AlertDialogContent = React.forwardRef<AlertDialogContentElement, AlertDialogContentProps>(
   (props: ScopedProps<AlertDialogContentProps>, forwardedRef) => {
     const { __scopeAlertDialog, children, ...contentProps } = props;
@@ -133,14 +130,7 @@ const AlertDialogContent = React.forwardRef<AlertDialogContentElement, AlertDial
           onPointerDownOutside={(event) => event.preventDefault()}
           onInteractOutside={(event) => event.preventDefault()}
         >
-          {/**
-           * We have to use `Slottable` here as we cannot wrap the `AlertDialogContentProvider`
-           * around everything, otherwise the `DescriptionWarning` would be rendered straight away.
-           * This is because we want the accessibility checks to run only once the content is actually
-           * open and that behaviour is already encapsulated in `DialogContent`.
-           */}
-          <Slottable>{children}</Slottable>
-          {process.env.NODE_ENV === 'development' && <DescriptionWarning contentRef={contentRef} />}
+          {children}
         </DialogPrimitive.Content>
       </AlertDialogContentProvider>
     );
@@ -232,29 +222,6 @@ const AlertDialogCancel = React.forwardRef<AlertDialogCancelElement, AlertDialog
 AlertDialogCancel.displayName = CANCEL_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
-
-type DescriptionWarningProps = {
-  contentRef: React.RefObject<AlertDialogContentElement | null>;
-};
-
-const DescriptionWarning: React.FC<DescriptionWarningProps> = ({ contentRef }) => {
-  const MESSAGE = `\`${CONTENT_NAME}\` requires a description for the component to be accessible for screen reader users.
-
-You can add a description to the \`${CONTENT_NAME}\` by passing a \`${DESCRIPTION_NAME}\` component as a child, which also benefits sighted users by adding visible context to the dialog.
-
-Alternatively, you can use your own component as a description by assigning it an \`id\` and passing the same value to the \`aria-describedby\` prop in \`${CONTENT_NAME}\`. If the description is confusing or duplicative for sighted users, you can use the \`@radix-ui/react-visually-hidden\` primitive as a wrapper around your description component.
-
-For more information, see https://radix-ui.com/primitives/docs/components/alert-dialog`;
-
-  React.useEffect(() => {
-    const hasDescription = document.getElementById(
-      contentRef.current?.getAttribute('aria-describedby')!,
-    );
-    if (!hasDescription) console.warn(MESSAGE);
-  }, [MESSAGE, contentRef]);
-
-  return null;
-};
 
 const Root = AlertDialog;
 const Trigger = AlertDialogTrigger;
