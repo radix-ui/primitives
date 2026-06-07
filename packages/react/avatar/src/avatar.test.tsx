@@ -132,6 +132,26 @@ describe('given an Avatar with fallback and an image', () => {
     expect(image).not.toBeInTheDocument();
   });
 
+  it('should render the fallback again after a loaded image unmounts', async () => {
+    const conditionalUi = (showImage: boolean) => (
+      <Avatar.Root data-testid={ROOT_TEST_ID}>
+        <Avatar.Fallback>{FALLBACK_TEXT}</Avatar.Fallback>
+        {showImage ? <Avatar.Image src="/test.png" alt={IMAGE_ALT_TEXT} /> : null}
+      </Avatar.Root>
+    );
+    rendered.unmount();
+    rendered = render(conditionalUi(true));
+
+    image = await rendered.findByRole('img');
+    expect(image).toBeInTheDocument();
+    expect(rendered.queryByText(FALLBACK_TEXT)).not.toBeInTheDocument();
+
+    rendered.rerender(conditionalUi(false));
+    image = rendered.queryByRole('img');
+    expect(image).not.toBeInTheDocument();
+    expect(rendered.queryByText(FALLBACK_TEXT)).toBeInTheDocument();
+  });
+
   it('should show fallback if image has no data', async () => {
     rendered.unmount();
     const spy = vi.spyOn(window.Image.prototype, 'naturalWidth', 'get');
@@ -140,6 +160,63 @@ describe('given an Avatar with fallback and an image', () => {
     const fallback = rendered.queryByText(FALLBACK_TEXT);
     expect(fallback).toBeInTheDocument();
     spy.mockRestore();
+  });
+
+  it('should show the fallback if a loaded image reports no natural size', async () => {
+    rendered.unmount();
+    const spy = vi.spyOn(window.Image.prototype, 'naturalWidth', 'get').mockReturnValue(0);
+    const onLoadingStatusChange = vi.fn();
+    rendered = render(
+      <Avatar.Root data-testid={ROOT_TEST_ID}>
+        <Avatar.Fallback>{FALLBACK_TEXT}</Avatar.Fallback>
+        <Avatar.Image
+          src="/no-size.png"
+          alt={IMAGE_ALT_TEXT}
+          onLoadingStatusChange={onLoadingStatusChange}
+        />
+      </Avatar.Root>,
+    );
+
+    // The image dispatches `load`, but because its natural size is 0 we treat it as an error.
+    await waitFor(() => expect(onLoadingStatusChange).toHaveBeenCalledWith('error'));
+    expect(rendered.queryByRole('img')).not.toBeInTheDocument();
+    expect(rendered.queryByText(FALLBACK_TEXT)).toBeInTheDocument();
+    spy.mockRestore();
+  });
+
+  describe('onLoadingStatusChange', () => {
+    const renderWithCallback = (src?: string) => {
+      const onLoadingStatusChange = vi.fn();
+      rendered.unmount();
+      rendered = render(
+        <Avatar.Root data-testid={ROOT_TEST_ID}>
+          <Avatar.Fallback>{FALLBACK_TEXT}</Avatar.Fallback>
+          <Avatar.Image
+            src={src}
+            alt={IMAGE_ALT_TEXT}
+            onLoadingStatusChange={onLoadingStatusChange}
+          />
+        </Avatar.Root>,
+      );
+      return onLoadingStatusChange;
+    };
+
+    it('is called with "loaded" once the image loads', async () => {
+      const onLoadingStatusChange = renderWithCallback('/test.png');
+      await rendered.findByRole('img');
+      expect(onLoadingStatusChange).toHaveBeenCalledWith('loaded');
+    });
+
+    it('is called with "error" when there is no src', async () => {
+      const onLoadingStatusChange = renderWithCallback();
+      await waitFor(() => expect(onLoadingStatusChange).toHaveBeenCalledWith('error'));
+    });
+
+    it('is not called with "idle" while the image is mounted', async () => {
+      const onLoadingStatusChange = renderWithCallback('/test.png');
+      await rendered.findByRole('img');
+      expect(onLoadingStatusChange).not.toHaveBeenCalledWith('idle');
+    });
   });
 
   describe('SSR', () => {
@@ -215,6 +292,8 @@ describe('given an Avatar with an image that only works when referrerPolicy=no-r
       onSrcChange() {
         setTimeout(() => {
           if (this.referrerPolicy === 'no-referrer') {
+            // Mirror real browsers: mark the image complete before `load` fires.
+            cache.add(this.src);
             this.dispatchEvent(new Event('load'));
           } else {
             this.dispatchEvent(new Event('error'));
@@ -283,6 +362,46 @@ describe('given an Avatar with an image that only works when referrerPolicy=no-r
   });
 });
 
+describe('given an Avatar with multiple images (development)', () => {
+  let warnSpy: ReturnType<typeof vi.spyOn>;
+
+  beforeEach(() => {
+    vi.stubEnv('NODE_ENV', 'development');
+    warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    cleanup();
+    vi.unstubAllEnvs();
+    vi.restoreAllMocks();
+  });
+
+  it('warns that multiple images are not supported', async () => {
+    render(
+      <Avatar.Root data-testid={ROOT_TEST_ID}>
+        <Avatar.Fallback>{FALLBACK_TEXT}</Avatar.Fallback>
+        <Avatar.Image src="/a.png" alt="a" />
+        <Avatar.Image src="/b.png" alt="b" />
+      </Avatar.Root>,
+    );
+
+    await waitFor(() =>
+      expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('multiple were detected')),
+    );
+  });
+
+  it('does not warn for a single image', () => {
+    render(
+      <Avatar.Root data-testid={ROOT_TEST_ID}>
+        <Avatar.Fallback>{FALLBACK_TEXT}</Avatar.Fallback>
+        <Avatar.Image src="/a.png" alt="a" />
+      </Avatar.Root>,
+    );
+
+    expect(warnSpy).not.toHaveBeenCalled();
+  });
+});
+
 class MockImage extends EventTarget {
   _src: string = '';
 
@@ -313,8 +432,10 @@ class MockImage extends EventTarget {
 
   onSrcChange() {
     setTimeout(() => {
-      this.dispatchEvent(new Event('load'));
+      // Mirror real browsers: the image is `complete` (and `naturalWidth` is
+      // populated) before the `load` event fires.
       cache.add(this.src);
+      this.dispatchEvent(new Event('load'));
     }, DELAY);
   }
 }
