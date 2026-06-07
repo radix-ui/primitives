@@ -54,7 +54,7 @@ export const Controlled = {
         <PasswordToggleField.Root
           {...args}
           visible={visible}
-          onVisiblityChange={(visible) => updateArgs({ visible })}
+          onVisibilityChange={(visible) => updateArgs({ visible })}
         >
           <div className={styles.field}>
             <PasswordToggleField.Input className={styles.input} />
@@ -96,7 +96,7 @@ export const InsideForm = {
         >
           <PasswordToggleField.Root
             visible={visible}
-            onVisiblityChange={(visible) => updateArgs({ visible })}
+            onVisibilityChange={(visible) => updateArgs({ visible })}
             {...args}
           >
             <div className={styles.field}>
