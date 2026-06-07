@@ -334,7 +334,7 @@ const PasswordToggleFieldToggle = React.forwardRef<
                 // wait a tick so that focus has settled, then restore select position
                 requestAnimationFrame(() => {
                   // make sure the input still has focus (developer may have
-                  // programatically moved focus elsewhere)
+                  // programmatically moved focus elsewhere)
                   if (input.ownerDocument.activeElement === input) {
                     input.selectionStart = selectionStart;
                     input.selectionEnd = selectionEnd;

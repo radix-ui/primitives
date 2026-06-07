@@ -56,7 +56,7 @@ describe('given a default Dialog', () => {
   let consoleErrorMockFunction: Mock;
 
   beforeEach(() => {
-    // This surpresses React error boundary logs for testing intentionally
+    // This suppresses React error boundary logs for testing intentionally
     // thrown errors, like in some test cases in this suite. See discussion of
     // this here: https://github.com/facebook/react/issues/11098
     consoleWarnMockFunction = vi.fn();

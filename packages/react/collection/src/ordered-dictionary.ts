@@ -1,5 +1,5 @@
 // Not a real member because it shouldn't be accessible, but the super class
-// calls `set` which needs to read the instanciation state, so it can't be a
+// calls `set` which needs to read the instantiation state, so it can't be a
 // private member.
 const __instanciated = new WeakMap<OrderedDict<any, any>, boolean>();
 export class OrderedDict<K, V> extends Map<K, V> {

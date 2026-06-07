@@ -29,7 +29,7 @@ describe('Toast', () => {
       cy.findByText('Add toast').click();
     });
 
-    it('should have no acessibility issues', () => {
+    it('should have no accessibility issues', () => {
       cy.injectAxe();
       cy.checkA11y('[aria-label="Notifications (F8)"]');
     });

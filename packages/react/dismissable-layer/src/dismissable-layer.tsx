@@ -249,7 +249,7 @@ function usePointerDownOutside(
         /**
          * On touch devices, we need to wait for a click event because browsers implement
          * a ~350ms delay between the time the user stops touching the display and when the
-         * browser executres events. We need to ensure we don't reactivate pointer-events within
+         * browser executes events. We need to ensure we don't reactivate pointer-events within
          * this timeframe otherwise the browser may execute events that should have been prevented.
          *
          * Additionally, this also lets us deal automatically with cancellations when a click event
