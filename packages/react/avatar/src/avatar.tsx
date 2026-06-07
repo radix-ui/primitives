@@ -1,10 +1,10 @@
 import * as React from 'react';
-import { createContextScope } from '@radix-ui/react-context';
+import { createContextScope, type Scope } from '@radix-ui/react-context';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { Primitive } from '@radix-ui/react-primitive';
-
-import type { Scope } from '@radix-ui/react-context';
+import { composeEventHandlers } from '@radix-ui/primitive';
+import { useComposedRefs } from '@radix-ui/react-compose-refs';
 
 /* -------------------------------------------------------------------------------------------------
  * Avatar
@@ -65,44 +65,186 @@ const IMAGE_NAME = 'AvatarImage';
 
 type AvatarImageElement = React.ComponentRef<typeof Primitive.img>;
 type PrimitiveImageProps = React.ComponentPropsWithoutRef<typeof Primitive.img>;
-interface AvatarImageProps extends PrimitiveImageProps {
+type AvatarImageMode = 'default' | 'native' | 'custom';
+interface AvatarImageCommonProps extends PrimitiveImageProps {
   onLoadingStatusChange?: (status: ImageLoadingStatus) => void;
 }
+interface AvatarImageDefaultModeProps extends AvatarImageCommonProps {
+  mode?: Exclude<AvatarImageMode, 'custom'>;
+  render?: never;
+}
+interface AvatarImageCustomModeProps extends AvatarImageCommonProps {
+  mode: 'custom';
+  render: (args: {
+    props: PrimitiveImageProps;
+    ref: React.Ref<HTMLImageElement> | undefined;
+    context: {
+      loadingStatus: ImageLoadingStatus;
+      onLoadingStatusChange: (status: ImageLoadingStatus) => void;
+    };
+  }) => React.ReactNode;
+}
+
+type AvatarImageProps = AvatarImageDefaultModeProps | AvatarImageCustomModeProps;
 
 const AvatarImage = React.forwardRef<AvatarImageElement, AvatarImageProps>(
   (props: ScopedProps<AvatarImageProps>, forwardedRef) => {
-    const { __scopeAvatar, src, onLoadingStatusChange, ...imageProps } = props;
-    const context = useAvatarContext(IMAGE_NAME, __scopeAvatar);
-    useUpdateImageCount(context.setImageCount);
+    const { mode = 'default', render, ...imageProps } = props;
+    switch (mode) {
+      case 'default':
+        return <AvatarImageImpl ref={forwardedRef} {...imageProps} />;
+      case 'native':
+        return <AvatarImageNative ref={forwardedRef} {...imageProps} />;
+      case 'custom':
+        if (render == null) {
+          throw new Error('AvatarImage: `render` prop is required when mode is `custom`');
+        }
 
-    const imageLoadingStatus = useImageLoadingStatus(src, {
-      referrerPolicy: imageProps.referrerPolicy,
-      crossOrigin: imageProps.crossOrigin,
-      loadingStatus: context.imageLoadingStatus,
-      setLoadingStatus: context.setImageLoadingStatus,
-    });
-    const handleLoadingStatusChange = useCallbackRef((status: ImageLoadingStatus) => {
-      onLoadingStatusChange?.(status);
-    });
+        return <AvatarImageCustom ref={forwardedRef} {...imageProps} render={render} />;
 
-    const loadingStatusRef = React.useRef<ImageLoadingStatus>(imageLoadingStatus);
-
-    useLayoutEffect(() => {
-      const previousLoadingStatus = loadingStatusRef.current;
-      loadingStatusRef.current = imageLoadingStatus;
-
-      if (imageLoadingStatus !== previousLoadingStatus) {
-        handleLoadingStatusChange(imageLoadingStatus);
-      }
-    }, [imageLoadingStatus, handleLoadingStatusChange]);
-
-    return imageLoadingStatus === 'loaded' ? (
-      <Primitive.img {...imageProps} ref={forwardedRef} src={src} />
-    ) : null;
+      default:
+        mode satisfies never;
+        return <AvatarImageImpl ref={forwardedRef} {...imageProps} />;
+    }
   },
 );
 
 AvatarImage.displayName = IMAGE_NAME;
+
+const AvatarImageImpl = React.forwardRef<
+  AvatarImageElement,
+  Omit<AvatarImageDefaultModeProps, 'mode'>
+>((props: ScopedProps<Omit<AvatarImageDefaultModeProps, 'mode'>>, forwardedRef) => {
+  const { __scopeAvatar, src, onLoadingStatusChange, ...imageProps } = props;
+  const context = useAvatarContext(IMAGE_NAME, __scopeAvatar);
+  useUpdateImageCount(context.setImageCount);
+
+  const imageLoadingStatus = useImageLoadingStatus(src, {
+    referrerPolicy: imageProps.referrerPolicy,
+    crossOrigin: imageProps.crossOrigin,
+    loadingStatus: context.imageLoadingStatus,
+    setLoadingStatus: context.setImageLoadingStatus,
+  });
+  const handleLoadingStatusChange = useCallbackRef((status: ImageLoadingStatus) => {
+    onLoadingStatusChange?.(status);
+  });
+
+  const loadingStatusRef = React.useRef<ImageLoadingStatus>(imageLoadingStatus);
+
+  useLayoutEffect(() => {
+    const previousLoadingStatus = loadingStatusRef.current;
+    loadingStatusRef.current = imageLoadingStatus;
+
+    if (imageLoadingStatus !== previousLoadingStatus) {
+      handleLoadingStatusChange(imageLoadingStatus);
+    }
+  }, [imageLoadingStatus, handleLoadingStatusChange]);
+
+  return imageLoadingStatus === 'loaded' ? (
+    <Primitive.img {...imageProps} ref={forwardedRef} src={src} />
+  ) : null;
+});
+
+AvatarImageImpl.displayName = IMAGE_NAME + 'Impl';
+
+const AvatarImageNative = React.forwardRef<
+  AvatarImageElement,
+  Omit<AvatarImageDefaultModeProps, 'mode'>
+>((props: ScopedProps<Omit<AvatarImageDefaultModeProps, 'mode'>>, forwardedRef) => {
+  const { __scopeAvatar, src, onLoadingStatusChange, ...imageProps } = props;
+  const context = useAvatarContext(IMAGE_NAME, __scopeAvatar);
+  useUpdateImageCount(context.setImageCount);
+
+  const { imageLoadingStatus, setImageLoadingStatus } = context;
+  const loadingStatusRef = React.useRef<ImageLoadingStatus>(imageLoadingStatus);
+
+  const handleLoadingStatusChange = useCallbackRef((status: ImageLoadingStatus) => {
+    onLoadingStatusChange?.(status);
+  });
+
+  useLayoutEffect(() => {
+    const previousLoadingStatus = loadingStatusRef.current;
+    loadingStatusRef.current = imageLoadingStatus;
+    if (imageLoadingStatus !== previousLoadingStatus) {
+      handleLoadingStatusChange(imageLoadingStatus);
+    }
+  }, [imageLoadingStatus, handleLoadingStatusChange]);
+
+  return (
+    <Primitive.img
+      {...imageProps}
+      data-radix-avatar-loading-status={imageLoadingStatus}
+      ref={useComposedRefs(
+        forwardedRef,
+        React.useCallback(
+          (node: HTMLImageElement | null) => {
+            if (!src) {
+              // an image without an src will never update its loading status from `error`
+              return;
+            }
+
+            if (Number.parseInt(React.version, 10) >= 19) {
+              return () => {
+                setImageLoadingStatus('idle');
+              };
+            } else if (!node) {
+              setImageLoadingStatus('idle');
+            }
+          },
+          [setImageLoadingStatus, src],
+        ),
+      )}
+      src={src}
+      onError={composeEventHandlers(imageProps.onError, () =>
+        context.setImageLoadingStatus('error'),
+      )}
+      onLoad={composeEventHandlers(imageProps.onLoad, (event) => {
+        if (!src) {
+          // an image without an src will never update its loading status from `error`
+          return;
+        }
+
+        return context.setImageLoadingStatus(getImageLoadingStatus(event.currentTarget));
+      })}
+    />
+  );
+});
+AvatarImageNative.displayName = IMAGE_NAME + 'Native';
+
+const AvatarImageCustom = React.forwardRef<
+  AvatarImageElement,
+  Omit<AvatarImageCustomModeProps, 'mode'>
+>((props: ScopedProps<Omit<AvatarImageCustomModeProps, 'mode'>>, forwardedRef) => {
+  const { __scopeAvatar, render, onLoadingStatusChange, ...imageProps } = props;
+  const context = useAvatarContext(IMAGE_NAME, __scopeAvatar);
+  useUpdateImageCount(context.setImageCount);
+
+  const handleLoadingStatusChange = useCallbackRef((status: ImageLoadingStatus) => {
+    onLoadingStatusChange?.(status);
+  });
+
+  const { imageLoadingStatus, setImageLoadingStatus } = context;
+  const loadingStatusRef = React.useRef<ImageLoadingStatus>(imageLoadingStatus);
+
+  useLayoutEffect(() => {
+    const previousLoadingStatus = loadingStatusRef.current;
+    loadingStatusRef.current = imageLoadingStatus;
+    if (imageLoadingStatus !== previousLoadingStatus) {
+      handleLoadingStatusChange(imageLoadingStatus);
+    }
+  }, [imageLoadingStatus, handleLoadingStatusChange]);
+
+  return render({
+    context: {
+      loadingStatus: imageLoadingStatus,
+      onLoadingStatusChange: setImageLoadingStatus,
+    },
+    props: imageProps,
+    ref: forwardedRef,
+  });
+});
+
+AvatarImageCustom.displayName = IMAGE_NAME + 'Custom';
 
 /* -------------------------------------------------------------------------------------------------
  * AvatarFallback
