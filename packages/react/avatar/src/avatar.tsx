@@ -183,6 +183,10 @@ const AvatarImageNative = React.forwardRef<
               return;
             }
 
+            if (node) {
+              setImageLoadingStatus(getImageLoadingStatus(node));
+            }
+
             if (Number.parseInt(React.version, 10) >= 19) {
               return () => {
                 setImageLoadingStatus('idle');

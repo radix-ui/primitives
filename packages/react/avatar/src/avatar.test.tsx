@@ -417,6 +417,45 @@ describe('given an Avatar with a native image', () => {
     expect(rendered.queryByRole('img')).toBeInTheDocument();
   });
 
+  it('resolves to "loaded" for a cached image', async () => {
+    // Mirror a cached image
+    const completeSpy = vi
+      .spyOn(window.HTMLImageElement.prototype, 'complete', 'get')
+      .mockReturnValue(true);
+    const naturalWidthSpy = vi
+      .spyOn(window.HTMLImageElement.prototype, 'naturalWidth', 'get')
+      .mockReturnValue(300);
+
+    const rendered = render(ui(true));
+    const image = rendered.getByRole('img');
+
+    await waitFor(() =>
+      expect(image).toHaveAttribute('data-radix-avatar-loading-status', 'loaded'),
+    );
+    expect(rendered.queryByText(FALLBACK_TEXT)).not.toBeInTheDocument();
+
+    completeSpy.mockRestore();
+    naturalWidthSpy.mockRestore();
+  });
+
+  it('resolves to "error" for a cached image with no natural size', async () => {
+    const completeSpy = vi
+      .spyOn(window.HTMLImageElement.prototype, 'complete', 'get')
+      .mockReturnValue(true);
+    const naturalWidthSpy = vi
+      .spyOn(window.HTMLImageElement.prototype, 'naturalWidth', 'get')
+      .mockReturnValue(0);
+
+    const rendered = render(ui(true));
+    const image = rendered.getByRole('img');
+
+    await waitFor(() => expect(image).toHaveAttribute('data-radix-avatar-loading-status', 'error'));
+    expect(rendered.queryByText(FALLBACK_TEXT)).toBeInTheDocument();
+
+    completeSpy.mockRestore();
+    naturalWidthSpy.mockRestore();
+  });
+
   it('should render the fallback again after a loaded image unmounts', async () => {
     const completeSpy = vi
       .spyOn(window.HTMLImageElement.prototype, 'complete', 'get')
