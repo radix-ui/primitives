@@ -10,27 +10,6 @@ const OPEN_TEXT = 'Open';
 const CLOSE_TEXT = 'Close';
 const TITLE_TEXT = 'Title';
 
-const NoLabelDialogTest = (props: React.ComponentProps<typeof Dialog.Root>) => (
-  <Dialog.Root {...props}>
-    <Dialog.Trigger>{OPEN_TEXT}</Dialog.Trigger>
-    <Dialog.Overlay />
-    <Dialog.Content>
-      <Dialog.Close>{CLOSE_TEXT}</Dialog.Close>
-    </Dialog.Content>
-  </Dialog.Root>
-);
-
-const UndefinedDescribedByDialog = (props: React.ComponentProps<typeof Dialog.Root>) => (
-  <Dialog.Root {...props}>
-    <Dialog.Trigger>{OPEN_TEXT}</Dialog.Trigger>
-    <Dialog.Overlay />
-    <Dialog.Content aria-describedby={undefined}>
-      <Dialog.Title>{TITLE_TEXT}</Dialog.Title>
-      <Dialog.Close>{CLOSE_TEXT}</Dialog.Close>
-    </Dialog.Content>
-  </Dialog.Root>
-);
-
 const DialogTest = (props: React.ComponentProps<typeof Dialog.Root>) => (
   <Dialog.Root {...props}>
     <Dialog.Trigger>{OPEN_TEXT}</Dialog.Trigger>
@@ -41,10 +20,6 @@ const DialogTest = (props: React.ComponentProps<typeof Dialog.Root>) => (
     </Dialog.Content>
   </Dialog.Root>
 );
-
-function renderAndClickDialogTrigger(Dialog: any) {
-  fireEvent.click(render(Dialog).getByText(OPEN_TEXT));
-}
 
 describe('given a default Dialog', () => {
   let rendered: RenderResult;
@@ -84,36 +59,6 @@ describe('given a default Dialog', () => {
     beforeEach(() => {
       fireEvent.click(trigger);
       closeButton = rendered.getByText(CLOSE_TEXT);
-    });
-
-    describe('when no description has been provided', () => {
-      it('should warn to the console', () => {
-        expect(consoleWarnMockFunction).toHaveBeenCalledTimes(1);
-      });
-    });
-
-    describe('when no title has been provided', () => {
-      beforeEach(() => {
-        cleanup();
-      });
-      it('should display an error in the console', () => {
-        consoleErrorMockFunction.mockClear();
-
-        renderAndClickDialogTrigger(<NoLabelDialogTest />);
-        expect(consoleErrorMockFunction).toHaveBeenCalled();
-      });
-    });
-
-    describe('when aria-describedby is set to undefined', () => {
-      beforeEach(() => {
-        cleanup();
-      });
-      it('should not warn to the console', () => {
-        consoleWarnMockFunction.mockClear();
-
-        renderAndClickDialogTrigger(<UndefinedDescribedByDialog />);
-        expect(consoleWarnMockFunction).not.toHaveBeenCalled();
-      });
     });
 
     it('should open the content', () => {

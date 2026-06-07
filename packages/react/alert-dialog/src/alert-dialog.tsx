@@ -120,37 +120,29 @@ const AlertDialogContent = React.forwardRef<AlertDialogContentElement, AlertDial
     const cancelRef = React.useRef<AlertDialogCancelElement | null>(null);
 
     return (
-      <DialogPrimitive.WarningProvider
-        contentName={CONTENT_NAME}
-        titleName={TITLE_NAME}
-        docsSlug="alert-dialog"
-      >
-        <AlertDialogContentProvider scope={__scopeAlertDialog} cancelRef={cancelRef}>
-          <DialogPrimitive.Content
-            role="alertdialog"
-            {...dialogScope}
-            {...contentProps}
-            ref={composedRefs}
-            onOpenAutoFocus={composeEventHandlers(contentProps.onOpenAutoFocus, (event) => {
-              event.preventDefault();
-              cancelRef.current?.focus({ preventScroll: true });
-            })}
-            onPointerDownOutside={(event) => event.preventDefault()}
-            onInteractOutside={(event) => event.preventDefault()}
-          >
-            {/**
-             * We have to use `Slottable` here as we cannot wrap the `AlertDialogContentProvider`
-             * around everything, otherwise the `DescriptionWarning` would be rendered straight away.
-             * This is because we want the accessibility checks to run only once the content is actually
-             * open and that behaviour is already encapsulated in `DialogContent`.
-             */}
-            <Slottable>{children}</Slottable>
-            {process.env.NODE_ENV === 'development' && (
-              <DescriptionWarning contentRef={contentRef} />
-            )}
-          </DialogPrimitive.Content>
-        </AlertDialogContentProvider>
-      </DialogPrimitive.WarningProvider>
+      <AlertDialogContentProvider scope={__scopeAlertDialog} cancelRef={cancelRef}>
+        <DialogPrimitive.Content
+          role="alertdialog"
+          {...dialogScope}
+          {...contentProps}
+          ref={composedRefs}
+          onOpenAutoFocus={composeEventHandlers(contentProps.onOpenAutoFocus, (event) => {
+            event.preventDefault();
+            cancelRef.current?.focus({ preventScroll: true });
+          })}
+          onPointerDownOutside={(event) => event.preventDefault()}
+          onInteractOutside={(event) => event.preventDefault()}
+        >
+          {/**
+           * We have to use `Slottable` here as we cannot wrap the `AlertDialogContentProvider`
+           * around everything, otherwise the `DescriptionWarning` would be rendered straight away.
+           * This is because we want the accessibility checks to run only once the content is actually
+           * open and that behaviour is already encapsulated in `DialogContent`.
+           */}
+          <Slottable>{children}</Slottable>
+          {process.env.NODE_ENV === 'development' && <DescriptionWarning contentRef={contentRef} />}
+        </DialogPrimitive.Content>
+      </AlertDialogContentProvider>
     );
   },
 );

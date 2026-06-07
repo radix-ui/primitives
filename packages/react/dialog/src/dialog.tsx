@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
-import { createContext, createContextScope } from '@radix-ui/react-context';
+import { createContextScope } from '@radix-ui/react-context';
 import { useId } from '@radix-ui/react-id';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
@@ -414,12 +414,6 @@ const DialogContentImpl = React.forwardRef<DialogContentImplElement, DialogConte
             onDismiss={() => context.onOpenChange(false)}
           />
         </FocusScope>
-        {process.env.NODE_ENV !== 'production' && (
-          <>
-            <TitleWarning titleId={context.titleId} />
-            <DescriptionWarning contentRef={contentRef} descriptionId={context.descriptionId} />
-          </>
-        )}
       </>
     );
   },
@@ -497,58 +491,6 @@ function getState(open: boolean) {
   return open ? 'open' : 'closed';
 }
 
-const TITLE_WARNING_NAME = 'DialogTitleWarning';
-
-const [WarningProvider, useWarningContext] = createContext(TITLE_WARNING_NAME, {
-  contentName: CONTENT_NAME,
-  titleName: TITLE_NAME,
-  docsSlug: 'dialog',
-});
-
-type TitleWarningProps = { titleId?: string };
-
-const TitleWarning: React.FC<TitleWarningProps> = ({ titleId }) => {
-  const titleWarningContext = useWarningContext(TITLE_WARNING_NAME);
-
-  const MESSAGE = `\`${titleWarningContext.contentName}\` requires a \`${titleWarningContext.titleName}\` for the component to be accessible for screen reader users.
-
-If you want to hide the \`${titleWarningContext.titleName}\`, you can wrap it with our VisuallyHidden component.
-
-For more information, see https://radix-ui.com/primitives/docs/components/${titleWarningContext.docsSlug}`;
-
-  React.useEffect(() => {
-    if (titleId) {
-      const hasTitle = document.getElementById(titleId);
-      if (!hasTitle) console.error(MESSAGE);
-    }
-  }, [MESSAGE, titleId]);
-
-  return null;
-};
-
-const DESCRIPTION_WARNING_NAME = 'DialogDescriptionWarning';
-
-type DescriptionWarningProps = {
-  contentRef: React.RefObject<DialogContentElement | null>;
-  descriptionId?: string;
-};
-
-const DescriptionWarning: React.FC<DescriptionWarningProps> = ({ contentRef, descriptionId }) => {
-  const descriptionWarningContext = useWarningContext(DESCRIPTION_WARNING_NAME);
-  const MESSAGE = `Warning: Missing \`Description\` or \`aria-describedby={undefined}\` for {${descriptionWarningContext.contentName}}.`;
-
-  React.useEffect(() => {
-    const describedById = contentRef.current?.getAttribute('aria-describedby');
-    // if we have an id and the user hasn't set aria-describedby={undefined}
-    if (descriptionId && describedById) {
-      const hasDescription = document.getElementById(descriptionId);
-      if (!hasDescription) console.warn(MESSAGE);
-    }
-  }, [MESSAGE, contentRef, descriptionId]);
-
-  return null;
-};
-
 const Root = Dialog;
 const Trigger = DialogTrigger;
 const Portal = DialogPortal;
@@ -578,8 +520,6 @@ export {
   Title,
   Description,
   Close,
-  //
-  WarningProvider,
 };
 export type {
   DialogProps,
