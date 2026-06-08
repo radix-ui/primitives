@@ -106,14 +106,30 @@ describe('Select (shadow DOM)', () => {
       // assert the select content is still open after swiping
       cy.get('.shadow-host').shadow().findByRole('listbox').should('exist');
 
-      // select an item after scrolling, ensuring it is scrolled into view and
-      // visible so the touch reliably lands within the constrained viewport
+      // Select an item after scrolling, ensuring it is scrolled into view and
+      // visible so the touch reliably lands within the constrained viewport.
       cy.get('.shadow-host')
         .shadow()
         .findByRole('option', { name: /Grapes/i })
         .scrollIntoView()
         .should('be.visible')
-        .realTouch();
+        .then(($option) => {
+          const option = $option[0]!;
+          let previousTop = Number.NaN;
+          // Retry until the option reports the same position on two consecutive
+          // checks, i.e. any residual swipe momentum / scroll-into-view
+          // adjustment has settled. Otherwise the row can shift by a few pixels
+          // between computing the tap coordinates and dispatching the touch,
+          // landing it on a neighbouring option.
+          cy.wrap(null)
+            .should(() => {
+              const currentTop = option.getBoundingClientRect().top;
+              const isStable = currentTop === previousTop;
+              previousTop = currentTop;
+              expect(isStable, 'option position has settled').to.equal(true);
+            })
+            .then(() => cy.wrap(option).realTouch());
+        });
 
       // selecting an item should close the content, which confirms the
       // selection registered before we assert on the bound value
