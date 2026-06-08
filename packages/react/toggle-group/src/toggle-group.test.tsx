@@ -83,8 +83,8 @@ describe('given a multiple ToggleGroup', () => {
     expect(await axe(rendered.container)).toHaveNoViolations();
   });
 
-  it('should have group role', () => {
-    expect(rendered.getByRole('group')).toBeInTheDocument();
+  it('should have toolbar role', () => {
+    expect(rendered.getByRole('toolbar')).toBeInTheDocument();
   });
 
   describe('when clicking `One`', () => {

@@ -42,7 +42,7 @@ const ToggleGroup = React.forwardRef<
 
   if (type === 'multiple') {
     const multipleProps = toggleGroupProps as ToggleGroupImplMultipleProps;
-    return <ToggleGroupImplMultiple role="group" {...multipleProps} ref={forwardedRef} />;
+    return <ToggleGroupImplMultiple role="toolbar" {...multipleProps} ref={forwardedRef} />;
   }
 
   throw new Error(`Missing prop \`type\` expected on \`${TOGGLE_GROUP_NAME}\``);
@@ -303,16 +303,13 @@ const ToggleGroupItemImpl = React.forwardRef<ToggleGroupItemImplElement, ToggleG
 
 /* -----------------------------------------------------------------------------------------------*/
 
-const Root = ToggleGroup;
-const Item = ToggleGroupItem;
-
 export {
   createToggleGroupScope,
   //
   ToggleGroup,
   ToggleGroupItem,
   //
-  Root,
-  Item,
+  ToggleGroup as Root,
+  ToggleGroupItem as Item,
 };
 export type { ToggleGroupSingleProps, ToggleGroupMultipleProps, ToggleGroupItemProps };
