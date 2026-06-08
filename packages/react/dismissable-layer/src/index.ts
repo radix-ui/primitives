@@ -2,6 +2,7 @@
 export {
   DismissableLayer,
   DismissableLayerBranch,
+  useDismissableLayerSurface,
   //
   Root,
   Branch,

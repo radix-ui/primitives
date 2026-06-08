@@ -281,6 +281,33 @@ describe('DismissableLayer', () => {
     expect(onDismiss).not.toHaveBeenCalled();
   });
 
+  it('dismisses when a registered dismiss surface stops propagation', async () => {
+    const onDismiss = vi.fn();
+
+    function Surface() {
+      const registerSurface = DismissableLayer.useDismissableLayerSurface();
+      return (
+        <div ref={registerSurface} onClick={(event) => event.stopPropagation()}>
+          surface
+        </div>
+      );
+    }
+
+    render(
+      <>
+        <DismissableLayer.Root deferPointerDownOutside onDismiss={onDismiss}>
+          <button type="button">inside</button>
+        </DismissableLayer.Root>
+        <Surface />
+      </>,
+    );
+    await waitForDocumentPointerDownListener();
+
+    firePointerMouseClick(screen.getByText('surface'));
+    await waitForDocumentPointerDownListener();
+    expect(onDismiss).toHaveBeenCalledTimes(1);
+  });
+
   it('does not dismiss when focus moves outside during a deferred stopped interaction', async () => {
     const onDismiss = vi.fn();
 

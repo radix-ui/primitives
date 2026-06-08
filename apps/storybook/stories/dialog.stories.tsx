@@ -176,6 +176,53 @@ export const NoPointerDownOutsideDismiss = () => (
   </Dialog.Root>
 );
 
+export const EventPropagation = () => {
+  const count = React.useRef(0);
+  const [stopPropagation, setStopPropagation] = React.useState(true);
+  return (
+    <>
+      <div
+        style={{ padding: '2rem', border: '1px solid black' }}
+        onClick={() => {
+          count.current++;
+          console.log(`clicked the card ${count.current} time${count.current === 1 ? '' : 's'}!`);
+        }}
+      >
+        <Dialog.Root>
+          <Dialog.Trigger onClick={(event) => event.stopPropagation()}>open</Dialog.Trigger>
+          <Dialog.Portal>
+            <Dialog.Overlay
+              className={styles.overlay}
+              onClick={(event) => {
+                if (stopPropagation) {
+                  event.stopPropagation();
+                }
+                console.log('clicked the dialog overlay!');
+              }}
+            />
+            <Dialog.Content
+              className={styles.contentDefault}
+              onClick={(event) => {
+                if (stopPropagation) {
+                  event.stopPropagation();
+                }
+                console.log('clicked the dialog content!');
+              }}
+            >
+              <Dialog.Close>close</Dialog.Close>
+              <Dialog.Title>Title</Dialog.Title>
+              <Dialog.Description>You can close me now!</Dialog.Description>
+            </Dialog.Content>
+          </Dialog.Portal>
+        </Dialog.Root>
+      </div>
+      <button type="button" onClick={() => setStopPropagation(!stopPropagation)}>
+        Stop propagation: {stopPropagation ? 'on' : 'off'}
+      </button>
+    </>
+  );
+};
+
 export const WithPortalContainer = () => {
   const [portalContainer, setPortalContainer] = React.useState<HTMLDivElement | null>(null);
   return (

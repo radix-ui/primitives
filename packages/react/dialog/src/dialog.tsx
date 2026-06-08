@@ -4,7 +4,7 @@ import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
 import { useId } from '@radix-ui/react-id';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
-import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
+import { DismissableLayer, useDismissableLayerSurface } from '@radix-ui/react-dismissable-layer';
 import { FocusScope } from '@radix-ui/react-focus-scope';
 import { Portal as PortalPrimitive } from '@radix-ui/react-portal';
 import { Presence } from '@radix-ui/react-presence';
@@ -200,6 +200,13 @@ const DialogOverlayImpl = React.forwardRef<DialogOverlayImplElement, DialogOverl
   (props: ScopedProps<DialogOverlayImplProps>, forwardedRef) => {
     const { __scopeDialog, ...overlayProps } = props;
     const context = useDialogContext(OVERLAY_NAME, __scopeDialog);
+
+    // Register the overlay as a dismiss surface so a consumer calling
+    // `stopPropagation` on it (eg. to avoid triggering parent handlers) does not
+    // prevent the dialog from closing. See: https://github.com/radix-ui/primitives/issues/3346
+    const registerDismissableSurface = useDismissableLayerSurface();
+    const composedRefs = useComposedRefs(forwardedRef, registerDismissableSurface);
+
     return (
       // Make sure `Content` is scrollable even when it doesn't live inside `RemoveScroll`
       // ie. when `Overlay` and `Content` are siblings
@@ -207,7 +214,7 @@ const DialogOverlayImpl = React.forwardRef<DialogOverlayImplElement, DialogOverl
         <Primitive.div
           data-state={getState(context.open)}
           {...overlayProps}
-          ref={forwardedRef}
+          ref={composedRefs}
           // We re-enable pointer-events prevented by `Dialog.Content` to allow scrolling the overlay.
           style={{ pointerEvents: 'auto', ...overlayProps.style }}
         />
