@@ -94,6 +94,9 @@ describe('Select (shadow DOM)', () => {
         .findByLabelText(/pick a food/i)
         .realTouch();
 
+      // wait for the content to be open and settled before interacting with it
+      cy.get('.shadow-host').shadow().findByRole('listbox').should('be.visible');
+
       // trigger a touch scroll, triggering the pointer move event and ensuring
       // we do not preventDefault on the upcoming pointer up event
       cy.get('.shadow-host').shadow().find('[data-radix-select-viewport]').realSwipe('toTop', {
@@ -103,14 +106,23 @@ describe('Select (shadow DOM)', () => {
       // assert the select content is still open after swiping
       cy.get('.shadow-host').shadow().findByRole('listbox').should('exist');
 
-      // select an item after scrolling
+      // select an item after scrolling, ensuring it is scrolled into view and
+      // visible so the touch reliably lands within the constrained viewport
       cy.get('.shadow-host')
         .shadow()
         .findByRole('option', { name: /Grapes/i })
+        .scrollIntoView()
+        .should('be.visible')
         .realTouch();
 
-      // assert the select value has been updated
-      cy.get('.shadow-host').shadow().findByText(/food:/).should('include.text', 'grapes');
+      // selecting an item should close the content, which confirms the
+      // selection registered before we assert on the bound value
+      cy.get('.shadow-host').shadow().findByRole('listbox').should('not.exist');
+
+      // assert the select value has been updated. We query the element directly
+      // rather than running `findByText` against the shadow root, which throws a
+      // confusing "got ShadowRoot" error while retrying when the node is absent.
+      cy.get('.shadow-host').shadow().find('p').should('include.text', 'food: grapes');
     });
   });
 });
