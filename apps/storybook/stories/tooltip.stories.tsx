@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { Popper } from 'radix-ui/internal';
-import { Dialog, Tooltip } from 'radix-ui';
+import { Dialog, Slot, Tooltip } from 'radix-ui';
 import styles from './tooltip.stories.module.css';
+import { customMergeProps } from './custom-merge-props';
 
 const { SIDE_OPTIONS, ALIGN_OPTIONS } = Popper;
 
@@ -787,6 +788,23 @@ export const DisableHoverableContent = () => (
       </Tooltip.Provider>
     </div>
   </>
+);
+
+export const WithCustomMergeProps = () => (
+  <Slot.Provider mergeProps={customMergeProps}>
+    <Tooltip.Provider>
+      <Tooltip.Root>
+        <Tooltip.Trigger className={styles.trigger} asChild>
+          <button data-custom-merge>Hover or Focus me (asChild)</button>
+        </Tooltip.Trigger>
+        <Tooltip.Portal>
+          <Tooltip.Content className={styles.content} sideOffset={5}>
+            Nicely done!
+          </Tooltip.Content>
+        </Tooltip.Portal>
+      </Tooltip.Root>
+    </Tooltip.Provider>
+  </Slot.Provider>
 );
 
 // change order slightly for more pleasing visual

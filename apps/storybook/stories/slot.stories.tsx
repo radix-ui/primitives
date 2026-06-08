@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Slot } from 'radix-ui';
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import { customMergeProps } from './custom-merge-props';
 
 export default { title: 'Utilities/Slot' } satisfies Meta<typeof Slot.Root>;
 
@@ -101,6 +102,39 @@ export const WithLazyComponent = () => {
     </React.Suspense>
   );
 };
+
+export const WithCustomMergePropsProp = () => (
+  <Slot.Root
+    className="slot-class"
+    mergeProps={customMergeProps}
+    onClick={() => console.log('slot click')}
+  >
+    <button data-custom-merge className="child-class" onClick={() => console.log('child click')}>
+      Custom merge (prop)
+    </button>
+  </Slot.Root>
+);
+
+export const WithCustomMergePropsProvider = () => (
+  <Slot.Provider mergeProps={customMergeProps}>
+    <h1>Bare Slot under the provider</h1>
+    <Slot.Root className="slot-class">
+      <button className="child-class" data-custom-merge>
+        Custom merge via provider
+      </button>
+    </Slot.Root>
+    <h1>Component using Slot internally (asChild)</h1>
+    <Button
+      asChild
+      iconLeft={<MockIcon color="tomato" />}
+      iconRight={<MockIcon color="royalblue" />}
+    >
+      <a href="https://radix-ui.com" data-custom-merge>
+        Button <em>as link</em>
+      </a>
+    </Button>
+  </Slot.Provider>
+);
 
 export const Chromatic = () => (
   <>

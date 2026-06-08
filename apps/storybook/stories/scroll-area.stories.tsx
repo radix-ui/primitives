@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { Direction, ScrollArea } from 'radix-ui';
+import { Direction, ScrollArea, Slot } from 'radix-ui';
 import styles from './scroll-area.stories.module.css';
+import { customMergeProps } from './custom-merge-props';
 
 export default { title: 'Components/ScrollArea' };
 
@@ -104,6 +105,22 @@ export const Animated = () => {
     </div>
   );
 };
+
+export const WithCustomMergeProps = () => (
+  <Slot.Provider mergeProps={customMergeProps}>
+    <ScrollArea.Root style={{ width: 200, height: 100, overflow: 'hidden' }} asChild>
+      <div data-custom-merge>
+        <ScrollArea.Viewport style={{ width: '100%', height: '100%' }}>
+          <div style={{ width: 400 }}>Scrollable content via an asChild root</div>
+        </ScrollArea.Viewport>
+        <ScrollArea.Scrollbar orientation="horizontal">
+          <ScrollArea.Thumb />
+        </ScrollArea.Scrollbar>
+        <ScrollArea.Corner />
+      </div>
+    </ScrollArea.Root>
+  </Slot.Provider>
+);
 
 export const Chromatic = () => (
   <div className={styles.root}>
