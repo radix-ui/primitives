@@ -119,6 +119,7 @@ interface SwitchTriggerProps extends Omit<
 const SwitchTrigger = React.forwardRef<HTMLButtonElement, SwitchTriggerProps>(
   ({ __scopeSwitch, onClick, ...switchProps }: ScopedProps<SwitchTriggerProps>, forwardedRef) => {
     const {
+      control,
       value,
       disabled,
       checked,
@@ -130,6 +131,16 @@ const SwitchTrigger = React.forwardRef<HTMLButtonElement, SwitchTriggerProps>(
       bubbleInput,
     } = useSwitchContext(TRIGGER_NAME, __scopeSwitch);
     const composedRefs = useComposedRefs(forwardedRef, setControl);
+
+    const initialCheckedStateRef = React.useRef(checked);
+    React.useEffect(() => {
+      const form = control?.form;
+      if (form) {
+        const reset = () => setChecked(initialCheckedStateRef.current);
+        form.addEventListener('reset', reset);
+        return () => form.removeEventListener('reset', reset);
+      }
+    }, [control, setChecked]);
 
     return (
       <Primitive.button
