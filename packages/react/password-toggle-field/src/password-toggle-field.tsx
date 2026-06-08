@@ -2,7 +2,7 @@ import * as React from 'react';
 import { flushSync } from 'react-dom';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
-import { Primitive } from '@radix-ui/react-primitive';
+import { Primitive, type PrimitivePropsWithRef } from '@radix-ui/react-primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { useId } from '@radix-ui/react-id';
 import { useIsHydrated } from '@radix-ui/react-use-is-hydrated';
@@ -102,7 +102,7 @@ PasswordToggleField.displayName = PASSWORD_TOGGLE_FIELD_NAME;
 
 const PASSWORD_TOGGLE_FIELD_INPUT_NAME = PASSWORD_TOGGLE_FIELD_NAME + 'Input';
 
-type PrimitiveInputProps = React.ComponentPropsWithoutRef<'input'>;
+type PrimitiveInputProps = PrimitivePropsWithRef<'input'>;
 
 interface PasswordToggleFieldOwnProps {
   autoComplete?: 'current-password' | 'new-password';
@@ -201,7 +201,7 @@ PasswordToggleFieldInput.displayName = PASSWORD_TOGGLE_FIELD_INPUT_NAME;
 
 const PASSWORD_TOGGLE_FIELD_TOGGLE_NAME = PASSWORD_TOGGLE_FIELD_NAME + 'Toggle';
 
-type PrimitiveButtonProps = React.ComponentPropsWithoutRef<'button'>;
+type PrimitiveButtonProps = PrimitivePropsWithRef<'button'>;
 
 interface PasswordToggleFieldToggleProps extends Omit<PrimitiveButtonProps, 'type'> {}
 
@@ -406,7 +406,7 @@ PasswordToggleFieldSlot.displayName = PASSWORD_TOGGLE_FIELD_SLOT_NAME;
 
 const PASSWORD_TOGGLE_FIELD_ICON_NAME = PASSWORD_TOGGLE_FIELD_NAME + 'Icon';
 
-type PrimitiveSvgProps = React.ComponentPropsWithoutRef<'svg'>;
+type PrimitiveSvgProps = PrimitivePropsWithRef<'svg'>;
 
 interface PasswordToggleFieldIconProps extends Omit<PrimitiveSvgProps, 'children'> {
   visible: React.ReactElement;
