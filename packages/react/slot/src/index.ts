@@ -8,5 +8,7 @@ export {
   //
   createSlot,
   createSlottable,
+  //
+  mergeProps,
 } from './slot';
 export type { SlotProps, MergePropsFunction } from './slot';
