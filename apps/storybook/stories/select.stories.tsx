@@ -349,6 +349,60 @@ export const NoDefaultValue = () => (
   </div>
 );
 
+export const Clearable = () => (
+  <div
+    style={{
+      display: 'flex',
+      gap: 20,
+      alignItems: 'center',
+      justifyContent: 'center',
+      height: '100vh',
+    }}
+  >
+    <Label>
+      Choose a number (optional):
+      <Select.Root defaultValue="two">
+        <Select.Trigger className={styles.trigger}>
+          <Select.Value placeholder="Pick an option" />
+          <Select.Icon />
+        </Select.Trigger>
+        <Select.Portal>
+          <Select.Content className={styles.content} sideOffset={5}>
+            <Select.Viewport className={styles.viewport}>
+              {/* An item with an empty value resets the selection back to the placeholder */}
+              <Select.Item className={styles.item} value="">
+                <Select.ItemText>None</Select.ItemText>
+                <Select.ItemIndicator className={styles.indicator}>
+                  <TickIcon />
+                </Select.ItemIndicator>
+              </Select.Item>
+              <Select.Item className={styles.item} value="one">
+                <Select.ItemText>One</Select.ItemText>
+                <Select.ItemIndicator className={styles.indicator}>
+                  <TickIcon />
+                </Select.ItemIndicator>
+              </Select.Item>
+              <Select.Item className={styles.item} value="two">
+                <Select.ItemText>Two</Select.ItemText>
+                <Select.ItemIndicator className={styles.indicator}>
+                  <TickIcon />
+                </Select.ItemIndicator>
+              </Select.Item>
+              <Select.Item className={styles.item} value="three">
+                <Select.ItemText>Three</Select.ItemText>
+                <Select.ItemIndicator className={styles.indicator}>
+                  <TickIcon />
+                </Select.ItemIndicator>
+              </Select.Item>
+            </Select.Viewport>
+            <Select.Arrow />
+          </Select.Content>
+        </Select.Portal>
+      </Select.Root>
+    </Label>
+  </div>
+);
+
 export const Typeahead = () => (
   <div
     style={{
