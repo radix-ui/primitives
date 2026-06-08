@@ -485,20 +485,23 @@ const DialogClose = React.forwardRef<DialogCloseElement, DialogCloseProps>(
 
 DialogClose.displayName = CLOSE_NAME;
 
+/** @deprecated Noop component to avoid breaking changes. */
+export const WarningProvider: React.FC<
+  ScopedProps<{
+    children?: React.ReactNode;
+    contentName: string;
+    titleName: string;
+    docsSlug: 'dialog';
+  }>
+> = (props) => {
+  return props.children;
+};
+
 /* -----------------------------------------------------------------------------------------------*/
 
 function getState(open: boolean) {
   return open ? 'open' : 'closed';
 }
-
-const Root = Dialog;
-const Trigger = DialogTrigger;
-const Portal = DialogPortal;
-const Overlay = DialogOverlay;
-const Content = DialogContent;
-const Title = DialogTitle;
-const Description = DialogDescription;
-const Close = DialogClose;
 
 export {
   createDialogScope,
@@ -512,14 +515,14 @@ export {
   DialogDescription,
   DialogClose,
   //
-  Root,
-  Trigger,
-  Portal,
-  Overlay,
-  Content,
-  Title,
-  Description,
-  Close,
+  Dialog as Root,
+  DialogTrigger as Trigger,
+  DialogPortal as Portal,
+  DialogOverlay as Overlay,
+  DialogContent as Content,
+  DialogTitle as Title,
+  DialogDescription as Description,
+  DialogClose as Close,
 };
 export type {
   DialogProps,
