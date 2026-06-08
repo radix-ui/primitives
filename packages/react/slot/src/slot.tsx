@@ -13,12 +13,14 @@ declare module 'react' {
 
 export type Usable<T> = PromiseLike<T> | React.Context<T>;
 
-interface SlotProps extends React.HTMLAttributes<HTMLElement> {
+interface SlotProps<T extends Element = HTMLElement> extends React.HTMLAttributes<T> {
   children?: React.ReactNode;
 }
 
-/* @__NO_SIDE_EFFECTS__ */ export function createSlot(ownerName: string) {
-  const Slot = React.forwardRef<HTMLElement, SlotProps>((props, forwardedRef) => {
+/* @__NO_SIDE_EFFECTS__ */ export function createSlot<T extends Element = HTMLElement>(
+  ownerName: string,
+) {
+  const Slot = React.forwardRef<T, SlotProps<T>>((props, forwardedRef) => {
     let { children, ...slotProps } = props;
     let slottableElement: React.ReactElement | null = null;
     let hasSlottable = false;
