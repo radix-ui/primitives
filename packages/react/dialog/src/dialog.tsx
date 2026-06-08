@@ -411,6 +411,7 @@ const DialogContentImpl = React.forwardRef<DialogContentImplElement, DialogConte
             data-state={getState(context.open)}
             {...contentProps}
             ref={composedRefs}
+            deferPointerDownOutside
             onDismiss={() => context.onOpenChange(false)}
           />
         </FocusScope>

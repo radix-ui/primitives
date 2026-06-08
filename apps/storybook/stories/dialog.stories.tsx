@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Dialog } from 'radix-ui';
 import styles from './dialog.stories.module.css';
+import { ExternalOverlayTrigger } from './external-overlay';
 
 export default { title: 'Components/Dialog' };
 
@@ -536,3 +537,46 @@ export const Cypress = () => {
     </>
   );
 };
+
+export const WithExtensionOverlay = () => {
+  const [open, setOpen] = React.useState(false);
+
+  return (
+    <>
+      <Dialog.Root open={open} onOpenChange={setOpen}>
+        <Dialog.Trigger className={styles.trigger}>open</Dialog.Trigger>
+        <Dialog.Portal>
+          <Dialog.Overlay className={styles.overlay} />
+          <Dialog.Content className={styles.contentDefault}>
+            <Dialog.Title>title</Dialog.Title>
+            <Dialog.Description>
+              Simulates extension UI interacting with a dialog.
+            </Dialog.Description>
+            <ExternalOverlayTrigger />
+            <Dialog.Close className={styles.close}>close</Dialog.Close>
+            <InsideShadowSuggestion />
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
+      <div data-testid="dialog-state">{open ? 'open' : 'closed'}</div>
+    </>
+  );
+};
+
+function InsideShadowSuggestion() {
+  const hostRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    const host = hostRef.current;
+    if (!host || host.shadowRoot) return;
+
+    const shadowRoot = host.attachShadow({ mode: 'open' });
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.textContent = 'inside shadow suggestion';
+    button.style.marginTop = '16px';
+    shadowRoot.append(button);
+  }, []);
+
+  return <div data-testid="inside-shadow-host" ref={hostRef} />;
+}

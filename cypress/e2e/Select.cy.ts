@@ -64,6 +64,23 @@ describe('Select', () => {
   });
 });
 
+describe('Select extension overlay interactions', () => {
+  beforeEach(() => {
+    cy.visitStory('select--with-extension-overlay');
+  });
+
+  it('closes when an external overlay stops later mouse events', () => {
+    cy.findByText('Trigger overlay').click();
+    cy.findByTestId('external-overlay').should('exist');
+    cy.findByText(/choose a number/i).click();
+    cy.findByRole('listbox').should('exist');
+
+    cy.findByTestId('external-overlay-button').realClick();
+
+    cy.findByRole('listbox').should('not.exist');
+  });
+});
+
 describe('Select (shadow DOM)', () => {
   beforeEach(() => {
     cy.visitStory('select--cypress-shadow-dom');

@@ -249,3 +249,20 @@ describe('DropdownMenu', () => {
     return cy.findByText(elementText).should('be.visible').realHover();
   }
 });
+
+describe('DropdownMenu extension overlay interactions', () => {
+  beforeEach(() => {
+    cy.visitStory('dropdownmenu--with-extension-overlay');
+  });
+
+  it('should close when an external overlay stops later mouse events', () => {
+    cy.findByText('Trigger overlay').click();
+    cy.findByTestId('external-overlay').should('exist');
+    cy.findByText('Open').click();
+    cy.findByText('New Tab').should('be.visible');
+
+    cy.findByTestId('external-overlay-button').realClick();
+
+    cy.findByText('New Tab').should('not.exist');
+  });
+});

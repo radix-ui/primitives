@@ -4,6 +4,7 @@ import { createPortal } from 'react-dom';
 import { Dialog, Select, Label as LabelPrimitive } from 'radix-ui';
 import { foodGroups } from '@repo/test-data/foods';
 import styles from './select.stories.module.css';
+import { ExternalOverlayTrigger } from './external-overlay';
 
 const Label = LabelPrimitive.Root;
 
@@ -201,6 +202,50 @@ export const Controlled = () => {
           </Select.Root>
         </Label>
       ))}
+    </div>
+  );
+};
+
+export const WithExtensionOverlay = () => {
+  const [open, setOpen] = React.useState(false);
+
+  return (
+    <div style={{ display: 'grid', gap: 20, padding: 50, justifyItems: 'start' }}>
+      <ExternalOverlayTrigger />
+      <Label>
+        Choose a number:
+        <Select.Root open={open} onOpenChange={setOpen} defaultValue="two">
+          <Select.Trigger className={styles.trigger}>
+            <Select.Value />
+            <Select.Icon />
+          </Select.Trigger>
+          <Select.Portal>
+            <Select.Content className={styles.content} position="popper" sideOffset={5}>
+              <Select.Viewport className={styles.viewport}>
+                <Select.Item className={styles.item} value="one">
+                  <Select.ItemText>One</Select.ItemText>
+                  <Select.ItemIndicator className={styles.indicator}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+                <Select.Item className={styles.item} value="two">
+                  <Select.ItemText>Two</Select.ItemText>
+                  <Select.ItemIndicator className={styles.indicator}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+                <Select.Item className={styles.item} value="three">
+                  <Select.ItemText>Three</Select.ItemText>
+                  <Select.ItemIndicator className={styles.indicator}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+              </Select.Viewport>
+            </Select.Content>
+          </Select.Portal>
+        </Select.Root>
+      </Label>
+      <div data-testid="select-state">{open ? 'open' : 'closed'}</div>
     </div>
   );
 };

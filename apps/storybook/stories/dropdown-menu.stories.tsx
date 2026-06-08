@@ -4,6 +4,7 @@ import { Dialog, DropdownMenu, Tooltip } from 'radix-ui';
 import { Popper } from 'radix-ui/internal';
 import { foodGroups } from '@repo/test-data/foods';
 import styles from './dropdown-menu.stories.module.css';
+import { ExternalOverlayTrigger } from './external-overlay';
 
 const { SIDE_OPTIONS, ALIGN_OPTIONS } = Popper;
 
@@ -362,6 +363,26 @@ export const Submenus = () => {
           </DropdownMenu.Portal>
         </DropdownMenu.Root>
       </div>
+    </div>
+  );
+};
+
+export const WithExtensionOverlay = () => {
+  const [open, setOpen] = React.useState(false);
+
+  return (
+    <div style={{ display: 'grid', gap: 20, padding: 50, justifyItems: 'start' }}>
+      <ExternalOverlayTrigger />
+      <DropdownMenu.Root open={open} onOpenChange={setOpen}>
+        <DropdownMenu.Trigger className={styles.trigger}>Open</DropdownMenu.Trigger>
+        <DropdownMenu.Portal>
+          <DropdownMenu.Content className={styles.content} sideOffset={5}>
+            <DropdownMenu.Item className={styles.item}>New Tab</DropdownMenu.Item>
+            <DropdownMenu.Item className={styles.item}>New Window</DropdownMenu.Item>
+          </DropdownMenu.Content>
+        </DropdownMenu.Portal>
+      </DropdownMenu.Root>
+      <div data-testid="dropdown-menu-state">{open ? 'open' : 'closed'}</div>
     </div>
   );
 };

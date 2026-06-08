@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Popover } from 'radix-ui';
 import { Popper } from 'radix-ui/internal';
 import styles from './popover.stories.module.css';
+import { ExternalOverlayTrigger } from './external-overlay';
 
 const { SIDE_OPTIONS, ALIGN_OPTIONS } = Popper;
 
@@ -124,6 +125,28 @@ export const Controlled = () => {
           </Popover.Content>
         </Popover.Portal>
       </Popover.Root>
+    </div>
+  );
+};
+
+export const WithExtensionOverlay = () => {
+  const [open, setOpen] = React.useState(false);
+
+  return (
+    <div
+      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '50vh' }}
+    >
+      <Popover.Root open={open} onOpenChange={setOpen}>
+        <Popover.Trigger className={styles.trigger}>open</Popover.Trigger>
+        <Popover.Portal>
+          <Popover.Content className={styles.content}>
+            <ExternalOverlayTrigger />
+            <Popover.Close className={styles.close}>close</Popover.Close>
+            <Popover.Arrow className={styles.arrow} width={20} height={10} />
+          </Popover.Content>
+        </Popover.Portal>
+      </Popover.Root>
+      <div data-testid="popover-state">{open ? 'open' : 'closed'}</div>
     </div>
   );
 };
