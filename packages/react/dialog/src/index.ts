@@ -19,8 +19,6 @@ export {
   Title,
   Description,
   Close,
-  //
-  WarningProvider,
 } from './dialog';
 export type {
   DialogProps,
