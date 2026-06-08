@@ -209,7 +209,9 @@ export const EventPropagation = () => {
                 console.log('clicked the dialog content!');
               }}
             >
-              <Dialog.Close>close</Dialog.Close>
+              <ExternalOverlayTrigger />
+              <Dialog.Close className={styles.close}>close</Dialog.Close>
+              <InsideShadowSuggestion />
               <Dialog.Title>Title</Dialog.Title>
               <Dialog.Description>You can close me now!</Dialog.Description>
             </Dialog.Content>
