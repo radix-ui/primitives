@@ -80,4 +80,59 @@ describe('Slider', () => {
       ));
     });
   });
+
+  describe('within a form that is reset', () => {
+    function renderSliderInForm(props: React.ComponentProps<typeof Slider.Root>) {
+      return render(
+        <form>
+          <Slider.Root {...props}>
+            <Slider.Track>
+              <Slider.Range />
+            </Slider.Track>
+            <Slider.Thumb />
+          </Slider.Root>
+          <button type="reset">Reset</button>
+        </form>,
+      );
+    }
+
+    it('should restore its `defaultValue` when the form is reset (uncontrolled)', async () => {
+      const user = userEvent.setup();
+      renderSliderInForm({ name: 'volume', defaultValue: [20], min: 0, max: 100 });
+
+      await user.tab();
+      await user.keyboard('{ArrowRight}');
+      expect(getThumbValue()).toBe(21);
+
+      await user.click(screen.getByText('Reset'));
+      expect(getThumbValue()).toBe(20);
+    });
+
+    it('should restore its initial `value` when the form is reset (controlled)', async () => {
+      function ControlledSlider() {
+        const [value, setValue] = React.useState([20]);
+        return (
+          <form>
+            <Slider.Root name="volume" value={value} onValueChange={setValue} min={0} max={100}>
+              <Slider.Track>
+                <Slider.Range />
+              </Slider.Track>
+              <Slider.Thumb />
+            </Slider.Root>
+            <button type="reset">Reset</button>
+          </form>
+        );
+      }
+
+      const user = userEvent.setup();
+      render(<ControlledSlider />);
+
+      await user.tab();
+      await user.keyboard('{ArrowRight}');
+      expect(getThumbValue()).toBe(21);
+
+      await user.click(screen.getByText('Reset'));
+      expect(getThumbValue()).toBe(20);
+    });
+  });
 });
