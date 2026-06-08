@@ -145,13 +145,7 @@ const ScrollAreaViewport = React.forwardRef<ScrollAreaViewportElement, ScrollAre
     const composedRefs = useComposedRefs(forwardedRef, ref, context.onViewportChange);
     return (
       <>
-        {/* Hide scrollbars cross-browser and enable momentum scroll for touch devices */}
-        <style
-          dangerouslySetInnerHTML={{
-            __html: `[data-radix-scroll-area-viewport]{scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;}[data-radix-scroll-area-viewport]::-webkit-scrollbar{display:none}`,
-          }}
-          nonce={nonce}
-        />
+        <ScrollAreaViewportStyle nonce={nonce} />
         <Primitive.div
           data-radix-scroll-area-viewport=""
           {...viewportProps}
@@ -190,6 +184,21 @@ const ScrollAreaViewport = React.forwardRef<ScrollAreaViewportElement, ScrollAre
 );
 
 ScrollAreaViewport.displayName = VIEWPORT_NAME;
+
+const ScrollAreaViewportStyle = React.memo(
+  ({ nonce }: { nonce?: string }) => {
+    return (
+      <style
+        // Hide scrollbars cross-browser and enable momentum scroll for touch devices
+        dangerouslySetInnerHTML={{
+          __html: `[data-radix-scroll-area-viewport]{scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;}[data-radix-scroll-area-viewport]::-webkit-scrollbar{display:none}`,
+        }}
+        nonce={nonce}
+      />
+    );
+  },
+  (prevProps, nextProps) => prevProps.nonce === nextProps.nonce,
+);
 
 /* -------------------------------------------------------------------------------------------------
  * ScrollAreaScrollbar
