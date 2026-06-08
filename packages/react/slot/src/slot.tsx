@@ -260,3 +260,4 @@ export {
   mergeProps,
 };
 export type { SlotProps };
+export type { MergePropsFunction } from './merge-props';

@@ -9,4 +9,4 @@ export {
   createSlot,
   createSlottable,
 } from './slot';
-export type { SlotProps } from './slot';
+export type { SlotProps, MergePropsFunction } from './slot';
