@@ -3,7 +3,7 @@ import { axe } from 'vitest-axe';
 import type { RenderResult } from '@testing-library/react';
 import { render, fireEvent, cleanup, screen } from '@testing-library/react';
 import * as Dialog from './dialog';
-import type { Mock, MockInstance } from 'vitest';
+import type { MockInstance } from 'vitest';
 import { describe, it, afterEach, beforeEach, vi, expect } from 'vitest';
 
 const OPEN_TEXT = 'Open';
@@ -25,30 +25,14 @@ describe('given a default Dialog', () => {
   let rendered: RenderResult;
   let trigger: HTMLElement;
   let closeButton: HTMLElement;
-  let consoleWarnMock: MockInstance;
-  let consoleWarnMockFunction: Mock;
-  let consoleErrorMock: MockInstance;
-  let consoleErrorMockFunction: Mock;
 
   beforeEach(() => {
-    // This surpresses React error boundary logs for testing intentionally
-    // thrown errors, like in some test cases in this suite. See discussion of
-    // this here: https://github.com/facebook/react/issues/11098
-    consoleWarnMockFunction = vi.fn();
-    consoleWarnMock = vi.spyOn(console, 'warn').mockImplementation(consoleWarnMockFunction);
-    consoleErrorMockFunction = vi.fn();
-    consoleErrorMock = vi.spyOn(console, 'error').mockImplementation(consoleErrorMockFunction);
-
     rendered = render(<DialogTest />);
     trigger = rendered.getByText(OPEN_TEXT);
   });
 
   afterEach(() => {
     cleanup();
-    consoleWarnMock.mockRestore();
-    consoleWarnMockFunction.mockClear();
-    consoleErrorMock.mockRestore();
-    consoleErrorMockFunction.mockClear();
   });
 
   it('should have no accessibility violations in default state', async () => {

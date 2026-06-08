@@ -387,8 +387,6 @@ const DialogContentImpl = React.forwardRef<DialogContentImplElement, DialogConte
   (props: ScopedProps<DialogContentImplProps>, forwardedRef) => {
     const { __scopeDialog, trapFocus, onOpenAutoFocus, onCloseAutoFocus, ...contentProps } = props;
     const context = useDialogContext(CONTENT_NAME, __scopeDialog);
-    const contentRef = React.useRef<HTMLDivElement>(null);
-    const composedRefs = useComposedRefs(forwardedRef, contentRef);
 
     // Make sure the whole tree has focus guards as our `Dialog` will be
     // the last element in the DOM (because of the `Portal`)
@@ -410,7 +408,7 @@ const DialogContentImpl = React.forwardRef<DialogContentImplElement, DialogConte
             aria-labelledby={context.titleId}
             data-state={getState(context.open)}
             {...contentProps}
-            ref={composedRefs}
+            ref={forwardedRef}
             deferPointerDownOutside
             onDismiss={() => context.onOpenChange(false)}
           />
