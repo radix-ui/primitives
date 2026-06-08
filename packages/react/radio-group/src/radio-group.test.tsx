@@ -209,6 +209,50 @@ describe('RadioGroup', () => {
     });
   });
 
+  describe('given a controlled RadioGroup that is reset to `null`', () => {
+    function ResettableRadioGroup() {
+      const [value, setValue] = React.useState<string | null>('2');
+      return (
+        <div>
+          <RadioGroup.Root aria-label="pets" value={value} onValueChange={setValue}>
+            {VALUES.map((v) => (
+              <RadioGroup.Item key={v} value={v} aria-label={LABELS[v]}>
+                <RadioGroup.Indicator data-testid={`${INDICATOR_TEST_ID}-${v}`} />
+              </RadioGroup.Item>
+            ))}
+          </RadioGroup.Root>
+          <button type="button" onClick={() => setValue(null)}>
+            Reset
+          </button>
+        </div>
+      );
+    }
+
+    beforeEach(() => {
+      render(<ResettableRadioGroup />);
+    });
+
+    it('should uncheck every item and hide indicators when value becomes `null`', async () => {
+      const radios = screen.getAllByRole(RADIO_ROLE);
+      expect(radios[1]).toHaveAttribute('aria-checked', 'true');
+      expect(screen.queryByTestId(`${INDICATOR_TEST_ID}-2`)).toBeVisible();
+
+      await act(async () => fireEvent.click(screen.getByText('Reset')));
+
+      radios.forEach((radio) => expect(radio).toHaveAttribute('aria-checked', 'false'));
+      expect(screen.queryByTestId(`${INDICATOR_TEST_ID}-2`)).not.toBeInTheDocument();
+    });
+
+    it('should allow selecting a new value after being reset', async () => {
+      const radios = screen.getAllByRole(RADIO_ROLE);
+      await act(async () => fireEvent.click(screen.getByText('Reset')));
+      await act(async () => fireEvent.click(radios[0]!));
+
+      expect(radios[0]).toHaveAttribute('aria-checked', 'true');
+      expect(screen.queryByTestId(`${INDICATOR_TEST_ID}-1`)).toBeVisible();
+    });
+  });
+
   describe('keyboard navigation', () => {
     it('should check an item that receives focus while an arrow key is pressed', async () => {
       render(<ClassicRadioGroup />);
