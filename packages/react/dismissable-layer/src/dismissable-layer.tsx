@@ -20,6 +20,13 @@ const DismissableLayerContext = React.createContext({
   layers: new Set<DismissableLayerElement>(),
   layersWithOutsidePointerEventsDisabled: new Set<DismissableLayerElement>(),
   branches: new Set<DismissableLayerBranchElement>(),
+
+  // Outside elements that belong to a layer's own dismiss affordance (eg, a
+  // dialog overlay). Pressing them should dismiss the layer regardless of
+  // whether or not they stop propagation.
+  //
+  // See https://github.com/radix-ui/primitives/issues/3346
+  dismissableSurfaces: new Set<DismissableLayerBranchElement>(),
 });
 
 type DismissableLayerElement = React.ComponentRef<typeof Primitive.div>;
@@ -108,6 +115,7 @@ const DismissableLayer = React.forwardRef<DismissableLayerElement, DismissableLa
         ownerDocument,
         deferPointerDownOutside,
         isDeferredPointerDownOutsideRef,
+        dismissableSurfaces: context.dismissableSurfaces,
       },
     );
 
@@ -241,6 +249,26 @@ DismissableLayerBranch.displayName = BRANCH_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
+/**
+ * Registers a node as a "dismiss surface" for the enclosing DismissableLayer
+ */
+function useDismissableLayerSurface(): React.RefCallback<DismissableLayerBranchElement> {
+  const context = React.useContext(DismissableLayerContext);
+  const [node, setNode] = React.useState<DismissableLayerBranchElement | null>(null);
+
+  React.useEffect(() => {
+    if (!node) {
+      return;
+    }
+    context.dismissableSurfaces.add(node);
+    return () => {
+      context.dismissableSurfaces.delete(node);
+    };
+  }, [node, context.dismissableSurfaces]);
+
+  return setNode;
+}
+
 type PointerDownOutsideEvent = CustomEvent<{ originalEvent: PointerEvent }>;
 type FocusOutsideEvent = CustomEvent<{ originalEvent: FocusEvent }>;
 
@@ -255,12 +283,14 @@ function usePointerDownOutside(
     ownerDocument: Document | undefined;
     deferPointerDownOutside: boolean;
     isDeferredPointerDownOutsideRef: React.RefObject<boolean>;
+    dismissableSurfaces: Set<DismissableLayerBranchElement>;
   },
 ) {
   const {
     ownerDocument = globalThis?.document,
     deferPointerDownOutside = false,
     isDeferredPointerDownOutsideRef,
+    dismissableSurfaces,
   } = args;
   const handlePointerDownOutside = useCallbackRef(onPointerDownOutside) as EventListener;
   const isPointerInsideReactTreeRef = React.useRef(false);
@@ -280,16 +310,25 @@ function usePointerDownOutside(
     }
 
     function handleInteractionCapture(event: Event) {
-      if (isPointerDownOutsideRef.current) {
-        interceptedOutsideInteractionEventsRef.current.set(event.type, true);
+      if (!isPointerDownOutsideRef.current) {
+        return;
+      }
 
-        if (event.type === 'click') {
-          window.setTimeout(() => {
-            if (isPointerDownOutsideRef.current) {
-              handleClickRef.current();
-            }
-          }, 0);
-        }
+      const target = event.target;
+      const isDismissableSurface =
+        target instanceof Node &&
+        [...dismissableSurfaces].some((surface) => surface.contains(target as Node));
+
+      if (!isDismissableSurface) {
+        interceptedOutsideInteractionEventsRef.current.set(event.type, true);
+      }
+
+      if (event.type === 'click') {
+        window.setTimeout(() => {
+          if (isPointerDownOutsideRef.current) {
+            handleClickRef.current();
+          }
+        }, 0);
       }
     }
 
@@ -407,6 +446,7 @@ function usePointerDownOutside(
     handlePointerDownOutside,
     deferPointerDownOutside,
     isDeferredPointerDownOutsideRef,
+    dismissableSurfaces,
   ]);
 
   return {
@@ -473,6 +513,7 @@ const Branch = DismissableLayerBranch;
 export {
   DismissableLayer,
   DismissableLayerBranch,
+  useDismissableLayerSurface,
   //
   Root,
   Branch,
