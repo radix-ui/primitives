@@ -1,7 +1,8 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import * as React from 'react';
-import { Accordion } from 'radix-ui';
+import { Accordion, Slot } from 'radix-ui';
 import styles from './accordion.stories.module.css';
+import { customMergeProps } from './custom-merge-props';
 
 export default { title: 'Components/Accordion' };
 
@@ -490,6 +491,23 @@ export const Horizontal = () => (
       </Accordion.Item>
     </Accordion.Root>
   </>
+);
+
+export const WithCustomMergeProps = () => (
+  <Slot.Provider mergeProps={customMergeProps}>
+    <Accordion.Root type="single" className={styles.root}>
+      <Accordion.Item className={styles.item} value="one">
+        <Accordion.Header className={styles.header}>
+          <Accordion.Trigger className={styles.trigger} asChild>
+            <button>One (asChild)</button>
+          </Accordion.Trigger>
+        </Accordion.Header>
+        <Accordion.Content className={styles.content}>
+          Trigger props are merged onto the consumer's element via a custom strategy.
+        </Accordion.Content>
+      </Accordion.Item>
+    </Accordion.Root>
+  </Slot.Provider>
 );
 
 export const Chromatic = () => {

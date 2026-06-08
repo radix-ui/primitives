@@ -1,8 +1,9 @@
 /* eslint-disable react/jsx-pascal-case */
 import * as React from 'react';
-import { Direction, Slider } from 'radix-ui';
+import { Direction, Slider, Slot } from 'radix-ui';
 import serialize from 'form-serialize';
 import styles from './slider.stories.module.css';
+import { customMergeProps } from './custom-merge-props';
 
 export default { title: 'Components/Slider' };
 
@@ -504,6 +505,19 @@ export const InScrollableContext = () => {
     </div>
   );
 };
+
+export const WithCustomMergeProps = () => (
+  <Slot.Provider mergeProps={customMergeProps}>
+    <Slider.Root className={styles.root} defaultValue={[40]}>
+      <Slider.Track className={styles.track}>
+        <Slider.Range className={styles.range} />
+      </Slider.Track>
+      <Slider.Thumb className={styles.thumb} asChild>
+        <span data-custom-merge />
+      </Slider.Thumb>
+    </Slider.Root>
+  </Slot.Provider>
+);
 
 export const Chromatic = () => (
   <>
