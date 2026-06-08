@@ -308,6 +308,73 @@ describe('DismissableLayer', () => {
     expect(onDismiss).toHaveBeenCalledTimes(1);
   });
 
+  it('dismisses when a registered dismiss surface stops propagation without deferring', async () => {
+    const onDismiss = vi.fn();
+
+    function Surface() {
+      const registerSurface = DismissableLayer.useDismissableLayerSurface();
+      return (
+        <div ref={registerSurface} onClick={(event) => event.stopPropagation()}>
+          surface
+        </div>
+      );
+    }
+
+    render(
+      <>
+        <DismissableLayer.Root onDismiss={onDismiss}>
+          <button type="button">inside</button>
+        </DismissableLayer.Root>
+        <Surface />
+      </>,
+    );
+    await waitForDocumentPointerDownListener();
+
+    firePointerMouseClick(screen.getByText('surface'));
+    await waitForDocumentPointerDownListener();
+    expect(onDismiss).toHaveBeenCalledTimes(1);
+  });
+
+  it('only exempts registered dismiss surfaces from stopped propagation', async () => {
+    const onDismiss = vi.fn();
+
+    function Surface() {
+      const registerSurface = DismissableLayer.useDismissableLayerSurface();
+      return (
+        <div ref={registerSurface} onClick={(event) => event.stopPropagation()}>
+          surface
+        </div>
+      );
+    }
+
+    render(
+      <>
+        <DismissableLayer.Root deferPointerDownOutside onDismiss={onDismiss}>
+          <button type="button">inside</button>
+        </DismissableLayer.Root>
+        <Surface />
+        <button type="button">outside</button>
+      </>,
+    );
+    await waitForDocumentPointerDownListener();
+
+    // A non-surface outside element that stops propagation should still block
+    // dismissal.
+    const outside = screen.getByText('outside');
+    const stopPropagation = (event: Event) => event.stopPropagation();
+    outside.addEventListener('mousedown', stopPropagation);
+    outside.addEventListener('mouseup', stopPropagation);
+    outside.addEventListener('click', stopPropagation);
+
+    firePointerMouseClick(outside);
+    await waitForDocumentPointerDownListener();
+    expect(onDismiss).not.toHaveBeenCalled();
+
+    firePointerMouseClick(screen.getByText('surface'));
+    await waitForDocumentPointerDownListener();
+    expect(onDismiss).toHaveBeenCalledTimes(1);
+  });
+
   it('does not dismiss when focus moves outside during a deferred stopped interaction', async () => {
     const onDismiss = vi.fn();
 
