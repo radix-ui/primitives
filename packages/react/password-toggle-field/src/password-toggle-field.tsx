@@ -45,7 +45,7 @@ interface PasswordToggleFieldProps {
   id?: string;
   visible?: boolean;
   defaultVisible?: boolean;
-  onVisiblityChange?: (visible: boolean) => void;
+  onVisibilityChange?: (visible: boolean) => void;
   children?: React.ReactNode;
 }
 
@@ -69,12 +69,12 @@ const PasswordToggleField: React.FC<PasswordToggleFieldProps> = ({
     [],
   );
 
-  const { visible: visibleProp, defaultVisible, onVisiblityChange, children } = props;
+  const { visible: visibleProp, defaultVisible, onVisibilityChange, children } = props;
   const [visible = false, setVisible] = useControllableState({
     caller: PASSWORD_TOGGLE_FIELD_NAME,
     prop: visibleProp,
     defaultProp: defaultVisible ?? false,
-    onChange: onVisiblityChange,
+    onChange: onVisibilityChange,
   });
 
   const inputRef = React.useRef<HTMLInputElement | null>(null);
