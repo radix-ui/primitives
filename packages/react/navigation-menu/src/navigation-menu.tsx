@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { createContextScope } from '@radix-ui/react-context';
-import { composeEventHandlers } from '@radix-ui/primitive';
+import { composeEventHandlers, getDeepActiveElement } from '@radix-ui/primitive';
 import { Primitive, dispatchDiscreteCustomEvent } from '@radix-ui/react-primitive';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { composeRefs, useComposedRefs } from '@radix-ui/react-compose-refs';
@@ -880,7 +880,7 @@ const NavigationMenuContentImpl = React.forwardRef<
       const handleClose = () => {
         onItemDismiss();
         onRootContentClose();
-        if (content.contains(document.activeElement)) triggerRef.current?.focus();
+        if (content.contains(getDeepActiveElement())) triggerRef.current?.focus();
       };
       content.addEventListener(ROOT_CONTENT_DISMISS, handleClose);
       return () => content.removeEventListener(ROOT_CONTENT_DISMISS, handleClose);
@@ -951,7 +951,7 @@ const NavigationMenuContentImpl = React.forwardRef<
           const isTabKey = event.key === 'Tab' && !isMetaKey;
           if (isTabKey) {
             const candidates = getTabbableCandidates(event.currentTarget);
-            const focusedElement = document.activeElement;
+            const focusedElement = getDeepActiveElement();
             const index = candidates.findIndex((candidate) => candidate === focusedElement);
             const isMovingBackwards = event.shiftKey;
             const nextCandidates = isMovingBackwards
@@ -1182,12 +1182,12 @@ function getTabbableCandidates(container: HTMLElement) {
 }
 
 function focusFirst(candidates: HTMLElement[]) {
-  const previouslyFocusedElement = document.activeElement;
+  const previouslyFocusedElement = getDeepActiveElement();
   return candidates.some((candidate) => {
     // if focus is already where we want to go, we don't want to keep going through the candidates
     if (candidate === previouslyFocusedElement) return true;
     candidate.focus();
-    return document.activeElement !== previouslyFocusedElement;
+    return getDeepActiveElement() !== previouslyFocusedElement;
   });
 }
 
