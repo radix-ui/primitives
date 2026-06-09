@@ -19,7 +19,7 @@ interface SeparatorProps extends PrimitiveDivProps {
   orientation?: Orientation;
   /**
    * Whether or not the component is purely decorative. When true, accessibility-related attributes
-   * are updated so that that the rendered element is removed from the accessibility tree.
+   * are updated so that the rendered element is removed from the accessibility tree.
    */
   decorative?: boolean;
 }
