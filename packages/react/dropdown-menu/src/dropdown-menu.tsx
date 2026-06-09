@@ -33,6 +33,8 @@ type DropdownMenuContextValue = {
   onOpenChange(open: boolean): void;
   onOpenToggle(): void;
   modal: boolean;
+  wasOpenedWithArrowUp: boolean;
+  setWasOpenedWithArrowUp(value: boolean): void;
 };
 
 const [DropdownMenuProvider, useDropdownMenuContext] =
@@ -65,6 +67,14 @@ const DropdownMenu: React.FC<DropdownMenuProps> = (props: ScopedProps<DropdownMe
     onChange: onOpenChange,
     caller: DROPDOWN_MENU_NAME,
   });
+  const [wasOpenedWithArrowUp, setWasOpenedWithArrowUp] = React.useState(false);
+
+  // Reset arrow up state when menu closes
+  React.useEffect(() => {
+    if (!open) {
+      setWasOpenedWithArrowUp(false);
+    }
+  }, [open]);
 
   return (
     <DropdownMenuProvider
@@ -76,6 +86,8 @@ const DropdownMenu: React.FC<DropdownMenuProps> = (props: ScopedProps<DropdownMe
       onOpenChange={setOpen}
       onOpenToggle={React.useCallback(() => setOpen((prevOpen) => !prevOpen), [setOpen])}
       modal={modal}
+      wasOpenedWithArrowUp={wasOpenedWithArrowUp}
+      setWasOpenedWithArrowUp={setWasOpenedWithArrowUp}
     >
       <MenuPrimitive.Root {...menuScope} open={open} onOpenChange={setOpen} dir={dir} modal={modal}>
         {children}
@@ -130,7 +142,11 @@ const DropdownMenuTrigger = React.forwardRef<DropdownMenuTriggerElement, Dropdow
             if (event.key === 'ArrowDown') context.onOpenChange(true);
             // prevent keydown from scrolling window / first focused item to execute
             // that keydown (inadvertently closing the menu)
-            if (['Enter', ' ', 'ArrowDown'].includes(event.key)) event.preventDefault();
+            if (event.key === 'ArrowUp') {
+              context.setWasOpenedWithArrowUp(true);
+              context.onOpenChange(true);
+            }
+            if (['Enter', ' ', 'ArrowDown', 'ArrowUp'].includes(event.key)) event.preventDefault();
           })}
         />
       </MenuPrimitive.Anchor>
@@ -167,7 +183,7 @@ const CONTENT_NAME = 'DropdownMenuContent';
 
 type DropdownMenuContentElement = React.ComponentRef<typeof MenuPrimitive.Content>;
 type MenuContentProps = React.ComponentPropsWithoutRef<typeof MenuPrimitive.Content>;
-interface DropdownMenuContentProps extends Omit<MenuContentProps, 'onEntryFocus'> {}
+interface DropdownMenuContentProps extends MenuContentProps {}
 
 const DropdownMenuContent = React.forwardRef<DropdownMenuContentElement, DropdownMenuContentProps>(
   (props: ScopedProps<DropdownMenuContentProps>, forwardedRef) => {
@@ -183,6 +199,21 @@ const DropdownMenuContent = React.forwardRef<DropdownMenuContentElement, Dropdow
         {...menuScope}
         {...contentProps}
         ref={forwardedRef}
+        onEntryFocus={(event: Event) => {
+          // If opened with ArrowUp, focus last item instead of first
+          if (context.wasOpenedWithArrowUp) {
+            event.preventDefault();
+            // Focus the last item
+            const target = event.target as HTMLElement;
+            const items = target.querySelectorAll('[role="menuitem"]:not([data-disabled])');
+            const lastItem = items[items.length - 1] as HTMLElement;
+            if (lastItem) {
+              setTimeout(() => lastItem.focus(), 0);
+            }
+          }
+          // Call the original onEntryFocus if provided
+          contentProps.onEntryFocus?.(event);
+        }}
         onCloseAutoFocus={composeEventHandlers(props.onCloseAutoFocus, (event) => {
           if (!hasInteractedOutsideRef.current) context.triggerRef.current?.focus();
           hasInteractedOutsideRef.current = false;
