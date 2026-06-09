@@ -106,8 +106,14 @@ const AccordionImplSingle = React.forwardRef<AccordionImplSingleElement, Accordi
       ...accordionSingleProps
     } = props;
 
+    // When the `value` prop is explicitly provided (even as `undefined`), the
+    // component is in controlled mode and we normalize `undefined` to `''` so
+    // that `useControllableState` always sees a non-undefined prop.  This
+    // prevents the controlled ↔ uncontrolled flip that would otherwise cause
+    // the stale uncontrolled state to re-open the item after collapse.
+    const isValueControlled = 'value' in props;
     const [value, setValue] = useControllableState({
-      prop: valueProp,
+      prop: isValueControlled ? (valueProp ?? '') : valueProp,
       defaultProp: defaultValue ?? '',
       onChange: onValueChange,
       caller: ACCORDION_NAME,

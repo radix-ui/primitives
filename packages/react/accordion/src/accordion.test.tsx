@@ -291,6 +291,51 @@ describe('given a single Accordion', () => {
   });
 });
 
+describe('given a controlled single collapsible Accordion', () => {
+  let rendered: RenderResult;
+
+  afterEach(cleanup);
+
+  beforeEach(() => {
+    rendered = render(<ControlledAccordionSingle />);
+  });
+
+  describe('when opening an item and then clicking the same trigger', () => {
+    let trigger: HTMLElement;
+    let contentOne: HTMLElement;
+
+    beforeEach(() => {
+      trigger = rendered.getByText('Trigger One');
+      fireEvent.click(trigger);
+      contentOne = rendered.getByText('Content One');
+    });
+
+    it('should show the content after the first click', () => {
+      expect(contentOne).toBeVisible();
+    });
+
+    describe('then clicking the trigger again to close', () => {
+      beforeEach(() => {
+        fireEvent.click(trigger);
+      });
+
+      it('should hide the content after the second click', () => {
+        expect(contentOne).not.toBeVisible();
+      });
+
+      describe('then clicking the trigger a third time to re-open', () => {
+        beforeEach(() => {
+          fireEvent.click(trigger);
+        });
+
+        it('should show the content again', () => {
+          expect(rendered.getByText('Content One')).toBeVisible();
+        });
+      });
+    });
+  });
+});
+
 describe('given a multiple Accordion', () => {
   let handleValueChange: Mock;
   let rendered: RenderResult;
@@ -409,6 +454,25 @@ function AccordionTest(props: React.ComponentProps<typeof Accordion.Root>) {
           <Accordion.Content>Content {val}</Accordion.Content>
         </Accordion.Item>
       ))}
+    </Accordion.Root>
+  );
+}
+
+function ControlledAccordionSingle() {
+  const [value, setValue] = React.useState<string | undefined>(undefined);
+  return (
+    <Accordion.Root
+      type="single"
+      collapsible
+      value={value}
+      onValueChange={(v) => setValue(v || undefined)}
+    >
+      <Accordion.Item value="One">
+        <Accordion.Header>
+          <Accordion.Trigger>Trigger One</Accordion.Trigger>
+        </Accordion.Header>
+        <Accordion.Content>Content One</Accordion.Content>
+      </Accordion.Item>
     </Accordion.Root>
   );
 }
