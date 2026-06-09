@@ -545,6 +545,13 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
       if (open && !context.isClosePausedRef.current) startTimer(duration);
     }, [open, duration, context.isClosePausedRef, startTimer]);
 
+    // Clear close timer on unmount to prevent memory leaks and errors in test environments
+    React.useEffect(() => {
+      return () => {
+        window.clearTimeout(closeTimerRef.current);
+      };
+    }, []);
+
     React.useEffect(() => {
       onToastAdd();
       return () => onToastRemove();
