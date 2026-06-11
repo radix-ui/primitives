@@ -936,9 +936,18 @@ const NavigationMenuContentImpl = React.forwardRef<
         }}
         onFocusOutside={composeEventHandlers(props.onFocusOutside, (event) => {
           onContentFocusOutside();
-          const target = event.target as HTMLElement;
-          // Only dismiss content when focus moves outside of the menu
-          if (context.rootNavigationMenu?.contains(target)) event.preventDefault();
+          const target = event.target;
+          const relatedTarget = event.detail.originalEvent.relatedTarget;
+          const focusMovedIntoMenu = context.rootNavigationMenu?.contains(target as Node);
+          const focusCameFromMenu = context.rootNavigationMenu?.contains(relatedTarget as Node);
+          // Only dismiss content when focus actually leaves the menu. If focus
+          // moves into the menu, or it never originated from within the menu
+          // (e.g. an external layer such as a Dialog auto-focusing on open),
+          // keep the content open.
+          // See https://github.com/radix-ui/primitives/issues/3473
+          if (focusMovedIntoMenu || !focusCameFromMenu) {
+            event.preventDefault();
+          }
         })}
         onPointerDownOutside={composeEventHandlers(props.onPointerDownOutside, (event) => {
           const target = event.target as HTMLElement;
