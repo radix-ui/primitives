@@ -252,7 +252,19 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
         }),
         arrow && floatingUIarrow({ element: arrow, padding: arrowPadding }),
         transformOrigin({ arrowWidth, arrowHeight }),
-        hideWhenDetached && hide({ strategy: 'referenceHidden', ...detectOverflowOptions }),
+        hideWhenDetached &&
+          hide({
+            strategy: 'referenceHidden',
+            ...detectOverflowOptions,
+            // `hide` detects whether the anchor (reference) is clipped, so when
+            // no explicit `collisionBoundary` is set we fall back to Floating
+            // UI's default clipping ancestors (e.g. a scrollable menu). This
+            // lets an occluded submenu hide once its anchor scrolls out of view
+            // (#3237). The collision/size middlewares deliberately keep the
+            // viewport-based default to avoid clamping content rendered inside
+            // transformed or overflow-clipping portal containers.
+            boundary: hasExplicitBoundaries ? detectOverflowOptions.boundary : undefined,
+          }),
       ],
     });
 

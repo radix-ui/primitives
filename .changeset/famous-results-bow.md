@@ -1,5 +1,6 @@
 ---
 "@radix-ui/react-popper": patch
+"radix-ui": patch
 ---
 
-Revert sdfj
+Fix regression in popper that caused submenu misalignment when using custom portals
