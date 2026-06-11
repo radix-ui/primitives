@@ -1379,12 +1379,6 @@ const SelectItem = React.forwardRef<SelectItemElement, SelectItemProps>(
       }
     };
 
-    if (value === '') {
-      throw new Error(
-        'A <Select.Item /> must have a value prop that is not an empty string. This is because the Select value can be set to an empty string to clear the selection and show the placeholder.',
-      );
-    }
-
     return (
       <SelectItemContextProvider
         scope={__scopeSelect}
@@ -1505,8 +1499,13 @@ const SelectItemText = React.forwardRef<SelectItemTextElement, SelectItemTextPro
       <>
         <Primitive.span id={itemContext.textId} {...itemTextProps} ref={composedRefs} />
 
-        {/* Portal the select item text into the trigger value node */}
-        {itemContext.isSelected && context.valueNode && !context.valueNodeHasChildren
+        {/* Portal the select item text into the trigger value node.
+            When the value is empty we show the placeholder instead, so a
+            selected "clear" item (empty value) must not portal its text. */}
+        {itemContext.isSelected &&
+        context.valueNode &&
+        !context.valueNodeHasChildren &&
+        !shouldShowPlaceholder(context.value)
           ? ReactDOM.createPortal(itemTextProps.children, context.valueNode)
           : null}
       </>
@@ -1753,6 +1752,14 @@ const SelectBubbleInput = React.forwardRef<SelectBubbleInputElement, SelectBubbl
     const selectValue = value ?? '';
     const prevValue = usePrevious(selectValue);
 
+    // A consumer may render a `Select.Item` with an empty value to act as a
+    // "clear" option. In that case it already provides a native `<option>` with
+    // an empty value, so we avoid rendering our synthetic placeholder option to
+    // prevent duplicate empty options in the native `select`.
+    const hasEmptyValueOption = Array.from(nativeOptions).some(
+      (option) => (option.props.value ?? '') === '',
+    );
+
     // Bubble value change to parents (e.g form change event)
     React.useEffect(() => {
       const select = ref.current;
@@ -1805,7 +1812,7 @@ const SelectBubbleInput = React.forwardRef<SelectBubbleInputElement, SelectBubbl
         ref={composedRefs}
         defaultValue={selectValue}
       >
-        {shouldShowPlaceholder(value) ? <option value="" /> : null}
+        {shouldShowPlaceholder(value) && !hasEmptyValueOption ? <option value="" /> : null}
         {Array.from(nativeOptions)}
       </Primitive.select>
     );
