@@ -326,6 +326,53 @@ export const WithinForm = () => {
   );
 };
 
+export const WithinFormReset = () => {
+  const [controlled, setControlled] = React.useState([40]);
+
+  return (
+    <form onSubmit={(event) => event.preventDefault()}>
+      <p>
+        Move the thumbs, then press <strong>Reset</strong>. Each slider returns to its initial value
+        (the uncontrolled slider via its <code>defaultValue</code>, the controlled slider via its
+        initial <code>value</code> state).
+      </p>
+
+      <fieldset>
+        <legend>Uncontrolled (defaultValue)</legend>
+        <Slider.Root name="uncontrolled" defaultValue={[20]} className={styles.root}>
+          <Slider.Track className={styles.track}>
+            <Slider.Range className={styles.range} />
+          </Slider.Track>
+          <Slider.Thumb className={styles.thumb} />
+        </Slider.Root>
+      </fieldset>
+
+      <br />
+      <br />
+
+      <fieldset>
+        <legend>Controlled value: {String(controlled)}</legend>
+        <Slider.Root
+          name="controlled"
+          value={controlled}
+          onValueChange={setControlled}
+          className={styles.root}
+        >
+          <Slider.Track className={styles.track}>
+            <Slider.Range className={styles.range} />
+          </Slider.Track>
+          <Slider.Thumb className={styles.thumb} />
+        </Slider.Root>
+      </fieldset>
+
+      <br />
+      <br />
+
+      <button type="reset">Reset</button>
+    </form>
+  );
+};
+
 export const BubbleInputWithinForm = () => {
   const [data, setData] = React.useState<any>({ single: [25], price: { min: 30, max: 70 } });
   return (

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, it, expect } from 'vitest';
 import * as Select from './select';
 
@@ -14,10 +14,10 @@ const SelectTest = (props: React.ComponentProps<typeof Select.Root>) => (
     <Select.Portal>
       <Select.Content position="popper">
         <Select.Viewport>
-          <Select.Item value="apple">
+          <Select.Item value="apple" data-testid="item-apple">
             <Select.ItemText>Apple</Select.ItemText>
           </Select.Item>
-          <Select.Item value="banana">
+          <Select.Item value="banana" data-testid="item-banana">
             <Select.ItemText>Banana</Select.ItemText>
           </Select.Item>
         </Select.Viewport>
@@ -138,5 +138,89 @@ describe('clearing an optional value (#2706)', () => {
       (option) => option.value === '',
     );
     expect(emptyOptions).toHaveLength(1);
+  });
+});
+
+describe('given a Select in a form that is reset', () => {
+  afterEach(cleanup);
+
+  describe('uncontrolled', () => {
+    it('should restore its `defaultValue` when the form is reset', async () => {
+      render(
+        <form>
+          {/* Keep the content open so the items (and their selection state) stay mounted. */}
+          <SelectTest name="fruit" defaultValue="apple" open onOpenChange={() => {}} />
+          <button type="reset">Reset</button>
+        </form>,
+      );
+
+      const apple = await screen.findByTestId('item-apple');
+      const banana = screen.getByTestId('item-banana');
+      expect(apple).toHaveAttribute('data-state', 'checked');
+
+      act(() => fireEvent.click(banana));
+      expect(banana).toHaveAttribute('data-state', 'checked');
+      expect(apple).toHaveAttribute('data-state', 'unchecked');
+
+      act(() => fireEvent.click(screen.getByText('Reset')));
+      expect(apple).toHaveAttribute('data-state', 'checked');
+      expect(banana).toHaveAttribute('data-state', 'unchecked');
+    });
+
+    it('should restore the placeholder when reset with no initial value', async () => {
+      render(
+        <form>
+          {/* Keep the content open so the items (and their selection state) stay mounted. */}
+          <SelectTest name="fruit" open onOpenChange={() => {}} />
+          <button type="reset">Reset</button>
+        </form>,
+      );
+
+      const banana = await screen.findByTestId('item-banana');
+      // No value selected initially, so the placeholder is shown.
+      expect(screen.getByText(PLACEHOLDER_TEXT)).toBeInTheDocument();
+
+      act(() => fireEvent.click(banana));
+      expect(banana).toHaveAttribute('data-state', 'checked');
+      expect(screen.queryByText(PLACEHOLDER_TEXT)).not.toBeInTheDocument();
+
+      act(() => fireEvent.click(screen.getByText('Reset')));
+      expect(banana).toHaveAttribute('data-state', 'unchecked');
+      expect(screen.getByText(PLACEHOLDER_TEXT)).toBeInTheDocument();
+    });
+  });
+
+  describe('controlled', () => {
+    it('should restore its initial `value` when the form is reset', async () => {
+      function ControlledSelect() {
+        const [value, setValue] = React.useState('apple');
+        return (
+          <form>
+            <SelectTest
+              name="fruit"
+              value={value}
+              onValueChange={setValue}
+              open
+              onOpenChange={() => {}}
+            />
+            <button type="reset">Reset</button>
+          </form>
+        );
+      }
+
+      render(<ControlledSelect />);
+
+      const apple = await screen.findByTestId('item-apple');
+      const banana = screen.getByTestId('item-banana');
+      expect(apple).toHaveAttribute('data-state', 'checked');
+
+      act(() => fireEvent.click(banana));
+      expect(banana).toHaveAttribute('data-state', 'checked');
+      expect(apple).toHaveAttribute('data-state', 'unchecked');
+
+      act(() => fireEvent.click(screen.getByText('Reset')));
+      expect(apple).toHaveAttribute('data-state', 'checked');
+      expect(banana).toHaveAttribute('data-state', 'unchecked');
+    });
   });
 });

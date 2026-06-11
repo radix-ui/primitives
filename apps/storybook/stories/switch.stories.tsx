@@ -95,6 +95,51 @@ export const WithinForm = () => {
   );
 };
 
+export const WithinFormReset = () => {
+  const [controlled, setControlled] = React.useState(true);
+
+  return (
+    <form onSubmit={(event) => event.preventDefault()}>
+      <p>
+        Toggle the switches, then press <strong>Reset</strong>. Each switch returns to its initial
+        value (the uncontrolled switch via its <code>defaultChecked</code>, the controlled switch
+        via its initial <code>checked</code> state).
+      </p>
+
+      <fieldset>
+        <legend>Uncontrolled (defaultChecked)</legend>
+        <label>
+          <Switch.Root className={styles.root} name="uncontrolled" defaultChecked>
+            <Switch.Thumb className={styles.thumb} />
+          </Switch.Root>{' '}
+          with label
+        </label>
+      </fieldset>
+
+      <br />
+
+      <fieldset>
+        <legend>Controlled checked: {String(controlled)}</legend>
+        <label>
+          <Switch.Root
+            className={styles.root}
+            name="controlled"
+            checked={controlled}
+            onCheckedChange={setControlled}
+          >
+            <Switch.Thumb className={styles.thumb} />
+          </Switch.Root>{' '}
+          with label
+        </label>
+      </fieldset>
+
+      <br />
+
+      <button type="reset">Reset</button>
+    </form>
+  );
+};
+
 export const Parts = () => {
   const [checked, setChecked] = React.useState(true);
 
