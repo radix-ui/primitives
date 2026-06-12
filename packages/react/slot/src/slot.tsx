@@ -20,7 +20,7 @@ SlotContext.displayName = 'SlotContext';
 
 interface SlotProviderProps {
   children: React.ReactNode;
-  mergeProps: MergePropsFunction;
+  mergeProps: MergePropsFunction<AnyProps, AnyProps, AnyProps>;
 }
 
 const SlotProvider: React.FC<SlotProviderProps> = ({ children, mergeProps }) => {
@@ -105,7 +105,7 @@ type SlotProps<Elem extends Element = HTMLElement, Props = React.HTMLAttributes<
 
     const mergedProps = (() => {
       try {
-        return mergePropsProp(slotProps, slottableElement.props ?? {});
+        return mergePropsProp(slotProps, (slottableElement.props ?? {}) as Record<string, unknown>);
       } catch (error) {
         console.error(
           'Slot: mergeProps failed with the following error. Falling back to default behavior.',
@@ -118,10 +118,10 @@ type SlotProps<Elem extends Element = HTMLElement, Props = React.HTMLAttributes<
 
     // do not pass ref to React.Fragment for React 19 compatibility
     if (slottableElement.type !== React.Fragment) {
-      (mergedProps as AnyProps).ref = forwardedRef ? composedRef : slottableElementRef;
+      mergedProps.ref = forwardedRef ? composedRef : slottableElementRef;
     }
 
-    return React.cloneElement(slottableElement, mergedProps as AnyProps);
+    return React.cloneElement(slottableElement, mergedProps);
   });
 
   Slot.displayName = `${ownerName}.Slot`;

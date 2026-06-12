@@ -1,10 +1,12 @@
-const mergeProps: MergePropsFunction = function mergeProps(
-  slotProps: AnyProps,
-  childProps: AnyProps,
-) {
-  // all child props should override
+const mergeProps = (<
+  SlotProps extends AnyProps = AnyProps,
+  ChildProps extends AnyProps = SlotProps,
+  ReturnProps extends AnyProps = SlotProps & ChildProps,
+>(
+  slotProps: SlotProps,
+  childProps: ChildProps,
+): ReturnProps => {
   const overrideProps = { ...childProps };
-
   for (const propName in childProps) {
     const slotPropValue = slotProps[propName];
     const childPropValue = childProps[propName];
@@ -13,9 +15,24 @@ const mergeProps: MergePropsFunction = function mergeProps(
     if (isHandler) {
       // if the handler exists on both, we compose them
       if (slotPropValue && childPropValue) {
+        const slotIsFunction = typeof slotPropValue === 'function';
+        const childIsFunction = typeof childPropValue === 'function';
+        if (process.env.NODE_ENV === 'development') {
+          if (!slotIsFunction || !childIsFunction) {
+            console.warn(
+              `Slot: Expected a function for ${propName}, but received ${[typeof slotPropValue, typeof childPropValue].filter((v) => v !== 'function').join(' and ')}.`,
+            );
+          }
+        }
+
+        // @ts-expect-error - we don't know the type of the function. This
+        // technically makes the return signature a lie, not sure if it's worth
+        // handling.
         overrideProps[propName] = (...args: unknown[]) => {
-          const result = childPropValue(...args);
-          slotPropValue(...args);
+          const result = childIsFunction ? childPropValue(...args) : undefined;
+          if (slotIsFunction) {
+            slotPropValue(...args);
+          }
           return result;
         };
       }
@@ -24,32 +41,33 @@ const mergeProps: MergePropsFunction = function mergeProps(
         overrideProps[propName] = slotPropValue;
       }
     }
+
     // if it's `style`, we merge them
     else if (propName === 'style') {
-      overrideProps[propName] = { ...slotPropValue, ...childPropValue };
+      // @ts-expect-error
+      overrideProps[propName] = {
+        ...(typeof slotPropValue === 'object' ? slotPropValue : null),
+        ...(typeof childPropValue === 'object' ? childPropValue : null),
+      };
     } else if (propName === 'className') {
+      // @ts-expect-error
       overrideProps[propName] = [slotPropValue, childPropValue].filter(Boolean).join(' ');
     }
   }
 
-  return { ...slotProps, ...overrideProps };
-};
+  return { ...slotProps, ...overrideProps } as ReturnProps;
+}) satisfies MergePropsFunction;
 
-// taken from: https://stackoverflow.com/questions/51603250/typescript-3-parameter-list-intersection-type/51604379#51604379
-type TupleTypes<T> = { [P in keyof T]: T[P] } extends { [key: number]: infer V }
-  ? NullToObject<V>
-  : never;
-type NullToObject<T> = T extends null | undefined ? {} : T;
-
-type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (k: infer I) => void
-  ? I
-  : never;
-
-interface MergePropsFunction {
-  <T extends AnyProps[] = AnyProps[]>(...args: T): UnionToIntersection<TupleTypes<T>>;
-  (...args: AnyProps[]): UnionToIntersection<TupleTypes<AnyProps[]>>;
+interface MergePropsFunction<
+  SlotProps extends AnyProps = UnknownProps,
+  ChildProps extends AnyProps = SlotProps,
+  ReturnProps extends AnyProps = SlotProps & ChildProps,
+> {
+  (slotProps: SlotProps, childProps: ChildProps): ReturnProps;
 }
 
 type AnyProps = Record<string, any>;
+type UnknownProps = Record<string, unknown>;
 
-export { mergeProps, type MergePropsFunction, type AnyProps };
+export { mergeProps };
+export type { MergePropsFunction, AnyProps, UnknownProps };
