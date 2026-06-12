@@ -9,11 +9,9 @@ declare module 'react' {
   }
 }
 
-interface SlotContextValue {
-  mergeProps: MergePropsFunction;
-}
+type SlotContextValue = MergePropsFunction;
 
-const SlotContext = React.createContext<SlotContextValue>({ mergeProps });
+const SlotContext = React.createContext<SlotContextValue>(mergeProps);
 SlotContext.displayName = 'SlotContext';
 
 /* -------------------------------------------------------------------------------------------------
@@ -26,7 +24,7 @@ interface SlotProviderProps {
 }
 
 const SlotProvider: React.FC<SlotProviderProps> = ({ children, mergeProps }) => {
-  return <SlotContext.Provider value={{ mergeProps }}>{children}</SlotContext.Provider>;
+  return <SlotContext.Provider value={mergeProps}>{children}</SlotContext.Provider>;
 };
 
 /* -------------------------------------------------------------------------------------------------
@@ -50,7 +48,7 @@ type SlotProps<Elem extends Element = HTMLElement, Props = React.HTMLAttributes<
 >(ownerName: string) {
   const Slot = React.forwardRef<Elem, SlotProps<Elem, Props>>((props, forwardedRef) => {
     const context = React.useContext(SlotContext);
-    let { children, mergeProps: mergePropsProp = context.mergeProps, ...slotProps } = props;
+    let { children, mergeProps: mergePropsProp = context, ...slotProps } = props;
     let slottableElement: React.ReactElement | null = null;
     let hasSlottable = false;
     const newChildren: React.ReactNode[] = [];
