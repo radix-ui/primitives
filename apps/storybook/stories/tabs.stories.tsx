@@ -1,5 +1,6 @@
-import { Direction, Tabs } from 'radix-ui';
+import { Direction, Slot, Tabs } from 'radix-ui';
 import styles from './tabs.stories.module.css';
+import { customMergeProps } from './custom-merge-props';
 
 export default { title: 'Components/Tabs' };
 
@@ -130,6 +131,27 @@ export const Animated = () => (
       </Tabs.Content>
     </Tabs.Root>
   </>
+);
+
+export const WithCustomMergeProps = () => (
+  <Slot.Provider mergeProps={customMergeProps}>
+    <Tabs.Root defaultValue="tab1" className={styles.root}>
+      <Tabs.List aria-label="tabs example" className={styles.list}>
+        <Tabs.Trigger value="tab1" className={styles.trigger} asChild>
+          <button data-custom-merge>Tab 1 (asChild)</button>
+        </Tabs.Trigger>
+        <Tabs.Trigger value="tab2" className={styles.trigger}>
+          Tab 2
+        </Tabs.Trigger>
+      </Tabs.List>
+      <Tabs.Content value="tab1" className={styles.content} asChild>
+        <div data-custom-merge>Tab 1 content (asChild)</div>
+      </Tabs.Content>
+      <Tabs.Content value="tab2" className={styles.content}>
+        Tab 2 content
+      </Tabs.Content>
+    </Tabs.Root>
+  </Slot.Provider>
 );
 
 export const Chromatic = () => (

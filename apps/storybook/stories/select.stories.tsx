@@ -1,10 +1,11 @@
 /* eslint-disable react/jsx-pascal-case */
 import * as React from 'react';
 import { createPortal } from 'react-dom';
-import { Dialog, Select, Label as LabelPrimitive } from 'radix-ui';
+import { Dialog, Select, Slot, Label as LabelPrimitive } from 'radix-ui';
 import { foodGroups } from '@repo/test-data/foods';
 import styles from './select.stories.module.css';
 import { ExternalOverlayTrigger } from './external-overlay';
+import { customMergeProps } from './custom-merge-props';
 
 const Label = LabelPrimitive.Root;
 
@@ -961,6 +962,33 @@ export const WithVeryLongSelectItems = () => (
       </Select.Root>
     </Label>
   </div>
+);
+
+export const WithCustomMergeProps = () => (
+  <Slot.Provider mergeProps={customMergeProps}>
+    <Select.Root defaultValue="two">
+      <Select.Trigger className={styles.trigger} asChild>
+        <button data-custom-merge>
+          <Select.Value />
+          <Select.Icon />
+        </button>
+      </Select.Trigger>
+      <Select.Portal>
+        <Select.Content className={styles.content} position="popper" sideOffset={5}>
+          <Select.Viewport className={styles.viewport}>
+            <Select.Item className={styles.item} value="one" asChild>
+              <div data-custom-merge>
+                <Select.ItemText>One (asChild)</Select.ItemText>
+              </div>
+            </Select.Item>
+            <Select.Item className={styles.item} value="two">
+              <Select.ItemText>Two</Select.ItemText>
+            </Select.Item>
+          </Select.Viewport>
+        </Select.Content>
+      </Select.Portal>
+    </Select.Root>
+  </Slot.Provider>
 );
 
 export const ChromaticShortOptionsPaddedContent = () => (

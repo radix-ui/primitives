@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { AlertDialog } from 'radix-ui';
+import { AlertDialog, Slot } from 'radix-ui';
 import styles from './alert-dialog.stories.module.css';
+import { customMergeProps } from './custom-merge-props';
 
 export default { title: 'Components/AlertDialog' };
 
@@ -61,6 +62,29 @@ export const Controlled = () => {
     </div>
   );
 };
+
+export const WithCustomMergeProps = () => (
+  <Slot.Provider mergeProps={customMergeProps}>
+    <AlertDialog.Root>
+      <AlertDialog.Trigger className={styles.trigger} asChild>
+        <button>delete everything (asChild)</button>
+      </AlertDialog.Trigger>
+      <AlertDialog.Portal>
+        <AlertDialog.Overlay className={styles.overlay} />
+        <AlertDialog.Content className={styles.content}>
+          <AlertDialog.Title className={styles.title}>Are you sure?</AlertDialog.Title>
+          <AlertDialog.Description className={styles.description}>
+            This will do a very dangerous thing. Thar be dragons!
+          </AlertDialog.Description>
+          <AlertDialog.Action className={styles.action} asChild>
+            <button>yolo, do it</button>
+          </AlertDialog.Action>
+          <AlertDialog.Cancel className={styles.cancel}>maybe not</AlertDialog.Cancel>
+        </AlertDialog.Content>
+      </AlertDialog.Portal>
+    </AlertDialog.Root>
+  </Slot.Provider>
+);
 
 export const Chromatic = () => (
   <div

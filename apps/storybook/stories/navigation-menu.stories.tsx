@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { NavigationMenu, Direction } from 'radix-ui';
+import { NavigationMenu, Direction, Slot } from 'radix-ui';
 import styles from './navigation-menu.stories.module.css';
+import { customMergeProps } from './custom-merge-props';
 
 export default { title: 'Components/NavigationMenu' };
 
@@ -367,6 +368,22 @@ export const Submenus = () => {
     </StoryFrame>
   );
 };
+
+export const WithCustomMergeProps = () => (
+  <Slot.Provider mergeProps={customMergeProps}>
+    <NavigationMenu.Root>
+      <NavigationMenu.List className={styles.mainList}>
+        <NavigationMenu.Item>
+          <NavigationMenu.Link className={styles.link} asChild>
+            <a href="#example" data-custom-merge>
+              Link (asChild)
+            </a>
+          </NavigationMenu.Link>
+        </NavigationMenu.Item>
+      </NavigationMenu.List>
+    </NavigationMenu.Root>
+  </Slot.Provider>
+);
 
 /* -----------------------------------------------------------------------------------------------*/
 
