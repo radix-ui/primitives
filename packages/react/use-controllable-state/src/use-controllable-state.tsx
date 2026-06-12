@@ -1,9 +1,5 @@
+import { useEffectEvent } from '@radix-ui/react-use-effect-event';
 import * as React from 'react';
-import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
-
-// Prevent bundlers from trying to optimize the import
-const useInsertionEffect: typeof useLayoutEffect =
-  (React as any)[' useInsertionEffect '.trim().toString()] || useLayoutEffect;
 
 type ChangeHandler<T> = (state: T) => void;
 type SetStateFn<T> = React.Dispatch<React.SetStateAction<T>>;
@@ -21,7 +17,7 @@ export function useControllableState<T>({
   onChange = () => {},
   caller,
 }: UseControllableStateParams<T>): [T, SetStateFn<T>] {
-  const [uncontrolledProp, setUncontrolledProp, onChangeRef] = useUncontrolledState({
+  const [uncontrolledProp, setUncontrolledProp, stableOnChange] = useUncontrolledState({
     defaultProp,
     onChange,
   });
@@ -53,13 +49,13 @@ export function useControllableState<T>({
       if (isControlled) {
         const value = isFunction(nextValue) ? nextValue(prop) : nextValue;
         if (value !== prop) {
-          onChangeRef.current?.(value);
+          stableOnChange(value);
         }
       } else {
         setUncontrolledProp(nextValue);
       }
     },
-    [isControlled, prop, setUncontrolledProp, onChangeRef],
+    [isControlled, prop, setUncontrolledProp, stableOnChange],
   );
 
   return [value, setValue];
@@ -71,24 +67,21 @@ function useUncontrolledState<T>({
 }: Omit<UseControllableStateParams<T>, 'prop'>): [
   Value: T,
   setValue: React.Dispatch<React.SetStateAction<T>>,
-  OnChangeRef: React.RefObject<ChangeHandler<T> | undefined>,
+  OnChange: ChangeHandler<T>,
 ] {
   const [value, setValue] = React.useState(defaultProp);
   const prevValueRef = React.useRef(value);
 
-  const onChangeRef = React.useRef(onChange);
-  useInsertionEffect(() => {
-    onChangeRef.current = onChange;
-  }, [onChange]);
+  const stableOnChange = useEffectEvent(onChange ?? (() => {}));
 
   React.useEffect(() => {
     if (prevValueRef.current !== value) {
-      onChangeRef.current?.(value);
+      stableOnChange(value);
       prevValueRef.current = value;
     }
-  }, [value, prevValueRef]);
+  }, [value, prevValueRef, stableOnChange]);
 
-  return [value, setValue, onChangeRef];
+  return [value, setValue, stableOnChange];
 }
 
 function isFunction(value: unknown): value is (...args: any[]) => any {
