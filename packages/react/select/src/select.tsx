@@ -1808,7 +1808,7 @@ const SelectBubbleInput = React.forwardRef<SelectBubbleInputElement, SelectBubbl
         form={form}
         onChange={(event) => onValueChange(event.target.value)}
         {...props}
-        style={{ ...VISUALLY_HIDDEN_STYLES, ...props.style }}
+        style={{ ...VISUALLY_HIDDEN_STYLES, top: 0, left: 0, ...props.style }}
         ref={composedRefs}
         defaultValue={selectValue}
       >
