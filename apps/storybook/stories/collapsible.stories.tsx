@@ -58,6 +58,16 @@ export const AnimatedHorizontal = () => {
   );
 };
 
+export const KeepChildrenMounted = () => (
+  <>
+    <h1>With keepChildrenMounted</h1>
+    <Collapsible.Root keepChildrenMounted className={styles.root}>
+      <Collapsible.Trigger className={styles.trigger}>Trigger</Collapsible.Trigger>
+      <Collapsible.Content className={styles.content}>Content 1</Collapsible.Content>
+    </Collapsible.Root>
+  </>
+);
+
 export const Chromatic = () => (
   <>
     <h1>Uncontrolled</h1>
