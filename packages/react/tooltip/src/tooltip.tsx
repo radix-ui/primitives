@@ -276,11 +276,21 @@ const TooltipTrigger = React.forwardRef<TooltipTriggerElement, TooltipTriggerPro
     const composedRefs = useComposedRefs(forwardedRef, ref, context.onTriggerChange);
     const isPointerDownRef = React.useRef(false);
     const hasPointerMoveOpenedRef = React.useRef(false);
+    const isWindowBlurredRef = React.useRef(false);
     const handlePointerUp = React.useCallback(() => (isPointerDownRef.current = false), []);
 
     React.useEffect(() => {
       return () => document.removeEventListener('pointerup', handlePointerUp);
     }, [handlePointerUp]);
+
+    // When the window/tab loses focus, the browser refocuses the previously active
+    // element once focus returns, firing a `focus` event that would otherwise reopen
+    // the tooltip. Track the blur so we can ignore that synthetic refocus. See #1800.
+    React.useEffect(() => {
+      const handleWindowBlur = () => (isWindowBlurredRef.current = true);
+      window.addEventListener('blur', handleWindowBlur);
+      return () => window.removeEventListener('blur', handleWindowBlur);
+    }, []);
 
     return (
       <PopperPrimitive.Anchor asChild {...popperScope}>
@@ -313,6 +323,12 @@ const TooltipTrigger = React.forwardRef<TooltipTriggerElement, TooltipTriggerPro
             document.addEventListener('pointerup', handlePointerUp, { once: true });
           })}
           onFocus={composeEventHandlers(props.onFocus, () => {
+            // Ignore focus caused by the tab/window regaining focus, which would
+            // otherwise reopen the tooltip on the previously-focused trigger. See #1800.
+            if (isWindowBlurredRef.current) {
+              isWindowBlurredRef.current = false;
+              return;
+            }
             if (!isPointerDownRef.current) context.onOpen();
           })}
           onBlur={composeEventHandlers(props.onBlur, context.onClose)}
