@@ -472,6 +472,12 @@ importers:
 
   packages/react/avatar:
     dependencies:
+      '@radix-ui/primitive':
+        specifier: workspace:*
+        version: link:../../core/primitive
+      '@radix-ui/react-compose-refs':
+        specifier: workspace:*
+        version: link:../compose-refs
       '@radix-ui/react-context':
         specifier: workspace:*
         version: link:../context
@@ -481,9 +487,6 @@ importers:
       '@radix-ui/react-use-callback-ref':
         specifier: workspace:*
         version: link:../use-callback-ref
-      '@radix-ui/react-use-is-hydrated':
-        specifier: workspace:*
-        version: link:../use-is-hydrated
       '@radix-ui/react-use-layout-effect':
         specifier: workspace:*
         version: link:../use-layout-effect

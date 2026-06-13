@@ -1,4 +1,5 @@
 .root {
+  position: relative;
   /* ensures image/fallback is centered */
   display: inline-flex;
   align-items: center;
@@ -19,6 +20,13 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.image[data-radix-avatar-loading-status]:not([data-radix-avatar-loading-status='loaded']),
+.image[data-loading-status]:not([data-loading-status='loaded']) {
+  opacity: 0;
+  position: absolute;
+  inset: 0;
 }
 
 .fallback {

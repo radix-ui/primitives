@@ -1,6 +1,6 @@
 import { axe } from 'vitest-axe';
 import type { RenderResult } from '@testing-library/react';
-import { cleanup, render, waitFor } from '@testing-library/react';
+import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
 import * as Avatar from './avatar';
 import * as React from 'react';
 import { renderToString } from 'react-dom/server';
@@ -399,6 +399,83 @@ describe('given an Avatar with multiple images (development)', () => {
     );
 
     expect(warnSpy).not.toHaveBeenCalled();
+  });
+});
+
+describe('given an Avatar with a native image', () => {
+  afterEach(cleanup);
+
+  const ui = (showImage: boolean) => (
+    <Avatar.Root data-testid={ROOT_TEST_ID}>
+      <Avatar.Fallback>{FALLBACK_TEXT}</Avatar.Fallback>
+      {showImage ? <Avatar.Image mode="native" src="/test.png" alt={IMAGE_ALT_TEXT} /> : null}
+    </Avatar.Root>
+  );
+
+  it('renders the image element unconditionally', () => {
+    const rendered = render(ui(true));
+    expect(rendered.queryByRole('img')).toBeInTheDocument();
+  });
+
+  it('resolves to "loaded" for a cached image', async () => {
+    // Mirror a cached image
+    const completeSpy = vi
+      .spyOn(window.HTMLImageElement.prototype, 'complete', 'get')
+      .mockReturnValue(true);
+    const naturalWidthSpy = vi
+      .spyOn(window.HTMLImageElement.prototype, 'naturalWidth', 'get')
+      .mockReturnValue(300);
+
+    const rendered = render(ui(true));
+    const image = rendered.getByRole('img');
+
+    await waitFor(() =>
+      expect(image).toHaveAttribute('data-radix-avatar-loading-status', 'loaded'),
+    );
+    expect(rendered.queryByText(FALLBACK_TEXT)).not.toBeInTheDocument();
+
+    completeSpy.mockRestore();
+    naturalWidthSpy.mockRestore();
+  });
+
+  it('resolves to "error" for a cached image with no natural size', async () => {
+    const completeSpy = vi
+      .spyOn(window.HTMLImageElement.prototype, 'complete', 'get')
+      .mockReturnValue(true);
+    const naturalWidthSpy = vi
+      .spyOn(window.HTMLImageElement.prototype, 'naturalWidth', 'get')
+      .mockReturnValue(0);
+
+    const rendered = render(ui(true));
+    const image = rendered.getByRole('img');
+
+    await waitFor(() => expect(image).toHaveAttribute('data-radix-avatar-loading-status', 'error'));
+    expect(rendered.queryByText(FALLBACK_TEXT)).toBeInTheDocument();
+
+    completeSpy.mockRestore();
+    naturalWidthSpy.mockRestore();
+  });
+
+  it('should render the fallback again after a loaded image unmounts', async () => {
+    const completeSpy = vi
+      .spyOn(window.HTMLImageElement.prototype, 'complete', 'get')
+      .mockReturnValue(true);
+    const naturalWidthSpy = vi
+      .spyOn(window.HTMLImageElement.prototype, 'naturalWidth', 'get')
+      .mockReturnValue(300);
+
+    const rendered = render(ui(true));
+    const image = rendered.getByRole('img');
+
+    fireEvent.load(image);
+    await waitFor(() => expect(rendered.queryByText(FALLBACK_TEXT)).not.toBeInTheDocument());
+
+    rendered.rerender(ui(false));
+    expect(rendered.queryByRole('img')).not.toBeInTheDocument();
+    expect(rendered.queryByText(FALLBACK_TEXT)).toBeInTheDocument();
+
+    completeSpy.mockRestore();
+    naturalWidthSpy.mockRestore();
   });
 });
 
