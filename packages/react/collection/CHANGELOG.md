@@ -1,5 +1,9 @@
 # @radix-ui/react-collection
 
+## 1.1.10
+
+- Updated dependencies: `@radix-ui/react-slot@1.3.0`, `@radix-ui/react-primitive@2.1.6`
+
 ## 1.1.9
 
 - Updated `unstable_createCollection` signature to extend `BaseItemData` internally

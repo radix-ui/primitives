@@ -1,5 +1,10 @@
 # @radix-ui/react-dropdown-menu
 
+## 2.1.18
+
+- Fixed a bug where menus and submenus remained open after a window loses focus.
+- Updated dependencies: `@radix-ui/react-menu@2.1.18`, `@radix-ui/react-primitive@2.1.6`
+
 ## 2.1.17
 
 - Added repository.directory to all package.json files

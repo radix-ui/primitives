@@ -1,5 +1,9 @@
 # @radix-ui/react-tabs
 
+## 1.1.15
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.6`, `@radix-ui/react-roving-focus@1.1.13`
+
 ## 1.1.14
 
 - Fixed triggers referencing a non-existent element via `aria-controls` when their content is removed from the DOM (credit to [@dodomorandi](https://github.com/dodomorandi) for the [original PR](https://github.com/radix-ui/primitives/pull/3243))

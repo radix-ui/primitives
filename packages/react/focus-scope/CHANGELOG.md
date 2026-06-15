@@ -1,5 +1,9 @@
 # @radix-ui/react-focus-scope
 
+## 1.1.10
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.6`
+
 ## 1.1.9
 
 - Added repository.directory to all package.json files

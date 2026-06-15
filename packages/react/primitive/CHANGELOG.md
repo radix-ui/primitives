@@ -1,5 +1,10 @@
 # @radix-ui/react-primitive
 
+## 2.1.6
+
+- Fixed `Duplicate index signature` errors that surfaced when consuming multiple packages together.
+- Updated dependencies: `@radix-ui/react-slot@1.3.0`
+
 ## 2.1.5
 
 - Added repository.directory to all package.json files

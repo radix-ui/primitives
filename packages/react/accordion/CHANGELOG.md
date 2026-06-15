@@ -1,5 +1,10 @@
 # @radix-ui/react-accordion
 
+## 1.2.14
+
+- Fixed `Duplicate index signature` errors that surfaced when consuming multiple packages together.
+- Updated dependencies: `@radix-ui/react-primitive@2.1.6`, `@radix-ui/react-collection@1.1.10`, `@radix-ui/react-collapsible@1.1.14`
+
 ## 1.2.13
 
 - Added repository.directory to all package.json files

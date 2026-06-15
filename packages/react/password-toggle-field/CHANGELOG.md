@@ -1,5 +1,11 @@
 # @radix-ui/react-password-toggle-field
 
+## 0.1.5
+
+- Renamed misspelled `onVisiblityChange` prop to `onVisibilityChange`.
+- Fixed prop type definitions to include `asChild` for all component parts.
+- Updated dependencies: `@radix-ui/react-primitive@2.1.6`
+
 ## 0.1.4
 
 - Added repository.directory to all package.json files

@@ -1,5 +1,10 @@
 # @radix-ui/react-context-menu
 
+## 2.3.1
+
+- Fixed a bug where menus and submenus remained open after a window loses focus.
+- Updated dependencies: `@radix-ui/react-menu@2.1.18`, `@radix-ui/react-primitive@2.1.6`
+
 ## 2.3.0
 
 - Added support for a controlled `open` prop on `ContextMenu.Root`. This is intended for reading the open state and closing the menu programmatically, though we discourage opening the menu programmatically since opening the menu depends on user interaction to position the menu.
