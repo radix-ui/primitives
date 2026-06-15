@@ -1,6 +1,6 @@
 ---
-"@radix-ui/react-password-toggle-field": minor
-"radix-ui": minor
+"@radix-ui/react-password-toggle-field": patch
+"radix-ui": patch
 ---
 
 Renamed misspelled `onVisiblityChange` prop to `onVisibilityChange`

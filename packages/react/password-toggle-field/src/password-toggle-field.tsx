@@ -69,7 +69,32 @@ const PasswordToggleField: React.FC<PasswordToggleFieldProps> = ({
     [],
   );
 
-  const { visible: visibleProp, defaultVisible, onVisibilityChange, children } = props;
+  const { visible: visibleProp, defaultVisible, children } = props;
+
+  let onVisibilityChange = props.onVisibilityChange;
+  let shouldWarn = false;
+  if (
+    !onVisibilityChange &&
+    'onVisiblityChange' in props &&
+    typeof props.onVisiblityChange === 'function'
+  ) {
+    shouldWarn = true;
+    onVisibilityChange = props.onVisiblityChange as (visible: boolean) => void;
+  } else {
+    onVisibilityChange = props.onVisibilityChange;
+  }
+
+  if (process.env.NODE_ENV !== 'production') {
+    // oxlint-disable-next-line react-hooks/rules-of-hooks
+    React.useEffect(() => {
+      if (shouldWarn) {
+        console.warn(
+          'PasswordToggleField: The misspelled `onVisiblityChange` prop has been removed. Please use `onVisibilityChange` instead.',
+        );
+      }
+    }, [shouldWarn]);
+  }
+
   const [visible = false, setVisible] = useControllableState({
     caller: PASSWORD_TOGGLE_FIELD_NAME,
     prop: visibleProp,
