@@ -1,5 +1,11 @@
 # @radix-ui/react-scroll-area
 
+## 1.2.12
+
+- Stabilize viewport style tag unless nonce changes.
+- Fixed `Duplicate index signature` errors that surfaced when consuming multiple packages together.
+- Updated dependencies: `@radix-ui/react-primitive@2.1.6`
+
 ## 1.2.11
 
 - Fixed missing `data-state` attribute for Scroll Area scrollbars

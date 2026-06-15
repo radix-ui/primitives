@@ -1,5 +1,9 @@
 # @radix-ui/react-toolbar
 
+## 1.1.13
+
+- Updated dependencies: `@radix-ui/react-toggle-group@1.1.13`, `@radix-ui/react-primitive@2.1.6`, `@radix-ui/react-roving-focus@1.1.13`, `@radix-ui/react-separator@1.1.10`
+
 ## 1.1.12
 
 - Added repository.directory to all package.json files

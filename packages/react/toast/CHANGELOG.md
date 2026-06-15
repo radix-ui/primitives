@@ -1,5 +1,9 @@
 # @radix-ui/react-toast
 
+## 1.2.17
+
+- Updated dependencies: `@radix-ui/react-dismissable-layer@1.1.13`, `@radix-ui/react-primitive@2.1.6`, `@radix-ui/react-collection@1.1.10`, `@radix-ui/react-portal@1.1.12`, `@radix-ui/react-visually-hidden@1.2.6`
+
 ## 1.2.16
 
 - Allow to specify container for ToastAnnounce

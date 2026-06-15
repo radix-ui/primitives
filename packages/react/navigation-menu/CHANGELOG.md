@@ -1,5 +1,10 @@
 # @radix-ui/react-navigation-menu
 
+## 1.2.16
+
+- Fixed `Duplicate index signature` errors that surfaced when consuming multiple packages together.
+- Updated dependencies: `@radix-ui/react-dismissable-layer@1.1.13`, `@radix-ui/react-primitive@2.1.6`, `@radix-ui/react-collection@1.1.10`, `@radix-ui/react-visually-hidden@1.2.6`
+
 ## 1.2.15
 
 - Fixed triggers referencing a non-existent element via `aria-controls` when their content is removed from the DOM (credit to [@dodomorandi](https://github.com/dodomorandi) for the [original PR](https://github.com/radix-ui/primitives/pull/3243))

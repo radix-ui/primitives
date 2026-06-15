@@ -1,5 +1,35 @@
 # radix-ui
 
+## 1.6.0
+
+### Added generic type arguments for `SlotProps` and `createSlot` to specify the type of element a slot should render, as well as its props.
+
+```tsx
+const Slot = createSlot<HTMLButtonElement, MyCustomButtonProps>("Slot");
+```
+
+### Fixed several edge cases with Avatar's loading state:
+
+- An avatar's fallback would not be displayed again if its image component unmounted. This is now fixed.
+- Rendering multiple `Avatar.Image` components per `Avatar.Root` was never supported and results in buggy, unpredictable behavior. We now warn about this in development.
+- Zero-sized images were treated as `loading`, meaning that `onLoadingStatusChange` is never called once loaded. A zero-sized image now triggers an `error` status on load.
+
+### Other updates
+
+- Renamed misspelled `onVisiblityChange` prop to `onVisibilityChange`
+- Fix regression in popper that caused submenu misalignment when using custom portals
+- Fix console warnings to show in test environments
+- Stabilize viewport style tag unless nonce changes.
+- Updated single-select and multi-select toggle groups to use the `radiogroup` and `toolbar` roles, respectively.
+- Removed dev-only warnings for dialogs when title and/or description is not rendered.
+- Allow a `Select.Item` with an empty string value to act as a "clear" option. Selecting it resets the selection back to the placeholder, restoring the native `<select>` behavior for optional selects.
+- Fixed a bug where menus and submenus remained open after a window loses focus.
+- Fixed a bug where typeahead search resulted in focusing an element that no longer exists
+- Fixed Dismissable Layer so outside interactions stopped by extension UI overlays do not dismiss dialogs or popovers
+- Fixed prop type definitions to include `asChild` for all component parts
+- Fixed `Duplicate index signature` errors that surfaced when consuming multiple packages together.
+- Updated dependencies: `@radix-ui/react-password-toggle-field@0.1.5`, `@radix-ui/react-slot@1.3.0`, `@radix-ui/react-popper@1.3.1`, `@radix-ui/react-avatar@1.2.0`, `@radix-ui/react-scroll-area@1.2.12`, `@radix-ui/react-toggle-group@1.1.13`, `@radix-ui/react-alert-dialog@1.1.17`, `@radix-ui/react-dialog@1.1.17`, `@radix-ui/react-select@2.3.1`, `@radix-ui/react-menu@2.1.18`, `@radix-ui/react-dropdown-menu@2.1.18`, `@radix-ui/react-context-menu@2.3.1`, `@radix-ui/react-menubar@1.1.18`, `@radix-ui/react-dismissable-layer@1.1.13`, `@radix-ui/react-popover@1.1.17`, `@radix-ui/react-primitive@2.1.6`, `@radix-ui/react-accordion@1.2.14`, `@radix-ui/react-navigation-menu@1.2.16`, `@radix-ui/react-slider@1.4.1`, `@radix-ui/react-collection@1.1.10`, `@radix-ui/react-tooltip@1.2.10`, `@radix-ui/react-hover-card@1.1.17`, `@radix-ui/react-toolbar@1.1.13`, `@radix-ui/react-toast@1.2.17`, `@radix-ui/react-arrow@1.1.10`, `@radix-ui/react-aspect-ratio@1.1.10`, `@radix-ui/react-checkbox@1.3.5`, `@radix-ui/react-collapsible@1.1.14`, `@radix-ui/react-focus-scope@1.1.10`, `@radix-ui/react-form@0.1.10`, `@radix-ui/react-label@2.1.10`, `@radix-ui/react-one-time-password-field@0.1.10`, `@radix-ui/react-portal@1.1.12`, `@radix-ui/react-progress@1.1.10`, `@radix-ui/react-radio-group@1.4.1`, `@radix-ui/react-roving-focus@1.1.13`, `@radix-ui/react-separator@1.1.10`, `@radix-ui/react-switch@1.3.1`, `@radix-ui/react-tabs@1.1.15`, `@radix-ui/react-toggle@1.1.12`, `@radix-ui/react-visually-hidden@1.2.6`, `@radix-ui/react-accessible-icon@1.1.10`
+
 ## 1.5.0
 
 ### Context Menu
@@ -51,12 +81,12 @@
 - Added unstable `RadioGroupItemProvider`, `RadioGroupItemTrigger` and `RadioGroupItemBubbleInput` parts. These expose the previously internal composition of a radio item that included a visually hidden `input` so consumers can directly access and recompose them. The `RadioGroupItem` component continues to render them by default.
 
   ```tsx
-  import { RadioGroup } from 'radix-ui';
+  import { RadioGroup } from "radix-ui";
 
   function ExampleRadioGroup() {
     return (
       <RadioGroup.Root>
-        {['one', 'two', 'three'].map((value) => (
+        {["one", "two", "three"].map((value) => (
           <RadioGroup.unstable_ItemProvider key={value} value={value}>
             <RadioGroup.unstable_ItemTrigger>
               <RadioGroup.Indicator />
@@ -75,7 +105,7 @@
 - Added unstable `Provider` and `BubbleInput` parts to Select. These expose the previously internal composition that included a visually hidden `select` so consumers can directly access and recompose them. `Select` continues to render them by default.
 
   ```tsx
-  import { Select } from 'radix-ui';
+  import { Select } from "radix-ui";
 
   function ExampleSelect() {
     return (
@@ -99,7 +129,7 @@
 - Added unstable `ThumbProvider`, `ThumbTrigger`, and `BubbleInput` parts to Slider. `SliderThumb` was previously a single component that implicitly rendered a hidden native input for form submission. It is now composed from these new parts, which are exposed so consumers can decouple the visually hidden input from the thumb. `SliderThumb` continues to render them by default.
 
   ```tsx
-  import { Slider } from 'radix-ui';
+  import { Slider } from "radix-ui";
 
   function ExampleSlider() {
     return (
@@ -138,7 +168,7 @@
 - Added unstable `Provider`, `Trigger` and `BubbleInput` parts to Switch. These expose the previously internal composition that included a visually hidden `input` so consumers can directly access and recompose them. The `Switch` component continues to render them by default.
 
   ```tsx
-  import { Switch } from 'radix-ui';
+  import { Switch } from "radix-ui";
 
   function ExampleSwitch() {
     return (
@@ -220,14 +250,17 @@ This new primitive provides components for rendering a password input alongside 
 This API is currently unstable, and we hope you'll help us test it out! Import the primitive using the `unstable_` prefix.
 
 ```tsx
-import { unstable_PasswordToggleField as PasswordToggleField } from 'radix-ui';
+import { unstable_PasswordToggleField as PasswordToggleField } from "radix-ui";
 
 function FieldWithIconToggle() {
   return (
     <PasswordToggleField.Root>
       <PasswordToggleField.Input />
       <PasswordToggleField.Toggle>
-        <PasswordToggleField.Icon visible={<EyeOpenIcon />} hidden={<EyeClosedIcon />} />
+        <PasswordToggleField.Icon
+          visible={<EyeOpenIcon />}
+          hidden={<EyeClosedIcon />}
+        />
       </PasswordToggleField.Toggle>
     </PasswordToggleField.Root>
   );
@@ -238,7 +271,10 @@ function FieldWithTextToggle() {
     <PasswordToggleField.Root>
       <PasswordToggleField.Input />
       <PasswordToggleField.Toggle>
-        <PasswordToggleField.Slot visible="Hide password" hidden="Show password" />
+        <PasswordToggleField.Slot
+          visible="Hide password"
+          hidden="Show password"
+        />
       </PasswordToggleField.Toggle>
     </PasswordToggleField.Root>
   );
@@ -283,7 +319,7 @@ This new primitive is designed to implement the common design pattern for one-ti
 This API is currently unstable, and we hope you'll help us test it out! Import the primitive using the `unstable_` prefix.
 
 ```tsx
-import { unstable_OneTimePasswordField as OneTimePasswordField } from 'radix-ui';
+import { unstable_OneTimePasswordField as OneTimePasswordField } from "radix-ui";
 
 export function Verify() {
   return (

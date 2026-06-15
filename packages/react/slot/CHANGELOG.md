@@ -1,5 +1,15 @@
 # @radix-ui/react-slot
 
+## 1.3.0
+
+### Added generic type arguments for `SlotProps` and `createSlot` to specify the type of element a slot should render, as well as its props.
+
+```tsx
+const Slot = createSlot<HTMLButtonElement, MyCustomButtonProps>("Slot");
+```
+
+### Other updates
+
 ## 1.2.5
 
 - Fixed infinite re-render loop in React 19 caused by `Slot` creating a new ref callback on every render

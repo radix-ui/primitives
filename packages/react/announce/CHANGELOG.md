@@ -1,5 +1,9 @@
 # @radix-ui/react-announce
 
+## 0.2.10
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.6`
+
 ## 0.2.9
 
 - Added repository.directory to all package.json files
