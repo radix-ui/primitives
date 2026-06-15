@@ -222,6 +222,27 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
+  internal/test-utils:
+    devDependencies:
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      '@testing-library/react':
+        specifier: ^16.3.2
+        version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.15))(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      '@types/react':
+        specifier: ^19.2.15
+        version: 19.2.15
+      react:
+        specifier: ^19.2.6
+        version: 19.2.6
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.1.7
+        version: 4.1.7(@types/node@24.12.4)(jsdom@29.1.1)(vite@7.3.3(@types/node@24.12.4)(terser@5.48.0))
+
   internal/typescript-config: {}
 
   packages/core/number:
@@ -848,6 +869,9 @@ importers:
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
+      '@repo/test-utils':
+        specifier: workspace:*
+        version: link:../../../internal/test-utils
       '@repo/typescript-config':
         specifier: workspace:*
         version: link:../../../internal/typescript-config
@@ -900,6 +924,9 @@ importers:
       '@repo/test-data':
         specifier: workspace:*
         version: link:../../../internal/test-data
+      '@repo/test-utils':
+        specifier: workspace:*
+        version: link:../../../internal/test-utils
       '@repo/typescript-config':
         specifier: workspace:*
         version: link:../../../internal/typescript-config
@@ -958,6 +985,9 @@ importers:
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
+      '@repo/test-utils':
+        specifier: workspace:*
+        version: link:../../../internal/test-utils
       '@repo/typescript-config':
         specifier: workspace:*
         version: link:../../../internal/typescript-config
@@ -1316,6 +1346,9 @@ importers:
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
+      '@repo/test-utils':
+        specifier: workspace:*
+        version: link:../../../internal/test-utils
       '@repo/typescript-config':
         specifier: workspace:*
         version: link:../../../internal/typescript-config
@@ -1551,6 +1584,9 @@ importers:
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
+      '@repo/test-utils':
+        specifier: workspace:*
+        version: link:../../../internal/test-utils
       '@repo/typescript-config':
         specifier: workspace:*
         version: link:../../../internal/typescript-config
@@ -2018,6 +2054,9 @@ importers:
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
+      '@repo/test-utils':
+        specifier: workspace:*
+        version: link:../../../internal/test-utils
       '@repo/typescript-config':
         specifier: workspace:*
         version: link:../../../internal/typescript-config
@@ -2112,6 +2151,9 @@ importers:
       '@repo/test-data':
         specifier: workspace:*
         version: link:../../../internal/test-data
+      '@repo/test-utils':
+        specifier: workspace:*
+        version: link:../../../internal/test-utils
       '@repo/typescript-config':
         specifier: workspace:*
         version: link:../../../internal/typescript-config
@@ -2198,6 +2240,9 @@ importers:
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
+      '@repo/test-utils':
+        specifier: workspace:*
+        version: link:../../../internal/test-utils
       '@repo/typescript-config':
         specifier: workspace:*
         version: link:../../../internal/typescript-config
@@ -2382,6 +2427,9 @@ importers:
       '@repo/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
+      '@repo/test-utils':
+        specifier: workspace:*
+        version: link:../../../internal/test-utils
       '@repo/typescript-config':
         specifier: workspace:*
         version: link:../../../internal/typescript-config

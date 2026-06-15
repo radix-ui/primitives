@@ -1,0 +1,27 @@
+{
+  "name": "@repo/test-utils",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    "./*": "./*.tsx"
+  },
+  "scripts": {
+    "lint": "oxlint --max-warnings 0 .",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "@testing-library/react": "^16.3.2",
+    "@types/react": "^19.2.15",
+    "react": "^19.2.6",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.7"
+  },
+  "peerDependencies": {
+    "@testing-library/react": "*",
+    "react": "*",
+    "vitest": "*"
+  }
+}
