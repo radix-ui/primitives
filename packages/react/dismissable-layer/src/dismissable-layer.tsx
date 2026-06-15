@@ -87,7 +87,7 @@ const DismissableLayer = React.forwardRef<DismissableLayerElement, DismissableLa
     const [node, setNode] = React.useState<DismissableLayerElement | null>(null);
     const ownerDocument = node?.ownerDocument ?? globalThis?.document;
     const [, force] = React.useState({});
-    const composedRefs = useComposedRefs(forwardedRef, (node) => setNode(node));
+    const composedRefs = useComposedRefs(forwardedRef, setNode);
     const layers = Array.from(context.layers);
     const [highestLayerWithOutsidePointerEventsDisabled] = [...context.layersWithOutsidePointerEventsDisabled].slice(-1); // prettier-ignore
     const highestLayerWithOutsidePointerEventsDisabledIndex = layers.indexOf(highestLayerWithOutsidePointerEventsDisabled!); // prettier-ignore

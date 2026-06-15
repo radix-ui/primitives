@@ -82,7 +82,7 @@ const ScrollArea = React.forwardRef<ScrollAreaElement, ScrollAreaProps>(
     const [cornerHeight, setCornerHeight] = React.useState(0);
     const [scrollbarXEnabled, setScrollbarXEnabled] = React.useState(false);
     const [scrollbarYEnabled, setScrollbarYEnabled] = React.useState(false);
-    const composedRefs = useComposedRefs(forwardedRef, (node) => setScrollArea(node));
+    const composedRefs = useComposedRefs(forwardedRef, setScrollArea);
     const direction = useDirection(dir);
 
     return (
@@ -665,7 +665,7 @@ const ScrollAreaScrollbarImpl = React.forwardRef<
   } = props;
   const context = useScrollAreaContext(SCROLLBAR_NAME, __scopeScrollArea);
   const [scrollbar, setScrollbar] = React.useState<ScrollAreaScrollbarElement | null>(null);
-  const composeRefs = useComposedRefs(forwardedRef, (node) => setScrollbar(node));
+  const composeRefs = useComposedRefs(forwardedRef, setScrollbar);
   const rectRef = React.useRef<DOMRect | null>(null);
   const prevWebkitUserSelectRef = React.useRef<string>('');
   const viewport = context.viewport;
@@ -783,9 +783,7 @@ const ScrollAreaThumbImpl = React.forwardRef<ScrollAreaThumbImplElement, ScrollA
     const scrollAreaContext = useScrollAreaContext(THUMB_NAME, __scopeScrollArea);
     const scrollbarContext = useScrollbarContext(THUMB_NAME, __scopeScrollArea);
     const { onThumbPositionChange } = scrollbarContext;
-    const composedRef = useComposedRefs(forwardedRef, (node) =>
-      scrollbarContext.onThumbChange(node),
-    );
+    const composedRef = useComposedRefs(forwardedRef, scrollbarContext.onThumbChange);
     const removeUnlinkedScrollListenerRef = React.useRef<() => void>(undefined);
     const debounceScrollEnd = useDebounceCallback(() => {
       if (removeUnlinkedScrollListenerRef.current) {

@@ -192,7 +192,7 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
     const context = usePopperContext(CONTENT_NAME, __scopePopper);
 
     const [content, setContent] = React.useState<HTMLDivElement | null>(null);
-    const composedRefs = useComposedRefs(forwardedRef, (node) => setContent(node));
+    const composedRefs = useComposedRefs(forwardedRef, setContent);
 
     const [arrow, setArrow] = React.useState<HTMLSpanElement | null>(null);
     const arrowSize = useSize(arrow);

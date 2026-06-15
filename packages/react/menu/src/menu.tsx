@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { createCollection } from '@radix-ui/react-collection';
-import { useComposedRefs, composeRefs } from '@radix-ui/react-compose-refs';
+import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
 import { useDirection } from '@radix-ui/react-direction';
 import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
@@ -1057,6 +1057,8 @@ const MenuSubTrigger = React.forwardRef<MenuSubTriggerElement, MenuSubTriggerPro
       };
     }, [pointerGraceTimerRef, onPointerGraceIntentChange]);
 
+    const composedRefs = useComposedRefs(forwardedRef, subContext.onTriggerChange);
+
     return (
       <MenuAnchor asChild {...scope}>
         <MenuItemImpl
@@ -1066,7 +1068,7 @@ const MenuSubTrigger = React.forwardRef<MenuSubTriggerElement, MenuSubTriggerPro
           aria-controls={context.open ? subContext.contentId : undefined}
           data-state={getOpenState(context.open)}
           {...props}
-          ref={composeRefs(forwardedRef, subContext.onTriggerChange)}
+          ref={composedRefs}
           // This is redundant for mouse users but we cannot determine pointer type from
           // click event and we cannot use pointerup event (see git history for reasons why)
           onClick={(event) => {
