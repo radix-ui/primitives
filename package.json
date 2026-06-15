@@ -26,7 +26,7 @@
     "bump:next": "changeset version --snapshot",
     "bump:check": "changeset status --since=main",
     "release:stable": "pnpm publish -r --access public",
-    "release:stable:ci": "pnpm publish -r --access public --publish-branch stable",
+    "release:stable:ci": "changeset publish",
     "release:next": "pnpm publish -r --access public --tag next",
     "format": "oxfmt --write",
     "format:check": "oxfmt --check"
