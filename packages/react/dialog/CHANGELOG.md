@@ -3,7 +3,7 @@
 ## 1.1.17
 
 - Removed dev-only warnings for dialogs when title and/or description is not rendered.
-- Fixed Dismissable Layer so outside interactions stopped by extension UI overlays do not dismiss dialogs or popovers
+- Fixed Dismissable Layer so outside interactions stopped by extension UI overlays do not dismiss dialogs or popovers.
 - Updated dependencies: `@radix-ui/react-slot@1.3.0`, `@radix-ui/react-dismissable-layer@1.1.13`, `@radix-ui/react-primitive@2.1.6`, `@radix-ui/react-focus-scope@1.1.10`, `@radix-ui/react-portal@1.1.12`
 
 ## 1.1.16

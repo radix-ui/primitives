@@ -2,8 +2,8 @@
 
 ## 2.3.1
 
-- Allow a `Select.Item` with an empty string value to act as a "clear" option. Selecting it resets the selection back to the placeholder, restoring the native `<select>` behavior for optional selects.
-- Fixed a bug where typeahead search resulted in focusing an element that no longer exists
+- Allowed a `Select.Item` with an empty string value to act as a "clear" option. Selecting it resets the selection back to the placeholder, restoring the native `<select>` behavior for optional selects.
+- Fixed a bug where typeahead search resulted in focusing an element that no longer exists.
 - Updated dependencies: `@radix-ui/react-slot@1.3.0`, `@radix-ui/react-popper@1.3.1`, `@radix-ui/react-dismissable-layer@1.1.13`, `@radix-ui/react-primitive@2.1.6`, `@radix-ui/react-collection@1.1.10`, `@radix-ui/react-focus-scope@1.1.10`, `@radix-ui/react-portal@1.1.12`, `@radix-ui/react-visually-hidden@1.2.6`
 
 ## 2.3.0

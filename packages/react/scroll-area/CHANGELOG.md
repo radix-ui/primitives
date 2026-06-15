@@ -2,7 +2,7 @@
 
 ## 1.2.12
 
-- Stabilize viewport style tag unless nonce changes.
+- Stabilized the viewport style tag unless the nonce changes.
 - Fixed `Duplicate index signature` errors that surfaced when consuming multiple packages together.
 - Updated dependencies: `@radix-ui/react-primitive@2.1.6`
 

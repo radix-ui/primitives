@@ -2,7 +2,7 @@
 
 ## 1.1.13
 
-- Fixed Dismissable Layer so outside interactions stopped by extension UI overlays do not dismiss dialogs or popovers
+- Fixed Dismissable Layer so outside interactions stopped by extension UI overlays do not dismiss dialogs or popovers.
 - Updated dependencies: `@radix-ui/react-primitive@2.1.6`
 
 ## 1.1.12
