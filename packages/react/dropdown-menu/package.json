@@ -46,6 +46,7 @@
   "devDependencies": {
     "@repo/builder": "workspace:*",
     "@repo/test-data": "workspace:*",
+    "@repo/test-utils": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",

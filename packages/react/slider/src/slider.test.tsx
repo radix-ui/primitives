@@ -2,6 +2,7 @@ import * as React from 'react';
 import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, it, expect } from 'vitest';
+import { assertStableComposedRef } from '@repo/test-utils/ref-stability';
 import * as Slider from './slider';
 
 function renderSlider(props: React.ComponentProps<typeof Slider.Root>) {
@@ -53,5 +54,30 @@ describe('Slider', () => {
     await user.keyboard('{ArrowRight}');
 
     expect(getThumbValue()).toBeCloseTo(1.5e-7, 12);
+  });
+
+  // Regression tests for https://github.com/radix-ui/primitives/issues/3963
+  describe('ref stability', () => {
+    it('keeps a stable composed ref on the root', () => {
+      assertStableComposedRef((ref) => (
+        <Slider.Root ref={ref} defaultValue={[50]}>
+          <Slider.Track>
+            <Slider.Range />
+          </Slider.Track>
+          <Slider.Thumb />
+        </Slider.Root>
+      ));
+    });
+
+    it('keeps a stable composed ref on the thumb', () => {
+      assertStableComposedRef((ref) => (
+        <Slider.Root defaultValue={[50]}>
+          <Slider.Track>
+            <Slider.Range />
+          </Slider.Track>
+          <Slider.Thumb ref={ref} />
+        </Slider.Root>
+      ));
+    });
   });
 });

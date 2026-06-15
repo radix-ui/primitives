@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { assertStableComposedRef } from '@repo/test-utils/ref-stability';
 import * as DismissableLayer from './dismissable-layer';
 
 async function waitForDocumentPointerDownListener() {
@@ -394,5 +395,14 @@ describe('DismissableLayer', () => {
     fireEvent.click(outside);
 
     expect(onDismiss).not.toHaveBeenCalled();
+  });
+
+  // Regression test for https://github.com/radix-ui/primitives/issues/3963
+  it('keeps a stable composed ref (no infinite render loop)', () => {
+    assertStableComposedRef((ref) => (
+      <DismissableLayer.Root ref={ref}>
+        <button type="button">inside</button>
+      </DismissableLayer.Root>
+    ));
   });
 });
