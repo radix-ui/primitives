@@ -1,5 +1,11 @@
 # @radix-ui/react-popper
 
+## 1.3.1
+
+- Fixed a regression in Popper that caused submenu misalignment when using custom portals.
+- Fixed `Duplicate index signature` errors that surfaced when consuming multiple packages together.
+- Updated dependencies: `@radix-ui/react-primitive@2.1.6`, `@radix-ui/react-arrow@1.1.10`
+
 ## 1.3.0
 
 - Exposed `data-side` and `data-align` on `PopperAnchor` element

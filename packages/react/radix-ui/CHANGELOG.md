@@ -1,5 +1,48 @@
 # radix-ui
 
+## 1.6.0
+
+```tsx
+const Slot = createSlot<HTMLButtonElement, MyCustomButtonProps>('Slot');
+```
+
+### Avatar
+
+- Fixed several edge cases with Avatar's loading state
+  - An avatar's fallback would not be displayed again if its image component unmounted. This is now fixed.
+  - Rendering multiple `Avatar.Image` components per `Avatar.Root` was never supported and results in buggy, unpredictable behavior. We now warn about this in development.
+  - Zero-sized images were treated as `loading`, meaning that `onLoadingStatusChange` is never called once loaded. A zero-sized image now triggers an `error` status on load.
+
+### Password Toggle Field
+
+- Renamed misspelled `onVisiblityChange` prop to `onVisibilityChange`.
+- Fixed prop type definitions to include `asChild` for all component parts.
+
+### Scroll Area
+
+- Stabilized the viewport style tag unless the nonce changes.
+
+### Slot
+
+- `SlotProps` and `createSlot` now accept generic type arguments to specify the type of element a slot should render, as well as its props.
+
+### Toggle Group
+
+- Updated single-select and multi-select toggle groups to use the `radiogroup` and `toolbar` roles, respectively.
+
+### Select
+
+- Allowed a `Select.Item` with an empty string value to act as a "clear" option. Selecting it resets the selection back to the placeholder, restoring the native `<select>` behavior for optional selects. Previously using an empty string value would throw an error.
+- Fixed a bug where typeahead search resulted in focusing an element that no longer exists.
+
+### Other updates
+
+- Fixed a regression in that caused submenu misalignment when using custom portals.
+- Removed dev-only warnings for dialogs when title and/or description is not rendered.
+- Fixed a bug where menus and submenus remained open after a window loses focus.
+- Fixed Dismissable Layer so outside interactions stopped by extension UI overlays do not dismiss dialogs or popovers.
+- Fixed `Duplicate index signature` errors that surfaced when consuming multiple packages together.
+
 ## 1.5.0
 
 ### Context Menu

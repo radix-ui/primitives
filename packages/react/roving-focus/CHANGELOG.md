@@ -1,5 +1,9 @@
 # @radix-ui/react-roving-focus
 
+## 1.1.13
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.6`, `@radix-ui/react-collection@1.1.10`
+
 ## 1.1.12
 
 - Added repository.directory to all package.json files

@@ -1,5 +1,9 @@
 # @radix-ui/react-radio-group
 
+## 1.4.1
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.6`, `@radix-ui/react-roving-focus@1.1.13`
+
 ## 1.4.0
 
 - Added unstable `RadioGroupItemProvider`, `RadioGroupItemTrigger` and `RadioGroupItemBubbleInput` parts. These expose the previously internal composition of a radio item (context provider, the interactive control, and the hidden form input) so consumers can directly access and recompose them. The `RadioGroupItem` component continues to render them by default.

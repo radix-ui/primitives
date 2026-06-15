@@ -1,5 +1,10 @@
 # @radix-ui/react-slider
 
+## 1.4.1
+
+- Fixed `Duplicate index signature` errors that surfaced when consuming multiple packages together.
+- Updated dependencies: `@radix-ui/react-primitive@2.1.6`, `@radix-ui/react-collection@1.1.10`
+
 ## 1.4.0
 
 - Added unstable `ThumbProvider`, `ThumbTrigger`, and `BubbleInput` parts to Slider. `SliderThumb` was previously a single component that implicitly rendered a hidden native input for form submission. It is now composed from these new parts, which are exposed so consumers can decouple the bubble input from the thumb (for example, to render or customize it independently) instead of relying on `SliderThumb` to render it implicitly. `SliderThumb` continues to render all three by default, so existing usage is unaffected.

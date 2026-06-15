@@ -1,5 +1,9 @@
 # @radix-ui/react-toggle
 
+## 1.1.12
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.6`
+
 ## 1.1.11
 
 - Added repository.directory to all package.json files
