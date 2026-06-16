@@ -105,6 +105,51 @@ export const Animated = () => {
   );
 };
 
+export const ContentProps = () => {
+  return (
+    <div className={styles.root}>
+      <h2>Default (display: table)</h2>
+      <ScrollAreaStory type="always" style={{ width: 400, height: 300 }}>
+        {Array.from({ length: 20 }).map((_, index) => (
+          <div
+            key={index}
+            style={{ padding: '8px 12px', borderBottom: '1px solid #eee', whiteSpace: 'nowrap' }}
+          >
+            Item {index + 1} - This is a long text that should be constrained by the container width
+          </div>
+        ))}
+      </ScrollAreaStory>
+
+      <h2>With contentProps (display: flex)</h2>
+      <ScrollArea.Root
+        type="always"
+        className={styles.scrollArea}
+        style={{ width: 400, height: 300 }}
+      >
+        <ScrollArea.Viewport
+          className={styles.scrollAreaViewport}
+          contentProps={{
+            style: { display: 'flex', flexDirection: 'column' },
+          }}
+        >
+          {Array.from({ length: 20 }).map((_, index) => (
+            <div
+              key={index}
+              style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}
+            >
+              Item {index + 1} - This is a long text that should be constrained by the container
+              width
+            </div>
+          ))}
+        </ScrollArea.Viewport>
+        <ScrollArea.Scrollbar className={styles.scrollbar} orientation="vertical">
+          <ScrollArea.Thumb className={styles.thumb} />
+        </ScrollArea.Scrollbar>
+      </ScrollArea.Root>
+    </div>
+  );
+};
+
 export const Chromatic = () => (
   <div className={styles.root}>
     <h1>Vertical</h1>
