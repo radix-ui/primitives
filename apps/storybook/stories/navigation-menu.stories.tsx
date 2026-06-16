@@ -4,6 +4,42 @@ import styles from './navigation-menu.stories.module.css';
 
 export default { title: 'Components/NavigationMenu' };
 
+export const ForceMountWithViewport = () => {
+  return (
+    <StoryFrame>
+      <NavigationMenu.Root>
+        <NavigationMenu.List className={styles.mainList}>
+          <NavigationMenu.Item>
+            <TriggerWithIndicator>Products</TriggerWithIndicator>
+            {/* forceMount keeps content mounted; Viewport routes it via ViewportContentMounter */}
+            <NavigationMenu.Content
+              forceMount
+              className={styles.viewportContent}
+              style={{ width: 400 }}
+            >
+              <LinkGroup items={['Item One', 'Item Two', 'Item Three']} />
+            </NavigationMenu.Content>
+          </NavigationMenu.Item>
+
+          <NavigationMenu.Item>
+            <TriggerWithIndicator>Company</TriggerWithIndicator>
+            <NavigationMenu.Content
+              forceMount
+              className={styles.viewportContent}
+              style={{ width: 300 }}
+            >
+              <LinkGroup items={['About', 'Careers']} />
+            </NavigationMenu.Content>
+          </NavigationMenu.Item>
+        </NavigationMenu.List>
+
+        {/* Viewport is the key — this triggers the ViewportContentMounter path */}
+        <NavigationMenu.Viewport />
+      </NavigationMenu.Root>
+    </StoryFrame>
+  );
+};
+
 export const Basic = () => {
   return (
     <StoryFrame>
