@@ -57,6 +57,14 @@ describe('given a default Dialog', () => {
       expect(closeButton).toHaveFocus();
     });
 
+    it('should not set aria-hidden on focus guards', () => {
+      const focusGuards = document.querySelectorAll('[data-radix-focus-guard]');
+      expect(focusGuards.length).toBeGreaterThan(0);
+      focusGuards.forEach((guard) => {
+        expect(guard).not.toHaveAttribute('aria-hidden', 'true');
+      });
+    });
+
     describe('when pressing escape', () => {
       beforeEach(() => {
         fireEvent.keyDown(document.activeElement!, { key: 'Escape' });
