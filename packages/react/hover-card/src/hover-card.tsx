@@ -137,7 +137,15 @@ const HoverCardTrigger = React.forwardRef<HoverCardTriggerElement, HoverCardTrig
           onFocus={composeEventHandlers(props.onFocus, context.onOpen)}
           onBlur={composeEventHandlers(props.onBlur, context.onClose)}
           // prevent focus event on touch devices
-          onTouchStart={composeEventHandlers(props.onTouchStart, (event) => event.preventDefault())}
+          onTouchStart={composeEventHandlers(
+            props.onTouchStart,
+            (event) => {
+              if (event.cancelable) {
+                event.preventDefault();
+              }
+            }
+          )}
+
         />
       </PopperPrimitive.Anchor>
     );
