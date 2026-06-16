@@ -497,6 +497,20 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
     const closeTimerStartTimeRef = React.useRef(0);
     const closeTimerRemainingTimeRef = React.useRef(duration);
     const closeTimerRef = React.useRef(0);
+
+    // Sync remaining time when duration prop changes.
+    // When not paused: reset to new duration (timer restart is handled by the open/duration effect).
+    // When paused: clamp remaining to new duration so resume uses the correct value.
+    // Without this, a toast paused while duration=Infinity will hold Infinity in the ref
+    // forever and never close after duration changes to a finite value.
+    React.useEffect(() => {
+      if (!context.isClosePausedRef.current) {
+        closeTimerRemainingTimeRef.current = duration;
+      } else if (duration < closeTimerRemainingTimeRef.current) {
+        closeTimerRemainingTimeRef.current = duration;
+      }
+    }, [duration, context.isClosePausedRef])
+
     const { onToastAdd, onToastRemove } = context;
     const handleClose = useCallbackRef(() => {
       // focus viewport if focus is within toast to read the remaining toast
