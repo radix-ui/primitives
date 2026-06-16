@@ -108,12 +108,25 @@ const FocusScope = React.forwardRef<FocusScopeElement, FocusScopeProps>((props, 
       // When the focused element gets removed from the DOM, browsers move focus
       // back to the document.body. In this case, we move focus to the container
       // to keep focus trapped correctly.
+      //
+      // We defer the focus check to the next animation frame because DOM mutations
+      // from framework re-renders (e.g. React) can temporarily remove and re-add nodes,
+      // causing activeElement to briefly become document.body during normal focus
+      // transitions (like Tab). Without deferring, the MutationObserver would
+      // incorrectly hijack focus to the container before the browser completes
+      // moving focus to the next tabbable element.
       function handleMutations(mutations: MutationRecord[]) {
         const focusedElement = document.activeElement as HTMLElement | null;
         if (focusedElement !== document.body) return;
-        for (const mutation of mutations) {
-          if (mutation.removedNodes.length > 0) focus(container);
-        }
+        const hasMutationRemovedNodes = mutations.some(
+          (mutation) => mutation.removedNodes.length > 0
+        );
+        if (!hasMutationRemovedNodes) return;
+        requestAnimationFrame(() => {
+          if (document.activeElement === document.body) {
+            focus(container);
+          }
+        });
       }
 
       document.addEventListener('focusin', handleFocusIn);
