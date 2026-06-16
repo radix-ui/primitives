@@ -9,6 +9,7 @@
 '@radix-ui/react-slider': patch
 '@radix-ui/react-toast': patch
 '@radix-ui/react-menu': patch
+'@radix-ui/react-use-escape-keydown': patch
 ---
 
 Fixed infinite re-render loop in React 19 caused by unstable composed ref callbacks being recreated on every render.

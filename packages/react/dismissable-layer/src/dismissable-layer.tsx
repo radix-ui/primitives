@@ -2,7 +2,7 @@ import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { Primitive, dispatchDiscreteCustomEvent } from '@radix-ui/react-primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
-import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
+import { useEffectEvent } from '@radix-ui/react-use-effect-event';
 import { useEscapeKeydown } from '@radix-ui/react-use-escape-keydown';
 
 /* -------------------------------------------------------------------------------------------------
@@ -133,7 +133,13 @@ const DismissableLayer = React.forwardRef<DismissableLayerElement, DismissableLa
     }, ownerDocument);
 
     useEscapeKeydown((event) => {
-      const isHighestLayer = index === context.layers.size - 1;
+      // Compute the layer position from the live `context.layers` set rather than
+      // the render-time `index`. The layer is registered in an effect after the
+      // ref sets `node`, so the memoized `index` can still be `-1` when Escape is
+      // pressed before the follow-up re-render. Reading the set live keeps Escape
+      // working regardless of render timing (see issue #3963).
+      const liveLayers = Array.from(context.layers);
+      const isHighestLayer = node ? liveLayers.indexOf(node) === liveLayers.length - 1 : false;
       if (!isHighestLayer) return;
       onEscapeKeyDown?.(event);
       if (!event.defaultPrevented && onDismiss) {
@@ -292,7 +298,7 @@ function usePointerDownOutside(
     isDeferredPointerDownOutsideRef,
     dismissableSurfaces,
   } = args;
-  const handlePointerDownOutside = useCallbackRef(onPointerDownOutside) as EventListener;
+  const handlePointerDownOutside = useEffectEvent(onPointerDownOutside) as EventListener;
   const isPointerInsideReactTreeRef = React.useRef(false);
   const isPointerDownOutsideRef = React.useRef(false);
   const interceptedOutsideInteractionEventsRef = React.useRef<Map<string, boolean>>(new Map());
@@ -463,7 +469,7 @@ function useFocusOutside(
   onFocusOutside?: (event: FocusOutsideEvent) => void,
   ownerDocument: Document = globalThis?.document,
 ) {
-  const handleFocusOutside = useCallbackRef(onFocusOutside) as EventListener;
+  const handleFocusOutside = useEffectEvent(onFocusOutside) as EventListener;
   const isFocusInsideReactTreeRef = React.useRef(false);
 
   React.useEffect(() => {
