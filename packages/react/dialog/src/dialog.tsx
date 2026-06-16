@@ -210,7 +210,7 @@ const DialogOverlayImpl = React.forwardRef<DialogOverlayImplElement, DialogOverl
     return (
       // Make sure `Content` is scrollable even when it doesn't live inside `RemoveScroll`
       // ie. when `Overlay` and `Content` are siblings
-      <RemoveScroll as={Slot} allowPinchZoom shards={[context.contentRef]}>
+      <RemoveScroll enable={context.isOpen} as={Slot} allowPinchZoom shards={[context.contentRef]}>
         <Primitive.div
           data-state={getState(context.open)}
           {...overlayProps}
