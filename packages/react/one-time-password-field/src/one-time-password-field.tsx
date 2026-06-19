@@ -12,7 +12,6 @@ import type { Scope } from '@radix-ui/react-context';
 import { createContextScope } from '@radix-ui/react-context';
 import { useDirection } from '@radix-ui/react-direction';
 import { clamp } from '@radix-ui/number';
-import { getDeepActiveElement } from '@radix-ui/deep-active-element'
 
 type InputValidationType = 'alpha' | 'numeric' | 'alphanumeric' | 'none';
 
