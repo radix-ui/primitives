@@ -883,6 +883,27 @@ export const Parts = () => {
   );
 };
 
+export const AllItemsDisabled = () => (
+  <Select.Root defaultOpen>
+    <Select.Trigger className={styles.trigger}>
+      <Select.Value placeholder="Pick an option" />
+      <Select.Icon />
+    </Select.Trigger>
+    <Select.Portal>
+      <Select.Content className={styles.content}>
+        <Select.Viewport className={styles.viewport}>
+          <Select.Item className={styles.item} value="a" disabled>
+            <Select.ItemText>Option A</Select.ItemText>
+          </Select.Item>
+          <Select.Item className={styles.item} value="b" disabled>
+            <Select.ItemText>Option B</Select.ItemText>
+          </Select.Item>
+        </Select.Viewport>
+      </Select.Content>
+    </Select.Portal>
+  </Select.Root>
+);
+
 export const WithinDialog = () => (
   <div style={{ height: '120vh' }}>
     <Dialog.Root>
