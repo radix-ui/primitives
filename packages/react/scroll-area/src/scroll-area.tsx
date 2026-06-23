@@ -168,13 +168,11 @@ const ScrollAreaViewport = React.forwardRef<ScrollAreaViewportElement, ScrollAre
           }}
         >
           {/**
-           * `display: table` ensures our content div will match the size of its children in both
-           * horizontal and vertical axis so we can determine if scroll width/height changed and
-           * recalculate thumb sizes. This doesn't account for children with *percentage*
-           * widths that change. We'll wait to see what use-cases consumers come up with there
-           * before trying to resolve it.
+           * `display: block` avoids layout issues caused by `display: table` in
+           * flex and resizable layouts while still allowing the viewport to
+           * measure scrollable content via `minWidth: 100%`.
            */}
-          <div ref={context.onContentChange} style={{ minWidth: '100%', display: 'table' }}>
+          <div ref={context.onContentChange} style={{ minWidth: '100%', display: 'block' }}>
             {children}
           </div>
         </Primitive.div>
