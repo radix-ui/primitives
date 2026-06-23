@@ -341,16 +341,21 @@ const CheckboxBubbleInput = React.forwardRef<HTMLInputElement, CheckboxBubbleInp
     }, [bubbleInput, prevChecked, checked, hasConsumerStoppedPropagationRef]);
 
     const defaultCheckedRef = React.useRef(isIndeterminate(checked) ? false : checked);
+    const controlAriaLabel = control?.getAttribute('aria-label') ?? undefined;
+    const controlAriaLabelledBy = control?.getAttribute('aria-labelledby') ?? undefined;
+
     return (
       <Primitive.input
         type="checkbox"
-        aria-hidden
+        hidden
         defaultChecked={defaultChecked ?? defaultCheckedRef.current}
         required={required}
         disabled={disabled}
         name={name}
         value={value}
         form={form}
+        aria-label={controlAriaLabel}
+        aria-labelledby={controlAriaLabelledBy}
         {...props}
         tabIndex={-1}
         ref={composedRefs}
