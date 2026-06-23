@@ -564,6 +564,28 @@ export const NestedComposition = () => {
   );
 };
 
+export const DropdownWithinDialog = () => (
+  <Dialog.Root defaultOpen>
+    <Dialog.Portal>
+      <Dialog.Overlay />
+      <Dialog.Content className={styles.dialog} style={{ padding: 24 }}>
+        <Dialog.Title>Dialog with dropdown</Dialog.Title>
+        <DropdownMenu.Root defaultOpen>
+          <DropdownMenu.Trigger className={styles.trigger}>Open menu</DropdownMenu.Trigger>
+          <DropdownMenu.Portal>
+            <DropdownMenu.Content className={styles.content} sideOffset={5}>
+              <DropdownMenu.Item className={styles.item}>Item 1</DropdownMenu.Item>
+              <DropdownMenu.Item className={styles.item}>Item 2</DropdownMenu.Item>
+              <DropdownMenu.Arrow />
+            </DropdownMenu.Content>
+          </DropdownMenu.Portal>
+        </DropdownMenu.Root>
+        <p data-testid="dialog-open-indicator">Dialog is still open</p>
+      </Dialog.Content>
+    </Dialog.Portal>
+  </Dialog.Root>
+);
+
 export const SingleItemAsDialogTrigger = () => {
   const dropdownTriggerRef = React.useRef<React.ComponentRef<typeof DropdownMenu.Trigger>>(null);
   const dropdownTriggerRef2 = React.useRef<React.ComponentRef<typeof DropdownMenu.Trigger>>(null);

@@ -395,4 +395,31 @@ describe('DismissableLayer', () => {
 
     expect(onDismiss).not.toHaveBeenCalled();
   });
+
+  // Regression test for https://github.com/radix-ui/primitives/issues/3971
+  it('does not dismiss a deferred parent when a nested deferred child dismisses first', async () => {
+    const onParentDismiss = vi.fn();
+    const onChildDismiss = vi.fn();
+
+    render(
+      <>
+        <DismissableLayer.Root deferPointerDownOutside onDismiss={onParentDismiss}>
+          <div data-testid="parent-inside">dialog</div>
+          <DismissableLayer.Root deferPointerDownOutside onDismiss={onChildDismiss}>
+            <div data-testid="child-inside">menu</div>
+          </DismissableLayer.Root>
+        </DismissableLayer.Root>
+      </>,
+    );
+    await waitForDocumentPointerDownListener();
+
+    firePointerMouseClick(screen.getByTestId('parent-inside'));
+
+    await act(async () => {
+      await new Promise((resolve) => window.setTimeout(resolve, 0));
+    });
+
+    expect(onChildDismiss).toHaveBeenCalledTimes(1);
+    expect(onParentDismiss).not.toHaveBeenCalled();
+  });
 });
