@@ -140,3 +140,14 @@ describe('clearing an optional value (#2706)', () => {
     expect(emptyOptions).toHaveLength(1);
   });
 });
+
+// Regression test for https://github.com/radix-ui/primitives/issues/1488
+describe('given a select item', () => {
+  afterEach(cleanup);
+
+  it('should not allow text selection', async () => {
+    render(<SelectTest defaultOpen />);
+    const option = await waitFor(() => screen.getByRole('option', { name: 'Apple', hidden: true }));
+    expect(option).toHaveStyle({ userSelect: 'none' });
+  });
+});

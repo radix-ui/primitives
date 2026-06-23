@@ -1408,6 +1408,7 @@ const SelectItem = React.forwardRef<SelectItemElement, SelectItemProps>(
             data-disabled={disabled ? '' : undefined}
             tabIndex={disabled ? undefined : -1}
             {...itemProps}
+            style={{ userSelect: 'none', ...itemProps.style }}
             ref={composedRefs}
             onFocus={composeEventHandlers(itemProps.onFocus, () => setIsFocused(true))}
             onBlur={composeEventHandlers(itemProps.onBlur, () => setIsFocused(false))}
