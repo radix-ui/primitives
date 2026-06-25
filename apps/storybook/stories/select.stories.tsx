@@ -1061,6 +1061,39 @@ export const ChromaticNoDefaultValue = () => (
 );
 ChromaticNoDefaultValue.parameters = { chromatic: { disable: false } };
 
+export const CypressScrollButtons = () => (
+  <div style={{ display: 'flex', justifyContent: 'center', padding: 50 }}>
+    <Label>
+      Choose an item:
+      <Select.Root defaultValue="item-25">
+        <Select.Trigger className={styles.trigger}>
+          <Select.Value />
+          <Select.Icon />
+        </Select.Trigger>
+        <Select.Portal>
+          <Select.Content className={styles.content} position="popper" sideOffset={5}>
+            <Select.ScrollUpButton className={scrollUpButtonClass}>▲</Select.ScrollUpButton>
+            <Select.Viewport className={styles.viewport} style={{ maxHeight: 150 }}>
+              {Array.from({ length: 50 }, (_, i) => {
+                const value = `item-${i + 1}`;
+                return (
+                  <Select.Item key={value} className={styles.item} value={value}>
+                    <Select.ItemText>item {i + 1}</Select.ItemText>
+                    <Select.ItemIndicator className={styles.indicator}>
+                      <TickIcon />
+                    </Select.ItemIndicator>
+                  </Select.Item>
+                );
+              })}
+            </Select.Viewport>
+            <Select.ScrollDownButton className={scrollDownButtonClass}>▼</Select.ScrollDownButton>
+          </Select.Content>
+        </Select.Portal>
+      </Select.Root>
+    </Label>
+  </div>
+);
+
 export const Cypress = () => {
   const [data, setData] = React.useState<{ size?: string; model?: string }>({});
   const [model, setModel] = React.useState<string | undefined>('');
