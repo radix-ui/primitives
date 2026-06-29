@@ -859,12 +859,12 @@ importers:
       '@radix-ui/react-primitive':
         specifier: workspace:*
         version: link:../primitive
+      '@radix-ui/react-use-callback-ref':
+        specifier: workspace:*
+        version: link:../use-callback-ref
       '@radix-ui/react-use-effect-event':
         specifier: workspace:*
         version: link:../use-effect-event
-      '@radix-ui/react-use-escape-keydown':
-        specifier: workspace:*
-        version: link:../use-escape-keydown
     devDependencies:
       '@repo/builder':
         specifier: workspace:*
@@ -2724,9 +2724,9 @@ importers:
 
   packages/react/use-escape-keydown:
     dependencies:
-      '@radix-ui/react-use-effect-event':
+      '@radix-ui/react-use-callback-ref':
         specifier: workspace:*
-        version: link:../use-effect-event
+        version: link:../use-callback-ref
     devDependencies:
       '@repo/builder':
         specifier: workspace:*

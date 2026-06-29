@@ -2,8 +2,8 @@ import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { Primitive, dispatchDiscreteCustomEvent } from '@radix-ui/react-primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
+import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useEffectEvent } from '@radix-ui/react-use-effect-event';
-import { useEscapeKeydown } from '@radix-ui/react-use-escape-keydown';
 
 /* -------------------------------------------------------------------------------------------------
  * DismissableLayer
@@ -132,21 +132,36 @@ const DismissableLayer = React.forwardRef<DismissableLayerElement, DismissableLa
       if (!event.defaultPrevented) onDismiss?.();
     }, ownerDocument);
 
-    useEscapeKeydown((event) => {
-      // Compute the layer position from the live `context.layers` set rather than
-      // the render-time `index`. The layer is registered in an effect after the
-      // ref sets `node`, so the memoized `index` can still be `-1` when Escape is
-      // pressed before the follow-up re-render. Reading the set live keeps Escape
-      // working regardless of render timing (see issue #3963).
+    // Compute the layer position from the live `context.layers` set rather than
+    // the render-time `index`. The layer is registered in an effect after the
+    // ref sets `node`, so the memoized `index` can still be `-1` when Escape is
+    // pressed before the follow-up re-render. Reading the set live keeps Escape
+    // working regardless of render timing (see issue #3963).
+    const isHighestLayer = React.useMemo(() => {
       const liveLayers = Array.from(context.layers);
-      const isHighestLayer = node ? liveLayers.indexOf(node) === liveLayers.length - 1 : false;
-      if (!isHighestLayer) return;
+      return node ? liveLayers.indexOf(node) === liveLayers.length - 1 : false;
+    }, [node, context.layers]);
+
+    const handleKeyDown = useEffectEvent((event: KeyboardEvent) => {
+      if (event.key !== 'Escape') {
+        return;
+      }
+
       onEscapeKeyDown?.(event);
       if (!event.defaultPrevented && onDismiss) {
         event.preventDefault();
         onDismiss();
       }
-    }, ownerDocument);
+    });
+
+    React.useEffect(() => {
+      if (!isHighestLayer) {
+        return;
+      }
+
+      ownerDocument.addEventListener('keydown', handleKeyDown, { capture: true });
+      return () => ownerDocument.removeEventListener('keydown', handleKeyDown, { capture: true });
+    }, [ownerDocument, isHighestLayer]);
 
     React.useEffect(() => {
       if (!node) return;
@@ -298,7 +313,7 @@ function usePointerDownOutside(
     isDeferredPointerDownOutsideRef,
     dismissableSurfaces,
   } = args;
-  const handlePointerDownOutside = useEffectEvent(onPointerDownOutside) as EventListener;
+  const handlePointerDownOutside = useCallbackRef(onPointerDownOutside) as EventListener;
   const isPointerInsideReactTreeRef = React.useRef(false);
   const isPointerDownOutsideRef = React.useRef(false);
   const interceptedOutsideInteractionEventsRef = React.useRef<Map<string, boolean>>(new Map());
@@ -469,7 +484,7 @@ function useFocusOutside(
   onFocusOutside?: (event: FocusOutsideEvent) => void,
   ownerDocument: Document = globalThis?.document,
 ) {
-  const handleFocusOutside = useEffectEvent(onFocusOutside) as EventListener;
+  const handleFocusOutside = useCallbackRef(onFocusOutside) as EventListener;
   const isFocusInsideReactTreeRef = React.useRef(false);
 
   React.useEffect(() => {

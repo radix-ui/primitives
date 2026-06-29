@@ -1,14 +1,17 @@
 import * as React from 'react';
-import { useEffectEvent } from '@radix-ui/react-use-effect-event';
+import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 
 /**
  * Listens for when the escape key is down
+ *
+ * @deprecated Attach listeners directly via useEffect for more granular control
+ * over how callbacks are stabilized, when to detach listeners, etc.
  */
 function useEscapeKeydown(
   onEscapeKeyDownProp?: (event: KeyboardEvent) => void,
   ownerDocument: Document = globalThis?.document,
 ) {
-  const onEscapeKeyDown = useEffectEvent(onEscapeKeyDownProp);
+  const onEscapeKeyDown = useCallbackRef(onEscapeKeyDownProp);
 
   React.useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -18,7 +21,7 @@ function useEscapeKeydown(
     };
     ownerDocument.addEventListener('keydown', handleKeyDown, { capture: true });
     return () => ownerDocument.removeEventListener('keydown', handleKeyDown, { capture: true });
-  }, [ownerDocument]);
+  }, [onEscapeKeyDown, ownerDocument]);
 }
 
 export { useEscapeKeydown };

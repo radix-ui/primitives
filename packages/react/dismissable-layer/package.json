@@ -38,8 +38,8 @@
     "@radix-ui/primitive": "workspace:*",
     "@radix-ui/react-compose-refs": "workspace:*",
     "@radix-ui/react-primitive": "workspace:*",
-    "@radix-ui/react-use-effect-event": "workspace:*",
-    "@radix-ui/react-use-escape-keydown": "workspace:*"
+    "@radix-ui/react-use-callback-ref": "workspace:*",
+    "@radix-ui/react-use-effect-event": "workspace:*"
   },
   "devDependencies": {
     "@repo/builder": "workspace:*",
