@@ -545,6 +545,14 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
       if (open && !context.isClosePausedRef.current) startTimer(duration);
     }, [open, duration, context.isClosePausedRef, startTimer]);
 
+    // clear timer on unmount to prevent calling handleClose (which accesses
+    // document.activeElement) after the component tree has been torn down,
+    // which causes ReferenceError in test environments and potential stale
+    // closure issues in production
+    React.useEffect(() => {
+      return () => window.clearTimeout(closeTimerRef.current);
+    }, []);
+
     React.useEffect(() => {
       onToastAdd();
       return () => onToastRemove();
