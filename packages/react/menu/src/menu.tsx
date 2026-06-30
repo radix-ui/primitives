@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { composeEventHandlers } from '@radix-ui/primitive';
+import { composeEventHandlers, getDeepActiveElement, isInShadowDOM } from '@radix-ui/primitive';
 import { createCollection } from '@radix-ui/react-collection';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
@@ -36,6 +36,7 @@ const SUB_CLOSE_KEYS: Record<Direction, string[]> = {
   ltr: ['ArrowLeft'],
   rtl: ['ArrowRight'],
 };
+const FORCE_CLOSE_CUSTOM_EVENT_NAME = 'radix-force-close-submenu';
 
 /* -------------------------------------------------------------------------------------------------
  * Menu
@@ -411,7 +412,7 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
     const handleTypeaheadSearch = (key: string) => {
       const search = searchRef.current + key;
       const items = getItems().filter((item) => !item.disabled);
-      const currentItem = document.activeElement;
+      const currentItem = getDeepActiveElement();
       const currentMatch = items.find((item) => item.ref.current === currentItem)?.textValue;
       const values = items.map((item) => item.textValue);
       const nextMatch = getNextMatch(values, search, currentMatch);
@@ -452,7 +453,29 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
         searchRef={searchRef}
         onItemEnter={React.useCallback(
           (event) => {
-            if (isPointerMovingToSubmenu(event)) event.preventDefault();
+            if (isPointerMovingToSubmenu(event)) {
+              event.preventDefault();
+            } else {
+              // In shadow DOM, force close other submenus when entering any menu item
+              const target = event.target as Element;
+              if (isInShadowDOM(target)) {
+                const menuItem = event.currentTarget as HTMLElement;
+
+                // Clear grace intent
+                pointerGraceIntentRef.current = null;
+
+                // Always close other submenus, regardless of whether this is a subtrigger or not
+                setTimeout(() => {
+                  // Dispatch a custom event that submenu triggers can listen for
+                  const closeEvent = new CustomEvent(FORCE_CLOSE_CUSTOM_EVENT_NAME, {
+                    bubbles: true,
+                    cancelable: false,
+                    detail: { currentTrigger: menuItem } // Pass the current trigger to exclude it
+                  });
+                  menuItem.dispatchEvent(closeEvent);
+                }, 0);
+              }
+            }
           },
           [isPointerMovingToSubmenu],
         )}
@@ -1059,6 +1082,41 @@ const MenuSubTrigger = React.forwardRef<MenuSubTriggerElement, MenuSubTriggerPro
 
     const composedRefs = useComposedRefs(forwardedRef, subContext.onTriggerChange);
 
+    // Listen for forced close events in shadow DOM
+    React.useEffect(() => {
+      const handleForceClose = (event: CustomEvent) => {
+        // Don't close this submenu if it's the current trigger being hovered
+        const currentTrigger = event.detail?.currentTrigger;
+        const thisTrigger = subContext.trigger;
+
+        if (currentTrigger === thisTrigger) {
+          return; // Don't close the submenu that's currently being hovered
+        }
+
+        if (context.open) {
+          context.onOpenChange(false);
+        }
+      };
+
+      const currentElement = subContext.trigger;
+      if (currentElement) {
+        currentElement.addEventListener(FORCE_CLOSE_CUSTOM_EVENT_NAME, handleForceClose as EventListener);
+        // Also listen on parent elements since the event bubbles
+        const menuContent = currentElement.closest('[data-radix-menu-content]');
+        if (menuContent) {
+          menuContent.addEventListener(FORCE_CLOSE_CUSTOM_EVENT_NAME, handleForceClose as EventListener);
+        }
+
+        return () => {
+          currentElement.removeEventListener(FORCE_CLOSE_CUSTOM_EVENT_NAME, handleForceClose as EventListener);
+          if (menuContent) {
+            menuContent.removeEventListener(FORCE_CLOSE_CUSTOM_EVENT_NAME, handleForceClose as EventListener);
+          }
+        };
+      }
+    }, [context, subContext.trigger]);
+
+
     return (
       <MenuAnchor asChild {...scope}>
         <MenuItemImpl
@@ -1067,6 +1125,7 @@ const MenuSubTrigger = React.forwardRef<MenuSubTriggerElement, MenuSubTriggerPro
           aria-expanded={context.open}
           aria-controls={context.open ? subContext.contentId : undefined}
           data-state={getOpenState(context.open)}
+          data-radix-menu-sub-trigger=""
           {...props}
           ref={composedRefs}
           // This is redundant for mouse users but we cannot determine pointer type from
@@ -1124,9 +1183,10 @@ const MenuSubTrigger = React.forwardRef<MenuSubTriggerElement, MenuSubTriggerPro
                 });
 
                 window.clearTimeout(pointerGraceTimerRef.current);
+
                 pointerGraceTimerRef.current = window.setTimeout(
                   () => contentContext.onPointerGraceIntentChange(null),
-                  300,
+                  300
                 );
               } else {
                 contentContext.onTriggerLeave(event);
@@ -1261,12 +1321,12 @@ function getCheckedState(checked: CheckedState) {
 }
 
 function focusFirst(candidates: HTMLElement[]) {
-  const PREVIOUSLY_FOCUSED_ELEMENT = document.activeElement;
+  const PREVIOUSLY_FOCUSED_ELEMENT = getDeepActiveElement();
   for (const candidate of candidates) {
     // if focus is already where we want to go, we don't want to keep going through the candidates
     if (candidate === PREVIOUSLY_FOCUSED_ELEMENT) return;
     candidate.focus();
-    if (document.activeElement !== PREVIOUSLY_FOCUSED_ELEMENT) return;
+    if (getDeepActiveElement() !== PREVIOUSLY_FOCUSED_ELEMENT) return;
   }
 }
 
