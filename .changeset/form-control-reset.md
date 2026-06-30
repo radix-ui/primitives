@@ -6,4 +6,4 @@
 "radix-ui": patch
 ---
 
-All form control components now listen to their associated form's `reset` event and restore their initial value. This affects `RadioGroup`, `Slider`, `Select`, and `Switch`.
+Fixed a bug in form control components to ensure their values are updated when their associated form's is reset. This affects `RadioGroup`, `Slider`, `Select`, and `Switch`.
