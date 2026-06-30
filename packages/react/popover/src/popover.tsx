@@ -391,6 +391,7 @@ const PopoverContentImpl = React.forwardRef<PopoverContentImplElement, PopoverCo
       onPointerDownOutside,
       onFocusOutside,
       onInteractOutside,
+      hideWhenDetached: hideWhenDetachedProp,
       ...contentProps
     } = props;
     const context = usePopoverContext(CONTENT_NAME, __scopePopover);
@@ -425,6 +426,8 @@ const PopoverContentImpl = React.forwardRef<PopoverContentImplElement, PopoverCo
             {...popperScope}
             {...contentProps}
             ref={forwardedRef}
+            hideWhenDetached={hideWhenDetachedProp ?? true}
+            onReferenceHidden={() => context.onOpenChange(false)}
             style={{
               ...contentProps.style,
               // re-namespace exposed content custom properties

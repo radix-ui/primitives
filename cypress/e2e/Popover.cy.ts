@@ -13,4 +13,19 @@ describe('Popover', () => {
 
     cy.findByText('close').should('be.visible');
   });
+
+  describe('given a popover inside a scrollable container', () => {
+    beforeEach(() => {
+      cy.visitStory('popover--in-scroll-container');
+    });
+
+    it('closes when the trigger scrolls out of view', () => {
+      cy.findByTestId('trigger').click();
+      cy.findByTestId('popover-state').should('have.text', 'open');
+
+      cy.findByTestId('scroll-container').scrollTo(0, 200);
+
+      cy.findByTestId('popover-state').should('have.text', 'closed');
+    });
+  });
 });
