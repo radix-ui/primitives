@@ -1,5 +1,9 @@
 # @radix-ui/react-avatar
 
+## 1.2.1
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.7`
+
 ## 1.2.0
 
 - Fixed several edge cases with Avatar's loading state

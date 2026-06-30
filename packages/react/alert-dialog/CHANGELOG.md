@@ -1,5 +1,9 @@
 # @radix-ui/react-alert-dialog
 
+## 1.1.18
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.7`, `@radix-ui/react-dialog@1.1.18`
+
 ## 1.1.17
 
 - Removed dev-only warnings for dialogs when title and/or description is not rendered.

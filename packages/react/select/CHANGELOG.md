@@ -1,5 +1,13 @@
 # @radix-ui/react-select
 
+## 2.3.2
+
+- Fixed infinite re-render loop in React 19 caused by unstable composed ref callback references.
+
+### Other updates
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.7`, `@radix-ui/react-dismissable-layer@1.1.14`, `@radix-ui/react-focus-scope@1.1.11`, `@radix-ui/react-popper@1.3.2`, `@radix-ui/react-collection@1.1.11`, `@radix-ui/react-portal@1.1.13`, `@radix-ui/react-visually-hidden@1.2.7`
+
 ## 2.3.1
 
 - Allowed a `Select.Item` with an empty string value to act as a "clear" option. Selecting it resets the selection back to the placeholder, restoring the native `<select>` behavior for optional selects.

@@ -1,5 +1,9 @@
 # @radix-ui/react-context-menu
 
+## 2.3.2
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.7`, `@radix-ui/react-menu@2.1.19`
+
 ## 2.3.1
 
 - Fixed a bug where menus and submenus remained open after a window loses focus.
