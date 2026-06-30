@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-pascal-case */
 import * as React from 'react';
 import { createPortal } from 'react-dom';
-import { Dialog, Select, Label as LabelPrimitive } from 'radix-ui';
+import { Dialog, Select, ScrollArea, Label as LabelPrimitive } from 'radix-ui';
 import { foodGroups } from '@repo/test-data/foods';
 import styles from './select.stories.module.css';
 import { ExternalOverlayTrigger } from './external-overlay';
@@ -962,6 +962,48 @@ export const WithVeryLongSelectItems = () => (
     </Label>
   </div>
 );
+
+export const WithScrollArea = () => {
+  <div  style={{ padding: 50 }}>
+    <p style={{ marginBottom: 16, fontSize: 13, color: '#666', maxWidth: 400 }}>
+      Open the browser console. Before the fix, opening this select logs a React
+      style conflict warning: <em>"Updating a style property during rerender
+      (overflowY) when a conflicting property is set (overflow)"</em>.
+      After the fix, no warning should appear.
+    </p>
+    <Select.Root>
+      <Select.Trigger className={styles.trigger}>
+        <Select.Value placeholder="Pick a fruit…" />
+        <Select.Icon />
+      </Select.Trigger>
+      <Select.Portal>
+        <Select.Content className={styles.content} position="popper" sideOffset={5}>
+          <ScrollArea.Root style={{ height: 200 }} type="auto">
+            <Select.Viewport asChild>
+              <ScrollArea.Viewport className={styles.viewport}>
+                {[
+                  'Apple', 'Banana', 'Blueberry', 'Grapes', 'Pineapple',
+                  'Mango', 'Strawberry', 'Watermelon', 'Peach', 'Plum',
+                  'Cherry', 'Kiwi',
+                ].map((fruit) => (
+                  <Select.Item key={fruit} className={styles.item} value={fruit.toLowerCase()}>
+                    <Select.ItemText>{fruit}</Select.ItemText>
+                    <Select.ItemIndicator className={styles.indicator}>
+                      <TickIcon />
+                    </Select.ItemIndicator>
+                  </Select.Item>
+                ))}
+              </ScrollArea.Viewport>
+            </Select.Viewport>
+            <ScrollArea.Scrollbar orientation="vertical" style={{ width: 6 }}>
+              <ScrollArea.Thumb style={{ background: 'rgba(0,0,0,0.3)', borderRadius: 3 }} />
+            </ScrollArea.Scrollbar>
+          </ScrollArea.Root>
+        </Select.Content>
+      </Select.Portal>
+    </Select.Root>
+  </div>
+}
 
 export const ChromaticShortOptionsPaddedContent = () => (
   <ChromaticStoryShortOptions paddedElement="content" />
