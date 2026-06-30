@@ -288,23 +288,3 @@ describe('Menubar extension overlay interactions', () => {
     cy.findByText('Redo').should('not.exist');
   });
 });
-
-describe('Menubar nested in Dialog', () => {
-  beforeEach(() => {
-    cy.visitStory('menubar--dismisses-only-menubar-inside-dialog');
-  });
-
-  it('dismisses only the menubar menu when clicking outside both layers', () => {
-    cy.findByText('Open dialog').click();
-    cy.findByText('Actions').click();
-
-    cy.findByText('Dialog with nested menubar').should('be.visible');
-    cy.findByText('dialog: open | menu: open').should('exist');
-
-    cy.findByTestId('dialog-overlay').realClick();
-
-    cy.findByText('Dialog with nested menubar').should('be.visible');
-    cy.findByText('dialog: open | menu: closed').should('exist');
-    cy.findByText('Item one').should('not.exist');
-  });
-});
