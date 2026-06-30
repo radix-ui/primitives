@@ -585,11 +585,6 @@ export const DismissesOnlyMenuInsideDialog = () => {
         padding: 40,
       }}
     >
-      <p style={{ margin: 0, maxWidth: 700 }}>
-        Manual check: open the dialog, then open the dropdown menu. Click the button inside the
-        dialog but outside the menu. The dropdown menu should close while the dialog stays open.
-      </p>
-
       <Dialog.Root open={dialogOpen} onOpenChange={setDialogOpen}>
         <Dialog.Trigger className={styles.trigger}>Open dialog</Dialog.Trigger>
         <Dialog.Portal>
