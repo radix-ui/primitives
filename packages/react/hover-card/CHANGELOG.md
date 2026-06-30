@@ -1,5 +1,9 @@
 # @radix-ui/react-hover-card
 
+## 1.1.18
+
+- Updated dependencies: `@radix-ui/react-dismissable-layer@1.1.14`, `@radix-ui/react-popper@1.3.2`
+
 ## 1.1.17
 
 - Updated dependencies: `@radix-ui/react-popper@1.3.1`, `@radix-ui/react-dismissable-layer@1.1.13`, `@radix-ui/react-primitive@2.1.6`, `@radix-ui/react-portal@1.1.12`

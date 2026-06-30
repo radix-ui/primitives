@@ -1,5 +1,9 @@
 # @radix-ui/react-popover
 
+## 1.1.18
+
+- Updated dependencies: `@radix-ui/react-dismissable-layer@1.1.14`, `@radix-ui/react-focus-scope@1.1.11`, `@radix-ui/react-popper@1.3.2`
+
 ## 1.1.17
 
 - Fixed Dismissable Layer so outside interactions stopped by extension UI overlays do not dismiss dialogs or popovers.
