@@ -564,6 +564,69 @@ export const NestedComposition = () => {
   );
 };
 
+// Regression story for https://github.com/radix-ui/primitives/issues/3971
+export const DismissesOnlyMenuInsideDialog = () => {
+  const [dialogOpen, setDialogOpen] = React.useState(false);
+  const [menuOpen, setMenuOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!dialogOpen) {
+      setMenuOpen(false);
+    }
+  }, [dialogOpen]);
+
+  return (
+    <div
+      style={{
+        display: 'grid',
+        gap: 16,
+        alignItems: 'start',
+        justifyItems: 'start',
+        padding: 40,
+      }}
+    >
+      <p style={{ margin: 0, maxWidth: 700 }}>
+        Manual check: open the dialog, then open the dropdown menu. Click the button inside the
+        dialog but outside the menu. The dropdown menu should close while the dialog stays open.
+      </p>
+
+      <Dialog.Root open={dialogOpen} onOpenChange={setDialogOpen}>
+        <Dialog.Trigger className={styles.trigger}>Open dialog</Dialog.Trigger>
+        <Dialog.Portal>
+          <Dialog.Content className={styles.dialog}>
+            <Dialog.Title>Dialog with nested dropdown</Dialog.Title>
+            <DropdownMenu.Root open={menuOpen} onOpenChange={setMenuOpen}>
+              <DropdownMenu.Trigger
+                className={styles.trigger}
+                style={{ width: '100%', marginBottom: 12 }}
+              >
+                Open menu
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Portal>
+                <DropdownMenu.Content className={styles.content} sideOffset={5}>
+                  <DropdownMenu.Item className={styles.item}>Item one</DropdownMenu.Item>
+                  <DropdownMenu.Item className={styles.item}>Item two</DropdownMenu.Item>
+                  <DropdownMenu.Arrow />
+                </DropdownMenu.Content>
+              </DropdownMenu.Portal>
+            </DropdownMenu.Root>
+
+            <button type="button" className={styles.item} style={{ width: '100%' }}>
+              Dialog surface button
+            </button>
+
+            <p style={{ marginTop: 12, marginBottom: 0 }}>
+              dialog: {dialogOpen ? 'open' : 'closed'} | menu: {menuOpen ? 'open' : 'closed'}
+            </p>
+
+            <Dialog.Close style={{ marginTop: 12 }}>Close dialog</Dialog.Close>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
+    </div>
+  );
+};
+
 export const SingleItemAsDialogTrigger = () => {
   const dropdownTriggerRef = React.useRef<React.ComponentRef<typeof DropdownMenu.Trigger>>(null);
   const dropdownTriggerRef2 = React.useRef<React.ComponentRef<typeof DropdownMenu.Trigger>>(null);
