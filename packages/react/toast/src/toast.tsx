@@ -273,6 +273,7 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
               // If we can't focus that means we're at the edges so we
               // proxy to the corresponding exit point and let the browser handle
               // tab/shift+tab keypress and implicitly pass focus to the next valid element in the document
+              // https://github.com/radix-ui/primitives/issues/3190
               isTabbingBackwards
                 ? headFocusProxyRef.current?.focus()
                 : tailFocusProxyRef.current?.focus();
@@ -313,7 +314,15 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
          * the list instead of the viewport so it announces number of items remaining.
          */}
         <Collection.Slot scope={__scopeToast}>
-          <Primitive.ol tabIndex={-1} {...viewportProps} ref={composedRefs} />
+          <Primitive.ol
+            tabIndex={-1}
+            // because each toast has a role of `status`, the list itself must
+            // clear its default role of `list` since a list can only contain
+            // items with a role of `listitem`
+            role="presentation"
+            {...viewportProps}
+            ref={composedRefs}
+          />
         </Collection.Slot>
         {hasToasts && (
           <FocusProxy
