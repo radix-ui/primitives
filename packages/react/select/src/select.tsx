@@ -1367,7 +1367,7 @@ const SelectItem = React.forwardRef<SelectItemElement, SelectItemProps>(
     const [textValue, setTextValue] = React.useState(textValueProp ?? '');
     const [isFocused, setIsFocused] = React.useState(false);
     const handleItemRefCallback = useCallbackRef((node: SelectItemElement | null) =>
-      contentContext.itemRefCallback?.(node, value, disabled)
+      contentContext.itemRefCallback?.(node, value, disabled),
     );
     const composedRefs = useComposedRefs(forwardedRef, handleItemRefCallback);
     const textId = useId();
@@ -1474,7 +1474,7 @@ const SelectItemText = React.forwardRef<SelectItemTextElement, SelectItemTextPro
     const nativeOptionsContext = useSelectNativeOptionsContext(ITEM_TEXT_NAME, __scopeSelect);
     const [itemTextNode, setItemTextNode] = React.useState<SelectItemTextElement | null>(null);
     const handleItemTextRefCallback = useCallbackRef((node: SelectItemTextElement | null) =>
-      contentContext.itemTextRefCallback?.(node, itemContext.value, itemContext.disabled)
+      contentContext.itemTextRefCallback?.(node, itemContext.value, itemContext.disabled),
     );
     const composedRefs = useComposedRefs(
       forwardedRef,

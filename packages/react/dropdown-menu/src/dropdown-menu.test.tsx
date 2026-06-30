@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, it, expect } from 'vitest';
+import { assertStableComposedRef } from '@repo/test-utils/ref-stability';
 import * as DropdownMenu from './dropdown-menu';
 
 const TRIGGER_TEXT = 'Open';
@@ -82,5 +83,44 @@ describe('closing on window blur', () => {
     await waitFor(() => expect(screen.queryByText(SUB_ITEM_TEXT)).not.toBeInTheDocument());
     expect(screen.queryByText(ITEM_TEXT)).not.toBeInTheDocument();
     expect(trigger).toHaveAttribute('aria-expanded', 'false');
+  });
+});
+
+// Regression tests for https://github.com/radix-ui/primitives/issues/3963
+describe('ref stability', () => {
+  afterEach(cleanup);
+
+  it('keeps a stable composed ref on the Trigger', () => {
+    assertStableComposedRef((ref) => (
+      <DropdownMenu.Root>
+        <DropdownMenu.Trigger ref={ref}>{TRIGGER_TEXT}</DropdownMenu.Trigger>
+        <DropdownMenu.Portal>
+          <DropdownMenu.Content>
+            <DropdownMenu.Item>{ITEM_TEXT}</DropdownMenu.Item>
+          </DropdownMenu.Content>
+        </DropdownMenu.Portal>
+      </DropdownMenu.Root>
+    ));
+  });
+
+  // Exercises the underlying `@radix-ui/react-menu` `MenuSubTrigger` fix.
+  it('keeps a stable composed ref on the SubTrigger', () => {
+    assertStableComposedRef((ref) => (
+      <DropdownMenu.Root defaultOpen>
+        <DropdownMenu.Trigger>{TRIGGER_TEXT}</DropdownMenu.Trigger>
+        <DropdownMenu.Portal>
+          <DropdownMenu.Content>
+            <DropdownMenu.Sub>
+              <DropdownMenu.SubTrigger ref={ref}>{SUB_TRIGGER_TEXT}</DropdownMenu.SubTrigger>
+              <DropdownMenu.Portal>
+                <DropdownMenu.SubContent>
+                  <DropdownMenu.Item>{SUB_ITEM_TEXT}</DropdownMenu.Item>
+                </DropdownMenu.SubContent>
+              </DropdownMenu.Portal>
+            </DropdownMenu.Sub>
+          </DropdownMenu.Content>
+        </DropdownMenu.Portal>
+      </DropdownMenu.Root>
+    ));
   });
 });

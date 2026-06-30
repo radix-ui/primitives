@@ -22,6 +22,9 @@ jobs:
       - name: Lint
         run: pnpm lint
 
+      - name: Check composed refs
+        run: node scripts/check-composed-refs.mjs
+
       - name: Run build
         run: pnpm build:ci
 

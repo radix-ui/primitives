@@ -3,7 +3,7 @@ import { composeEventHandlers } from '@radix-ui/primitive';
 import { Primitive, dispatchDiscreteCustomEvent } from '@radix-ui/react-primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
-import { useEscapeKeydown } from '@radix-ui/react-use-escape-keydown';
+import { useEffectEvent } from '@radix-ui/react-use-effect-event';
 
 /* -------------------------------------------------------------------------------------------------
  * DismissableLayer
@@ -132,15 +132,28 @@ const DismissableLayer = React.forwardRef<DismissableLayerElement, DismissableLa
       if (!event.defaultPrevented) onDismiss?.();
     }, ownerDocument);
 
-    useEscapeKeydown((event) => {
-      const isHighestLayer = index === context.layers.size - 1;
-      if (!isHighestLayer) return;
+    const isHighestLayer = node ? index === layers.length - 1 : false;
+
+    const handleKeyDown = useEffectEvent((event: KeyboardEvent) => {
+      if (event.key !== 'Escape') {
+        return;
+      }
+
       onEscapeKeyDown?.(event);
       if (!event.defaultPrevented && onDismiss) {
         event.preventDefault();
         onDismiss();
       }
-    }, ownerDocument);
+    });
+
+    React.useEffect(() => {
+      if (!isHighestLayer) {
+        return;
+      }
+
+      ownerDocument.addEventListener('keydown', handleKeyDown, { capture: true });
+      return () => ownerDocument.removeEventListener('keydown', handleKeyDown, { capture: true });
+    }, [ownerDocument, isHighestLayer]);
 
     React.useEffect(() => {
       if (!node) return;

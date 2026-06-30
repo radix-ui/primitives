@@ -4,7 +4,7 @@ import { createContextScope } from '@radix-ui/react-context';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { Primitive, dispatchDiscreteCustomEvent } from '@radix-ui/react-primitive';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
-import { composeRefs, useComposedRefs } from '@radix-ui/react-compose-refs';
+import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { useDirection } from '@radix-ui/react-direction';
 import { Presence } from '@radix-ui/react-presence';
 import { useId } from '@radix-ui/react-id';
@@ -110,7 +110,7 @@ const NavigationMenu = React.forwardRef<NavigationMenuElement, NavigationMenuPro
       ...NavigationMenuProps
     } = props;
     const [navigationMenu, setNavigationMenu] = React.useState<NavigationMenuElement | null>(null);
-    const composedRef = useComposedRefs(forwardedRef, (node) => setNavigationMenu(node));
+    const composedRef = useComposedRefs(forwardedRef, setNavigationMenu);
     const direction = useDirection(dir);
     const openTimerRef = React.useRef(0);
     const closeTimerRef = React.useRef(0);
@@ -1070,13 +1070,11 @@ const NavigationMenuViewportImpl = React.forwardRef<
         const isActive = activeContentValue === value;
         return (
           <Presence key={value} present={forceMount || isActive}>
-            <NavigationMenuContentImpl
+            <NavigationMenuViewportItem
               {...props}
-              ref={composeRefs(ref, (node) => {
-                // We only want to update the stored node when another is available
-                // as we need to smoothly transition between them.
-                if (isActive && node) setContent(node);
-              })}
+              contentRef={ref}
+              isActive={isActive}
+              onActiveContentChange={setContent}
             />
           </Presence>
         );
@@ -1084,6 +1082,34 @@ const NavigationMenuViewportImpl = React.forwardRef<
     </Primitive.div>
   );
 });
+
+/* -----------------------------------------------------------------------------------------------*/
+
+interface NavigationMenuViewportItemProps extends NavigationMenuContentImplProps {
+  contentRef?: React.Ref<ViewportContentMounterElement>;
+  isActive: boolean;
+  onActiveContentChange: (node: NavigationMenuContentElement | null) => void;
+}
+
+const NavigationMenuViewportItem = ({
+  contentRef,
+  isActive,
+  onActiveContentChange,
+  ...props
+}: ScopedProps<NavigationMenuViewportItemProps>) => {
+  const handleContentChange = React.useCallback(
+    (node: NavigationMenuContentElement | null) => {
+      // We only want to update the stored node when another is available
+      // as we need to smoothly transition between them.
+      if (isActive && node) {
+        onActiveContentChange(node);
+      }
+    },
+    [isActive, onActiveContentChange],
+  );
+  const composedRefs = useComposedRefs(contentRef, handleContentChange);
+  return <NavigationMenuContentImpl {...props} ref={composedRefs} />;
+};
 
 /* -----------------------------------------------------------------------------------------------*/
 

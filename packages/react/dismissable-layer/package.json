@@ -39,10 +39,11 @@
     "@radix-ui/react-compose-refs": "workspace:*",
     "@radix-ui/react-primitive": "workspace:*",
     "@radix-ui/react-use-callback-ref": "workspace:*",
-    "@radix-ui/react-use-escape-keydown": "workspace:*"
+    "@radix-ui/react-use-effect-event": "workspace:*"
   },
   "devDependencies": {
     "@repo/builder": "workspace:*",
+    "@repo/test-utils": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",

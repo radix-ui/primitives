@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, it, expect } from 'vitest';
+import { assertStableComposedRef } from '@repo/test-utils/ref-stability';
 import * as Select from './select';
 
 const PLACEHOLDER_TEXT = 'Pick one';
@@ -138,5 +139,40 @@ describe('clearing an optional value (#2706)', () => {
       (option) => option.value === '',
     );
     expect(emptyOptions).toHaveLength(1);
+  });
+});
+
+// Regression tests for https://github.com/radix-ui/primitives/issues/3963
+describe('Select ref stability', () => {
+  afterEach(cleanup);
+
+  const renderOpenSelect =
+    (slot: 'content' | 'item' | 'itemText') => (ref: React.RefCallback<any>) => (
+      <Select.Root defaultOpen>
+        <Select.Trigger aria-label="Choice">
+          <Select.Value placeholder={PLACEHOLDER_TEXT} />
+        </Select.Trigger>
+        <Select.Portal>
+          <Select.Content ref={slot === 'content' ? ref : undefined}>
+            <Select.Viewport>
+              <Select.Item value="apple" ref={slot === 'item' ? ref : undefined}>
+                <Select.ItemText ref={slot === 'itemText' ? ref : undefined}>Apple</Select.ItemText>
+              </Select.Item>
+            </Select.Viewport>
+          </Select.Content>
+        </Select.Portal>
+      </Select.Root>
+    );
+
+  it('keeps a stable composed ref on Content', () => {
+    assertStableComposedRef(renderOpenSelect('content'));
+  });
+
+  it('keeps a stable composed ref on Item', () => {
+    assertStableComposedRef(renderOpenSelect('item'));
+  });
+
+  it('keeps a stable composed ref on ItemText', () => {
+    assertStableComposedRef(renderOpenSelect('itemText'));
   });
 });

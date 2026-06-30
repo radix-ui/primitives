@@ -279,7 +279,7 @@ const SliderHorizontal = React.forwardRef<SliderHorizontalElement, SliderHorizon
       ...sliderProps
     } = props;
     const [slider, setSlider] = React.useState<SliderImplElement | null>(null);
-    const composedRefs = useComposedRefs(forwardedRef, (node) => setSlider(node));
+    const composedRefs = useComposedRefs(forwardedRef, setSlider);
     const rectRef = React.useRef<DOMRect>(undefined);
     const direction = useDirection(dir);
     const isDirectionLTR = direction === 'ltr';
@@ -660,7 +660,7 @@ const SliderThumbTrigger = React.forwardRef<SliderThumbTriggerElement, SliderThu
       THUMB_TRIGGER_NAME,
       __scopeSlider,
     );
-    const composedRefs = useComposedRefs(forwardedRef, (node) => onThumbChange(node));
+    const composedRefs = useComposedRefs(forwardedRef, onThumbChange);
     const label = getLabel(index, context.values.length);
     const orientationSize = size?.[orientation.size];
     const thumbInBoundsOffset = orientationSize
