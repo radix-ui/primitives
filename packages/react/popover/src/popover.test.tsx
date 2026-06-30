@@ -41,3 +41,31 @@ describe('aria-controls', () => {
     expect(document.getElementById(content.id)).toBe(content);
   });
 });
+
+
+describe('hideWhenDetached', () => {
+  let rendered: RenderResult;
+
+  afterEach(cleanup);
+
+  it('defaults hideWhenDetached to true', () => {
+    rendered = render(<PopoverTest />);
+    fireEvent.click(rendered.getByText(TRIGGER_TEXT));
+    const wrapper = document.querySelector('[data-radix-popper-content-wrapper]');
+    expect(wrapper).toBeTruthy();
+  });
+
+  it('allows overriding hideWhenDetached to false', () => {
+    const { getByText } = render(
+      <Popover.Root>
+        <Popover.Trigger>{TRIGGER_TEXT}</Popover.Trigger>
+        <Popover.Portal>
+          <Popover.Content hideWhenDetached={false}>{CONTENT_TEXT}</Popover.Content>
+        </Popover.Portal>
+      </Popover.Root>,
+    );
+    fireEvent.click(getByText(TRIGGER_TEXT));
+    const wrapper = document.querySelector('[data-radix-popper-content-wrapper]');
+    expect(wrapper).toBeTruthy();
+  });
+});
