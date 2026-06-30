@@ -81,6 +81,26 @@ describe('Select extension overlay interactions', () => {
   });
 });
 
+describe('Select nested in Dialog', () => {
+  beforeEach(() => {
+    cy.visitStory('select--dismisses-only-select-inside-dialog');
+  });
+
+  it('dismisses only the select when clicking inside dialog outside select', () => {
+    cy.findByText('Open dialog').click();
+    cy.findByRole('combobox', { name: /choose a value/i }).click();
+
+    cy.findByText('Dialog with nested select').should('be.visible');
+    cy.findByText('dialog: open | select: open').should('exist');
+
+    cy.findByText('Dialog with nested select').realClick();
+
+    cy.findByText('Dialog with nested select').should('be.visible');
+    cy.findByText('dialog: open | select: closed').should('exist');
+    cy.findByRole('option', { name: 'One' }).should('not.exist');
+  });
+});
+
 describe('Select (shadow DOM)', () => {
   beforeEach(() => {
     cy.visitStory('select--cypress-shadow-dom');
