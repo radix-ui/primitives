@@ -185,6 +185,16 @@ function SelectProvider(props: ScopedProps<SelectProviderProps>) {
   });
   const triggerPointerDownPosRef = React.useRef<{ x: number; y: number } | null>(null);
 
+  const initialValueRef = React.useRef(value);
+  React.useEffect(() => {
+    const associatedForm = form ? trigger?.ownerDocument.getElementById(form) : trigger?.form;
+    if (associatedForm instanceof HTMLFormElement) {
+      const reset = () => setValue(initialValueRef.current);
+      associatedForm.addEventListener('reset', reset);
+      return () => associatedForm.removeEventListener('reset', reset);
+    }
+  }, [form, trigger, setValue]);
+
   // We set this to true by default so that events bubble to forms without JS (SSR)
   const isFormControl = trigger ? !!form || !!trigger.closest('form') : true;
   const [nativeOptionsSet, setNativeOptionsSet] = React.useState(new Set<NativeOption>());
@@ -1367,7 +1377,7 @@ const SelectItem = React.forwardRef<SelectItemElement, SelectItemProps>(
     const [textValue, setTextValue] = React.useState(textValueProp ?? '');
     const [isFocused, setIsFocused] = React.useState(false);
     const handleItemRefCallback = useCallbackRef((node: SelectItemElement | null) =>
-      contentContext.itemRefCallback?.(node, value, disabled)
+      contentContext.itemRefCallback?.(node, value, disabled),
     );
     const composedRefs = useComposedRefs(forwardedRef, handleItemRefCallback);
     const textId = useId();
@@ -1474,7 +1484,7 @@ const SelectItemText = React.forwardRef<SelectItemTextElement, SelectItemTextPro
     const nativeOptionsContext = useSelectNativeOptionsContext(ITEM_TEXT_NAME, __scopeSelect);
     const [itemTextNode, setItemTextNode] = React.useState<SelectItemTextElement | null>(null);
     const handleItemTextRefCallback = useCallbackRef((node: SelectItemTextElement | null) =>
-      contentContext.itemTextRefCallback?.(node, itemContext.value, itemContext.disabled)
+      contentContext.itemTextRefCallback?.(node, itemContext.value, itemContext.disabled),
     );
     const composedRefs = useComposedRefs(
       forwardedRef,

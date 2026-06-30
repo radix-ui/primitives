@@ -1,5 +1,9 @@
 # @radix-ui/react-announce
 
+## 0.2.11
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.7`
+
 ## 0.2.10
 
 - Updated dependencies: `@radix-ui/react-primitive@2.1.6`

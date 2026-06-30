@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-dismissable-layer",
-  "version": "1.1.13",
+  "version": "1.1.14",
   "license": "MIT",
   "source": "./src/index.ts",
   "main": "./src/index.ts",
@@ -39,10 +39,11 @@
     "@radix-ui/react-compose-refs": "workspace:*",
     "@radix-ui/react-primitive": "workspace:*",
     "@radix-ui/react-use-callback-ref": "workspace:*",
-    "@radix-ui/react-use-escape-keydown": "workspace:*"
+    "@radix-ui/react-use-effect-event": "workspace:*"
   },
   "devDependencies": {
     "@repo/builder": "workspace:*",
+    "@repo/test-utils": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",

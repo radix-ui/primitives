@@ -1,5 +1,9 @@
 # @radix-ui/react-one-time-password-field
 
+## 0.1.11
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.7`, `@radix-ui/react-collection@1.1.11`, `@radix-ui/react-roving-focus@1.1.14`
+
 ## 0.1.10
 
 - Updated dependencies: `@radix-ui/react-primitive@2.1.6`, `@radix-ui/react-collection@1.1.10`, `@radix-ui/react-roving-focus@1.1.13`

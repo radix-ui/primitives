@@ -90,6 +90,55 @@ export const PartsWithinForm = () => {
   );
 };
 
+export const WithinFormReset = () => {
+  const [controlled, setControlled] = React.useState('1');
+
+  return (
+    <form onSubmit={(event) => event.preventDefault()}>
+      <p>
+        Change the selection, then press <strong>Reset</strong>. Each group returns to its initial
+        value (the uncontrolled group via its <code>defaultValue</code>, the controlled group via
+        its initial <code>value</code> state).
+      </p>
+
+      <fieldset>
+        <legend>Uncontrolled (defaultValue)</legend>
+        <RadioGroup.Root className={styles.root} name="uncontrolled" defaultValue="1">
+          {['1', '2', '3'].map((value) => (
+            <RadioGroup.Item key={value} className={styles.item} value={value}>
+              <RadioGroup.Indicator className={styles.indicator} />
+            </RadioGroup.Item>
+          ))}
+        </RadioGroup.Root>
+      </fieldset>
+
+      <br />
+      <br />
+
+      <fieldset>
+        <legend>Controlled value: {controlled}</legend>
+        <RadioGroup.Root
+          className={styles.root}
+          name="controlled"
+          value={controlled}
+          onValueChange={setControlled}
+        >
+          {['1', '2', '3'].map((value) => (
+            <RadioGroup.Item key={value} className={styles.item} value={value}>
+              <RadioGroup.Indicator className={styles.indicator} />
+            </RadioGroup.Item>
+          ))}
+        </RadioGroup.Root>
+      </fieldset>
+
+      <br />
+      <br />
+
+      <button type="reset">Reset</button>
+    </form>
+  );
+};
+
 export const LegacyStyled = () => (
   <Label>
     Favourite pet

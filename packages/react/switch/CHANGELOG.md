@@ -1,5 +1,9 @@
 # @radix-ui/react-switch
 
+## 1.3.2
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.7`
+
 ## 1.3.1
 
 - Updated dependencies: `@radix-ui/react-primitive@2.1.6`

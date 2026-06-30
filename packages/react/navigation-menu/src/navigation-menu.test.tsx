@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, it, expect } from 'vitest';
+import { assertStableComposedRef } from '@repo/test-utils/ref-stability';
 import * as NavigationMenu from './navigation-menu';
 
 const TRIGGER_TEXT = 'Item One';
@@ -42,5 +43,43 @@ describe('aria-controls', () => {
     const content = document.getElementById(contentId!);
     expect(content).not.toBeNull();
     expect(content).toContainElement(screen.getByText(CONTENT_TEXT));
+  });
+});
+
+// Regression tests for https://github.com/radix-ui/primitives/issues/3963
+describe('NavigationMenu ref stability', () => {
+  afterEach(cleanup);
+
+  it('keeps a stable composed ref on the root', () => {
+    assertStableComposedRef((ref) => (
+      <NavigationMenu.Root ref={ref}>
+        <NavigationMenu.List>
+          <NavigationMenu.Item value="one">
+            <NavigationMenu.Trigger>{TRIGGER_TEXT}</NavigationMenu.Trigger>
+            <NavigationMenu.Content>
+              <NavigationMenu.Link href="#">{CONTENT_TEXT}</NavigationMenu.Link>
+            </NavigationMenu.Content>
+          </NavigationMenu.Item>
+        </NavigationMenu.List>
+        <NavigationMenu.Viewport />
+      </NavigationMenu.Root>
+    ));
+  });
+
+  // Exercises the viewport content item composed ref (`NavigationMenuViewportItem`).
+  it('keeps a stable composed ref on viewport content', () => {
+    assertStableComposedRef((ref) => (
+      <NavigationMenu.Root defaultValue="one">
+        <NavigationMenu.List>
+          <NavigationMenu.Item value="one">
+            <NavigationMenu.Trigger>{TRIGGER_TEXT}</NavigationMenu.Trigger>
+            <NavigationMenu.Content ref={ref}>
+              <NavigationMenu.Link href="#">{CONTENT_TEXT}</NavigationMenu.Link>
+            </NavigationMenu.Content>
+          </NavigationMenu.Item>
+        </NavigationMenu.List>
+        <NavigationMenu.Viewport />
+      </NavigationMenu.Root>
+    ));
   });
 });

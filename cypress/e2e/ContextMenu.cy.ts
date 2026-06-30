@@ -311,3 +311,23 @@ describe('ContextMenu extension overlay interactions', () => {
     cy.findByText('New Tab').should('not.exist');
   });
 });
+
+describe('ContextMenu nested in Dialog', () => {
+  beforeEach(() => {
+    cy.visitStory('contextmenu--dismisses-only-context-menu-inside-dialog');
+  });
+
+  it('dismisses only the context menu when clicking inside dialog outside menu', () => {
+    cy.findByText('Open dialog').click();
+    cy.findByText('Right click inside dialog').rightclick();
+
+    cy.findByText('Dialog with nested context menu').should('be.visible');
+    cy.findByText('dialog: open | menu: open').should('exist');
+
+    cy.findByText('Dialog with nested context menu').realClick();
+
+    cy.findByText('Dialog with nested context menu').should('be.visible');
+    cy.findByText('dialog: open | menu: closed').should('exist');
+    cy.findByText('Item one').should('not.exist');
+  });
+});

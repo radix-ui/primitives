@@ -1,5 +1,13 @@
 # @radix-ui/react-popper
 
+## 1.3.2
+
+- Fixed infinite re-render loop in React 19 caused by unstable composed ref callback references.
+
+### Other updates
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.7`, `@radix-ui/react-arrow@1.1.11`
+
 ## 1.3.1
 
 - Fixed a regression in Popper that caused submenu misalignment when using custom portals.

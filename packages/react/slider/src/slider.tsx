@@ -112,6 +112,8 @@ const Slider = React.forwardRef<SliderElement, SliderProps>(
     const isKeyboardInteractionRef = React.useRef(false);
     const isHorizontal = orientation === 'horizontal';
     const SliderOrientation = isHorizontal ? SliderHorizontal : SliderVertical;
+    const [control, setControl] = React.useState<SliderElement | null>(null);
+    const composedRefs = useComposedRefs(forwardedRef, setControl);
 
     const [values = [], setValues] = useControllableState({
       prop: value,
@@ -127,6 +129,18 @@ const Slider = React.forwardRef<SliderElement, SliderProps>(
       },
     });
     const valuesBeforeSlideStartRef = React.useRef(values);
+
+    const initialValuesRef = React.useRef(values);
+    React.useEffect(() => {
+      const associatedForm = form
+        ? control?.ownerDocument.getElementById(form)
+        : control?.closest('form');
+      if (associatedForm instanceof HTMLFormElement) {
+        const reset = () => setValues(initialValuesRef.current);
+        associatedForm.addEventListener('reset', reset);
+        return () => associatedForm.removeEventListener('reset', reset);
+      }
+    }, [control, form, setValues]);
 
     function handleSlideStart(value: number) {
       const closestIndex = getClosestValueIndex(values, value);
@@ -181,7 +195,7 @@ const Slider = React.forwardRef<SliderElement, SliderProps>(
               aria-disabled={disabled}
               data-disabled={disabled ? '' : undefined}
               {...sliderProps}
-              ref={forwardedRef}
+              ref={composedRefs}
               onPointerDown={composeEventHandlers(sliderProps.onPointerDown, () => {
                 if (!disabled) {
                   valuesBeforeSlideStartRef.current = values;
@@ -279,7 +293,7 @@ const SliderHorizontal = React.forwardRef<SliderHorizontalElement, SliderHorizon
       ...sliderProps
     } = props;
     const [slider, setSlider] = React.useState<SliderImplElement | null>(null);
-    const composedRefs = useComposedRefs(forwardedRef, (node) => setSlider(node));
+    const composedRefs = useComposedRefs(forwardedRef, setSlider);
     const rectRef = React.useRef<DOMRect>(undefined);
     const direction = useDirection(dir);
     const isDirectionLTR = direction === 'ltr';
@@ -660,7 +674,7 @@ const SliderThumbTrigger = React.forwardRef<SliderThumbTriggerElement, SliderThu
       THUMB_TRIGGER_NAME,
       __scopeSlider,
     );
-    const composedRefs = useComposedRefs(forwardedRef, (node) => onThumbChange(node));
+    const composedRefs = useComposedRefs(forwardedRef, onThumbChange);
     const label = getLabel(index, context.values.length);
     const orientationSize = size?.[orientation.size];
     const thumbInBoundsOffset = orientationSize

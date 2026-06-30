@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ContextMenu } from 'radix-ui';
+import { ContextMenu, Dialog } from 'radix-ui';
 import { foodGroups } from '@repo/test-data/foods';
 import styles from './context-menu.stories.module.css';
 import { ExternalOverlayTrigger } from './external-overlay';
@@ -490,6 +490,73 @@ export const WithExtensionOverlay = () => {
         </ContextMenu.Portal>
       </ContextMenu.Root>
       <div data-testid="context-menu-state">{open ? 'open' : 'closed'}</div>
+    </div>
+  );
+};
+
+// Regression story for https://github.com/radix-ui/primitives/issues/3971
+export const DismissesOnlyContextMenuInsideDialog = () => {
+  const [dialogOpen, setDialogOpen] = React.useState(false);
+  const [menuOpen, setMenuOpen] = React.useState(false);
+  const [isModal, setIsModal] = React.useState<boolean | undefined>(undefined);
+
+  if (!dialogOpen && menuOpen) {
+    setMenuOpen(false);
+  }
+
+  return (
+    <div style={{ display: 'grid', gap: 16, padding: 40, justifyItems: 'start' }}>
+      <Dialog.Root open={dialogOpen} onOpenChange={setDialogOpen}>
+        <Dialog.Trigger className={styles.trigger}>Open dialog</Dialog.Trigger>
+        <label>
+          <input
+            type="checkbox"
+            checked={isModal || false}
+            ref={(node) => {
+              if (node && isModal === undefined) {
+                node.indeterminate = true;
+              }
+            }}
+            onChange={(event) => {
+              event.target.indeterminate = false;
+              setIsModal((prev) => !prev);
+            }}
+          />
+          <span>Modal</span>
+        </label>
+        <Dialog.Portal>
+          <Dialog.Content
+            style={{
+              position: 'fixed',
+              top: 100,
+              left: '50%',
+              transform: 'translateX(-50%)',
+              width: 360,
+              padding: 20,
+              backgroundColor: 'white',
+              border: '1px solid #ccc',
+              borderRadius: 8,
+            }}
+          >
+            <Dialog.Title>Dialog with nested context menu</Dialog.Title>
+            <ContextMenu.Root open={menuOpen} onOpenChange={setMenuOpen} modal={isModal}>
+              <ContextMenu.Trigger className={styles.trigger}>
+                Right click inside dialog
+              </ContextMenu.Trigger>
+              <ContextMenu.Portal>
+                <ContextMenu.Content className={styles.content}>
+                  <ContextMenu.Item className={styles.item}>Item one</ContextMenu.Item>
+                  <ContextMenu.Item className={styles.item}>Item two</ContextMenu.Item>
+                </ContextMenu.Content>
+              </ContextMenu.Portal>
+            </ContextMenu.Root>
+            <p style={{ marginTop: 12, marginBottom: 0 }}>
+              dialog: {dialogOpen ? 'open' : 'closed'} | menu: {menuOpen ? 'open' : 'closed'}
+            </p>
+            <Dialog.Close style={{ marginTop: 12 }}>Close dialog</Dialog.Close>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
     </div>
   );
 };

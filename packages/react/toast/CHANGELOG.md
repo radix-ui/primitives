@@ -1,5 +1,11 @@
 # @radix-ui/react-toast
 
+## 1.2.18
+
+- Fixed infinite re-render loop in React 19 caused by unstable composed ref callback references.
+- Cleared the close timer on unmount to prevent memory leaks and errors in test environments
+- Updated dependencies: `@radix-ui/react-primitive@2.1.7`, `@radix-ui/react-dismissable-layer@1.1.14`, `@radix-ui/react-collection@1.1.11`, `@radix-ui/react-portal@1.1.13`, `@radix-ui/react-visually-hidden@1.2.7`
+
 ## 1.2.17
 
 - Updated dependencies: `@radix-ui/react-dismissable-layer@1.1.13`, `@radix-ui/react-primitive@2.1.6`, `@radix-ui/react-collection@1.1.10`, `@radix-ui/react-portal@1.1.12`, `@radix-ui/react-visually-hidden@1.2.6`

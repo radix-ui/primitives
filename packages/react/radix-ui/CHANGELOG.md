@@ -1,5 +1,11 @@
 # radix-ui
 
+## 1.6.1
+
+- Cleared the close timer when unmounting `Toast` components to prevent memory leaks and errors in test environments.
+- Fixed infinite re-render loop in React 19 caused by unstable composed ref callback references.
+- Removed global `React.CSSProperties` augmentation from emitted declaration files.
+
 ## 1.6.0
 
 ```tsx

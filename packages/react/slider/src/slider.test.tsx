@@ -2,6 +2,7 @@ import * as React from 'react';
 import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, it, expect } from 'vitest';
+import { assertStableComposedRef } from '@repo/test-utils/ref-stability';
 import * as Slider from './slider';
 
 function renderSlider(props: React.ComponentProps<typeof Slider.Root>) {
@@ -53,5 +54,147 @@ describe('Slider', () => {
     await user.keyboard('{ArrowRight}');
 
     expect(getThumbValue()).toBeCloseTo(1.5e-7, 12);
+  });
+
+  // Regression tests for https://github.com/radix-ui/primitives/issues/3963
+  describe('ref stability', () => {
+    it('keeps a stable composed ref on the root', () => {
+      assertStableComposedRef((ref) => (
+        <Slider.Root ref={ref} defaultValue={[50]}>
+          <Slider.Track>
+            <Slider.Range />
+          </Slider.Track>
+          <Slider.Thumb />
+        </Slider.Root>
+      ));
+    });
+
+    it('keeps a stable composed ref on the thumb', () => {
+      assertStableComposedRef((ref) => (
+        <Slider.Root defaultValue={[50]}>
+          <Slider.Track>
+            <Slider.Range />
+          </Slider.Track>
+          <Slider.Thumb ref={ref} />
+        </Slider.Root>
+      ));
+    });
+  });
+
+  describe('within a form that is reset', () => {
+    function renderSliderInForm(props: React.ComponentProps<typeof Slider.Root>) {
+      return render(
+        <form>
+          <Slider.Root {...props}>
+            <Slider.Track>
+              <Slider.Range />
+            </Slider.Track>
+            <Slider.Thumb />
+          </Slider.Root>
+          <button type="reset">Reset</button>
+        </form>,
+      );
+    }
+
+    it('should restore its `defaultValue` when the form is reset (uncontrolled)', async () => {
+      const user = userEvent.setup();
+      renderSliderInForm({ name: 'volume', defaultValue: [20], min: 0, max: 100 });
+
+      screen.getByRole('slider').focus();
+      await user.keyboard('{ArrowRight}');
+      expect(getThumbValue()).toBe(21);
+
+      await user.click(screen.getByText('Reset'));
+      expect(getThumbValue()).toBe(20);
+    });
+
+    it('should restore its initial `value` when the form is reset (controlled)', async () => {
+      function ControlledSlider() {
+        const [value, setValue] = React.useState([20]);
+        return (
+          <form>
+            <Slider.Root name="volume" value={value} onValueChange={setValue} min={0} max={100}>
+              <Slider.Track>
+                <Slider.Range />
+              </Slider.Track>
+              <Slider.Thumb />
+            </Slider.Root>
+            <button type="reset">Reset</button>
+          </form>
+        );
+      }
+
+      const user = userEvent.setup();
+      render(<ControlledSlider />);
+
+      screen.getByRole('slider').focus();
+      await user.keyboard('{ArrowRight}');
+      expect(getThumbValue()).toBe(21);
+
+      await user.click(screen.getByText('Reset'));
+      expect(getThumbValue()).toBe(20);
+    });
+  });
+
+  describe('with external form association', () => {
+    it('should restore its `defaultValue` when reset from an external form', async () => {
+      const user = userEvent.setup();
+      render(
+        <>
+          <form id="slider-reset-form">
+            <button type="reset">Reset</button>
+          </form>
+          <Slider.Root name="volume" form="slider-reset-form" defaultValue={[20]} min={0} max={100}>
+            <Slider.Track>
+              <Slider.Range />
+            </Slider.Track>
+            <Slider.Thumb />
+          </Slider.Root>
+        </>,
+      );
+
+      screen.getByRole('slider').focus();
+      await user.keyboard('{ArrowRight}');
+      expect(getThumbValue()).toBe(21);
+
+      await user.click(screen.getByRole('button', { name: 'Reset' }));
+      expect(getThumbValue()).toBe(20);
+    });
+
+    it('should restore its initial `value` when reset from an external form', async () => {
+      function ControlledSlider() {
+        const [value, setValue] = React.useState([20]);
+        return (
+          <>
+            <form id="slider-reset-form">
+              <button type="reset">Reset</button>
+            </form>
+            <Slider.Root
+              name="volume"
+              form="slider-reset-form"
+              value={value}
+              onValueChange={setValue}
+              min={0}
+              max={100}
+            >
+              <Slider.Track>
+                <Slider.Range />
+              </Slider.Track>
+              <Slider.Thumb />
+            </Slider.Root>
+          </>
+        );
+      }
+
+      const user = userEvent.setup();
+      render(<ControlledSlider />);
+
+      screen.getByRole('slider').focus();
+      await user.keyboard('{ArrowRight}');
+      expect(getThumbValue()).toBe(21);
+
+      await user.click(screen.getByRole('button', { name: 'Reset' }));
+      expect(getThumbValue()).toBe(20);
+    });
   });
 });

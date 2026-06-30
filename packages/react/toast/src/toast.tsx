@@ -490,7 +490,7 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
     } = props;
     const context = useToastProviderContext(TOAST_NAME, __scopeToast);
     const [node, setNode] = React.useState<ToastImplElement | null>(null);
-    const composedRefs = useComposedRefs(forwardedRef, (node) => setNode(node));
+    const composedRefs = useComposedRefs(forwardedRef, setNode);
     const pointerStartRef = React.useRef<{ x: number; y: number } | null>(null);
     const swipeDeltaRef = React.useRef<{ x: number; y: number } | null>(null);
     const duration = durationProp || context.duration;
@@ -544,6 +544,13 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
     React.useEffect(() => {
       if (open && !context.isClosePausedRef.current) startTimer(duration);
     }, [open, duration, context.isClosePausedRef, startTimer]);
+
+    // Clear close timer on unmount to prevent memory leaks and errors in test environments
+    React.useEffect(() => {
+      return () => {
+        window.clearTimeout(closeTimerRef.current);
+      };
+    }, []);
 
     React.useEffect(() => {
       onToastAdd();

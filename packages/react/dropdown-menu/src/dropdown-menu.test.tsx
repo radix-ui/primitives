@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, it, expect } from 'vitest';
+import { assertStableComposedRef } from '@repo/test-utils/ref-stability';
 import * as DropdownMenu from './dropdown-menu';
 
 const TRIGGER_TEXT = 'Open';
@@ -39,7 +40,9 @@ const DropdownMenuWithSubTest = (props: React.ComponentProps<typeof DropdownMenu
   </DropdownMenu.Root>
 );
 
-const DropdownMenuWithInputTest = (props: { focusOnItemEnter?: boolean }) => (
+const DropdownMenuWithInputTest = (props: {
+  focusOnItemEnter?: boolean;
+}) => (
   <DropdownMenu.Root>
     <DropdownMenu.Trigger>{TRIGGER_TEXT}</DropdownMenu.Trigger>
     <DropdownMenu.Portal>
@@ -102,10 +105,6 @@ describe('closing on window blur', () => {
 describe('focusOnItemEnter', () => {
   afterEach(cleanup);
 
-  // Helper: open the menu with a keyboard Enter, focus the input (Radix does
-  // not auto-focus non-menuitem children on open — `onMountAutoFocus` only
-  // focuses the content root), then simulate a pointermove with the
-  // `pointerType: 'mouse'` Radix's `whenMouse` guard requires.
   async function openMenuAndFocusInput(options: { focusOnItemEnter?: boolean } = {}) {
     render(<DropdownMenuWithInputTest focusOnItemEnter={options.focusOnItemEnter} />);
     const trigger = screen.getByText(TRIGGER_TEXT);
@@ -122,7 +121,6 @@ describe('focusOnItemEnter', () => {
     const { searchInput } = await openMenuAndFocusInput({ focusOnItemEnter: false });
     const item = await waitFor(() => screen.getByText(ITEM_TEXT));
 
-    // `whenMouse` in menu.tsx short-circuits unless event.pointerType === 'mouse'.
     fireEvent.pointerMove(item, { pointerType: 'mouse' });
 
     expect(document.activeElement).toBe(searchInput);
@@ -133,9 +131,6 @@ describe('focusOnItemEnter', () => {
     const { searchInput } = await openMenuAndFocusInput();
     const item = await waitFor(() => screen.getByText(ITEM_TEXT));
 
-    // Default behaviour is preserved: hovering the item steals focus even though
-    // there's a sibling input that was just focused. Regression guard for the
-    // default (focusOnItemEnter: true) path.
     fireEvent.pointerMove(item, { pointerType: 'mouse' });
 
     expect(document.activeElement).toBe(item);
@@ -155,9 +150,6 @@ describe('focusOnItemEnter', () => {
   });
 
   it('should still focus the first item on keyboard-open when focusOnItemEnter={false}', async () => {
-    // Regression guard: disabling hover-to-focus must not break the
-    // RovingFocusGroup entry-focus path. Keyboard-open focuses the first
-    // item via onEntryFocus (RovingFocusGroup), independent of pointermove.
     render(<DropdownMenuWithInputTest focusOnItemEnter={false} />);
     const trigger = screen.getByText(TRIGGER_TEXT);
     fireEvent.keyDown(trigger, { key: 'Enter' });
@@ -168,14 +160,6 @@ describe('focusOnItemEnter', () => {
 });
 
 describe('focusOnItemEnter with submenus', () => {
-  // Submenu hover-open is driven by MenuSubTrigger.onPointerMove scheduling
-  // a setTimeout(open, 100). `focusOnItemEnter={false}` on the parent must
-  // not interfere with that path — the focus call lives in MenuItemImpl, not
-  // MenuSubTrigger.
-  //
-  // We avoid mixing fake timers with `waitFor` (which polls via setInterval
-  // and deadlocks under fake timers). Instead: real timers, then flush the
-  // 100ms SubTrigger open timer via the real event loop.
   afterEach(cleanup);
 
   it('should still open submenu on SubTrigger hover when parent has focusOnItemEnter={false}', async () => {
@@ -195,7 +179,7 @@ describe('focusOnItemEnter with submenus', () => {
             </DropdownMenu.Sub>
           </DropdownMenu.Content>
         </DropdownMenu.Portal>
-      </DropdownMenu.Root>,
+      </DropdownMenu.Root>
     );
 
     const trigger = screen.getByText(TRIGGER_TEXT);
@@ -204,12 +188,49 @@ describe('focusOnItemEnter with submenus', () => {
     const subTrigger = await waitFor(() => screen.getByText(SUB_TRIGGER_TEXT));
     expect(screen.queryByText(SUB_ITEM_TEXT)).not.toBeInTheDocument();
 
-    // Pointer grace intent needs mouse pointer type (matches Radix whenMouse).
     fireEvent.pointerMove(subTrigger, { pointerType: 'mouse' });
 
-    // Wait past the 100ms SubTrigger open timer + render flush.
     await waitFor(() => expect(screen.getByText(SUB_ITEM_TEXT)).toBeInTheDocument(), {
       timeout: 1000,
     });
+  });
+});
+
+// Regression tests for https://github.com/radix-ui/primitives/issues/3963
+describe('ref stability', () => {
+  afterEach(cleanup);
+
+  it('keeps a stable composed ref on the Trigger', () => {
+    assertStableComposedRef((ref) => (
+      <DropdownMenu.Root>
+        <DropdownMenu.Trigger ref={ref}>{TRIGGER_TEXT}</DropdownMenu.Trigger>
+        <DropdownMenu.Portal>
+          <DropdownMenu.Content>
+            <DropdownMenu.Item>{ITEM_TEXT}</DropdownMenu.Item>
+          </DropdownMenu.Content>
+        </DropdownMenu.Portal>
+      </DropdownMenu.Root>
+    ));
+  });
+
+  // Exercises the underlying `@radix-ui/react-menu` `MenuSubTrigger` fix.
+  it('keeps a stable composed ref on the SubTrigger', () => {
+    assertStableComposedRef((ref) => (
+      <DropdownMenu.Root defaultOpen>
+        <DropdownMenu.Trigger>{TRIGGER_TEXT}</DropdownMenu.Trigger>
+        <DropdownMenu.Portal>
+          <DropdownMenu.Content>
+            <DropdownMenu.Sub>
+              <DropdownMenu.SubTrigger ref={ref}>{SUB_TRIGGER_TEXT}</DropdownMenu.SubTrigger>
+              <DropdownMenu.Portal>
+                <DropdownMenu.SubContent>
+                  <DropdownMenu.Item>{SUB_ITEM_TEXT}</DropdownMenu.Item>
+                </DropdownMenu.SubContent>
+              </DropdownMenu.Portal>
+            </DropdownMenu.Sub>
+          </DropdownMenu.Content>
+        </DropdownMenu.Portal>
+      </DropdownMenu.Root>
+    ));
   });
 });

@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, describe, it, expect } from 'vitest';
+import { assertStableComposedRef } from '@repo/test-utils/ref-stability';
 import * as Select from './select';
 
 const PLACEHOLDER_TEXT = 'Pick one';
@@ -138,5 +139,195 @@ describe('clearing an optional value (#2706)', () => {
       (option) => option.value === '',
     );
     expect(emptyOptions).toHaveLength(1);
+  });
+});
+
+// Regression tests for https://github.com/radix-ui/primitives/issues/3963
+describe('Select ref stability', () => {
+  afterEach(cleanup);
+
+  const renderOpenSelect =
+    (slot: 'content' | 'item' | 'itemText') => (ref: React.RefCallback<any>) => (
+      <Select.Root defaultOpen>
+        <Select.Trigger aria-label="Choice">
+          <Select.Value placeholder={PLACEHOLDER_TEXT} />
+        </Select.Trigger>
+        <Select.Portal>
+          <Select.Content ref={slot === 'content' ? ref : undefined}>
+            <Select.Viewport>
+              <Select.Item value="apple" ref={slot === 'item' ? ref : undefined}>
+                <Select.ItemText ref={slot === 'itemText' ? ref : undefined}>Apple</Select.ItemText>
+              </Select.Item>
+            </Select.Viewport>
+          </Select.Content>
+        </Select.Portal>
+      </Select.Root>
+    );
+
+  it('keeps a stable composed ref on Content', () => {
+    assertStableComposedRef(renderOpenSelect('content'));
+  });
+
+  it('keeps a stable composed ref on Item', () => {
+    assertStableComposedRef(renderOpenSelect('item'));
+  });
+
+  it('keeps a stable composed ref on ItemText', () => {
+    assertStableComposedRef(renderOpenSelect('itemText'));
+  });
+});
+
+describe('given a Select in a form that is reset', () => {
+  afterEach(cleanup);
+
+  describe('uncontrolled', () => {
+    it('should restore its `defaultValue` when the form is reset', async () => {
+      render(
+        <form>
+          {/* Keep the content open so the items (and their selection state) stay mounted. */}
+          <SelectTest name="fruit" defaultValue="apple" open onOpenChange={() => {}} />
+          <button type="reset">Reset</button>
+        </form>,
+      );
+
+      const listbox = await screen.findByRole('listbox', { hidden: true });
+      const apple = within(listbox).getByRole('option', { name: 'Apple' });
+      const banana = within(listbox).getByRole('option', { name: 'Banana' });
+
+      expect(apple).toHaveAttribute('data-state', 'checked');
+
+      act(() => fireEvent.click(banana));
+      expect(banana).toHaveAttribute('data-state', 'checked');
+      expect(apple).toHaveAttribute('data-state', 'unchecked');
+
+      act(() => fireEvent.click(screen.getByText('Reset')));
+      expect(apple).toHaveAttribute('data-state', 'checked');
+      expect(banana).toHaveAttribute('data-state', 'unchecked');
+    });
+
+    it('should restore the placeholder when reset with no initial value', async () => {
+      render(
+        <form>
+          {/* Keep the content open so the items (and their selection state) stay mounted. */}
+          <SelectTest name="fruit" open onOpenChange={() => {}} />
+          <button type="reset">Reset</button>
+        </form>,
+      );
+
+      const trigger = screen.getByRole('combobox', { name: 'Choice', hidden: true });
+      // No value selected initially, so the placeholder is shown.
+      expect(trigger).toHaveTextContent(PLACEHOLDER_TEXT);
+
+      const listbox = await screen.findByRole('listbox', { hidden: true });
+      const banana = within(listbox).getByRole('option', { name: 'Banana' });
+      act(() => fireEvent.click(banana));
+      expect(banana).toHaveAttribute('data-state', 'checked');
+      expect(trigger).not.toHaveTextContent(PLACEHOLDER_TEXT);
+
+      act(() => fireEvent.click(screen.getByRole('button', { name: 'Reset', hidden: true })));
+      expect(banana).toHaveAttribute('data-state', 'unchecked');
+      expect(trigger).toHaveTextContent(PLACEHOLDER_TEXT);
+    });
+  });
+
+  describe('controlled', () => {
+    it('should restore its initial `value` when the form is reset', async () => {
+      function ControlledSelect() {
+        const [value, setValue] = React.useState('apple');
+        return (
+          <form>
+            <SelectTest
+              name="fruit"
+              value={value}
+              onValueChange={setValue}
+              open
+              onOpenChange={() => {}}
+            />
+            <button type="reset">Reset</button>
+          </form>
+        );
+      }
+
+      render(<ControlledSelect />);
+
+      const listbox = await screen.findByRole('listbox', { hidden: true });
+      const apple = within(listbox).getByRole('option', { name: 'Apple' });
+      expect(apple).toHaveAttribute('data-state', 'checked');
+
+      const banana = within(listbox).getByRole('option', { name: 'Banana' });
+      act(() => fireEvent.click(banana));
+      expect(banana).toHaveAttribute('data-state', 'checked');
+      expect(apple).toHaveAttribute('data-state', 'unchecked');
+
+      act(() => fireEvent.click(screen.getByText('Reset')));
+      expect(apple).toHaveAttribute('data-state', 'checked');
+      expect(banana).toHaveAttribute('data-state', 'unchecked');
+    });
+  });
+
+  describe('external form association', () => {
+    it('should restore its `defaultValue` when reset from an external form', async () => {
+      render(
+        <>
+          <form id="select-reset-form">
+            <button type="reset">Reset</button>
+          </form>
+          <SelectTest
+            name="fruit"
+            form="select-reset-form"
+            defaultValue="apple"
+            open
+            onOpenChange={() => {}}
+          />
+        </>,
+      );
+
+      const listbox = await screen.findByRole('listbox', { hidden: true });
+      const apple = within(listbox).getByRole('option', { name: 'Apple' });
+      expect(apple).toHaveAttribute('data-state', 'checked');
+
+      const banana = within(listbox).getByRole('option', { name: 'Banana' });
+      act(() => fireEvent.click(banana));
+      expect(banana).toHaveAttribute('data-state', 'checked');
+
+      act(() => fireEvent.click(screen.getByRole('button', { name: 'Reset', hidden: true })));
+      expect(apple).toHaveAttribute('data-state', 'checked');
+      expect(banana).toHaveAttribute('data-state', 'unchecked');
+    });
+
+    it('should restore its initial `value` when reset from an external form', async () => {
+      function ControlledSelect() {
+        const [value, setValue] = React.useState('apple');
+        return (
+          <>
+            <form id="select-reset-form">
+              <button type="reset">Reset</button>
+            </form>
+            <SelectTest
+              name="fruit"
+              form="select-reset-form"
+              value={value}
+              onValueChange={setValue}
+              open
+              onOpenChange={() => {}}
+            />
+          </>
+        );
+      }
+
+      render(<ControlledSelect />);
+
+      const listbox = await screen.findByRole('listbox', { hidden: true });
+      const apple = within(listbox).getByRole('option', { name: 'Apple' });
+      expect(apple).toHaveAttribute('data-state', 'checked');
+
+      const banana = within(listbox).getByRole('option', { name: 'Banana' });
+      act(() => fireEvent.click(banana));
+      expect(banana).toHaveAttribute('data-state', 'checked');
+
+      act(() => fireEvent.click(screen.getByRole('button', { name: 'Reset', hidden: true })));
+      expect(apple).toHaveAttribute('data-state', 'checked');
+      expect(banana).toHaveAttribute('data-state', 'unchecked');
+    });
   });
 });

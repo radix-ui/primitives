@@ -1,5 +1,9 @@
 # @radix-ui/react-roving-focus
 
+## 1.1.14
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.7`, `@radix-ui/react-collection@1.1.11`
+
 ## 1.1.13
 
 - Updated dependencies: `@radix-ui/react-primitive@2.1.6`, `@radix-ui/react-collection@1.1.10`

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Popover } from 'radix-ui';
+import { Dialog, Popover } from 'radix-ui';
 import { Popper } from 'radix-ui/internal';
 import styles from './popover.stories.module.css';
 import { ExternalOverlayTrigger } from './external-overlay';
@@ -147,6 +147,75 @@ export const WithExtensionOverlay = () => {
         </Popover.Portal>
       </Popover.Root>
       <div data-testid="popover-state">{open ? 'open' : 'closed'}</div>
+    </div>
+  );
+};
+
+// Regression story for https://github.com/radix-ui/primitives/issues/3971
+export const DismissesOnlyPopoverInsideDialog = () => {
+  const [dialogOpen, setDialogOpen] = React.useState(false);
+  const [popoverOpen, setPopoverOpen] = React.useState(false);
+  const [isModal, setIsModal] = React.useState<boolean | undefined>(undefined);
+
+  if (!dialogOpen && popoverOpen) {
+    setPopoverOpen(false);
+  }
+
+  return (
+    <div style={{ display: 'grid', gap: 16, padding: 40, justifyItems: 'start' }}>
+      <Dialog.Root open={dialogOpen} onOpenChange={setDialogOpen}>
+        <Dialog.Trigger className={styles.trigger}>Open dialog</Dialog.Trigger>
+        <label>
+          <input
+            type="checkbox"
+            checked={isModal || false}
+            ref={(node) => {
+              if (node && isModal === undefined) {
+                node.indeterminate = true;
+              }
+            }}
+            onChange={(event) => {
+              event.target.indeterminate = false;
+              setIsModal((prev) => !prev);
+            }}
+          />
+          <span>Modal</span>
+        </label>
+        <Dialog.Portal>
+          <Dialog.Overlay
+            data-testid="dialog-overlay"
+            style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0, 0, 0, 0.2)' }}
+          />
+          <Dialog.Content
+            style={{
+              position: 'fixed',
+              top: 100,
+              left: '50%',
+              transform: 'translateX(-50%)',
+              width: 320,
+              padding: 20,
+              backgroundColor: 'white',
+              border: '1px solid #ccc',
+              borderRadius: 8,
+            }}
+          >
+            <Dialog.Title>Dialog with nested popover</Dialog.Title>
+            <Popover.Root open={popoverOpen} onOpenChange={setPopoverOpen} modal={isModal}>
+              <Popover.Trigger className={styles.trigger}>Open popover</Popover.Trigger>
+              <Popover.Portal>
+                <Popover.Content className={styles.content} sideOffset={5}>
+                  <Popover.Close className={styles.close}>Close popover</Popover.Close>
+                  <Popover.Arrow className={styles.arrow} width={20} height={10} />
+                </Popover.Content>
+              </Popover.Portal>
+            </Popover.Root>
+            <p style={{ marginTop: 12, marginBottom: 0 }}>
+              dialog: {dialogOpen ? 'open' : 'closed'} | popover: {popoverOpen ? 'open' : 'closed'}
+            </p>
+            <Dialog.Close style={{ marginTop: 12 }}>Close dialog</Dialog.Close>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
     </div>
   );
 };

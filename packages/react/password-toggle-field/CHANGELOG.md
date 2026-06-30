@@ -1,5 +1,9 @@
 # @radix-ui/react-password-toggle-field
 
+## 0.1.6
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.7`
+
 ## 0.1.5
 
 - Renamed misspelled `onVisiblityChange` prop to `onVisibilityChange`.

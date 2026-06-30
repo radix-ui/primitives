@@ -266,3 +266,23 @@ describe('DropdownMenu extension overlay interactions', () => {
     cy.findByText('New Tab').should('not.exist');
   });
 });
+
+describe('DropdownMenu nested in Dialog', () => {
+  beforeEach(() => {
+    cy.visitStory('dropdownmenu--dismisses-only-menu-inside-dialog');
+  });
+
+  it('dismisses only the menu when clicking inside dialog outside menu', () => {
+    cy.findByText('Open dialog').click();
+    cy.findByText('Open menu').click();
+
+    cy.findByText('Dialog with nested dropdown').should('be.visible');
+    cy.findByText('dialog: open | menu: open').should('exist');
+
+    cy.findByText('Dialog with nested dropdown').realClick();
+
+    cy.findByText('Dialog with nested dropdown').should('be.visible');
+    cy.findByText('dialog: open | menu: closed').should('exist');
+    cy.findByText('Item one').should('not.exist');
+  });
+});

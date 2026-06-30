@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-scroll-area",
-  "version": "1.2.12",
+  "version": "1.2.13",
   "license": "MIT",
   "source": "./src/index.ts",
   "main": "./src/index.ts",
@@ -47,6 +47,7 @@
   },
   "devDependencies": {
     "@repo/builder": "workspace:*",
+    "@repo/test-utils": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",

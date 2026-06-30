@@ -1,5 +1,9 @@
 # @radix-ui/react-menubar
 
+## 1.1.19
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.7`, `@radix-ui/react-menu@2.1.19`, `@radix-ui/react-collection@1.1.11`, `@radix-ui/react-roving-focus@1.1.14`
+
 ## 1.1.18
 
 - Fixed a bug where menus and submenus remained open after a window loses focus.
