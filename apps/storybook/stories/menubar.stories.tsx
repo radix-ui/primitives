@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Menubar } from 'radix-ui';
+import { Dialog, Menubar } from 'radix-ui';
 import { foodGroups } from '@repo/test-data/foods';
 import styles from './menubar.stories.module.css';
 import { ExternalOverlayTrigger } from './external-overlay';
@@ -213,6 +213,64 @@ export const WithExtensionOverlay = () => {
         </Menubar.Menu>
       </Menubar.Root>
       <div data-testid="menubar-state">{value === '' ? 'closed' : 'open'}</div>
+    </div>
+  );
+};
+
+// Regression story for https://github.com/radix-ui/primitives/issues/3971
+export const DismissesOnlyMenubarInsideDialog = () => {
+  const [dialogOpen, setDialogOpen] = React.useState(false);
+  const [menuValue, setMenuValue] = React.useState('');
+
+  if (!dialogOpen && menuValue !== '') {
+    setMenuValue('');
+  }
+
+  return (
+    <div style={{ display: 'grid', gap: 16, padding: 40, justifyItems: 'start' }}>
+      <Dialog.Root open={dialogOpen} onOpenChange={setDialogOpen}>
+        <Dialog.Trigger className={styles.trigger}>Open dialog</Dialog.Trigger>
+        <Dialog.Portal>
+          <Dialog.Overlay
+            data-testid="dialog-overlay"
+            style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0, 0, 0, 0.2)' }}
+          />
+          <Dialog.Content
+            style={{
+              position: 'fixed',
+              top: 100,
+              left: '50%',
+              transform: 'translateX(-50%)',
+              width: 360,
+              padding: 20,
+              backgroundColor: 'white',
+              border: '1px solid #ccc',
+              borderRadius: 8,
+            }}
+          >
+            <Dialog.Title>Dialog with nested menubar</Dialog.Title>
+            <Menubar.Root className={styles.root} value={menuValue} onValueChange={setMenuValue}>
+              <Menubar.Menu value="actions">
+                <Menubar.Trigger className={styles.trigger}>Actions</Menubar.Trigger>
+                <Menubar.Portal>
+                  <Menubar.Content className={styles.content} sideOffset={2}>
+                    <Menubar.Item className={styles.item}>Item one</Menubar.Item>
+                    <Menubar.Item className={styles.item}>Item two</Menubar.Item>
+                  </Menubar.Content>
+                </Menubar.Portal>
+              </Menubar.Menu>
+            </Menubar.Root>
+            <button type="button" className={styles.item} style={{ width: '100%', marginTop: 12 }}>
+              Dialog surface button
+            </button>
+            <p style={{ marginTop: 12, marginBottom: 0 }}>
+              dialog: {dialogOpen ? 'open' : 'closed'} | menu:{' '}
+              {menuValue === '' ? 'closed' : 'open'}
+            </p>
+            <Dialog.Close style={{ marginTop: 12 }}>Close dialog</Dialog.Close>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
     </div>
   );
 };

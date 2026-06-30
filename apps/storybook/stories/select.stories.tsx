@@ -250,6 +250,79 @@ export const WithExtensionOverlay = () => {
   );
 };
 
+// Regression story for https://github.com/radix-ui/primitives/issues/3971
+export const DismissesOnlySelectInsideDialog = () => {
+  const [dialogOpen, setDialogOpen] = React.useState(false);
+  const [selectOpen, setSelectOpen] = React.useState(false);
+
+  if (!dialogOpen && selectOpen) {
+    setSelectOpen(false);
+  }
+
+  return (
+    <div style={{ display: 'grid', gap: 16, padding: 40, justifyItems: 'start' }}>
+      <Dialog.Root open={dialogOpen} onOpenChange={setDialogOpen}>
+        <Dialog.Trigger className={styles.trigger}>Open dialog</Dialog.Trigger>
+        <Dialog.Portal>
+          <Dialog.Content
+            aria-describedby={undefined}
+            style={{
+              position: 'fixed',
+              top: 100,
+              left: '50%',
+              transform: 'translateX(-50%)',
+              width: 360,
+              padding: 20,
+              backgroundColor: 'white',
+              border: '1px solid #ccc',
+              borderRadius: 8,
+            }}
+          >
+            <Dialog.Title>Dialog with nested select</Dialog.Title>
+            <Label>
+              Choose a value:
+              <Select.Root open={selectOpen} onOpenChange={setSelectOpen} defaultValue="two">
+                <Select.Trigger className={styles.trigger}>
+                  <Select.Value />
+                  <Select.Icon />
+                </Select.Trigger>
+                <Select.Portal>
+                  <Select.Content className={styles.content} sideOffset={5}>
+                    <Select.Viewport className={styles.viewport}>
+                      <Select.Item className={styles.item} value="one">
+                        <Select.ItemText>One</Select.ItemText>
+                        <Select.ItemIndicator className={styles.indicator}>
+                          <TickIcon />
+                        </Select.ItemIndicator>
+                      </Select.Item>
+                      <Select.Item className={styles.item} value="two">
+                        <Select.ItemText>Two</Select.ItemText>
+                        <Select.ItemIndicator className={styles.indicator}>
+                          <TickIcon />
+                        </Select.ItemIndicator>
+                      </Select.Item>
+                      <Select.Item className={styles.item} value="three">
+                        <Select.ItemText>Three</Select.ItemText>
+                        <Select.ItemIndicator className={styles.indicator}>
+                          <TickIcon />
+                        </Select.ItemIndicator>
+                      </Select.Item>
+                    </Select.Viewport>
+                  </Select.Content>
+                </Select.Portal>
+              </Select.Root>
+            </Label>
+            <p style={{ marginTop: 12, marginBottom: 0 }}>
+              dialog: {dialogOpen ? 'open' : 'closed'} | select: {selectOpen ? 'open' : 'closed'}
+            </p>
+            <Dialog.Close style={{ marginTop: 12 }}>Close dialog</Dialog.Close>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
+    </div>
+  );
+};
+
 export const Position = () => (
   <div
     style={{
