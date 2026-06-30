@@ -32,7 +32,7 @@ type DialogContextValue = {
   titleId: string;
   descriptionId: string;
   open: boolean;
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  onOpenChange(open: boolean): void;
   onOpenToggle(): void;
   modal: boolean;
 };
@@ -74,7 +74,7 @@ const Dialog: React.FC<DialogProps> = (props: ScopedProps<DialogProps>) => {
       titleId={useId()}
       descriptionId={useId()}
       open={open}
-      setOpen={setOpen}
+      onOpenChange={setOpen}
       onOpenToggle={React.useCallback(() => setOpen((prevOpen) => !prevOpen), [setOpen])}
       modal={modal}
     >
@@ -394,7 +394,6 @@ const DialogContentImpl = React.forwardRef<DialogContentImplElement, DialogConte
   (props: ScopedProps<DialogContentImplProps>, forwardedRef) => {
     const { __scopeDialog, trapFocus, onOpenAutoFocus, onCloseAutoFocus, ...contentProps } = props;
     const context = useDialogContext(CONTENT_NAME, __scopeDialog);
-    const { setOpen } = context;
 
     // Make sure the whole tree has focus guards as our `Dialog` will be
     // the last element in the DOM (because of the `Portal`)
@@ -418,7 +417,7 @@ const DialogContentImpl = React.forwardRef<DialogContentImplElement, DialogConte
             {...contentProps}
             ref={forwardedRef}
             deferPointerDownOutside
-            onDismiss={React.useCallback(() => setOpen(false), [setOpen])}
+            onDismiss={() => context.onOpenChange(false)}
           />
         </FocusScope>
       </>
@@ -484,7 +483,7 @@ const DialogClose = React.forwardRef<DialogCloseElement, DialogCloseProps>(
         type="button"
         {...closeProps}
         ref={forwardedRef}
-        onClick={composeEventHandlers(props.onClick, () => context.setOpen(false))}
+        onClick={composeEventHandlers(props.onClick, () => context.onOpenChange(false))}
       />
     );
   },
