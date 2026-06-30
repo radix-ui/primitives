@@ -101,6 +101,27 @@ describe('Select nested in Dialog', () => {
   });
 });
 
+describe('Select nested in Popover', () => {
+  beforeEach(() => {
+    cy.visitStory('select--dismisses-only-select-in-popover');
+  });
+
+  it('dismisses only the open select when clicking another select trigger', () => {
+    cy.findByText('Open popover').click();
+    cy.findByTestId('first-trigger').click();
+
+    cy.findByText('popover: open | first: open | second: closed').should('exist');
+    cy.findByRole('option', { name: 'One' }).should('exist');
+
+    // Clicking the second trigger while the first select is open should close
+    // the first select but keep the popover open.
+    cy.findByTestId('second-trigger').realClick();
+
+    cy.findByText(/^popover: open/).should('exist');
+    cy.findByRole('option', { name: 'One' }).should('not.exist');
+  });
+});
+
 describe('Select (shadow DOM)', () => {
   beforeEach(() => {
     cy.visitStory('select--cypress-shadow-dom');

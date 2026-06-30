@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-pascal-case */
 import * as React from 'react';
 import { createPortal } from 'react-dom';
-import { Dialog, Select, Label as LabelPrimitive } from 'radix-ui';
+import { Dialog, Popover, Select, Label as LabelPrimitive } from 'radix-ui';
 import { foodGroups } from '@repo/test-data/foods';
 import styles from './select.stories.module.css';
 import { ExternalOverlayTrigger } from './external-overlay';
@@ -319,6 +319,117 @@ export const DismissesOnlySelectInsideDialog = () => {
           </Dialog.Content>
         </Dialog.Portal>
       </Dialog.Root>
+    </div>
+  );
+};
+
+// Regression story for https://github.com/radix-ui/primitives/issues/3166
+export const DismissesOnlySelectInPopover = () => {
+  const [popoverOpen, setPopoverOpen] = React.useState(false);
+  const [firstOpen, setFirstOpen] = React.useState(false);
+  const [secondOpen, setSecondOpen] = React.useState(false);
+
+  if (!popoverOpen) {
+    if (firstOpen) {
+      setFirstOpen(false);
+    }
+    if (secondOpen) {
+      setSecondOpen(false);
+    }
+  }
+
+  return (
+    <div style={{ display: 'grid', gap: 16, padding: 40, justifyItems: 'start' }}>
+      <Popover.Root open={popoverOpen} onOpenChange={setPopoverOpen}>
+        <Popover.Trigger className={styles.trigger}>Open popover</Popover.Trigger>
+        <Popover.Portal>
+          <Popover.Content
+            sideOffset={5}
+            style={{
+              display: 'grid',
+              gap: 12,
+              padding: 20,
+              backgroundColor: 'white',
+              border: '1px solid #ccc',
+              borderRadius: 8,
+              boxShadow: '0 10px 30px rgba(0, 0, 0, 0.15)',
+            }}
+          >
+            <div style={{ display: 'flex', gap: 12 }}>
+              <Label>
+                First select:
+                <Select.Root open={firstOpen} onOpenChange={setFirstOpen} defaultValue="one">
+                  <Select.Trigger className={styles.trigger} data-testid="first-trigger">
+                    <Select.Value />
+                    <Select.Icon />
+                  </Select.Trigger>
+                  <Select.Portal>
+                    <Select.Content className={styles.content} position="popper" sideOffset={5}>
+                      <Select.Viewport className={styles.viewport}>
+                        <Select.Item className={styles.item} value="one">
+                          <Select.ItemText>One</Select.ItemText>
+                          <Select.ItemIndicator className={styles.indicator}>
+                            <TickIcon />
+                          </Select.ItemIndicator>
+                        </Select.Item>
+                        <Select.Item className={styles.item} value="two">
+                          <Select.ItemText>Two</Select.ItemText>
+                          <Select.ItemIndicator className={styles.indicator}>
+                            <TickIcon />
+                          </Select.ItemIndicator>
+                        </Select.Item>
+                        <Select.Item className={styles.item} value="three">
+                          <Select.ItemText>Three</Select.ItemText>
+                          <Select.ItemIndicator className={styles.indicator}>
+                            <TickIcon />
+                          </Select.ItemIndicator>
+                        </Select.Item>
+                      </Select.Viewport>
+                    </Select.Content>
+                  </Select.Portal>
+                </Select.Root>
+              </Label>
+              <Label>
+                Second select:
+                <Select.Root open={secondOpen} onOpenChange={setSecondOpen} defaultValue="a">
+                  <Select.Trigger className={styles.trigger} data-testid="second-trigger">
+                    <Select.Value />
+                    <Select.Icon />
+                  </Select.Trigger>
+                  <Select.Portal>
+                    <Select.Content className={styles.content} position="popper" sideOffset={5}>
+                      <Select.Viewport className={styles.viewport}>
+                        <Select.Item className={styles.item} value="a">
+                          <Select.ItemText>A</Select.ItemText>
+                          <Select.ItemIndicator className={styles.indicator}>
+                            <TickIcon />
+                          </Select.ItemIndicator>
+                        </Select.Item>
+                        <Select.Item className={styles.item} value="b">
+                          <Select.ItemText>B</Select.ItemText>
+                          <Select.ItemIndicator className={styles.indicator}>
+                            <TickIcon />
+                          </Select.ItemIndicator>
+                        </Select.Item>
+                        <Select.Item className={styles.item} value="c">
+                          <Select.ItemText>C</Select.ItemText>
+                          <Select.ItemIndicator className={styles.indicator}>
+                            <TickIcon />
+                          </Select.ItemIndicator>
+                        </Select.Item>
+                      </Select.Viewport>
+                    </Select.Content>
+                  </Select.Portal>
+                </Select.Root>
+              </Label>
+            </div>
+            <p style={{ margin: 0 }}>
+              popover: {popoverOpen ? 'open' : 'closed'} | first: {firstOpen ? 'open' : 'closed'} |
+              second: {secondOpen ? 'open' : 'closed'}
+            </p>
+          </Popover.Content>
+        </Popover.Portal>
+      </Popover.Root>
     </div>
   );
 };
