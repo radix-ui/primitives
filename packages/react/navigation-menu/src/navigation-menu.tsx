@@ -1097,15 +1097,16 @@ const NavigationMenuViewportItem = ({
   onActiveContentChange,
   ...props
 }: ScopedProps<NavigationMenuViewportItemProps>) => {
-  // Wrapped in `useCallbackRef` so the composed ref keeps a stable identity
-  // across renders. An inline ref callback here would be recreated every render,
-  // which under React 19 causes React to detach/re-attach the ref on every
-  // commit and can trigger an infinite render loop (issue #3963).
-  const handleContentChange = useCallbackRef((node: NavigationMenuContentElement | null) => {
-    // We only want to update the stored node when another is available
-    // as we need to smoothly transition between them.
-    if (isActive && node) onActiveContentChange(node);
-  });
+  const handleContentChange = React.useCallback(
+    (node: NavigationMenuContentElement | null) => {
+      // We only want to update the stored node when another is available
+      // as we need to smoothly transition between them.
+      if (isActive && node) {
+        onActiveContentChange(node);
+      }
+    },
+    [isActive, onActiveContentChange],
+  );
   const composedRefs = useComposedRefs(contentRef, handleContentChange);
   return <NavigationMenuContentImpl {...props} ref={composedRefs} />;
 };
