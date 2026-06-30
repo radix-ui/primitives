@@ -1,8 +1,9 @@
 import * as React from 'react';
-import { Menubar } from 'radix-ui';
+import { Menubar, Slot } from 'radix-ui';
 import { foodGroups } from '@repo/test-data/foods';
 import styles from './menubar.stories.module.css';
 import { ExternalOverlayTrigger } from './external-overlay';
+import { customMergeProps } from './custom-merge-props';
 
 const subTriggerClass = [styles.item, styles.subTrigger].join(' ');
 
@@ -216,6 +217,26 @@ export const WithExtensionOverlay = () => {
     </div>
   );
 };
+
+export const WithCustomMergeProps = () => (
+  <Slot.Provider mergeProps={customMergeProps}>
+    <Menubar.Root className={styles.root}>
+      <Menubar.Menu>
+        <Menubar.Trigger className={styles.trigger} asChild>
+          <button data-custom-merge>File (asChild)</button>
+        </Menubar.Trigger>
+        <Menubar.Portal>
+          <Menubar.Content className={styles.content} sideOffset={5}>
+            <Menubar.Item className={styles.item} asChild>
+              <div data-custom-merge>New Tab (asChild)</div>
+            </Menubar.Item>
+            <Menubar.Item className={styles.item}>New Window</Menubar.Item>
+          </Menubar.Content>
+        </Menubar.Portal>
+      </Menubar.Menu>
+    </Menubar.Root>
+  </Slot.Provider>
+);
 
 export const Cypress = () => {
   const [loop, setLoop] = React.useState(false);

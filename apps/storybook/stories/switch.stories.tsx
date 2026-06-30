@@ -1,7 +1,8 @@
 /* eslint-disable react/jsx-pascal-case */
 import * as React from 'react';
-import { Label as LabelPrimitive, Switch } from 'radix-ui';
+import { Label as LabelPrimitive, Slot, Switch } from 'radix-ui';
 import styles from './switch.stories.module.css';
+import { customMergeProps } from './custom-merge-props';
 
 export default { title: 'Components/Switch' };
 
@@ -181,6 +182,16 @@ export const PartsWithinForm = () => {
     </form>
   );
 };
+
+export const WithCustomMergeProps = () => (
+  <Slot.Provider mergeProps={customMergeProps}>
+    <Switch.Root className={styles.root} asChild>
+      <button data-custom-merge>
+        <Switch.Thumb className={styles.thumb} />
+      </button>
+    </Switch.Root>
+  </Slot.Provider>
+);
 
 export const Chromatic = () => (
   <>
