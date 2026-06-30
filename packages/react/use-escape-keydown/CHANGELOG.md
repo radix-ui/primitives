@@ -2,9 +2,7 @@
 
 ## 1.1.3
 
-### - Fixed infinite re-render loop in React 19 caused by unstable composed ref callbacks being recreated on every render.
-
-- Deprecated `useEscapeKeydown` in favor of attaching listeners directly via `useEffect` for more granular control over how callbacks are stabilized, when to detach listeners, etc.
+- Deprecated `useEscapeKeydown` in favor of attaching listeners directly via `useEffect` for more granular control over how callbacks are stabilized, when to detach listeners, etc. This package itself will be deprecated in the near future.
 
 ### Other updates
 

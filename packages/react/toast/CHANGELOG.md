@@ -2,13 +2,8 @@
 
 ## 1.2.18
 
-### - Fixed infinite re-render loop in React 19 caused by unstable composed ref callbacks being recreated on every render.
-
-- Deprecated `useEscapeKeydown` in favor of attaching listeners directly via `useEffect` for more granular control over how callbacks are stabilized, when to detach listeners, etc.
-
-### Other updates
-
-- Clear close timer on unmount to prevent memory leaks and errors in test environments
+- Fixed infinite re-render loop in React 19 caused by unstable composed ref callback references.
+- Cleared the close timer on unmount to prevent memory leaks and errors in test environments
 - Updated dependencies: `@radix-ui/react-primitive@2.1.7`, `@radix-ui/react-dismissable-layer@1.1.14`, `@radix-ui/react-collection@1.1.11`, `@radix-ui/react-portal@1.1.13`, `@radix-ui/react-visually-hidden@1.2.7`
 
 ## 1.2.17
