@@ -1,5 +1,15 @@
 # @radix-ui/react-dropdown-menu
 
+## 2.1.19
+
+### - Fixed infinite re-render loop in React 19 caused by unstable composed ref callbacks being recreated on every render.
+
+- Deprecated `useEscapeKeydown` in favor of attaching listeners directly via `useEffect` for more granular control over how callbacks are stabilized, when to detach listeners, etc.
+
+### Other updates
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.7`, `@radix-ui/react-menu@2.1.19`
+
 ## 2.1.18
 
 - Fixed a bug where menus and submenus remained open after a window loses focus.

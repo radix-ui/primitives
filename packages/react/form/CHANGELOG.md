@@ -1,5 +1,9 @@
 # @radix-ui/react-form
 
+## 0.1.11
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.7`, `@radix-ui/react-label@2.1.11`
+
 ## 0.1.10
 
 - Updated dependencies: `@radix-ui/react-primitive@2.1.6`, `@radix-ui/react-label@2.1.10`

@@ -1,5 +1,9 @@
 # @radix-ui/react-toggle-group
 
+## 1.1.14
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.7`, `@radix-ui/react-roving-focus@1.1.14`, `@radix-ui/react-toggle@1.1.13`
+
 ## 1.1.13
 
 - Updated single-select and multi-select toggle groups to use the `radiogroup` and `toolbar` roles, respectively.

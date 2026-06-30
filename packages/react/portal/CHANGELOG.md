@@ -1,5 +1,9 @@
 # @radix-ui/react-portal
 
+## 1.1.13
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.7`
+
 ## 1.1.12
 
 - Updated dependencies: `@radix-ui/react-primitive@2.1.6`

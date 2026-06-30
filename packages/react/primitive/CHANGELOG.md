@@ -1,5 +1,9 @@
 # @radix-ui/react-primitive
 
+## 2.1.7
+
+- Removed global `React.CSSProperties` augmentation from emitted declaration files.
+
 ## 2.1.6
 
 - Fixed `Duplicate index signature` errors that surfaced when consuming multiple packages together.
