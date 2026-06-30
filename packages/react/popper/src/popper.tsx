@@ -76,7 +76,7 @@ const ANCHOR_NAME = 'PopperAnchor';
 type PopperAnchorElement = React.ComponentRef<typeof Primitive.div>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface PopperAnchorProps extends PrimitiveDivProps {
-  virtualRef?: React.RefObject<Measurable>;
+  virtualRef?: React.RefObject<Measurable | null>;
 }
 
 const PopperAnchor = React.forwardRef<PopperAnchorElement, PopperAnchorProps>(
