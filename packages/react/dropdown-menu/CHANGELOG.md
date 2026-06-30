@@ -1,5 +1,13 @@
 # @radix-ui/react-dropdown-menu
 
+## 2.1.19
+
+- Fixed infinite re-render loop in React 19 caused by unstable composed ref callback references.
+
+### Other updates
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.7`, `@radix-ui/react-menu@2.1.19`
+
 ## 2.1.18
 
 - Fixed a bug where menus and submenus remained open after a window loses focus.

@@ -1,5 +1,9 @@
 # @radix-ui/react-dialog
 
+## 1.1.18
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.7`, `@radix-ui/react-dismissable-layer@1.1.14`, `@radix-ui/react-focus-scope@1.1.11`, `@radix-ui/react-portal@1.1.13`
+
 ## 1.1.17
 
 - Removed dev-only warnings for dialogs when title and/or description is not rendered.

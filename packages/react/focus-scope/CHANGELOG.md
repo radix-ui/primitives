@@ -1,5 +1,13 @@
 # @radix-ui/react-focus-scope
 
+## 1.1.11
+
+- Fixed infinite re-render loop in React 19 caused by unstable composed ref callback references.
+
+### Other updates
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.7`
+
 ## 1.1.10
 
 - Updated dependencies: `@radix-ui/react-primitive@2.1.6`

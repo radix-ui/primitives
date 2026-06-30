@@ -1,5 +1,13 @@
 # @radix-ui/react-navigation-menu
 
+## 1.2.17
+
+- Fixed infinite re-render loop in React 19 caused by unstable composed ref callback references.
+
+### Other updates
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.7`, `@radix-ui/react-dismissable-layer@1.1.14`, `@radix-ui/react-collection@1.1.11`, `@radix-ui/react-visually-hidden@1.2.7`
+
 ## 1.2.16
 
 - Fixed `Duplicate index signature` errors that surfaced when consuming multiple packages together.

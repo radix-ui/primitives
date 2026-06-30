@@ -1,5 +1,9 @@
 # @radix-ui/react-checkbox
 
+## 1.3.6
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.7`
+
 ## 1.3.5
 
 - Updated dependencies: `@radix-ui/react-primitive@2.1.6`

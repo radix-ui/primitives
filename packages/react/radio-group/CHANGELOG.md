@@ -1,5 +1,9 @@
 # @radix-ui/react-radio-group
 
+## 1.4.2
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.7`, `@radix-ui/react-roving-focus@1.1.14`
+
 ## 1.4.1
 
 - Updated dependencies: `@radix-ui/react-primitive@2.1.6`, `@radix-ui/react-roving-focus@1.1.13`

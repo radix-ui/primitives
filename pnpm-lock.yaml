@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  node-fetch: npm:node-fetch-native@^1.6.0
+
 patchedDependencies:
   '@changesets/apply-release-plan': 07a08c92a179c60bea9ec7b945a1c1c57ecfc8fdaa76edfb99ed9ea2f46808ea
 

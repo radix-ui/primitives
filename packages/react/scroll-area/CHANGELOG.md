@@ -1,5 +1,13 @@
 # @radix-ui/react-scroll-area
 
+## 1.2.13
+
+- Fixed infinite re-render loop in React 19 caused by unstable composed ref callback references.
+
+### Other updates
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.7`
+
 ## 1.2.12
 
 - Stabilized the viewport style tag unless the nonce changes.

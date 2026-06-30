@@ -1,5 +1,13 @@
 # @radix-ui/react-dismissable-layer
 
+## 1.1.14
+
+- Fixed infinite re-render loop in React 19 caused by unstable composed ref callback references.
+
+### Other updates
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.7`
+
 ## 1.1.13
 
 - Fixed Dismissable Layer so outside interactions stopped by extension UI overlays do not dismiss dialogs or popovers.
