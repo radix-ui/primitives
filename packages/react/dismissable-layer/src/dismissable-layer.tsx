@@ -132,15 +132,7 @@ const DismissableLayer = React.forwardRef<DismissableLayerElement, DismissableLa
       if (!event.defaultPrevented) onDismiss?.();
     }, ownerDocument);
 
-    // Compute the layer position from the live `context.layers` set rather than
-    // the render-time `index`. The layer is registered in an effect after the
-    // ref sets `node`, so the memoized `index` can still be `-1` when Escape is
-    // pressed before the follow-up re-render. Reading the set live keeps Escape
-    // working regardless of render timing (see issue #3963).
-    const isHighestLayer = React.useMemo(() => {
-      const liveLayers = Array.from(context.layers);
-      return node ? liveLayers.indexOf(node) === liveLayers.length - 1 : false;
-    }, [node, context.layers]);
+    const isHighestLayer = node ? index === layers.length - 1 : false;
 
     const handleKeyDown = useEffectEvent((event: KeyboardEvent) => {
       if (event.key !== 'Escape') {
