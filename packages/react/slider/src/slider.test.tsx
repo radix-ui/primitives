@@ -100,7 +100,7 @@ describe('Slider', () => {
       const user = userEvent.setup();
       renderSliderInForm({ name: 'volume', defaultValue: [20], min: 0, max: 100 });
 
-      await user.tab();
+      screen.getByRole('slider').focus();
       await user.keyboard('{ArrowRight}');
       expect(getThumbValue()).toBe(21);
 
@@ -127,11 +127,73 @@ describe('Slider', () => {
       const user = userEvent.setup();
       render(<ControlledSlider />);
 
-      await user.tab();
+      screen.getByRole('slider').focus();
       await user.keyboard('{ArrowRight}');
       expect(getThumbValue()).toBe(21);
 
       await user.click(screen.getByText('Reset'));
+      expect(getThumbValue()).toBe(20);
+    });
+  });
+
+  describe('with external form association', () => {
+    it('should restore its `defaultValue` when reset from an external form', async () => {
+      const user = userEvent.setup();
+      render(
+        <>
+          <form id="slider-reset-form">
+            <button type="reset">Reset</button>
+          </form>
+          <Slider.Root name="volume" form="slider-reset-form" defaultValue={[20]} min={0} max={100}>
+            <Slider.Track>
+              <Slider.Range />
+            </Slider.Track>
+            <Slider.Thumb />
+          </Slider.Root>
+        </>,
+      );
+
+      screen.getByRole('slider').focus();
+      await user.keyboard('{ArrowRight}');
+      expect(getThumbValue()).toBe(21);
+
+      await user.click(screen.getByRole('button', { name: 'Reset' }));
+      expect(getThumbValue()).toBe(20);
+    });
+
+    it('should restore its initial `value` when reset from an external form', async () => {
+      function ControlledSlider() {
+        const [value, setValue] = React.useState([20]);
+        return (
+          <>
+            <form id="slider-reset-form">
+              <button type="reset">Reset</button>
+            </form>
+            <Slider.Root
+              name="volume"
+              form="slider-reset-form"
+              value={value}
+              onValueChange={setValue}
+              min={0}
+              max={100}
+            >
+              <Slider.Track>
+                <Slider.Range />
+              </Slider.Track>
+              <Slider.Thumb />
+            </Slider.Root>
+          </>
+        );
+      }
+
+      const user = userEvent.setup();
+      render(<ControlledSlider />);
+
+      screen.getByRole('slider').focus();
+      await user.keyboard('{ArrowRight}');
+      expect(getThumbValue()).toBe(21);
+
+      await user.click(screen.getByRole('button', { name: 'Reset' }));
       expect(getThumbValue()).toBe(20);
     });
   });

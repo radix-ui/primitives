@@ -187,13 +187,13 @@ function SelectProvider(props: ScopedProps<SelectProviderProps>) {
 
   const initialValueRef = React.useRef(value);
   React.useEffect(() => {
-    const associatedForm = trigger?.form;
-    if (associatedForm) {
+    const associatedForm = form ? trigger?.ownerDocument.getElementById(form) : trigger?.form;
+    if (associatedForm instanceof HTMLFormElement) {
       const reset = () => setValue(initialValueRef.current);
       associatedForm.addEventListener('reset', reset);
       return () => associatedForm.removeEventListener('reset', reset);
     }
-  }, [trigger, setValue]);
+  }, [form, trigger, setValue]);
 
   // We set this to true by default so that events bubble to forms without JS (SSR)
   const isFormControl = trigger ? !!form || !!trigger.closest('form') : true;

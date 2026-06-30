@@ -36,6 +36,7 @@ const useRadioScope = createRadioScope();
 
 type RadioGroupContextValue = {
   name?: string;
+  form?: string;
   required: boolean;
   disabled: boolean;
   value: string | null;
@@ -50,6 +51,7 @@ type RovingFocusGroupProps = React.ComponentPropsWithoutRef<typeof RovingFocusGr
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface RadioGroupProps extends PrimitiveDivProps {
   name?: RadioGroupContextValue['name'];
+  form?: React.ComponentPropsWithoutRef<typeof Radio>['form'];
   required?: React.ComponentPropsWithoutRef<typeof Radio>['required'];
   disabled?: React.ComponentPropsWithoutRef<typeof Radio>['disabled'];
   dir?: RovingFocusGroupProps['dir'];
@@ -65,6 +67,7 @@ const RadioGroup = React.forwardRef<RadioGroupElement, RadioGroupProps>(
     const {
       __scopeRadioGroup,
       name,
+      form,
       defaultValue,
       value: valueProp,
       required = false,
@@ -88,18 +91,21 @@ const RadioGroup = React.forwardRef<RadioGroupElement, RadioGroupProps>(
 
     const initialValueRef = React.useRef(value);
     React.useEffect(() => {
-      const form = control?.closest('form');
-      if (form) {
+      const associatedForm = form
+        ? control?.ownerDocument.getElementById(form)
+        : control?.closest('form');
+      if (associatedForm instanceof HTMLFormElement) {
         const reset = () => setValue(initialValueRef.current);
-        form.addEventListener('reset', reset);
-        return () => form.removeEventListener('reset', reset);
+        associatedForm.addEventListener('reset', reset);
+        return () => associatedForm.removeEventListener('reset', reset);
       }
-    }, [control, setValue]);
+    }, [control, form, setValue]);
 
     return (
       <RadioGroupProvider
         scope={__scopeRadioGroup}
         name={name}
+        form={form}
         required={required}
         disabled={disabled}
         value={value}
@@ -164,6 +170,7 @@ function RadioGroupItemProvider(props: ScopedProps<RadioGroupItemProviderProps>)
       disabled={isDisabled}
       required={context.required}
       name={context.name}
+      form={context.form}
       value={value}
       onCheck={() => context.onValueChange(value)}
       // @ts-expect-error

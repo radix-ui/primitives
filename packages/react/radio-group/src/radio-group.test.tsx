@@ -410,6 +410,71 @@ describe('RadioGroup', () => {
       });
     });
   });
+
+  describe('given a RadioGroup with external form association that is reset', () => {
+    describe('uncontrolled', () => {
+      it('should restore its `defaultValue` selection when the external form is reset', () => {
+        render(
+          <>
+            <form id="radio-group-reset-form">
+              <button type="reset">Reset</button>
+            </form>
+            <ClassicRadioGroup name="pet" form="radio-group-reset-form" defaultValue="1" />
+          </>,
+        );
+
+        const radios = screen.getAllByRole(RADIO_ROLE);
+        expect(radios[0]).toHaveAttribute('aria-checked', 'true');
+
+        act(() => fireEvent.click(radios[2]!));
+        expect(radios[2]).toHaveAttribute('aria-checked', 'true');
+
+        act(() => fireEvent.click(screen.getByRole('button', { name: 'Reset' })));
+        expect(radios[0]).toHaveAttribute('aria-checked', 'true');
+        expect(radios[2]).toHaveAttribute('aria-checked', 'false');
+      });
+    });
+
+    describe('controlled', () => {
+      it('should restore its initial `value` selection when the external form is reset', () => {
+        function ControlledRadioGroup() {
+          const [value, setValue] = React.useState<string | null>('1');
+          return (
+            <>
+              <form id="radio-group-reset-form">
+                <button type="reset">Reset</button>
+              </form>
+              <RadioGroup.Root
+                aria-label="pets"
+                name="pet"
+                form="radio-group-reset-form"
+                value={value}
+                onValueChange={setValue}
+              >
+                {VALUES.map((v) => (
+                  <RadioGroup.Item key={v} value={v} aria-label={LABELS[v]}>
+                    <RadioGroup.Indicator />
+                  </RadioGroup.Item>
+                ))}
+              </RadioGroup.Root>
+            </>
+          );
+        }
+
+        render(<ControlledRadioGroup />);
+
+        const radios = screen.getAllByRole(RADIO_ROLE);
+        expect(radios[0]).toHaveAttribute('aria-checked', 'true');
+
+        act(() => fireEvent.click(radios[1]!));
+        expect(radios[1]).toHaveAttribute('aria-checked', 'true');
+
+        act(() => fireEvent.click(screen.getByRole('button', { name: 'Reset' })));
+        expect(radios[0]).toHaveAttribute('aria-checked', 'true');
+        expect(radios[1]).toHaveAttribute('aria-checked', 'false');
+      });
+    });
+  });
 });
 
 describe('Composable RadioGroup', () => {

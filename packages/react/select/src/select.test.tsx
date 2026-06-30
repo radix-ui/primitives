@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, describe, it, expect } from 'vitest';
 import { assertStableComposedRef } from '@repo/test-utils/ref-stability';
 import * as Select from './select';
@@ -15,10 +15,10 @@ const SelectTest = (props: React.ComponentProps<typeof Select.Root>) => (
     <Select.Portal>
       <Select.Content position="popper">
         <Select.Viewport>
-          <Select.Item value="apple" data-testid="item-apple">
+          <Select.Item value="apple">
             <Select.ItemText>Apple</Select.ItemText>
           </Select.Item>
-          <Select.Item value="banana" data-testid="item-banana">
+          <Select.Item value="banana">
             <Select.ItemText>Banana</Select.ItemText>
           </Select.Item>
         </Select.Viewport>
@@ -190,8 +190,10 @@ describe('given a Select in a form that is reset', () => {
         </form>,
       );
 
-      const apple = await screen.findByTestId('item-apple');
-      const banana = screen.getByTestId('item-banana');
+      const listbox = await screen.findByRole('listbox', { hidden: true });
+      const apple = within(listbox).getByRole('option', { name: 'Apple' });
+      const banana = within(listbox).getByRole('option', { name: 'Banana' });
+
       expect(apple).toHaveAttribute('data-state', 'checked');
 
       act(() => fireEvent.click(banana));
@@ -212,17 +214,19 @@ describe('given a Select in a form that is reset', () => {
         </form>,
       );
 
-      const banana = await screen.findByTestId('item-banana');
+      const trigger = screen.getByRole('combobox', { name: 'Choice', hidden: true });
       // No value selected initially, so the placeholder is shown.
-      expect(screen.getByText(PLACEHOLDER_TEXT)).toBeInTheDocument();
+      expect(trigger).toHaveTextContent(PLACEHOLDER_TEXT);
 
+      const listbox = await screen.findByRole('listbox', { hidden: true });
+      const banana = within(listbox).getByRole('option', { name: 'Banana' });
       act(() => fireEvent.click(banana));
       expect(banana).toHaveAttribute('data-state', 'checked');
-      expect(screen.queryByText(PLACEHOLDER_TEXT)).not.toBeInTheDocument();
+      expect(trigger).not.toHaveTextContent(PLACEHOLDER_TEXT);
 
-      act(() => fireEvent.click(screen.getByText('Reset')));
+      act(() => fireEvent.click(screen.getByRole('button', { name: 'Reset', hidden: true })));
       expect(banana).toHaveAttribute('data-state', 'unchecked');
-      expect(screen.getByText(PLACEHOLDER_TEXT)).toBeInTheDocument();
+      expect(trigger).toHaveTextContent(PLACEHOLDER_TEXT);
     });
   });
 
@@ -246,15 +250,82 @@ describe('given a Select in a form that is reset', () => {
 
       render(<ControlledSelect />);
 
-      const apple = await screen.findByTestId('item-apple');
-      const banana = screen.getByTestId('item-banana');
+      const listbox = await screen.findByRole('listbox', { hidden: true });
+      const apple = within(listbox).getByRole('option', { name: 'Apple' });
       expect(apple).toHaveAttribute('data-state', 'checked');
 
+      const banana = within(listbox).getByRole('option', { name: 'Banana' });
       act(() => fireEvent.click(banana));
       expect(banana).toHaveAttribute('data-state', 'checked');
       expect(apple).toHaveAttribute('data-state', 'unchecked');
 
       act(() => fireEvent.click(screen.getByText('Reset')));
+      expect(apple).toHaveAttribute('data-state', 'checked');
+      expect(banana).toHaveAttribute('data-state', 'unchecked');
+    });
+  });
+
+  describe('external form association', () => {
+    it('should restore its `defaultValue` when reset from an external form', async () => {
+      render(
+        <>
+          <form id="select-reset-form">
+            <button type="reset">Reset</button>
+          </form>
+          <SelectTest
+            name="fruit"
+            form="select-reset-form"
+            defaultValue="apple"
+            open
+            onOpenChange={() => {}}
+          />
+        </>,
+      );
+
+      const listbox = await screen.findByRole('listbox', { hidden: true });
+      const apple = within(listbox).getByRole('option', { name: 'Apple' });
+      expect(apple).toHaveAttribute('data-state', 'checked');
+
+      const banana = within(listbox).getByRole('option', { name: 'Banana' });
+      act(() => fireEvent.click(banana));
+      expect(banana).toHaveAttribute('data-state', 'checked');
+
+      act(() => fireEvent.click(screen.getByRole('button', { name: 'Reset', hidden: true })));
+      expect(apple).toHaveAttribute('data-state', 'checked');
+      expect(banana).toHaveAttribute('data-state', 'unchecked');
+    });
+
+    it('should restore its initial `value` when reset from an external form', async () => {
+      function ControlledSelect() {
+        const [value, setValue] = React.useState('apple');
+        return (
+          <>
+            <form id="select-reset-form">
+              <button type="reset">Reset</button>
+            </form>
+            <SelectTest
+              name="fruit"
+              form="select-reset-form"
+              value={value}
+              onValueChange={setValue}
+              open
+              onOpenChange={() => {}}
+            />
+          </>
+        );
+      }
+
+      render(<ControlledSelect />);
+
+      const listbox = await screen.findByRole('listbox', { hidden: true });
+      const apple = within(listbox).getByRole('option', { name: 'Apple' });
+      expect(apple).toHaveAttribute('data-state', 'checked');
+
+      const banana = within(listbox).getByRole('option', { name: 'Banana' });
+      act(() => fireEvent.click(banana));
+      expect(banana).toHaveAttribute('data-state', 'checked');
+
+      act(() => fireEvent.click(screen.getByRole('button', { name: 'Reset', hidden: true })));
       expect(apple).toHaveAttribute('data-state', 'checked');
       expect(banana).toHaveAttribute('data-state', 'unchecked');
     });

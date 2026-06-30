@@ -120,6 +120,7 @@ const SwitchTrigger = React.forwardRef<HTMLButtonElement, SwitchTriggerProps>(
   ({ __scopeSwitch, onClick, ...switchProps }: ScopedProps<SwitchTriggerProps>, forwardedRef) => {
     const {
       control,
+      form,
       value,
       disabled,
       checked,
@@ -134,13 +135,13 @@ const SwitchTrigger = React.forwardRef<HTMLButtonElement, SwitchTriggerProps>(
 
     const initialCheckedStateRef = React.useRef(checked);
     React.useEffect(() => {
-      const form = control?.form;
-      if (form) {
+      const associatedForm = form ? control?.ownerDocument.getElementById(form) : control?.form;
+      if (associatedForm instanceof HTMLFormElement) {
         const reset = () => setChecked(initialCheckedStateRef.current);
-        form.addEventListener('reset', reset);
-        return () => form.removeEventListener('reset', reset);
+        associatedForm.addEventListener('reset', reset);
+        return () => associatedForm.removeEventListener('reset', reset);
       }
-    }, [control, setChecked]);
+    }, [control, form, setChecked]);
 
     return (
       <Primitive.button
