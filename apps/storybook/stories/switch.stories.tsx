@@ -37,25 +37,26 @@ export const Controlled = () => {
 };
 
 export const React19Action = () => {
-  const [checked, setChecked] = React.useState(false);
-  const [savedChecked, setSavedChecked] = React.useState(checked);
+  const [state, saveCheckedAction, isPending] = React.useActionState(
+    async (_previousState: { checked: boolean }, nextChecked: boolean) => {
+      await sleep(1200);
+      return { checked: nextChecked };
+    },
+    { checked: false },
+  );
 
   return (
     <div style={{ display: 'grid', gap: 10, justifyItems: 'start' }}>
       <Label htmlFor="react-19-action-switch">Email notifications</Label>{' '}
       <Switch.Root
         className={styles.root}
-        checked={checked}
-        checkedChangedAction={async (nextChecked) => {
-          await sleep(1200);
-          setChecked(nextChecked);
-          setSavedChecked(nextChecked);
-        }}
+        checked={state.checked}
+        checkedChangedAction={saveCheckedAction}
         id="react-19-action-switch"
       >
         <Switch.Thumb className={styles.thumb} />
       </Switch.Root>
-      <output>Saved value: {String(savedChecked)}</output>
+      <output>{isPending ? 'Saving value...' : `Saved value: ${String(state.checked)}`}</output>
     </div>
   );
 };
