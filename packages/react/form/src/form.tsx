@@ -237,20 +237,36 @@ const LABEL_NAME = 'FormLabel';
 
 type FormLabelElement = React.ComponentRef<typeof LabelPrimitive>;
 type LabelProps = React.ComponentPropsWithoutRef<typeof LabelPrimitive>;
-interface FormLabelProps extends LabelProps {}
+interface FormLabelProps extends LabelProps {
+  name?: string;
+}
 
 const FormLabel = React.forwardRef<FormLabelElement, FormLabelProps>(
   (props: ScopedProps<FormLabelProps>, forwardedRef) => {
-    const { __scopeForm, ...labelProps } = props;
+    const { __scopeForm, name: nameProp, ...labelProps } = props;
     const validationContext = useValidationContext(LABEL_NAME, __scopeForm);
-    const fieldContext = useFormFieldContext(LABEL_NAME, __scopeForm);
-    const htmlFor = labelProps.htmlFor || fieldContext.id;
-    const validity = validationContext.getFieldValidity(fieldContext.name);
+    const fieldContext = useFormFieldContext(LABEL_NAME, __scopeForm, { optional: true });
+    const name = nameProp ?? fieldContext?.name;
+    if (!name) {
+      throw new Error(
+        `\`${LABEL_NAME}\` must be used within \`${FIELD_NAME}\` or specify the \`name\` prop`,
+      );
+    }
+
+    const htmlFor = labelProps.htmlFor || fieldContext?.id;
+    if (!htmlFor) {
+      throw new Error(
+        `\`${LABEL_NAME}\` must be used within \`${FIELD_NAME}\` or specify the \`htmlFor\` prop`,
+      );
+    }
+
+    const validity = validationContext.getFieldValidity(name);
+    const serverInvalid = fieldContext?.serverInvalid ?? false;
 
     return (
       <LabelPrimitive
-        data-valid={getValidAttribute(validity, fieldContext.serverInvalid)}
-        data-invalid={getInvalidAttribute(validity, fieldContext.serverInvalid)}
+        data-valid={getValidAttribute(validity, serverInvalid)}
+        data-invalid={getInvalidAttribute(validity, serverInvalid)}
         {...labelProps}
         ref={forwardedRef}
         htmlFor={htmlFor}
@@ -273,16 +289,28 @@ interface FormControlProps extends PrimitiveInputProps {}
 
 const FormControl = React.forwardRef<FormControlElement, FormControlProps>(
   (props: ScopedProps<FormControlProps>, forwardedRef) => {
-    const { __scopeForm, ...controlProps } = props;
+    const { __scopeForm, name: nameProp, id: idProp, ...controlProps } = props;
 
     const validationContext = useValidationContext(CONTROL_NAME, __scopeForm);
-    const fieldContext = useFormFieldContext(CONTROL_NAME, __scopeForm);
+    const fieldContext = useFormFieldContext(CONTROL_NAME, __scopeForm, { optional: true });
     const ariaDescriptionContext = useAriaDescriptionContext(CONTROL_NAME, __scopeForm);
 
     const ref = React.useRef<FormControlElement>(null);
     const composedRef = useComposedRefs(forwardedRef, ref);
-    const name = controlProps.name || fieldContext.name;
-    const id = controlProps.id || fieldContext.id;
+    const name = nameProp || fieldContext?.name;
+    if (!name) {
+      throw new Error(
+        `\`${CONTROL_NAME}\` must be used within \`${FIELD_NAME}\` or specify the \`name\` prop`,
+      );
+    }
+
+    const id = idProp || fieldContext?.id;
+    if (!id) {
+      throw new Error(
+        `\`${CONTROL_NAME}\` must be used within \`${FIELD_NAME}\` or specify the \`id\` prop`,
+      );
+    }
+
     const customMatcherEntries = validationContext.getFieldCustomMatcherEntries(name);
 
     const { onFieldValidityChange, onFieldCustomErrorsChange, onFieldValiditionClear } =
@@ -379,23 +407,29 @@ const FormControl = React.forwardRef<FormControlElement, FormControlProps>(
       }
     }, [resetControlValidity]);
 
+    const serverInvalid = fieldContext?.serverInvalid ?? false;
+
     // focus first invalid control when fields are set as invalid by server
     React.useEffect(() => {
+      if (!serverInvalid) {
+        return;
+      }
+
       const control = ref.current;
       const form = control?.closest('form');
-      if (form && fieldContext.serverInvalid) {
-        const firstInvalidControl = getFirstInvalidControl(form);
-        if (firstInvalidControl === control) firstInvalidControl.focus();
+      const firstInvalidControl = form ? getFirstInvalidControl(form) : null;
+      if (firstInvalidControl === control) {
+        firstInvalidControl?.focus();
       }
-    }, [fieldContext.serverInvalid]);
+    }, [serverInvalid]);
 
     const validity = validationContext.getFieldValidity(name);
 
     return (
       <Primitive.input
-        data-valid={getValidAttribute(validity, fieldContext.serverInvalid)}
-        data-invalid={getInvalidAttribute(validity, fieldContext.serverInvalid)}
-        aria-invalid={fieldContext.serverInvalid ? true : undefined}
+        data-valid={getValidAttribute(validity, serverInvalid)}
+        data-invalid={getInvalidAttribute(validity, serverInvalid)}
+        aria-invalid={serverInvalid || undefined}
         aria-describedby={ariaDescriptionContext.getFieldDescription(name)}
         // disable default browser behaviour of showing built-in error message on hover
         title=""
@@ -462,8 +496,13 @@ interface FormMessageProps extends Omit<FormMessageImplProps, 'name'> {
 const FormMessage = React.forwardRef<FormMessageElement, FormMessageProps>(
   (props: ScopedProps<FormMessageProps>, forwardedRef) => {
     const { match, name: nameProp, ...messageProps } = props;
-    const fieldContext = useFormFieldContext(MESSAGE_NAME, props.__scopeForm);
-    const name = nameProp ?? fieldContext.name;
+    const fieldContext = useFormFieldContext(MESSAGE_NAME, props.__scopeForm, { optional: true });
+    const name = nameProp ?? fieldContext?.name;
+    if (!name) {
+      throw new Error(
+        `\`${MESSAGE_NAME}\` must be used within \`${FIELD_NAME}\` or specify the \`name\` prop`,
+      );
+    }
 
     if (match === undefined) {
       return (
@@ -585,8 +624,13 @@ interface FormValidityStateProps {
 const FormValidityState = (props: ScopedProps<FormValidityStateProps>) => {
   const { __scopeForm, name: nameProp, children } = props;
   const validationContext = useValidationContext(VALIDITY_STATE_NAME, __scopeForm);
-  const fieldContext = useFormFieldContext(VALIDITY_STATE_NAME, __scopeForm);
-  const name = nameProp ?? fieldContext.name;
+  const fieldContext = useFormFieldContext(VALIDITY_STATE_NAME, __scopeForm, { optional: true });
+  const name = nameProp ?? fieldContext?.name;
+  if (!name) {
+    throw new Error(
+      `\`${VALIDITY_STATE_NAME}\` must be used within \`${FIELD_NAME}\` or specify the \`name\` prop`,
+    );
+  }
   const validity = validationContext.getFieldValidity(name);
   return <>{children(validity)}</>;
 };
@@ -646,10 +690,10 @@ function isInvalid(control: HTMLElement) {
   );
 }
 
-function getFirstInvalidControl(form: HTMLFormElement): HTMLElement | undefined {
+function getFirstInvalidControl(form: HTMLFormElement): HTMLElement | null {
   const elements = form.elements;
   const [firstInvalidControl] = Array.from(elements).filter(isHTMLElement).filter(isInvalid);
-  return firstInvalidControl;
+  return firstInvalidControl ?? null;
 }
 
 function isAsyncCustomMatcherEntry(
