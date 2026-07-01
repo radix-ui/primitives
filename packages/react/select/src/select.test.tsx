@@ -178,8 +178,6 @@ describe('async value actions', () => {
 
     expect(handleValueChangedAction).toHaveBeenCalledWith('banana');
     expect(trigger).toHaveTextContent('Banana');
-    expect(trigger).toHaveAttribute('data-pending');
-    expect(trigger).toHaveAttribute('data-optimistic');
     expect(banana).toHaveAttribute('data-state', 'checked');
 
     await act(async () => {
@@ -187,8 +185,6 @@ describe('async value actions', () => {
       await deferredAction.promise;
     });
 
-    await waitFor(() => expect(trigger).not.toHaveAttribute('data-pending'));
-    expect(trigger).not.toHaveAttribute('data-optimistic');
     expect(trigger).toHaveTextContent('Banana');
     expect(banana).toHaveAttribute('data-state', 'checked');
   });
@@ -224,7 +220,6 @@ describe('async value actions', () => {
       await deferredAction.promise;
     });
 
-    await waitFor(() => expect(trigger).not.toHaveAttribute('data-pending'));
     expect(trigger).toHaveTextContent('Apple');
     expect(apple).toHaveAttribute('data-state', 'checked');
   });

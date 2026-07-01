@@ -16,15 +16,6 @@
     outline: none;
     box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.5);
   }
-
-  &[data-pending] {
-    cursor: progress;
-    opacity: 0.75;
-  }
-
-  &[data-optimistic] {
-    border-style: dashed;
-  }
 }
 
 .content {
@@ -86,10 +77,6 @@
 
   &[data-disabled] {
     color: var(--color-gray100);
-  }
-
-  &[data-pending] {
-    cursor: progress;
   }
 
   [dir='rtl'] & {

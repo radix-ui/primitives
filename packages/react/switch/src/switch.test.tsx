@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as Switch from './switch';
-import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, it, expect, vi } from 'vitest';
 
 const SWITCH_ROLE = 'switch';
@@ -117,8 +117,6 @@ describe('async checked actions', () => {
     expect(handleCheckedChangedAction).toHaveBeenCalledWith(true);
     expect(switchControl).toHaveAttribute('aria-checked', 'true');
     expect(switchControl).toHaveAttribute('data-state', 'checked');
-    expect(switchControl).toHaveAttribute('data-pending');
-    expect(switchControl).toHaveAttribute('data-optimistic');
     expect(thumb).toHaveAttribute('data-state', 'checked');
 
     await act(async () => {
@@ -126,8 +124,6 @@ describe('async checked actions', () => {
       await deferredAction.promise;
     });
 
-    await waitFor(() => expect(switchControl).not.toHaveAttribute('data-pending'));
-    expect(switchControl).not.toHaveAttribute('data-optimistic');
     expect(switchControl).toHaveAttribute('aria-checked', 'true');
     expect(thumb).toHaveAttribute('data-state', 'checked');
   });
@@ -156,7 +152,6 @@ describe('async checked actions', () => {
       await deferredAction.promise;
     });
 
-    await waitFor(() => expect(switchControl).not.toHaveAttribute('data-pending'));
     expect(switchControl).toHaveAttribute('aria-checked', 'false');
   });
 });

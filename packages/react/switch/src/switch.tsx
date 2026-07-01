@@ -23,7 +23,6 @@ type SwitchContextValue = {
   setChecked: React.Dispatch<React.SetStateAction<boolean>>;
   resetChecked(checked: boolean): void;
   checkedChangePending: boolean;
-  checkedChangeOptimistic: boolean;
   disabled: boolean | undefined;
   control: HTMLButtonElement | null;
   setControl: React.Dispatch<React.SetStateAction<HTMLButtonElement | null>>;
@@ -138,7 +137,6 @@ function SwitchProvider(props: ScopedProps<SwitchProviderProps>) {
     setChecked,
     resetChecked: setCommittedChecked,
     checkedChangePending,
-    checkedChangeOptimistic: checkedChangePending,
     disabled,
     control,
     setControl,
@@ -186,7 +184,6 @@ const SwitchTrigger = React.forwardRef<HTMLButtonElement, SwitchTriggerProps>(
       setChecked,
       resetChecked,
       checkedChangePending,
-      checkedChangeOptimistic,
       hasConsumerStoppedPropagationRef,
       isFormControl,
       bubbleInput,
@@ -210,8 +207,6 @@ const SwitchTrigger = React.forwardRef<HTMLButtonElement, SwitchTriggerProps>(
         aria-checked={checked}
         aria-required={required}
         data-state={getState(checked)}
-        data-pending={checkedChangePending ? '' : undefined}
-        data-optimistic={checkedChangeOptimistic ? '' : undefined}
         data-disabled={disabled ? '' : undefined}
         disabled={disabled}
         value={value}
@@ -321,8 +316,6 @@ const SwitchThumb = React.forwardRef<SwitchThumbElement, SwitchThumbProps>(
     return (
       <Primitive.span
         data-state={getState(context.checked)}
-        data-pending={context.checkedChangePending ? '' : undefined}
-        data-optimistic={context.checkedChangeOptimistic ? '' : undefined}
         data-disabled={context.disabled ? '' : undefined}
         {...thumbProps}
         ref={forwardedRef}

@@ -15,13 +15,13 @@ const [state, savePreferenceAction, isPending] = React.useActionState(
   { notificationsEnabled: false },
 );
 
-<Switch.Root
-  checked={state.notificationsEnabled}
-  checkedChangedAction={savePreferenceAction}
-  data-saving={isPending ? '' : undefined}
->
+<Switch.Root checked={state.notificationsEnabled} checkedChangedAction={savePreferenceAction}>
   <Switch.Thumb />
 </Switch.Root>;
+
+{
+  isPending ? 'Saving preference...' : null;
+}
 ```
 
-The existing `onCheckedChange` callback remains available for synchronous observation and local updates. When `checkedChangedAction` is used, `Switch.Root` and `Switch.Thumb` expose `data-pending` and `data-optimistic` for custom styling. The prop requires React 19.2 or newer.
+The existing `onCheckedChange` callback remains available for synchronous observation and local updates. When `checkedChangedAction` is used, the switch owns the optimistic checked display and duplicate-interaction guard, while pending UI and styling remain fully owned by userland through `useActionState`. The prop requires React 19.2 or newer.

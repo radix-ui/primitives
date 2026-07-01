@@ -32,16 +32,6 @@
   &[data-disabled] {
     opacity: 0.5;
   }
-
-  &[data-pending] {
-    cursor: progress;
-    opacity: 0.75;
-  }
-
-  &[data-optimistic] {
-    outline: 2px dashed var(--color-black);
-    outline-offset: 2px;
-  }
 }
 
 .thumb {

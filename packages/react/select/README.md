@@ -15,11 +15,7 @@ const [state, savePlanAction, isPending] = React.useActionState(
   { plan: 'pro' },
 );
 
-<Select.Root
-  value={state.plan}
-  valueChangedAction={savePlanAction}
-  data-saving={isPending ? '' : undefined}
->
+<Select.Root value={state.plan} valueChangedAction={savePlanAction}>
   <Select.Trigger>
     <Select.Value />
     <Select.Icon />
@@ -33,6 +29,10 @@ const [state, savePlanAction, isPending] = React.useActionState(
     </Select.Item>
   </Select.Content>
 </Select.Root>;
+
+{
+  isPending ? 'Saving plan...' : null;
+}
 ```
 
-The existing `onValueChange` callback remains available for synchronous observation and local updates. When `valueChangedAction` is used, `Select.Trigger` and `Select.Item` expose `data-pending` and `data-optimistic` for custom styling. The prop requires React 19.2 or newer.
+The existing `onValueChange` callback remains available for synchronous observation and local updates. When `valueChangedAction` is used, the select owns the optimistic value display and duplicate-interaction guard, while pending UI and styling remain fully owned by userland through `useActionState`. The prop requires React 19.2 or newer.

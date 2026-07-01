@@ -65,7 +65,6 @@ type SelectContextValue = {
   value: string | undefined;
   onValueChange(value: string): void;
   valueChangePending: boolean;
-  valueChangeOptimistic: boolean;
   open: boolean;
   required?: boolean;
   onOpenChange(open: boolean): void;
@@ -286,7 +285,6 @@ function SelectProvider(props: ScopedProps<SelectProviderProps>) {
     value,
     onValueChange: setValue,
     valueChangePending,
-    valueChangeOptimistic: valueChangePending,
     open,
     onOpenChange: setOpen,
     dir: direction,
@@ -406,8 +404,6 @@ const SelectTrigger = React.forwardRef<SelectTriggerElement, SelectTriggerProps>
           data-state={context.open ? 'open' : 'closed'}
           disabled={isDisabled}
           data-disabled={isDisabled ? '' : undefined}
-          data-pending={context.valueChangePending ? '' : undefined}
-          data-optimistic={context.valueChangeOptimistic ? '' : undefined}
           data-placeholder={shouldShowPlaceholder(context.value) ? '' : undefined}
           {...triggerProps}
           ref={composedRefs}
@@ -1471,8 +1467,6 @@ const SelectItem = React.forwardRef<SelectItemElement, SelectItemProps>(
             // `isFocused` caveat fixes stuttering in VoiceOver
             aria-selected={isSelected && isFocused}
             data-state={isSelected ? 'checked' : 'unchecked'}
-            data-pending={context.valueChangePending ? '' : undefined}
-            data-optimistic={context.valueChangeOptimistic ? '' : undefined}
             aria-disabled={disabled || undefined}
             data-disabled={disabled ? '' : undefined}
             tabIndex={disabled ? undefined : -1}
