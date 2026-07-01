@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as Switch from './switch';
-import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
-import { afterEach, describe, it, expect } from 'vitest';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { afterEach, describe, it, expect, vi } from 'vitest';
 
 const SWITCH_ROLE = 'switch';
 
@@ -82,6 +82,85 @@ describe('given a Switch in a form', () => {
   });
 });
 
+describe('async checked actions', () => {
+  afterEach(cleanup);
+
+  it('shows the next controlled checked state optimistically while the action is pending', async () => {
+    const deferredAction = createDeferred<void>();
+    const handleCheckedChangedAction = vi.fn();
+
+    function ControlledSwitch() {
+      const [checked, setChecked] = React.useState(false);
+
+      return (
+        <Switch.Root
+          checked={checked}
+          checkedChangedAction={async (nextChecked) => {
+            handleCheckedChangedAction(nextChecked);
+            await deferredAction.promise;
+            setChecked(nextChecked);
+          }}
+        >
+          <Switch.Thumb />
+        </Switch.Root>
+      );
+    }
+
+    render(<ControlledSwitch />);
+
+    const switchControl = screen.getByRole(SWITCH_ROLE);
+    const thumb = switchControl.querySelector('[data-state]');
+    expect(switchControl).toHaveAttribute('aria-checked', 'false');
+
+    act(() => fireEvent.click(switchControl));
+
+    expect(handleCheckedChangedAction).toHaveBeenCalledWith(true);
+    expect(switchControl).toHaveAttribute('aria-checked', 'true');
+    expect(switchControl).toHaveAttribute('data-state', 'checked');
+    expect(switchControl).toHaveAttribute('data-pending');
+    expect(switchControl).toHaveAttribute('data-optimistic');
+    expect(thumb).toHaveAttribute('data-state', 'checked');
+
+    await act(async () => {
+      deferredAction.resolve();
+      await deferredAction.promise;
+    });
+
+    await waitFor(() => expect(switchControl).not.toHaveAttribute('data-pending'));
+    expect(switchControl).not.toHaveAttribute('data-optimistic');
+    expect(switchControl).toHaveAttribute('aria-checked', 'true');
+    expect(thumb).toHaveAttribute('data-state', 'checked');
+  });
+
+  it('ignores additional checked changes while the checked action is pending', async () => {
+    const deferredAction = createDeferred<void>();
+    const handleCheckedChangedAction = vi.fn(() => deferredAction.promise);
+
+    render(
+      <Switch.Root checked={false} checkedChangedAction={handleCheckedChangedAction}>
+        <Switch.Thumb />
+      </Switch.Root>,
+    );
+
+    const switchControl = screen.getByRole(SWITCH_ROLE);
+
+    act(() => fireEvent.click(switchControl));
+    act(() => fireEvent.click(switchControl));
+
+    expect(handleCheckedChangedAction).toHaveBeenCalledTimes(1);
+    expect(handleCheckedChangedAction).toHaveBeenCalledWith(true);
+    expect(switchControl).toHaveAttribute('aria-checked', 'true');
+
+    await act(async () => {
+      deferredAction.resolve();
+      await deferredAction.promise;
+    });
+
+    await waitFor(() => expect(switchControl).not.toHaveAttribute('data-pending'));
+    expect(switchControl).toHaveAttribute('aria-checked', 'false');
+  });
+});
+
 describe('given a Switch with external form association', () => {
   afterEach(cleanup);
 
@@ -143,3 +222,14 @@ describe('given a Switch with external form association', () => {
     });
   });
 });
+
+function createDeferred<T>() {
+  let resolve!: (value: T | PromiseLike<T>) => void;
+  let reject!: (reason?: unknown) => void;
+  const promise = new Promise<T>((promiseResolve, promiseReject) => {
+    resolve = promiseResolve;
+    reject = promiseReject;
+  });
+
+  return { promise, resolve, reject };
+}

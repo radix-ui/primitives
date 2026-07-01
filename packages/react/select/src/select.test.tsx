@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
-import { afterEach, describe, it, expect } from 'vitest';
+import { afterEach, describe, it, expect, vi } from 'vitest';
 import { assertStableComposedRef } from '@repo/test-utils/ref-stability';
 import * as Select from './select';
 
@@ -139,6 +139,94 @@ describe('clearing an optional value (#2706)', () => {
       (option) => option.value === '',
     );
     expect(emptyOptions).toHaveLength(1);
+  });
+});
+
+describe('async value actions', () => {
+  afterEach(cleanup);
+
+  it('shows the next controlled value optimistically while the action is pending', async () => {
+    const deferredAction = createDeferred<void>();
+    const handleValueChangedAction = vi.fn();
+
+    function ControlledSelect() {
+      const [value, setValue] = React.useState('apple');
+
+      return (
+        <SelectTest
+          value={value}
+          valueChangedAction={async (nextValue) => {
+            handleValueChangedAction(nextValue);
+            await deferredAction.promise;
+            setValue(nextValue);
+          }}
+          open
+          onOpenChange={() => {}}
+        />
+      );
+    }
+
+    render(<ControlledSelect />);
+
+    const trigger = screen.getByRole('combobox', { name: 'Choice', hidden: true });
+    const listbox = await screen.findByRole('listbox', { hidden: true });
+    const banana = within(listbox).getByRole('option', { name: 'Banana' });
+
+    expect(trigger).toHaveTextContent('Apple');
+
+    act(() => fireEvent.click(banana));
+
+    expect(handleValueChangedAction).toHaveBeenCalledWith('banana');
+    expect(trigger).toHaveTextContent('Banana');
+    expect(trigger).toHaveAttribute('data-pending');
+    expect(trigger).toHaveAttribute('data-optimistic');
+    expect(banana).toHaveAttribute('data-state', 'checked');
+
+    await act(async () => {
+      deferredAction.resolve();
+      await deferredAction.promise;
+    });
+
+    await waitFor(() => expect(trigger).not.toHaveAttribute('data-pending'));
+    expect(trigger).not.toHaveAttribute('data-optimistic');
+    expect(trigger).toHaveTextContent('Banana');
+    expect(banana).toHaveAttribute('data-state', 'checked');
+  });
+
+  it('ignores additional value changes while the value action is pending', async () => {
+    const deferredAction = createDeferred<void>();
+    const handleValueChangedAction = vi.fn(() => deferredAction.promise);
+
+    render(
+      <SelectTest
+        value="apple"
+        valueChangedAction={handleValueChangedAction}
+        open
+        onOpenChange={() => {}}
+      />,
+    );
+
+    const trigger = screen.getByRole('combobox', { name: 'Choice', hidden: true });
+    const listbox = await screen.findByRole('listbox', { hidden: true });
+    const apple = within(listbox).getByRole('option', { name: 'Apple' });
+    const banana = within(listbox).getByRole('option', { name: 'Banana' });
+
+    act(() => fireEvent.click(banana));
+    act(() => fireEvent.click(apple));
+
+    expect(handleValueChangedAction).toHaveBeenCalledTimes(1);
+    expect(handleValueChangedAction).toHaveBeenCalledWith('banana');
+    expect(trigger).toHaveTextContent('Banana');
+    expect(banana).toHaveAttribute('data-state', 'checked');
+
+    await act(async () => {
+      deferredAction.resolve();
+      await deferredAction.promise;
+    });
+
+    await waitFor(() => expect(trigger).not.toHaveAttribute('data-pending'));
+    expect(trigger).toHaveTextContent('Apple');
+    expect(apple).toHaveAttribute('data-state', 'checked');
   });
 });
 
@@ -331,3 +419,14 @@ describe('given a Select in a form that is reset', () => {
     });
   });
 });
+
+function createDeferred<T>() {
+  let resolve!: (value: T | PromiseLike<T>) => void;
+  let reject!: (reason?: unknown) => void;
+  const promise = new Promise<T>((promiseResolve, promiseReject) => {
+    resolve = promiseResolve;
+    reject = promiseReject;
+  });
+
+  return { promise, resolve, reject };
+}

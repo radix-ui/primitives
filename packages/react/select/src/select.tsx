@@ -14,7 +14,11 @@ import * as PopperPrimitive from '@radix-ui/react-popper';
 import { createPopperScope } from '@radix-ui/react-popper';
 import { Portal as PortalPrimitive } from '@radix-ui/react-portal';
 import { Presence } from '@radix-ui/react-presence';
-import { Primitive } from '@radix-ui/react-primitive';
+import {
+  Primitive,
+  runActionInTransition,
+  useActionOptimisticState,
+} from '@radix-ui/react-primitive';
 import { createSlot } from '@radix-ui/react-slot';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
@@ -60,6 +64,8 @@ type SelectContextValue = {
   contentId: string;
   value: string | undefined;
   onValueChange(value: string): void;
+  valueChangePending: boolean;
+  valueChangeOptimistic: boolean;
   open: boolean;
   required?: boolean;
   onOpenChange(open: boolean): void;
@@ -124,6 +130,8 @@ export interface SelectSharedProps {
   form?: string;
 }
 
+type SelectValueChangedAction = (value: string) => void | PromiseLike<unknown>;
+
 // TODO: Should improve typing somewhat, but this would be a breaking change.
 // Consider using in the next major version (along with some testing to be sure
 // it works as expected and doesn't cause problems)
@@ -133,6 +141,7 @@ type SelectProps = SelectSharedProps & {
   value?: string;
   defaultValue?: string;
   onValueChange?(value: string): void;
+  valueChangedAction?: SelectValueChangedAction;
 };
 
 /* -------------------------------------------------------------------------------------------------
@@ -145,6 +154,7 @@ interface SelectProviderProps extends SelectSharedProps {
   value?: string;
   defaultValue?: string;
   onValueChange?(value: string): void;
+  valueChangedAction?: SelectValueChangedAction;
 }
 
 function SelectProvider(props: ScopedProps<SelectProviderProps>) {
@@ -157,6 +167,7 @@ function SelectProvider(props: ScopedProps<SelectProviderProps>) {
     value: valueProp,
     defaultValue,
     onValueChange,
+    valueChangedAction,
     dir,
     name,
     autoComplete,
@@ -177,23 +188,65 @@ function SelectProvider(props: ScopedProps<SelectProviderProps>) {
     onChange: onOpenChange,
     caller: SELECT_NAME,
   });
-  const [value, setValue] = useControllableState({
+  const [committedValue, setCommittedValue] = useControllableState({
     prop: valueProp,
     defaultProp: defaultValue,
     onChange: onValueChange as any,
     caller: SELECT_NAME,
   });
+  const valueActionPendingRef = React.useRef(false);
+  const [valueChangePending, setValueChangePending] = React.useState(false);
+  const [value, setOptimisticValue] = useActionOptimisticState(
+    committedValue,
+    (_currentValue, optimisticValue: string | undefined) => optimisticValue,
+    valueChangedAction !== undefined,
+    SELECT_NAME,
+    'valueChangedAction',
+  );
+
+  const setValue = React.useCallback(
+    (nextValue: string | undefined) => {
+      if (!valueChangedAction || nextValue === undefined) {
+        setCommittedValue(nextValue);
+        return;
+      }
+
+      if (valueActionPendingRef.current) return;
+
+      const previousValue = committedValue;
+      setValueChangePending(true);
+      valueActionPendingRef.current = true;
+
+      runActionInTransition(
+        () => {
+          setOptimisticValue(nextValue);
+          return valueChangedAction(nextValue);
+        },
+        () => {
+          valueActionPendingRef.current = false;
+          setValueChangePending(false);
+          setCommittedValue(nextValue);
+        },
+        () => {
+          valueActionPendingRef.current = false;
+          setValueChangePending(false);
+          setCommittedValue(previousValue);
+        },
+      );
+    },
+    [committedValue, valueChangedAction, setCommittedValue, setOptimisticValue],
+  );
   const triggerPointerDownPosRef = React.useRef<{ x: number; y: number } | null>(null);
 
   const initialValueRef = React.useRef(value);
   React.useEffect(() => {
     const associatedForm = form ? trigger?.ownerDocument.getElementById(form) : trigger?.form;
     if (associatedForm instanceof HTMLFormElement) {
-      const reset = () => setValue(initialValueRef.current);
+      const reset = () => setCommittedValue(initialValueRef.current);
       associatedForm.addEventListener('reset', reset);
       return () => associatedForm.removeEventListener('reset', reset);
     }
-  }, [form, trigger, setValue]);
+  }, [form, trigger, setCommittedValue]);
 
   // We set this to true by default so that events bubble to forms without JS (SSR)
   const isFormControl = trigger ? !!form || !!trigger.closest('form') : true;
@@ -232,6 +285,8 @@ function SelectProvider(props: ScopedProps<SelectProviderProps>) {
     contentId,
     value,
     onValueChange: setValue,
+    valueChangePending,
+    valueChangeOptimistic: valueChangePending,
     open,
     onOpenChange: setOpen,
     dir: direction,
@@ -351,6 +406,8 @@ const SelectTrigger = React.forwardRef<SelectTriggerElement, SelectTriggerProps>
           data-state={context.open ? 'open' : 'closed'}
           disabled={isDisabled}
           data-disabled={isDisabled ? '' : undefined}
+          data-pending={context.valueChangePending ? '' : undefined}
+          data-optimistic={context.valueChangeOptimistic ? '' : undefined}
           data-placeholder={shouldShowPlaceholder(context.value) ? '' : undefined}
           {...triggerProps}
           ref={composedRefs}
@@ -1384,7 +1441,7 @@ const SelectItem = React.forwardRef<SelectItemElement, SelectItemProps>(
     const pointerTypeRef = React.useRef<React.PointerEvent['pointerType']>('touch');
 
     const handleSelect = () => {
-      if (!disabled) {
+      if (!disabled && !context.valueChangePending) {
         context.onValueChange(value);
         context.onOpenChange(false);
       }
@@ -1414,6 +1471,8 @@ const SelectItem = React.forwardRef<SelectItemElement, SelectItemProps>(
             // `isFocused` caveat fixes stuttering in VoiceOver
             aria-selected={isSelected && isFocused}
             data-state={isSelected ? 'checked' : 'unchecked'}
+            data-pending={context.valueChangePending ? '' : undefined}
+            data-optimistic={context.valueChangeOptimistic ? '' : undefined}
             aria-disabled={disabled || undefined}
             data-disabled={disabled ? '' : undefined}
             tabIndex={disabled ? undefined : -1}

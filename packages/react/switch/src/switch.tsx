@@ -5,7 +5,11 @@ import { createContextScope } from '@radix-ui/react-context';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { usePrevious } from '@radix-ui/react-use-previous';
 import { useSize } from '@radix-ui/react-use-size';
-import { Primitive } from '@radix-ui/react-primitive';
+import {
+  Primitive,
+  runActionInTransition,
+  useActionOptimisticState,
+} from '@radix-ui/react-primitive';
 
 import type { Scope } from '@radix-ui/react-context';
 
@@ -17,6 +21,9 @@ const [createSwitchContext, createSwitchScope] = createContextScope(SWITCH_NAME)
 type SwitchContextValue = {
   checked: boolean;
   setChecked: React.Dispatch<React.SetStateAction<boolean>>;
+  resetChecked(checked: boolean): void;
+  checkedChangePending: boolean;
+  checkedChangeOptimistic: boolean;
   disabled: boolean | undefined;
   control: HTMLButtonElement | null;
   setControl: React.Dispatch<React.SetStateAction<HTMLButtonElement | null>>;
@@ -33,6 +40,8 @@ type SwitchContextValue = {
 
 const [SwitchProviderImpl, useSwitchContext] = createSwitchContext<SwitchContextValue>(SWITCH_NAME);
 
+type SwitchCheckedChangedAction = (checked: boolean) => void | PromiseLike<unknown>;
+
 /* -------------------------------------------------------------------------------------------------
  * SwitchProvider
  * -----------------------------------------------------------------------------------------------*/
@@ -42,6 +51,7 @@ interface SwitchProviderProps {
   defaultChecked?: boolean;
   required?: boolean;
   onCheckedChange?(checked: boolean): void;
+  checkedChangedAction?: SwitchCheckedChangedAction;
   name?: string;
   form?: string;
   disabled?: boolean;
@@ -59,18 +69,62 @@ function SwitchProvider(props: ScopedProps<SwitchProviderProps>) {
     form,
     name,
     onCheckedChange,
+    checkedChangedAction,
     required,
     value = 'on',
     // @ts-expect-error
     internal_do_not_use_render,
   } = props;
 
-  const [checked, setChecked] = useControllableState({
+  const [committedChecked, setCommittedChecked] = useControllableState({
     prop: checkedProp,
     defaultProp: defaultChecked ?? false,
     onChange: onCheckedChange,
     caller: SWITCH_NAME,
   });
+  const checkedActionPendingRef = React.useRef(false);
+  const [checkedChangePending, setCheckedChangePending] = React.useState(false);
+  const [checked, setOptimisticChecked] = useActionOptimisticState(
+    committedChecked,
+    (_currentChecked, optimisticChecked: boolean) => optimisticChecked,
+    checkedChangedAction !== undefined,
+    SWITCH_NAME,
+    'checkedChangedAction',
+  );
+  const setChecked = React.useCallback<React.Dispatch<React.SetStateAction<boolean>>>(
+    (nextChecked) => {
+      const nextCheckedValue = isFunction(nextChecked) ? nextChecked(checked) : nextChecked;
+
+      if (!checkedChangedAction) {
+        setCommittedChecked(nextCheckedValue);
+        return;
+      }
+
+      if (checkedActionPendingRef.current) return;
+
+      const previousChecked = committedChecked;
+      setCheckedChangePending(true);
+      checkedActionPendingRef.current = true;
+
+      runActionInTransition(
+        () => {
+          setOptimisticChecked(nextCheckedValue);
+          return checkedChangedAction(nextCheckedValue);
+        },
+        () => {
+          checkedActionPendingRef.current = false;
+          setCheckedChangePending(false);
+          setCommittedChecked(nextCheckedValue);
+        },
+        () => {
+          checkedActionPendingRef.current = false;
+          setCheckedChangePending(false);
+          setCommittedChecked(previousChecked);
+        },
+      );
+    },
+    [checked, checkedChangedAction, committedChecked, setCommittedChecked, setOptimisticChecked],
+  );
   const [control, setControl] = React.useState<HTMLButtonElement | null>(null);
   const [bubbleInput, setBubbleInput] = React.useState<HTMLInputElement | null>(null);
   const hasConsumerStoppedPropagationRef = React.useRef(false);
@@ -82,6 +136,9 @@ function SwitchProvider(props: ScopedProps<SwitchProviderProps>) {
   const context: SwitchContextValue = {
     checked,
     setChecked,
+    resetChecked: setCommittedChecked,
+    checkedChangePending,
+    checkedChangeOptimistic: checkedChangePending,
     disabled,
     control,
     setControl,
@@ -127,6 +184,9 @@ const SwitchTrigger = React.forwardRef<HTMLButtonElement, SwitchTriggerProps>(
       required,
       setControl,
       setChecked,
+      resetChecked,
+      checkedChangePending,
+      checkedChangeOptimistic,
       hasConsumerStoppedPropagationRef,
       isFormControl,
       bubbleInput,
@@ -137,11 +197,11 @@ const SwitchTrigger = React.forwardRef<HTMLButtonElement, SwitchTriggerProps>(
     React.useEffect(() => {
       const associatedForm = form ? control?.ownerDocument.getElementById(form) : control?.form;
       if (associatedForm instanceof HTMLFormElement) {
-        const reset = () => setChecked(initialCheckedStateRef.current);
+        const reset = () => resetChecked(initialCheckedStateRef.current);
         associatedForm.addEventListener('reset', reset);
         return () => associatedForm.removeEventListener('reset', reset);
       }
-    }, [control, form, setChecked]);
+    }, [control, form, resetChecked]);
 
     return (
       <Primitive.button
@@ -150,13 +210,17 @@ const SwitchTrigger = React.forwardRef<HTMLButtonElement, SwitchTriggerProps>(
         aria-checked={checked}
         aria-required={required}
         data-state={getState(checked)}
+        data-pending={checkedChangePending ? '' : undefined}
+        data-optimistic={checkedChangeOptimistic ? '' : undefined}
         data-disabled={disabled ? '' : undefined}
         disabled={disabled}
         value={value}
         {...switchProps}
         ref={composedRefs}
         onClick={composeEventHandlers(onClick, (event) => {
-          setChecked((prevChecked) => !prevChecked);
+          if (!checkedChangePending) {
+            setChecked((prevChecked) => !prevChecked);
+          }
           if (bubbleInput && isFormControl) {
             hasConsumerStoppedPropagationRef.current = event.isPropagationStopped();
             // if switch has a bubble input and is a form control, stop
@@ -185,6 +249,7 @@ interface SwitchProps extends Omit<PrimitiveButtonProps, 'checked' | 'defaultChe
   defaultChecked?: boolean;
   required?: boolean;
   onCheckedChange?(checked: boolean): void;
+  checkedChangedAction?: SwitchCheckedChangedAction;
 }
 
 const Switch = React.forwardRef<SwitchElement, SwitchProps>(
@@ -198,6 +263,7 @@ const Switch = React.forwardRef<SwitchElement, SwitchProps>(
       disabled,
       value,
       onCheckedChange,
+      checkedChangedAction,
       form,
       ...switchProps
     } = props;
@@ -210,6 +276,7 @@ const Switch = React.forwardRef<SwitchElement, SwitchProps>(
         disabled={disabled}
         required={required}
         onCheckedChange={onCheckedChange}
+        checkedChangedAction={checkedChangedAction}
         name={name}
         form={form}
         value={value}
@@ -254,6 +321,8 @@ const SwitchThumb = React.forwardRef<SwitchThumbElement, SwitchThumbProps>(
     return (
       <Primitive.span
         data-state={getState(context.checked)}
+        data-pending={context.checkedChangePending ? '' : undefined}
+        data-optimistic={context.checkedChangeOptimistic ? '' : undefined}
         data-disabled={context.disabled ? '' : undefined}
         {...thumbProps}
         ref={forwardedRef}
