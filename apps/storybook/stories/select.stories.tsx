@@ -206,6 +206,56 @@ export const Controlled = () => {
   );
 };
 
+export const React19Action = () => {
+  const [state, savePlanAction, isPending] = React.useActionState(
+    async (_previousState: { plan: string }, nextValue: string) => {
+      await sleep(1200);
+      return { plan: nextValue };
+    },
+    { plan: 'pro' },
+  );
+
+  return (
+    <div style={{ display: 'grid', gap: 10, padding: 50, justifyItems: 'start' }}>
+      <Label>
+        Subscription plan:
+        <Select.Root value={state.plan} valueChangedAction={savePlanAction}>
+          <Select.Trigger className={styles.trigger}>
+            <Select.Value />
+            <Select.Icon />
+          </Select.Trigger>
+          <Select.Portal>
+            <Select.Content className={styles.content} position="popper" sideOffset={5}>
+              <Select.Viewport className={styles.viewport}>
+                <Select.Item className={styles.item} value="starter">
+                  <Select.ItemText>Starter</Select.ItemText>
+                  <Select.ItemIndicator className={styles.indicator}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+                <Select.Item className={styles.item} value="pro">
+                  <Select.ItemText>Pro</Select.ItemText>
+                  <Select.ItemIndicator className={styles.indicator}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+                <Select.Item className={styles.item} value="enterprise">
+                  <Select.ItemText>Enterprise</Select.ItemText>
+                  <Select.ItemIndicator className={styles.indicator}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+              </Select.Viewport>
+              <Select.Arrow />
+            </Select.Content>
+          </Select.Portal>
+        </Select.Root>
+      </Label>
+      <output>{isPending ? 'Saving plan...' : `Saved plan: ${state.plan}`}</output>
+    </div>
+  );
+};
+
 export const WithExtensionOverlay = () => {
   const [open, setOpen] = React.useState(false);
 
@@ -1570,3 +1620,7 @@ const TickIcon = () => (
     <path d="M2 20 L12 28 30 4" />
   </svg>
 );
+
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}

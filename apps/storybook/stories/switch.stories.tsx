@@ -36,6 +36,30 @@ export const Controlled = () => {
   );
 };
 
+export const React19Action = () => {
+  const [checked, setChecked] = React.useState(false);
+  const [savedChecked, setSavedChecked] = React.useState(checked);
+
+  return (
+    <div style={{ display: 'grid', gap: 10, justifyItems: 'start' }}>
+      <Label htmlFor="react-19-action-switch">Email notifications</Label>{' '}
+      <Switch.Root
+        className={styles.root}
+        checked={checked}
+        checkedChangedAction={async (nextChecked) => {
+          await sleep(1200);
+          setChecked(nextChecked);
+          setSavedChecked(nextChecked);
+        }}
+        id="react-19-action-switch"
+      >
+        <Switch.Thumb className={styles.thumb} />
+      </Switch.Root>
+      <output>Saved value: {String(savedChecked)}</output>
+    </div>
+  );
+};
+
 export const WithinForm = () => {
   const [data, setData] = React.useState({ optional: false, required: false, stopprop: false });
   const [checked, setChecked] = React.useState(false);
@@ -276,3 +300,7 @@ export const Chromatic = () => (
 Chromatic.parameters = { chromatic: { disable: false } };
 
 const Label = (props: any) => <LabelPrimitive.Root {...props} className={styles.label} />;
+
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
