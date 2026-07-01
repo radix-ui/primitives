@@ -33,12 +33,20 @@ const usePopperScope = createPopperScope();
 type PopoverContextValue = {
   triggerRef: React.RefObject<HTMLButtonElement | null>;
   contentId: string;
+  titleId: string;
+  descriptionId: string;
   open: boolean;
   onOpenChange(open: boolean): void;
   onOpenToggle(): void;
   hasCustomAnchor: boolean;
   onCustomAnchorAdd(): void;
   onCustomAnchorRemove(): void;
+  // `Title` and `Description` are optional, so we only reference them from the
+  // content (via `aria-labelledby`/`aria-describedby`) once they are rendered.
+  hasTitle: boolean;
+  setHasTitle: React.Dispatch<React.SetStateAction<boolean>>;
+  hasDescription: boolean;
+  setHasDescription: React.Dispatch<React.SetStateAction<boolean>>;
   modal: boolean;
 };
 
@@ -65,6 +73,8 @@ const Popover: React.FC<PopoverProps> = (props: ScopedProps<PopoverProps>) => {
   const popperScope = usePopperScope(__scopePopover);
   const triggerRef = React.useRef<HTMLButtonElement>(null);
   const [hasCustomAnchor, setHasCustomAnchor] = React.useState(false);
+  const [hasTitle, setHasTitle] = React.useState(false);
+  const [hasDescription, setHasDescription] = React.useState(false);
   const [open, setOpen] = useControllableState({
     prop: openProp,
     defaultProp: defaultOpen ?? false,
@@ -77,6 +87,8 @@ const Popover: React.FC<PopoverProps> = (props: ScopedProps<PopoverProps>) => {
       <PopoverProvider
         scope={__scopePopover}
         contentId={useId()}
+        titleId={useId()}
+        descriptionId={useId()}
         triggerRef={triggerRef}
         open={open}
         onOpenChange={setOpen}
@@ -84,6 +96,10 @@ const Popover: React.FC<PopoverProps> = (props: ScopedProps<PopoverProps>) => {
         hasCustomAnchor={hasCustomAnchor}
         onCustomAnchorAdd={React.useCallback(() => setHasCustomAnchor(true), [])}
         onCustomAnchorRemove={React.useCallback(() => setHasCustomAnchor(false), [])}
+        hasTitle={hasTitle}
+        setHasTitle={setHasTitle}
+        hasDescription={hasDescription}
+        setHasDescription={setHasDescription}
         modal={modal}
       >
         {children}
@@ -428,6 +444,8 @@ const PopoverContentImpl = /* @__PURE__ */ React.forwardRef<
             data-state={getState(context.open)}
             role="dialog"
             id={context.contentId}
+            aria-labelledby={context.hasTitle ? context.titleId : undefined}
+            aria-describedby={context.hasDescription ? context.descriptionId : undefined}
             {...popperScope}
             {...contentProps}
             ref={forwardedRef}
@@ -448,6 +466,60 @@ const PopoverContentImpl = /* @__PURE__ */ React.forwardRef<
     );
   },
 );
+
+/* -------------------------------------------------------------------------------------------------
+ * PopoverTitle
+ * -----------------------------------------------------------------------------------------------*/
+
+const TITLE_NAME = 'PopoverTitle';
+
+type PopoverTitleElement = React.ComponentRef<typeof Primitive.h2>;
+type PrimitiveHeading2Props = React.ComponentPropsWithoutRef<typeof Primitive.h2>;
+interface PopoverTitleProps extends PrimitiveHeading2Props {}
+
+const PopoverTitle = React.forwardRef<PopoverTitleElement, PopoverTitleProps>(
+  (props: ScopedProps<PopoverTitleProps>, forwardedRef) => {
+    const { __scopePopover, ...titleProps } = props;
+    const context = usePopoverContext(TITLE_NAME, __scopePopover);
+    const { setHasTitle } = context;
+
+    React.useEffect(() => {
+      setHasTitle(true);
+      return () => setHasTitle(false);
+    }, [setHasTitle]);
+
+    return <Primitive.h2 id={context.titleId} {...titleProps} ref={forwardedRef} />;
+  },
+);
+
+PopoverTitle.displayName = TITLE_NAME;
+
+/* -------------------------------------------------------------------------------------------------
+ * PopoverDescription
+ * -----------------------------------------------------------------------------------------------*/
+
+const DESCRIPTION_NAME = 'PopoverDescription';
+
+type PopoverDescriptionElement = React.ComponentRef<typeof Primitive.p>;
+type PrimitiveParagraphProps = React.ComponentPropsWithoutRef<typeof Primitive.p>;
+interface PopoverDescriptionProps extends PrimitiveParagraphProps {}
+
+const PopoverDescription = React.forwardRef<PopoverDescriptionElement, PopoverDescriptionProps>(
+  (props: ScopedProps<PopoverDescriptionProps>, forwardedRef) => {
+    const { __scopePopover, ...descriptionProps } = props;
+    const context = usePopoverContext(DESCRIPTION_NAME, __scopePopover);
+    const { setHasDescription } = context;
+
+    React.useEffect(() => {
+      setHasDescription(true);
+      return () => setHasDescription(false);
+    }, [setHasDescription]);
+
+    return <Primitive.p id={context.descriptionId} {...descriptionProps} ref={forwardedRef} />;
+  },
+);
+
+PopoverDescription.displayName = DESCRIPTION_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * PopoverClose
@@ -503,6 +575,8 @@ export {
   PopoverTrigger,
   PopoverPortal,
   PopoverContent,
+  PopoverTitle,
+  PopoverDescription,
   PopoverClose,
   PopoverArrow,
   //
@@ -511,6 +585,8 @@ export {
   PopoverTrigger as Trigger,
   PopoverPortal as Portal,
   PopoverContent as Content,
+  PopoverTitle as Title,
+  PopoverDescription as Description,
   PopoverClose as Close,
   PopoverArrow as Arrow,
 };
@@ -520,6 +596,8 @@ export type {
   PopoverTriggerProps,
   PopoverPortalProps,
   PopoverContentProps,
+  PopoverTitleProps,
+  PopoverDescriptionProps,
   PopoverCloseProps,
   PopoverArrowProps,
 };
