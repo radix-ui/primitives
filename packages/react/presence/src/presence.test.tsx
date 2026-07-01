@@ -61,3 +61,85 @@ describe('ref stability', () => {
     expect(received).toBeInstanceOf(HTMLButtonElement);
   });
 });
+
+describe('mount/unmount behavior', () => {
+  afterEach(cleanup);
+
+  it('renders the child when present is true', () => {
+    const { queryByRole } = render(
+      <Presence present>
+        <button type="button">Hello</button>
+      </Presence>,
+    );
+    expect(queryByRole('button')).not.toBeNull();
+  });
+
+  it('removes the child when present is false and no exit animation', () => {
+    const { queryByRole, rerender } = render(
+      <Presence present>
+        <button type="button">Hello</button>
+      </Presence>,
+    );
+    rerender(
+      <Presence present={false}>
+        <button type="button">Hello</button>
+      </Presence>,
+    );
+    expect(queryByRole('button')).toBeNull();
+  });
+
+  it('keeps the child mounted when toggling present back to true', () => {
+    const { queryByRole, rerender } = render(
+      <Presence present>
+        <button type="button">Hello</button>
+      </Presence>,
+    );
+    rerender(
+      <Presence present={false}>
+        <button type="button">Hello</button>
+      </Presence>,
+    );
+    rerender(
+      <Presence present>
+        <button type="button">Hello</button>
+      </Presence>,
+    );
+    expect(queryByRole('button')).not.toBeNull();
+  });
+});
+
+describe('render function children', () => {
+  afterEach(cleanup);
+
+  it('always renders the child when using a render function', () => {
+    const { queryByRole, rerender } = render(
+      <Presence present>
+        {({ present }) => <button type="button">{present ? 'visible' : 'hidden'}</button>}
+      </Presence>,
+    );
+    expect(queryByRole('button')).not.toBeNull();
+    expect(queryByRole('button')!.textContent).toBe('visible');
+
+    rerender(
+      <Presence present={false}>
+        {({ present }) => <button type="button">{present ? 'visible' : 'hidden'}</button>}
+      </Presence>,
+    );
+    // render function variant force-mounts: element stays in DOM
+    expect(queryByRole('button')).not.toBeNull();
+    expect(queryByRole('button')!.textContent).toBe('hidden');
+  });
+
+  it('passes present=true to the render function when present prop is true', () => {
+    let receivedPresent: boolean | undefined;
+    render(
+      <Presence present>
+        {({ present }) => {
+          receivedPresent = present;
+          return <div />;
+        }}
+      </Presence>,
+    );
+    expect(receivedPresent).toBe(true);
+  });
+});

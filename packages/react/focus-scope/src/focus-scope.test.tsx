@@ -130,6 +130,41 @@ describe('FocusScope', () => {
       ));
     });
   });
+
+  describe('given a FocusScope with hidden elements', () => {
+    let rendered: RenderResult;
+    let visibleFirst: HTMLInputElement;
+    let visibleLast: HTMLButtonElement;
+
+    beforeEach(() => {
+      rendered = render(
+        <div>
+          <FocusScope asChild loop trapped>
+            <form>
+              <TestField label={INNER_NAME_INPUT_LABEL} />
+              <TestField label="hidden-display" style={{ display: 'none' }} />
+              <TestField label="hidden-visibility" style={{ visibility: 'hidden' }} />
+              <button>{INNER_SUBMIT_LABEL}</button>
+            </form>
+          </FocusScope>
+        </div>,
+      );
+      visibleFirst = rendered.getByLabelText(INNER_NAME_INPUT_LABEL) as HTMLInputElement;
+      visibleLast = rendered.getByText(INNER_SUBMIT_LABEL) as HTMLButtonElement;
+    });
+
+    it('should skip elements with display: none when looping backward', async () => {
+      visibleFirst.focus();
+      await userEvent.tab({ shift: true });
+      await waitFor(() => expect(visibleLast).toHaveFocus());
+    });
+
+    it('should skip elements with visibility: hidden when looping forward', async () => {
+      visibleLast.focus();
+      await userEvent.tab();
+      await waitFor(() => expect(visibleFirst).toHaveFocus());
+    });
+  });
 });
 
 function TestField({ label, ...props }: { label: string } & React.ComponentProps<'input'>) {
