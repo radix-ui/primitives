@@ -273,6 +273,15 @@ function findVisible(elements: HTMLElement[], container: HTMLElement) {
 }
 
 function isHidden(node: HTMLElement, { upTo }: { upTo?: HTMLElement }) {
+  // `checkVisibility` performs a single native check for `visibility: hidden`
+  // and `display: none` across the ancestor chain. This avoids the repeated
+  // `getComputedStyle` calls per ancestor that the fallback path requires,
+  // which reduces the cost of style resolution triggered by earlier DOM writes
+  // (e.g. react-remove-scroll, DismissableLayer setting body styles).
+  if (typeof node.checkVisibility === 'function') {
+    return !node.checkVisibility({ checkVisibilityCSS: true });
+  }
+
   if (getComputedStyle(node).visibility === 'hidden') return true;
   while (node) {
     // we stop at `upTo` (excluding it)
