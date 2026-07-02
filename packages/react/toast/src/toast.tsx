@@ -34,7 +34,6 @@ type ToastProviderContextValue = {
   onViewportChange(viewport: ToastViewportElement): void;
   onToastAdd(): void;
   onToastRemove(): void;
-  isFocusedToastEscapeKeyDownRef: React.MutableRefObject<boolean>;
   isClosePausedRef: React.MutableRefObject<boolean>;
   announcerContainer?: Element | DocumentFragment;
 };
@@ -88,7 +87,6 @@ const ToastProvider: React.FC<ToastProviderProps> = (props: ScopedProps<ToastPro
   } = props;
   const [viewport, setViewport] = React.useState<ToastViewportElement | null>(null);
   const [toastCount, setToastCount] = React.useState(0);
-  const isFocusedToastEscapeKeyDownRef = React.useRef(false);
   const isClosePausedRef = React.useRef(false);
 
   if (!label.trim()) {
@@ -110,7 +108,6 @@ const ToastProvider: React.FC<ToastProviderProps> = (props: ScopedProps<ToastPro
         onViewportChange={setViewport}
         onToastAdd={React.useCallback(() => setToastCount((prevCount) => prevCount + 1), [])}
         onToastRemove={React.useCallback(() => setToastCount((prevCount) => prevCount - 1), [])}
-        isFocusedToastEscapeKeyDownRef={isFocusedToastEscapeKeyDownRef}
         isClosePausedRef={isClosePausedRef}
         announcerContainer={announcerContainer}
       >
@@ -489,6 +486,7 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
       ...toastProps
     } = props;
     const context = useToastProviderContext(TOAST_NAME, __scopeToast);
+    const getItems = useCollection(__scopeToast);
     const [node, setNode] = React.useState<ToastImplElement | null>(null);
     const composedRefs = useComposedRefs(forwardedRef, setNode);
     const pointerStartRef = React.useRef<{ x: number; y: number } | null>(null);
@@ -581,9 +579,19 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
             <Collection.ItemSlot scope={__scopeToast}>
               <DismissableLayer.Root
                 asChild
-                onEscapeKeyDown={composeEventHandlers(onEscapeKeyDown, () => {
-                  if (!context.isFocusedToastEscapeKeyDownRef.current) handleClose();
-                  context.isFocusedToastEscapeKeyDownRef.current = false;
+                onEscapeKeyDown={composeEventHandlers(onEscapeKeyDown, (event) => {
+                  // Only the highest layer (most recent toast) registers the
+                  // escape listener, and it runs in the capture phase. If the
+                  // key press originated from within a focused toast, that
+                  // toast closes itself via `onKeyDown` below, so we must not
+                  // also close this (top-most) toast. Otherwise, close it.
+                  // See: https://github.com/radix-ui/primitives/issues/2906
+                  const isFocusInToast = getItems().some((item) =>
+                    item.ref.current?.contains(event.target as Node | null),
+                  );
+                  if (!isFocusInToast) {
+                    handleClose();
+                  }
                 })}
               >
                 <Primitive.li
@@ -597,7 +605,6 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
                     if (event.key !== 'Escape') return;
                     onEscapeKeyDown?.(event.nativeEvent);
                     if (!event.nativeEvent.defaultPrevented) {
-                      context.isFocusedToastEscapeKeyDownRef.current = true;
                       handleClose();
                     }
                   })}
