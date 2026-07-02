@@ -8,8 +8,10 @@ import { Primitive } from '@radix-ui/react-primitive';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { useDirection } from '@radix-ui/react-direction';
-
 import type { Scope } from '@radix-ui/react-context';
+import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
+
+import { useIsHydrated } from '@radix-ui/react-use-is-hydrated';
 
 const ENTRY_FOCUS = 'rovingFocusGroup.onEntryFocus';
 const EVENT_OPTIONS = { bubbles: false, cancelable: true };
@@ -228,12 +230,40 @@ const RovingFocusGroupItem = React.forwardRef<RovingFocusItemElement, RovingFocu
 
     const { onFocusableItemAdd, onFocusableItemRemove, currentTabStopId } = context;
 
-    React.useEffect(() => {
-      if (focusable) {
-        onFocusableItemAdd();
-        return () => onFocusableItemRemove();
+    const isHydrated = useIsHydrated();
+
+    // The group's tab stop is driven by how many focusable items are registered
+    // (`tabIndex={focusableItemsCount === 0 ? -1 : 0}`). Registering focusable
+    // items happens in an effect, so the group renders with `tabIndex={-1}` and
+    // only becomes tabbable once items have registered.
+    //
+    // Post-hydration (e.g. when a `Dialog`/`Popover` opens) we register in a
+    // layout effect so the count (and therefore the group's `tabIndex`) is
+    // resolved before paint. Otherwise focus libraries such as `FocusScope` can
+    // read the stale `tabIndex={-1}` and skip the group when auto-focusing on
+    // open.
+    //
+    // See: https://github.com/radix-ui/primitives/issues/3077
+    useLayoutEffect(() => {
+      if (!isHydrated || !focusable) {
+        return;
       }
-    }, [focusable, onFocusableItemAdd, onFocusableItemRemove]);
+
+      onFocusableItemAdd();
+      return () => onFocusableItemRemove();
+    }, [isHydrated, focusable, onFocusableItemAdd, onFocusableItemRemove]);
+
+    // Before hydration we register in a passive effect instead. Running a
+    // layout effect during hydration would trigger a synchronous re-render
+    // mid-hydration, so we keep the pre-hydration path asynchronous.
+    React.useEffect(() => {
+      if (isHydrated || !focusable) {
+        return;
+      }
+
+      onFocusableItemAdd();
+      return () => onFocusableItemRemove();
+    }, [isHydrated, focusable, onFocusableItemAdd, onFocusableItemRemove]);
 
     return (
       <Collection.ItemSlot
