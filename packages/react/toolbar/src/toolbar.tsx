@@ -140,7 +140,17 @@ const ToolbarLink = React.forwardRef<ToolbarLinkElement, ToolbarLinkProps>(
           {...linkProps}
           ref={forwardedRef}
           onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
-            if (event.key === ' ') event.currentTarget.click();
+            // Only react to keys originating from the link itself. Focusable
+            // descendants (eg. content portaled out of the link's DOM subtree)
+            // bubble their key events here through React's event system.
+            // See: https://github.com/radix-ui/primitives/issues/3232
+            if (event.target !== event.currentTarget) {
+              return;
+            }
+
+            if (event.key === ' ') {
+              event.currentTarget.click();
+            }
           })}
         />
       </RovingFocusGroup.Item>

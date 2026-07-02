@@ -1,6 +1,7 @@
 import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
-import { afterEach, describe, it, expect } from 'vitest';
+import { afterEach, describe, it, expect, vi } from 'vitest';
 import { assertStableComposedRef } from '@repo/test-utils/ref-stability';
 import * as Select from './select';
 
@@ -139,6 +140,48 @@ describe('clearing an optional value (#2706)', () => {
       (option) => option.value === '',
     );
     expect(emptyOptions).toHaveLength(1);
+  });
+});
+
+// Regression tests for https://github.com/radix-ui/primitives/issues/3232
+describe('keys from focusable descendants', () => {
+  afterEach(cleanup);
+
+  const SelectWithPortaledInput = (props: React.ComponentProps<typeof Select.Root>) => (
+    <Select.Root defaultOpen {...props}>
+      <Select.Trigger aria-label="Choice">
+        <Select.Value placeholder={PLACEHOLDER_TEXT} />
+      </Select.Trigger>
+      <Select.Portal>
+        <Select.Content position="popper">
+          <Select.Viewport>
+            <Select.Item value="apple">
+              <Select.ItemText>Apple</Select.ItemText>
+              {ReactDOM.createPortal(<input data-testid="input" defaultValue="" />, document.body)}
+            </Select.Item>
+          </Select.Viewport>
+        </Select.Content>
+      </Select.Portal>
+    </Select.Root>
+  );
+
+  it('does not select an item from Space/Enter typed into a portaled focusable descendant', async () => {
+    const onValueChange = vi.fn();
+    render(<SelectWithPortaledInput onValueChange={onValueChange} />);
+    const input = await waitFor(() => screen.getByTestId('input'));
+    input.focus();
+    fireEvent.keyDown(input, { key: ' ' });
+    fireEvent.keyDown(input, { key: 'Enter' });
+    expect(onValueChange).not.toHaveBeenCalled();
+  });
+
+  it('still selects the item via Enter when the item itself is focused', async () => {
+    const onValueChange = vi.fn();
+    render(<SelectWithPortaledInput onValueChange={onValueChange} />);
+    const item = await waitFor(() => screen.getByRole('option', { name: 'Apple', hidden: true }));
+    item.focus();
+    fireEvent.keyDown(item, { key: 'Enter' });
+    expect(onValueChange).toHaveBeenCalledWith('apple');
   });
 });
 
