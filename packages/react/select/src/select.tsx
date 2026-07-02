@@ -1450,11 +1450,27 @@ const SelectItem = React.forwardRef<SelectItemElement, SelectItemProps>(
               }
             })}
             onKeyDown={composeEventHandlers(itemProps.onKeyDown, (event) => {
+              // Only react to keys originating from the item itself. Focusable
+              // descendants (eg. an `input` inside a `Dialog` rendered within
+              // the item) bubble their key events here through React's event
+              // system even when portaled out of the item's DOM subtree.
+              // See: https://github.com/radix-ui/primitives/issues/3232
+              if (disabled || event.target !== event.currentTarget) {
+                return;
+              }
+
               const isTypingAhead = contentContext.searchRef?.current !== '';
-              if (isTypingAhead && event.key === ' ') return;
-              if (SELECTION_KEYS.includes(event.key)) handleSelect();
+              if (isTypingAhead && event.key === ' ') {
+                return;
+              }
+
+              if (SELECTION_KEYS.includes(event.key)) {
+                handleSelect();
+              }
               // prevent page scroll if using the space key to select an item
-              if (event.key === ' ') event.preventDefault();
+              if (event.key === ' ') {
+                event.preventDefault();
+              }
             })}
           />
         </Collection.ItemSlot>

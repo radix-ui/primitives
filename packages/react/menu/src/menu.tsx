@@ -665,8 +665,21 @@ const MenuItem = React.forwardRef<MenuItemElement, MenuItemProps>(
           if (!isPointerDownRef.current) event.currentTarget?.click();
         })}
         onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
+          // Only react to keys originating from the item itself. Focusable
+          // descendants (eg. an `input` inside a `Dialog` rendered within the
+          // item) bubble their key events here through React's event system
+          // even when portaled out of the item's DOM subtree, which would
+          // otherwise let the item swallow selection keys.
+          // See: https://github.com/radix-ui/primitives/issues/3232
+          if (disabled || event.target !== event.currentTarget) {
+            return;
+          }
+
           const isTypingAhead = contentContext.searchRef.current !== '';
-          if (disabled || (isTypingAhead && event.key === ' ')) return;
+          if (isTypingAhead && event.key === ' ') {
+            return;
+          }
+
           if (SELECTION_KEYS.includes(event.key)) {
             event.currentTarget.click();
             /**
@@ -1138,8 +1151,19 @@ const MenuSubTrigger = React.forwardRef<MenuSubTriggerElement, MenuSubTriggerPro
             }),
           )}
           onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
+            // Only react to keys originating from the trigger itself. Focusable descendants
+            // (eg. content rendered within the trigger) bubble their key events here through
+            // React's event system even when portaled, which would otherwise let the trigger
+            // swallow them. See: https://github.com/radix-ui/primitives/issues/3232
+            if (props.disabled || event.target !== event.currentTarget) {
+              return;
+            }
+
             const isTypingAhead = contentContext.searchRef.current !== '';
-            if (props.disabled || (isTypingAhead && event.key === ' ')) return;
+            if (isTypingAhead && event.key === ' ') {
+              return;
+            }
+
             if (SUB_OPEN_KEYS[rootContext.dir].includes(event.key)) {
               context.onOpenChange(true);
               // The trigger may hold focus if opened via pointer interaction
