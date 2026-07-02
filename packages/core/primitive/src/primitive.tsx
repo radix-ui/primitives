@@ -16,7 +16,7 @@ export function composeEventHandlers<E extends { defaultPrevented: boolean }>(
   return function handleEvent(event: E) {
     originalEventHandler?.(event);
 
-    if (checkForDefaultPrevented === false || !event.defaultPrevented) {
+    if (checkForDefaultPrevented === false || !event || !event.defaultPrevented) {
       return ourEventHandler?.(event);
     }
   };
