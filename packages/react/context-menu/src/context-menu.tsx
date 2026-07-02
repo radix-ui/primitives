@@ -109,10 +109,19 @@ const ContextMenuTrigger = React.forwardRef<ContextMenuTriggerElement, ContextMe
     const { __scopeContextMenu, disabled = false, ...triggerProps } = props;
     const context = useContextMenuContext(TRIGGER_NAME, __scopeContextMenu);
     const menuScope = useMenuScope(__scopeContextMenu);
-    const pointRef = React.useRef<Point>({ x: 0, y: 0 });
-    const virtualRef = React.useRef({
-      getBoundingClientRect: () => DOMRect.fromRect({ width: 0, height: 0, ...pointRef.current }),
-    });
+    const [point, setPoint] = React.useState<Point>({ x: 0, y: 0 });
+
+    // Re-create the virtual anchor whenever the pointer position changes so the
+    // content re-anchors to the latest point when the menu is re-triggered while
+    // already open (e.g. right-clicking in a new location, #2611).
+    const virtualRef = React.useMemo(
+      () => ({
+        current: {
+          getBoundingClientRect: () => DOMRect.fromRect({ width: 0, height: 0, ...point }),
+        },
+      }),
+      [point],
+    );
     const longPressTimerRef = React.useRef(0);
     const clearLongPress = React.useCallback(
       () => window.clearTimeout(longPressTimerRef.current),
@@ -120,7 +129,7 @@ const ContextMenuTrigger = React.forwardRef<ContextMenuTriggerElement, ContextMe
     );
     const handleOpen = (event: React.MouseEvent | React.PointerEvent) => {
       context.hasInteractedRef.current = true;
-      pointRef.current = { x: event.clientX, y: event.clientY };
+      setPoint({ x: event.clientX, y: event.clientY });
       context.onOpenChange(true);
     };
 
