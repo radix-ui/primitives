@@ -266,30 +266,27 @@ function getTabbableCandidates(container: HTMLElement) {
  * NOTE: Only checks visibility up to the `container`.
  */
 function findVisible(elements: HTMLElement[], container: HTMLElement) {
-  for (const element of elements) {
-    // we stop checking if it's hidden at the `container` level (excluding)
-    if (!isHidden(element, { upTo: container })) return element;
-  }
-}
-
-function isHidden(node: HTMLElement, { upTo }: { upTo?: HTMLElement }) {
   // `checkVisibility` performs a single native check for `visibility: hidden`
   // and `display: none` across the ancestor chain. This avoids the repeated
   // `getComputedStyle` calls per ancestor that the fallback path requires,
   // which reduces the cost of style resolution triggered by earlier DOM writes
   // (e.g. react-remove-scroll, DismissableLayer setting body styles).
-  //
-  // checkVisibility walks to the document root, but the original contract only
-  // checks ancestors strictly below `upTo`. When `upTo` itself is visible the
-  // two checks are equivalent — any hidden ancestor must be within scope. If
-  // `upTo` is hidden (rare: keyboard events don't fire on hidden containers)
-  // we fall back to the scoped loop to preserve the original contract.
-  if (typeof node.checkVisibility === 'function') {
-    if (!upTo || upTo.checkVisibility({ checkVisibilityCSS: true })) {
-      return !node.checkVisibility({ checkVisibilityCSS: true });
+  const canUseCheckVisibility =
+    typeof container.checkVisibility === 'function' &&
+    container.checkVisibility({ checkVisibilityCSS: true });
+
+  for (const element of elements) {
+    const hidden = canUseCheckVisibility
+      ? !element.checkVisibility({ checkVisibilityCSS: true })
+      : isHidden(element, { upTo: container });
+    // we stop checking if it's hidden at the `container` level (excluding)
+    if (!hidden) {
+      return element;
     }
   }
+}
 
+function isHidden(node: HTMLElement, { upTo }: { upTo?: HTMLElement }) {
   if (getComputedStyle(node).visibility === 'hidden') return true;
   while (node) {
     // we stop at `upTo` (excluding it)
