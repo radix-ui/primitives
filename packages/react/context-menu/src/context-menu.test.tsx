@@ -39,6 +39,25 @@ describe('rendering and opening', () => {
     expect(screen.getByText(TRIGGER_TEXT)).toHaveAttribute('data-state', 'open');
   });
 
+  it('re-anchors the content when re-triggered in a new location while open', async () => {
+    render(<ContextMenuTest />);
+    const trigger = screen.getByText(TRIGGER_TEXT);
+
+    fireEvent.contextMenu(trigger, { clientX: 10, clientY: 10 });
+    await waitFor(() => expect(screen.getByRole('menu')).toBeInTheDocument());
+
+    const wrapper = () =>
+      document.querySelector('[data-radix-popper-content-wrapper]') as HTMLElement;
+    await waitFor(() => expect(wrapper()).toBeTruthy());
+    const initialTransform = wrapper().style.transform;
+
+    // Right-click again in a different location while the menu is still open.
+    fireEvent.contextMenu(trigger, { clientX: 200, clientY: 150 });
+
+    expect(screen.getByRole('menu')).toBeInTheDocument();
+    await waitFor(() => expect(wrapper().style.transform).not.toEqual(initialTransform));
+  });
+
   it('closes the content when pressing escape', async () => {
     render(<ContextMenuTest />);
     fireEvent.contextMenu(screen.getByText(TRIGGER_TEXT));
