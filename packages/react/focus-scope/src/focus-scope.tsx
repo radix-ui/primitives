@@ -278,8 +278,16 @@ function isHidden(node: HTMLElement, { upTo }: { upTo?: HTMLElement }) {
   // `getComputedStyle` calls per ancestor that the fallback path requires,
   // which reduces the cost of style resolution triggered by earlier DOM writes
   // (e.g. react-remove-scroll, DismissableLayer setting body styles).
+  //
+  // checkVisibility walks to the document root, but the original contract only
+  // checks ancestors strictly below `upTo`. When `upTo` itself is visible the
+  // two checks are equivalent — any hidden ancestor must be within scope. If
+  // `upTo` is hidden (rare: keyboard events don't fire on hidden containers)
+  // we fall back to the scoped loop to preserve the original contract.
   if (typeof node.checkVisibility === 'function') {
-    return !node.checkVisibility({ checkVisibilityCSS: true });
+    if (!upTo || upTo.checkVisibility({ checkVisibilityCSS: true })) {
+      return !node.checkVisibility({ checkVisibilityCSS: true });
+    }
   }
 
   if (getComputedStyle(node).visibility === 'hidden') return true;
