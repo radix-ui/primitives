@@ -6,6 +6,7 @@ import * as DropdownMenu from './dropdown-menu';
 
 const TRIGGER_TEXT = 'Open';
 const ITEM_TEXT = 'Item';
+const ITEM_TEXT_2 = 'Item 2';
 const SUB_TRIGGER_TEXT = 'Sub';
 const SUB_ITEM_TEXT = 'Sub Item';
 
@@ -34,6 +35,21 @@ const DropdownMenuWithSubTest = (props: React.ComponentProps<typeof DropdownMenu
             </DropdownMenu.SubContent>
           </DropdownMenu.Portal>
         </DropdownMenu.Sub>
+      </DropdownMenu.Content>
+    </DropdownMenu.Portal>
+  </DropdownMenu.Root>
+);
+
+const DropdownMenuWithInputTest = (props: {
+  focusOnItemEnter?: boolean;
+}) => (
+  <DropdownMenu.Root>
+    <DropdownMenu.Trigger>{TRIGGER_TEXT}</DropdownMenu.Trigger>
+    <DropdownMenu.Portal>
+      <DropdownMenu.Content focusOnItemEnter={props.focusOnItemEnter}>
+        <input data-testid="search" type="text" />
+        <DropdownMenu.Item>{ITEM_TEXT}</DropdownMenu.Item>
+        <DropdownMenu.Item>{ITEM_TEXT_2}</DropdownMenu.Item>
       </DropdownMenu.Content>
     </DropdownMenu.Portal>
   </DropdownMenu.Root>
@@ -83,6 +99,100 @@ describe('closing on window blur', () => {
     await waitFor(() => expect(screen.queryByText(SUB_ITEM_TEXT)).not.toBeInTheDocument());
     expect(screen.queryByText(ITEM_TEXT)).not.toBeInTheDocument();
     expect(trigger).toHaveAttribute('aria-expanded', 'false');
+  });
+});
+
+describe('focusOnItemEnter', () => {
+  afterEach(cleanup);
+
+  async function openMenuAndFocusInput(options: { focusOnItemEnter?: boolean } = {}) {
+    render(<DropdownMenuWithInputTest focusOnItemEnter={options.focusOnItemEnter} />);
+    const trigger = screen.getByText(TRIGGER_TEXT);
+    fireEvent.keyDown(trigger, { key: 'Enter' });
+
+    const searchInput = await waitFor(() => screen.getByTestId('search'));
+    searchInput.focus();
+    expect(document.activeElement).toBe(searchInput);
+
+    return { searchInput };
+  }
+
+  it('should keep focus on a sibling input when focusOnItemEnter={false}', async () => {
+    const { searchInput } = await openMenuAndFocusInput({ focusOnItemEnter: false });
+    const item = await waitFor(() => screen.getByText(ITEM_TEXT));
+
+    fireEvent.pointerMove(item, { pointerType: 'mouse' });
+
+    expect(document.activeElement).toBe(searchInput);
+    expect(document.activeElement).not.toBe(item);
+  });
+
+  it('should still focus items on hover when focusOnItemEnter is omitted (default)', async () => {
+    const { searchInput } = await openMenuAndFocusInput();
+    const item = await waitFor(() => screen.getByText(ITEM_TEXT));
+
+    fireEvent.pointerMove(item, { pointerType: 'mouse' });
+
+    expect(document.activeElement).toBe(item);
+    expect(document.activeElement).not.toBe(searchInput);
+  });
+
+  it('should keep focus on the input across multiple pointer moves over different items', async () => {
+    const { searchInput } = await openMenuAndFocusInput({ focusOnItemEnter: false });
+    const item1 = await waitFor(() => screen.getByText(ITEM_TEXT));
+    const item2 = await waitFor(() => screen.getByText(ITEM_TEXT_2));
+
+    fireEvent.pointerMove(item1, { pointerType: 'mouse' });
+    expect(document.activeElement).toBe(searchInput);
+
+    fireEvent.pointerMove(item2, { pointerType: 'mouse' });
+    expect(document.activeElement).toBe(searchInput);
+  });
+
+  it('should still focus the first item on keyboard-open when focusOnItemEnter={false}', async () => {
+    render(<DropdownMenuWithInputTest focusOnItemEnter={false} />);
+    const trigger = screen.getByText(TRIGGER_TEXT);
+    fireEvent.keyDown(trigger, { key: 'Enter' });
+
+    const item = await waitFor(() => screen.getByText(ITEM_TEXT));
+    await waitFor(() => expect(document.activeElement).toBe(item));
+  });
+});
+
+describe('focusOnItemEnter with submenus', () => {
+  afterEach(cleanup);
+
+  it('should still open submenu on SubTrigger hover when parent has focusOnItemEnter={false}', async () => {
+    render(
+      <DropdownMenu.Root>
+        <DropdownMenu.Trigger>{TRIGGER_TEXT}</DropdownMenu.Trigger>
+        <DropdownMenu.Portal>
+          <DropdownMenu.Content focusOnItemEnter={false}>
+            <DropdownMenu.Item>{ITEM_TEXT}</DropdownMenu.Item>
+            <DropdownMenu.Sub>
+              <DropdownMenu.SubTrigger>{SUB_TRIGGER_TEXT}</DropdownMenu.SubTrigger>
+              <DropdownMenu.Portal>
+                <DropdownMenu.SubContent>
+                  <DropdownMenu.Item>{SUB_ITEM_TEXT}</DropdownMenu.Item>
+                </DropdownMenu.SubContent>
+              </DropdownMenu.Portal>
+            </DropdownMenu.Sub>
+          </DropdownMenu.Content>
+        </DropdownMenu.Portal>
+      </DropdownMenu.Root>
+    );
+
+    const trigger = screen.getByText(TRIGGER_TEXT);
+    fireEvent.keyDown(trigger, { key: 'Enter' });
+
+    const subTrigger = await waitFor(() => screen.getByText(SUB_TRIGGER_TEXT));
+    expect(screen.queryByText(SUB_ITEM_TEXT)).not.toBeInTheDocument();
+
+    fireEvent.pointerMove(subTrigger, { pointerType: 'mouse' });
+
+    await waitFor(() => expect(screen.getByText(SUB_ITEM_TEXT)).toBeInTheDocument(), {
+      timeout: 1000,
+    });
   });
 });
 

@@ -221,6 +221,30 @@ type MenuContentContextValue = {
   searchRef: React.RefObject<string>;
   pointerGraceTimerRef: React.MutableRefObject<number>;
   onPointerGraceIntentChange(intent: GraceIntent | null): void;
+  /**
+   * Whether items should focus themselves on `pointerMove` (i.e. hover).
+   *
+   * Default `true` — matches native menu behaviour where moving the pointer
+   * over an item focuses it.
+   *
+   * Set to `false` when the menu contains focusable siblings (e.g. an embedded
+   * search `<input>`) that the user may want to keep typing in without their
+   * caret being stolen by every row the pointer passes over. This fixes a
+   * long-standing focus-stealing issue (see
+   * https://github.com/radix-ui/primitives/issues/2193).
+   *
+   * **Visual hover state:** when `false`, items no longer set
+   * `data-highlighted` on hover (that attribute tracks the focused state).
+   * Consumers who need a hover visual should style via the `:hover`
+   * pseudo-class or a separate `onPointerEnter` mechanism.
+   *
+   * **Submenu interaction:** submenu hover-open via `MenuSubTrigger` is
+   * unaffected — submenu opening is driven by `onItemEnter` (pointer grace
+   * intent), not by the focus call.
+   *
+   * @defaultValue true
+   */
+  focusOnItemEnter: boolean;
 };
 const [MenuContentProvider, useMenuContentContext] =
   createMenuContext<MenuContentContextValue>(CONTENT_NAME);
@@ -361,6 +385,31 @@ interface MenuContentImplProps
    */
   loop?: RovingFocusGroupProps['loop'];
 
+  /**
+   * Whether items should focus themselves on `pointerMove` (i.e. hover).
+   *
+   * Default `true` — matches native menu behaviour where moving the pointer
+   * over an item focuses it.
+   *
+   * Set to `false` when the menu contains focusable siblings (e.g. an embedded
+   * search `<input>`) that the user may want to keep typing in without their
+   * caret being stolen by every row the pointer passes over. This fixes a
+   * long-standing focus-stealing issue (see
+   * https://github.com/radix-ui/primitives/issues/2193).
+   *
+   * **Visual hover state:** when `false`, items no longer set
+   * `data-highlighted` on hover (that attribute tracks the focused state).
+   * Consumers who need a hover visual should style via the `:hover`
+   * pseudo-class or a separate `onPointerEnter` mechanism.
+   *
+   * **Submenu interaction:** submenu hover-open via `MenuSubTrigger` is
+   * unaffected — submenu opening is driven by `onItemEnter` (pointer grace
+   * intent), not by the focus call.
+   *
+   * @defaultValue true
+   */
+  focusOnItemEnter?: boolean;
+
   onEntryFocus?: RovingFocusGroupProps['onEntryFocus'];
   onEscapeKeyDown?: DismissableLayerProps['onEscapeKeyDown'];
   onPointerDownOutside?: DismissableLayerProps['onPointerDownOutside'];
@@ -376,6 +425,7 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
       __scopeMenu,
       loop = false,
       trapFocus,
+      focusOnItemEnter = true,
       onOpenAutoFocus,
       onCloseAutoFocus,
       disableOutsidePointerEvents,
@@ -450,6 +500,7 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
       <MenuContentProvider
         scope={__scopeMenu}
         searchRef={searchRef}
+        focusOnItemEnter={focusOnItemEnter}
         onItemEnter={React.useCallback(
           (event) => {
             if (isPointerMovingToSubmenu(event)) event.preventDefault();
@@ -743,7 +794,7 @@ const MenuItemImpl = React.forwardRef<MenuItemImplElement, MenuItemImplProps>(
                   contentContext.onItemLeave(event);
                 } else {
                   contentContext.onItemEnter(event);
-                  if (!event.defaultPrevented) {
+                  if (!event.defaultPrevented && contentContext.focusOnItemEnter) {
                     const item = event.currentTarget;
                     item.focus({ preventScroll: true });
                   }

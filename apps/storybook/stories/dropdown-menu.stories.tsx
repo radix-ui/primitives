@@ -988,6 +988,122 @@ export const WithTooltip = () => (
   </div>
 );
 
+export const WithSearchInput = () => {
+  // Demonstrates the `focusOnItemEnter` opt-out prop. By default, moving the
+  // pointer over a menu item steals focus from any sibling focusable element
+  // (here, the search `<input>`) — so the user can't keep typing while their
+  // cursor passes over rows. Setting `focusOnItemEnter={false}` on the
+  // `Content` lets the input keep its caret.
+  //
+  // The two examples below are identical except for that one prop. Hover the
+  // items in each and try typing in the input:
+  //   - Left (default): the input loses focus after every row the cursor
+  //     passes over.
+  //   - Right (`focusOnItemEnter={false}`): the input keeps focus; rows
+  //     still highlight visually thanks to the `:hover` rule in the CSS.
+  return (
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        gap: 40,
+        padding: 40,
+        fontFamily: 'apple-system, BlinkMacSystemFont, helvetica, arial, sans-serif',
+      }}
+    >
+      <div>
+        <h3>Default (focusOnItemEnter: true)</h3>
+        <p style={{ fontSize: 12, color: '#666' }}>
+          Hovering an item steals focus from the input — typing stops working.
+        </p>
+        <DropdownMenu.Root>
+          <DropdownMenu.Trigger className={styles.trigger}>Open</DropdownMenu.Trigger>
+          <DropdownMenu.Portal>
+            <DropdownMenu.Content className={styles.content} sideOffset={5}>
+              <div style={{ padding: 4 }}>
+                <input
+                  type="text"
+                  placeholder="Type here…"
+                  style={{
+                    width: '100%',
+                    padding: '4px 6px',
+                    fontSize: 13,
+                    border: '1px solid #ccc',
+                    borderRadius: 3,
+                  }}
+                />
+              </div>
+              <DropdownMenu.Separator className={styles.separator} />
+              <DropdownMenu.Item className={styles.item} onSelect={() => {}}>
+                Undo
+              </DropdownMenu.Item>
+              <DropdownMenu.Item className={styles.item} onSelect={() => {}}>
+                Redo
+              </DropdownMenu.Item>
+              <DropdownMenu.Item className={styles.item} onSelect={() => {}}>
+                Cut
+              </DropdownMenu.Item>
+              <DropdownMenu.Item className={styles.item} onSelect={() => {}}>
+                Copy
+              </DropdownMenu.Item>
+              <DropdownMenu.Item className={styles.item} onSelect={() => {}}>
+                Paste
+              </DropdownMenu.Item>
+            </DropdownMenu.Content>
+          </DropdownMenu.Portal>
+        </DropdownMenu.Root>
+      </div>
+
+      <div>
+        <h3>focusOnItemEnter=false</h3>
+        <p style={{ fontSize: 12, color: '#666' }}>
+          Hovering items no longer steals focus — typing continues uninterrupted.
+        </p>
+        <DropdownMenu.Root>
+          <DropdownMenu.Trigger className={styles.trigger}>Open</DropdownMenu.Trigger>
+          <DropdownMenu.Portal>
+            <DropdownMenu.Content
+              className={styles.content}
+              focusOnItemEnter={false}
+              sideOffset={5}
+            >
+              <div style={{ padding: 4 }}>
+                <input
+                  type="text"
+                  placeholder="Type here…"
+                  style={{
+                    width: '100%',
+                    padding: '4px 6px',
+                    fontSize: 13,
+                    border: '1px solid #ccc',
+                    borderRadius: 3,
+                  }}
+                />
+              </div>
+              <DropdownMenu.Separator className={styles.separator} />
+              <DropdownMenu.Item className={styles.item} onSelect={() => {}}>
+                Undo
+              </DropdownMenu.Item>
+              <DropdownMenu.Item className={styles.item} onSelect={() => {}}>
+                Redo
+              </DropdownMenu.Item>
+              <DropdownMenu.Item className={styles.item} onSelect={() => {}}>
+                Cut
+              </DropdownMenu.Item>
+              <DropdownMenu.Item className={styles.item} onSelect={() => {}}>
+                Copy
+              </DropdownMenu.Item>
+              <DropdownMenu.Item className={styles.item} onSelect={() => {}}>
+                Paste
+              </DropdownMenu.Item>
+            </DropdownMenu.Content>
+          </DropdownMenu.Portal>
+        </DropdownMenu.Root>
+      </div>
+    </div>
+  );
+};
+
 export const InPopupWindow = () => {
   const handlePopupClick = React.useCallback(() => {
     const popupWindow = window.open(undefined, undefined, 'width=300,height=300,top=100,left=100');
