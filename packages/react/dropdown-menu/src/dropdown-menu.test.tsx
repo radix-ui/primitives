@@ -1,6 +1,7 @@
 import * as React from 'react';
+import ReactDOM from 'react-dom';
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { afterEach, describe, it, expect } from 'vitest';
+import { afterEach, describe, it, expect, vi } from 'vitest';
 import { assertStableComposedRef } from '@repo/test-utils/ref-stability';
 import * as DropdownMenu from './dropdown-menu';
 
@@ -83,6 +84,52 @@ describe('closing on window blur', () => {
     await waitFor(() => expect(screen.queryByText(SUB_ITEM_TEXT)).not.toBeInTheDocument());
     expect(screen.queryByText(ITEM_TEXT)).not.toBeInTheDocument();
     expect(trigger).toHaveAttribute('aria-expanded', 'false');
+  });
+});
+
+// Regression tests for https://github.com/radix-ui/primitives/issues/3232
+describe('keys from focusable descendants', () => {
+  afterEach(cleanup);
+
+  const MenuWithPortaledInput = () => (
+    <DropdownMenu.Root defaultOpen>
+      <DropdownMenu.Trigger>{TRIGGER_TEXT}</DropdownMenu.Trigger>
+      <DropdownMenu.Portal>
+        <DropdownMenu.Content>
+          <DropdownMenu.Item onSelect={(event) => event.preventDefault()}>
+            {ITEM_TEXT}
+            {ReactDOM.createPortal(<input data-testid="input" defaultValue="" />, document.body)}
+          </DropdownMenu.Item>
+        </DropdownMenu.Content>
+      </DropdownMenu.Portal>
+    </DropdownMenu.Root>
+  );
+
+  it('does not intercept Space/Enter typed into a portaled focusable descendant', async () => {
+    render(<MenuWithPortaledInput />);
+    const input = await waitFor(() => screen.getByTestId('input'));
+    input.focus();
+    // `fireEvent` returns `false` when `preventDefault` was called on the event.
+    expect(fireEvent.keyDown(input, { key: ' ' })).toBe(true);
+    expect(fireEvent.keyDown(input, { key: 'Enter' })).toBe(true);
+  });
+
+  it('still selects the item via Space/Enter when the item itself is focused', async () => {
+    const onSelect = vi.fn();
+    render(
+      <DropdownMenu.Root defaultOpen>
+        <DropdownMenu.Trigger>{TRIGGER_TEXT}</DropdownMenu.Trigger>
+        <DropdownMenu.Portal>
+          <DropdownMenu.Content>
+            <DropdownMenu.Item onSelect={onSelect}>{ITEM_TEXT}</DropdownMenu.Item>
+          </DropdownMenu.Content>
+        </DropdownMenu.Portal>
+      </DropdownMenu.Root>,
+    );
+    const item = await waitFor(() => screen.getByText(ITEM_TEXT));
+    item.focus();
+    fireEvent.keyDown(item, { key: 'Enter' });
+    await waitFor(() => expect(onSelect).toHaveBeenCalledTimes(1));
   });
 });
 

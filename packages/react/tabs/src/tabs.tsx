@@ -190,7 +190,18 @@ const TabsTrigger = React.forwardRef<TabsTriggerElement, TabsTriggerProps>(
             }
           })}
           onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
-            if ([' ', 'Enter'].includes(event.key)) context.onValueChange(value);
+            // Only react to keys originating from the trigger itself. Focusable
+            // descendants (eg. content portaled out of the trigger's DOM
+            // subtree) bubble their key events here through React's event
+            // system.
+            // See: https://github.com/radix-ui/primitives/issues/3232
+            if (disabled || event.target !== event.currentTarget) {
+              return;
+            }
+
+            if ([' ', 'Enter'].includes(event.key)) {
+              context.onValueChange(value);
+            }
           })}
           onFocus={composeEventHandlers(props.onFocus, () => {
             // handle "automatic" activation if necessary
