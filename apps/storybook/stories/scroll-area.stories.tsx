@@ -367,6 +367,45 @@ ChromaticDynamicContentAfterLoaded.parameters = {
   chromatic: { disable: false, delay: DYNAMIC_CONTENT_DELAY },
 };
 
+// Regression test for https://github.com/radix-ui/primitives/issues/2383
+export const Cypress = () => {
+  const [horizontalOverflow, setHorizontalOverflow] = React.useState(true);
+  return (
+    <div className={styles.root}>
+      <button
+        data-testid="toggle-horizontal-overflow"
+        onClick={() => setHorizontalOverflow((value) => !value)}
+      >
+        toggle horizontal overflow
+      </button>
+      <ScrollArea.Root
+        type="auto"
+        data-testid="root"
+        className={styles.scrollArea}
+        style={{ width: 200, height: 200 }}
+      >
+        <ScrollArea.Viewport className={styles.scrollAreaViewport}>
+          <div style={{ width: horizontalOverflow ? 4000 : '100%' }}>
+            {Array.from({ length: 30 }).map((_, index) => (
+              <p key={index} style={{ margin: 0 }}>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+              </p>
+            ))}
+          </div>
+        </ScrollArea.Viewport>
+        <ScrollArea.Scrollbar className={styles.scrollbar} orientation="vertical">
+          <ScrollArea.Thumb className={styles.thumb} />
+        </ScrollArea.Scrollbar>
+        <ScrollArea.Scrollbar className={styles.scrollbar} orientation="horizontal">
+          <ScrollArea.Thumb className={styles.thumb} />
+        </ScrollArea.Scrollbar>
+        <ScrollArea.Corner className={styles.corner} />
+      </ScrollArea.Root>
+    </div>
+  );
+};
+Cypress.parameters = { chromatic: { disable: true } };
+
 const ScrollAreaStory = ({
   children,
   animated = false,
