@@ -94,11 +94,29 @@ const TRIGGER_NAME = 'DropdownMenuTrigger';
 
 type DropdownMenuTriggerElement = React.ComponentRef<typeof Primitive.button>;
 type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
-interface DropdownMenuTriggerProps extends PrimitiveButtonProps {}
+interface DropdownMenuTriggerProps extends PrimitiveButtonProps {
+  /**
+   * Controls how the trigger opens the menu.
+   * - `"pointer-down"`: Opens the menu when the user presses the left mouse
+   *   button down on the trigger. This matches native menu behavior and is
+   *   ideal for most use cases.
+   * - `"click"`: Opens the menu when the user triggers a full click event. This
+   *   is ideal for use cases where cases where pointer-down events conflict
+   *   with other interactions such as dragging or selecting text.
+   *
+   * @defaultValue "pointer-down"
+   */
+  activationMode?: 'pointer-down' | 'click';
+}
 
 const DropdownMenuTrigger = React.forwardRef<DropdownMenuTriggerElement, DropdownMenuTriggerProps>(
   (props: ScopedProps<DropdownMenuTriggerProps>, forwardedRef) => {
-    const { __scopeDropdownMenu, disabled = false, ...triggerProps } = props;
+    const {
+      __scopeDropdownMenu,
+      disabled = false,
+      activationMode = 'pointer-down',
+      ...triggerProps
+    } = props;
     const context = useDropdownMenuContext(TRIGGER_NAME, __scopeDropdownMenu);
     const menuScope = useMenuScope(__scopeDropdownMenu);
     const composedRefs = useComposedRefs(forwardedRef, context.triggerRef);
@@ -116,22 +134,62 @@ const DropdownMenuTrigger = React.forwardRef<DropdownMenuTriggerElement, Dropdow
           {...triggerProps}
           ref={composedRefs}
           onPointerDown={composeEventHandlers(props.onPointerDown, (event) => {
+            // When the trigger is draggable, defer opening to the `click` event
+            // so a drag gesture can begin. Opening here calls `preventDefault`,
+            // which suppresses the browser's native drag-and-drop (`dragstart`
+            // never fires).
+            // See: https://github.com/radix-ui/primitives/issues/2867
+            if (activationMode === 'click') {
+              return;
+            }
+
             // only call handler if it's the left button (mousedown gets triggered by all mouse buttons)
             // but not when the control key is pressed (avoiding MacOS right click)
             if (!disabled && event.button === 0 && event.ctrlKey === false) {
               context.onOpenToggle();
               // prevent trigger focusing when opening
               // this allows the content to be given focus without competition
-              if (!context.open) event.preventDefault();
+              if (!context.open) {
+                event.preventDefault();
+              }
+            }
+          })}
+          onClick={composeEventHandlers(props.onClick, (event) => {
+            // Draggable triggers open on `click` instead of `pointerdown` (see
+            // `onPointerDown` above). The browser suppresses `click` after a
+            // drag, so this only fires for a genuine click and never when the
+            // user drags the trigger.
+            if (activationMode === 'pointer-down') {
+              return;
+            }
+
+            // only call handler if it's the left button, but not when the
+            // control key is pressed (avoiding MacOS right click)
+            if (!disabled && event.button === 0 && event.ctrlKey === false) {
+              context.onOpenToggle();
             }
           })}
           onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
-            if (disabled) return;
-            if (['Enter', ' '].includes(event.key)) context.onOpenToggle();
-            if (event.key === 'ArrowDown') context.onOpenChange(true);
-            // prevent keydown from scrolling window / first focused item to execute
-            // that keydown (inadvertently closing the menu)
-            if (['Enter', ' ', 'ArrowDown'].includes(event.key)) event.preventDefault();
+            if (disabled) {
+              return;
+            }
+
+            switch (event.key) {
+              case 'ArrowDown':
+              case 'Enter':
+              case ' ':
+                // prevent keydown from scrolling window / first focused item to execute
+                // that keydown (inadvertently closing the menu)
+                event.preventDefault();
+                if (event.key === 'ArrowDown') {
+                  context.onOpenChange(true);
+                } else {
+                  context.onOpenToggle();
+                }
+                return;
+              default:
+                return;
+            }
           })}
         />
       </MenuPrimitive.Anchor>
