@@ -1024,8 +1024,6 @@ export const InPopupWindow = () => {
   );
 };
 
-// A trigger using `activationMode="click"` so it can also be dragged, à la Notion's drag handle.
-// Regression demo for https://github.com/radix-ui/primitives/issues/2867
 export const ActivationModeClick = () => {
   const [log, setLog] = React.useState<string[]>([]);
   const append = (message: string) => setLog((prev) => [message, ...prev].slice(0, 5));

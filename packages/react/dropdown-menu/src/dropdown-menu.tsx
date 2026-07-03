@@ -134,31 +134,23 @@ const DropdownMenuTrigger = React.forwardRef<DropdownMenuTriggerElement, Dropdow
           {...triggerProps}
           ref={composedRefs}
           onPointerDown={composeEventHandlers(props.onPointerDown, (event) => {
-            // When the trigger is draggable, defer opening to the `click` event
-            // so a drag gesture can begin. Opening here calls `preventDefault`,
-            // which suppresses the browser's native drag-and-drop (`dragstart`
-            // never fires).
-            // See: https://github.com/radix-ui/primitives/issues/2867
             if (activationMode === 'click') {
               return;
             }
 
-            // only call handler if it's the left button (mousedown gets triggered by all mouse buttons)
-            // but not when the control key is pressed (avoiding MacOS right click)
+            // only call handler if it's the left button (mousedown gets
+            // triggered by all mouse buttons) but not when the control key is
+            // pressed (avoiding MacOS right click)
             if (!disabled && event.button === 0 && event.ctrlKey === false) {
               context.onOpenToggle();
-              // prevent trigger focusing when opening
-              // this allows the content to be given focus without competition
+              // prevent trigger focusing when opening. this allows the content
+              // to be given focus without competition.
               if (!context.open) {
                 event.preventDefault();
               }
             }
           })}
           onClick={composeEventHandlers(props.onClick, (event) => {
-            // Draggable triggers open on `click` instead of `pointerdown` (see
-            // `onPointerDown` above). The browser suppresses `click` after a
-            // drag, so this only fires for a genuine click and never when the
-            // user drags the trigger.
             if (activationMode === 'pointer-down') {
               return;
             }
