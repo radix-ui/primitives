@@ -228,8 +228,13 @@ const Slider = React.forwardRef<SliderElement, SliderProps>(
                   const multiplier = isSkipKey ? 10 : 1;
                   const atIndex = valueIndexToChangeRef.current;
                   const value = values[atIndex]!;
-                  const stepInDirection = step * multiplier * stepDirection;
-                  updateValues(value + stepInDirection, atIndex, { commit: true });
+                  const nextValue = getNextStepValue(value, {
+                    min,
+                    step,
+                    direction: stepDirection,
+                    multiplier,
+                  });
+                  updateValues(nextValue, atIndex, { commit: true });
                 }
               }}
             />
@@ -934,6 +939,38 @@ function getDecimalCount(value: number) {
 function roundValue(value: number, decimalCount: number) {
   const rounder = Math.pow(10, decimalCount);
   return Math.round(value * rounder) / rounder;
+}
+
+function getNextStepValue(
+  value: number,
+  {
+    min,
+    step,
+    direction,
+    multiplier,
+  }: {
+    min: number;
+    step: number;
+    direction: number;
+    multiplier: number;
+  },
+) {
+  const decimalCount = getDecimalCount(step);
+  const stepsFromMin = (value - min) / step;
+  const nearestSteps = Math.round(stepsFromMin);
+  const isAligned =
+    roundValue(nearestSteps * step + min, decimalCount) === roundValue(value, decimalCount);
+
+  let nextSteps: number;
+  if (isAligned) {
+    nextSteps = nearestSteps + multiplier * direction;
+  } else if (direction > 0) {
+    nextSteps = Math.ceil(stepsFromMin);
+  } else {
+    nextSteps = Math.floor(stepsFromMin);
+  }
+
+  return roundValue(nextSteps * step + min, decimalCount);
 }
 
 function isFunction(value: unknown): value is (...args: any[]) => any {

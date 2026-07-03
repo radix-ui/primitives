@@ -33,6 +33,30 @@ describe('Slider', () => {
     expect(getThumbValue()).toBeCloseTo(0.1, 10);
   });
 
+  // https://github.com/radix-ui/primitives/issues/3041
+  describe('when the value is off the step grid', () => {
+    it('snaps to the next aligned value on arrow up without skipping a step', async () => {
+      const user = userEvent.setup();
+      renderSlider({ defaultValue: [49000], min: 1000, max: 100000, step: 5000 });
+
+      await user.tab();
+      await user.keyboard('{ArrowRight}');
+      expect(getThumbValue()).toBe(51000);
+
+      await user.keyboard('{ArrowRight}');
+      expect(getThumbValue()).toBe(56000);
+    });
+
+    it('snaps to the next aligned value on arrow down without skipping a step', async () => {
+      const user = userEvent.setup();
+      renderSlider({ defaultValue: [49000], min: 1000, max: 100000, step: 5000 });
+
+      await user.tab();
+      await user.keyboard('{ArrowLeft}');
+      expect(getThumbValue()).toBe(46000);
+    });
+  });
+
   // https://github.com/radix-ui/primitives/issues/3852
   it('steps correctly when step is serialized in scientific notation', async () => {
     const user = userEvent.setup();
