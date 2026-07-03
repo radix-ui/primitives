@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { cleanup, render, screen, waitFor, fireEvent } from '@testing-library/react';
-import { assertStableComposedRef } from '@repo/test-utils/ref-stability';
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, it, expect, vi } from 'vitest';
+import { assertStableComposedRef } from '@repo/test-utils/ref-stability';
 import * as NavigationMenu from './navigation-menu';
 
 const TRIGGER_TEXT = 'Item One';
@@ -43,6 +43,45 @@ describe('aria-controls', () => {
     const content = document.getElementById(contentId!);
     expect(content).not.toBeNull();
     expect(content).toContainElement(screen.getByText(CONTENT_TEXT));
+  });
+});
+
+describe('NavigationMenuSub triggerBehavior', () => {
+  afterEach(cleanup);
+
+  const NavigationMenuSubTest = (props: React.ComponentProps<typeof NavigationMenu.Sub>) => (
+    <NavigationMenu.Root>
+      <NavigationMenu.Sub defaultValue="one" {...props}>
+        <NavigationMenu.List>
+          <NavigationMenu.Item value="one">
+            <NavigationMenu.Trigger>{TRIGGER_TEXT}</NavigationMenu.Trigger>
+            <NavigationMenu.Content>
+              <NavigationMenu.Link href="#">{CONTENT_TEXT}</NavigationMenu.Link>
+            </NavigationMenu.Content>
+          </NavigationMenu.Item>
+        </NavigationMenu.List>
+      </NavigationMenu.Sub>
+    </NavigationMenu.Root>
+  );
+
+  it('keeps the open item open when clicking its trigger by default ("open")', async () => {
+    render(<NavigationMenuSubTest />);
+    const trigger = screen.getByText(TRIGGER_TEXT);
+    await waitFor(() => expect(screen.getByText(CONTENT_TEXT)).toBeInTheDocument());
+
+    fireEvent.click(trigger);
+    expect(screen.getByText(CONTENT_TEXT)).toBeInTheDocument();
+    expect(trigger).toHaveAttribute('aria-expanded', 'true');
+  });
+
+  it('closes the open item when clicking its trigger with triggerBehavior="toggle"', async () => {
+    render(<NavigationMenuSubTest triggerBehavior="toggle" />);
+    const trigger = screen.getByText(TRIGGER_TEXT);
+    await waitFor(() => expect(screen.getByText(CONTENT_TEXT)).toBeInTheDocument());
+
+    fireEvent.click(trigger);
+    await waitFor(() => expect(screen.queryByText(CONTENT_TEXT)).not.toBeInTheDocument());
+    expect(trigger).toHaveAttribute('aria-expanded', 'false');
   });
 });
 

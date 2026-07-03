@@ -229,6 +229,16 @@ interface NavigationMenuSubProps
   defaultValue?: string;
   onValueChange?: (value: string) => void;
   orientation?: Orientation;
+  /**
+   * Controls how clicking a trigger affects its item.
+   * - `"open"`: clicking a trigger only ever opens its item, leaving the
+   *   currently open item unchanged.
+   * - `"toggle"`: clicking the trigger of an already open item closes it,
+   *   matching the toggle behavior of the root `NavigationMenu`.
+   *
+   * @defaultValue "open"
+   */
+  triggerBehavior?: 'open' | 'toggle';
 }
 
 const NavigationMenuSub = /* @__PURE__ */ React.forwardRef<
@@ -243,6 +253,7 @@ const NavigationMenuSub = /* @__PURE__ */ React.forwardRef<
       onValueChange,
       defaultValue,
       orientation = 'horizontal',
+      triggerBehavior = 'open',
       ...subProps
     } = props;
     const context = useNavigationMenuContext(SUB_NAME, __scopeNavigationMenu);
@@ -262,7 +273,11 @@ const NavigationMenuSub = /* @__PURE__ */ React.forwardRef<
         orientation={orientation}
         rootNavigationMenu={context.rootNavigationMenu}
         onTriggerEnter={(itemValue) => setValue(itemValue)}
-        onItemSelect={(itemValue) => setValue(itemValue)}
+        onItemSelect={(itemValue) => {
+          setValue((prevValue) =>
+            triggerBehavior === 'toggle' && prevValue === itemValue ? '' : itemValue,
+          );
+        }}
         onItemDismiss={() => setValue('')}
       >
         <Primitive.div data-orientation={orientation} {...subProps} ref={forwardedRef} />
