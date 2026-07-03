@@ -204,6 +204,50 @@ export const WithMinimumStepsBetweenThumbs = () => (
   </Slider.Root>
 );
 
+export const WithPreserveThumbOrder = () => (
+  <div style={{ display: 'flex', flexDirection: 'column', gap: 50 }}>
+    <div>
+      <h4>Default (thumbs can swap)</h4>
+      <Slider.Root className={styles.root} defaultValue={[10, 30]}>
+        <Slider.Track className={styles.track}>
+          <Slider.Range className={styles.range} />
+        </Slider.Track>
+        <Slider.Thumb className={styles.thumb} />
+        <Slider.Thumb className={styles.thumb} />
+      </Slider.Root>
+    </div>
+
+    <div>
+      <h4>preserveThumbOrder</h4>
+      <Slider.Root className={styles.root} defaultValue={[10, 30]} preserveThumbOrder>
+        <Slider.Track className={styles.track}>
+          <Slider.Range className={styles.range} />
+        </Slider.Track>
+        <Slider.Thumb className={styles.thumb} />
+        <Slider.Thumb className={styles.thumb} />
+      </Slider.Root>
+    </div>
+
+    <div>
+      <h4>preserveThumbOrder with minStepsBetweenThumbs</h4>
+      <Slider.Root
+        className={styles.root}
+        defaultValue={[10, 30, 60, 80]}
+        minStepsBetweenThumbs={10}
+        preserveThumbOrder
+      >
+        <Slider.Track className={styles.track}>
+          <Slider.Range className={styles.range} />
+        </Slider.Track>
+        <Slider.Thumb className={styles.thumb} />
+        <Slider.Thumb className={styles.thumb} />
+        <Slider.Thumb className={styles.thumb} />
+        <Slider.Thumb className={styles.thumb} />
+      </Slider.Root>
+    </div>
+  </div>
+);
+
 export const WithMultipleRanges = () => {
   const [minStepsBetweenThumbs, setMinStepsBetweenThumbs] = React.useState(0);
 

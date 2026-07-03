@@ -16,8 +16,28 @@ function renderSlider(props: React.ComponentProps<typeof Slider.Root>) {
   );
 }
 
+function renderRangeSlider(
+  props: React.ComponentProps<typeof Slider.Root>,
+  thumbCount = props.defaultValue?.length ?? props.value?.length ?? 2,
+) {
+  return render(
+    <Slider.Root {...props}>
+      <Slider.Track>
+        <Slider.Range />
+      </Slider.Track>
+      {Array.from({ length: thumbCount }, (_, index) => (
+        <Slider.Thumb key={index} />
+      ))}
+    </Slider.Root>,
+  );
+}
+
 function getThumbValue() {
   return Number(screen.getByRole('slider').getAttribute('aria-valuenow'));
+}
+
+function getThumbValues() {
+  return screen.getAllByRole('slider').map((thumb) => Number(thumb.getAttribute('aria-valuenow')));
 }
 
 describe('Slider', () => {
@@ -178,6 +198,57 @@ describe('Slider', () => {
       fireEvent.pointerUp(slider, { pointerId: 1, clientX: 70 });
 
       expect(handleValueCommit).not.toHaveBeenCalled();
+  describe('preserveThumbOrder', () => {
+    it('allows thumbs to swap by default', async () => {
+      const user = userEvent.setup();
+      renderRangeSlider({ defaultValue: [10, 30], min: 0, max: 100, step: 1 });
+
+      screen.getAllByRole('slider')[0]!.focus();
+      for (let i = 0; i < 25; i++) {
+        await user.keyboard('{ArrowRight}');
+      }
+
+      // The first thumb crosses the second and they swap positions.
+      expect(getThumbValues()).toEqual([30, 35]);
+    });
+
+    it('prevents a thumb from crossing its neighbour when set', async () => {
+      const user = userEvent.setup();
+      renderRangeSlider({
+        defaultValue: [10, 30],
+        min: 0,
+        max: 100,
+        step: 1,
+        preserveThumbOrder: true,
+      });
+
+      screen.getAllByRole('slider')[0]!.focus();
+      for (let i = 0; i < 25; i++) {
+        await user.keyboard('{ArrowRight}');
+      }
+
+      // The first thumb stops at the second thumb's value instead of swapping.
+      expect(getThumbValues()).toEqual([30, 30]);
+    });
+
+    it('respects `minStepsBetweenThumbs` when preserving order', async () => {
+      const user = userEvent.setup();
+      renderRangeSlider({
+        defaultValue: [10, 30],
+        min: 0,
+        max: 100,
+        step: 1,
+        minStepsBetweenThumbs: 5,
+        preserveThumbOrder: true,
+      });
+
+      screen.getAllByRole('slider')[0]!.focus();
+      for (let i = 0; i < 25; i++) {
+        await user.keyboard('{ArrowRight}');
+      }
+
+      // The first thumb stops 5 steps short of the second thumb.
+      expect(getThumbValues()).toEqual([25, 30]);
     });
   });
 
