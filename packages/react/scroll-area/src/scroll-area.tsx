@@ -875,6 +875,7 @@ const ScrollAreaCornerImpl = React.forwardRef<
   const [width, setWidth] = React.useState(0);
   const [height, setHeight] = React.useState(0);
   const hasSize = Boolean(width && height);
+  const { onCornerWidthChange, onCornerHeightChange } = context;
 
   useResizeObserver(context.scrollbarX, () => {
     const height = context.scrollbarX?.offsetHeight || 0;
@@ -887,6 +888,17 @@ const ScrollAreaCornerImpl = React.forwardRef<
     context.onCornerWidthChange(width);
     setWidth(width);
   });
+
+  // Reset the corner sizes when the corner unmounts (eg. when one of the
+  // scrollbars is no longer visible) so the exposed CSS variables don't stick
+  // around and leave a gap on the remaining scrollbar.
+  // https://github.com/radix-ui/primitives/issues/2383
+  React.useEffect(() => {
+    return () => {
+      onCornerWidthChange(0);
+      onCornerHeightChange(0);
+    };
+  }, [onCornerWidthChange, onCornerHeightChange]);
 
   return hasSize ? (
     <Primitive.div
