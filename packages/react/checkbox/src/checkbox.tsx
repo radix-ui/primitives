@@ -136,6 +136,7 @@ const CheckboxTrigger = React.forwardRef<HTMLButtonElement, CheckboxTriggerProps
       disabled,
       checked,
       required,
+      form,
       setControl,
       setChecked,
       hasConsumerStoppedPropagationRef,
@@ -146,13 +147,13 @@ const CheckboxTrigger = React.forwardRef<HTMLButtonElement, CheckboxTriggerProps
 
     const initialCheckedStateRef = React.useRef(checked);
     React.useEffect(() => {
-      const form = control?.form;
-      if (form) {
+      const associatedForm = form ? control?.ownerDocument.getElementById(form) : control?.form;
+      if (associatedForm instanceof HTMLFormElement) {
         const reset = () => setChecked(initialCheckedStateRef.current);
-        form.addEventListener('reset', reset);
-        return () => form.removeEventListener('reset', reset);
+        associatedForm.addEventListener('reset', reset);
+        return () => associatedForm.removeEventListener('reset', reset);
       }
-    }, [control, setChecked]);
+    }, [control, form, setChecked]);
 
     return (
       <Primitive.button

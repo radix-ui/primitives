@@ -298,6 +298,121 @@ describe('Checkbox', () => {
   });
 });
 
+describe('given a Checkbox in a form', () => {
+  afterEach(cleanup);
+
+  describe('uncontrolled', () => {
+    it('should restore its `defaultChecked` value when the form is reset', () => {
+      render(
+        <form>
+          <Checkbox.Root name="agree" defaultChecked>
+            <Checkbox.Indicator data-testid={INDICATOR_TEST_ID} />
+          </Checkbox.Root>
+          <button type="reset">Reset</button>
+        </form>,
+      );
+
+      const checkbox = screen.getByRole(CHECKBOX_ROLE);
+      expect(checkbox).toHaveAttribute('aria-checked', 'true');
+
+      act(() => fireEvent.click(checkbox));
+      expect(checkbox).toHaveAttribute('aria-checked', 'false');
+
+      act(() => fireEvent.click(screen.getByText('Reset')));
+      expect(checkbox).toHaveAttribute('aria-checked', 'true');
+    });
+  });
+
+  describe('controlled', () => {
+    it('should restore its initial `checked` value when the form is reset', () => {
+      function ControlledCheckbox() {
+        const [checked, setChecked] = React.useState<boolean>(true);
+        return (
+          <form>
+            <Checkbox.Root name="agree" checked={checked} onCheckedChange={setChecked as any}>
+              <Checkbox.Indicator data-testid={INDICATOR_TEST_ID} />
+            </Checkbox.Root>
+            <button type="reset">Reset</button>
+          </form>
+        );
+      }
+
+      render(<ControlledCheckbox />);
+
+      const checkbox = screen.getByRole(CHECKBOX_ROLE);
+      expect(checkbox).toHaveAttribute('aria-checked', 'true');
+
+      act(() => fireEvent.click(checkbox));
+      expect(checkbox).toHaveAttribute('aria-checked', 'false');
+
+      act(() => fireEvent.click(screen.getByText('Reset')));
+      expect(checkbox).toHaveAttribute('aria-checked', 'true');
+    });
+  });
+});
+
+describe('given a Checkbox with external form association', () => {
+  afterEach(cleanup);
+
+  describe('uncontrolled', () => {
+    it('should restore its `defaultChecked` value when the external form is reset', () => {
+      render(
+        <>
+          <form id="checkbox-reset-form">
+            <button type="reset">Reset</button>
+          </form>
+          <Checkbox.Root name="agree" form="checkbox-reset-form" defaultChecked>
+            <Checkbox.Indicator data-testid={INDICATOR_TEST_ID} />
+          </Checkbox.Root>
+        </>,
+      );
+
+      const checkbox = screen.getByRole(CHECKBOX_ROLE);
+      expect(checkbox).toHaveAttribute('aria-checked', 'true');
+
+      act(() => fireEvent.click(checkbox));
+      expect(checkbox).toHaveAttribute('aria-checked', 'false');
+
+      act(() => fireEvent.click(screen.getByRole('button', { name: 'Reset' })));
+      expect(checkbox).toHaveAttribute('aria-checked', 'true');
+    });
+  });
+
+  describe('controlled', () => {
+    it('should restore its initial `checked` value when the external form is reset', () => {
+      function ControlledCheckbox() {
+        const [checked, setChecked] = React.useState<boolean>(true);
+        return (
+          <>
+            <form id="checkbox-reset-form">
+              <button type="reset">Reset</button>
+            </form>
+            <Checkbox.Root
+              name="agree"
+              form="checkbox-reset-form"
+              checked={checked}
+              onCheckedChange={setChecked as any}
+            >
+              <Checkbox.Indicator data-testid={INDICATOR_TEST_ID} />
+            </Checkbox.Root>
+          </>
+        );
+      }
+
+      render(<ControlledCheckbox />);
+
+      const checkbox = screen.getByRole(CHECKBOX_ROLE);
+      expect(checkbox).toHaveAttribute('aria-checked', 'true');
+
+      act(() => fireEvent.click(checkbox));
+      expect(checkbox).toHaveAttribute('aria-checked', 'false');
+
+      act(() => fireEvent.click(screen.getByRole('button', { name: 'Reset' })));
+      expect(checkbox).toHaveAttribute('aria-checked', 'true');
+    });
+  });
+});
+
 describe('Legacy Checkbox', () => {
   describe('given a default Checkbox', () => {
     let rendered: RenderResult;
