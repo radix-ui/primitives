@@ -3,7 +3,6 @@ import { composeEventHandlers } from '@radix-ui/primitive';
 import { Primitive, dispatchDiscreteCustomEvent } from '@radix-ui/react-primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
-import { useEffectEvent } from '@radix-ui/react-use-effect-event';
 
 /* -------------------------------------------------------------------------------------------------
  * DismissableLayer
@@ -143,7 +142,16 @@ const DismissableLayer = React.forwardRef<DismissableLayerElement, DismissableLa
 
     const isHighestLayer = node ? index === layers.length - 1 : false;
 
-    const handleKeyDown = useEffectEvent((event: KeyboardEvent) => {
+    // Stabilize via `useCallbackRef` rather than `useEffectEvent`: React's
+    // native `useEffectEvent` returns a stale closure inside `forwardRef`
+    // components on React 19.2.x, which caused escape handlers to observe
+    // mount-time props/state instead of the latest values.
+    //
+    // We should revert this to use useEffectEvent when the fix lands in React.
+    //
+    // - https://github.com/radix-ui/primitives/issues/4014
+    // - https://github.com/react/react/pull/34831
+    const handleKeyDown = useCallbackRef((event: KeyboardEvent) => {
       if (event.key !== 'Escape') {
         return;
       }
@@ -162,7 +170,7 @@ const DismissableLayer = React.forwardRef<DismissableLayerElement, DismissableLa
 
       ownerDocument.addEventListener('keydown', handleKeyDown, { capture: true });
       return () => ownerDocument.removeEventListener('keydown', handleKeyDown, { capture: true });
-    }, [ownerDocument, isHighestLayer]);
+    }, [ownerDocument, isHighestLayer, handleKeyDown]);
 
     React.useEffect(() => {
       if (!node) return;

@@ -434,4 +434,57 @@ describe('DismissableLayer', () => {
       </DismissableLayer.Root>
     ));
   });
+
+  // Regression test for https://github.com/radix-ui/primitives/issues/4014
+  it('calls the latest escape key handler after re-rendering', () => {
+    const onEscapeKeyDown = vi.fn();
+
+    function Test() {
+      const [count, setCount] = React.useState(0);
+      return (
+        <DismissableLayer.Root onEscapeKeyDown={() => onEscapeKeyDown(count)}>
+          <button type="button" onClick={() => setCount((value) => value + 1)}>
+            increment
+          </button>
+        </DismissableLayer.Root>
+      );
+    }
+
+    render(<Test />);
+
+    fireEvent.click(screen.getByText('increment'));
+    fireEvent.click(screen.getByText('increment'));
+
+    fireEvent.keyDown(document, { key: 'Escape' });
+
+    expect(onEscapeKeyDown).toHaveBeenLastCalledWith(2);
+  });
+
+  // Regression test for https://github.com/radix-ui/primitives/issues/4014
+  it('observes the latest state when preventing escape dismissal', () => {
+    const onDismiss = vi.fn();
+
+    function Test() {
+      const [blocked, setBlocked] = React.useState(false);
+      return (
+        <DismissableLayer.Root
+          onEscapeKeyDown={(event) => {
+            if (blocked) event.preventDefault();
+          }}
+          onDismiss={onDismiss}
+        >
+          <button type="button" onClick={() => setBlocked(true)}>
+            block
+          </button>
+        </DismissableLayer.Root>
+      );
+    }
+
+    render(<Test />);
+
+    fireEvent.click(screen.getByText('block'));
+    fireEvent.keyDown(document, { key: 'Escape' });
+
+    expect(onDismiss).not.toHaveBeenCalled();
+  });
 });
