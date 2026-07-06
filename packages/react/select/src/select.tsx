@@ -608,6 +608,7 @@ type SelectContentContextValue = {
   position?: SelectContentProps['position'];
   isPositioned?: boolean;
   searchRef?: React.RefObject<string>;
+  lastScrolledIntoViewItemRef?: React.RefObject<SelectItemElement | null>;
 };
 
 const [SelectContentProvider, useSelectContentContext] =
@@ -680,6 +681,9 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
     const getItems = useCollection(__scopeSelect);
     const [isPositioned, setIsPositioned] = React.useState(false);
     const firstValidItemFoundRef = React.useRef(false);
+    // Tracks the item the scroll buttons last scrolled into view, so the compensation
+    // effect only re-runs when keyboard focus moves to a different item (see #3686).
+    const lastScrolledIntoViewItemRef = React.useRef<SelectItemElement | null>(null);
 
     // aria-hide everything except the content (better supported equivalent to setting aria-modal)
     React.useEffect(() => {
@@ -845,6 +849,7 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
         position={position}
         isPositioned={isPositioned}
         searchRef={searchRef}
+        lastScrolledIntoViewItemRef={lastScrolledIntoViewItemRef}
       >
         <RemoveScroll as={Slot} allowPinchZoom>
           <FocusScope
@@ -1692,10 +1697,22 @@ const SelectScrollButtonImpl = React.forwardRef<
   // Because it is part of the normal flow, it will push down (top button) or shrink (bottom button)
   // the viewport, potentially causing the active item to now be partially out of view.
   // We re-run the `scrollIntoView` logic to make sure it stays within the viewport.
+  //
+  // The buttons also mount/unmount as the user scrolls across the top/bottom thresholds, so this
+  // effect re-runs mid-scroll. We only re-scroll when keyboard focus has moved to a *different*
+  // item (keyboard navigation moves `document.activeElement`); pointer/wheel/touch scrolling does
+  // not move focus, so it is no longer snapped back to the selected item. See #3686.
+  const { lastScrolledIntoViewItemRef } = contentContext;
   useLayoutEffect(() => {
     const activeItem = getItems().find((item) => item.ref.current === document.activeElement);
-    activeItem?.ref.current?.scrollIntoView({ block: 'nearest' });
-  }, [getItems]);
+    const activeNode = activeItem?.ref.current;
+    if (activeNode && activeNode !== lastScrolledIntoViewItemRef?.current) {
+      activeNode.scrollIntoView({ block: 'nearest' });
+      if (lastScrolledIntoViewItemRef) {
+        lastScrolledIntoViewItemRef.current = activeNode;
+      }
+    }
+  }, [getItems, lastScrolledIntoViewItemRef]);
 
   return (
     <Primitive.div

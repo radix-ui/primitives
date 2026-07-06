@@ -183,3 +183,61 @@ describe('Select (shadow DOM)', () => {
     });
   });
 });
+
+describe('Select (scroll buttons)', () => {
+  beforeEach(() => {
+    cy.visitStory('select--cypress-scroll-buttons');
+  });
+
+  // https://github.com/radix-ui/primitives/issues/3686
+  it('does not snap the selected item back into view when a scroll button mounts mid-scroll', () => {
+    cy.findByLabelText(/choose an item/i).click();
+    cy.findByRole('listbox').should('be.visible');
+    cy.get('[data-radix-select-viewport]').as('viewport');
+
+    // Scroll to the very top so the up button unmounts and the selected item
+    // (item 25) sits well below the visible area.
+    cy.get('@viewport').scrollTo('top');
+
+    // Scroll down a little so the up button mounts again. Before the fix, the
+    // button's mount-time `scrollIntoView` yanked the viewport back to the
+    // selected item; now it should stay where the user scrolled.
+    cy.get('@viewport').scrollTo(0, 120);
+
+    cy.get('@viewport').then(($viewport) => {
+      const viewportRect = $viewport[0].getBoundingClientRect();
+      cy.findByRole('option', { name: /^item 25$/i }).then(($item) => {
+        const itemRect = $item[0].getBoundingClientRect();
+        expect(itemRect.top, 'selected item stays below the viewport').to.be.greaterThan(
+          viewportRect.bottom,
+        );
+      });
+    });
+  });
+
+  it('keeps the focused item visible while navigating with the keyboard', () => {
+    cy.findByLabelText(/choose an item/i).click();
+    cy.findByRole('listbox').should('be.visible');
+
+    // Walk focus up from the selected item; the scroll buttons mount/unmount as
+    // we move, and the focused item must remain within the viewport.
+    cy.realPress('ArrowUp');
+    cy.realPress('ArrowUp');
+    cy.realPress('ArrowUp');
+    cy.realPress('ArrowUp');
+    cy.realPress('ArrowUp');
+
+    cy.get('[data-radix-select-viewport]').then(($viewport) => {
+      const viewportRect = $viewport[0].getBoundingClientRect();
+      cy.focused().then(($item) => {
+        const itemRect = $item[0].getBoundingClientRect();
+        expect(itemRect.bottom, 'focused item is below the viewport top').to.be.greaterThan(
+          viewportRect.top,
+        );
+        expect(itemRect.top, 'focused item is above the viewport bottom').to.be.lessThan(
+          viewportRect.bottom,
+        );
+      });
+    });
+  });
+});
