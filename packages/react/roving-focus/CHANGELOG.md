@@ -1,5 +1,10 @@
 # @radix-ui/react-roving-focus
 
+## 1.1.15
+
+- Fixed `RovingFocusGroup` items not being auto-focused on mount within a focus scope component.
+- Updated dependencies: `@radix-ui/primitive@1.1.5`, `@radix-ui/react-context@1.2.0`, `@radix-ui/react-collection@1.1.12`
+
 ## 1.1.14
 
 - Updated dependencies: `@radix-ui/react-primitive@2.1.7`, `@radix-ui/react-collection@1.1.11`

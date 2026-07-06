@@ -1,5 +1,9 @@
 # @radix-ui/react-toggle
 
+## 1.1.14
+
+- Updated dependencies: `@radix-ui/primitive@1.1.5`
+
 ## 1.1.13
 
 - Updated dependencies: `@radix-ui/react-primitive@2.1.7`

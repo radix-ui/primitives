@@ -1,5 +1,10 @@
 # @radix-ui/react-dropdown-menu
 
+## 2.1.20
+
+- Fixed menu items, tab triggers, toolbar links, and select items intercepting `Space`/`Enter` keys that originate from focusable descendants.
+- Updated dependencies: `@radix-ui/primitive@1.1.5`, `@radix-ui/react-context@1.2.0`, `@radix-ui/react-menu@2.1.20`
+
 ## 2.1.19
 
 - Fixed infinite re-render loop in React 19 caused by unstable composed ref callback references.

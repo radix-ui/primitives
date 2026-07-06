@@ -1,5 +1,11 @@
 # @radix-ui/react-slider
 
+## 1.4.3
+
+- Fixed a bug in form control components to ensure their values are updated when their associated form's is reset. This affects `RadioGroup`, `Slider`, `Select`, and `Switch`.
+- Fixed keyboard stepping skipping a valid value when the current value is off the step grid (eg, a `defaultValue` that isn't a multiple of `step` from `min`). Stepping now snaps to the next step-aligned value in the direction of travel, matching native `<input type="range">` behavior.
+- Updated dependencies: `@radix-ui/primitive@1.1.5`, `@radix-ui/react-context@1.2.0`, `@radix-ui/react-collection@1.1.12`
+
 ## 1.4.2
 
 - Fixed infinite re-render loop in React 19 caused by unstable composed ref callback references.

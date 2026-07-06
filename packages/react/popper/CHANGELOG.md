@@ -1,5 +1,9 @@
 # @radix-ui/react-popper
 
+## 1.3.3
+
+- Updated dependencies: `@radix-ui/react-context@1.2.0`
+
 ## 1.3.2
 
 - Fixed infinite re-render loop in React 19 caused by unstable composed ref callback references.
