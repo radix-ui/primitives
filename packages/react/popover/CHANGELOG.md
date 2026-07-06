@@ -1,5 +1,9 @@
 # @radix-ui/react-popover
 
+## 1.1.19
+
+- Updated dependencies: `@radix-ui/react-dismissable-layer@1.1.15`, `@radix-ui/primitive@1.1.5`, `@radix-ui/react-context@1.2.0`, `@radix-ui/react-focus-scope@1.1.12`, `@radix-ui/react-presence@1.1.7`, `@radix-ui/react-popper@1.3.3`
+
 ## 1.1.18
 
 - Updated dependencies: `@radix-ui/react-primitive@2.1.7`, `@radix-ui/react-dismissable-layer@1.1.14`, `@radix-ui/react-focus-scope@1.1.11`, `@radix-ui/react-popper@1.3.2`, `@radix-ui/react-portal@1.1.13`

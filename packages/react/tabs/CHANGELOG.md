@@ -1,5 +1,10 @@
 # @radix-ui/react-tabs
 
+## 1.1.17
+
+- Fixed menu items, tab triggers, toolbar links, and select items intercepting `Space`/`Enter` keys that originate from focusable descendants.
+- Updated dependencies: `@radix-ui/primitive@1.1.5`, `@radix-ui/react-context@1.2.0`, `@radix-ui/react-roving-focus@1.1.15`, `@radix-ui/react-presence@1.1.7`
+
 ## 1.1.16
 
 - Updated dependencies: `@radix-ui/react-primitive@2.1.7`, `@radix-ui/react-roving-focus@1.1.14`

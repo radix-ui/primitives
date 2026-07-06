@@ -1,5 +1,10 @@
 # @radix-ui/react-menu
 
+## 2.1.20
+
+- Fixed menu items, tab triggers, toolbar links, and select items intercepting `Space`/`Enter` keys that originate from focusable descendants.
+- Updated dependencies: `@radix-ui/react-dismissable-layer@1.1.15`, `@radix-ui/primitive@1.1.5`, `@radix-ui/react-context@1.2.0`, `@radix-ui/react-roving-focus@1.1.15`, `@radix-ui/react-focus-scope@1.1.12`, `@radix-ui/react-presence@1.1.7`, `@radix-ui/react-collection@1.1.12`, `@radix-ui/react-popper@1.3.3`
+
 ## 2.1.19
 
 - Fixed infinite re-render loop in React 19 caused by unstable composed ref callback references.

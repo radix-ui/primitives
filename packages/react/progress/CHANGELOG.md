@@ -1,5 +1,9 @@
 # @radix-ui/react-progress
 
+## 1.1.12
+
+- Updated dependencies: `@radix-ui/react-context@1.2.0`
+
 ## 1.1.11
 
 - Updated dependencies: `@radix-ui/react-primitive@2.1.7`

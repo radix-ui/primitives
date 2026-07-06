@@ -1,5 +1,9 @@
 # @radix-ui/react-focus-scope
 
+## 1.1.12
+
+- Improved performance by reducing forced reflow in `FocusScope` and `Presence`
+
 ## 1.1.11
 
 - Fixed infinite re-render loop in React 19 caused by unstable composed ref callback references.

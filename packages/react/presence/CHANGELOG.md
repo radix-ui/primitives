@@ -1,5 +1,9 @@
 # @radix-ui/react-presence
 
+## 1.1.7
+
+- Improved performance by reducing forced reflow in `FocusScope` and `Presence`
+
 ## 1.1.6
 
 - Fixed a "Maximum update depth exceeded" infinite loop in React 19 that could occur when `Presence` was given a child with an unstable ref.
