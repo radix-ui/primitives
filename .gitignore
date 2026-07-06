@@ -13,8 +13,9 @@ storybook-static
 .npmrc
 
 # Testing
-cypress/videos
-cypress/screenshots
+test-results
+playwright-report
+playwright/.cache
 
 # Editor-specific
 .vscode
