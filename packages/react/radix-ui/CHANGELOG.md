@@ -1,5 +1,22 @@
 # radix-ui
 
+## 1.6.2
+
+### Other updates
+
+- Added CSS custom properties for Navigation Menu item indicators' translate values.
+- Fixed a bug in Dismissable Layer causing background nested popovers to close all layers on outside click
+- Fixed runtime errors for `Form.Message`, `Form.Control`, `Form.Label` and `Form.ValidityState` that are correctly rendered outside of `Form.Field` components
+- Fixed a bug in form control components to ensure their values are updated when their associated form's is reset. This affects `RadioGroup`, `Slider`, `Select`, and `Switch`.
+- Fixed menu items, tab triggers, toolbar links, and select items intercepting `Space`/`Enter` keys that originate from focusable descendants.
+- Fixed a bug where calling an event handler without an argument would throw, preventing successive event handlers from being called. This affected all components that accept event handlers with internal implementations.
+- Fixed a bug in Context Menu to ensure that the menu properly re-anchors to the latest pointer position when re-triggered in its open state.
+- Fixed stale `onEscapeKeyDown`/`onDismiss` handlers on React 19.2.
+- Fixed items in a Roving Focus Group not being auto-focused on mount within a Focus Scope component.
+- Fixed a regression in Dismissable Layer originating from a [bug in React's `useEffectEvent`](https://github.com/react/react/pull/34831).
+- Fixed `--radix-scroll-area-corner-width` and `--radix-scroll-area-corner-height` not resetting to `0` when a corner is removed. Previously these values would stick around and leave a permanent gap on the remaining scrollbar.
+- Fixed a bug in Slider where stepping with the keyboard would skip a valid value when the current value is off the step grid. Stepping now snaps to the next step-aligned value in the direction of travel, matching native `<input type="range">` behavior.
+
 ## 1.6.1
 
 - Cleared the close timer when unmounting `Toast` components to prevent memory leaks and errors in test environments.

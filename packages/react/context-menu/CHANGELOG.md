@@ -1,5 +1,11 @@
 # @radix-ui/react-context-menu
 
+## 2.3.3
+
+- Fixed `ContextMenu` not re-anchoring to the latest pointer position when re-triggered while already open.
+- Fixed menu items, tab triggers, toolbar links, and select items intercepting `Space`/`Enter` keys that originate from focusable descendants.
+- Updated dependencies: `@radix-ui/primitive@1.1.5`, `@radix-ui/react-context@1.2.0`, `@radix-ui/react-menu@2.1.20`
+
 ## 2.3.2
 
 - Updated dependencies: `@radix-ui/react-primitive@2.1.7`, `@radix-ui/react-menu@2.1.19`

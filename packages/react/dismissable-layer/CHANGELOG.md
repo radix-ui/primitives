@@ -1,5 +1,12 @@
 # @radix-ui/react-dismissable-layer
 
+## 1.1.15
+
+- Fixed a bug causing background nested popovers to close all layers on outside click
+- Fixed stale `onEscapeKeyDown`/`onDismiss` handlers on React 19.2. The escape key handling now stabilizes via `useCallbackRef` instead of the native `useEffectEvent`, which returns a stale closure inside `forwardRef` components on React 19.2.x.
+- Fixed a regression in Dismissable Layer originating from a [bug in React's `useEffectEvent`](https://github.com/react/react/pull/34831).
+- Updated dependencies: `@radix-ui/primitive@1.1.5`
+
 ## 1.1.14
 
 - Fixed infinite re-render loop in React 19 caused by unstable composed ref callback references.
