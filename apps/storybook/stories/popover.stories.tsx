@@ -377,7 +377,32 @@ export const WithSlottedTrigger = () => {
   );
 };
 
-// change order slightly for more pleasing visual
+export const InScrollContainer = () => {
+  const [open, setOpen] = React.useState(false);
+  return (
+    <div style={{ padding: 50 }}>
+      <div
+        data-testid="scroll-container"
+        style={{ width: 300, height: 200, overflow: 'auto', border: '1px solid black' }}
+      >
+        <div style={{ height: 900, paddingTop: 20 }}>
+          <Popover.Root open={open} onOpenChange={setOpen}>
+            <Popover.Trigger data-testid="trigger" className={styles.trigger}>
+              open
+            </Popover.Trigger>
+            <Popover.Portal>
+              <Popover.Content className={styles.content} side="right" sideOffset={5}>
+                <Popover.Close className={styles.close}>close</Popover.Close>
+              </Popover.Content>
+            </Popover.Portal>
+          </Popover.Root>
+        </div>
+      </div>
+      <div data-testid="popover-state">{open ? 'open' : 'closed'}</div>
+    </div>
+  );
+};
+
 const SIDES = [...SIDE_OPTIONS.filter((side) => side !== 'bottom'), 'bottom' as const];
 
 export const Chromatic = () => (

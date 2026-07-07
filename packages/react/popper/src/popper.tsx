@@ -168,6 +168,7 @@ interface PopperContentProps extends PrimitiveDivProps {
   hideWhenDetached?: boolean;
   updatePositionStrategy?: 'optimized' | 'always';
   onPlaced?: () => void;
+  onReferenceHidden?: () => void;
 }
 
 const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>(
@@ -186,6 +187,7 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
       hideWhenDetached = false,
       updatePositionStrategy = 'optimized',
       onPlaced,
+      onReferenceHidden,
       ...contentProps
     } = props;
 
@@ -284,6 +286,13 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
         handlePlaced?.();
       }
     }, [isPositioned, handlePlaced]);
+
+    const handleReferenceHidden = useCallbackRef(onReferenceHidden);
+    React.useEffect(() => {
+      if (middlewareData.hide?.referenceHidden) {
+        handleReferenceHidden?.();
+      }
+    }, [middlewareData.hide?.referenceHidden, handleReferenceHidden]);
 
     const arrowX = middlewareData.arrow?.x;
     const arrowY = middlewareData.arrow?.y;
