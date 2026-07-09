@@ -2,6 +2,7 @@ import * as React from 'react';
 import { axe } from 'vitest-axe';
 import type { RenderResult } from '@testing-library/react';
 import { render, fireEvent, cleanup, screen } from '@testing-library/react';
+import { Provider as DismissableLayerProvider } from '@radix-ui/react-dismissable-layer';
 import * as Dialog from './dialog';
 import type { MockInstance } from 'vitest';
 import { describe, it, afterEach, beforeEach, vi, expect } from 'vitest';
@@ -123,10 +124,8 @@ describe('given an open modal Dialog with a drag interaction', () => {
   // by elements appended to it afterwards. Charting/drag libraries (eg. Plotly)
   // append a full-viewport "cover" to the `body` on pointer down and track the
   // drag via listeners on that cover; if it inherits `pointer-events: none` the
-  // drag silently breaks. The cover should remain interactive.
-  //
-  // Note: jsdom does not hit-test `pointer-events`, so the meaningful assertion
-  // is that the cover ends up with `pointer-events: auto`.
+  // drag silently breaks. Wrapping the tree in a `DismissableLayerProvider` lets
+  // a consumer opt those elements back into pointer interactions.
   afterEach(() => {
     cleanup();
     document.body.style.pointerEvents = '';
@@ -136,8 +135,18 @@ describe('given an open modal Dialog with a drag interaction', () => {
     await new Promise((resolve) => window.setTimeout(resolve, 0));
   }
 
-  it('keeps a drag cover appended to the body interactive', async () => {
-    render(<DialogTest />);
+  it('reports a drag cover appended to the body so a consumer can re-enable it', async () => {
+    const handleInertElementsAdded = vi.fn((nodes: Set<Element>) => {
+      for (const node of nodes) {
+        (node as HTMLElement).style.pointerEvents = 'auto';
+      }
+    });
+
+    render(
+      <DismissableLayerProvider onInertElementsAdded={handleInertElementsAdded}>
+        <DialogTest />
+      </DismissableLayerProvider>,
+    );
     fireEvent.click(screen.getByText(OPEN_TEXT));
     expect(document.body.style.pointerEvents).toBe('none');
 
@@ -146,6 +155,10 @@ describe('given an open modal Dialog with a drag interaction', () => {
     document.body.appendChild(dragCover);
     await flushMutationObserver();
 
+    expect(handleInertElementsAdded).toHaveBeenCalledTimes(1);
+    const nodes = handleInertElementsAdded.mock.calls[0]![0];
+    expect(nodes.has(dragCover)).toBe(true);
+    // The consumer opted the cover back into interactions.
     expect(dragCover.style.pointerEvents).toBe('auto');
 
     dragCover.remove();

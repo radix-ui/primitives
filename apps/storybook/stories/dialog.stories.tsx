@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Dialog } from 'radix-ui';
+import { DismissableLayer } from 'radix-ui/internal';
 import Plot from 'react-plotly.js';
 import styles from './dialog.stories.module.css';
 import { ExternalOverlayTrigger } from './external-overlay';
@@ -337,35 +338,53 @@ export const WithPlotly = () => {
       fixedrange: true,
     },
   };
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 10 }}>
-      <Plot
-        style={{ width: '100%', maxWidth: 800 }}
-        data={PLOTLY_DATA}
-        layout={layout}
-        debug={true}
-        useResizeHandler={true}
-      />
-      <div>
-        <Dialog.Root>
-          <Dialog.Trigger className={styles.trigger}>open</Dialog.Trigger>
-          <Dialog.Portal>
-            <Dialog.Overlay className={styles.overlay} />
-            <Dialog.Content className={styles.contentDefault} style={{ width: 800 }}>
-              <Dialog.Title className={styles.title}>Plotly in Dialog</Dialog.Title>
-              <Plot
-                style={{ width: '100%', height: '100%' }}
-                data={PLOTLY_DATA}
-                layout={layout}
-                debug={true}
-                useResizeHandler={true}
-              />
-              <Dialog.Close className={styles.close}>close</Dialog.Close>
-            </Dialog.Content>
-          </Dialog.Portal>
-        </Dialog.Root>
+    <DismissableLayer.Provider
+      // A modal `Dialog` sets `pointer-events: none` on the `body`, which is
+      // inherited by the full-viewport "drag cover" Plotly appends to the `body`
+      // when a range slider drag starts. That renders the cover inert and breaks
+      // the drag. Opt those elements back into pointer interactions via the
+      // provider.
+      //
+      // See: https://github.com/radix-ui/primitives/issues/3222
+      onInertElementsAdded={(nodes: Set<Element>) => {
+        for (const node of nodes) {
+          if (node instanceof HTMLElement) {
+            node.style.pointerEvents = 'auto';
+          }
+        }
+      }}
+    >
+      <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 10 }}>
+        <Plot
+          style={{ width: '100%', maxWidth: 800 }}
+          data={PLOTLY_DATA}
+          layout={layout}
+          debug={true}
+          useResizeHandler={true}
+        />
+        <div>
+          <Dialog.Root>
+            <Dialog.Trigger className={styles.trigger}>open</Dialog.Trigger>
+            <Dialog.Portal>
+              <Dialog.Overlay className={styles.overlay} />
+              <Dialog.Content className={styles.contentDefault} style={{ width: 800 }}>
+                <Dialog.Title className={styles.title}>Plotly in Dialog</Dialog.Title>
+                <Plot
+                  style={{ width: '100%', height: '100%' }}
+                  data={PLOTLY_DATA}
+                  layout={layout}
+                  debug={true}
+                  useResizeHandler={true}
+                />
+                <Dialog.Close className={styles.close}>close</Dialog.Close>
+              </Dialog.Content>
+            </Dialog.Portal>
+          </Dialog.Root>
+        </div>
       </div>
-    </div>
+    </DismissableLayer.Provider>
   );
 };
 
