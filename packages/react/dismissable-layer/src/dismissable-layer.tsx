@@ -3,6 +3,59 @@ import { composeEventHandlers } from '@radix-ui/primitive';
 import { Primitive, dispatchDiscreteCustomEvent } from '@radix-ui/react-primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
+import { createContextScope, type Scope } from '@radix-ui/react-context';
+
+/* -------------------------------------------------------------------------------------------------
+ * DismissableLayerProvider
+ * -----------------------------------------------------------------------------------------------*/
+
+type ScopedProps<P = {}> = P & { __scopeDismissableLayer?: Scope };
+const [createDismissableLayerProviderContext, createDismissableLayerScope] =
+  createContextScope('DismissableLayer');
+
+const PROVIDER_NAME = 'DismissableLayerProvider';
+
+interface DismissableLayerContextValue {
+  onInertElementsAdded: (nodes: Set<Element>) => void;
+}
+
+const [DismissableLayerProviderContextProvider, useDismissableLayerProviderContext] =
+  createDismissableLayerProviderContext<DismissableLayerContextValue>(PROVIDER_NAME, {
+    onInertElementsAdded: () => void 0,
+  });
+
+export interface DismissableLayerProviderProps {
+  children: React.ReactNode;
+  /**
+   * Called when a modal layer renders elements added to the `body` inert.
+   *
+   * While a modal layer is open it sets `pointer-events: none` on the `body`,
+   * which is inherited by elements appended to the `body` afterwards (eg. the
+   * full-viewport "drag cover" some charting/drag libraries create on pointer
+   * down). By default those elements stay inert. Use this handler to opt
+   * specific elements back into pointer interactions, eg. by setting
+   * `pointer-events` on them. Only the top-most modal layer's handler is called.
+   */
+  onInertElementsAdded?: (nodes: Set<Element>) => void;
+}
+
+const DismissableLayerProvider: React.FC<DismissableLayerProviderProps> = (
+  props: ScopedProps<DismissableLayerProviderProps>,
+) => {
+  const { __scopeDismissableLayer, onInertElementsAdded, children } = props;
+  const onInertElementsAddedFn = useCallbackRef(onInertElementsAdded);
+
+  return (
+    <DismissableLayerProviderContextProvider
+      scope={__scopeDismissableLayer}
+      onInertElementsAdded={onInertElementsAddedFn}
+    >
+      {children}
+    </DismissableLayerProviderContextProvider>
+  );
+};
+
+DismissableLayerProvider.displayName = PROVIDER_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * DismissableLayer
@@ -19,6 +72,7 @@ const DismissableLayerContext = React.createContext({
   layers: new Set<DismissableLayerElement>(),
   layersWithOutsidePointerEventsDisabled: new Set<DismissableLayerElement>(),
   branches: new Set<DismissableLayerBranchElement>(),
+  inertCallbacks: new Map<DismissableLayerElement, (nodes: Set<Element>) => void>(),
 
   // Outside elements that belong to a layer's own dismiss affordance (eg, a
   // dialog overlay). Pressing them should dismiss the layer regardless of
@@ -70,8 +124,10 @@ interface DismissableLayerProps extends PrimitiveDivProps {
   onDismiss?: () => void;
 }
 
+let bodyPointerEventsObserver: MutationObserver | null = null;
+
 const DismissableLayer = React.forwardRef<DismissableLayerElement, DismissableLayerProps>(
-  (props, forwardedRef) => {
+  (props: ScopedProps<DismissableLayerProps>, forwardedRef) => {
     const {
       disableOutsidePointerEvents = false,
       deferPointerDownOutside = false,
@@ -80,6 +136,7 @@ const DismissableLayer = React.forwardRef<DismissableLayerElement, DismissableLa
       onFocusOutside,
       onInteractOutside,
       onDismiss,
+      __scopeDismissableLayer,
       ...layerProps
     } = props;
     const context = React.useContext(DismissableLayerContext);
@@ -172,14 +229,24 @@ const DismissableLayer = React.forwardRef<DismissableLayerElement, DismissableLa
       return () => ownerDocument.removeEventListener('keydown', handleKeyDown, { capture: true });
     }, [ownerDocument, isHighestLayer, handleKeyDown]);
 
+    const { onInertElementsAdded } = useDismissableLayerProviderContext(
+      'DismissableLayer',
+      __scopeDismissableLayer,
+    );
+
     React.useEffect(() => {
-      if (!node) return;
+      if (!node) {
+        return;
+      }
+
       if (disableOutsidePointerEvents) {
         if (context.layersWithOutsidePointerEventsDisabled.size === 0) {
           originalBodyPointerEvents = ownerDocument.body.style.pointerEvents;
           ownerDocument.body.style.pointerEvents = 'none';
+          bodyPointerEventsObserver = observeBodyPointerEvents(ownerDocument, context);
         }
         context.layersWithOutsidePointerEventsDisabled.add(node);
+        context.inertCallbacks.set(node, onInertElementsAdded);
       }
       context.layers.add(node);
       dispatchUpdate();
@@ -189,27 +256,36 @@ const DismissableLayer = React.forwardRef<DismissableLayerElement, DismissableLa
         // closes but stays mounted during an exit animation) and not only on
         // unmount. Otherwise the `body` `pointer-events` could be left as
         // `none` when multiple layers overlap.
+        //
         // See: https://github.com/radix-ui/primitives/issues/3645
         if (disableOutsidePointerEvents) {
           context.layersWithOutsidePointerEventsDisabled.delete(node);
+          context.inertCallbacks.delete(node);
           if (context.layersWithOutsidePointerEventsDisabled.size === 0) {
             ownerDocument.body.style.pointerEvents = originalBodyPointerEvents;
+            bodyPointerEventsObserver?.disconnect();
+            bodyPointerEventsObserver = null;
           }
         }
       };
-    }, [node, ownerDocument, disableOutsidePointerEvents, context]);
+    }, [node, ownerDocument, disableOutsidePointerEvents, context, onInertElementsAdded]);
 
     /**
-     * We purposefully prevent combining this effect with the `disableOutsidePointerEvents` effect
-     * because a change to `disableOutsidePointerEvents` would remove this layer from the stack
-     * and add it to the end again so the layering order wouldn't be _creation order_.
-     * We only want them to be removed from context stacks when unmounted.
+     * We purposefully prevent combining this effect with the
+     * `disableOutsidePointerEvents` effect because a change to
+     * `disableOutsidePointerEvents` would remove this layer from the stack and
+     * add it to the end again so the layering order wouldn't be _creation
+     * order_. We only want them to be removed from context stacks when
+     * unmounted.
      */
     React.useEffect(() => {
       return () => {
-        if (!node) return;
+        if (!node) {
+          return;
+        }
         context.layers.delete(node);
         context.layersWithOutsidePointerEventsDisabled.delete(node);
+        context.inertCallbacks.delete(node);
         dispatchUpdate();
       };
     }, [node, context]);
@@ -217,7 +293,9 @@ const DismissableLayer = React.forwardRef<DismissableLayerElement, DismissableLa
     React.useEffect(() => {
       const handleUpdate = () => force({});
       document.addEventListener(CONTEXT_UPDATE, handleUpdate);
-      return () => document.removeEventListener(CONTEXT_UPDATE, handleUpdate);
+      return () => {
+        document.removeEventListener(CONTEXT_UPDATE, handleUpdate);
+      };
     }, []);
 
     return (
@@ -549,15 +627,81 @@ function handleAndDispatchCustomEvent<E extends CustomEvent, OriginalEvent exten
   }
 }
 
-const Root = DismissableLayer;
-const Branch = DismissableLayerBranch;
+/**
+ * While outside pointer events are disabled we set `pointer-events: none` on
+ * the `body`. Because `pointer-events` is inherited, any element that third
+ * party code appends to the `body` *after* a layer opens also becomes
+ * non-interactive. This silently breaks interactions that originate inside the
+ * layer but rely on a helper element rendered on the `body`, eg. the
+ * full-viewport "drag cover" overlay that charting/drag libraries (Plotly, d3,
+ * etc.) create on pointer down to track a drag. The cover inherits
+ * `pointer-events: none`, never receives `mousemove`/`mouseup`, and the drag
+ * never tracks or ends.
+ *
+ * We observe the `body` for newly added top-level elements that inherit its
+ * `pointer-events: none` and report them to the top-most disabled layer's
+ * `onInertElementsAdded` handler. Consumers can opt those elements back into
+ * pointer interactions while the rest of the page behind the layer stays inert.
+ *
+ * See: https://github.com/radix-ui/primitives/issues/3222
+ */
+function observeBodyPointerEvents(
+  ownerDocument: Document,
+  context: React.ContextType<typeof DismissableLayerContext>,
+) {
+  const body = ownerDocument.body;
+  const observer = new MutationObserver((mutations) => {
+    const addedNodes: Set<Element> = new Set();
+    for (const mutation of mutations) {
+      for (const addedNode of mutation.addedNodes) {
+        if (
+          isAnyElement(addedNode) &&
+          isStylableElement(addedNode) &&
+          // elements will be inert if the element has no `pointer-events` style
+          // (inherits from the body by default) or has explicit
+          // `pointer-events: inherit` (still inherits from the body since it's
+          // a direct child)
+          (addedNode.style.pointerEvents === '' || addedNode.style.pointerEvents === 'inherit')
+        ) {
+          addedNodes.add(addedNode);
+        }
+      }
+    }
+
+    if (addedNodes.size === 0) {
+      return;
+    }
+
+    // Route to the top-most disabled layer whose nearest provider decides what
+    // stays interactive during its interaction.
+    const disabled = [...context.layersWithOutsidePointerEventsDisabled];
+    const topLayer = disabled[disabled.length - 1];
+    const onInertElementsAdded = topLayer ? context.inertCallbacks.get(topLayer) : undefined;
+    onInertElementsAdded?.(addedNodes);
+  });
+  observer.observe(body, { childList: true });
+  return observer;
+}
+
+function isAnyElement(node: Node): node is Element {
+  const view = node.ownerDocument?.defaultView;
+  return view ? node instanceof view.Element : node instanceof Element;
+}
+
+function isStylableElement(node: Element): node is Element & { style: CSSStyleDeclaration } {
+  return 'style' in node && node.style != null && typeof node.style === 'object';
+}
 
 export {
+  createDismissableLayerScope,
+  //
+  DismissableLayerProvider,
   DismissableLayer,
   DismissableLayerBranch,
   useDismissableLayerSurface,
   //
-  Root,
-  Branch,
+  DismissableLayerProvider as Provider,
+  DismissableLayer as Root,
+  DismissableLayerBranch as Branch,
 };
 export type { DismissableLayerProps };

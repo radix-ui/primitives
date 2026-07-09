@@ -8,6 +8,7 @@ export * as Collapsible from './collapsible';
 export * as ContextMenu from './context-menu';
 export * as Dialog from './dialog';
 export * as Direction from './direction';
+export * as unstable_DismissableLayer from './unstable/dismissable-layer';
 export * as DropdownMenu from './dropdown-menu';
 export * as Form from './form';
 export * as HoverCard from './hover-card';

@@ -10,6 +10,13 @@ async function waitForDocumentPointerDownListener() {
   });
 }
 
+async function flushMutationObserver() {
+  // `MutationObserver` callbacks run as a microtask after the mutation.
+  await act(async () => {
+    await Promise.resolve();
+  });
+}
+
 function renderDismissableLayer(
   props: React.ComponentProps<typeof DismissableLayer.Root> = {},
   extraContent?: React.ReactNode,
@@ -424,6 +431,156 @@ describe('DismissableLayer', () => {
 
     expect(onChildDismiss).toHaveBeenCalledTimes(1);
     expect(onParentDismiss).not.toHaveBeenCalled();
+  });
+
+  // Regression test for https://github.com/radix-ui/primitives/issues/3222
+  //
+  // While outside pointer events are disabled, `pointer-events: none` on the
+  // `body` is inherited by any element appended to it afterwards. Drag
+  // libraries (Plotly, d3, etc.) append a full-viewport "cover" element to the
+  // `body` on pointer down and listen for `mousemove`/`mouseup` on it; if it
+  // inherits `pointer-events: none` the drag never tracks or ends. A
+  // `DismissableLayerProvider` can observe these inert elements and opt them
+  // back into pointer interactions.
+  describe('inert elements added to the body while outside pointer events are disabled', () => {
+    afterEach(() => {
+      document.body.style.pointerEvents = '';
+    });
+
+    function renderWithProvider(
+      onInertElementsAdded: (nodes: Set<Element>) => void,
+      layerProps: React.ComponentProps<typeof DismissableLayer.Root> = {
+        disableOutsidePointerEvents: true,
+      },
+    ) {
+      return render(
+        <DismissableLayer.Provider onInertElementsAdded={onInertElementsAdded}>
+          <DismissableLayer.Root {...layerProps}>
+            <button type="button">inside</button>
+          </DismissableLayer.Root>
+        </DismissableLayer.Provider>,
+      );
+    }
+
+    it('reports inert elements appended to the body to the provider handler', async () => {
+      const onInertElementsAdded = vi.fn();
+      renderWithProvider(onInertElementsAdded);
+      expect(document.body.style.pointerEvents).toBe('none');
+
+      const dragCover = document.createElement('div');
+      document.body.appendChild(dragCover);
+      await flushMutationObserver();
+
+      expect(onInertElementsAdded).toHaveBeenCalledTimes(1);
+      const nodes = onInertElementsAdded.mock.calls[0]![0] as Set<Element>;
+      expect(nodes.has(dragCover)).toBe(true);
+
+      dragCover.remove();
+    });
+
+    it('does not report elements with an explicit inline pointer-events value', async () => {
+      const onInertElementsAdded = vi.fn();
+      renderWithProvider(onInertElementsAdded);
+
+      const cover = document.createElement('div');
+      cover.style.pointerEvents = 'none';
+      document.body.appendChild(cover);
+      await flushMutationObserver();
+
+      expect(onInertElementsAdded).not.toHaveBeenCalled();
+
+      cover.remove();
+    });
+
+    it('does not report anything when outside pointer events are enabled', async () => {
+      const onInertElementsAdded = vi.fn();
+      renderWithProvider(onInertElementsAdded, { disableOutsidePointerEvents: false });
+      expect(document.body.style.pointerEvents).toBe('');
+
+      const cover = document.createElement('div');
+      document.body.appendChild(cover);
+      await flushMutationObserver();
+
+      expect(onInertElementsAdded).not.toHaveBeenCalled();
+
+      cover.remove();
+    });
+
+    it('leaves appended elements untouched when there is no provider', async () => {
+      renderDismissableLayer({ disableOutsidePointerEvents: true });
+
+      const cover = document.createElement('div');
+      document.body.appendChild(cover);
+      await flushMutationObserver();
+
+      // Without a provider the default handler is a no-op, so we never mutate
+      // the element's `pointer-events`.
+      expect(cover.style.pointerEvents).toBe('');
+
+      cover.remove();
+    });
+
+    it('routes to the top-most disabled layer, and falls back as layers unmount', async () => {
+      const onBottomInert = vi.fn();
+      const onTopInert = vi.fn();
+
+      function TwoLayers({ showTop }: { showTop: boolean }) {
+        return (
+          <>
+            <DismissableLayer.Provider onInertElementsAdded={onBottomInert}>
+              <DismissableLayer.Root disableOutsidePointerEvents>
+                <button type="button">bottom</button>
+              </DismissableLayer.Root>
+            </DismissableLayer.Provider>
+            {showTop && (
+              <DismissableLayer.Provider onInertElementsAdded={onTopInert}>
+                <DismissableLayer.Root disableOutsidePointerEvents>
+                  <button type="button">top</button>
+                </DismissableLayer.Root>
+              </DismissableLayer.Provider>
+            )}
+          </>
+        );
+      }
+
+      const { rerender } = render(<TwoLayers showTop />);
+
+      const firstCover = document.createElement('div');
+      document.body.appendChild(firstCover);
+      await flushMutationObserver();
+
+      // Only the top-most layer's provider is notified.
+      expect(onTopInert).toHaveBeenCalledTimes(1);
+      expect(onBottomInert).not.toHaveBeenCalled();
+      firstCover.remove();
+
+      // Closing the top layer routes subsequent additions to the layer beneath.
+      rerender(<TwoLayers showTop={false} />);
+
+      const secondCover = document.createElement('div');
+      document.body.appendChild(secondCover);
+      await flushMutationObserver();
+
+      expect(onBottomInert).toHaveBeenCalledTimes(1);
+      expect(onTopInert).toHaveBeenCalledTimes(1);
+      secondCover.remove();
+    });
+
+    it('stops reporting once the layer unmounts', async () => {
+      const onInertElementsAdded = vi.fn();
+      const { unmount } = renderWithProvider(onInertElementsAdded);
+      unmount();
+      await flushMutationObserver();
+      expect(document.body.style.pointerEvents).toBe('');
+
+      const cover = document.createElement('div');
+      document.body.appendChild(cover);
+      await flushMutationObserver();
+
+      expect(onInertElementsAdded).not.toHaveBeenCalled();
+
+      cover.remove();
+    });
   });
 
   // Regression test for https://github.com/radix-ui/primitives/issues/3963
