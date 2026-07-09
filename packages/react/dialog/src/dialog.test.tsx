@@ -116,6 +116,42 @@ describe('given a modal Dialog', () => {
   });
 });
 
+describe('given an open modal Dialog with a drag interaction', () => {
+  // Regression test for https://github.com/radix-ui/primitives/issues/3222
+  //
+  // A modal Dialog sets `pointer-events: none` on the `body`, which is inherited
+  // by elements appended to it afterwards. Charting/drag libraries (eg. Plotly)
+  // append a full-viewport "cover" to the `body` on pointer down and track the
+  // drag via listeners on that cover; if it inherits `pointer-events: none` the
+  // drag silently breaks. The cover should remain interactive.
+  //
+  // Note: jsdom does not hit-test `pointer-events`, so the meaningful assertion
+  // is that the cover ends up with `pointer-events: auto`.
+  afterEach(() => {
+    cleanup();
+    document.body.style.pointerEvents = '';
+  });
+
+  async function flushMutationObserver() {
+    await new Promise((resolve) => window.setTimeout(resolve, 0));
+  }
+
+  it('keeps a drag cover appended to the body interactive', async () => {
+    render(<DialogTest />);
+    fireEvent.click(screen.getByText(OPEN_TEXT));
+    expect(document.body.style.pointerEvents).toBe('none');
+
+    // Mimic what a drag library does when a drag starts inside the dialog.
+    const dragCover = document.createElement('div');
+    document.body.appendChild(dragCover);
+    await flushMutationObserver();
+
+    expect(dragCover.style.pointerEvents).toBe('auto');
+
+    dragCover.remove();
+  });
+});
+
 describe('given two overlapping modal Dialogs (forceMount)', () => {
   // Forcing mount keeps the content (and its `DismissableLayer`) mounted while
   // `open` toggles, which mirrors what happens during exit animations or when

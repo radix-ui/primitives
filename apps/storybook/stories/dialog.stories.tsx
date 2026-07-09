@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Dialog } from 'radix-ui';
+import Plot from 'react-plotly.js';
 import styles from './dialog.stories.module.css';
 import { ExternalOverlayTrigger } from './external-overlay';
 
@@ -306,6 +307,67 @@ export const OuterScrollable = () => (
     </Dialog.Portal>
   </Dialog.Root>
 );
+
+const PLOTLY_DATA = (() => {
+  const input =
+    '2.50369 91.71 2.51547 91.63 2.527 91.52 2.53878 91.43 2.55057 91.35 2.562 91.26 2.57326 91.17 2.58504 91.08 2.59658 90.92 2.60804 90.6 2.61866 90.08 2.62966 89.23 2.63993 88.1 2.64733 86.95 2.65494 85.21 2.66066 83.2 2.66518 80.99 2.66876 78.7 2.67174 76.39 2.67428 74.04 2.67677 71.69 2.67934 69.34 2.68191 66.99 2.68423 64.63 2.68658 62.29 2.68912 59.97 2.69192 57.64 2.69461 55.29 2.69714 52.94 2.69954 50.58 2.70205 48.23 2.70433 45.86 2.70722 43.53 2.7118 41.37 2.71915 39.91 2.73023 40.8 2.73696 42.76 2.74244 44.9 2.74747 47.07 2.75272 49.23 2.75794 51.39 2.76318 53.53 2.76853 55.67 2.77407 57.75 2.77977 59.86 2.78543 61.97 2.79111 64.07 2.79665 66.2 2.80176 68.3 2.80694 70.44 2.81296 72.48 2.81979 74.43 2.82736 76.27 2.83561 77.88 2.84501 79.15 2.85567 80.13 2.86585 80.72 2.87725 81.06 2.889 81.23 2.90002 81.36 ';
+  const values = input.split(' ');
+  const x = [];
+  const y = [];
+  for (let i = 0; i < values.length; i += 2) {
+    x.push(Number.parseFloat(values[i] ?? '0'));
+    y.push(Number.parseFloat(values[i + 1] ?? '0'));
+  }
+  return [
+    {
+      x: x,
+      y: y,
+      mode: 'lines',
+      type: 'scatter',
+    },
+  ];
+})();
+
+export const WithPlotly = () => {
+  const layout = {
+    xaxis: {
+      rangeslider: {},
+    },
+    yaxis: {
+      fixedrange: true,
+    },
+  };
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 10 }}>
+      <Plot
+        style={{ width: '100%', maxWidth: 800 }}
+        data={PLOTLY_DATA}
+        layout={layout}
+        debug={true}
+        useResizeHandler={true}
+      />
+      <div>
+        <Dialog.Root>
+          <Dialog.Trigger className={styles.trigger}>open</Dialog.Trigger>
+          <Dialog.Portal>
+            <Dialog.Overlay className={styles.overlay} />
+            <Dialog.Content className={styles.contentDefault} style={{ width: 800 }}>
+              <Dialog.Title className={styles.title}>Plotly in Dialog</Dialog.Title>
+              <Plot
+                style={{ width: '100%', height: '100%' }}
+                data={PLOTLY_DATA}
+                layout={layout}
+                debug={true}
+                useResizeHandler={true}
+              />
+              <Dialog.Close className={styles.close}>close</Dialog.Close>
+            </Dialog.Content>
+          </Dialog.Portal>
+        </Dialog.Root>
+      </div>
+    </div>
+  );
+};
 
 export const Chromatic = () => (
   <>

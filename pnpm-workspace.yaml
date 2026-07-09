@@ -5,6 +5,7 @@ packages:
 allowBuilds:
   '@swc/core': true
   cypress: true
+  es5-ext: true
   esbuild: true
   sharp: true
 overrides:
@@ -12,5 +13,6 @@ overrides:
   # because of its dependency on node-fetch@^2 (which is incompatible with
   # Node.js 24). Resolve to use native fetch in any node environment.
   node-fetch: npm:node-fetch-native@^1.6.0
+  es5-ext: 0.10.64
 patchedDependencies:
   '@changesets/apply-release-plan': patches/@changesets__apply-release-plan.patch

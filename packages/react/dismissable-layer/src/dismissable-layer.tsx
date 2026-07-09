@@ -173,11 +173,16 @@ const DismissableLayer = React.forwardRef<DismissableLayerElement, DismissableLa
     }, [ownerDocument, isHighestLayer, handleKeyDown]);
 
     React.useEffect(() => {
-      if (!node) return;
+      if (!node) {
+        return;
+      }
+
+      let bodyPointerEventsObserver: MutationObserver | null = null;
       if (disableOutsidePointerEvents) {
         if (context.layersWithOutsidePointerEventsDisabled.size === 0) {
           originalBodyPointerEvents = ownerDocument.body.style.pointerEvents;
           ownerDocument.body.style.pointerEvents = 'none';
+          bodyPointerEventsObserver = observeBodyPointerEvents(ownerDocument);
         }
         context.layersWithOutsidePointerEventsDisabled.add(node);
       }
@@ -194,6 +199,7 @@ const DismissableLayer = React.forwardRef<DismissableLayerElement, DismissableLa
           context.layersWithOutsidePointerEventsDisabled.delete(node);
           if (context.layersWithOutsidePointerEventsDisabled.size === 0) {
             ownerDocument.body.style.pointerEvents = originalBodyPointerEvents;
+            bodyPointerEventsObserver?.disconnect();
           }
         }
       };
@@ -547,6 +553,49 @@ function handleAndDispatchCustomEvent<E extends CustomEvent, OriginalEvent exten
   } else {
     target.dispatchEvent(event);
   }
+}
+
+/**
+ * While outside pointer events are disabled we set `pointer-events: none` on
+ * the `body`. Because `pointer-events` is inherited, any element that third
+ * party code appends to the `body` *after* a layer opens also becomes
+ * non-interactive. This silently breaks interactions that originate inside the
+ * layer but rely on a helper element rendered on the `body`, eg. the
+ * full-viewport "drag cover" overlay that charting/drag libraries (Plotly, d3,
+ * etc.) create on pointer down to track a drag. The cover inherits
+ * `pointer-events: none`, never receives `mousemove`/`mouseup`, and the drag
+ * never tracks or ends.
+ *
+ * We observe the `body` and re-enable pointer events on newly added top-level
+ * elements so these interactions keep working while the page behind the layer
+ * stays inert.
+ *
+ * See: https://github.com/radix-ui/primitives/issues/3222
+ */
+function observeBodyPointerEvents(ownerDocument: Document) {
+  const body = ownerDocument.body;
+  const observer = new MutationObserver((mutations) => {
+    for (const mutation of mutations) {
+      for (const addedNode of mutation.addedNodes) {
+        // Only re-enable elements appended directly to the `body`, and never
+        // override an explicit `pointer-events` value set by the author.
+        if (
+          isHTMLElement(addedNode) &&
+          addedNode.parentElement === body &&
+          addedNode.style.pointerEvents === ''
+        ) {
+          addedNode.style.pointerEvents = 'auto';
+        }
+      }
+    }
+  });
+  observer.observe(body, { childList: true });
+  return observer;
+}
+
+function isHTMLElement(node: Node): node is HTMLElement {
+  const view = node.ownerDocument?.defaultView;
+  return view ? node instanceof view.HTMLElement : node instanceof HTMLElement;
 }
 
 const Root = DismissableLayer;

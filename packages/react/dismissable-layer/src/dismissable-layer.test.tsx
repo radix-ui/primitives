@@ -10,6 +10,13 @@ async function waitForDocumentPointerDownListener() {
   });
 }
 
+async function flushMutationObserver() {
+  // `MutationObserver` callbacks run as a microtask after the mutation.
+  await act(async () => {
+    await Promise.resolve();
+  });
+}
+
 function renderDismissableLayer(
   props: React.ComponentProps<typeof DismissableLayer.Root> = {},
   extraContent?: React.ReactNode,
@@ -424,6 +431,75 @@ describe('DismissableLayer', () => {
 
     expect(onChildDismiss).toHaveBeenCalledTimes(1);
     expect(onParentDismiss).not.toHaveBeenCalled();
+  });
+
+  // Regression test for https://github.com/radix-ui/primitives/issues/3222
+  //
+  // While outside pointer events are disabled, `pointer-events: none` on the
+  // `body` is inherited by any element appended to it afterwards. Drag
+  // libraries (Plotly, d3, etc.) append a full-viewport "cover" element to the
+  // `body` on pointer down and listen for `mousemove`/`mouseup` on it; if it
+  // inherits `pointer-events: none` the drag never tracks or ends. We re-enable
+  // pointer events on such elements so drags originating inside the layer keep
+  // working.
+  describe('elements appended to the body while outside pointer events are disabled', () => {
+    afterEach(() => {
+      document.body.style.pointerEvents = '';
+    });
+
+    it('re-enables pointer events on newly appended body elements', async () => {
+      renderDismissableLayer({ disableOutsidePointerEvents: true });
+      expect(document.body.style.pointerEvents).toBe('none');
+
+      const dragCover = document.createElement('div');
+      document.body.appendChild(dragCover);
+      await flushMutationObserver();
+
+      expect(dragCover.style.pointerEvents).toBe('auto');
+
+      dragCover.remove();
+    });
+
+    it('does not override an explicit pointer-events value', async () => {
+      renderDismissableLayer({ disableOutsidePointerEvents: true });
+
+      const cover = document.createElement('div');
+      cover.style.pointerEvents = 'none';
+      document.body.appendChild(cover);
+      await flushMutationObserver();
+
+      expect(cover.style.pointerEvents).toBe('none');
+
+      cover.remove();
+    });
+
+    it('does not touch appended elements when outside pointer events are enabled', async () => {
+      renderDismissableLayer({ disableOutsidePointerEvents: false });
+      expect(document.body.style.pointerEvents).toBe('');
+
+      const cover = document.createElement('div');
+      document.body.appendChild(cover);
+      await flushMutationObserver();
+
+      expect(cover.style.pointerEvents).toBe('');
+
+      cover.remove();
+    });
+
+    it('stops re-enabling elements once the layer unmounts', async () => {
+      const { unmount } = renderDismissableLayer({ disableOutsidePointerEvents: true });
+      unmount();
+      await flushMutationObserver();
+      expect(document.body.style.pointerEvents).toBe('');
+
+      const cover = document.createElement('div');
+      document.body.appendChild(cover);
+      await flushMutationObserver();
+
+      expect(cover.style.pointerEvents).toBe('');
+
+      cover.remove();
+    });
   });
 
   // Regression test for https://github.com/radix-ui/primitives/issues/3963
