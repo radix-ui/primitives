@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { afterEach, describe, it, expect } from 'vitest';
+import { afterEach, describe, it, expect, vi } from 'vitest';
 import { assertStableComposedRef } from '@repo/test-utils/ref-stability';
 import * as Slider from './slider';
 
@@ -102,6 +102,82 @@ describe('Slider', () => {
           <Slider.Thumb ref={ref} />
         </Slider.Root>
       ));
+    });
+  });
+
+  // Regression tests for https://github.com/radix-ui/primitives/issues/3698
+  describe('when dragging a range thumb to overlap another', () => {
+    function renderRangeSlider(props: React.ComponentProps<typeof Slider.Root>) {
+      const result = render(
+        <Slider.Root {...props} data-testid="slider">
+          <Slider.Track>
+            <Slider.Range />
+          </Slider.Track>
+          <Slider.Thumb />
+          <Slider.Thumb />
+        </Slider.Root>,
+      );
+      // The root slider element's bounding rect maps pointer coordinates to
+      // values, so with a width of 100 over the [100, 110] range each unit of
+      // value equals 10px (e.g. 107 → 70px).
+      const slider = result.getByTestId('slider');
+      slider.getBoundingClientRect = () =>
+        ({
+          left: 0,
+          top: 0,
+          width: 100,
+          height: 10,
+          right: 100,
+          bottom: 10,
+          x: 0,
+          y: 0,
+          toJSON: () => {},
+        }) as DOMRect;
+
+      // jsdom implements the `PointerEvent` interface but not the pointer
+      // capture methods that the slide handlers rely on, so we stub them here.
+      // See https://github.com/jsdom/jsdom/pull/2666
+      slider.setPointerCapture = () => {};
+      slider.releasePointerCapture = () => {};
+      slider.hasPointerCapture = () => true;
+      return { ...result, slider };
+    }
+
+    it('calls `onValueCommit` with the narrowed value', () => {
+      const handleValueCommit = vi.fn();
+      const { slider } = renderRangeSlider({
+        defaultValue: [105, 107],
+        min: 100,
+        max: 110,
+        step: 1,
+        onValueCommit: handleValueCommit,
+      });
+
+      // Grab the right thumb (value 107 → 70px), then drag it left onto the
+      // left thumb (value 105 → 50px) so both thumbs share the same value.
+      fireEvent.pointerDown(slider, { pointerId: 1, clientX: 70 });
+      fireEvent.pointerMove(slider, { pointerId: 1, clientX: 50 });
+      fireEvent.pointerUp(slider, { pointerId: 1, clientX: 50 });
+
+      expect(handleValueCommit).toHaveBeenCalledTimes(1);
+      expect(handleValueCommit).toHaveBeenCalledWith([105, 105]);
+    });
+
+    it('does not call `onValueCommit` when the value is unchanged', () => {
+      const handleValueCommit = vi.fn();
+      const { slider } = renderRangeSlider({
+        defaultValue: [105, 107],
+        min: 100,
+        max: 110,
+        step: 1,
+        onValueCommit: handleValueCommit,
+      });
+
+      // Press and release on the right thumb without moving it.
+      fireEvent.pointerDown(slider, { pointerId: 1, clientX: 70 });
+      fireEvent.pointerUp(slider, { pointerId: 1, clientX: 70 });
+
+      expect(handleValueCommit).not.toHaveBeenCalled();
     });
   });
 
