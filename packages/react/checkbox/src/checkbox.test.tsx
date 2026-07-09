@@ -296,6 +296,55 @@ describe('Checkbox', () => {
       expect(onChange).toHaveBeenCalledWith(false);
     });
   });
+
+  describe('given a Checkbox with a clickable ancestor inside a form', () => {
+    const onParentClick = vi.fn();
+    const onFormChange = vi.fn();
+
+    afterEach(() => {
+      onParentClick.mockClear();
+      onFormChange.mockClear();
+    });
+
+    function App({ checked }: { checked: boolean }) {
+      return (
+        <form
+          onChange={(event) => onFormChange((event.target as unknown as HTMLInputElement).checked)}
+        >
+          <div onClick={onParentClick}>
+            <Checkbox.Root checked={checked}>
+              <Checkbox.Indicator data-testid={INDICATOR_TEST_ID} />
+            </Checkbox.Root>
+          </div>
+        </form>
+      );
+    }
+
+    // regression test for https://github.com/radix-ui/primitives/issues/3265
+    it('should not trigger the ancestor `onClick` when `checked` is updated programmatically', () => {
+      const { rerender } = render(<App checked={false} />);
+      act(() => rerender(<App checked={true} />));
+      expect(onParentClick).not.toHaveBeenCalled();
+      // the form should still be notified of the change
+      expect(onFormChange).toHaveBeenCalledWith(true);
+    });
+
+    it('should trigger the ancestor `onClick` on a real user click', () => {
+      render(
+        <form
+          onChange={(event) => onFormChange((event.target as unknown as HTMLInputElement).checked)}
+        >
+          <div onClick={onParentClick}>
+            <Checkbox.Root>
+              <Checkbox.Indicator data-testid={INDICATOR_TEST_ID} />
+            </Checkbox.Root>
+          </div>
+        </form>,
+      );
+      act(() => fireEvent.click(screen.getByRole(CHECKBOX_ROLE)));
+      expect(onParentClick).toHaveBeenCalledTimes(1);
+    });
+  });
 });
 
 describe('Legacy Checkbox', () => {

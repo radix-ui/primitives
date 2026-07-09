@@ -24,6 +24,7 @@ type SwitchContextValue = {
   form: string | undefined;
   value: string | number | readonly string[];
   hasConsumerStoppedPropagationRef: React.RefObject<boolean>;
+  isUserInteractionRef: React.RefObject<boolean>;
   required: boolean | undefined;
   defaultChecked: boolean | undefined;
   isFormControl: boolean;
@@ -74,6 +75,10 @@ function SwitchProvider(props: ScopedProps<SwitchProviderProps>) {
   const [control, setControl] = React.useState<HTMLButtonElement | null>(null);
   const [bubbleInput, setBubbleInput] = React.useState<HTMLInputElement | null>(null);
   const hasConsumerStoppedPropagationRef = React.useRef(false);
+  // Tracks whether the current checked change originated from a user
+  // interaction with the trigger (vs. a controlled/programmatic `checked`
+  // update).
+  const isUserInteractionRef = React.useRef(false);
   const isFormControl = control
     ? !!form || !!control.closest('form')
     : // We set this to true by default so that events bubble to forms without JS (SSR)
@@ -89,6 +94,7 @@ function SwitchProvider(props: ScopedProps<SwitchProviderProps>) {
     form,
     value,
     hasConsumerStoppedPropagationRef,
+    isUserInteractionRef,
     required,
     defaultChecked,
     isFormControl,
@@ -128,6 +134,7 @@ const SwitchTrigger = React.forwardRef<HTMLButtonElement, SwitchTriggerProps>(
       setControl,
       setChecked,
       hasConsumerStoppedPropagationRef,
+      isUserInteractionRef,
       isFormControl,
       bubbleInput,
     } = useSwitchContext(TRIGGER_NAME, __scopeSwitch);
@@ -156,6 +163,7 @@ const SwitchTrigger = React.forwardRef<HTMLButtonElement, SwitchTriggerProps>(
         {...switchProps}
         ref={composedRefs}
         onClick={composeEventHandlers(onClick, (event) => {
+          isUserInteractionRef.current = true;
           setChecked((prevChecked) => !prevChecked);
           if (bubbleInput && isFormControl) {
             hasConsumerStoppedPropagationRef.current = event.isPropagationStopped();
@@ -274,10 +282,11 @@ type InputProps = React.ComponentPropsWithoutRef<typeof Primitive.input>;
 interface SwitchBubbleInputProps extends Omit<InputProps, 'checked'> {}
 
 const SwitchBubbleInput = React.forwardRef<HTMLInputElement, SwitchBubbleInputProps>(
-  ({ __scopeSwitch, ...props }: ScopedProps<SwitchBubbleInputProps>, forwardedRef) => {
+  ({ __scopeSwitch, onClick, ...props }: ScopedProps<SwitchBubbleInputProps>, forwardedRef) => {
     const {
       control,
       hasConsumerStoppedPropagationRef,
+      isUserInteractionRef,
       checked,
       defaultChecked,
       required,
@@ -292,6 +301,13 @@ const SwitchBubbleInput = React.forwardRef<HTMLInputElement, SwitchBubbleInputPr
     const composedRefs = useComposedRefs(forwardedRef, setBubbleInput);
     const prevChecked = usePrevious(checked);
     const controlSize = useSize(control);
+    // When the checked change is not driven by a user interaction (e.g. a
+    // controlled `checked` update), the `click` event we dispatch to notify
+    // forms must not reach ancestor `onClick` handlers. We can't simply make it
+    // non-bubbling because React derives the switch's `change` event from a
+    // bubbling `click`. Instead we stop propagation of the synthetic click,
+    // which still lets the `change` event reach the form.
+    const shouldStopClickPropagationRef = React.useRef(false);
 
     // Bubble checked change to parents (e.g form change event)
     React.useEffect(() => {
@@ -305,13 +321,17 @@ const SwitchBubbleInput = React.forwardRef<HTMLInputElement, SwitchBubbleInputPr
       ) as PropertyDescriptor;
       const setChecked = descriptor.set;
 
-      const bubbles = !hasConsumerStoppedPropagationRef.current;
+      const isUserInteraction = isUserInteractionRef.current;
+      isUserInteractionRef.current = false;
+      const bubbles = !(isUserInteraction && hasConsumerStoppedPropagationRef.current);
       if (prevChecked !== checked && setChecked) {
+        shouldStopClickPropagationRef.current = !isUserInteraction;
         const event = new Event('click', { bubbles });
         setChecked.call(input, checked);
         input.dispatchEvent(event);
+        shouldStopClickPropagationRef.current = false;
       }
-    }, [bubbleInput, prevChecked, checked, hasConsumerStoppedPropagationRef]);
+    }, [bubbleInput, prevChecked, checked, hasConsumerStoppedPropagationRef, isUserInteractionRef]);
 
     const defaultCheckedRef = React.useRef(checked);
     return (
@@ -327,6 +347,14 @@ const SwitchBubbleInput = React.forwardRef<HTMLInputElement, SwitchBubbleInputPr
         {...props}
         tabIndex={-1}
         ref={composedRefs}
+        onClick={composeEventHandlers(onClick, (event) => {
+          // Prevent the synthetic click dispatched on controlled/programmatic
+          // updates from triggering ancestor `onClick` handlers, while still
+          // allowing the resulting `change` event to reach the form.
+          if (shouldStopClickPropagationRef.current) {
+            event.stopPropagation();
+          }
+        })}
         style={{
           ...props.style,
           ...controlSize,

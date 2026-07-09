@@ -24,6 +24,7 @@ type RadioContextValue = {
   control: HTMLButtonElement | null;
   setControl: React.Dispatch<React.SetStateAction<HTMLButtonElement | null>>;
   hasConsumerStoppedPropagationRef: React.RefObject<boolean>;
+  isUserInteractionRef: React.RefObject<boolean>;
   isFormControl: boolean;
   bubbleInput: HTMLInputElement | null;
   setBubbleInput: React.Dispatch<React.SetStateAction<HTMLInputElement | null>>;
@@ -65,6 +66,10 @@ function RadioProvider(props: ScopedProps<RadioProviderProps>) {
   const [control, setControl] = React.useState<HTMLButtonElement | null>(null);
   const [bubbleInput, setBubbleInput] = React.useState<HTMLInputElement | null>(null);
   const hasConsumerStoppedPropagationRef = React.useRef(false);
+  // Tracks whether the current checked change originated from a user
+  // interaction with the trigger (vs. a controlled/programmatic `checked`
+  // update).
+  const isUserInteractionRef = React.useRef(false);
   const isFormControl = control
     ? !!form || !!control.closest('form')
     : // We set this to true by default so that events bubble to forms without JS (SSR)
@@ -80,6 +85,7 @@ function RadioProvider(props: ScopedProps<RadioProviderProps>) {
     control,
     setControl,
     hasConsumerStoppedPropagationRef,
+    isUserInteractionRef,
     isFormControl,
     bubbleInput,
     setBubbleInput,
@@ -115,6 +121,7 @@ const RadioTrigger = React.forwardRef<HTMLButtonElement, RadioTriggerProps>(
       setControl,
       onCheck,
       hasConsumerStoppedPropagationRef,
+      isUserInteractionRef,
       isFormControl,
       bubbleInput,
     } = useRadioContext(TRIGGER_NAME, __scopeRadio);
@@ -132,6 +139,7 @@ const RadioTrigger = React.forwardRef<HTMLButtonElement, RadioTriggerProps>(
         {...radioProps}
         ref={composedRefs}
         onClick={composeEventHandlers(onClick, (event) => {
+          isUserInteractionRef.current = true;
           // radios cannot be unchecked so we only communicate a checked state
           if (!checked) onCheck();
           if (bubbleInput && isFormControl) {
@@ -246,7 +254,7 @@ type InputProps = React.ComponentPropsWithoutRef<typeof Primitive.input>;
 interface RadioBubbleInputProps extends Omit<InputProps, 'checked'> {}
 
 const RadioBubbleInput = React.forwardRef<HTMLInputElement, RadioBubbleInputProps>(
-  ({ __scopeRadio, ...props }: ScopedProps<RadioBubbleInputProps>, forwardedRef) => {
+  ({ __scopeRadio, onClick, ...props }: ScopedProps<RadioBubbleInputProps>, forwardedRef) => {
     const {
       control,
       checked,
@@ -258,11 +266,19 @@ const RadioBubbleInput = React.forwardRef<HTMLInputElement, RadioBubbleInputProp
       bubbleInput,
       setBubbleInput,
       hasConsumerStoppedPropagationRef,
+      isUserInteractionRef,
     } = useRadioContext(BUBBLE_INPUT_NAME, __scopeRadio);
 
     const composedRefs = useComposedRefs(forwardedRef, setBubbleInput);
     const prevChecked = usePrevious(checked);
     const controlSize = useSize(control);
+    // When the checked change is not driven by a user interaction (e.g. a
+    // controlled `checked` update), the `click` event we dispatch to notify
+    // forms must not reach ancestor `onClick` handlers. We can't simply make it
+    // non-bubbling because React derives the radio's `change` event from a
+    // bubbling `click`. Instead we stop propagation of the synthetic click,
+    // which still lets the `change` event reach the form.
+    const shouldStopClickPropagationRef = React.useRef(false);
 
     // Bubble checked change to parents (e.g form change event)
     React.useEffect(() => {
@@ -276,13 +292,17 @@ const RadioBubbleInput = React.forwardRef<HTMLInputElement, RadioBubbleInputProp
       ) as PropertyDescriptor;
       const setChecked = descriptor.set;
 
-      const bubbles = !hasConsumerStoppedPropagationRef.current;
+      const isUserInteraction = isUserInteractionRef.current;
+      isUserInteractionRef.current = false;
+      const bubbles = !(isUserInteraction && hasConsumerStoppedPropagationRef.current);
       if (prevChecked !== checked && setChecked) {
+        shouldStopClickPropagationRef.current = !isUserInteraction;
         const event = new Event('click', { bubbles });
         setChecked.call(input, checked);
         input.dispatchEvent(event);
+        shouldStopClickPropagationRef.current = false;
       }
-    }, [bubbleInput, prevChecked, checked, hasConsumerStoppedPropagationRef]);
+    }, [bubbleInput, prevChecked, checked, hasConsumerStoppedPropagationRef, isUserInteractionRef]);
 
     const defaultCheckedRef = React.useRef(checked);
     return (
@@ -298,6 +318,14 @@ const RadioBubbleInput = React.forwardRef<HTMLInputElement, RadioBubbleInputProp
         {...props}
         tabIndex={-1}
         ref={composedRefs}
+        onClick={composeEventHandlers(onClick, (event) => {
+          // Prevent the synthetic click dispatched on controlled/programmatic
+          // updates from triggering ancestor `onClick` handlers, while still
+          // allowing the resulting `change` event to reach the form.
+          if (shouldStopClickPropagationRef.current) {
+            event.stopPropagation();
+          }
+        })}
         style={{
           ...props.style,
           ...controlSize,
