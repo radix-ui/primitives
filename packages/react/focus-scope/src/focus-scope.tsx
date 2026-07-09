@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { Primitive } from '@radix-ui/react-primitive';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
+import { getDeepActiveElement } from '@radix-ui/primitive'
 
 const AUTOFOCUS_ON_MOUNT = 'focusScope.autoFocusOnMount';
 const AUTOFOCUS_ON_UNMOUNT = 'focusScope.autoFocusOnUnmount';
@@ -109,7 +110,7 @@ const FocusScope = React.forwardRef<FocusScopeElement, FocusScopeProps>((props, 
       // back to the document.body. In this case, we move focus to the container
       // to keep focus trapped correctly.
       function handleMutations(mutations: MutationRecord[]) {
-        const focusedElement = document.activeElement as HTMLElement | null;
+        const focusedElement = getDeepActiveElement() as HTMLElement | null;
         if (focusedElement !== document.body) return;
         for (const mutation of mutations) {
           if (mutation.removedNodes.length > 0) focus(container);
@@ -132,7 +133,7 @@ const FocusScope = React.forwardRef<FocusScopeElement, FocusScopeProps>((props, 
   React.useEffect(() => {
     if (container) {
       focusScopesStack.add(focusScope);
-      const previouslyFocusedElement = document.activeElement as HTMLElement | null;
+      const previouslyFocusedElement = getDeepActiveElement() as HTMLElement | null;
       const hasFocusedCandidate = container.contains(previouslyFocusedElement);
 
       if (!hasFocusedCandidate) {
@@ -141,7 +142,7 @@ const FocusScope = React.forwardRef<FocusScopeElement, FocusScopeProps>((props, 
         container.dispatchEvent(mountEvent);
         if (!mountEvent.defaultPrevented) {
           focusFirst(removeLinks(getTabbableCandidates(container)), { select: true });
-          if (document.activeElement === previouslyFocusedElement) {
+          if (getDeepActiveElement() === previouslyFocusedElement) {
             focus(container);
           }
         }
@@ -176,7 +177,7 @@ const FocusScope = React.forwardRef<FocusScopeElement, FocusScopeProps>((props, 
       if (focusScope.paused) return;
 
       const isTabKey = event.key === 'Tab' && !event.altKey && !event.ctrlKey && !event.metaKey;
-      const focusedElement = document.activeElement as HTMLElement | null;
+      const focusedElement = getDeepActiveElement() as HTMLElement | null;
 
       if (isTabKey && focusedElement) {
         const container = event.currentTarget as HTMLElement;
@@ -216,10 +217,10 @@ FocusScope.displayName = FOCUS_SCOPE_NAME;
  * Stops when focus has actually moved.
  */
 function focusFirst(candidates: HTMLElement[], { select = false } = {}) {
-  const previouslyFocusedElement = document.activeElement;
+  const previouslyFocusedElement = getDeepActiveElement();
   for (const candidate of candidates) {
     focus(candidate, { select });
-    if (document.activeElement !== previouslyFocusedElement) return;
+    if (getDeepActiveElement() !== previouslyFocusedElement) return;
   }
 }
 
@@ -245,17 +246,28 @@ function getTabbableEdges(container: HTMLElement) {
  */
 function getTabbableCandidates(container: HTMLElement) {
   const nodes: HTMLElement[] = [];
-  const walker = document.createTreeWalker(container, NodeFilter.SHOW_ELEMENT, {
-    acceptNode: (node: any) => {
-      const isHiddenInput = node.tagName === 'INPUT' && node.type === 'hidden';
-      if (node.disabled || node.hidden || isHiddenInput) return NodeFilter.FILTER_SKIP;
-      // `.tabIndex` is not the same as the `tabindex` attribute. It works on the
-      // runtime's understanding of tabbability, so this automatically accounts
-      // for any kind of element that could be tabbed to.
-      return node.tabIndex >= 0 ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP;
-    },
-  });
-  while (walker.nextNode()) nodes.push(walker.currentNode as HTMLElement);
+  function walk(root: HTMLElement | ShadowRoot) {
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT, {
+      acceptNode: (node: any) => {
+        const isHiddenInput = node.tagName === 'INPUT' && node.type === 'hidden';
+        if (node.disabled || node.hidden || isHiddenInput) return NodeFilter.FILTER_SKIP;
+        if (node.shadowRoot) return NodeFilter.FILTER_ACCEPT;
+        // `.tabIndex` is not the same as the `tabindex` attribute. It works on the
+        // runtime's understanding of tabbability, so this automatically accounts
+        // for any kind of element that could be tabbed to.
+        return node.tabIndex >= 0 ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP;
+      },
+    });
+    while (walker.nextNode()) {
+      const el = walker.currentNode as HTMLElement;
+      if (el.shadowRoot) {
+        walk(el.shadowRoot);
+      } else {
+        nodes.push(el);
+      }
+    }
+  }
+  walk(container);
   // we do not take into account the order of nodes with positive `tabIndex` as it
   // hinders accessibility to have tab order different from visual order.
   return nodes;
@@ -304,7 +316,7 @@ function isSelectableInput(element: any): element is FocusableTarget & { select:
 function focus(element?: FocusableTarget | null, { select = false } = {}) {
   // only focus if that element is focusable
   if (element && element.focus) {
-    const previouslyFocusedElement = document.activeElement;
+    const previouslyFocusedElement = getDeepActiveElement();
     // NOTE: we prevent scrolling on focus, to minimize jarring transitions for users
     element.focus({ preventScroll: true });
     // only select if its not the same element, it supports selection and we need to select
@@ -362,5 +374,6 @@ export {
   FocusScope,
   //
   Root,
+  getTabbableCandidates,
 };
 export type { FocusScopeProps };

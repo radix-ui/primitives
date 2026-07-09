@@ -1,7 +1,7 @@
 import * as Primitive from '@radix-ui/react-primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
-import { composeEventHandlers } from '@radix-ui/primitive';
+import { composeEventHandlers, getDeepActiveElement } from '@radix-ui/primitive';
 import { unstable_createCollection as createCollection } from '@radix-ui/react-collection';
 import * as RovingFocusGroup from '@radix-ui/react-roving-focus';
 import { createRovingFocusGroupScope } from '@radix-ui/react-roving-focus';
@@ -762,7 +762,7 @@ const OneTimePasswordFieldInput = React.forwardRef<
                   const element = event.target;
                   onInvalidChange?.(element.value);
                   requestAnimationFrame(() => {
-                    if (element.ownerDocument.activeElement === element) {
+                    if (getDeepActiveElement() === element) {
                       element.select();
                     }
                   });
@@ -925,7 +925,7 @@ function removeWhitespace(value: string) {
 
 function focusInput(element: HTMLInputElement | null | undefined) {
   if (!element) return;
-  if (element.ownerDocument.activeElement === element) {
+  if (getDeepActiveElement() === element) {
     // if the element is already focused, select the value in the next
     // animation frame
     window.requestAnimationFrame(() => {
