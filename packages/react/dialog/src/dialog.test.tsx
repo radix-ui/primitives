@@ -100,6 +100,53 @@ describe('aria-controls', () => {
   });
 });
 
+describe('aria-describedby', () => {
+  afterEach(() => {
+    cleanup();
+  });
+
+  it('should not be present when no `Dialog.Description` is rendered', () => {
+    const rendered = render(<DialogTest />);
+    fireEvent.click(rendered.getByText(OPEN_TEXT));
+    const content = rendered.getByRole('dialog');
+    expect(content).not.toHaveAttribute('aria-describedby');
+  });
+
+  it('should reference the rendered `Dialog.Description`', () => {
+    const DESCRIPTION_TEXT = 'Description';
+    const rendered = render(
+      <Dialog.Root>
+        <Dialog.Trigger>{OPEN_TEXT}</Dialog.Trigger>
+        <Dialog.Content>
+          <Dialog.Title>{TITLE_TEXT}</Dialog.Title>
+          <Dialog.Description>{DESCRIPTION_TEXT}</Dialog.Description>
+          <Dialog.Close>{CLOSE_TEXT}</Dialog.Close>
+        </Dialog.Content>
+      </Dialog.Root>,
+    );
+    fireEvent.click(rendered.getByText(OPEN_TEXT));
+    const content = rendered.getByRole('dialog');
+    const describedById = content.getAttribute('aria-describedby');
+    expect(describedById).toBeTruthy();
+    expect(document.getElementById(describedById!)).toBe(rendered.getByText(DESCRIPTION_TEXT));
+  });
+
+  it('should respect an explicit `aria-describedby` override even without `Dialog.Description`', () => {
+    const rendered = render(
+      <Dialog.Root>
+        <Dialog.Trigger>{OPEN_TEXT}</Dialog.Trigger>
+        <Dialog.Content aria-describedby="custom-id">
+          <Dialog.Title>{TITLE_TEXT}</Dialog.Title>
+          <Dialog.Close>{CLOSE_TEXT}</Dialog.Close>
+        </Dialog.Content>
+      </Dialog.Root>,
+    );
+    fireEvent.click(rendered.getByText(OPEN_TEXT));
+    const content = rendered.getByRole('dialog');
+    expect(content).toHaveAttribute('aria-describedby', 'custom-id');
+  });
+});
+
 describe('given a modal Dialog', () => {
   afterEach(() => {
     cleanup();

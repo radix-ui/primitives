@@ -31,6 +31,8 @@ type DialogContextValue = {
   contentId: string;
   titleId: string;
   descriptionId: string;
+  isDescriptionRendered: boolean;
+  setIsDescriptionRendered: React.Dispatch<React.SetStateAction<boolean>>;
   open: boolean;
   onOpenChange(open: boolean): void;
   onOpenToggle(): void;
@@ -64,6 +66,7 @@ const Dialog: React.FC<DialogProps> = (props: ScopedProps<DialogProps>) => {
     onChange: onOpenChange,
     caller: DIALOG_NAME,
   });
+  const [isDescriptionRendered, setIsDescriptionRendered] = React.useState(false);
 
   return (
     <DialogProvider
@@ -73,6 +76,8 @@ const Dialog: React.FC<DialogProps> = (props: ScopedProps<DialogProps>) => {
       contentId={useId()}
       titleId={useId()}
       descriptionId={useId()}
+      isDescriptionRendered={isDescriptionRendered}
+      setIsDescriptionRendered={setIsDescriptionRendered}
       open={open}
       onOpenChange={setOpen}
       onOpenToggle={React.useCallback(() => setOpen((prevOpen) => !prevOpen), [setOpen])}
@@ -411,7 +416,7 @@ const DialogContentImpl = React.forwardRef<DialogContentImplElement, DialogConte
           <DismissableLayer
             role="dialog"
             id={context.contentId}
-            aria-describedby={context.descriptionId}
+            aria-describedby={context.isDescriptionRendered ? context.descriptionId : undefined}
             aria-labelledby={context.titleId}
             data-state={getState(context.open)}
             {...contentProps}
@@ -459,6 +464,16 @@ const DialogDescription = React.forwardRef<DialogDescriptionElement, DialogDescr
   (props: ScopedProps<DialogDescriptionProps>, forwardedRef) => {
     const { __scopeDialog, ...descriptionProps } = props;
     const context = useDialogContext(DESCRIPTION_NAME, __scopeDialog);
+    const { setIsDescriptionRendered } = context;
+
+    // Let `DialogContent` know a description is present so it only sets
+    // `aria-describedby` when there is an element for it to reference.
+    // https://github.com/radix-ui/primitives/issues/3007
+    React.useEffect(() => {
+      setIsDescriptionRendered(true);
+      return () => setIsDescriptionRendered(false);
+    }, [setIsDescriptionRendered]);
+
     return <Primitive.p id={context.descriptionId} {...descriptionProps} ref={forwardedRef} />;
   },
 );
