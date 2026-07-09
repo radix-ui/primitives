@@ -121,6 +121,14 @@ describe('Dialog', () => {
       cy.realPress('Tab');
       cy.findByText('close').should('be.focused');
     });
+
+    it('focuses next element correctly when another element is removed on blur', () => {
+      cy.findByLabelText('enable blur validation').click();
+      cy.findByText('open').click();
+      cy.findByLabelText('My text field').type('hello');
+      cy.realPress('Tab');
+      cy.findByLabelText('My second text field').should('be.focused');
+    });
   });
 
   describe('given a non-modal dialog', () => {
