@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Dialog } from 'radix-ui';
-import { DismissableLayer } from 'radix-ui/internal';
+import * as DismissableLayer from 'radix-ui/unstable/dismissable-layer';
 import Plot from 'react-plotly.js';
 import styles from './dialog.stories.module.css';
 import { ExternalOverlayTrigger } from './external-overlay';
