@@ -106,8 +106,11 @@ export async function build(relativePath) {
  * @param {string} distDirectoryPath
  */
 async function stripLeakedReactModuleAugmentations(distDirectoryPath) {
-  const distFileNames = await fs.promises.readdir(distDirectoryPath).catch(() => []);
-  const declarationFilePaths = distFileNames
+  const distEntries = await fs.promises
+    .readdir(distDirectoryPath, { recursive: true })
+    .catch(() => []);
+  const declarationFilePaths = distEntries
+    .map((entry) => entry.toString())
     .filter((fileName) => DECLARATION_FILE_REGEX.test(fileName))
     .map((fileName) => path.resolve(distDirectoryPath, fileName));
 
