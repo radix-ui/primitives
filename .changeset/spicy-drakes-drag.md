@@ -1,6 +1,6 @@
 ---
-"radix-ui": patch
-"@radix-ui/react-dismissable-layer": patch
+"radix-ui": minor
+"@radix-ui/react-dismissable-layer": minor
 ---
 
-Fixed a bug where drag interactions that originate inside a modal layer (eg. a `Dialog`) would break when the interaction relied on a helper element appended to the `body`. Modal layers set `pointer-events: none` on the `body`, which was inherited by such elements (eg. the full-viewport "drag cover" that charting/drag libraries like Plotly create on pointer down), preventing them from receiving pointer events. These elements now remain interactive while the page behind the layer stays inert.
+Added `unstable_DismissableLayer.Provider` with an `onInertElementsAdded` handler. This allows consumers the ability to better manage how outside elements are handled when appended to the DOM from inside a modal layer. This is primarily useful for dealing with compatibility issues with third party libraries that inject elements into the DOM.
