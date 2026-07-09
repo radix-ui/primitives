@@ -11,6 +11,7 @@ import { Presence } from '@radix-ui/react-presence';
 import { Primitive } from '@radix-ui/react-primitive';
 import { createSlottable } from '@radix-ui/react-slot';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
+import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import * as VisuallyHiddenPrimitive from '@radix-ui/react-visually-hidden';
 
 import type { Scope } from '@radix-ui/react-context';
@@ -29,15 +30,15 @@ const PROVIDER_NAME = 'TooltipProvider';
 const DEFAULT_DELAY_DURATION = 700;
 const TOOLTIP_OPEN = 'tooltip.open';
 
-type TooltipProviderContextValue = {
-  isOpenDelayedRef: React.MutableRefObject<boolean>;
+interface TooltipProviderContextValue {
+  isOpenDelayedRef: React.RefObject<boolean>;
   delayDuration: number;
   onOpen(): void;
   onClose(): void;
   onPointerInTransitChange(inTransit: boolean): void;
-  isPointerInTransitRef: React.MutableRefObject<boolean>;
+  isPointerInTransitRef: React.RefObject<boolean>;
   disableHoverableContent: boolean;
-};
+}
 
 const [TooltipProviderContextProvider, useTooltipProviderContext] =
   createTooltipContext<TooltipProviderContextValue>(PROVIDER_NAME);
@@ -117,7 +118,7 @@ TooltipProvider.displayName = PROVIDER_NAME;
 
 const TOOLTIP_NAME = 'Tooltip';
 
-type TooltipContextValue = {
+interface TooltipContextValue {
   contentId: string;
   open: boolean;
   stateAttribute: 'closed' | 'delayed-open' | 'instant-open';
@@ -128,7 +129,8 @@ type TooltipContextValue = {
   onOpen(): void;
   onClose(): void;
   disableHoverableContent: boolean;
-};
+  setContentId: React.Dispatch<React.SetStateAction<string | undefined>>;
+}
 
 const [TooltipContextProvider, useTooltipContext] =
   createTooltipContext<TooltipContextValue>(TOOLTIP_NAME);
@@ -164,7 +166,8 @@ const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
   const providerContext = useTooltipProviderContext(TOOLTIP_NAME, props.__scopeTooltip);
   const popperScope = usePopperScope(__scopeTooltip);
   const [trigger, setTrigger] = React.useState<HTMLButtonElement | null>(null);
-  const contentId = useId();
+  const [contentIdState, setContentId] = React.useState<string | undefined>(undefined);
+  const generatedContentId = useId();
   const openTimerRef = React.useRef(0);
   const disableHoverableContent =
     disableHoverableContentProp ?? providerContext.disableHoverableContent;
@@ -222,11 +225,14 @@ const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
     };
   }, []);
 
+  const contentId = contentIdState ?? generatedContentId;
+
   return (
     <PopperPrimitive.Root {...popperScope}>
       <TooltipContextProvider
         scope={__scopeTooltip}
         contentId={contentId}
+        setContentId={setContentId}
         open={open}
         stateAttribute={stateAttribute}
         trigger={trigger}
@@ -480,9 +486,6 @@ const TooltipContentHoverable = React.forwardRef<
   return <TooltipContentImpl {...props} ref={composedRefs} />;
 });
 
-const [VisuallyHiddenContentContextProvider, useVisuallyHiddenContentContext] =
-  createTooltipContext(TOOLTIP_NAME, { isInside: false });
-
 type TooltipContentImplElement = React.ComponentRef<typeof PopperPrimitive.Content>;
 type DismissableLayerProps = React.ComponentPropsWithoutRef<typeof DismissableLayer>;
 type PopperContentProps = React.ComponentPropsWithoutRef<typeof PopperPrimitive.Content>;
@@ -539,6 +542,14 @@ const TooltipContentImpl = React.forwardRef<TooltipContentImplElement, TooltipCo
       }
     }, [context.trigger, onClose]);
 
+    const { setContentId } = context;
+    useLayoutEffect(() => {
+      setContentId(contentProps.id);
+      return () => {
+        setContentId(undefined);
+      };
+    }, [contentProps.id, setContentId]);
+
     return (
       <DismissableLayer
         asChild
@@ -550,6 +561,13 @@ const TooltipContentImpl = React.forwardRef<TooltipContentImplElement, TooltipCo
       >
         <PopperPrimitive.Content
           data-state={context.stateAttribute}
+          // Following the ARIA tooltip pattern, the visible content acts as the
+          // accessible description (referenced by the trigger's
+          // `aria-describedby`) when no `aria-label` override is provided. This
+          // lets `children` render a single time instead of being duplicated
+          // into a visually hidden copy.
+          role={ariaLabel ? undefined : 'tooltip'}
+          id={ariaLabel ? undefined : context.contentId}
           {...popperScope}
           {...contentProps}
           ref={forwardedRef}
@@ -566,11 +584,11 @@ const TooltipContentImpl = React.forwardRef<TooltipContentImplElement, TooltipCo
           }}
         >
           <Slottable>{children}</Slottable>
-          <VisuallyHiddenContentContextProvider scope={__scopeTooltip} isInside={true}>
+          {ariaLabel ? (
             <VisuallyHiddenPrimitive.Root id={context.contentId} role="tooltip">
-              {ariaLabel || children}
+              {ariaLabel}
             </VisuallyHiddenPrimitive.Root>
-          </VisuallyHiddenContentContextProvider>
+          ) : null}
         </PopperPrimitive.Content>
       </DismissableLayer>
     );
@@ -593,15 +611,7 @@ const TooltipArrow = React.forwardRef<TooltipArrowElement, TooltipArrowProps>(
   (props: ScopedProps<TooltipArrowProps>, forwardedRef) => {
     const { __scopeTooltip, ...arrowProps } = props;
     const popperScope = usePopperScope(__scopeTooltip);
-    const visuallyHiddenContentContext = useVisuallyHiddenContentContext(
-      ARROW_NAME,
-      __scopeTooltip,
-    );
-    // if the arrow is inside the `VisuallyHidden`, we don't want to render it all to
-    // prevent issues in positioning the arrow due to the duplicate
-    return visuallyHiddenContentContext.isInside ? null : (
-      <PopperPrimitive.Arrow {...popperScope} {...arrowProps} ref={forwardedRef} />
-    );
+    return <PopperPrimitive.Arrow {...popperScope} {...arrowProps} ref={forwardedRef} />;
   },
 );
 
