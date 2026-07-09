@@ -34,7 +34,17 @@ export async function build(relativePath) {
   const pkg = packageJson.name;
   const files = ['index.ts'];
   if (pkg === 'radix-ui') {
-    files.push('internal.ts');
+    // The `radix-ui` package exposes every module in `src` as its own subpath
+    // entry point (eg. `radix-ui/accordion`, `radix-ui/unstable/dismissable-layer`),
+    // so build all of them. `recursive` is used to pick up nested modules such as
+    // those under `src/unstable`.
+    const sourceDirectory = path.resolve(relativePath || '.', 'src');
+    const additionalEntryFiles = fs
+      .readdirSync(sourceDirectory, { recursive: true })
+      .map((entry) => entry.toString().split(path.sep).join('/'))
+      .filter((file) => file.endsWith('.ts') && !file.endsWith('.d.ts') && file !== 'index.ts')
+      .sort();
+    files.push(...additionalEntryFiles);
   }
 
   const entryPoints = files.map((file) => `${relativePath || '.'}/src/${file}`);
