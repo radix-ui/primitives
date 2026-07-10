@@ -100,6 +100,81 @@ describe('aria-controls', () => {
   });
 });
 
+describe('aria-labelledby / aria-describedby references', () => {
+  afterEach(() => {
+    cleanup();
+  });
+
+  // A referenced `aria-labelledby`/`aria-describedby` id must resolve to an
+  // element in the document, otherwise it is a broken ARIA reference.
+  // https://github.com/radix-ui/primitives/issues/2836
+  it('should reference `Title` and `Description` when they are rendered', () => {
+    const rendered = render(
+      <Dialog.Root defaultOpen>
+        <Dialog.Content>
+          <Dialog.Title>Title</Dialog.Title>
+          <Dialog.Description>Description</Dialog.Description>
+        </Dialog.Content>
+      </Dialog.Root>,
+    );
+    const content = rendered.getByRole('dialog');
+    const labelledBy = content.getAttribute('aria-labelledby');
+    const describedBy = content.getAttribute('aria-describedby');
+    expect(labelledBy).toBeTruthy();
+    expect(describedBy).toBeTruthy();
+    expect(document.getElementById(labelledBy!)).toHaveTextContent('Title');
+    expect(document.getElementById(describedBy!)).toHaveTextContent('Description');
+  });
+
+  it('should not set `aria-labelledby` when no `Title` is rendered', () => {
+    const rendered = render(
+      <Dialog.Root defaultOpen>
+        <Dialog.Content aria-label="Custom label">
+          <Dialog.Description>Description</Dialog.Description>
+        </Dialog.Content>
+      </Dialog.Root>,
+    );
+    const content = rendered.getByRole('dialog');
+    expect(content).not.toHaveAttribute('aria-labelledby');
+  });
+
+  it('should not set `aria-describedby` when no `Description` is rendered', () => {
+    const rendered = render(
+      <Dialog.Root defaultOpen>
+        <Dialog.Content>
+          <Dialog.Title>Title</Dialog.Title>
+        </Dialog.Content>
+      </Dialog.Root>,
+    );
+    const content = rendered.getByRole('dialog');
+    expect(content).not.toHaveAttribute('aria-describedby');
+  });
+
+  it('should update references when `Title`/`Description` mount and unmount', () => {
+    const Test = ({ showText }: { showText: boolean }) => (
+      <Dialog.Root defaultOpen>
+        <Dialog.Content aria-label="Custom label">
+          {showText ? <Dialog.Title>Title</Dialog.Title> : null}
+          {showText ? <Dialog.Description>Description</Dialog.Description> : null}
+        </Dialog.Content>
+      </Dialog.Root>
+    );
+
+    const rendered = render(<Test showText={false} />);
+    const content = rendered.getByRole('dialog');
+    expect(content).not.toHaveAttribute('aria-labelledby');
+    expect(content).not.toHaveAttribute('aria-describedby');
+
+    rendered.rerender(<Test showText={true} />);
+    expect(content).toHaveAttribute('aria-labelledby');
+    expect(content).toHaveAttribute('aria-describedby');
+
+    rendered.rerender(<Test showText={false} />);
+    expect(content).not.toHaveAttribute('aria-labelledby');
+    expect(content).not.toHaveAttribute('aria-describedby');
+  });
+});
+
 describe('given a modal Dialog', () => {
   afterEach(() => {
     cleanup();
