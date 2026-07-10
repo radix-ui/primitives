@@ -10,6 +10,7 @@ import { Portal as PortalPrimitive } from '@radix-ui/react-portal';
 import { Presence } from '@radix-ui/react-presence';
 import { Primitive } from '@radix-ui/react-primitive';
 import { useFocusGuards } from '@radix-ui/react-focus-guards';
+import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { RemoveScroll } from 'react-remove-scroll';
 import { hideOthers } from 'aria-hidden';
 import { createSlot } from '@radix-ui/react-slot';
@@ -31,6 +32,10 @@ type DialogContextValue = {
   contentId: string;
   titleId: string;
   descriptionId: string;
+  titlePresent: boolean;
+  descriptionPresent: boolean;
+  setTitleCount: React.Dispatch<React.SetStateAction<number>>;
+  setDescriptionCount: React.Dispatch<React.SetStateAction<number>>;
   open: boolean;
   onOpenChange(open: boolean): void;
   onOpenToggle(): void;
@@ -65,6 +70,9 @@ const Dialog: React.FC<DialogProps> = (props: ScopedProps<DialogProps>) => {
     caller: DIALOG_NAME,
   });
 
+  const [titleCount, setTitleCount] = React.useState(0);
+  const [descriptionCount, setDescriptionCount] = React.useState(0);
+
   return (
     <DialogProvider
       scope={__scopeDialog}
@@ -73,6 +81,10 @@ const Dialog: React.FC<DialogProps> = (props: ScopedProps<DialogProps>) => {
       contentId={useId()}
       titleId={useId()}
       descriptionId={useId()}
+      titlePresent={titleCount > 0}
+      descriptionPresent={descriptionCount > 0}
+      setTitleCount={setTitleCount}
+      setDescriptionCount={setDescriptionCount}
       open={open}
       onOpenChange={setOpen}
       onOpenToggle={React.useCallback(() => setOpen((prevOpen) => !prevOpen), [setOpen])}
@@ -411,8 +423,8 @@ const DialogContentImpl = React.forwardRef<DialogContentImplElement, DialogConte
           <DismissableLayer
             role="dialog"
             id={context.contentId}
-            aria-describedby={context.descriptionId}
-            aria-labelledby={context.titleId}
+            aria-describedby={context.descriptionPresent ? context.descriptionId : undefined}
+            aria-labelledby={context.titlePresent ? context.titleId : undefined}
             data-state={getState(context.open)}
             {...contentProps}
             ref={forwardedRef}
@@ -439,6 +451,11 @@ const DialogTitle = React.forwardRef<DialogTitleElement, DialogTitleProps>(
   (props: ScopedProps<DialogTitleProps>, forwardedRef) => {
     const { __scopeDialog, ...titleProps } = props;
     const context = useDialogContext(TITLE_NAME, __scopeDialog);
+    const { setTitleCount } = context;
+    useLayoutEffect(() => {
+      setTitleCount((count) => count + 1);
+      return () => setTitleCount((count) => count - 1);
+    }, [setTitleCount]);
     return <Primitive.h2 id={context.titleId} {...titleProps} ref={forwardedRef} />;
   },
 );
@@ -459,6 +476,11 @@ const DialogDescription = React.forwardRef<DialogDescriptionElement, DialogDescr
   (props: ScopedProps<DialogDescriptionProps>, forwardedRef) => {
     const { __scopeDialog, ...descriptionProps } = props;
     const context = useDialogContext(DESCRIPTION_NAME, __scopeDialog);
+    const { setDescriptionCount } = context;
+    useLayoutEffect(() => {
+      setDescriptionCount((count) => count + 1);
+      return () => setDescriptionCount((count) => count - 1);
+    }, [setDescriptionCount]);
     return <Primitive.p id={context.descriptionId} {...descriptionProps} ref={forwardedRef} />;
   },
 );
