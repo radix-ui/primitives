@@ -46,10 +46,139 @@ describe('Tooltip', () => {
 
     userEvent.hover(trigger);
     await waitFor(() => {
-      // Get the first instance of the tooltip content because the second is
-      // the visually hidden primitive.
-      expect(screen.queryAllByText('Tooltip Content')[0]).toBeVisible();
+      expect(screen.getByText('Tooltip Content')).toBeVisible();
     });
+  });
+
+  // Regression test for https://github.com/radix-ui/primitives/issues/3034
+  // Content children must be mounted to the DOM a single time so that their
+  // effects (analytics, fetches, etc.) do not run twice.
+  it('mounts content children a single time', async () => {
+    const onMount = vi.fn();
+
+    function Child() {
+      React.useEffect(() => {
+        onMount();
+      }, []);
+      return <span>Tooltip Content</span>;
+    }
+
+    render(
+      <Tooltip.Provider>
+        <Tooltip.Root delayDuration={0}>
+          <Tooltip.Trigger>Tooltip Trigger</Tooltip.Trigger>
+          <Tooltip.Portal>
+            <Tooltip.Content>
+              <Child />
+            </Tooltip.Content>
+          </Tooltip.Portal>
+        </Tooltip.Root>
+      </Tooltip.Provider>,
+    );
+
+    userEvent.hover(screen.getByText('Tooltip Trigger'));
+    await waitFor(() => {
+      expect(screen.getByText('Tooltip Content')).toBeVisible();
+    });
+
+    expect(screen.getAllByText('Tooltip Content')).toHaveLength(1);
+    expect(onMount).toHaveBeenCalledTimes(1);
+  });
+
+  // Regression test for https://github.com/radix-ui/primitives/issues/3034
+  // When `aria-label` is provided, the accessible description comes from a
+  // visually hidden element while `children` still mount a single time.
+  it('uses aria-label without duplicating content children', async () => {
+    const onMount = vi.fn();
+
+    function Child() {
+      React.useEffect(() => {
+        onMount();
+      }, []);
+      return <span>Tooltip Content</span>;
+    }
+
+    render(
+      <Tooltip.Provider>
+        <Tooltip.Root delayDuration={0}>
+          <Tooltip.Trigger>Tooltip Trigger</Tooltip.Trigger>
+          <Tooltip.Portal>
+            <Tooltip.Content aria-label="Accessible label">
+              <Child />
+            </Tooltip.Content>
+          </Tooltip.Portal>
+        </Tooltip.Root>
+      </Tooltip.Provider>,
+    );
+
+    userEvent.hover(screen.getByText('Tooltip Trigger'));
+    await waitFor(() => {
+      expect(screen.getByText('Tooltip Content')).toBeVisible();
+    });
+
+    expect(screen.getAllByText('Tooltip Content')).toHaveLength(1);
+    expect(onMount).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole('tooltip')).toHaveTextContent('Accessible label');
+  });
+
+  // A consumer-provided `id` on the content must stay in sync with the
+  // trigger's `aria-describedby` so the accessible description resolves.
+  it('keeps aria-describedby in sync with a custom content id', async () => {
+    render(
+      <Tooltip.Provider>
+        <Tooltip.Root delayDuration={0}>
+          <Tooltip.Trigger>Tooltip Trigger</Tooltip.Trigger>
+          <Tooltip.Portal>
+            <Tooltip.Content id="custom-id">Tooltip Content</Tooltip.Content>
+          </Tooltip.Portal>
+        </Tooltip.Root>
+      </Tooltip.Provider>,
+    );
+
+    const trigger = screen.getByText('Tooltip Trigger');
+    userEvent.hover(trigger);
+    await waitFor(() => {
+      expect(trigger).toHaveAttribute('aria-describedby', 'custom-id');
+      expect(screen.getByRole('tooltip')).toHaveAttribute('id', 'custom-id');
+    });
+  });
+
+  // Regression test for https://github.com/radix-ui/primitives/issues/3034
+  // When both `aria-label` and a custom `id` are provided, the id must live on
+  // a single element so it is not duplicated in the DOM and the trigger's
+  // `aria-describedby` resolves to the accessible label rather than the visible
+  // children.
+  it('keeps a custom id unique when combined with aria-label', async () => {
+    render(
+      <Tooltip.Provider>
+        <Tooltip.Root delayDuration={0}>
+          <Tooltip.Trigger>Tooltip Trigger</Tooltip.Trigger>
+          <Tooltip.Portal>
+            <Tooltip.Content aria-label="Accessible label" id="custom-id">
+              Tooltip Content
+            </Tooltip.Content>
+          </Tooltip.Portal>
+        </Tooltip.Root>
+      </Tooltip.Provider>,
+    );
+
+    const trigger = screen.getByText('Tooltip Trigger');
+    userEvent.hover(trigger);
+    await waitFor(() => {
+      expect(screen.getByText('Tooltip Content')).toBeVisible();
+    });
+
+    // The id must not be duplicated across the visible content and the
+    // visually hidden description.
+    expect(document.querySelectorAll('#custom-id')).toHaveLength(1);
+
+    // `aria-describedby` must resolve to the accessible label, not the visible
+    // children.
+    expect(trigger).toHaveAttribute('aria-describedby', 'custom-id');
+    const description = document.getElementById('custom-id');
+    expect(description).toHaveAttribute('role', 'tooltip');
+    expect(description).toHaveTextContent('Accessible label');
+    expect(description).not.toHaveTextContent('Tooltip Content');
   });
 
   it('renders tooltip content is dismissed when trigger is clicked', async () => {
@@ -72,9 +201,7 @@ describe('Tooltip', () => {
 
     userEvent.hover(trigger);
     await waitFor(() => {
-      // Get the first instance of the tooltip content because the second is
-      // the visually hidden primitive.
-      expect(screen.queryAllByText('Tooltip Content')[0]).toBeVisible();
+      expect(screen.getByText('Tooltip Content')).toBeVisible();
     });
 
     userEvent.click(trigger);
