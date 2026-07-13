@@ -4,6 +4,28 @@ import { Primitive } from '@radix-ui/react-primitive';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 
 /* -------------------------------------------------------------------------------------------------
+ * PortalProvider
+ * -----------------------------------------------------------------------------------------------*/
+
+const PortalContext = React.createContext<Element | DocumentFragment | null>(null);
+PortalContext.displayName = 'PortalContext';
+
+interface PortalProviderProps {
+  children: React.ReactNode;
+  /**
+   * The default container element for portaled content.
+   * @defaultValue document.body
+   */
+  container: Element | DocumentFragment;
+}
+
+const PortalProvider: React.FC<PortalProviderProps> = ({ container, children }) => {
+  return <PortalContext.Provider value={container}>{children}</PortalContext.Provider>;
+};
+
+PortalProvider.displayName = 'PortalProvider';
+
+/* -------------------------------------------------------------------------------------------------
  * Portal
  * -----------------------------------------------------------------------------------------------*/
 
@@ -20,9 +42,10 @@ interface PortalProps extends PrimitiveDivProps {
 
 const Portal = React.forwardRef<PortalElement, PortalProps>((props, forwardedRef) => {
   const { container: containerProp, ...portalProps } = props;
+  const contextContainer = React.useContext(PortalContext);
   const [mounted, setMounted] = React.useState(false);
   useLayoutEffect(() => setMounted(true), []);
-  const container = containerProp || (mounted && globalThis?.document?.body);
+  const container = containerProp || contextContainer || (mounted && globalThis?.document?.body);
   return container
     ? ReactDOM.createPortal(<Primitive.div {...portalProps} ref={forwardedRef} />, container)
     : null;
@@ -36,7 +59,8 @@ const Root = Portal;
 
 export {
   Portal,
+  PortalProvider,
   //
   Root,
 };
-export type { PortalProps };
+export type { PortalProps, PortalProviderProps };
