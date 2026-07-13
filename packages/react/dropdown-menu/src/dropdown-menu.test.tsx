@@ -133,6 +133,72 @@ describe('keys from focusable descendants', () => {
   });
 });
 
+describe('trigger activationMode', () => {
+  afterEach(cleanup);
+
+  const ActivationModeTest = (props: React.ComponentProps<typeof DropdownMenu.Trigger>) => (
+    <DropdownMenu.Root>
+      <DropdownMenu.Trigger {...props}>{TRIGGER_TEXT}</DropdownMenu.Trigger>
+      <DropdownMenu.Portal>
+        <DropdownMenu.Content>
+          <DropdownMenu.Item>{ITEM_TEXT}</DropdownMenu.Item>
+        </DropdownMenu.Content>
+      </DropdownMenu.Portal>
+    </DropdownMenu.Root>
+  );
+
+  describe('"pointer-down" (default)', () => {
+    it('opens on pointer down', async () => {
+      render(<ActivationModeTest />);
+      const trigger = screen.getByText(TRIGGER_TEXT);
+      fireEvent.pointerDown(trigger, { button: 0, ctrlKey: false });
+      await waitFor(() => expect(screen.getByRole('menu')).toBeInTheDocument());
+      expect(trigger).toHaveAttribute('aria-expanded', 'true');
+    });
+
+    it('does not open again on the subsequent click', async () => {
+      render(<ActivationModeTest />);
+      const trigger = screen.getByText(TRIGGER_TEXT);
+      fireEvent.pointerDown(trigger, { button: 0, ctrlKey: false });
+      await waitFor(() => expect(screen.getByRole('menu')).toBeInTheDocument());
+      // A `click` follows the opening `pointerdown`; it must not toggle the menu closed.
+      fireEvent.click(trigger, { button: 0, ctrlKey: false });
+      expect(screen.getByRole('menu')).toBeInTheDocument();
+      expect(trigger).toHaveAttribute('aria-expanded', 'true');
+    });
+  });
+
+  // Regression tests for https://github.com/radix-ui/primitives/issues/2867
+  describe('"click"', () => {
+    it('does not open or prevent default on pointer down, allowing a drag to start', () => {
+      render(<ActivationModeTest activationMode="click" />);
+      const trigger = screen.getByText(TRIGGER_TEXT);
+      // `fireEvent` returns `false` when `preventDefault` was called on the event.
+      // Not calling `preventDefault` is what allows a native `dragstart` to fire.
+      expect(fireEvent.pointerDown(trigger, { button: 0, ctrlKey: false })).toBe(true);
+      expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+      expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    });
+
+    it('opens on click', async () => {
+      render(<ActivationModeTest activationMode="click" />);
+      const trigger = screen.getByText(TRIGGER_TEXT);
+      fireEvent.pointerDown(trigger, { button: 0, ctrlKey: false });
+      fireEvent.click(trigger, { button: 0, ctrlKey: false });
+      await waitFor(() => expect(screen.getByRole('menu')).toBeInTheDocument());
+      expect(trigger).toHaveAttribute('aria-expanded', 'true');
+    });
+
+    it('still opens via keyboard', async () => {
+      render(<ActivationModeTest activationMode="click" />);
+      const trigger = screen.getByText(TRIGGER_TEXT);
+      fireEvent.keyDown(trigger, { key: 'Enter' });
+      await waitFor(() => expect(screen.getByRole('menu')).toBeInTheDocument());
+      expect(trigger).toHaveAttribute('aria-expanded', 'true');
+    });
+  });
+});
+
 // Regression tests for https://github.com/radix-ui/primitives/issues/3963
 describe('ref stability', () => {
   afterEach(cleanup);

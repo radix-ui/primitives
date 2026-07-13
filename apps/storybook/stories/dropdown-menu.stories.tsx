@@ -1024,6 +1024,42 @@ export const InPopupWindow = () => {
   );
 };
 
+export const ActivationModeClick = () => {
+  const [log, setLog] = React.useState<string[]>([]);
+  const append = (message: string) => setLog((prev) => [message, ...prev].slice(0, 5));
+  return (
+    <div style={{ padding: 50, display: 'grid', gap: 20 }}>
+      <p>Click the handle to open the menu. Drag it to fire native drag events instead.</p>
+      <DropdownMenu.Root>
+        <DropdownMenu.Trigger
+          className={styles.trigger}
+          activationMode="click"
+          draggable
+          onDragStart={(event) => {
+            event.dataTransfer.setData('text/plain', 'drag handle');
+            append('dragStart');
+          }}
+          onDragEnd={() => append('dragEnd')}
+        >
+          ⠿ Drag handle
+        </DropdownMenu.Trigger>
+        <DropdownMenu.Portal>
+          <DropdownMenu.Content className={styles.content} sideOffset={5}>
+            <DropdownMenu.Item className={styles.item} onSelect={() => append('duplicate')}>
+              Duplicate
+            </DropdownMenu.Item>
+            <DropdownMenu.Item className={styles.item} onSelect={() => append('delete')}>
+              Delete
+            </DropdownMenu.Item>
+            <DropdownMenu.Arrow />
+          </DropdownMenu.Content>
+        </DropdownMenu.Portal>
+      </DropdownMenu.Root>
+      <pre>{log.join('\n')}</pre>
+    </div>
+  );
+};
+
 // change order slightly for more pleasing visual
 const SIDES = [...SIDE_OPTIONS.filter((side) => side !== 'bottom'), 'bottom' as const];
 
