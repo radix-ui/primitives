@@ -3,7 +3,6 @@ import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
-import { usePrevious } from '@radix-ui/react-use-previous';
 import { useSize } from '@radix-ui/react-use-size';
 import { Presence } from '@radix-ui/react-presence';
 import { Primitive } from '@radix-ui/react-primitive';
@@ -27,6 +26,8 @@ type CheckboxContextValue<State extends CheckedState | boolean = CheckedState> =
   form: string | undefined;
   value: string | number | readonly string[];
   hasConsumerStoppedPropagationRef: React.RefObject<boolean>;
+  userInteractionCount: number;
+  onUserInteraction: () => void;
   required: boolean | undefined;
   defaultChecked: boolean | undefined;
   isFormControl: boolean;
@@ -80,6 +81,17 @@ function CheckboxProvider<State extends CheckedState = CheckedState>(
   const [control, setControl] = React.useState<HTMLButtonElement | null>(null);
   const [bubbleInput, setBubbleInput] = React.useState<HTMLInputElement | null>(null);
   const hasConsumerStoppedPropagationRef = React.useRef(false);
+
+  // Incremented on every user interaction with the trigger. The bubble input
+  // compares this against the value it last handled to tell whether a `checked`
+  // change was driven by the user (vs. a controlled/programmatic update). Using
+  // a counter guarantees the marker is updated in the same commit as the
+  // resulting render, so it can never go stale and leak into a later
+  // programmatic update.
+  const [userInteractionCount, onUserInteraction] = React.useReducer(
+    (count: number): number => count + 1,
+    0,
+  );
   const isFormControl = control
     ? !!form || !!control.closest('form')
     : // We set this to true by default so that events bubble to forms without JS (SSR)
@@ -95,6 +107,8 @@ function CheckboxProvider<State extends CheckedState = CheckedState>(
     form: form,
     value: value,
     hasConsumerStoppedPropagationRef: hasConsumerStoppedPropagationRef,
+    userInteractionCount: userInteractionCount,
+    onUserInteraction: onUserInteraction,
     required: required,
     defaultChecked: isIndeterminate(defaultChecked) ? false : defaultChecked,
     isFormControl: isFormControl,
@@ -139,6 +153,7 @@ const CheckboxTrigger = React.forwardRef<HTMLButtonElement, CheckboxTriggerProps
       setControl,
       setChecked,
       hasConsumerStoppedPropagationRef,
+      onUserInteraction,
       isFormControl,
       bubbleInput,
     } = useCheckboxContext(TRIGGER_NAME, __scopeCheckbox);
@@ -171,6 +186,7 @@ const CheckboxTrigger = React.forwardRef<HTMLButtonElement, CheckboxTriggerProps
           if (event.key === 'Enter') event.preventDefault();
         })}
         onClick={composeEventHandlers(onClick, (event) => {
+          onUserInteraction();
           setChecked((prevChecked) => (isIndeterminate(prevChecked) ? true : !prevChecked));
           if (bubbleInput && isFormControl) {
             hasConsumerStoppedPropagationRef.current = event.isPropagationStopped();
@@ -300,10 +316,11 @@ type InputProps = React.ComponentPropsWithoutRef<typeof Primitive.input>;
 interface CheckboxBubbleInputProps extends Omit<InputProps, 'checked'> {}
 
 const CheckboxBubbleInput = React.forwardRef<HTMLInputElement, CheckboxBubbleInputProps>(
-  ({ __scopeCheckbox, ...props }: ScopedProps<CheckboxBubbleInputProps>, forwardedRef) => {
+  ({ __scopeCheckbox, onClick, ...props }: ScopedProps<CheckboxBubbleInputProps>, forwardedRef) => {
     const {
       control,
       hasConsumerStoppedPropagationRef,
+      userInteractionCount,
       checked,
       defaultChecked,
       required,
@@ -316,8 +333,21 @@ const CheckboxBubbleInput = React.forwardRef<HTMLInputElement, CheckboxBubbleInp
     } = useCheckboxContext(BUBBLE_INPUT_NAME, __scopeCheckbox);
 
     const composedRefs = useComposedRefs(forwardedRef, setBubbleInput);
-    const prevChecked = usePrevious(checked);
     const controlSize = useSize(control);
+    // When the checked change is not driven by a user interaction (e.g. a
+    // controlled `checked` update), the `click` event we dispatch to notify
+    // forms must not reach ancestor `onClick` handlers. We can't simply make it
+    // non-bubbling because React derives the checkbox's `change` event from a
+    // bubbling `click`. Instead we stop propagation of the synthetic click,
+    // which still lets the `change` event reach the form.
+    const shouldStopClickPropagationRef = React.useRef(false);
+    // The `checked` value we last synced to the input, and the interaction
+    // counter we last accounted for. Comparing against these lets us detect a
+    // genuine `checked` change and whether it followed a user interaction, even
+    // on renders caused by clicks that don't change `checked` (e.g. a
+    // controlled value that ignores the change).
+    const prevCheckedRef = React.useRef(checked);
+    const prevUserInteractionCountRef = React.useRef(userInteractionCount);
 
     // Bubble checked change to parents (e.g form change event)
     React.useEffect(() => {
@@ -331,14 +361,21 @@ const CheckboxBubbleInput = React.forwardRef<HTMLInputElement, CheckboxBubbleInp
       ) as PropertyDescriptor;
       const setChecked = descriptor.set;
 
-      const bubbles = !hasConsumerStoppedPropagationRef.current;
-      if (prevChecked !== checked && setChecked) {
+      const isUserInteraction = userInteractionCount !== prevUserInteractionCountRef.current;
+      prevUserInteractionCountRef.current = userInteractionCount;
+      const checkedChanged = prevCheckedRef.current !== checked;
+      prevCheckedRef.current = checked;
+
+      const bubbles = !(isUserInteraction && hasConsumerStoppedPropagationRef.current);
+      if (checkedChanged && setChecked) {
+        shouldStopClickPropagationRef.current = !isUserInteraction;
         const event = new Event('click', { bubbles });
         input.indeterminate = isIndeterminate(checked);
         setChecked.call(input, isIndeterminate(checked) ? false : checked);
         input.dispatchEvent(event);
+        shouldStopClickPropagationRef.current = false;
       }
-    }, [bubbleInput, prevChecked, checked, hasConsumerStoppedPropagationRef]);
+    }, [bubbleInput, checked, hasConsumerStoppedPropagationRef, userInteractionCount]);
 
     const defaultCheckedRef = React.useRef(isIndeterminate(checked) ? false : checked);
     return (
@@ -354,6 +391,14 @@ const CheckboxBubbleInput = React.forwardRef<HTMLInputElement, CheckboxBubbleInp
         {...props}
         tabIndex={-1}
         ref={composedRefs}
+        onClick={composeEventHandlers(onClick, (event) => {
+          // Prevent the synthetic click dispatched on controlled/programmatic
+          // updates from triggering ancestor `onClick` handlers, while still
+          // allowing the resulting `change` event to reach the form.
+          if (shouldStopClickPropagationRef.current) {
+            event.stopPropagation();
+          }
+        })}
         style={{
           ...props.style,
           ...controlSize,

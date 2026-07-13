@@ -324,6 +324,78 @@ describe('RadioGroup', () => {
       expect(onChange).toHaveBeenCalledWith('2');
     });
 
+    // regression test for https://github.com/radix-ui/primitives/issues/3265
+    it('should not trigger a clickable ancestor `onClick` when the value is set programmatically', () => {
+      const onParentClick = vi.fn();
+      const onChange = vi.fn();
+
+      function App({ value }: { value: string | null }) {
+        return (
+          <form onChange={(event) => onChange((event.target as unknown as HTMLInputElement).value)}>
+            <div onClick={onParentClick}>
+              <RadioGroup.Root aria-label="pets" name="pet" value={value} onValueChange={() => {}}>
+                {VALUES.map((v) => (
+                  <RadioGroup.Item key={v} value={v} aria-label={LABELS[v]}>
+                    <RadioGroup.Indicator data-testid={`${INDICATOR_TEST_ID}-${v}`} />
+                  </RadioGroup.Item>
+                ))}
+              </RadioGroup.Root>
+            </div>
+          </form>
+        );
+      }
+
+      const { rerender } = render(<App value={null} />);
+      act(() => rerender(<App value="2" />));
+      expect(onParentClick).not.toHaveBeenCalled();
+      // the form should still be notified of the change
+      expect(onChange).toHaveBeenCalledWith('2');
+    });
+
+    it('should trigger a clickable ancestor `onClick` on a real user click', () => {
+      const onParentClick = vi.fn();
+      render(
+        <form>
+          <div onClick={onParentClick}>
+            <ClassicRadioGroup name="pet" />
+          </div>
+        </form>,
+      );
+      const radios = screen.getAllByRole(RADIO_ROLE);
+      act(() => fireEvent.click(radios[0]!));
+      expect(onParentClick).toHaveBeenCalledTimes(1);
+    });
+
+    // regression test for https://github.com/radix-ui/primitives/issues/3265
+    it('should not trigger a clickable ancestor `onClick` on a programmatic change after re-selecting the checked radio', () => {
+      const onParentClick = vi.fn();
+
+      function App({ value }: { value: string }) {
+        return (
+          <form>
+            <div onClick={onParentClick}>
+              <RadioGroup.Root aria-label="pets" name="pet" value={value} onValueChange={() => {}}>
+                {VALUES.map((v) => (
+                  <RadioGroup.Item key={v} value={v} aria-label={LABELS[v]}>
+                    <RadioGroup.Indicator data-testid={`${INDICATOR_TEST_ID}-${v}`} />
+                  </RadioGroup.Item>
+                ))}
+              </RadioGroup.Root>
+            </div>
+          </form>
+        );
+      }
+
+      const { rerender } = render(<App value="1" />);
+      const radios = screen.getAllByRole(RADIO_ROLE);
+      // user clicks the already-selected radio (value stays "1", no change)
+      act(() => fireEvent.click(radios[0]!));
+      onParentClick.mockClear();
+      // subsequent programmatic value change
+      act(() => rerender(<App value="2" />));
+      expect(onParentClick).not.toHaveBeenCalled();
+    });
+
     it('should expose the group as required for native validation', () => {
       const { container } = render(
         <form>

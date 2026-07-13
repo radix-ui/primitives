@@ -545,9 +545,6 @@ importers:
       '@radix-ui/react-use-controllable-state':
         specifier: workspace:*
         version: link:../use-controllable-state
-      '@radix-ui/react-use-previous':
-        specifier: workspace:*
-        version: link:../use-previous
       '@radix-ui/react-use-size':
         specifier: workspace:*
         version: link:../use-size
@@ -1747,9 +1744,6 @@ importers:
       '@radix-ui/react-use-controllable-state':
         specifier: workspace:*
         version: link:../use-controllable-state
-      '@radix-ui/react-use-previous':
-        specifier: workspace:*
-        version: link:../use-previous
       '@radix-ui/react-use-size':
         specifier: workspace:*
         version: link:../use-size
@@ -2310,9 +2304,6 @@ importers:
       '@radix-ui/react-use-controllable-state':
         specifier: workspace:*
         version: link:../use-controllable-state
-      '@radix-ui/react-use-previous':
-        specifier: workspace:*
-        version: link:../use-previous
       '@radix-ui/react-use-size':
         specifier: workspace:*
         version: link:../use-size
