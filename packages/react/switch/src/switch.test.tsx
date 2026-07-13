@@ -193,4 +193,17 @@ describe('given a Switch with a clickable ancestor inside a form', () => {
     act(() => fireEvent.click(screen.getByRole(SWITCH_ROLE)));
     expect(onParentClick).toHaveBeenCalledTimes(1);
   });
+
+  // regression test for https://github.com/radix-ui/primitives/issues/3265
+  it('should not trigger the ancestor `onClick` on a programmatic update after a click that did not change `checked`', () => {
+    const { rerender } = render(<App checked={false} />);
+    // user click that is rejected by the controlled parent (no `checked` change)
+    act(() => fireEvent.click(screen.getByRole(SWITCH_ROLE)));
+    onParentClick.mockClear();
+    // subsequent programmatic update
+    act(() => rerender(<App checked />));
+    expect(onParentClick).not.toHaveBeenCalled();
+    // the form should still be notified of the change
+    expect(onFormChange).toHaveBeenCalledWith(true);
+  });
 });
