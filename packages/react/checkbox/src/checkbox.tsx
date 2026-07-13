@@ -344,8 +344,8 @@ const CheckboxBubbleInput = React.forwardRef<HTMLInputElement, CheckboxBubbleInp
     // The `checked` value we last synced to the input, and the interaction
     // counter we last accounted for. Comparing against these lets us detect a
     // genuine `checked` change and whether it followed a user interaction, even
-    // on renders caused by clicks that don't change `checked` (e.g. re-selecting
-    // a checked radio, or a controlled value that ignores the change).
+    // on renders caused by clicks that don't change `checked` (e.g. a
+    // controlled value that ignores the change).
     const prevCheckedRef = React.useRef(checked);
     const prevUserInteractionCountRef = React.useRef(userInteractionCount);
 
