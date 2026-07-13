@@ -515,6 +515,7 @@ const TooltipContentImpl = React.forwardRef<TooltipContentImplElement, TooltipCo
       __scopeTooltip,
       children,
       'aria-label': ariaLabel,
+      id: idProp,
       onEscapeKeyDown,
       onPointerDownOutside,
       ...contentProps
@@ -544,11 +545,11 @@ const TooltipContentImpl = React.forwardRef<TooltipContentImplElement, TooltipCo
 
     const { setContentId } = context;
     useLayoutEffect(() => {
-      setContentId(contentProps.id);
+      setContentId(idProp);
       return () => {
         setContentId(undefined);
       };
-    }, [contentProps.id, setContentId]);
+    }, [idProp, setContentId]);
 
     return (
       <DismissableLayer
