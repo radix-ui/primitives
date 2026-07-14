@@ -442,7 +442,13 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
     useFocusGuards();
 
     const isPointerMovingToSubmenu = React.useCallback((event: React.PointerEvent) => {
-      const isMovingTowards = pointerDirRef.current === pointerGraceIntentRef.current?.side;
+      // A pointerleave can be the first event after a coalesced move, so use its coordinates
+      // instead of relying on the direction recorded by the last pointermove.
+      let pointerDir = pointerDirRef.current;
+      if (event.type === 'pointerleave' && event.clientX !== lastPointerXRef.current) {
+        pointerDir = event.clientX > lastPointerXRef.current ? 'right' : 'left';
+      }
+      const isMovingTowards = pointerDir === pointerGraceIntentRef.current?.side;
       return isMovingTowards && isPointerInGraceArea(event, pointerGraceIntentRef.current?.area);
     }, []);
 
