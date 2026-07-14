@@ -1,4 +1,5 @@
 ---
+"radix-ui": patch
 "@radix-ui/react-use-controllable-state": patch
 "@radix-ui/react-password-toggle-field": patch
 "@radix-ui/react-context-menu": patch
