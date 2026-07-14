@@ -49,6 +49,7 @@ export async function build(relativePath) {
   } else if (pkg === '@radix-ui/primitive') {
     // Additional files exposed to consumers
     files.push(
+      //
       'internal/is-development.false.ts',
       'internal/is-development.true.ts',
     );
@@ -60,7 +61,7 @@ export async function build(relativePath) {
   /** @type {esbuild.BuildOptions} */
   const esbuildConfig = {
     entryPoints: entryPoints,
-    external:  ['@radix-ui/*'] ,
+    external: ['@radix-ui/*'],
     packages: 'external',
     bundle: true,
     sourcemap: true,
