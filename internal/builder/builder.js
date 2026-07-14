@@ -32,19 +32,19 @@ export async function build(relativePath) {
 
   const tasks = [];
   const pkg = packageJson.name;
-  const files = ['index.ts'];
-  if (pkg === 'radix-ui') {
-    // The `radix-ui` package exposes every module in `src` as its own subpath
-    // entry point (eg. `radix-ui/accordion`, `radix-ui/unstable/dismissable-layer`),
-    // so build all of them. `recursive` is used to pick up nested modules such as
-    // those under `src/unstable`.
+  const UNBUNDLED_PACKAGES = new Set(['radix-ui', '@radix-ui/primitive']);
+
+  const files = [];
+  if (UNBUNDLED_PACKAGES.has(pkg)) {
     const sourceDirectory = path.resolve(relativePath || '.', 'src');
     const additionalEntryFiles = fs
       .readdirSync(sourceDirectory, { recursive: true })
       .map((entry) => entry.toString().split(path.sep).join('/'))
-      .filter((file) => file.endsWith('.ts') && !file.endsWith('.d.ts') && file !== 'index.ts')
+      .filter((file) => (file.endsWith('.ts') || file.endsWith('.tsx')) && !file.endsWith('.d.ts'))
       .sort();
     files.push(...additionalEntryFiles);
+  } else {
+    files.push('index.ts');
   }
 
   const entryPoints = files.map((file) => `${relativePath || '.'}/src/${file}`);
@@ -53,9 +53,9 @@ export async function build(relativePath) {
   /** @type {esbuild.BuildOptions} */
   const esbuildConfig = {
     entryPoints: entryPoints,
-    external: ['@radix-ui/*'],
+    external: !UNBUNDLED_PACKAGES.has(pkg) ? ['@radix-ui/*'] : undefined,
     packages: 'external',
-    bundle: true,
+    bundle: !UNBUNDLED_PACKAGES.has(pkg),
     sourcemap: true,
     format: 'cjs',
     target: 'es2022',
