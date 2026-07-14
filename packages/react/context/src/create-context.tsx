@@ -23,7 +23,7 @@ function createContext<ContextValueType extends object | null>(
   defaultContext: ContextValueType,
 ): readonly [ContextProvider<ContextValueType>, UseAssertedContext<ContextValueType>];
 
-function createContext<ContextValueType extends object | null>(
+/* @__NO_SIDE_EFFECTS__ */ function createContext<ContextValueType extends object | null>(
   rootComponentName: string,
   defaultContext?: ContextValueType,
 ): readonly [ContextProvider<ContextValueType>, UseContext<ContextValueType>] {
@@ -103,7 +103,7 @@ interface CreateScopedContext {
   ): readonly [ScopedContextProvider<ContextValueType>, UseAssertedScopedContext<ContextValueType>];
 }
 
-function createContextScope(
+/* @__NO_SIDE_EFFECTS__ */ function createContextScope(
   scopeName: string,
   createContextScopeDeps: CreateScope[] = [],
 ): readonly [CreateScopedContext, CreateScope] {

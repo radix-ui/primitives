@@ -41,7 +41,7 @@ interface PrimitiveForwardRefComponent<
  * Primitive
  * -----------------------------------------------------------------------------------------------*/
 
-const Primitive = NODES.reduce((primitive, node) => {
+/* @__NO_SIDE_EFFECTS__ */ const Primitive = NODES.reduce((primitive, node) => {
   const Slot = createSlot(`Primitive.${node}`);
   const Node = React.forwardRef((props: PrimitivePropsWithRef<typeof node>, forwardedRef: any) => {
     const { asChild, ...primitiveProps } = props;
