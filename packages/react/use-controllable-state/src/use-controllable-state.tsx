@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { IS_DEVELOPMENT } from '@radix-ui/primitive/is-development';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 
 // Prevent bundlers from trying to optimize the import
@@ -32,7 +33,7 @@ export function useControllableState<T>({
   // consistently in the same environment. Bundlers should be able to remove the
   // code block entirely in production.
   /* eslint-disable react-hooks/rules-of-hooks */
-  if (process.env.NODE_ENV !== 'production') {
+  if (IS_DEVELOPMENT) {
     const isControlledRef = React.useRef(prop !== undefined);
     React.useEffect(() => {
       const wasControlled = isControlledRef.current;

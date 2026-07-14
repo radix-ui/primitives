@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { flushSync } from 'react-dom';
+import { IS_DEVELOPMENT } from '@radix-ui/primitive/is-development';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { Primitive, type PrimitivePropsWithRef } from '@radix-ui/react-primitive';
@@ -84,7 +85,7 @@ const PasswordToggleField: React.FC<PasswordToggleFieldProps> = ({
     onVisibilityChange = props.onVisibilityChange;
   }
 
-  if (process.env.NODE_ENV !== 'production') {
+  if (IS_DEVELOPMENT) {
     // oxlint-disable-next-line react-hooks/rules-of-hooks
     React.useEffect(() => {
       if (shouldWarn) {
