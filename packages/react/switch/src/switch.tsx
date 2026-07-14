@@ -131,8 +131,11 @@ interface SwitchTriggerProps extends Omit<
   children?: React.ReactNode;
 }
 
-const SwitchTrigger = React.forwardRef<HTMLButtonElement, SwitchTriggerProps>(
-  ({ __scopeSwitch, onClick, ...switchProps }: ScopedProps<SwitchTriggerProps>, forwardedRef) => {
+const SwitchTrigger = /* @__PURE__ */ React.forwardRef<HTMLButtonElement, SwitchTriggerProps>(
+  function SwitchTrigger(
+    { __scopeSwitch, onClick, ...switchProps }: ScopedProps<SwitchTriggerProps>,
+    forwardedRef,
+  ) {
     const {
       control,
       form,
@@ -189,8 +192,6 @@ const SwitchTrigger = React.forwardRef<HTMLButtonElement, SwitchTriggerProps>(
   },
 );
 
-SwitchTrigger.displayName = TRIGGER_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * Switch
  * -----------------------------------------------------------------------------------------------*/
@@ -204,8 +205,9 @@ interface SwitchProps extends Omit<PrimitiveButtonProps, 'checked' | 'defaultChe
   onCheckedChange?(checked: boolean): void;
 }
 
-const Switch = React.forwardRef<SwitchElement, SwitchProps>(
-  (props: ScopedProps<SwitchProps>, forwardedRef) => {
+const Switch = /* @__PURE__ */ React.forwardRef<SwitchElement, SwitchProps>(
+  // blank line to reduce diff noise
+  function Switch(props: ScopedProps<SwitchProps>, forwardedRef) {
     const {
       __scopeSwitch,
       name,
@@ -252,8 +254,6 @@ const Switch = React.forwardRef<SwitchElement, SwitchProps>(
   },
 );
 
-Switch.displayName = SWITCH_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * SwitchThumb
  * -----------------------------------------------------------------------------------------------*/
@@ -264,8 +264,8 @@ type SwitchThumbElement = React.ComponentRef<typeof Primitive.span>;
 type PrimitiveSpanProps = React.ComponentPropsWithoutRef<typeof Primitive.span>;
 interface SwitchThumbProps extends PrimitiveSpanProps {}
 
-const SwitchThumb = React.forwardRef<SwitchThumbElement, SwitchThumbProps>(
-  (props: ScopedProps<SwitchThumbProps>, forwardedRef) => {
+const SwitchThumb = /* @__PURE__ */ React.forwardRef<SwitchThumbElement, SwitchThumbProps>(
+  function SwitchThumb(props: ScopedProps<SwitchThumbProps>, forwardedRef) {
     const { __scopeSwitch, ...thumbProps } = props;
     const context = useSwitchContext(THUMB_NAME, __scopeSwitch);
     return (
@@ -279,8 +279,6 @@ const SwitchThumb = React.forwardRef<SwitchThumbElement, SwitchThumbProps>(
   },
 );
 
-SwitchThumb.displayName = THUMB_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * SwitchBubbleInput
  * -----------------------------------------------------------------------------------------------*/
@@ -290,8 +288,15 @@ const BUBBLE_INPUT_NAME = 'SwitchBubbleInput';
 type InputProps = React.ComponentPropsWithoutRef<typeof Primitive.input>;
 interface SwitchBubbleInputProps extends Omit<InputProps, 'checked'> {}
 
-const SwitchBubbleInput = React.forwardRef<HTMLInputElement, SwitchBubbleInputProps>(
-  ({ __scopeSwitch, onClick, ...props }: ScopedProps<SwitchBubbleInputProps>, forwardedRef) => {
+const SwitchBubbleInput = /* @__PURE__ */ React.forwardRef<
+  HTMLInputElement,
+  SwitchBubbleInputProps
+>(
+  // blank line to reduce diff noise
+  function SwitchBubbleInput(
+    { __scopeSwitch, onClick, ...props }: ScopedProps<SwitchBubbleInputProps>,
+    forwardedRef,
+  ) {
     const {
       control,
       hasConsumerStoppedPropagationRef,
@@ -390,8 +395,6 @@ const SwitchBubbleInput = React.forwardRef<HTMLInputElement, SwitchBubbleInputPr
     );
   },
 );
-
-SwitchBubbleInput.displayName = BUBBLE_INPUT_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 

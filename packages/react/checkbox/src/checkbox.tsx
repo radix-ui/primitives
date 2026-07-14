@@ -139,11 +139,11 @@ interface CheckboxTriggerProps extends Omit<
   children?: React.ReactNode;
 }
 
-const CheckboxTrigger = React.forwardRef<HTMLButtonElement, CheckboxTriggerProps>(
-  (
+const CheckboxTrigger = /* @__PURE__ */ React.forwardRef<HTMLButtonElement, CheckboxTriggerProps>(
+  function CheckboxTrigger(
     { __scopeCheckbox, onKeyDown, onClick, ...checkboxProps }: ScopedProps<CheckboxTriggerProps>,
     forwardedRef,
-  ) => {
+  ) {
     const {
       control,
       value,
@@ -203,8 +203,6 @@ const CheckboxTrigger = React.forwardRef<HTMLButtonElement, CheckboxTriggerProps
   },
 );
 
-CheckboxTrigger.displayName = TRIGGER_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * Checkbox
  * -----------------------------------------------------------------------------------------------*/
@@ -218,8 +216,9 @@ interface CheckboxProps extends Omit<PrimitiveButtonProps, 'checked' | 'defaultC
   onCheckedChange?(checked: CheckedState): void;
 }
 
-const Checkbox = React.forwardRef<CheckboxElement, CheckboxProps>(
-  (props: ScopedProps<CheckboxProps>, forwardedRef) => {
+const Checkbox = /* @__PURE__ */ React.forwardRef<CheckboxElement, CheckboxProps>(
+  // blank line to reduce diff noise
+  function Checkbox(props: ScopedProps<CheckboxProps>, forwardedRef) {
     const {
       __scopeCheckbox,
       name,
@@ -266,8 +265,6 @@ const Checkbox = React.forwardRef<CheckboxElement, CheckboxProps>(
   },
 );
 
-Checkbox.displayName = CHECKBOX_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * CheckboxIndicator
  * -----------------------------------------------------------------------------------------------*/
@@ -284,8 +281,12 @@ interface CheckboxIndicatorProps extends PrimitiveSpanProps {
   forceMount?: true;
 }
 
-const CheckboxIndicator = React.forwardRef<CheckboxIndicatorElement, CheckboxIndicatorProps>(
-  (props: ScopedProps<CheckboxIndicatorProps>, forwardedRef) => {
+const CheckboxIndicator = /* @__PURE__ */ React.forwardRef<
+  CheckboxIndicatorElement,
+  CheckboxIndicatorProps
+>(
+  // blank line to reduce diff noise
+  function CheckboxIndicator(props: ScopedProps<CheckboxIndicatorProps>, forwardedRef) {
     const { __scopeCheckbox, forceMount, ...indicatorProps } = props;
     const context = useCheckboxContext(INDICATOR_NAME, __scopeCheckbox);
     return (
@@ -304,8 +305,6 @@ const CheckboxIndicator = React.forwardRef<CheckboxIndicatorElement, CheckboxInd
   },
 );
 
-CheckboxIndicator.displayName = INDICATOR_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * CheckboxBubbleInput
  * -----------------------------------------------------------------------------------------------*/
@@ -315,8 +314,15 @@ const BUBBLE_INPUT_NAME = 'CheckboxBubbleInput';
 type InputProps = React.ComponentPropsWithoutRef<typeof Primitive.input>;
 interface CheckboxBubbleInputProps extends Omit<InputProps, 'checked'> {}
 
-const CheckboxBubbleInput = React.forwardRef<HTMLInputElement, CheckboxBubbleInputProps>(
-  ({ __scopeCheckbox, onClick, ...props }: ScopedProps<CheckboxBubbleInputProps>, forwardedRef) => {
+const CheckboxBubbleInput = /* @__PURE__ */ React.forwardRef<
+  HTMLInputElement,
+  CheckboxBubbleInputProps
+>(
+  // blank line to reduce diff noise
+  function CheckboxBubbleInput(
+    { __scopeCheckbox, onClick, ...props }: ScopedProps<CheckboxBubbleInputProps>,
+    forwardedRef,
+  ) {
     const {
       control,
       hasConsumerStoppedPropagationRef,
@@ -415,8 +421,6 @@ const CheckboxBubbleInput = React.forwardRef<HTMLInputElement, CheckboxBubbleInp
     );
   },
 );
-
-CheckboxBubbleInput.displayName = BUBBLE_INPUT_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 

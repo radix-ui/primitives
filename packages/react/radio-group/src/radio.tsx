@@ -121,8 +121,11 @@ interface RadioTriggerProps extends Omit<
   children?: React.ReactNode;
 }
 
-const RadioTrigger = React.forwardRef<HTMLButtonElement, RadioTriggerProps>(
-  ({ __scopeRadio, onClick, ...radioProps }: ScopedProps<RadioTriggerProps>, forwardedRef) => {
+const RadioTrigger = /* @__PURE__ */ React.forwardRef<HTMLButtonElement, RadioTriggerProps>(
+  function RadioTrigger(
+    { __scopeRadio, onClick, ...radioProps }: ScopedProps<RadioTriggerProps>,
+    forwardedRef,
+  ) {
     const {
       checked,
       disabled,
@@ -171,8 +174,6 @@ const RadioTrigger = React.forwardRef<HTMLButtonElement, RadioTriggerProps>(
   },
 );
 
-RadioTrigger.displayName = TRIGGER_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * Radio
  * -----------------------------------------------------------------------------------------------*/
@@ -185,8 +186,9 @@ interface RadioProps extends Omit<PrimitiveButtonProps, 'checked'> {
   onCheck?(): void;
 }
 
-const Radio = React.forwardRef<RadioElement, RadioProps>(
-  (props: ScopedProps<RadioProps>, forwardedRef) => {
+const Radio = /* @__PURE__ */ React.forwardRef<RadioElement, RadioProps>(
+  // blank line to reduce diff noise
+  function Radio(props: ScopedProps<RadioProps>, forwardedRef) {
     const { __scopeRadio, name, checked, required, disabled, value, onCheck, form, ...radioProps } =
       props;
 
@@ -222,8 +224,6 @@ const Radio = React.forwardRef<RadioElement, RadioProps>(
   },
 );
 
-Radio.displayName = RADIO_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * RadioIndicator
  * -----------------------------------------------------------------------------------------------*/
@@ -240,8 +240,8 @@ export interface RadioIndicatorProps extends PrimitiveSpanProps {
   forceMount?: true;
 }
 
-const RadioIndicator = React.forwardRef<RadioIndicatorElement, RadioIndicatorProps>(
-  (props: ScopedProps<RadioIndicatorProps>, forwardedRef) => {
+const RadioIndicator = /* @__PURE__ */ React.forwardRef<RadioIndicatorElement, RadioIndicatorProps>(
+  function RadioIndicator(props: ScopedProps<RadioIndicatorProps>, forwardedRef) {
     const { __scopeRadio, forceMount, ...indicatorProps } = props;
     const context = useRadioContext(INDICATOR_NAME, __scopeRadio);
     return (
@@ -257,8 +257,6 @@ const RadioIndicator = React.forwardRef<RadioIndicatorElement, RadioIndicatorPro
   },
 );
 
-RadioIndicator.displayName = INDICATOR_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * RadioBubbleInput
  * -----------------------------------------------------------------------------------------------*/
@@ -268,8 +266,11 @@ const BUBBLE_INPUT_NAME = 'RadioBubbleInput';
 type InputProps = React.ComponentPropsWithoutRef<typeof Primitive.input>;
 interface RadioBubbleInputProps extends Omit<InputProps, 'checked'> {}
 
-const RadioBubbleInput = React.forwardRef<HTMLInputElement, RadioBubbleInputProps>(
-  ({ __scopeRadio, onClick, ...props }: ScopedProps<RadioBubbleInputProps>, forwardedRef) => {
+const RadioBubbleInput = /* @__PURE__ */ React.forwardRef<HTMLInputElement, RadioBubbleInputProps>(
+  function RadioBubbleInput(
+    { __scopeRadio, onClick, ...props }: ScopedProps<RadioBubbleInputProps>,
+    forwardedRef,
+  ) {
     const {
       control,
       checked,
@@ -366,8 +367,6 @@ const RadioBubbleInput = React.forwardRef<HTMLInputElement, RadioBubbleInputProp
     );
   },
 );
-
-RadioBubbleInput.displayName = BUBBLE_INPUT_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 

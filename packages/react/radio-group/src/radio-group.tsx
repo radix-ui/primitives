@@ -62,8 +62,8 @@ interface RadioGroupProps extends PrimitiveDivProps {
   onValueChange?: RadioGroupContextValue['onValueChange'];
 }
 
-const RadioGroup = React.forwardRef<RadioGroupElement, RadioGroupProps>(
-  (props: ScopedProps<RadioGroupProps>, forwardedRef) => {
+const RadioGroup = /* @__PURE__ */ React.forwardRef<RadioGroupElement, RadioGroupProps>(
+  function RadioGroup(props: ScopedProps<RadioGroupProps>, forwardedRef) {
     const {
       __scopeRadioGroup,
       name,
@@ -133,16 +133,11 @@ const RadioGroup = React.forwardRef<RadioGroupElement, RadioGroupProps>(
   },
 );
 
-RadioGroup.displayName = RADIO_GROUP_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * RadioGroupItemProvider
  * -----------------------------------------------------------------------------------------------*/
-
-const ITEM_NAME = 'RadioGroupItem';
 const ITEM_PROVIDER_NAME = 'RadioGroupItemProvider';
 const ITEM_TRIGGER_NAME = 'RadioGroupItemTrigger';
-const ITEM_BUBBLE_INPUT_NAME = 'RadioGroupItemBubbleInput';
 
 interface RadioGroupItemProviderProps {
   value: string;
@@ -188,10 +183,10 @@ function RadioGroupItemProvider(props: ScopedProps<RadioGroupItemProviderProps>)
 type RadioGroupItemTriggerElement = React.ComponentRef<typeof RadioTrigger>;
 interface RadioGroupItemTriggerProps extends React.ComponentPropsWithoutRef<typeof RadioTrigger> {}
 
-const RadioGroupItemTrigger = React.forwardRef<
+const RadioGroupItemTrigger = /* @__PURE__ */ React.forwardRef<
   RadioGroupItemTriggerElement,
   RadioGroupItemTriggerProps
->((props: ScopedProps<RadioGroupItemTriggerProps>, forwardedRef) => {
+>(function RadioGroupItemTrigger(props: ScopedProps<RadioGroupItemTriggerProps>, forwardedRef) {
   const { __scopeRadioGroup, ...triggerProps } = props;
   const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeRadioGroup);
   const radioScope = useRadioScope(__scopeRadioGroup);
@@ -247,8 +242,6 @@ const RadioGroupItemTrigger = React.forwardRef<
   );
 });
 
-RadioGroupItemTrigger.displayName = ITEM_TRIGGER_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * RadioGroupItem
  * -----------------------------------------------------------------------------------------------*/
@@ -259,8 +252,8 @@ interface RadioGroupItemProps extends Omit<RadioProps, 'onCheck' | 'name'> {
   value: string;
 }
 
-const RadioGroupItem = React.forwardRef<RadioGroupItemElement, RadioGroupItemProps>(
-  (props: ScopedProps<RadioGroupItemProps>, forwardedRef) => {
+const RadioGroupItem = /* @__PURE__ */ React.forwardRef<RadioGroupItemElement, RadioGroupItemProps>(
+  function RadioGroupItem(props: ScopedProps<RadioGroupItemProps>, forwardedRef) {
     const { __scopeRadioGroup, value, disabled, ...itemProps } = props;
 
     return (
@@ -290,8 +283,6 @@ const RadioGroupItem = React.forwardRef<RadioGroupItemElement, RadioGroupItemPro
   },
 );
 
-RadioGroupItem.displayName = ITEM_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * RadioGroupItemBubbleInput
  * -----------------------------------------------------------------------------------------------*/
@@ -301,36 +292,37 @@ interface RadioGroupItemBubbleInputProps extends React.ComponentPropsWithoutRef<
   typeof RadioBubbleInput
 > {}
 
-const RadioGroupItemBubbleInput = React.forwardRef<
+const RadioGroupItemBubbleInput = /* @__PURE__ */ React.forwardRef<
   RadioGroupItemBubbleInputElement,
   RadioGroupItemBubbleInputProps
->((props: ScopedProps<RadioGroupItemBubbleInputProps>, forwardedRef) => {
+>(function RadioGroupItemBubbleInput(
+  props: ScopedProps<RadioGroupItemBubbleInputProps>,
+  forwardedRef,
+) {
   const { __scopeRadioGroup, ...bubbleProps } = props;
   const radioScope = useRadioScope(__scopeRadioGroup);
   return <RadioBubbleInput {...radioScope} {...bubbleProps} ref={forwardedRef} />;
 });
 
-RadioGroupItemBubbleInput.displayName = ITEM_BUBBLE_INPUT_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * RadioGroupIndicator
  * -----------------------------------------------------------------------------------------------*/
-
-const INDICATOR_NAME = 'RadioGroupIndicator';
 
 type RadioGroupIndicatorElement = React.ComponentRef<typeof RadioIndicator>;
 type RadioIndicatorProps = React.ComponentPropsWithoutRef<typeof RadioIndicator>;
 interface RadioGroupIndicatorProps extends RadioIndicatorProps {}
 
-const RadioGroupIndicator = React.forwardRef<RadioGroupIndicatorElement, RadioGroupIndicatorProps>(
-  (props: ScopedProps<RadioGroupIndicatorProps>, forwardedRef) => {
+const RadioGroupIndicator = /* @__PURE__ */ React.forwardRef<
+  RadioGroupIndicatorElement,
+  RadioGroupIndicatorProps
+>(
+  // blank line to reduce diff noise
+  function RadioGroupIndicator(props: ScopedProps<RadioGroupIndicatorProps>, forwardedRef) {
     const { __scopeRadioGroup, ...indicatorProps } = props;
     const radioScope = useRadioScope(__scopeRadioGroup);
     return <RadioIndicator {...radioScope} {...indicatorProps} ref={forwardedRef} />;
   },
 );
-
-RadioGroupIndicator.displayName = INDICATOR_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 

@@ -22,8 +22,6 @@ const Presence: React.FC<PresenceProps> = (props) => {
   return forceMount || presence.isPresent ? React.cloneElement(child, { ref }) : null;
 };
 
-Presence.displayName = 'Presence';
-
 /* -------------------------------------------------------------------------------------------------
  * usePresence
  * -----------------------------------------------------------------------------------------------*/

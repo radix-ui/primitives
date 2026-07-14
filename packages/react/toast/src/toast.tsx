@@ -120,8 +120,6 @@ const ToastProvider: React.FC<ToastProviderProps> = (props: ScopedProps<ToastPro
   );
 };
 
-ToastProvider.displayName = PROVIDER_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * ToastViewport
  * -----------------------------------------------------------------------------------------------*/
@@ -147,8 +145,8 @@ interface ToastViewportProps extends PrimitiveOrderedListProps {
   label?: string;
 }
 
-const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>(
-  (props: ScopedProps<ToastViewportProps>, forwardedRef) => {
+const ToastViewport = /* @__PURE__ */ React.forwardRef<ToastViewportElement, ToastViewportProps>(
+  function ToastViewport(props: ScopedProps<ToastViewportProps>, forwardedRef) {
     const {
       __scopeToast,
       hotkey = VIEWPORT_DEFAULT_HOTKEY,
@@ -331,8 +329,6 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
   },
 );
 
-ToastViewport.displayName = VIEWPORT_NAME;
-
 /* -----------------------------------------------------------------------------------------------*/
 
 const FOCUS_PROXY_NAME = 'ToastFocusProxy';
@@ -343,8 +339,12 @@ interface FocusProxyProps extends VisuallyHiddenProps {
   onFocusFromOutsideViewport(): void;
 }
 
-const FocusProxy = React.forwardRef<FocusProxyElement, ScopedProps<FocusProxyProps>>(
-  (props, forwardedRef) => {
+const FocusProxy = /* @__PURE__ */ React.forwardRef<
+  FocusProxyElement,
+  ScopedProps<FocusProxyProps>
+>(
+  // blank line to reduce diff noise
+  function FocusProxy(props, forwardedRef) {
     const { __scopeToast, onFocusFromOutsideViewport, ...proxyProps } = props;
     const context = useToastProviderContext(FOCUS_PROXY_NAME, __scopeToast);
 
@@ -364,8 +364,6 @@ const FocusProxy = React.forwardRef<FocusProxyElement, ScopedProps<FocusProxyPro
     );
   },
 );
-
-FocusProxy.displayName = FOCUS_PROXY_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * Toast
@@ -389,8 +387,9 @@ interface ToastProps extends Omit<ToastImplProps, keyof ToastImplPrivateProps> {
   forceMount?: true;
 }
 
-const Toast = React.forwardRef<ToastElement, ToastProps>(
-  (props: ScopedProps<ToastProps>, forwardedRef) => {
+const Toast = /* @__PURE__ */ React.forwardRef<ToastElement, ToastProps>(
+  // blank line to reduce diff noise
+  function Toast(props: ScopedProps<ToastProps>, forwardedRef) {
     const { forceMount, open: openProp, defaultOpen, onOpenChange, ...toastProps } = props;
     const [open, setOpen] = useControllableState({
       prop: openProp,
@@ -438,8 +437,6 @@ const Toast = React.forwardRef<ToastElement, ToastProps>(
   },
 );
 
-Toast.displayName = TOAST_NAME;
-
 /* -----------------------------------------------------------------------------------------------*/
 
 type SwipeEvent = { currentTarget: EventTarget & ToastElement } & Omit<
@@ -471,8 +468,8 @@ interface ToastImplProps extends ToastImplPrivateProps, PrimitiveListItemProps {
   onSwipeEnd?(event: SwipeEvent): void;
 }
 
-const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
-  (props: ScopedProps<ToastImplProps>, forwardedRef) => {
+const ToastImpl = /* @__PURE__ */ React.forwardRef<ToastImplElement, ToastImplProps>(
+  function ToastImpl(props: ScopedProps<ToastImplProps>, forwardedRef) {
     const {
       __scopeToast,
       type = 'foreground',
@@ -720,38 +717,34 @@ const ToastAnnounce: React.FC<ToastAnnounceProps> = (props: ScopedProps<ToastAnn
  * ToastTitle
  * -----------------------------------------------------------------------------------------------*/
 
-const TITLE_NAME = 'ToastTitle';
-
 type ToastTitleElement = React.ComponentRef<typeof Primitive.div>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface ToastTitleProps extends PrimitiveDivProps {}
 
-const ToastTitle = React.forwardRef<ToastTitleElement, ToastTitleProps>(
-  (props: ScopedProps<ToastTitleProps>, forwardedRef) => {
+const ToastTitle = /* @__PURE__ */ React.forwardRef<ToastTitleElement, ToastTitleProps>(
+  function ToastTitle(props: ScopedProps<ToastTitleProps>, forwardedRef) {
     const { __scopeToast, ...titleProps } = props;
     return <Primitive.div {...titleProps} ref={forwardedRef} />;
   },
 );
 
-ToastTitle.displayName = TITLE_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * ToastDescription
  * -----------------------------------------------------------------------------------------------*/
 
-const DESCRIPTION_NAME = 'ToastDescription';
-
 type ToastDescriptionElement = React.ComponentRef<typeof Primitive.div>;
 interface ToastDescriptionProps extends PrimitiveDivProps {}
 
-const ToastDescription = React.forwardRef<ToastDescriptionElement, ToastDescriptionProps>(
-  (props: ScopedProps<ToastDescriptionProps>, forwardedRef) => {
+const ToastDescription = /* @__PURE__ */ React.forwardRef<
+  ToastDescriptionElement,
+  ToastDescriptionProps
+>(
+  // blank line to reduce diff noise
+  function ToastDescription(props: ScopedProps<ToastDescriptionProps>, forwardedRef) {
     const { __scopeToast, ...descriptionProps } = props;
     return <Primitive.div {...descriptionProps} ref={forwardedRef} />;
   },
 );
-
-ToastDescription.displayName = DESCRIPTION_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * ToastAction
@@ -770,8 +763,8 @@ interface ToastActionProps extends ToastCloseProps {
   altText: string;
 }
 
-const ToastAction = React.forwardRef<ToastActionElement, ToastActionProps>(
-  (props: ScopedProps<ToastActionProps>, forwardedRef) => {
+const ToastAction = /* @__PURE__ */ React.forwardRef<ToastActionElement, ToastActionProps>(
+  function ToastAction(props: ScopedProps<ToastActionProps>, forwardedRef) {
     const { altText, ...actionProps } = props;
 
     if (!altText.trim()) {
@@ -789,8 +782,6 @@ const ToastAction = React.forwardRef<ToastActionElement, ToastActionProps>(
   },
 );
 
-ToastAction.displayName = ACTION_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * ToastClose
  * -----------------------------------------------------------------------------------------------*/
@@ -801,8 +792,8 @@ type ToastCloseElement = React.ComponentRef<typeof Primitive.button>;
 type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
 interface ToastCloseProps extends PrimitiveButtonProps {}
 
-const ToastClose = React.forwardRef<ToastCloseElement, ToastCloseProps>(
-  (props: ScopedProps<ToastCloseProps>, forwardedRef) => {
+const ToastClose = /* @__PURE__ */ React.forwardRef<ToastCloseElement, ToastCloseProps>(
+  function ToastClose(props: ScopedProps<ToastCloseProps>, forwardedRef) {
     const { __scopeToast, ...closeProps } = props;
     const interactiveContext = useToastInteractiveContext(CLOSE_NAME, __scopeToast);
 
@@ -819,8 +810,6 @@ const ToastClose = React.forwardRef<ToastCloseElement, ToastCloseProps>(
   },
 );
 
-ToastClose.displayName = CLOSE_NAME;
-
 /* ---------------------------------------------------------------------------------------------- */
 
 type ToastAnnounceExcludeElement = React.ComponentRef<typeof Primitive.div>;
@@ -828,10 +817,10 @@ interface ToastAnnounceExcludeProps extends PrimitiveDivProps {
   altText?: string;
 }
 
-const ToastAnnounceExclude = React.forwardRef<
+const ToastAnnounceExclude = /* @__PURE__ */ React.forwardRef<
   ToastAnnounceExcludeElement,
   ToastAnnounceExcludeProps
->((props: ScopedProps<ToastAnnounceExcludeProps>, forwardedRef) => {
+>(function ToastAnnounceExclude(props: ScopedProps<ToastAnnounceExcludeProps>, forwardedRef) {
   const { __scopeToast, altText, ...announceExcludeProps } = props;
 
   return (

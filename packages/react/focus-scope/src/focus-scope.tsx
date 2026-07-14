@@ -13,8 +13,6 @@ type FocusableTarget = HTMLElement | { focus(): void };
  * FocusScope
  * -----------------------------------------------------------------------------------------------*/
 
-const FOCUS_SCOPE_NAME = 'FocusScope';
-
 type FocusScopeElement = React.ComponentRef<typeof Primitive.div>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface FocusScopeProps extends PrimitiveDivProps {
@@ -45,7 +43,10 @@ interface FocusScopeProps extends PrimitiveDivProps {
   onUnmountAutoFocus?: (event: Event) => void;
 }
 
-const FocusScope = React.forwardRef<FocusScopeElement, FocusScopeProps>((props, forwardedRef) => {
+const FocusScope = /* @__PURE__ */ React.forwardRef<FocusScopeElement, FocusScopeProps>(
+  // ignore prettier to reduce diff noise
+  // prettier-ignore
+  function FocusScope(props, forwardedRef) {
   const {
     loop = false,
     trapped = false,
@@ -203,9 +204,8 @@ const FocusScope = React.forwardRef<FocusScopeElement, FocusScopeProps>((props, 
   return (
     <Primitive.div tabIndex={-1} {...scopeProps} ref={composedRefs} onKeyDown={handleKeyDown} />
   );
-});
-
-FocusScope.displayName = FOCUS_SCOPE_NAME;
+  },
+);
 
 /* -------------------------------------------------------------------------------------------------
  * Utils

@@ -41,8 +41,9 @@ interface ToolbarProps extends PrimitiveDivProps {
   dir?: RovingFocusGroupProps['dir'];
 }
 
-const Toolbar = React.forwardRef<ToolbarElement, ToolbarProps>(
-  (props: ScopedProps<ToolbarProps>, forwardedRef) => {
+const Toolbar = /* @__PURE__ */ React.forwardRef<ToolbarElement, ToolbarProps>(
+  // blank line to reduce diff noise
+  function Toolbar(props: ScopedProps<ToolbarProps>, forwardedRef) {
     const { __scopeToolbar, orientation = 'horizontal', dir, loop = true, ...toolbarProps } = props;
     const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeToolbar);
     const direction = useDirection(dir);
@@ -68,8 +69,6 @@ const Toolbar = React.forwardRef<ToolbarElement, ToolbarProps>(
   },
 );
 
-Toolbar.displayName = TOOLBAR_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * ToolbarSeparator
  * -----------------------------------------------------------------------------------------------*/
@@ -80,8 +79,12 @@ type ToolbarSeparatorElement = React.ComponentRef<typeof SeparatorPrimitive.Root
 type SeparatorProps = React.ComponentPropsWithoutRef<typeof SeparatorPrimitive.Root>;
 interface ToolbarSeparatorProps extends SeparatorProps {}
 
-const ToolbarSeparator = React.forwardRef<ToolbarSeparatorElement, ToolbarSeparatorProps>(
-  (props: ScopedProps<ToolbarSeparatorProps>, forwardedRef) => {
+const ToolbarSeparator = /* @__PURE__ */ React.forwardRef<
+  ToolbarSeparatorElement,
+  ToolbarSeparatorProps
+>(
+  // blank line to reduce diff noise
+  function ToolbarSeparator(props: ScopedProps<ToolbarSeparatorProps>, forwardedRef) {
     const { __scopeToolbar, ...separatorProps } = props;
     const context = useToolbarContext(SEPARATOR_NAME, __scopeToolbar);
     return (
@@ -94,20 +97,16 @@ const ToolbarSeparator = React.forwardRef<ToolbarSeparatorElement, ToolbarSepara
   },
 );
 
-ToolbarSeparator.displayName = SEPARATOR_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * ToolbarButton
  * -----------------------------------------------------------------------------------------------*/
-
-const BUTTON_NAME = 'ToolbarButton';
 
 type ToolbarButtonElement = React.ComponentRef<typeof Primitive.button>;
 type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
 interface ToolbarButtonProps extends PrimitiveButtonProps {}
 
-const ToolbarButton = React.forwardRef<ToolbarButtonElement, ToolbarButtonProps>(
-  (props: ScopedProps<ToolbarButtonProps>, forwardedRef) => {
+const ToolbarButton = /* @__PURE__ */ React.forwardRef<ToolbarButtonElement, ToolbarButtonProps>(
+  function ToolbarButton(props: ScopedProps<ToolbarButtonProps>, forwardedRef) {
     const { __scopeToolbar, ...buttonProps } = props;
     const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeToolbar);
     return (
@@ -118,20 +117,16 @@ const ToolbarButton = React.forwardRef<ToolbarButtonElement, ToolbarButtonProps>
   },
 );
 
-ToolbarButton.displayName = BUTTON_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * ToolbarLink
  * -----------------------------------------------------------------------------------------------*/
-
-const LINK_NAME = 'ToolbarLink';
 
 type ToolbarLinkElement = React.ComponentRef<typeof Primitive.a>;
 type PrimitiveLinkProps = React.ComponentPropsWithoutRef<typeof Primitive.a>;
 interface ToolbarLinkProps extends PrimitiveLinkProps {}
 
-const ToolbarLink = React.forwardRef<ToolbarLinkElement, ToolbarLinkProps>(
-  (props: ScopedProps<ToolbarLinkProps>, forwardedRef) => {
+const ToolbarLink = /* @__PURE__ */ React.forwardRef<ToolbarLinkElement, ToolbarLinkProps>(
+  function ToolbarLink(props: ScopedProps<ToolbarLinkProps>, forwardedRef) {
     const { __scopeToolbar, ...linkProps } = props;
     const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeToolbar);
     return (
@@ -158,8 +153,6 @@ const ToolbarLink = React.forwardRef<ToolbarLinkElement, ToolbarLinkProps>(
   },
 );
 
-ToolbarLink.displayName = LINK_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * ToolbarToggleGroup
  * -----------------------------------------------------------------------------------------------*/
@@ -171,14 +164,15 @@ type ToggleGroupProps = React.ComponentPropsWithoutRef<typeof ToggleGroupPrimiti
 interface ToolbarToggleGroupSingleProps extends Extract<ToggleGroupProps, { type: 'single' }> {}
 interface ToolbarToggleGroupMultipleProps extends Extract<ToggleGroupProps, { type: 'multiple' }> {}
 
-const ToolbarToggleGroup = React.forwardRef<
+const ToolbarToggleGroup = /* @__PURE__ */ React.forwardRef<
   ToolbarToggleGroupElement,
   ToolbarToggleGroupSingleProps | ToolbarToggleGroupMultipleProps
 >(
-  (
+  // blank line to reduce diff noise
+  function ToolbarToggleGroup(
     props: ScopedProps<ToolbarToggleGroupSingleProps | ToolbarToggleGroupMultipleProps>,
     forwardedRef,
-  ) => {
+  ) {
     const { __scopeToolbar, ...toggleGroupProps } = props;
     const context = useToolbarContext(TOGGLE_GROUP_NAME, __scopeToolbar);
     const toggleGroupScope = useToggleGroupScope(__scopeToolbar);
@@ -195,20 +189,20 @@ const ToolbarToggleGroup = React.forwardRef<
   },
 );
 
-ToolbarToggleGroup.displayName = TOGGLE_GROUP_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * ToolbarToggleItem
  * -----------------------------------------------------------------------------------------------*/
-
-const TOGGLE_ITEM_NAME = 'ToolbarToggleItem';
 
 type ToolbarToggleItemElement = React.ComponentRef<typeof ToggleGroupPrimitive.Item>;
 type ToggleGroupItemProps = React.ComponentPropsWithoutRef<typeof ToggleGroupPrimitive.Item>;
 interface ToolbarToggleItemProps extends ToggleGroupItemProps {}
 
-const ToolbarToggleItem = React.forwardRef<ToolbarToggleItemElement, ToolbarToggleItemProps>(
-  (props: ScopedProps<ToolbarToggleItemProps>, forwardedRef) => {
+const ToolbarToggleItem = /* @__PURE__ */ React.forwardRef<
+  ToolbarToggleItemElement,
+  ToolbarToggleItemProps
+>(
+  // blank line to reduce diff noise
+  function ToolbarToggleItem(props: ScopedProps<ToolbarToggleItemProps>, forwardedRef) {
     const { __scopeToolbar, ...toggleItemProps } = props;
     const toggleGroupScope = useToggleGroupScope(__scopeToolbar);
     const scope = { __scopeToolbar: props.__scopeToolbar };
@@ -220,8 +214,6 @@ const ToolbarToggleItem = React.forwardRef<ToolbarToggleItemElement, ToolbarTogg
     );
   },
 );
-
-ToolbarToggleItem.displayName = TOGGLE_ITEM_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 
