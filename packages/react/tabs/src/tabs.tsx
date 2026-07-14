@@ -61,8 +61,9 @@ interface TabsProps extends PrimitiveDivProps {
   activationMode?: 'automatic' | 'manual';
 }
 
-const Tabs = React.forwardRef<TabsElement, TabsProps>(
-  (props: ScopedProps<TabsProps>, forwardedRef) => {
+const Tabs = /* @__PURE__ */ React.forwardRef<TabsElement, TabsProps>(
+  // blank line to reduce diff noise
+  function Tabs(props: ScopedProps<TabsProps>, forwardedRef) {
     const {
       __scopeTabs,
       value: valueProp,
@@ -102,8 +103,6 @@ const Tabs = React.forwardRef<TabsElement, TabsProps>(
   },
 );
 
-Tabs.displayName = TABS_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * TabsList
  * -----------------------------------------------------------------------------------------------*/
@@ -115,8 +114,9 @@ interface TabsListProps extends PrimitiveDivProps {
   loop?: RovingFocusGroupProps['loop'];
 }
 
-const TabsList = React.forwardRef<TabsListElement, TabsListProps>(
-  (props: ScopedProps<TabsListProps>, forwardedRef) => {
+const TabsList = /* @__PURE__ */ React.forwardRef<TabsListElement, TabsListProps>(
+  // blank line to reduce diff noise
+  function TabsList(props: ScopedProps<TabsListProps>, forwardedRef) {
     const { __scopeTabs, loop = true, ...listProps } = props;
     const context = useTabsContext(TAB_LIST_NAME, __scopeTabs);
     const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeTabs);
@@ -139,8 +139,6 @@ const TabsList = React.forwardRef<TabsListElement, TabsListProps>(
   },
 );
 
-TabsList.displayName = TAB_LIST_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * TabsTrigger
  * -----------------------------------------------------------------------------------------------*/
@@ -153,8 +151,8 @@ interface TabsTriggerProps extends PrimitiveButtonProps {
   value: string;
 }
 
-const TabsTrigger = React.forwardRef<TabsTriggerElement, TabsTriggerProps>(
-  (props: ScopedProps<TabsTriggerProps>, forwardedRef) => {
+const TabsTrigger = /* @__PURE__ */ React.forwardRef<TabsTriggerElement, TabsTriggerProps>(
+  function TabsTrigger(props: ScopedProps<TabsTriggerProps>, forwardedRef) {
     const { __scopeTabs, value, disabled = false, ...triggerProps } = props;
     const context = useTabsContext(TRIGGER_NAME, __scopeTabs);
     const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeTabs);
@@ -217,8 +215,6 @@ const TabsTrigger = React.forwardRef<TabsTriggerElement, TabsTriggerProps>(
   },
 );
 
-TabsTrigger.displayName = TRIGGER_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * TabsContent
  * -----------------------------------------------------------------------------------------------*/
@@ -236,8 +232,8 @@ interface TabsContentProps extends PrimitiveDivProps {
   forceMount?: true;
 }
 
-const TabsContent = React.forwardRef<TabsContentElement, TabsContentProps>(
-  (props: ScopedProps<TabsContentProps>, forwardedRef) => {
+const TabsContent = /* @__PURE__ */ React.forwardRef<TabsContentElement, TabsContentProps>(
+  function TabsContent(props: ScopedProps<TabsContentProps>, forwardedRef) {
     const { __scopeTabs, value, forceMount, children, ...contentProps } = props;
     const context = useTabsContext(CONTENT_NAME, __scopeTabs);
     const triggerId = makeTriggerId(context.baseId, value);
@@ -275,8 +271,6 @@ const TabsContent = React.forwardRef<TabsContentElement, TabsContentProps>(
     );
   },
 );
-
-TabsContent.displayName = CONTENT_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 

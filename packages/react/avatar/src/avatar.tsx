@@ -35,8 +35,9 @@ type AvatarElement = React.ComponentRef<typeof Primitive.span>;
 type PrimitiveSpanProps = React.ComponentPropsWithoutRef<typeof Primitive.span>;
 interface AvatarProps extends PrimitiveSpanProps {}
 
-const Avatar = React.forwardRef<AvatarElement, AvatarProps>(
-  (props: ScopedProps<AvatarProps>, forwardedRef) => {
+const Avatar = /* @__PURE__ */ React.forwardRef<AvatarElement, AvatarProps>(
+  // blank line to reduce diff noise
+  function Avatar(props: ScopedProps<AvatarProps>, forwardedRef) {
     const { __scopeAvatar, ...avatarProps } = props;
     const [imageLoadingStatus, setImageLoadingStatus] = React.useState<ImageLoadingStatus>('idle');
     const [imageCount, setImageCount] = useImageCount();
@@ -55,8 +56,6 @@ const Avatar = React.forwardRef<AvatarElement, AvatarProps>(
   },
 );
 
-Avatar.displayName = AVATAR_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * AvatarImage
  * -----------------------------------------------------------------------------------------------*/
@@ -69,8 +68,8 @@ interface AvatarImageProps extends PrimitiveImageProps {
   onLoadingStatusChange?: (status: ImageLoadingStatus) => void;
 }
 
-const AvatarImage = React.forwardRef<AvatarImageElement, AvatarImageProps>(
-  (props: ScopedProps<AvatarImageProps>, forwardedRef) => {
+const AvatarImage = /* @__PURE__ */ React.forwardRef<AvatarImageElement, AvatarImageProps>(
+  function AvatarImage(props: ScopedProps<AvatarImageProps>, forwardedRef) {
     const { __scopeAvatar, src, onLoadingStatusChange, ...imageProps } = props;
     const context = useAvatarContext(IMAGE_NAME, __scopeAvatar);
     useUpdateImageCount(context.setImageCount);
@@ -102,8 +101,6 @@ const AvatarImage = React.forwardRef<AvatarImageElement, AvatarImageProps>(
   },
 );
 
-AvatarImage.displayName = IMAGE_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * AvatarFallback
  * -----------------------------------------------------------------------------------------------*/
@@ -115,8 +112,8 @@ interface AvatarFallbackProps extends PrimitiveSpanProps {
   delayMs?: number;
 }
 
-const AvatarFallback = React.forwardRef<AvatarFallbackElement, AvatarFallbackProps>(
-  (props: ScopedProps<AvatarFallbackProps>, forwardedRef) => {
+const AvatarFallback = /* @__PURE__ */ React.forwardRef<AvatarFallbackElement, AvatarFallbackProps>(
+  function AvatarFallback(props: ScopedProps<AvatarFallbackProps>, forwardedRef) {
     const { __scopeAvatar, delayMs, ...fallbackProps } = props;
     const context = useAvatarContext(FALLBACK_NAME, __scopeAvatar);
     const [canRender, setCanRender] = React.useState(delayMs === undefined);
@@ -133,8 +130,6 @@ const AvatarFallback = React.forwardRef<AvatarFallbackElement, AvatarFallbackPro
     ) : null;
   },
 );
-
-AvatarFallback.displayName = FALLBACK_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 

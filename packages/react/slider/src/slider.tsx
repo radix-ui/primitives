@@ -89,8 +89,9 @@ interface SliderProps extends Omit<
   form?: string;
 }
 
-const Slider = React.forwardRef<SliderElement, SliderProps>(
-  (props: ScopedProps<SliderProps>, forwardedRef) => {
+const Slider = /* @__PURE__ */ React.forwardRef<SliderElement, SliderProps>(
+  // blank line to reduce diff noise
+  function Slider(props: ScopedProps<SliderProps>, forwardedRef) {
     const {
       name,
       min = 0,
@@ -243,8 +244,6 @@ const Slider = React.forwardRef<SliderElement, SliderProps>(
   },
 );
 
-Slider.displayName = SLIDER_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * SliderHorizontal
  * -----------------------------------------------------------------------------------------------*/
@@ -282,8 +281,12 @@ interface SliderHorizontalProps extends SliderOrientationProps {
   dir?: Direction;
 }
 
-const SliderHorizontal = React.forwardRef<SliderHorizontalElement, SliderHorizontalProps>(
-  (props: ScopedProps<SliderHorizontalProps>, forwardedRef) => {
+const SliderHorizontal = /* @__PURE__ */ React.forwardRef<
+  SliderHorizontalElement,
+  SliderHorizontalProps
+>(
+  // blank line to reduce diff noise
+  function SliderHorizontal(props: ScopedProps<SliderHorizontalProps>, forwardedRef) {
     const {
       min,
       max,
@@ -359,8 +362,8 @@ const SliderHorizontal = React.forwardRef<SliderHorizontalElement, SliderHorizon
 type SliderVerticalElement = SliderImplElement;
 interface SliderVerticalProps extends SliderOrientationProps {}
 
-const SliderVertical = React.forwardRef<SliderVerticalElement, SliderVerticalProps>(
-  (props: ScopedProps<SliderVerticalProps>, forwardedRef) => {
+const SliderVertical = /* @__PURE__ */ React.forwardRef<SliderVerticalElement, SliderVerticalProps>(
+  function SliderVertical(props: ScopedProps<SliderVerticalProps>, forwardedRef) {
     const {
       min,
       max,
@@ -441,8 +444,8 @@ type SliderImplPrivateProps = {
 };
 interface SliderImplProps extends PrimitiveDivProps, SliderImplPrivateProps {}
 
-const SliderImpl = React.forwardRef<SliderImplElement, SliderImplProps>(
-  (props: ScopedProps<SliderImplProps>, forwardedRef) => {
+const SliderImpl = /* @__PURE__ */ React.forwardRef<SliderImplElement, SliderImplProps>(
+  function SliderImpl(props: ScopedProps<SliderImplProps>, forwardedRef) {
     const {
       __scopeSlider,
       onSlideStart,
@@ -514,8 +517,8 @@ type SliderTrackElement = React.ComponentRef<typeof Primitive.span>;
 type PrimitiveSpanProps = React.ComponentPropsWithoutRef<typeof Primitive.span>;
 interface SliderTrackProps extends PrimitiveSpanProps {}
 
-const SliderTrack = React.forwardRef<SliderTrackElement, SliderTrackProps>(
-  (props: ScopedProps<SliderTrackProps>, forwardedRef) => {
+const SliderTrack = /* @__PURE__ */ React.forwardRef<SliderTrackElement, SliderTrackProps>(
+  function SliderTrack(props: ScopedProps<SliderTrackProps>, forwardedRef) {
     const { __scopeSlider, ...trackProps } = props;
     const context = useSliderContext(TRACK_NAME, __scopeSlider);
     return (
@@ -529,8 +532,6 @@ const SliderTrack = React.forwardRef<SliderTrackElement, SliderTrackProps>(
   },
 );
 
-SliderTrack.displayName = TRACK_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * SliderRange
  * -----------------------------------------------------------------------------------------------*/
@@ -540,8 +541,8 @@ const RANGE_NAME = 'SliderRange';
 type SliderRangeElement = React.ComponentRef<typeof Primitive.span>;
 interface SliderRangeProps extends PrimitiveSpanProps {}
 
-const SliderRange = React.forwardRef<SliderRangeElement, SliderRangeProps>(
-  (props: ScopedProps<SliderRangeProps>, forwardedRef) => {
+const SliderRange = /* @__PURE__ */ React.forwardRef<SliderRangeElement, SliderRangeProps>(
+  function SliderRange(props: ScopedProps<SliderRangeProps>, forwardedRef) {
     const { __scopeSlider, ...rangeProps } = props;
     const context = useSliderContext(RANGE_NAME, __scopeSlider);
     const orientation = useSliderOrientationContext(RANGE_NAME, __scopeSlider);
@@ -569,8 +570,6 @@ const SliderRange = React.forwardRef<SliderRangeElement, SliderRangeProps>(
     );
   },
 );
-
-SliderRange.displayName = RANGE_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * SliderThumb
@@ -657,8 +656,6 @@ function SliderThumbProvider(props: ScopedProps<SliderThumbProviderProps>) {
   );
 }
 
-SliderThumbProvider.displayName = THUMB_PROVIDER_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * SliderThumbTrigger
  * -----------------------------------------------------------------------------------------------*/
@@ -668,8 +665,12 @@ const THUMB_TRIGGER_NAME = 'SliderThumbTrigger';
 type SliderThumbTriggerElement = React.ComponentRef<typeof Primitive.span>;
 interface SliderThumbTriggerProps extends PrimitiveSpanProps {}
 
-const SliderThumbTrigger = React.forwardRef<SliderThumbTriggerElement, SliderThumbTriggerProps>(
-  (props: ScopedProps<SliderThumbTriggerProps>, forwardedRef) => {
+const SliderThumbTrigger = /* @__PURE__ */ React.forwardRef<
+  SliderThumbTriggerElement,
+  SliderThumbTriggerProps
+>(
+  // blank line to reduce diff noise
+  function SliderThumbTrigger(props: ScopedProps<SliderThumbTriggerProps>, forwardedRef) {
     const { __scopeSlider, ...thumbProps } = props;
     const context = useSliderContext(THUMB_TRIGGER_NAME, __scopeSlider);
     const orientation = useSliderOrientationContext(THUMB_TRIGGER_NAME, __scopeSlider);
@@ -722,8 +723,6 @@ const SliderThumbTrigger = React.forwardRef<SliderThumbTriggerElement, SliderThu
   },
 );
 
-SliderThumbTrigger.displayName = THUMB_TRIGGER_NAME;
-
 /* -----------------------------------------------------------------------------------------------*/
 
 type SliderThumbElement = SliderThumbTriggerElement;
@@ -731,8 +730,8 @@ interface SliderThumbProps extends SliderThumbTriggerProps {
   name?: string;
 }
 
-const SliderThumb = React.forwardRef<SliderThumbElement, SliderThumbProps>(
-  (props: ScopedProps<SliderThumbProps>, forwardedRef) => {
+const SliderThumb = /* @__PURE__ */ React.forwardRef<SliderThumbElement, SliderThumbProps>(
+  function SliderThumb(props: ScopedProps<SliderThumbProps>, forwardedRef) {
     const { __scopeSlider, name, ...thumbProps } = props;
     return (
       <SliderThumbProvider
@@ -761,8 +760,6 @@ const SliderThumb = React.forwardRef<SliderThumbElement, SliderThumbProps>(
   },
 );
 
-SliderThumb.displayName = THUMB_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * SliderBubbleInput
  * -----------------------------------------------------------------------------------------------*/
@@ -773,8 +770,15 @@ type SliderBubbleInputElement = React.ComponentRef<typeof Primitive.input>;
 type PrimitiveInputProps = React.ComponentPropsWithoutRef<typeof Primitive.input>;
 interface SliderBubbleInputProps extends Omit<PrimitiveInputProps, 'value'> {}
 
-const SliderBubbleInput = React.forwardRef<SliderBubbleInputElement, SliderBubbleInputProps>(
-  ({ __scopeSlider, ...props }: ScopedProps<SliderBubbleInputProps>, forwardedRef) => {
+const SliderBubbleInput = /* @__PURE__ */ React.forwardRef<
+  SliderBubbleInputElement,
+  SliderBubbleInputProps
+>(
+  // blank line to reduce diff noise
+  function SliderBubbleInput(
+    { __scopeSlider, ...props }: ScopedProps<SliderBubbleInputProps>,
+    forwardedRef,
+  ) {
     const { value, name, form } = useSliderThumbContext(BUBBLE_INPUT_NAME, __scopeSlider);
     const ref = React.useRef<SliderBubbleInputElement>(null);
     const composedRefs = useComposedRefs(ref, forwardedRef);
@@ -816,8 +820,6 @@ const SliderBubbleInput = React.forwardRef<SliderBubbleInputElement, SliderBubbl
     );
   },
 );
-
-SliderBubbleInput.displayName = BUBBLE_INPUT_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 

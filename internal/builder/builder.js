@@ -60,6 +60,7 @@ export async function build(relativePath) {
     format: 'cjs',
     target: 'es2022',
     outdir: dist,
+    keepNames: true,
   };
 
   tasks.push(esbuild.build(esbuildConfig).then(() => console.log(`CJS: Built ${relativePath}`)));

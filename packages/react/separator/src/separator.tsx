@@ -4,8 +4,6 @@ import { Primitive } from '@radix-ui/react-primitive';
 /* -------------------------------------------------------------------------------------------------
  *  Separator
  * -----------------------------------------------------------------------------------------------*/
-
-const NAME = 'Separator';
 const DEFAULT_ORIENTATION = 'horizontal';
 const ORIENTATIONS = ['horizontal', 'vertical'] as const;
 
@@ -24,7 +22,10 @@ interface SeparatorProps extends PrimitiveDivProps {
   decorative?: boolean;
 }
 
-const Separator = React.forwardRef<SeparatorElement, SeparatorProps>((props, forwardedRef) => {
+const Separator = /* @__PURE__ */ React.forwardRef<SeparatorElement, SeparatorProps>(
+  // ignore prettier to reduce diff noise
+  // prettier-ignore
+  function Separator(props, forwardedRef) {
   const { decorative, orientation: orientationProp = DEFAULT_ORIENTATION, ...domProps } = props;
   const orientation = isValidOrientation(orientationProp) ? orientationProp : DEFAULT_ORIENTATION;
   // `aria-orientation` defaults to `horizontal` so we only need it if `orientation` is vertical
@@ -41,9 +42,8 @@ const Separator = React.forwardRef<SeparatorElement, SeparatorProps>((props, for
       ref={forwardedRef}
     />
   );
-});
-
-Separator.displayName = NAME;
+},
+);
 
 /* -----------------------------------------------------------------------------------------------*/
 

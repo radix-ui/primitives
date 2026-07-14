@@ -19,8 +19,6 @@ const listenerMap = new Map<Element, number>();
  * Announce
  * -----------------------------------------------------------------------------------------------*/
 
-const NAME = 'Announce';
-
 type AnnounceElement = React.ComponentRef<typeof Primitive.div>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface AnnounceProps extends PrimitiveDivProps {
@@ -82,7 +80,10 @@ interface AnnounceProps extends PrimitiveDivProps {
   type?: RegionType;
 }
 
-const Announce = React.forwardRef<AnnounceElement, AnnounceProps>((props, forwardedRef) => {
+const Announce = /* @__PURE__ */ React.forwardRef<AnnounceElement, AnnounceProps>(
+  // ignore prettier to reduce diff noise
+  // prettier-ignore
+  function Announce(props, forwardedRef) {
   const {
     'aria-relevant': ariaRelevant,
     children,
@@ -174,9 +175,8 @@ const Announce = React.forwardRef<AnnounceElement, AnnounceProps>((props, forwar
       {region && ReactDOM.createPortal(<div>{children}</div>, region)}
     </React.Fragment>
   );
-});
-
-Announce.displayName = NAME;
+},
+);
 
 /* ---------------------------------------------------------------------------------------------- */
 

@@ -7,8 +7,6 @@ import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 /* -------------------------------------------------------------------------------------------------
  * DismissableLayer
  * -----------------------------------------------------------------------------------------------*/
-
-const DISMISSABLE_LAYER_NAME = 'DismissableLayer';
 const CONTEXT_UPDATE = 'dismissableLayer.update';
 const POINTER_DOWN_OUTSIDE = 'dismissableLayer.pointerDownOutside';
 const FOCUS_OUTSIDE = 'dismissableLayer.focusOutside';
@@ -70,8 +68,12 @@ interface DismissableLayerProps extends PrimitiveDivProps {
   onDismiss?: () => void;
 }
 
-const DismissableLayer = React.forwardRef<DismissableLayerElement, DismissableLayerProps>(
-  (props, forwardedRef) => {
+const DismissableLayer = /* @__PURE__ */ React.forwardRef<
+  DismissableLayerElement,
+  DismissableLayerProps
+>(
+  // blank line to reduce diff noise
+  function DismissableLayer(props, forwardedRef) {
     const {
       disableOutsidePointerEvents = false,
       deferPointerDownOutside = false,
@@ -243,21 +245,17 @@ const DismissableLayer = React.forwardRef<DismissableLayerElement, DismissableLa
   },
 );
 
-DismissableLayer.displayName = DISMISSABLE_LAYER_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * DismissableLayerBranch
  * -----------------------------------------------------------------------------------------------*/
 
-const BRANCH_NAME = 'DismissableLayerBranch';
-
 type DismissableLayerBranchElement = React.ComponentRef<typeof Primitive.div>;
 interface DismissableLayerBranchProps extends PrimitiveDivProps {}
 
-const DismissableLayerBranch = React.forwardRef<
+const DismissableLayerBranch = /* @__PURE__ */ React.forwardRef<
   DismissableLayerBranchElement,
   DismissableLayerBranchProps
->((props, forwardedRef) => {
+>(function DismissableLayerBranch(props, forwardedRef) {
   const context = React.useContext(DismissableLayerContext);
   const ref = React.useRef<DismissableLayerBranchElement>(null);
   const composedRefs = useComposedRefs(forwardedRef, ref);
@@ -274,8 +272,6 @@ const DismissableLayerBranch = React.forwardRef<
 
   return <Primitive.div {...props} ref={composedRefs} />;
 });
-
-DismissableLayerBranch.displayName = BRANCH_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 

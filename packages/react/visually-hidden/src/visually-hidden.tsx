@@ -19,14 +19,12 @@ const VISUALLY_HIDDEN_STYLES = Object.freeze({
   wordWrap: 'normal',
 }) satisfies React.CSSProperties;
 
-const NAME = 'VisuallyHidden';
-
 type VisuallyHiddenElement = React.ComponentRef<typeof Primitive.span>;
 type PrimitiveSpanProps = React.ComponentPropsWithoutRef<typeof Primitive.span>;
 interface VisuallyHiddenProps extends PrimitiveSpanProps {}
 
-const VisuallyHidden = React.forwardRef<VisuallyHiddenElement, VisuallyHiddenProps>(
-  (props, forwardedRef) => {
+const VisuallyHidden = /* @__PURE__ */ React.forwardRef<VisuallyHiddenElement, VisuallyHiddenProps>(
+  function VisuallyHidden(props, forwardedRef) {
     return (
       <Primitive.span
         {...props}
@@ -36,8 +34,6 @@ const VisuallyHidden = React.forwardRef<VisuallyHiddenElement, VisuallyHiddenPro
     );
   },
 );
-
-VisuallyHidden.displayName = NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 

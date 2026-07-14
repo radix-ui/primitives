@@ -53,8 +53,9 @@ interface FormProps extends PrimitiveFormProps {
   onClearServerErrors?(): void;
 }
 
-const Form = React.forwardRef<FormElement, FormProps>(
-  (props: ScopedProps<FormProps>, forwardedRef) => {
+const Form = /* @__PURE__ */ React.forwardRef<FormElement, FormProps>(
+  // blank line to reduce diff noise
+  function Form(props: ScopedProps<FormProps>, forwardedRef) {
     const { __scopeForm, onClearServerErrors = () => {}, ...rootProps } = props;
     const formRef = React.useRef<HTMLFormElement>(null);
     const composedFormRef = useComposedRefs(forwardedRef, formRef);
@@ -184,8 +185,6 @@ const Form = React.forwardRef<FormElement, FormProps>(
   },
 );
 
-Form.displayName = FORM_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * FormField
  * -----------------------------------------------------------------------------------------------*/
@@ -207,8 +206,8 @@ interface FormFieldProps extends PrimitiveDivProps {
   serverInvalid?: boolean;
 }
 
-const FormField = React.forwardRef<FormFieldElement, FormFieldProps>(
-  (props: ScopedProps<FormFieldProps>, forwardedRef) => {
+const FormField = /* @__PURE__ */ React.forwardRef<FormFieldElement, FormFieldProps>(
+  function FormField(props: ScopedProps<FormFieldProps>, forwardedRef) {
     const { __scopeForm, name, serverInvalid = false, ...fieldProps } = props;
     const validationContext = useValidationContext(FIELD_NAME, __scopeForm);
     const validity = validationContext.getFieldValidity(name);
@@ -227,8 +226,6 @@ const FormField = React.forwardRef<FormFieldElement, FormFieldProps>(
   },
 );
 
-FormField.displayName = FIELD_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * FormLabel
  * -----------------------------------------------------------------------------------------------*/
@@ -241,8 +238,8 @@ interface FormLabelProps extends LabelProps {
   name?: string;
 }
 
-const FormLabel = React.forwardRef<FormLabelElement, FormLabelProps>(
-  (props: ScopedProps<FormLabelProps>, forwardedRef) => {
+const FormLabel = /* @__PURE__ */ React.forwardRef<FormLabelElement, FormLabelProps>(
+  function FormLabel(props: ScopedProps<FormLabelProps>, forwardedRef) {
     const { __scopeForm, name: nameProp, ...labelProps } = props;
     const validationContext = useValidationContext(LABEL_NAME, __scopeForm);
     const fieldContext = useFormFieldContext(LABEL_NAME, __scopeForm, { optional: true });
@@ -275,8 +272,6 @@ const FormLabel = React.forwardRef<FormLabelElement, FormLabelProps>(
   },
 );
 
-FormLabel.displayName = LABEL_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * FormControl
  * -----------------------------------------------------------------------------------------------*/
@@ -287,8 +282,8 @@ type FormControlElement = React.ComponentRef<typeof Primitive.input>;
 type PrimitiveInputProps = React.ComponentPropsWithoutRef<typeof Primitive.input>;
 interface FormControlProps extends PrimitiveInputProps {}
 
-const FormControl = React.forwardRef<FormControlElement, FormControlProps>(
-  (props: ScopedProps<FormControlProps>, forwardedRef) => {
+const FormControl = /* @__PURE__ */ React.forwardRef<FormControlElement, FormControlProps>(
+  function FormControl(props: ScopedProps<FormControlProps>, forwardedRef) {
     const { __scopeForm, name: nameProp, id: idProp, ...controlProps } = props;
 
     const validationContext = useValidationContext(CONTROL_NAME, __scopeForm);
@@ -450,8 +445,6 @@ const FormControl = React.forwardRef<FormControlElement, FormControlProps>(
   },
 );
 
-FormControl.displayName = CONTROL_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * FormMessage
  * -----------------------------------------------------------------------------------------------*/
@@ -493,8 +486,8 @@ interface FormMessageProps extends Omit<FormMessageImplProps, 'name'> {
   name?: string;
 }
 
-const FormMessage = React.forwardRef<FormMessageElement, FormMessageProps>(
-  (props: ScopedProps<FormMessageProps>, forwardedRef) => {
+const FormMessage = /* @__PURE__ */ React.forwardRef<FormMessageElement, FormMessageProps>(
+  function FormMessage(props: ScopedProps<FormMessageProps>, forwardedRef) {
     const { match, name: nameProp, ...messageProps } = props;
     const fieldContext = useFormFieldContext(MESSAGE_NAME, props.__scopeForm, { optional: true });
     const name = nameProp ?? fieldContext?.name;
@@ -518,8 +511,6 @@ const FormMessage = React.forwardRef<FormMessageElement, FormMessageProps>(
   },
 );
 
-FormMessage.displayName = MESSAGE_NAME;
-
 type FormBuiltInMessageElement = FormMessageImplElement;
 interface FormBuiltInMessageProps extends FormMessageImplProps {
   match: ValidityMatcher;
@@ -527,8 +518,12 @@ interface FormBuiltInMessageProps extends FormMessageImplProps {
   name: string;
 }
 
-const FormBuiltInMessage = React.forwardRef<FormBuiltInMessageElement, FormBuiltInMessageProps>(
-  (props: ScopedProps<FormBuiltInMessageProps>, forwardedRef) => {
+const FormBuiltInMessage = /* @__PURE__ */ React.forwardRef<
+  FormBuiltInMessageElement,
+  FormBuiltInMessageProps
+>(
+  // blank line to reduce diff noise
+  function FormBuiltInMessage(props: ScopedProps<FormBuiltInMessageProps>, forwardedRef) {
     const { match, forceMatch = false, name, children, ...messageProps } = props;
     const validationContext = useValidationContext(MESSAGE_NAME, messageProps.__scopeForm);
     const validity = validationContext.getFieldValidity(name);
@@ -553,8 +548,12 @@ interface FormCustomMessageProps extends React.ComponentPropsWithoutRef<typeof F
   name: string;
 }
 
-const FormCustomMessage = React.forwardRef<FormCustomMessageElement, FormCustomMessageProps>(
-  (props: ScopedProps<FormCustomMessageProps>, forwardedRef) => {
+const FormCustomMessage = /* @__PURE__ */ React.forwardRef<
+  FormCustomMessageElement,
+  FormCustomMessageProps
+>(
+  // blank line to reduce diff noise
+  function FormCustomMessage(props: ScopedProps<FormCustomMessageProps>, forwardedRef) {
     const { match, forceMatch = false, name, id: idProp, children, ...messageProps } = props;
     const validationContext = useValidationContext(MESSAGE_NAME, messageProps.__scopeForm);
     const ref = React.useRef<FormCustomMessageElement>(null);
@@ -593,8 +592,12 @@ interface FormMessageImplProps extends PrimitiveSpanProps {
   name: string;
 }
 
-const FormMessageImpl = React.forwardRef<FormMessageImplElement, FormMessageImplProps>(
-  (props: ScopedProps<FormMessageImplProps>, forwardedRef) => {
+const FormMessageImpl = /* @__PURE__ */ React.forwardRef<
+  FormMessageImplElement,
+  FormMessageImplProps
+>(
+  // blank line to reduce diff noise
+  function FormMessageImpl(props: ScopedProps<FormMessageImplProps>, forwardedRef) {
     const { __scopeForm, id: idProp, name, ...messageProps } = props;
     const ariaDescriptionContext = useAriaDescriptionContext(MESSAGE_NAME, __scopeForm);
     const _id = useId();
@@ -635,26 +638,20 @@ const FormValidityState = (props: ScopedProps<FormValidityStateProps>) => {
   return <>{children(validity)}</>;
 };
 
-FormValidityState.displayName = VALIDITY_STATE_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * FormSubmit
  * -----------------------------------------------------------------------------------------------*/
-
-const SUBMIT_NAME = 'FormSubmit';
 
 type FormSubmitElement = React.ComponentRef<typeof Primitive.button>;
 type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
 interface FormSubmitProps extends PrimitiveButtonProps {}
 
-const FormSubmit = React.forwardRef<FormSubmitElement, FormSubmitProps>(
-  (props: ScopedProps<FormSubmitProps>, forwardedRef) => {
+const FormSubmit = /* @__PURE__ */ React.forwardRef<FormSubmitElement, FormSubmitProps>(
+  function FormSubmit(props: ScopedProps<FormSubmitProps>, forwardedRef) {
     const { __scopeForm, ...submitProps } = props;
     return <Primitive.button type="submit" {...submitProps} ref={forwardedRef} />;
   },
 );
-
-FormSubmit.displayName = SUBMIT_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 

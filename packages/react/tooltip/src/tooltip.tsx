@@ -110,8 +110,6 @@ const TooltipProvider: React.FC<TooltipProviderProps> = (
   );
 };
 
-TooltipProvider.displayName = PROVIDER_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * Tooltip
  * -----------------------------------------------------------------------------------------------*/
@@ -260,8 +258,6 @@ const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
   );
 };
 
-Tooltip.displayName = TOOLTIP_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * TooltipTrigger
  * -----------------------------------------------------------------------------------------------*/
@@ -272,8 +268,8 @@ type TooltipTriggerElement = React.ComponentRef<typeof Primitive.button>;
 type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
 interface TooltipTriggerProps extends PrimitiveButtonProps {}
 
-const TooltipTrigger = React.forwardRef<TooltipTriggerElement, TooltipTriggerProps>(
-  (props: ScopedProps<TooltipTriggerProps>, forwardedRef) => {
+const TooltipTrigger = /* @__PURE__ */ React.forwardRef<TooltipTriggerElement, TooltipTriggerProps>(
+  function TooltipTrigger(props: ScopedProps<TooltipTriggerProps>, forwardedRef) {
     const { __scopeTooltip, ...triggerProps } = props;
     const context = useTooltipContext(TRIGGER_NAME, __scopeTooltip);
     const providerContext = useTooltipProviderContext(TRIGGER_NAME, __scopeTooltip);
@@ -329,8 +325,6 @@ const TooltipTrigger = React.forwardRef<TooltipTriggerElement, TooltipTriggerPro
   },
 );
 
-TooltipTrigger.displayName = TRIGGER_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * TooltipPortal
  * -----------------------------------------------------------------------------------------------*/
@@ -370,8 +364,6 @@ const TooltipPortal: React.FC<TooltipPortalProps> = (props: ScopedProps<TooltipP
   );
 };
 
-TooltipPortal.displayName = PORTAL_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * TooltipContent
  * -----------------------------------------------------------------------------------------------*/
@@ -387,8 +379,8 @@ interface TooltipContentProps extends TooltipContentImplProps {
   forceMount?: true;
 }
 
-const TooltipContent = React.forwardRef<TooltipContentElement, TooltipContentProps>(
-  (props: ScopedProps<TooltipContentProps>, forwardedRef) => {
+const TooltipContent = /* @__PURE__ */ React.forwardRef<TooltipContentElement, TooltipContentProps>(
+  function TooltipContent(props: ScopedProps<TooltipContentProps>, forwardedRef) {
     const portalContext = usePortalContext(CONTENT_NAME, props.__scopeTooltip);
     const { forceMount = portalContext.forceMount, side = 'top', ...contentProps } = props;
     const context = useTooltipContext(CONTENT_NAME, props.__scopeTooltip);
@@ -411,10 +403,10 @@ type Polygon = Point[];
 type TooltipContentHoverableElement = TooltipContentImplElement;
 interface TooltipContentHoverableProps extends TooltipContentImplProps {}
 
-const TooltipContentHoverable = React.forwardRef<
+const TooltipContentHoverable = /* @__PURE__ */ React.forwardRef<
   TooltipContentHoverableElement,
   TooltipContentHoverableProps
->((props: ScopedProps<TooltipContentHoverableProps>, forwardedRef) => {
+>(function TooltipContentHoverable(props: ScopedProps<TooltipContentHoverableProps>, forwardedRef) {
   const context = useTooltipContext(CONTENT_NAME, props.__scopeTooltip);
   const providerContext = useTooltipProviderContext(CONTENT_NAME, props.__scopeTooltip);
   const ref = React.useRef<TooltipContentHoverableElement>(null);
@@ -509,8 +501,12 @@ interface TooltipContentImplProps extends Omit<PopperContentProps, 'onPlaced'> {
 
 const Slottable = createSlottable('TooltipContent');
 
-const TooltipContentImpl = React.forwardRef<TooltipContentImplElement, TooltipContentImplProps>(
-  (props: ScopedProps<TooltipContentImplProps>, forwardedRef) => {
+const TooltipContentImpl = /* @__PURE__ */ React.forwardRef<
+  TooltipContentImplElement,
+  TooltipContentImplProps
+>(
+  // blank line to reduce diff noise
+  function TooltipContentImpl(props: ScopedProps<TooltipContentImplProps>, forwardedRef) {
     const {
       __scopeTooltip,
       children,
@@ -596,27 +592,21 @@ const TooltipContentImpl = React.forwardRef<TooltipContentImplElement, TooltipCo
   },
 );
 
-TooltipContent.displayName = CONTENT_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * TooltipArrow
  * -----------------------------------------------------------------------------------------------*/
-
-const ARROW_NAME = 'TooltipArrow';
 
 type TooltipArrowElement = React.ComponentRef<typeof PopperPrimitive.Arrow>;
 type PopperArrowProps = React.ComponentPropsWithoutRef<typeof PopperPrimitive.Arrow>;
 interface TooltipArrowProps extends PopperArrowProps {}
 
-const TooltipArrow = React.forwardRef<TooltipArrowElement, TooltipArrowProps>(
-  (props: ScopedProps<TooltipArrowProps>, forwardedRef) => {
+const TooltipArrow = /* @__PURE__ */ React.forwardRef<TooltipArrowElement, TooltipArrowProps>(
+  function TooltipArrow(props: ScopedProps<TooltipArrowProps>, forwardedRef) {
     const { __scopeTooltip, ...arrowProps } = props;
     const popperScope = usePopperScope(__scopeTooltip);
     return <PopperPrimitive.Arrow {...popperScope} {...arrowProps} ref={forwardedRef} />;
   },
 );
-
-TooltipArrow.displayName = ARROW_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 

@@ -139,8 +139,6 @@ type SelectProps = SelectSharedProps & {
  * SelectProvider
  * -----------------------------------------------------------------------------------------------*/
 
-const PROVIDER_NAME = 'SelectProvider';
-
 interface SelectProviderProps extends SelectSharedProps {
   value?: string;
   defaultValue?: string;
@@ -264,8 +262,6 @@ function SelectProvider(props: ScopedProps<SelectProviderProps>) {
   );
 }
 
-SelectProvider.displayName = PROVIDER_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * Select
  * -----------------------------------------------------------------------------------------------*/
@@ -292,8 +288,6 @@ const Select: React.FC<SelectProps> = (props: ScopedProps<SelectProps>) => {
   );
 };
 
-Select.displayName = SELECT_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * SelectTrigger
  * -----------------------------------------------------------------------------------------------*/
@@ -304,8 +298,8 @@ type SelectTriggerElement = React.ComponentRef<typeof Primitive.button>;
 type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
 interface SelectTriggerProps extends PrimitiveButtonProps {}
 
-const SelectTrigger = React.forwardRef<SelectTriggerElement, SelectTriggerProps>(
-  (props: ScopedProps<SelectTriggerProps>, forwardedRef) => {
+const SelectTrigger = /* @__PURE__ */ React.forwardRef<SelectTriggerElement, SelectTriggerProps>(
+  function SelectTrigger(props: ScopedProps<SelectTriggerProps>, forwardedRef) {
     const { __scopeSelect, disabled = false, ...triggerProps } = props;
     const popperScope = usePopperScope(__scopeSelect);
     const context = useSelectContext(TRIGGER_NAME, __scopeSelect);
@@ -403,8 +397,6 @@ const SelectTrigger = React.forwardRef<SelectTriggerElement, SelectTriggerProps>
   },
 );
 
-SelectTrigger.displayName = TRIGGER_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * SelectValue
  * -----------------------------------------------------------------------------------------------*/
@@ -417,8 +409,8 @@ interface SelectValueProps extends Omit<PrimitiveSpanProps, 'placeholder'> {
   placeholder?: React.ReactNode;
 }
 
-const SelectValue = React.forwardRef<SelectValueElement, SelectValueProps>(
-  (props: ScopedProps<SelectValueProps>, forwardedRef) => {
+const SelectValue = /* @__PURE__ */ React.forwardRef<SelectValueElement, SelectValueProps>(
+  function SelectValue(props: ScopedProps<SelectValueProps>, forwardedRef) {
     // We ignore `className` and `style` as this part shouldn't be styled.
     const { __scopeSelect, className, style, children, placeholder = '', ...valueProps } = props;
     const context = useSelectContext(VALUE_NAME, __scopeSelect);
@@ -449,19 +441,15 @@ const SelectValue = React.forwardRef<SelectValueElement, SelectValueProps>(
   },
 );
 
-SelectValue.displayName = VALUE_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * SelectIcon
  * -----------------------------------------------------------------------------------------------*/
 
-const ICON_NAME = 'SelectIcon';
-
 type SelectIconElement = React.ComponentRef<typeof Primitive.span>;
 interface SelectIconProps extends PrimitiveSpanProps {}
 
-const SelectIcon = React.forwardRef<SelectIconElement, SelectIconProps>(
-  (props: ScopedProps<SelectIconProps>, forwardedRef) => {
+const SelectIcon = /* @__PURE__ */ React.forwardRef<SelectIconElement, SelectIconProps>(
+  function SelectIcon(props: ScopedProps<SelectIconProps>, forwardedRef) {
     const { __scopeSelect, children, ...iconProps } = props;
     return (
       <Primitive.span aria-hidden {...iconProps} ref={forwardedRef}>
@@ -470,8 +458,6 @@ const SelectIcon = React.forwardRef<SelectIconElement, SelectIconProps>(
     );
   },
 );
-
-SelectIcon.displayName = ICON_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * SelectPortal
@@ -507,8 +493,6 @@ const SelectPortal: React.FC<SelectPortalProps> = (props: ScopedProps<SelectPort
   );
 };
 
-SelectPortal.displayName = PORTAL_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * SelectContent
  * -----------------------------------------------------------------------------------------------*/
@@ -524,8 +508,8 @@ interface SelectContentProps extends SelectContentImplProps {
   forceMount?: true;
 }
 
-const SelectContent = React.forwardRef<SelectContentElement, SelectContentProps>(
-  (props: ScopedProps<SelectContentProps>, forwardedRef) => {
+const SelectContent = /* @__PURE__ */ React.forwardRef<SelectContentElement, SelectContentProps>(
+  function SelectContent(props: ScopedProps<SelectContentProps>, forwardedRef) {
     const portalContext = usePortalContext(CONTENT_NAME, props.__scopeSelect);
     const { forceMount = portalContext.forceMount, ...contentProps } = props;
     const context = useSelectContext(CONTENT_NAME, props.__scopeSelect);
@@ -555,8 +539,6 @@ const SelectContent = React.forwardRef<SelectContentElement, SelectContentProps>
   },
 );
 
-SelectContent.displayName = CONTENT_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * SelectContentFragment
  * -----------------------------------------------------------------------------------------------*/
@@ -566,10 +548,10 @@ interface SelectContentFragmentProps extends SelectContentImplProps {
   fragment?: DocumentFragment;
 }
 
-const SelectContentFragment = React.forwardRef<
+const SelectContentFragment = /* @__PURE__ */ React.forwardRef<
   SelectContentFragmentElement,
   SelectContentFragmentProps
->((props: ScopedProps<SelectContentFragmentProps>, forwardedRef) => {
+>(function SelectContentFragment(props: ScopedProps<SelectContentFragmentProps>, forwardedRef) {
   const { __scopeSelect, children, fragment } = props;
   if (!fragment) return null;
 
@@ -582,8 +564,6 @@ const SelectContentFragment = React.forwardRef<
     fragment,
   );
 });
-
-SelectContentFragment.displayName = 'SelectContentFragment';
 
 /* -------------------------------------------------------------------------------------------------
  * SelectContentImpl
@@ -612,8 +592,6 @@ type SelectContentContextValue = {
 
 const [SelectContentProvider, useSelectContentContext] =
   createSelectContext<SelectContentContextValue>(CONTENT_NAME);
-
-const CONTENT_IMPL_NAME = 'SelectContentImpl';
 
 type SelectContentImplElement = SelectPopperPositionElement | SelectItemAlignedPositionElement;
 type DismissableLayerProps = React.ComponentPropsWithoutRef<typeof DismissableLayer>;
@@ -646,8 +624,12 @@ interface SelectContentImplProps
 
 const Slot = createSlot('SelectContent.RemoveScroll');
 
-const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectContentImplProps>(
-  (props: ScopedProps<SelectContentImplProps>, forwardedRef) => {
+const SelectContentImpl = /* @__PURE__ */ React.forwardRef<
+  SelectContentImplElement,
+  SelectContentImplProps
+>(
+  // blank line to reduce diff noise
+  function SelectContentImpl(props: ScopedProps<SelectContentImplProps>, forwardedRef) {
     const { __scopeSelect } = props;
     const {
       position = 'item-aligned',
@@ -928,21 +910,20 @@ const SelectContentImpl = React.forwardRef<SelectContentImplElement, SelectConte
   },
 );
 
-SelectContentImpl.displayName = CONTENT_IMPL_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * SelectItemAlignedPosition
  * -----------------------------------------------------------------------------------------------*/
 
-const ITEM_ALIGNED_POSITION_NAME = 'SelectItemAlignedPosition';
-
 type SelectItemAlignedPositionElement = React.ComponentRef<typeof Primitive.div>;
 interface SelectItemAlignedPositionProps extends PrimitiveDivProps, SelectPopperPrivateProps {}
 
-const SelectItemAlignedPosition = React.forwardRef<
+const SelectItemAlignedPosition = /* @__PURE__ */ React.forwardRef<
   SelectItemAlignedPositionElement,
   SelectItemAlignedPositionProps
->((props: ScopedProps<SelectItemAlignedPositionProps>, forwardedRef) => {
+>(function SelectItemAlignedPosition(
+  props: ScopedProps<SelectItemAlignedPositionProps>,
+  forwardedRef,
+) {
   const { __scopeSelect, onPlaced, ...popperProps } = props;
   const context = useSelectContext(CONTENT_NAME, __scopeSelect);
   const contentContext = useSelectContentContext(CONTENT_NAME, __scopeSelect);
@@ -1149,22 +1130,18 @@ const SelectItemAlignedPosition = React.forwardRef<
   );
 });
 
-SelectItemAlignedPosition.displayName = ITEM_ALIGNED_POSITION_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * SelectPopperPosition
  * -----------------------------------------------------------------------------------------------*/
-
-const POPPER_POSITION_NAME = 'SelectPopperPosition';
 
 type SelectPopperPositionElement = React.ComponentRef<typeof PopperPrimitive.Content>;
 type PopperContentProps = React.ComponentPropsWithoutRef<typeof PopperPrimitive.Content>;
 interface SelectPopperPositionProps extends PopperContentProps, SelectPopperPrivateProps {}
 
-const SelectPopperPosition = React.forwardRef<
+const SelectPopperPosition = /* @__PURE__ */ React.forwardRef<
   SelectPopperPositionElement,
   SelectPopperPositionProps
->((props: ScopedProps<SelectPopperPositionProps>, forwardedRef) => {
+>(function SelectPopperPosition(props: ScopedProps<SelectPopperPositionProps>, forwardedRef) {
   const {
     __scopeSelect,
     align = 'start',
@@ -1197,8 +1174,6 @@ const SelectPopperPosition = React.forwardRef<
   );
 });
 
-SelectPopperPosition.displayName = POPPER_POSITION_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * SelectViewport
  * -----------------------------------------------------------------------------------------------*/
@@ -1220,8 +1195,8 @@ interface SelectViewportProps extends PrimitiveDivProps {
   nonce?: string;
 }
 
-const SelectViewport = React.forwardRef<SelectViewportElement, SelectViewportProps>(
-  (props: ScopedProps<SelectViewportProps>, forwardedRef) => {
+const SelectViewport = /* @__PURE__ */ React.forwardRef<SelectViewportElement, SelectViewportProps>(
+  function SelectViewport(props: ScopedProps<SelectViewportProps>, forwardedRef) {
     const { __scopeSelect, nonce, ...viewportProps } = props;
     const contentContext = useSelectContentContext(VIEWPORT_NAME, __scopeSelect);
     const viewportContext = useSelectViewportContext(VIEWPORT_NAME, __scopeSelect);
@@ -1289,8 +1264,6 @@ const SelectViewport = React.forwardRef<SelectViewportElement, SelectViewportPro
   },
 );
 
-SelectViewport.displayName = VIEWPORT_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * SelectGroup
  * -----------------------------------------------------------------------------------------------*/
@@ -1305,8 +1278,8 @@ const [SelectGroupContextProvider, useSelectGroupContext] =
 type SelectGroupElement = React.ComponentRef<typeof Primitive.div>;
 interface SelectGroupProps extends PrimitiveDivProps {}
 
-const SelectGroup = React.forwardRef<SelectGroupElement, SelectGroupProps>(
-  (props: ScopedProps<SelectGroupProps>, forwardedRef) => {
+const SelectGroup = /* @__PURE__ */ React.forwardRef<SelectGroupElement, SelectGroupProps>(
+  function SelectGroup(props: ScopedProps<SelectGroupProps>, forwardedRef) {
     const { __scopeSelect, ...groupProps } = props;
     const groupId = useId();
     return (
@@ -1317,8 +1290,6 @@ const SelectGroup = React.forwardRef<SelectGroupElement, SelectGroupProps>(
   },
 );
 
-SelectGroup.displayName = GROUP_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * SelectLabel
  * -----------------------------------------------------------------------------------------------*/
@@ -1328,15 +1299,13 @@ const LABEL_NAME = 'SelectLabel';
 type SelectLabelElement = React.ComponentRef<typeof Primitive.div>;
 interface SelectLabelProps extends PrimitiveDivProps {}
 
-const SelectLabel = React.forwardRef<SelectLabelElement, SelectLabelProps>(
-  (props: ScopedProps<SelectLabelProps>, forwardedRef) => {
+const SelectLabel = /* @__PURE__ */ React.forwardRef<SelectLabelElement, SelectLabelProps>(
+  function SelectLabel(props: ScopedProps<SelectLabelProps>, forwardedRef) {
     const { __scopeSelect, ...labelProps } = props;
     const groupContext = useSelectGroupContext(LABEL_NAME, __scopeSelect);
     return <Primitive.div id={groupContext.id} {...labelProps} ref={forwardedRef} />;
   },
 );
-
-SelectLabel.displayName = LABEL_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * SelectItem
@@ -1362,8 +1331,8 @@ interface SelectItemProps extends PrimitiveDivProps {
   textValue?: string;
 }
 
-const SelectItem = React.forwardRef<SelectItemElement, SelectItemProps>(
-  (props: ScopedProps<SelectItemProps>, forwardedRef) => {
+const SelectItem = /* @__PURE__ */ React.forwardRef<SelectItemElement, SelectItemProps>(
+  function SelectItem(props: ScopedProps<SelectItemProps>, forwardedRef) {
     const {
       __scopeSelect,
       value,
@@ -1479,8 +1448,6 @@ const SelectItem = React.forwardRef<SelectItemElement, SelectItemProps>(
   },
 );
 
-SelectItem.displayName = ITEM_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * SelectItemText
  * -----------------------------------------------------------------------------------------------*/
@@ -1490,8 +1457,8 @@ const ITEM_TEXT_NAME = 'SelectItemText';
 type SelectItemTextElement = React.ComponentRef<typeof Primitive.span>;
 interface SelectItemTextProps extends PrimitiveSpanProps {}
 
-const SelectItemText = React.forwardRef<SelectItemTextElement, SelectItemTextProps>(
-  (props: ScopedProps<SelectItemTextProps>, forwardedRef) => {
+const SelectItemText = /* @__PURE__ */ React.forwardRef<SelectItemTextElement, SelectItemTextProps>(
+  function SelectItemText(props: ScopedProps<SelectItemTextProps>, forwardedRef) {
     // We ignore `className` and `style` as this part shouldn't be styled.
     const { __scopeSelect, className, style, ...itemTextProps } = props;
     const context = useSelectContext(ITEM_TEXT_NAME, __scopeSelect);
@@ -1543,8 +1510,6 @@ const SelectItemText = React.forwardRef<SelectItemTextElement, SelectItemTextPro
   },
 );
 
-SelectItemText.displayName = ITEM_TEXT_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * SelectItemIndicator
  * -----------------------------------------------------------------------------------------------*/
@@ -1554,8 +1519,12 @@ const ITEM_INDICATOR_NAME = 'SelectItemIndicator';
 type SelectItemIndicatorElement = React.ComponentRef<typeof Primitive.span>;
 interface SelectItemIndicatorProps extends PrimitiveSpanProps {}
 
-const SelectItemIndicator = React.forwardRef<SelectItemIndicatorElement, SelectItemIndicatorProps>(
-  (props: ScopedProps<SelectItemIndicatorProps>, forwardedRef) => {
+const SelectItemIndicator = /* @__PURE__ */ React.forwardRef<
+  SelectItemIndicatorElement,
+  SelectItemIndicatorProps
+>(
+  // blank line to reduce diff noise
+  function SelectItemIndicator(props: ScopedProps<SelectItemIndicatorProps>, forwardedRef) {
     const { __scopeSelect, ...itemIndicatorProps } = props;
     const itemContext = useSelectItemContext(ITEM_INDICATOR_NAME, __scopeSelect);
     return itemContext.isSelected ? (
@@ -1563,8 +1532,6 @@ const SelectItemIndicator = React.forwardRef<SelectItemIndicatorElement, SelectI
     ) : null;
   },
 );
-
-SelectItemIndicator.displayName = ITEM_INDICATOR_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * SelectScrollUpButton
@@ -1575,10 +1542,10 @@ const SCROLL_UP_BUTTON_NAME = 'SelectScrollUpButton';
 type SelectScrollUpButtonElement = SelectScrollButtonImplElement;
 interface SelectScrollUpButtonProps extends Omit<SelectScrollButtonImplProps, 'onAutoScroll'> {}
 
-const SelectScrollUpButton = React.forwardRef<
+const SelectScrollUpButton = /* @__PURE__ */ React.forwardRef<
   SelectScrollUpButtonElement,
   SelectScrollUpButtonProps
->((props: ScopedProps<SelectScrollUpButtonProps>, forwardedRef) => {
+>(function SelectScrollUpButton(props: ScopedProps<SelectScrollUpButtonProps>, forwardedRef) {
   const contentContext = useSelectContentContext(SCROLL_UP_BUTTON_NAME, props.__scopeSelect);
   const viewportContext = useSelectViewportContext(SCROLL_UP_BUTTON_NAME, props.__scopeSelect);
   const [canScrollUp, setCanScrollUp] = React.useState(false);
@@ -1611,8 +1578,6 @@ const SelectScrollUpButton = React.forwardRef<
   ) : null;
 });
 
-SelectScrollUpButton.displayName = SCROLL_UP_BUTTON_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * SelectScrollDownButton
  * -----------------------------------------------------------------------------------------------*/
@@ -1622,10 +1587,10 @@ const SCROLL_DOWN_BUTTON_NAME = 'SelectScrollDownButton';
 type SelectScrollDownButtonElement = SelectScrollButtonImplElement;
 interface SelectScrollDownButtonProps extends Omit<SelectScrollButtonImplProps, 'onAutoScroll'> {}
 
-const SelectScrollDownButton = React.forwardRef<
+const SelectScrollDownButton = /* @__PURE__ */ React.forwardRef<
   SelectScrollDownButtonElement,
   SelectScrollDownButtonProps
->((props: ScopedProps<SelectScrollDownButtonProps>, forwardedRef) => {
+>(function SelectScrollDownButton(props: ScopedProps<SelectScrollDownButtonProps>, forwardedRef) {
   const contentContext = useSelectContentContext(SCROLL_DOWN_BUTTON_NAME, props.__scopeSelect);
   const viewportContext = useSelectViewportContext(SCROLL_DOWN_BUTTON_NAME, props.__scopeSelect);
   const [canScrollDown, setCanScrollDown] = React.useState(false);
@@ -1661,17 +1626,15 @@ const SelectScrollDownButton = React.forwardRef<
   ) : null;
 });
 
-SelectScrollDownButton.displayName = SCROLL_DOWN_BUTTON_NAME;
-
 type SelectScrollButtonImplElement = React.ComponentRef<typeof Primitive.div>;
 interface SelectScrollButtonImplProps extends PrimitiveDivProps {
   onAutoScroll(): void;
 }
 
-const SelectScrollButtonImpl = React.forwardRef<
+const SelectScrollButtonImpl = /* @__PURE__ */ React.forwardRef<
   SelectScrollButtonImplElement,
   SelectScrollButtonImplProps
->((props: ScopedProps<SelectScrollButtonImplProps>, forwardedRef) => {
+>(function SelectScrollButtonImpl(props: ScopedProps<SelectScrollButtonImplProps>, forwardedRef) {
   const { __scopeSelect, onAutoScroll, ...scrollIndicatorProps } = props;
   const contentContext = useSelectContentContext('SelectScrollButton', __scopeSelect);
   const autoScrollTimerRef = React.useRef<number | null>(null);
@@ -1725,19 +1688,19 @@ const SelectScrollButtonImpl = React.forwardRef<
  * SelectSeparator
  * -----------------------------------------------------------------------------------------------*/
 
-const SEPARATOR_NAME = 'SelectSeparator';
-
 type SelectSeparatorElement = React.ComponentRef<typeof Primitive.div>;
 interface SelectSeparatorProps extends PrimitiveDivProps {}
 
-const SelectSeparator = React.forwardRef<SelectSeparatorElement, SelectSeparatorProps>(
-  (props: ScopedProps<SelectSeparatorProps>, forwardedRef) => {
+const SelectSeparator = /* @__PURE__ */ React.forwardRef<
+  SelectSeparatorElement,
+  SelectSeparatorProps
+>(
+  // blank line to reduce diff noise
+  function SelectSeparator(props: ScopedProps<SelectSeparatorProps>, forwardedRef) {
     const { __scopeSelect, ...separatorProps } = props;
     return <Primitive.div aria-hidden {...separatorProps} ref={forwardedRef} />;
   },
 );
-
-SelectSeparator.displayName = SEPARATOR_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * SelectArrow
@@ -1749,8 +1712,8 @@ type SelectArrowElement = React.ComponentRef<typeof PopperPrimitive.Arrow>;
 type PopperArrowProps = React.ComponentPropsWithoutRef<typeof PopperPrimitive.Arrow>;
 interface SelectArrowProps extends PopperArrowProps {}
 
-const SelectArrow = React.forwardRef<SelectArrowElement, SelectArrowProps>(
-  (props: ScopedProps<SelectArrowProps>, forwardedRef) => {
+const SelectArrow = /* @__PURE__ */ React.forwardRef<SelectArrowElement, SelectArrowProps>(
+  function SelectArrow(props: ScopedProps<SelectArrowProps>, forwardedRef) {
     const { __scopeSelect, ...arrowProps } = props;
     const popperScope = usePopperScope(__scopeSelect);
     const contentContext = useSelectContentContext(ARROW_NAME, __scopeSelect);
@@ -1759,8 +1722,6 @@ const SelectArrow = React.forwardRef<SelectArrowElement, SelectArrowProps>(
     ) : null;
   },
 );
-
-SelectArrow.displayName = ARROW_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * SelectBubbleInput
@@ -1772,8 +1733,15 @@ type SelectBubbleInputElement = React.ComponentRef<typeof Primitive.select>;
 type PrimitiveSelectProps = React.ComponentPropsWithoutRef<typeof Primitive.select>;
 interface SelectBubbleInputProps extends Omit<PrimitiveSelectProps, 'value'> {}
 
-const SelectBubbleInput = React.forwardRef<SelectBubbleInputElement, SelectBubbleInputProps>(
-  ({ __scopeSelect, ...props }: ScopedProps<SelectBubbleInputProps>, forwardedRef) => {
+const SelectBubbleInput = /* @__PURE__ */ React.forwardRef<
+  SelectBubbleInputElement,
+  SelectBubbleInputProps
+>(
+  // blank line to reduce diff noise
+  function SelectBubbleInput(
+    { __scopeSelect, ...props }: ScopedProps<SelectBubbleInputProps>,
+    forwardedRef,
+  ) {
     const context = useSelectContext(BUBBLE_INPUT_NAME, __scopeSelect);
     const { value, onValueChange, required, disabled, name, autoComplete, form } = context;
     const { nativeOptions, nativeSelectKey } = context;
@@ -1848,8 +1816,6 @@ const SelectBubbleInput = React.forwardRef<SelectBubbleInputElement, SelectBubbl
     );
   },
 );
-
-SelectBubbleInput.displayName = BUBBLE_INPUT_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 

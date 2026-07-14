@@ -65,8 +65,6 @@ const Popper: React.FC<PopperProps> = (props: ScopedProps<PopperProps>) => {
   );
 };
 
-Popper.displayName = POPPER_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * PopperAnchor
  * -----------------------------------------------------------------------------------------------*/
@@ -79,8 +77,8 @@ interface PopperAnchorProps extends PrimitiveDivProps {
   virtualRef?: React.RefObject<Measurable | null>;
 }
 
-const PopperAnchor = React.forwardRef<PopperAnchorElement, PopperAnchorProps>(
-  (props: ScopedProps<PopperAnchorProps>, forwardedRef) => {
+const PopperAnchor = /* @__PURE__ */ React.forwardRef<PopperAnchorElement, PopperAnchorProps>(
+  function PopperAnchor(props: ScopedProps<PopperAnchorProps>, forwardedRef) {
     const { __scopePopper, virtualRef, ...anchorProps } = props;
     const context = usePopperContext(ANCHOR_NAME, __scopePopper);
     const ref = React.useRef<PopperAnchorElement>(null);
@@ -132,8 +130,6 @@ const PopperAnchor = React.forwardRef<PopperAnchorElement, PopperAnchorProps>(
   },
 );
 
-PopperAnchor.displayName = ANCHOR_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * PopperContent
  * -----------------------------------------------------------------------------------------------*/
@@ -170,8 +166,8 @@ interface PopperContentProps extends PrimitiveDivProps {
   onPlaced?: () => void;
 }
 
-const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>(
-  (props: ScopedProps<PopperContentProps>, forwardedRef) => {
+const PopperContent = /* @__PURE__ */ React.forwardRef<PopperContentElement, PopperContentProps>(
+  function PopperContent(props: ScopedProps<PopperContentProps>, forwardedRef) {
     const {
       __scopePopper,
       side = 'bottom',
@@ -348,8 +344,6 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
   },
 );
 
-PopperContent.displayName = CONTENT_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * PopperArrow
  * -----------------------------------------------------------------------------------------------*/
@@ -367,10 +361,10 @@ type PopperArrowElement = React.ComponentRef<typeof ArrowPrimitive.Root>;
 type ArrowProps = React.ComponentPropsWithoutRef<typeof ArrowPrimitive.Root>;
 interface PopperArrowProps extends ArrowProps {}
 
-const PopperArrow = React.forwardRef<PopperArrowElement, PopperArrowProps>(function PopperArrow(
-  props: ScopedProps<PopperArrowProps>,
-  forwardedRef,
-) {
+const PopperArrow = /* @__PURE__ */ React.forwardRef<PopperArrowElement, PopperArrowProps>(
+  // ignore prettier to reduce diff noise
+  // prettier-ignore
+  function PopperArrow(props: ScopedProps<PopperArrowProps>, forwardedRef) {
   const { __scopePopper, ...arrowProps } = props;
   const contentContext = useContentContext(ARROW_NAME, __scopePopper);
   const baseSide = OPPOSITE_SIDE[contentContext.placedSide];
@@ -412,9 +406,8 @@ const PopperArrow = React.forwardRef<PopperArrowElement, PopperArrowProps>(funct
       />
     </span>
   );
-});
-
-PopperArrow.displayName = ARROW_NAME;
+},
+);
 
 /* -----------------------------------------------------------------------------------------------*/
 

@@ -28,7 +28,10 @@ interface ToggleProps extends PrimitiveButtonProps {
   onPressedChange?(pressed: boolean): void;
 }
 
-const Toggle = React.forwardRef<ToggleElement, ToggleProps>((props, forwardedRef) => {
+const Toggle = /* @__PURE__ */ React.forwardRef<ToggleElement, ToggleProps>(
+  // ignore prettier to reduce diff noise
+  // prettier-ignore
+  function Toggle(props, forwardedRef) {
   const { pressed: pressedProp, defaultPressed, onPressedChange, ...buttonProps } = props;
 
   const [pressed, setPressed] = useControllableState({
@@ -53,9 +56,8 @@ const Toggle = React.forwardRef<ToggleElement, ToggleProps>((props, forwardedRef
       })}
     />
   );
-});
-
-Toggle.displayName = NAME;
+},
+);
 
 /* ---------------------------------------------------------------------------------------------- */
 

@@ -68,8 +68,12 @@ const [RovingFocusProvider, useRovingFocusContext] =
 type RovingFocusGroupElement = RovingFocusGroupImplElement;
 interface RovingFocusGroupProps extends RovingFocusGroupImplProps {}
 
-const RovingFocusGroup = React.forwardRef<RovingFocusGroupElement, RovingFocusGroupProps>(
-  (props: ScopedProps<RovingFocusGroupProps>, forwardedRef) => {
+const RovingFocusGroup = /* @__PURE__ */ React.forwardRef<
+  RovingFocusGroupElement,
+  RovingFocusGroupProps
+>(
+  // blank line to reduce diff noise
+  function RovingFocusGroup(props: ScopedProps<RovingFocusGroupProps>, forwardedRef) {
     return (
       <Collection.Provider scope={props.__scopeRovingFocusGroup}>
         <Collection.Slot scope={props.__scopeRovingFocusGroup}>
@@ -79,8 +83,6 @@ const RovingFocusGroup = React.forwardRef<RovingFocusGroupElement, RovingFocusGr
     );
   },
 );
-
-RovingFocusGroup.displayName = GROUP_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
@@ -95,10 +97,10 @@ interface RovingFocusGroupImplProps
   preventScrollOnEntryFocus?: boolean;
 }
 
-const RovingFocusGroupImpl = React.forwardRef<
+const RovingFocusGroupImpl = /* @__PURE__ */ React.forwardRef<
   RovingFocusGroupImplElement,
   RovingFocusGroupImplProps
->((props: ScopedProps<RovingFocusGroupImplProps>, forwardedRef) => {
+>(function RovingFocusGroupImpl(props: ScopedProps<RovingFocusGroupImplProps>, forwardedRef) {
   const {
     __scopeRovingFocusGroup,
     orientation,
@@ -212,8 +214,12 @@ interface RovingFocusItemProps extends Omit<PrimitiveSpanProps, 'children'> {
     | ((props: { hasTabStop: boolean; isCurrentTabStop: boolean }) => React.ReactNode);
 }
 
-const RovingFocusGroupItem = React.forwardRef<RovingFocusItemElement, RovingFocusItemProps>(
-  (props: ScopedProps<RovingFocusItemProps>, forwardedRef) => {
+const RovingFocusGroupItem = /* @__PURE__ */ React.forwardRef<
+  RovingFocusItemElement,
+  RovingFocusItemProps
+>(
+  // blank line to reduce diff noise
+  function RovingFocusGroupItem(props: ScopedProps<RovingFocusItemProps>, forwardedRef) {
     const {
       __scopeRovingFocusGroup,
       focusable = true,
@@ -326,8 +332,6 @@ const RovingFocusGroupItem = React.forwardRef<RovingFocusItemElement, RovingFocu
     );
   },
 );
-
-RovingFocusGroupItem.displayName = ITEM_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 

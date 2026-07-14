@@ -119,7 +119,6 @@ const PasswordToggleField: React.FC<PasswordToggleFieldProps> = ({
     </PasswordToggleFieldProvider>
   );
 };
-PasswordToggleField.displayName = PASSWORD_TOGGLE_FIELD_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * PasswordToggleFieldInput
@@ -140,8 +139,12 @@ interface PasswordToggleFieldInputProps
   autoComplete?: 'current-password' | 'new-password';
 }
 
-const PasswordToggleFieldInput = React.forwardRef<HTMLInputElement, PasswordToggleFieldInputProps>(
-  (
+const PasswordToggleFieldInput = /* @__PURE__ */ React.forwardRef<
+  HTMLInputElement,
+  PasswordToggleFieldInputProps
+>(
+  // blank line to reduce diff noise
+  function PasswordToggleFieldInput(
     {
       __scopePasswordToggleField,
       autoComplete = 'current-password',
@@ -151,7 +154,7 @@ const PasswordToggleFieldInput = React.forwardRef<HTMLInputElement, PasswordTogg
       ...props
     }: ScopedProps<PasswordToggleFieldInputProps>,
     forwardedRef,
-  ) => {
+  ) {
     const { visible, inputRef, inputId, syncInputId, setVisible, focusState } =
       usePasswordToggleFieldContext(PASSWORD_TOGGLE_FIELD_INPUT_NAME, __scopePasswordToggleField);
 
@@ -218,7 +221,6 @@ const PasswordToggleFieldInput = React.forwardRef<HTMLInputElement, PasswordTogg
     );
   },
 );
-PasswordToggleFieldInput.displayName = PASSWORD_TOGGLE_FIELD_INPUT_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * PasswordToggleFieldToggle
@@ -230,11 +232,12 @@ type PrimitiveButtonProps = PrimitivePropsWithRef<'button'>;
 
 interface PasswordToggleFieldToggleProps extends Omit<PrimitiveButtonProps, 'type'> {}
 
-const PasswordToggleFieldToggle = React.forwardRef<
+const PasswordToggleFieldToggle = /* @__PURE__ */ React.forwardRef<
   HTMLButtonElement,
   PasswordToggleFieldToggleProps
 >(
-  (
+  // blank line to reduce diff noise
+  function PasswordToggleFieldToggle(
     {
       __scopePasswordToggleField,
       onClick,
@@ -250,7 +253,7 @@ const PasswordToggleFieldToggle = React.forwardRef<
       ...props
     }: ScopedProps<PasswordToggleFieldToggleProps>,
     forwardedRef,
-  ) => {
+  ) {
     const { setVisible, visible, inputRef, inputId, focusState } = usePasswordToggleFieldContext(
       PASSWORD_TOGGLE_FIELD_TOGGLE_NAME,
       __scopePasswordToggleField,
@@ -386,7 +389,6 @@ const PasswordToggleFieldToggle = React.forwardRef<
     );
   },
 );
-PasswordToggleFieldToggle.displayName = PASSWORD_TOGGLE_FIELD_TOGGLE_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * PasswordToggleFieldSlot
@@ -423,7 +425,6 @@ const PasswordToggleFieldSlot: React.FC<PasswordToggleFieldSlotProps> = ({
       ? props.visible
       : props.hidden;
 };
-PasswordToggleFieldSlot.displayName = PASSWORD_TOGGLE_FIELD_SLOT_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * PasswordToggleFieldIcon
@@ -438,8 +439,12 @@ interface PasswordToggleFieldIconProps extends Omit<PrimitiveSvgProps, 'children
   hidden: React.ReactElement;
 }
 
-const PasswordToggleFieldIcon = React.forwardRef<SVGSVGElement, PasswordToggleFieldIconProps>(
-  (
+const PasswordToggleFieldIcon = /* @__PURE__ */ React.forwardRef<
+  SVGSVGElement,
+  PasswordToggleFieldIconProps
+>(
+  // blank line to reduce diff noise
+  function PasswordToggleFieldIcon(
     {
       __scopePasswordToggleField,
       // @ts-expect-error
@@ -447,7 +452,7 @@ const PasswordToggleFieldIcon = React.forwardRef<SVGSVGElement, PasswordToggleFi
       ...props
     }: ScopedProps<PasswordToggleFieldIconProps>,
     forwardedRef,
-  ) => {
+  ) {
     const { visible } = usePasswordToggleFieldContext(
       PASSWORD_TOGGLE_FIELD_ICON_NAME,
       __scopePasswordToggleField,
@@ -460,7 +465,6 @@ const PasswordToggleFieldIcon = React.forwardRef<SVGSVGElement, PasswordToggleFi
     );
   },
 );
-PasswordToggleFieldIcon.displayName = PASSWORD_TOGGLE_FIELD_ICON_NAME;
 
 export {
   PasswordToggleField,

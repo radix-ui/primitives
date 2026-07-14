@@ -193,7 +193,11 @@ interface OneTimePasswordFieldProps
     OneTimePasswordFieldOwnProps,
     Omit<Primitive.PrimitivePropsWithRef<'div'>, keyof OneTimePasswordFieldOwnProps> {}
 
-const OneTimePasswordField = React.forwardRef<HTMLDivElement, OneTimePasswordFieldProps>(
+const OneTimePasswordField = /* @__PURE__ */ React.forwardRef<
+  HTMLDivElement,
+  OneTimePasswordFieldProps
+>(
+  // blank line to reduce diff noise
   function OneTimePasswordFieldImpl(
     {
       __scopeOneTimePasswordField,
@@ -510,7 +514,7 @@ interface OneTimePasswordFieldHiddenInputProps extends Omit<
   | 'autoFocus'
 > {}
 
-const OneTimePasswordFieldHiddenInput = React.forwardRef<
+const OneTimePasswordFieldHiddenInput = /* @__PURE__ */ React.forwardRef<
   HTMLInputElement,
   OneTimePasswordFieldHiddenInputProps
 >(function OneTimePasswordFieldHiddenInput(
@@ -569,7 +573,7 @@ interface OneTimePasswordFieldInputProps extends Omit<
   index?: number;
 }
 
-const OneTimePasswordFieldInput = React.forwardRef<
+const OneTimePasswordFieldInput = /* @__PURE__ */ React.forwardRef<
   HTMLInputElement,
   OneTimePasswordFieldInputProps
 >(function OneTimePasswordFieldInput(

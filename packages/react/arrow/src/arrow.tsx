@@ -5,13 +5,14 @@ import { Primitive } from '@radix-ui/react-primitive';
  * Arrow
  * -----------------------------------------------------------------------------------------------*/
 
-const NAME = 'Arrow';
-
 type ArrowElement = React.ComponentRef<typeof Primitive.svg>;
 type PrimitiveSvgProps = React.ComponentPropsWithoutRef<typeof Primitive.svg>;
 interface ArrowProps extends PrimitiveSvgProps {}
 
-const Arrow = React.forwardRef<ArrowElement, ArrowProps>((props, forwardedRef) => {
+const Arrow = /* @__PURE__ */ React.forwardRef<ArrowElement, ArrowProps>(
+  // ignore prettier to reduce diff noise
+  // prettier-ignore
+  function Arrow(props, forwardedRef) {
   const { children, width = 10, height = 5, ...arrowProps } = props;
   return (
     <Primitive.svg
@@ -26,9 +27,8 @@ const Arrow = React.forwardRef<ArrowElement, ArrowProps>((props, forwardedRef) =
       {props.asChild ? children : <polygon points="0,0 30,0 15,10" />}
     </Primitive.svg>
   );
-});
-
-Arrow.displayName = NAME;
+},
+);
 
 /* -----------------------------------------------------------------------------------------------*/
 

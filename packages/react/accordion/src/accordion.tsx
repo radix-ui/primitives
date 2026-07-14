@@ -39,8 +39,15 @@ interface AccordionMultipleProps extends AccordionImplMultipleProps {
   type: 'multiple';
 }
 
-const Accordion = React.forwardRef<AccordionElement, AccordionSingleProps | AccordionMultipleProps>(
-  (props: ScopedProps<AccordionSingleProps | AccordionMultipleProps>, forwardedRef) => {
+const Accordion = /* @__PURE__ */ React.forwardRef<
+  AccordionElement,
+  AccordionSingleProps | AccordionMultipleProps
+>(
+  // blank line to reduce diff noise
+  function Accordion(
+    props: ScopedProps<AccordionSingleProps | AccordionMultipleProps>,
+    forwardedRef,
+  ) {
     const { type, ...accordionProps } = props;
     const singleProps = accordionProps as AccordionImplSingleProps;
     const multipleProps = accordionProps as AccordionImplMultipleProps;
@@ -55,8 +62,6 @@ const Accordion = React.forwardRef<AccordionElement, AccordionSingleProps | Acco
     );
   },
 );
-
-Accordion.displayName = ACCORDION_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
@@ -96,8 +101,12 @@ interface AccordionImplSingleProps extends AccordionImplProps {
   collapsible?: boolean;
 }
 
-const AccordionImplSingle = React.forwardRef<AccordionImplSingleElement, AccordionImplSingleProps>(
-  (props: ScopedProps<AccordionImplSingleProps>, forwardedRef) => {
+const AccordionImplSingle = /* @__PURE__ */ React.forwardRef<
+  AccordionImplSingleElement,
+  AccordionImplSingleProps
+>(
+  // blank line to reduce diff noise
+  function AccordionImplSingle(props: ScopedProps<AccordionImplSingleProps>, forwardedRef) {
     const {
       value: valueProp,
       defaultValue,
@@ -147,10 +156,10 @@ interface AccordionImplMultipleProps extends AccordionImplProps {
   onValueChange?(value: string[]): void;
 }
 
-const AccordionImplMultiple = React.forwardRef<
+const AccordionImplMultiple = /* @__PURE__ */ React.forwardRef<
   AccordionImplMultipleElement,
   AccordionImplMultipleProps
->((props: ScopedProps<AccordionImplMultipleProps>, forwardedRef) => {
+>(function AccordionImplMultiple(props: ScopedProps<AccordionImplMultipleProps>, forwardedRef) {
   const {
     value: valueProp,
     defaultValue,
@@ -221,8 +230,8 @@ interface AccordionImplProps extends PrimitiveDivProps {
   dir?: Direction;
 }
 
-const AccordionImpl = React.forwardRef<AccordionImplElement, AccordionImplProps>(
-  (props: ScopedProps<AccordionImplProps>, forwardedRef) => {
+const AccordionImpl = /* @__PURE__ */ React.forwardRef<AccordionImplElement, AccordionImplProps>(
+  function AccordionImpl(props: ScopedProps<AccordionImplProps>, forwardedRef) {
     const { __scopeAccordion, disabled, dir, orientation = 'vertical', ...accordionProps } = props;
     const accordionRef = React.useRef<AccordionImplElement>(null);
     const composedRefs = useComposedRefs(accordionRef, forwardedRef);
@@ -352,8 +361,8 @@ interface AccordionItemProps extends Omit<
 /**
  * `AccordionItem` contains all of the parts of a collapsible section inside of an `Accordion`.
  */
-const AccordionItem = React.forwardRef<AccordionItemElement, AccordionItemProps>(
-  (props: ScopedProps<AccordionItemProps>, forwardedRef) => {
+const AccordionItem = /* @__PURE__ */ React.forwardRef<AccordionItemElement, AccordionItemProps>(
+  function AccordionItem(props: ScopedProps<AccordionItemProps>, forwardedRef) {
     const { __scopeAccordion, value, ...accordionItemProps } = props;
     const accordionContext = useAccordionContext(ITEM_NAME, __scopeAccordion);
     const valueContext = useAccordionValueContext(ITEM_NAME, __scopeAccordion);
@@ -390,8 +399,6 @@ const AccordionItem = React.forwardRef<AccordionItemElement, AccordionItemProps>
   },
 );
 
-AccordionItem.displayName = ITEM_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * AccordionHeader
  * -----------------------------------------------------------------------------------------------*/
@@ -406,8 +413,12 @@ interface AccordionHeaderProps extends PrimitiveHeading3Props {}
  * `AccordionHeader` contains the content for the parts of an `AccordionItem` that will be visible
  * whether or not its content is collapsed.
  */
-const AccordionHeader = React.forwardRef<AccordionHeaderElement, AccordionHeaderProps>(
-  (props: ScopedProps<AccordionHeaderProps>, forwardedRef) => {
+const AccordionHeader = /* @__PURE__ */ React.forwardRef<
+  AccordionHeaderElement,
+  AccordionHeaderProps
+>(
+  // blank line to reduce diff noise
+  function AccordionHeader(props: ScopedProps<AccordionHeaderProps>, forwardedRef) {
     const { __scopeAccordion, ...headerProps } = props;
     const accordionContext = useAccordionContext(ACCORDION_NAME, __scopeAccordion);
     const itemContext = useAccordionItemContext(HEADER_NAME, __scopeAccordion);
@@ -423,8 +434,6 @@ const AccordionHeader = React.forwardRef<AccordionHeaderElement, AccordionHeader
   },
 );
 
-AccordionHeader.displayName = HEADER_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * AccordionTrigger
  * -----------------------------------------------------------------------------------------------*/
@@ -439,8 +448,12 @@ interface AccordionTriggerProps extends CollapsibleTriggerProps {}
  * `AccordionTrigger` is the trigger that toggles the collapsed state of an `AccordionItem`. It
  * should always be nested inside of an `AccordionHeader`.
  */
-const AccordionTrigger = React.forwardRef<AccordionTriggerElement, AccordionTriggerProps>(
-  (props: ScopedProps<AccordionTriggerProps>, forwardedRef) => {
+const AccordionTrigger = /* @__PURE__ */ React.forwardRef<
+  AccordionTriggerElement,
+  AccordionTriggerProps
+>(
+  // blank line to reduce diff noise
+  function AccordionTrigger(props: ScopedProps<AccordionTriggerProps>, forwardedRef) {
     const { __scopeAccordion, ...triggerProps } = props;
     const accordionContext = useAccordionContext(ACCORDION_NAME, __scopeAccordion);
     const itemContext = useAccordionItemContext(TRIGGER_NAME, __scopeAccordion);
@@ -461,8 +474,6 @@ const AccordionTrigger = React.forwardRef<AccordionTriggerElement, AccordionTrig
   },
 );
 
-AccordionTrigger.displayName = TRIGGER_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * AccordionContent
  * -----------------------------------------------------------------------------------------------*/
@@ -476,8 +487,12 @@ interface AccordionContentProps extends CollapsibleContentProps {}
 /**
  * `AccordionContent` contains the collapsible content for an `AccordionItem`.
  */
-const AccordionContent = React.forwardRef<AccordionContentElement, AccordionContentProps>(
-  (props: ScopedProps<AccordionContentProps>, forwardedRef) => {
+const AccordionContent = /* @__PURE__ */ React.forwardRef<
+  AccordionContentElement,
+  AccordionContentProps
+>(
+  // blank line to reduce diff noise
+  function AccordionContent(props: ScopedProps<AccordionContentProps>, forwardedRef) {
     const { __scopeAccordion, ...contentProps } = props;
     const accordionContext = useAccordionContext(ACCORDION_NAME, __scopeAccordion);
     const itemContext = useAccordionItemContext(CONTENT_NAME, __scopeAccordion);
@@ -499,8 +514,6 @@ const AccordionContent = React.forwardRef<AccordionContentElement, AccordionCont
     );
   },
 );
-
-AccordionContent.displayName = CONTENT_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 

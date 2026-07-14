@@ -95,8 +95,6 @@ const Dialog: React.FC<DialogProps> = (props: ScopedProps<DialogProps>) => {
   );
 };
 
-Dialog.displayName = DIALOG_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * DialogTrigger
  * -----------------------------------------------------------------------------------------------*/
@@ -107,8 +105,8 @@ type DialogTriggerElement = React.ComponentRef<typeof Primitive.button>;
 type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
 interface DialogTriggerProps extends PrimitiveButtonProps {}
 
-const DialogTrigger = React.forwardRef<DialogTriggerElement, DialogTriggerProps>(
-  (props: ScopedProps<DialogTriggerProps>, forwardedRef) => {
+const DialogTrigger = /* @__PURE__ */ React.forwardRef<DialogTriggerElement, DialogTriggerProps>(
+  function DialogTrigger(props: ScopedProps<DialogTriggerProps>, forwardedRef) {
     const { __scopeDialog, ...triggerProps } = props;
     const context = useDialogContext(TRIGGER_NAME, __scopeDialog);
     const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
@@ -126,8 +124,6 @@ const DialogTrigger = React.forwardRef<DialogTriggerElement, DialogTriggerProps>
     );
   },
 );
-
-DialogTrigger.displayName = TRIGGER_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * DialogPortal
@@ -170,8 +166,6 @@ const DialogPortal: React.FC<DialogPortalProps> = (props: ScopedProps<DialogPort
   );
 };
 
-DialogPortal.displayName = PORTAL_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * DialogOverlay
  * -----------------------------------------------------------------------------------------------*/
@@ -187,8 +181,8 @@ interface DialogOverlayProps extends DialogOverlayImplProps {
   forceMount?: true;
 }
 
-const DialogOverlay = React.forwardRef<DialogOverlayElement, DialogOverlayProps>(
-  (props: ScopedProps<DialogOverlayProps>, forwardedRef) => {
+const DialogOverlay = /* @__PURE__ */ React.forwardRef<DialogOverlayElement, DialogOverlayProps>(
+  function DialogOverlay(props: ScopedProps<DialogOverlayProps>, forwardedRef) {
     const portalContext = usePortalContext(OVERLAY_NAME, props.__scopeDialog);
     const { forceMount = portalContext.forceMount, ...overlayProps } = props;
     const context = useDialogContext(OVERLAY_NAME, props.__scopeDialog);
@@ -200,16 +194,18 @@ const DialogOverlay = React.forwardRef<DialogOverlayElement, DialogOverlayProps>
   },
 );
 
-DialogOverlay.displayName = OVERLAY_NAME;
-
 type DialogOverlayImplElement = React.ComponentRef<typeof Primitive.div>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface DialogOverlayImplProps extends PrimitiveDivProps {}
 
 const Slot = createSlot('DialogOverlay.RemoveScroll');
 
-const DialogOverlayImpl = React.forwardRef<DialogOverlayImplElement, DialogOverlayImplProps>(
-  (props: ScopedProps<DialogOverlayImplProps>, forwardedRef) => {
+const DialogOverlayImpl = /* @__PURE__ */ React.forwardRef<
+  DialogOverlayImplElement,
+  DialogOverlayImplProps
+>(
+  // blank line to reduce diff noise
+  function DialogOverlayImpl(props: ScopedProps<DialogOverlayImplProps>, forwardedRef) {
     const { __scopeDialog, ...overlayProps } = props;
     const context = useDialogContext(OVERLAY_NAME, __scopeDialog);
 
@@ -250,8 +246,8 @@ interface DialogContentProps extends DialogContentTypeProps {
   forceMount?: true;
 }
 
-const DialogContent = React.forwardRef<DialogContentElement, DialogContentProps>(
-  (props: ScopedProps<DialogContentProps>, forwardedRef) => {
+const DialogContent = /* @__PURE__ */ React.forwardRef<DialogContentElement, DialogContentProps>(
+  function DialogContent(props: ScopedProps<DialogContentProps>, forwardedRef) {
     const portalContext = usePortalContext(CONTENT_NAME, props.__scopeDialog);
     const { forceMount = portalContext.forceMount, ...contentProps } = props;
     const context = useDialogContext(CONTENT_NAME, props.__scopeDialog);
@@ -267,8 +263,6 @@ const DialogContent = React.forwardRef<DialogContentElement, DialogContentProps>
   },
 );
 
-DialogContent.displayName = CONTENT_NAME;
-
 /* -----------------------------------------------------------------------------------------------*/
 
 type DialogContentTypeElement = DialogContentImplElement;
@@ -277,8 +271,12 @@ interface DialogContentTypeProps extends Omit<
   'trapFocus' | 'disableOutsidePointerEvents'
 > {}
 
-const DialogContentModal = React.forwardRef<DialogContentTypeElement, DialogContentTypeProps>(
-  (props: ScopedProps<DialogContentTypeProps>, forwardedRef) => {
+const DialogContentModal = /* @__PURE__ */ React.forwardRef<
+  DialogContentTypeElement,
+  DialogContentTypeProps
+>(
+  // blank line to reduce diff noise
+  function DialogContentModal(props: ScopedProps<DialogContentTypeProps>, forwardedRef) {
     const context = useDialogContext(CONTENT_NAME, props.__scopeDialog);
     const contentRef = React.useRef<HTMLDivElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, context.contentRef, contentRef);
@@ -322,8 +320,12 @@ const DialogContentModal = React.forwardRef<DialogContentTypeElement, DialogCont
 
 /* -----------------------------------------------------------------------------------------------*/
 
-const DialogContentNonModal = React.forwardRef<DialogContentTypeElement, DialogContentTypeProps>(
-  (props: ScopedProps<DialogContentTypeProps>, forwardedRef) => {
+const DialogContentNonModal = /* @__PURE__ */ React.forwardRef<
+  DialogContentTypeElement,
+  DialogContentTypeProps
+>(
+  // blank line to reduce diff noise
+  function DialogContentNonModal(props: ScopedProps<DialogContentTypeProps>, forwardedRef) {
     const context = useDialogContext(CONTENT_NAME, props.__scopeDialog);
     const hasInteractedOutsideRef = React.useRef(false);
     const hasPointerDownOutsideRef = React.useRef(false);
@@ -402,8 +404,12 @@ interface DialogContentImplProps extends Omit<DismissableLayerProps, 'onDismiss'
   onCloseAutoFocus?: FocusScopeProps['onUnmountAutoFocus'];
 }
 
-const DialogContentImpl = React.forwardRef<DialogContentImplElement, DialogContentImplProps>(
-  (props: ScopedProps<DialogContentImplProps>, forwardedRef) => {
+const DialogContentImpl = /* @__PURE__ */ React.forwardRef<
+  DialogContentImplElement,
+  DialogContentImplProps
+>(
+  // blank line to reduce diff noise
+  function DialogContentImpl(props: ScopedProps<DialogContentImplProps>, forwardedRef) {
     const { __scopeDialog, trapFocus, onOpenAutoFocus, onCloseAutoFocus, ...contentProps } = props;
     const context = useDialogContext(CONTENT_NAME, __scopeDialog);
 
@@ -447,8 +453,8 @@ type DialogTitleElement = React.ComponentRef<typeof Primitive.h2>;
 type PrimitiveHeading2Props = React.ComponentPropsWithoutRef<typeof Primitive.h2>;
 interface DialogTitleProps extends PrimitiveHeading2Props {}
 
-const DialogTitle = React.forwardRef<DialogTitleElement, DialogTitleProps>(
-  (props: ScopedProps<DialogTitleProps>, forwardedRef) => {
+const DialogTitle = /* @__PURE__ */ React.forwardRef<DialogTitleElement, DialogTitleProps>(
+  function DialogTitle(props: ScopedProps<DialogTitleProps>, forwardedRef) {
     const { __scopeDialog, ...titleProps } = props;
     const context = useDialogContext(TITLE_NAME, __scopeDialog);
     const { setTitleCount } = context;
@@ -460,8 +466,6 @@ const DialogTitle = React.forwardRef<DialogTitleElement, DialogTitleProps>(
   },
 );
 
-DialogTitle.displayName = TITLE_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * DialogDescription
  * -----------------------------------------------------------------------------------------------*/
@@ -472,8 +476,12 @@ type DialogDescriptionElement = React.ComponentRef<typeof Primitive.p>;
 type PrimitiveParagraphProps = React.ComponentPropsWithoutRef<typeof Primitive.p>;
 interface DialogDescriptionProps extends PrimitiveParagraphProps {}
 
-const DialogDescription = React.forwardRef<DialogDescriptionElement, DialogDescriptionProps>(
-  (props: ScopedProps<DialogDescriptionProps>, forwardedRef) => {
+const DialogDescription = /* @__PURE__ */ React.forwardRef<
+  DialogDescriptionElement,
+  DialogDescriptionProps
+>(
+  // blank line to reduce diff noise
+  function DialogDescription(props: ScopedProps<DialogDescriptionProps>, forwardedRef) {
     const { __scopeDialog, ...descriptionProps } = props;
     const context = useDialogContext(DESCRIPTION_NAME, __scopeDialog);
     const { setDescriptionCount } = context;
@@ -485,8 +493,6 @@ const DialogDescription = React.forwardRef<DialogDescriptionElement, DialogDescr
   },
 );
 
-DialogDescription.displayName = DESCRIPTION_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * DialogClose
  * -----------------------------------------------------------------------------------------------*/
@@ -496,8 +502,8 @@ const CLOSE_NAME = 'DialogClose';
 type DialogCloseElement = React.ComponentRef<typeof Primitive.button>;
 interface DialogCloseProps extends PrimitiveButtonProps {}
 
-const DialogClose = React.forwardRef<DialogCloseElement, DialogCloseProps>(
-  (props: ScopedProps<DialogCloseProps>, forwardedRef) => {
+const DialogClose = /* @__PURE__ */ React.forwardRef<DialogCloseElement, DialogCloseProps>(
+  function DialogClose(props: ScopedProps<DialogCloseProps>, forwardedRef) {
     const { __scopeDialog, ...closeProps } = props;
     const context = useDialogContext(CLOSE_NAME, __scopeDialog);
     return (
@@ -510,8 +516,6 @@ const DialogClose = React.forwardRef<DialogCloseElement, DialogCloseProps>(
     );
   },
 );
-
-DialogClose.displayName = CLOSE_NAME;
 
 /** @deprecated Noop component to avoid breaking changes. */
 export const WarningProvider: React.FC<

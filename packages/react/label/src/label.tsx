@@ -5,13 +5,14 @@ import { Primitive } from '@radix-ui/react-primitive';
  * Label
  * -----------------------------------------------------------------------------------------------*/
 
-const NAME = 'Label';
-
 type LabelElement = React.ComponentRef<typeof Primitive.label>;
 type PrimitiveLabelProps = React.ComponentPropsWithoutRef<typeof Primitive.label>;
 interface LabelProps extends PrimitiveLabelProps {}
 
-const Label = React.forwardRef<LabelElement, LabelProps>((props, forwardedRef) => {
+const Label = /* @__PURE__ */ React.forwardRef<LabelElement, LabelProps>(
+  // ignore prettier to reduce diff noise
+  // prettier-ignore
+  function Label(props, forwardedRef) {
   return (
     <Primitive.label
       {...props}
@@ -27,9 +28,8 @@ const Label = React.forwardRef<LabelElement, LabelProps>((props, forwardedRef) =
       }}
     />
   );
-});
-
-Label.displayName = NAME;
+},
+);
 
 /* -----------------------------------------------------------------------------------------------*/
 
