@@ -4,7 +4,7 @@ import { composeEventHandlers, RovingFocus } from 'radix-ui/internal';
 
 type Direction = 'ltr' | 'rtl';
 
-const RovingFocusContext = /* @__PURE__ */ React.createContext<{
+const RovingFocusContext = React.createContext<{
   dir: 'ltr' | 'rtl';
   setDir: React.Dispatch<React.SetStateAction<Direction>>;
 }>({

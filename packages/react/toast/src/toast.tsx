@@ -344,7 +344,7 @@ const FocusProxy = /* @__PURE__ */ React.forwardRef<
   ScopedProps<FocusProxyProps>
 >(
   // blank line to reduce diff noise
-  function FocusProxy(props, forwardedRef) {
+  function ToastFocusProxy(props, forwardedRef) {
     const { __scopeToast, onFocusFromOutsideViewport, ...proxyProps } = props;
     const context = useToastProviderContext(FOCUS_PROXY_NAME, __scopeToast);
 
