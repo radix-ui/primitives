@@ -362,51 +362,49 @@ type ArrowProps = React.ComponentPropsWithoutRef<typeof ArrowPrimitive.Root>;
 interface PopperArrowProps extends ArrowProps {}
 
 const PopperArrow = /* @__PURE__ */ React.forwardRef<PopperArrowElement, PopperArrowProps>(
-  // ignore prettier to reduce diff noise
-  // prettier-ignore
   function PopperArrow(props: ScopedProps<PopperArrowProps>, forwardedRef) {
-  const { __scopePopper, ...arrowProps } = props;
-  const contentContext = useContentContext(ARROW_NAME, __scopePopper);
-  const baseSide = OPPOSITE_SIDE[contentContext.placedSide];
+    const { __scopePopper, ...arrowProps } = props;
+    const contentContext = useContentContext(ARROW_NAME, __scopePopper);
+    const baseSide = OPPOSITE_SIDE[contentContext.placedSide];
 
-  return (
-    // we have to use an extra wrapper because `ResizeObserver` (used by `useSize`)
-    // doesn't report size as we'd expect on SVG elements.
-    // it reports their bounding box which is effectively the largest path inside the SVG.
-    <span
-      ref={contentContext.onArrowChange}
-      style={{
-        position: 'absolute',
-        left: contentContext.arrowX,
-        top: contentContext.arrowY,
-        [baseSide]: 0,
-        transformOrigin: {
-          top: '',
-          right: '0 0',
-          bottom: 'center 0',
-          left: '100% 0',
-        }[contentContext.placedSide],
-        transform: {
-          top: 'translateY(100%)',
-          right: 'translateY(50%) rotate(90deg) translateX(-50%)',
-          bottom: `rotate(180deg)`,
-          left: 'translateY(50%) rotate(-90deg) translateX(50%)',
-        }[contentContext.placedSide],
-        visibility: contentContext.shouldHideArrow ? 'hidden' : undefined,
-      }}
-    >
-      <ArrowPrimitive.Root
-        {...arrowProps}
-        ref={forwardedRef}
+    return (
+      // we have to use an extra wrapper because `ResizeObserver` (used by `useSize`)
+      // doesn't report size as we'd expect on SVG elements.
+      // it reports their bounding box which is effectively the largest path inside the SVG.
+      <span
+        ref={contentContext.onArrowChange}
         style={{
-          ...arrowProps.style,
-          // ensures the element can be measured correctly (mostly for if SVG)
-          display: 'block',
+          position: 'absolute',
+          left: contentContext.arrowX,
+          top: contentContext.arrowY,
+          [baseSide]: 0,
+          transformOrigin: {
+            top: '',
+            right: '0 0',
+            bottom: 'center 0',
+            left: '100% 0',
+          }[contentContext.placedSide],
+          transform: {
+            top: 'translateY(100%)',
+            right: 'translateY(50%) rotate(90deg) translateX(-50%)',
+            bottom: `rotate(180deg)`,
+            left: 'translateY(50%) rotate(-90deg) translateX(50%)',
+          }[contentContext.placedSide],
+          visibility: contentContext.shouldHideArrow ? 'hidden' : undefined,
         }}
-      />
-    </span>
-  );
-},
+      >
+        <ArrowPrimitive.Root
+          {...arrowProps}
+          ref={forwardedRef}
+          style={{
+            ...arrowProps.style,
+            // ensures the element can be measured correctly (mostly for if SVG)
+            display: 'block',
+          }}
+        />
+      </span>
+    );
+  },
 );
 
 /* -----------------------------------------------------------------------------------------------*/

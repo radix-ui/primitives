@@ -17,17 +17,15 @@ interface PortalProps extends PrimitiveDivProps {
 }
 
 const Portal = /* @__PURE__ */ React.forwardRef<PortalElement, PortalProps>(
-  // ignore prettier to reduce diff noise
-  // prettier-ignore
   function Portal(props, forwardedRef) {
-  const { container: containerProp, ...portalProps } = props;
-  const [mounted, setMounted] = React.useState(false);
-  useLayoutEffect(() => setMounted(true), []);
-  const container = containerProp || (mounted && globalThis?.document?.body);
-  return container
-    ? ReactDOM.createPortal(<Primitive.div {...portalProps} ref={forwardedRef} />, container)
-    : null;
-},
+    const { container: containerProp, ...portalProps } = props;
+    const [mounted, setMounted] = React.useState(false);
+    useLayoutEffect(() => setMounted(true), []);
+    const container = containerProp || (mounted && globalThis?.document?.body);
+    return container
+      ? ReactDOM.createPortal(<Primitive.div {...portalProps} ref={forwardedRef} />, container)
+      : null;
+  },
 );
 
 /* -----------------------------------------------------------------------------------------------*/

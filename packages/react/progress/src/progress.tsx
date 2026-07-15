@@ -114,7 +114,7 @@ function isNumber(value: any): value is number {
 }
 
 function isValidMaxNumber(max: any): max is number {
-  // prettier-ignore
+  // oxfmt-ignore
   return (
     isNumber(max) &&
     !isNaN(max) &&
@@ -123,7 +123,7 @@ function isValidMaxNumber(max: any): max is number {
 }
 
 function isValidValueNumber(value: any, max: number): value is number {
-  // prettier-ignore
+  // oxfmt-ignore
   return (
     isNumber(value) &&
     !isNaN(value) &&

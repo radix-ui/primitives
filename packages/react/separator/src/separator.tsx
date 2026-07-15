@@ -23,26 +23,24 @@ interface SeparatorProps extends PrimitiveDivProps {
 }
 
 const Separator = /* @__PURE__ */ React.forwardRef<SeparatorElement, SeparatorProps>(
-  // ignore prettier to reduce diff noise
-  // prettier-ignore
   function Separator(props, forwardedRef) {
-  const { decorative, orientation: orientationProp = DEFAULT_ORIENTATION, ...domProps } = props;
-  const orientation = isValidOrientation(orientationProp) ? orientationProp : DEFAULT_ORIENTATION;
-  // `aria-orientation` defaults to `horizontal` so we only need it if `orientation` is vertical
-  const ariaOrientation = orientation === 'vertical' ? orientation : undefined;
-  const semanticProps = decorative
-    ? { role: 'none' }
-    : { 'aria-orientation': ariaOrientation, role: 'separator' };
+    const { decorative, orientation: orientationProp = DEFAULT_ORIENTATION, ...domProps } = props;
+    const orientation = isValidOrientation(orientationProp) ? orientationProp : DEFAULT_ORIENTATION;
+    // `aria-orientation` defaults to `horizontal` so we only need it if `orientation` is vertical
+    const ariaOrientation = orientation === 'vertical' ? orientation : undefined;
+    const semanticProps = decorative
+      ? { role: 'none' }
+      : { 'aria-orientation': ariaOrientation, role: 'separator' };
 
-  return (
-    <Primitive.div
-      data-orientation={orientation}
-      {...semanticProps}
-      {...domProps}
-      ref={forwardedRef}
-    />
-  );
-},
+    return (
+      <Primitive.div
+        data-orientation={orientation}
+        {...semanticProps}
+        {...domProps}
+        ref={forwardedRef}
+      />
+    );
+  },
 );
 
 /* -----------------------------------------------------------------------------------------------*/

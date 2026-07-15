@@ -29,34 +29,32 @@ interface ToggleProps extends PrimitiveButtonProps {
 }
 
 const Toggle = /* @__PURE__ */ React.forwardRef<ToggleElement, ToggleProps>(
-  // ignore prettier to reduce diff noise
-  // prettier-ignore
   function Toggle(props, forwardedRef) {
-  const { pressed: pressedProp, defaultPressed, onPressedChange, ...buttonProps } = props;
+    const { pressed: pressedProp, defaultPressed, onPressedChange, ...buttonProps } = props;
 
-  const [pressed, setPressed] = useControllableState({
-    prop: pressedProp,
-    onChange: onPressedChange,
-    defaultProp: defaultPressed ?? false,
-    caller: NAME,
-  });
+    const [pressed, setPressed] = useControllableState({
+      prop: pressedProp,
+      onChange: onPressedChange,
+      defaultProp: defaultPressed ?? false,
+      caller: NAME,
+    });
 
-  return (
-    <Primitive.button
-      type="button"
-      aria-pressed={pressed}
-      data-state={pressed ? 'on' : 'off'}
-      data-disabled={props.disabled ? '' : undefined}
-      {...buttonProps}
-      ref={forwardedRef}
-      onClick={composeEventHandlers(props.onClick, () => {
-        if (!props.disabled) {
-          setPressed(!pressed);
-        }
-      })}
-    />
-  );
-},
+    return (
+      <Primitive.button
+        type="button"
+        aria-pressed={pressed}
+        data-state={pressed ? 'on' : 'off'}
+        data-disabled={props.disabled ? '' : undefined}
+        {...buttonProps}
+        ref={forwardedRef}
+        onClick={composeEventHandlers(props.onClick, () => {
+          if (!props.disabled) {
+            setPressed(!pressed);
+          }
+        })}
+      />
+    );
+  },
 );
 
 /* ---------------------------------------------------------------------------------------------- */

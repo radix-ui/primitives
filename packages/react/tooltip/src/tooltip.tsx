@@ -686,7 +686,7 @@ function isPointInPolygon(point: Point, polygon: Polygon) {
     const xj = jj.x;
     const yj = jj.y;
 
-    // prettier-ignore
+    // oxfmt-ignore
     const intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
     if (intersect) inside = !inside;
   }

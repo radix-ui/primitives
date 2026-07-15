@@ -81,101 +81,99 @@ interface AnnounceProps extends PrimitiveDivProps {
 }
 
 const Announce = /* @__PURE__ */ React.forwardRef<AnnounceElement, AnnounceProps>(
-  // ignore prettier to reduce diff noise
-  // prettier-ignore
   function Announce(props, forwardedRef) {
-  const {
-    'aria-relevant': ariaRelevant,
-    children,
-    type = 'polite',
-    role = ROLES[type],
-    regionIdentifier,
-    ...regionProps
-  } = props;
+    const {
+      'aria-relevant': ariaRelevant,
+      children,
+      type = 'polite',
+      role = ROLES[type],
+      regionIdentifier,
+      ...regionProps
+    } = props;
 
-  const ariaAtomic = ['true', true].includes(regionProps['aria-atomic'] as any);
+    const ariaAtomic = ['true', true].includes(regionProps['aria-atomic'] as any);
 
-  // The region is appended to the root document node, which is usually the global `document` but in
-  // some contexts may be another node. After the Announce element ref is attached, we set the
-  // ownerDocumentRef to make sure we have the right root node. We should only need to do this once.
-  const ownerDocumentRef = React.useRef(document);
-  const setOwnerDocumentFromRef = React.useCallback((node: HTMLDivElement) => {
-    if (node) {
-      ownerDocumentRef.current = node.ownerDocument;
-    }
-  }, []);
-  const ownRef = React.useRef<HTMLDivElement | null>(null);
-  const ref = useComposedRefs(forwardedRef, ownRef, setOwnerDocumentFromRef);
-
-  const [region, setRegion] = React.useState<HTMLElement>();
-  const relevant = ariaRelevant
-    ? Array.isArray(ariaRelevant)
-      ? ariaRelevant.join(' ')
-      : ariaRelevant
-    : undefined;
-
-  const getLiveRegionElement = React.useCallback(() => {
-    const ownerDocument = ownerDocumentRef.current;
-    const regionConfig = { type, role, relevant, id: regionIdentifier, atomic: ariaAtomic };
-    const regionSelector = buildSelector(regionConfig);
-    const element = ownerDocument.querySelector(regionSelector);
-
-    return element || buildLiveRegionElement(ownerDocument, regionConfig);
-  }, [ariaAtomic, relevant, role, type, regionIdentifier]);
-
-  useLayoutEffect(() => {
-    setRegion(getLiveRegionElement() as HTMLElement);
-  }, [getLiveRegionElement]);
-
-  // In some screen reader/browser combinations, alerts coming from an inactive browser tab may be
-  // announced, which is a confusing experience for a user interacting with a completely different
-  // page. When the page visibility changes we'll update the `role` and `aria-live` attributes of
-  // our region element to prevent that.
-  // https://inclusive-components.design/notifications/#restrictingmessagestocontexts
-  React.useEffect(() => {
-    const ownerDocument = ownerDocumentRef.current;
-    function updateAttributesOnVisibilityChange() {
-      regionElement.setAttribute('role', ownerDocument.hidden ? 'none' : role);
-      regionElement.setAttribute('aria-live', ownerDocument.hidden ? 'off' : type);
-    }
-
-    // Ok, so this might look a little weird and confusing, but here's what's going on:
-    //   - We need to hide `aria-live` regions via a global event listener, as noted in the comment
-    //     above.
-    //   - We only need one listener per region. Keep in mind that each `Announce` does not
-    //     necessarily generate a unique live region element.
-    //   - We track whether or not a listener has already been attached for a given region in a map
-    //     so we can skip these effects after `Announce` is used again with a shared live region.
-    const regionElement = getLiveRegionElement();
-
-    if (!listenerMap.get(regionElement)) {
-      ownerDocument.addEventListener('visibilitychange', updateAttributesOnVisibilityChange);
-      listenerMap.set(regionElement, 1);
-    } else {
-      const announceCount = listenerMap.get(regionElement)!;
-      listenerMap.set(regionElement, announceCount + 1);
-    }
-
-    return function () {
-      const announceCount = listenerMap.get(regionElement)!;
-      listenerMap.set(regionElement, announceCount - 1);
-      if (announceCount === 1) {
-        ownerDocument.removeEventListener('visibilitychange', updateAttributesOnVisibilityChange);
+    // The region is appended to the root document node, which is usually the global `document` but in
+    // some contexts may be another node. After the Announce element ref is attached, we set the
+    // ownerDocumentRef to make sure we have the right root node. We should only need to do this once.
+    const ownerDocumentRef = React.useRef(document);
+    const setOwnerDocumentFromRef = React.useCallback((node: HTMLDivElement) => {
+      if (node) {
+        ownerDocumentRef.current = node.ownerDocument;
       }
-    };
-  }, [getLiveRegionElement, role, type]);
+    }, []);
+    const ownRef = React.useRef<HTMLDivElement | null>(null);
+    const ref = useComposedRefs(forwardedRef, ownRef, setOwnerDocumentFromRef);
 
-  return (
-    <React.Fragment>
-      <Primitive.div {...regionProps} ref={ref}>
-        {children}
-      </Primitive.div>
+    const [region, setRegion] = React.useState<HTMLElement>();
+    const relevant = ariaRelevant
+      ? Array.isArray(ariaRelevant)
+        ? ariaRelevant.join(' ')
+        : ariaRelevant
+      : undefined;
 
-      {/* portal into live region for screen reader announcements */}
-      {region && ReactDOM.createPortal(<div>{children}</div>, region)}
-    </React.Fragment>
-  );
-},
+    const getLiveRegionElement = React.useCallback(() => {
+      const ownerDocument = ownerDocumentRef.current;
+      const regionConfig = { type, role, relevant, id: regionIdentifier, atomic: ariaAtomic };
+      const regionSelector = buildSelector(regionConfig);
+      const element = ownerDocument.querySelector(regionSelector);
+
+      return element || buildLiveRegionElement(ownerDocument, regionConfig);
+    }, [ariaAtomic, relevant, role, type, regionIdentifier]);
+
+    useLayoutEffect(() => {
+      setRegion(getLiveRegionElement() as HTMLElement);
+    }, [getLiveRegionElement]);
+
+    // In some screen reader/browser combinations, alerts coming from an inactive browser tab may be
+    // announced, which is a confusing experience for a user interacting with a completely different
+    // page. When the page visibility changes we'll update the `role` and `aria-live` attributes of
+    // our region element to prevent that.
+    // https://inclusive-components.design/notifications/#restrictingmessagestocontexts
+    React.useEffect(() => {
+      const ownerDocument = ownerDocumentRef.current;
+      function updateAttributesOnVisibilityChange() {
+        regionElement.setAttribute('role', ownerDocument.hidden ? 'none' : role);
+        regionElement.setAttribute('aria-live', ownerDocument.hidden ? 'off' : type);
+      }
+
+      // Ok, so this might look a little weird and confusing, but here's what's going on:
+      //   - We need to hide `aria-live` regions via a global event listener, as noted in the comment
+      //     above.
+      //   - We only need one listener per region. Keep in mind that each `Announce` does not
+      //     necessarily generate a unique live region element.
+      //   - We track whether or not a listener has already been attached for a given region in a map
+      //     so we can skip these effects after `Announce` is used again with a shared live region.
+      const regionElement = getLiveRegionElement();
+
+      if (!listenerMap.get(regionElement)) {
+        ownerDocument.addEventListener('visibilitychange', updateAttributesOnVisibilityChange);
+        listenerMap.set(regionElement, 1);
+      } else {
+        const announceCount = listenerMap.get(regionElement)!;
+        listenerMap.set(regionElement, announceCount + 1);
+      }
+
+      return function () {
+        const announceCount = listenerMap.get(regionElement)!;
+        listenerMap.set(regionElement, announceCount - 1);
+        if (announceCount === 1) {
+          ownerDocument.removeEventListener('visibilitychange', updateAttributesOnVisibilityChange);
+        }
+      };
+    }, [getLiveRegionElement, role, type]);
+
+    return (
+      <React.Fragment>
+        <Primitive.div {...regionProps} ref={ref}>
+          {children}
+        </Primitive.div>
+
+        {/* portal into live region for screen reader announcements */}
+        {region && ReactDOM.createPortal(<div>{children}</div>, region)}
+      </React.Fragment>
+    );
+  },
 );
 
 /* ---------------------------------------------------------------------------------------------- */

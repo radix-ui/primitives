@@ -1001,7 +1001,12 @@ const SelectItemAlignedPosition = /* @__PURE__ */ React.forwardRef<
       const contentPaddingTop = parseInt(contentStyles.paddingTop, 10);
       const contentBorderBottomWidth = parseInt(contentStyles.borderBottomWidth, 10);
       const contentPaddingBottom = parseInt(contentStyles.paddingBottom, 10);
-      const fullContentHeight = contentBorderTopWidth + contentPaddingTop + itemsHeight + contentPaddingBottom + contentBorderBottomWidth; // prettier-ignore
+      const fullContentHeight =
+        contentBorderTopWidth +
+        contentPaddingTop +
+        itemsHeight +
+        contentPaddingBottom +
+        contentBorderBottomWidth;
       const minContentHeight = Math.min(selectedItem.offsetHeight * 5, fullContentHeight);
 
       const viewportStyles = window.getComputedStyle(viewport);
