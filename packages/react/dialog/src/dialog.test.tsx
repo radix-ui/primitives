@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { axe } from 'vitest-axe';
 import type { RenderResult } from '@testing-library/react';
-import { render, fireEvent, cleanup, screen } from '@testing-library/react';
+import { act, render, fireEvent, cleanup, screen } from '@testing-library/react';
+import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
 import * as Dialog from './dialog';
 import type { MockInstance } from 'vitest';
 import { describe, it, afterEach, beforeEach, vi, expect } from 'vitest';
@@ -237,5 +238,81 @@ describe('given two overlapping modal Dialogs (forceMount)', () => {
     fireEvent.click(screen.getByText('close-a'));
     fireEvent.click(screen.getByText('close-b'));
     expect(document.body.style.pointerEvents).toBe('');
+  });
+});
+
+describe('given a modal Dialog containing a nested modal layer (eg. a DropdownMenu)', () => {
+  async function waitForDocumentPointerDownListener() {
+    // `DismissableLayer` registers its `pointerdown` listener in a `setTimeout`.
+    await act(async () => {
+      await new Promise((resolve) => window.setTimeout(resolve, 0));
+    });
+  }
+
+  function firePointerMouseClick(target: Element) {
+    fireEvent.pointerDown(target, { pointerType: 'mouse' });
+    fireEvent.mouseDown(target);
+    fireEvent.pointerUp(target, { pointerType: 'mouse' });
+    fireEvent.mouseUp(target);
+    fireEvent.click(target);
+  }
+
+  afterEach(() => {
+    cleanup();
+    document.body.style.pointerEvents = '';
+  });
+
+  // Regression test for https://github.com/radix-ui/primitives/issues/4035
+  it('does not call `onOpenChange(false)` on a controlled dialog when the nested layer is dismissed by an outside interaction', async () => {
+    const onOpenChange = vi.fn();
+    const onNestedLayerDismiss = vi.fn();
+
+    function ControlledDialog() {
+      const [open, setOpen] = React.useState(true);
+      const [menuOpen, setMenuOpen] = React.useState(false);
+      return (
+        <>
+          <Dialog.Root
+            open={open}
+            onOpenChange={(nextOpen) => {
+              onOpenChange(nextOpen);
+              setOpen(nextOpen);
+            }}
+          >
+            <Dialog.Portal>
+              <Dialog.Overlay />
+              <Dialog.Content>
+                <Dialog.Title>Title</Dialog.Title>
+                <button type="button" onClick={() => setMenuOpen(true)}>
+                  open menu
+                </button>
+                {menuOpen ? (
+                  <DismissableLayer disableOutsidePointerEvents onDismiss={onNestedLayerDismiss}>
+                    <button type="button">menu item</button>
+                  </DismissableLayer>
+                ) : null}
+              </Dialog.Content>
+            </Dialog.Portal>
+          </Dialog.Root>
+          <button type="button">outside</button>
+        </>
+      );
+    }
+
+    render(<ControlledDialog />);
+    await waitForDocumentPointerDownListener();
+
+    // Open the nested layer so it becomes the top-most layer.
+    fireEvent.click(screen.getByText('open menu'));
+    await waitForDocumentPointerDownListener();
+
+    // An outside interaction dismisses the (higher) nested layer but must leave
+    // the dialog open, since the dialog is not the top-most layer.
+    firePointerMouseClick(screen.getByText('outside'));
+    await waitForDocumentPointerDownListener();
+
+    expect(onNestedLayerDismiss).toHaveBeenCalledTimes(1);
+    expect(onOpenChange).not.toHaveBeenCalled();
+    expect(screen.getByText('open menu')).toBeInTheDocument();
   });
 });
