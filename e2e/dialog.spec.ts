@@ -225,6 +225,48 @@ test.describe('Dialog', () => {
   });
 });
 
+test.describe('Dialog with a nested DropdownMenu', () => {
+  test.beforeEach(async ({ page }) => {
+    await visitStory(page, 'dialog--with-dropdown-menu');
+  });
+
+  // Regression test for https://github.com/radix-ui/primitives/issues/4035
+  test('dismissing the dropdown does not close the dialog', async ({ page }) => {
+    await page.getByText('open', { exact: true }).click();
+    await expect(page.getByTestId('dialog-state')).toHaveText('open');
+
+    // Open the nested dropdown menu.
+    await page.getByText('open menu', { exact: true }).click();
+    await expect(page.getByText('menu item', { exact: true })).toBeVisible();
+
+    // Let Dialog's dismiss/pointer-events effects settle after opening.
+    await page.waitForTimeout(150);
+
+    // Click the dialog overlay outside the dropdown. While the modal dropdown
+    // is open, the dialog content is `pointer-events: none`, so this mirrors a
+    // user clicking "inside the dialog, outside the dropdown".
+    await page.getByTestId('overlay').click({ position: { x: 5, y: 5 } });
+
+    // The dropdown closes, but the dialog stays open.
+    await expect(page.getByText('menu item', { exact: true })).toHaveCount(0);
+    await expect(page.getByTestId('dialog-state')).toHaveText('open');
+  });
+
+  test('pressing Escape closes only the dropdown', async ({ page }) => {
+    await page.getByText('open', { exact: true }).click();
+    await expect(page.getByTestId('dialog-state')).toHaveText('open');
+
+    await page.getByText('open menu', { exact: true }).click();
+    await expect(page.getByText('menu item', { exact: true })).toBeVisible();
+    await page.waitForTimeout(150);
+
+    await page.keyboard.press('Escape');
+
+    await expect(page.getByText('menu item', { exact: true })).toHaveCount(0);
+    await expect(page.getByTestId('dialog-state')).toHaveText('open');
+  });
+});
+
 test.describe('Dialog extension overlay interactions', () => {
   test.beforeEach(async ({ page }) => {
     await visitStory(page, 'dialog--with-extension-overlay');

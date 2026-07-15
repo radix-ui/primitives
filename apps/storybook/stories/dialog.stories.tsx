@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Dialog } from 'radix-ui';
+import { Dialog, DropdownMenu } from 'radix-ui';
 import styles from './dialog.stories.module.css';
 import { ExternalOverlayTrigger } from './external-overlay';
 
@@ -629,3 +629,36 @@ function InsideShadowSuggestion() {
 
   return <div data-testid="inside-shadow-host" ref={hostRef} />;
 }
+
+// Regression test for https://github.com/radix-ui/primitives/issues/4035
+export const WithDropdownMenu = () => {
+  const [open, setOpen] = React.useState(false);
+
+  return (
+    <>
+      <Dialog.Root open={open} onOpenChange={setOpen}>
+        <Dialog.Trigger className={styles.trigger}>open</Dialog.Trigger>
+        <Dialog.Portal>
+          <Dialog.Overlay className={styles.overlay} data-testid="overlay" />
+          <Dialog.Content className={styles.contentDefault}>
+            <Dialog.Title>title</Dialog.Title>
+            <Dialog.Description>A dialog containing a dropdown menu.</Dialog.Description>
+            <DropdownMenu.Root>
+              <DropdownMenu.Trigger className={styles.trigger}>open menu</DropdownMenu.Trigger>
+              <DropdownMenu.Portal>
+                <DropdownMenu.Content
+                  sideOffset={5}
+                  style={{ background: 'white', border: '1px solid black', padding: 8 }}
+                >
+                  <DropdownMenu.Item>menu item</DropdownMenu.Item>
+                </DropdownMenu.Content>
+              </DropdownMenu.Portal>
+            </DropdownMenu.Root>
+            <Dialog.Close className={styles.close}>close</Dialog.Close>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
+      <div data-testid="dialog-state">{open ? 'open' : 'closed'}</div>
+    </>
+  );
+};
