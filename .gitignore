@@ -1,25 +1,21 @@
-*.log
+*.log*
 .DS_Store
 node_modules
 dist
 test-output.*
 .cache
-.parcel-cache
 storybook-static
 .env
 .eslintcache
-
-# Yarn 2 build artifacts
-# https://yarnpkg.com/advanced/qa#which-files-should-be-gitignored
-.yarn/*
-!.yarn/releases
-!.yarn/plugins
-!.yarn/sdks
-!.yarn/versions
+.pnp
+.pnp.js
+*.pem
+.npmrc
 
 # Testing
-cypress/videos
-cypress/screenshots
+test-results
+playwright-report
+playwright/.cache
 
 # Editor-specific
 .vscode

@@ -1,7 +1,8 @@
 import type { RenderResult } from '@testing-library/react';
-import { fireEvent, render } from '@testing-library/react';
-import * as Toggle from '@radix-ui/react-toggle';
+import { cleanup, fireEvent, render } from '@testing-library/react';
+import * as Toggle from './toggle';
 import { axe } from 'vitest-axe';
+import { afterEach, describe, it, beforeEach, vi, expect } from 'vitest';
 
 const TEXT_CHILD = 'Like';
 
@@ -11,6 +12,8 @@ describe('given a Toggle with text', () => {
   beforeEach(() => {
     rendered = render(<Toggle.Root>{TEXT_CHILD}</Toggle.Root>);
   });
+
+  afterEach(cleanup);
 
   it('should have no accessibility violations', async () => {
     expect(await axe(rendered.container)).toHaveNoViolations();
@@ -31,7 +34,7 @@ describe('given a Toggle with text', () => {
       new MouseEvent('click', {
         bubbles: true,
         cancelable: true,
-      })
+      }),
     );
 
     expect(button).toHaveAttribute('aria-pressed', 'true');
@@ -45,6 +48,8 @@ describe('given a Toggle with text and defaultPressed="true"', () => {
   beforeEach(() => {
     rendered = render(<Toggle.Root defaultPressed>{TEXT_CHILD}</Toggle.Root>);
   });
+
+  afterEach(cleanup);
 
   it('should render with attributes true/on by default', () => {
     const button = rendered.getByRole('button', { name: TEXT_CHILD });
@@ -61,7 +66,7 @@ describe('given a Toggle with text and defaultPressed="true"', () => {
       new MouseEvent('click', {
         bubbles: true,
         cancelable: true,
-      })
+      }),
     );
 
     expect(button).toHaveAttribute('aria-pressed', 'false');
@@ -76,6 +81,8 @@ describe('given a Toggle with text and disabled="true"', () => {
     rendered = render(<Toggle.Root disabled>{TEXT_CHILD}</Toggle.Root>);
   });
 
+  afterEach(cleanup);
+
   it('on click the attributes do not change', () => {
     const button = rendered.getByRole('button', { name: TEXT_CHILD });
 
@@ -88,7 +95,7 @@ describe('given a Toggle with text and disabled="true"', () => {
       new MouseEvent('click', {
         bubbles: true,
         cancelable: true,
-      })
+      }),
     );
 
     expect(button).toHaveAttribute('aria-pressed', 'false');
@@ -104,9 +111,11 @@ describe('given a controlled Toggle (with pressed and onPressedChange)', () => {
     rendered = render(
       <Toggle.Root pressed onPressedChange={onPressedChangeMock}>
         {TEXT_CHILD}
-      </Toggle.Root>
+      </Toggle.Root>,
     );
   });
+
+  afterEach(cleanup);
 
   it('Click event should keep the same attributes, and pass the new state to onPressedChange', () => {
     const button = rendered.getByRole('button', { name: TEXT_CHILD });
@@ -119,7 +128,7 @@ describe('given a controlled Toggle (with pressed and onPressedChange)', () => {
       new MouseEvent('click', {
         bubbles: true,
         cancelable: true,
-      })
+      }),
     );
 
     expect(onPressedChangeMock).toHaveBeenCalledTimes(1);

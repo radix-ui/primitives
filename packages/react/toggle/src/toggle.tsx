@@ -9,7 +9,7 @@ import { Primitive } from '@radix-ui/react-primitive';
 
 const NAME = 'Toggle';
 
-type ToggleElement = React.ElementRef<typeof Primitive.button>;
+type ToggleElement = React.ComponentRef<typeof Primitive.button>;
 type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
 interface ToggleProps extends PrimitiveButtonProps {
   /**
@@ -28,33 +28,34 @@ interface ToggleProps extends PrimitiveButtonProps {
   onPressedChange?(pressed: boolean): void;
 }
 
-const Toggle = React.forwardRef<ToggleElement, ToggleProps>((props, forwardedRef) => {
-  const { pressed: pressedProp, defaultPressed = false, onPressedChange, ...buttonProps } = props;
+const Toggle = /* @__PURE__ */ React.forwardRef<ToggleElement, ToggleProps>(
+  function Toggle(props, forwardedRef) {
+    const { pressed: pressedProp, defaultPressed, onPressedChange, ...buttonProps } = props;
 
-  const [pressed = false, setPressed] = useControllableState({
-    prop: pressedProp,
-    onChange: onPressedChange,
-    defaultProp: defaultPressed,
-  });
+    const [pressed, setPressed] = useControllableState({
+      prop: pressedProp,
+      onChange: onPressedChange,
+      defaultProp: defaultPressed ?? false,
+      caller: NAME,
+    });
 
-  return (
-    <Primitive.button
-      type="button"
-      aria-pressed={pressed}
-      data-state={pressed ? 'on' : 'off'}
-      data-disabled={props.disabled ? '' : undefined}
-      {...buttonProps}
-      ref={forwardedRef}
-      onClick={composeEventHandlers(props.onClick, () => {
-        if (!props.disabled) {
-          setPressed(!pressed);
-        }
-      })}
-    />
-  );
-});
-
-Toggle.displayName = NAME;
+    return (
+      <Primitive.button
+        type="button"
+        aria-pressed={pressed}
+        data-state={pressed ? 'on' : 'off'}
+        data-disabled={props.disabled ? '' : undefined}
+        {...buttonProps}
+        ref={forwardedRef}
+        onClick={composeEventHandlers(props.onClick, () => {
+          if (!props.disabled) {
+            setPressed(!pressed);
+          }
+        })}
+      />
+    );
+  },
+);
 
 /* ---------------------------------------------------------------------------------------------- */
 

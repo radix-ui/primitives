@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { Root, Track, Range, Thumb } from '@radix-ui/react-slider';
+import { Slider } from 'radix-ui';
 
 export default function Page() {
   return (
-    <Root
+    <Slider.Root
       defaultValue={[20, 50]}
       max={100}
       step={1}
@@ -15,7 +15,7 @@ export default function Page() {
         height: 20,
       }}
     >
-      <Track
+      <Slider.Track
         style={{
           backgroundColor: 'grey',
           position: 'relative',
@@ -23,15 +23,15 @@ export default function Page() {
           height: 3,
         }}
       >
-        <Range
+        <Slider.Range
           style={{
             position: 'absolute',
             backgroundColor: 'blue',
             height: '100%',
           }}
         />
-      </Track>
-      <Thumb
+      </Slider.Track>
+      <Slider.Thumb
         style={{
           display: 'block',
           width: 20,
@@ -39,7 +39,7 @@ export default function Page() {
           backgroundColor: 'blue',
         }}
       />
-      <Thumb
+      <Slider.Thumb
         style={{
           display: 'block',
           width: 20,
@@ -47,6 +47,6 @@ export default function Page() {
           backgroundColor: 'blue',
         }}
       />
-    </Root>
+    </Slider.Root>
   );
 }

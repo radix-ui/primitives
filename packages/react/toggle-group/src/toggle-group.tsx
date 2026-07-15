@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { createContextScope } from '@radix-ui/react-context';
 import { Primitive } from '@radix-ui/react-primitive';
 import * as RovingFocusGroup from '@radix-ui/react-roving-focus';
@@ -29,26 +29,24 @@ interface ToggleGroupMultipleProps extends ToggleGroupImplMultipleProps {
   type: 'multiple';
 }
 
-const ToggleGroup = React.forwardRef<
+const ToggleGroup = /* @__PURE__ */ React.forwardRef<
   ToggleGroupElement,
   ToggleGroupSingleProps | ToggleGroupMultipleProps
->((props, forwardedRef) => {
+>(function ToggleGroup(props, forwardedRef) {
   const { type, ...toggleGroupProps } = props;
 
   if (type === 'single') {
     const singleProps = toggleGroupProps as ToggleGroupImplSingleProps;
-    return <ToggleGroupImplSingle {...singleProps} ref={forwardedRef} />;
+    return <ToggleGroupImplSingle role="radiogroup" {...singleProps} ref={forwardedRef} />;
   }
 
   if (type === 'multiple') {
     const multipleProps = toggleGroupProps as ToggleGroupImplMultipleProps;
-    return <ToggleGroupImplMultiple {...multipleProps} ref={forwardedRef} />;
+    return <ToggleGroupImplMultiple role="toolbar" {...multipleProps} ref={forwardedRef} />;
   }
 
   throw new Error(`Missing prop \`type\` expected on \`${TOGGLE_GROUP_NAME}\``);
 });
-
-ToggleGroup.displayName = TOGGLE_GROUP_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
@@ -79,10 +77,10 @@ interface ToggleGroupImplSingleProps extends ToggleGroupImplProps {
   onValueChange?(value: string): void;
 }
 
-const ToggleGroupImplSingle = React.forwardRef<
+const ToggleGroupImplSingle = /* @__PURE__ */ React.forwardRef<
   ToggleGroupImplSingleElement,
   ToggleGroupImplSingleProps
->((props: ScopedProps<ToggleGroupImplSingleProps>, forwardedRef) => {
+>(function ToggleGroupImplSingle(props: ScopedProps<ToggleGroupImplSingleProps>, forwardedRef) {
   const {
     value: valueProp,
     defaultValue,
@@ -92,15 +90,16 @@ const ToggleGroupImplSingle = React.forwardRef<
 
   const [value, setValue] = useControllableState({
     prop: valueProp,
-    defaultProp: defaultValue,
+    defaultProp: defaultValue ?? '',
     onChange: onValueChange,
+    caller: TOGGLE_GROUP_NAME,
   });
 
   return (
     <ToggleGroupValueProvider
       scope={props.__scopeToggleGroup}
       type="single"
-      value={value ? [value] : []}
+      value={React.useMemo(() => (value ? [value] : []), [value])}
       onItemActivate={setValue}
       onItemDeactivate={React.useCallback(() => setValue(''), [setValue])}
     >
@@ -126,10 +125,10 @@ interface ToggleGroupImplMultipleProps extends ToggleGroupImplProps {
   onValueChange?(value: string[]): void;
 }
 
-const ToggleGroupImplMultiple = React.forwardRef<
+const ToggleGroupImplMultiple = /* @__PURE__ */ React.forwardRef<
   ToggleGroupImplMultipleElement,
   ToggleGroupImplMultipleProps
->((props: ScopedProps<ToggleGroupImplMultipleProps>, forwardedRef) => {
+>(function ToggleGroupImplMultiple(props: ScopedProps<ToggleGroupImplMultipleProps>, forwardedRef) {
   const {
     value: valueProp,
     defaultValue,
@@ -137,21 +136,22 @@ const ToggleGroupImplMultiple = React.forwardRef<
     ...toggleGroupMultipleProps
   } = props;
 
-  const [value = [], setValue] = useControllableState({
+  const [value, setValue] = useControllableState({
     prop: valueProp,
-    defaultProp: defaultValue,
+    defaultProp: defaultValue ?? [],
     onChange: onValueChange,
+    caller: TOGGLE_GROUP_NAME,
   });
 
   const handleButtonActivate = React.useCallback(
     (itemValue: string) => setValue((prevValue = []) => [...prevValue, itemValue]),
-    [setValue]
+    [setValue],
   );
 
   const handleButtonDeactivate = React.useCallback(
     (itemValue: string) =>
       setValue((prevValue = []) => prevValue.filter((value) => value !== itemValue)),
-    [setValue]
+    [setValue],
   );
 
   return (
@@ -167,8 +167,6 @@ const ToggleGroupImplMultiple = React.forwardRef<
   );
 });
 
-ToggleGroup.displayName = TOGGLE_GROUP_NAME;
-
 /* -----------------------------------------------------------------------------------------------*/
 
 type ToggleGroupContextValue = { rovingFocus: boolean; disabled: boolean };
@@ -177,7 +175,7 @@ const [ToggleGroupContext, useToggleGroupContext] =
   createToggleGroupContext<ToggleGroupContextValue>(TOGGLE_GROUP_NAME);
 
 type RovingFocusGroupProps = React.ComponentPropsWithoutRef<typeof RovingFocusGroup.Root>;
-type ToggleGroupImplElement = React.ElementRef<typeof Primitive.div>;
+type ToggleGroupImplElement = React.ComponentRef<typeof Primitive.div>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface ToggleGroupImplProps extends PrimitiveDivProps {
   /**
@@ -195,8 +193,12 @@ interface ToggleGroupImplProps extends PrimitiveDivProps {
   dir?: RovingFocusGroupProps['dir'];
 }
 
-const ToggleGroupImpl = React.forwardRef<ToggleGroupImplElement, ToggleGroupImplProps>(
-  (props: ScopedProps<ToggleGroupImplProps>, forwardedRef) => {
+const ToggleGroupImpl = /* @__PURE__ */ React.forwardRef<
+  ToggleGroupImplElement,
+  ToggleGroupImplProps
+>(
+  // blank line to reduce diff noise
+  function ToggleGroupImpl(props: ScopedProps<ToggleGroupImplProps>, forwardedRef) {
     const {
       __scopeToggleGroup,
       disabled = false,
@@ -208,7 +210,7 @@ const ToggleGroupImpl = React.forwardRef<ToggleGroupImplElement, ToggleGroupImpl
     } = props;
     const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeToggleGroup);
     const direction = useDirection(dir);
-    const commonProps = { role: 'group', dir: direction, ...toggleGroupProps };
+    const commonProps = { dir: direction, ...toggleGroupProps };
     return (
       <ToggleGroupContext scope={__scopeToggleGroup} rovingFocus={rovingFocus} disabled={disabled}>
         {rovingFocus ? (
@@ -226,7 +228,7 @@ const ToggleGroupImpl = React.forwardRef<ToggleGroupImplElement, ToggleGroupImpl
         )}
       </ToggleGroupContext>
     );
-  }
+  },
 );
 
 /* -------------------------------------------------------------------------------------------------
@@ -238,8 +240,12 @@ const ITEM_NAME = 'ToggleGroupItem';
 type ToggleGroupItemElement = ToggleGroupItemImplElement;
 interface ToggleGroupItemProps extends Omit<ToggleGroupItemImplProps, 'pressed'> {}
 
-const ToggleGroupItem = React.forwardRef<ToggleGroupItemElement, ToggleGroupItemProps>(
-  (props: ScopedProps<ToggleGroupItemProps>, forwardedRef) => {
+const ToggleGroupItem = /* @__PURE__ */ React.forwardRef<
+  ToggleGroupItemElement,
+  ToggleGroupItemProps
+>(
+  // blank line to reduce diff noise
+  function ToggleGroupItem(props: ScopedProps<ToggleGroupItemProps>, forwardedRef) {
     const valueContext = useToggleGroupValueContext(ITEM_NAME, props.__scopeToggleGroup);
     const context = useToggleGroupContext(ITEM_NAME, props.__scopeToggleGroup);
     const rovingFocusGroupScope = useRovingFocusGroupScope(props.__scopeToggleGroup);
@@ -260,14 +266,12 @@ const ToggleGroupItem = React.forwardRef<ToggleGroupItemElement, ToggleGroupItem
     ) : (
       <ToggleGroupItemImpl {...commonProps} ref={forwardedRef} />
     );
-  }
+  },
 );
-
-ToggleGroupItem.displayName = ITEM_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
-type ToggleGroupItemImplElement = React.ElementRef<typeof Toggle>;
+type ToggleGroupItemImplElement = React.ComponentRef<typeof Toggle>;
 type ToggleProps = React.ComponentPropsWithoutRef<typeof Toggle>;
 interface ToggleGroupItemImplProps extends Omit<ToggleProps, 'defaultPressed' | 'onPressedChange'> {
   /**
@@ -276,8 +280,12 @@ interface ToggleGroupItemImplProps extends Omit<ToggleProps, 'defaultPressed' | 
   value: string;
 }
 
-const ToggleGroupItemImpl = React.forwardRef<ToggleGroupItemImplElement, ToggleGroupItemImplProps>(
-  (props: ScopedProps<ToggleGroupItemImplProps>, forwardedRef) => {
+const ToggleGroupItemImpl = /* @__PURE__ */ React.forwardRef<
+  ToggleGroupItemImplElement,
+  ToggleGroupItemImplProps
+>(
+  // blank line to reduce diff noise
+  function ToggleGroupItemImpl(props: ScopedProps<ToggleGroupItemImplProps>, forwardedRef) {
     const { __scopeToggleGroup, value, ...itemProps } = props;
     const valueContext = useToggleGroupValueContext(ITEM_NAME, __scopeToggleGroup);
     const singleProps = { role: 'radio', 'aria-checked': props.pressed, 'aria-pressed': undefined };
@@ -296,13 +304,10 @@ const ToggleGroupItemImpl = React.forwardRef<ToggleGroupItemImplElement, ToggleG
         }}
       />
     );
-  }
+  },
 );
 
 /* -----------------------------------------------------------------------------------------------*/
-
-const Root = ToggleGroup;
-const Item = ToggleGroupItem;
 
 export {
   createToggleGroupScope,
@@ -310,7 +315,7 @@ export {
   ToggleGroup,
   ToggleGroupItem,
   //
-  Root,
-  Item,
+  ToggleGroup as Root,
+  ToggleGroupItem as Item,
 };
 export type { ToggleGroupSingleProps, ToggleGroupMultipleProps, ToggleGroupItemProps };

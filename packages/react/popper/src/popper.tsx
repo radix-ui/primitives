@@ -40,6 +40,8 @@ const [createPopperContext, createPopperScope] = createContextScope(POPPER_NAME)
 type PopperContextValue = {
   anchor: Measurable | null;
   onAnchorChange(anchor: Measurable | null): void;
+  placementState: Placement | undefined;
+  setPlacementState: React.Dispatch<React.SetStateAction<Placement | undefined>>;
 };
 const [PopperProvider, usePopperContext] = createPopperContext<PopperContextValue>(POPPER_NAME);
 
@@ -49,14 +51,19 @@ interface PopperProps {
 const Popper: React.FC<PopperProps> = (props: ScopedProps<PopperProps>) => {
   const { __scopePopper, children } = props;
   const [anchor, setAnchor] = React.useState<Measurable | null>(null);
+  const [placementState, setPlacementState] = React.useState<Placement | undefined>(undefined);
   return (
-    <PopperProvider scope={__scopePopper} anchor={anchor} onAnchorChange={setAnchor}>
+    <PopperProvider
+      scope={__scopePopper}
+      anchor={anchor}
+      onAnchorChange={setAnchor}
+      placementState={placementState}
+      setPlacementState={setPlacementState}
+    >
       {children}
     </PopperProvider>
   );
 };
-
-Popper.displayName = POPPER_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * PopperAnchor
@@ -64,31 +71,64 @@ Popper.displayName = POPPER_NAME;
 
 const ANCHOR_NAME = 'PopperAnchor';
 
-type PopperAnchorElement = React.ElementRef<typeof Primitive.div>;
+type PopperAnchorElement = React.ComponentRef<typeof Primitive.div>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface PopperAnchorProps extends PrimitiveDivProps {
-  virtualRef?: React.RefObject<Measurable>;
+  virtualRef?: React.RefObject<Measurable | null>;
 }
 
-const PopperAnchor = React.forwardRef<PopperAnchorElement, PopperAnchorProps>(
-  (props: ScopedProps<PopperAnchorProps>, forwardedRef) => {
+const PopperAnchor = /* @__PURE__ */ React.forwardRef<PopperAnchorElement, PopperAnchorProps>(
+  function PopperAnchor(props: ScopedProps<PopperAnchorProps>, forwardedRef) {
     const { __scopePopper, virtualRef, ...anchorProps } = props;
     const context = usePopperContext(ANCHOR_NAME, __scopePopper);
     const ref = React.useRef<PopperAnchorElement>(null);
-    const composedRefs = useComposedRefs(forwardedRef, ref);
+    const onAnchorChange = context.onAnchorChange;
 
+    // For DOM anchors, set the anchor from a callback ref rather than an
+    // effect. React invokes callback refs during the commit phase which does
+    // not count toward the nested update depth limit, so mounting many
+    // Popper-based components at once doesn't trigger "Maximum update depth
+    // exceeded"
+    // see https://github.com/radix-ui/primitives/issues/3858
+    const callbackRef = React.useCallback(
+      (node: PopperAnchorElement | null) => {
+        ref.current = node;
+        if (node) {
+          onAnchorChange(node);
+        }
+      },
+      [onAnchorChange],
+    );
+    const composedRefs = useComposedRefs(forwardedRef, callbackRef);
+
+    const anchorRef = React.useRef<Measurable | null>(null);
     React.useEffect(() => {
-      // Consumer can anchor the popper to something that isn't
-      // a DOM node e.g. pointer position, so we override the
-      // `anchorRef` with their virtual ref in this case.
-      context.onAnchorChange(virtualRef?.current || ref.current);
+      if (!virtualRef) {
+        return;
+      }
+
+      const previousAnchor = anchorRef.current;
+      anchorRef.current = virtualRef.current;
+      if (previousAnchor !== anchorRef.current) {
+        onAnchorChange(anchorRef.current);
+      }
     });
 
-    return virtualRef ? null : <Primitive.div {...anchorProps} ref={composedRefs} />;
-  }
-);
+    const sideAndAlign =
+      context.placementState && getSideAndAlignFromPlacement(context.placementState);
+    const placedSide = sideAndAlign?.[0];
+    const placedAlign = sideAndAlign?.[1];
 
-PopperAnchor.displayName = ANCHOR_NAME;
+    return virtualRef ? null : (
+      <Primitive.div
+        data-radix-popper-side={placedSide}
+        data-radix-popper-align={placedAlign}
+        {...anchorProps}
+        ref={composedRefs}
+      />
+    );
+  },
+);
 
 /* -------------------------------------------------------------------------------------------------
  * PopperContent
@@ -98,6 +138,7 @@ const CONTENT_NAME = 'PopperContent';
 
 type PopperContentContextValue = {
   placedSide: Side;
+  placedAlign: Align;
   onArrowChange(arrow: HTMLSpanElement | null): void;
   arrowX?: number;
   arrowY?: number;
@@ -109,7 +150,7 @@ const [PopperContentProvider, useContentContext] =
 
 type Boundary = Element | null;
 
-type PopperContentElement = React.ElementRef<typeof Primitive.div>;
+type PopperContentElement = React.ComponentRef<typeof Primitive.div>;
 interface PopperContentProps extends PrimitiveDivProps {
   side?: Side;
   sideOffset?: number;
@@ -125,8 +166,8 @@ interface PopperContentProps extends PrimitiveDivProps {
   onPlaced?: () => void;
 }
 
-const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>(
-  (props: ScopedProps<PopperContentProps>, forwardedRef) => {
+const PopperContent = /* @__PURE__ */ React.forwardRef<PopperContentElement, PopperContentProps>(
+  function PopperContent(props: ScopedProps<PopperContentProps>, forwardedRef) {
     const {
       __scopePopper,
       side = 'bottom',
@@ -147,7 +188,7 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
     const context = usePopperContext(CONTENT_NAME, __scopePopper);
 
     const [content, setContent] = React.useState<HTMLDivElement | null>(null);
-    const composedRefs = useComposedRefs(forwardedRef, (node) => setContent(node));
+    const composedRefs = useComposedRefs(forwardedRef, setContent);
 
     const [arrow, setArrow] = React.useState<HTMLSpanElement | null>(null);
     const arrowSize = useSize(arrow);
@@ -207,9 +248,29 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
         }),
         arrow && floatingUIarrow({ element: arrow, padding: arrowPadding }),
         transformOrigin({ arrowWidth, arrowHeight }),
-        hideWhenDetached && hide({ strategy: 'referenceHidden', ...detectOverflowOptions }),
+        hideWhenDetached &&
+          hide({
+            strategy: 'referenceHidden',
+            ...detectOverflowOptions,
+            // `hide` detects whether the anchor (reference) is clipped, so when
+            // no explicit `collisionBoundary` is set we fall back to Floating
+            // UI's default clipping ancestors (e.g. a scrollable menu). This
+            // lets an occluded submenu hide once its anchor scrolls out of view
+            // (#3237). The collision/size middlewares deliberately keep the
+            // viewport-based default to avoid clamping content rendered inside
+            // transformed or overflow-clipping portal containers.
+            boundary: hasExplicitBoundaries ? detectOverflowOptions.boundary : undefined,
+          }),
       ],
     });
+
+    const setPlacementState = context.setPlacementState;
+    useLayoutEffect(() => {
+      setPlacementState(placement);
+      return () => {
+        setPlacementState(undefined);
+      };
+    }, [placement, setPlacementState]);
 
     const [placedSide, placedAlign] = getSideAndAlignFromPlacement(placement);
 
@@ -238,7 +299,7 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
           transform: isPositioned ? floatingStyles.transform : 'translate(0, -200%)', // keep off the page when measuring
           minWidth: 'max-content',
           zIndex: contentZIndex,
-          ['--radix-popper-transform-origin' as any]: [
+          '--radix-popper-transform-origin': [
             middlewareData.transformOrigin?.x,
             middlewareData.transformOrigin?.y,
           ].join(' '),
@@ -259,6 +320,7 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
         <PopperContentProvider
           scope={__scopePopper}
           placedSide={placedSide}
+          placedAlign={placedAlign}
           onArrowChange={setArrow}
           arrowX={arrowX}
           arrowY={arrowY}
@@ -279,10 +341,8 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
         </PopperContentProvider>
       </div>
     );
-  }
+  },
 );
-
-PopperContent.displayName = CONTENT_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * PopperArrow
@@ -297,58 +357,55 @@ const OPPOSITE_SIDE: Record<Side, Side> = {
   left: 'right',
 };
 
-type PopperArrowElement = React.ElementRef<typeof ArrowPrimitive.Root>;
+type PopperArrowElement = React.ComponentRef<typeof ArrowPrimitive.Root>;
 type ArrowProps = React.ComponentPropsWithoutRef<typeof ArrowPrimitive.Root>;
 interface PopperArrowProps extends ArrowProps {}
 
-const PopperArrow = React.forwardRef<PopperArrowElement, PopperArrowProps>(function PopperArrow(
-  props: ScopedProps<PopperArrowProps>,
-  forwardedRef
-) {
-  const { __scopePopper, ...arrowProps } = props;
-  const contentContext = useContentContext(ARROW_NAME, __scopePopper);
-  const baseSide = OPPOSITE_SIDE[contentContext.placedSide];
+const PopperArrow = /* @__PURE__ */ React.forwardRef<PopperArrowElement, PopperArrowProps>(
+  function PopperArrow(props: ScopedProps<PopperArrowProps>, forwardedRef) {
+    const { __scopePopper, ...arrowProps } = props;
+    const contentContext = useContentContext(ARROW_NAME, __scopePopper);
+    const baseSide = OPPOSITE_SIDE[contentContext.placedSide];
 
-  return (
-    // we have to use an extra wrapper because `ResizeObserver` (used by `useSize`)
-    // doesn't report size as we'd expect on SVG elements.
-    // it reports their bounding box which is effectively the largest path inside the SVG.
-    <span
-      ref={contentContext.onArrowChange}
-      style={{
-        position: 'absolute',
-        left: contentContext.arrowX,
-        top: contentContext.arrowY,
-        [baseSide]: 0,
-        transformOrigin: {
-          top: '',
-          right: '0 0',
-          bottom: 'center 0',
-          left: '100% 0',
-        }[contentContext.placedSide],
-        transform: {
-          top: 'translateY(100%)',
-          right: 'translateY(50%) rotate(90deg) translateX(-50%)',
-          bottom: `rotate(180deg)`,
-          left: 'translateY(50%) rotate(-90deg) translateX(50%)',
-        }[contentContext.placedSide],
-        visibility: contentContext.shouldHideArrow ? 'hidden' : undefined,
-      }}
-    >
-      <ArrowPrimitive.Root
-        {...arrowProps}
-        ref={forwardedRef}
+    return (
+      // we have to use an extra wrapper because `ResizeObserver` (used by `useSize`)
+      // doesn't report size as we'd expect on SVG elements.
+      // it reports their bounding box which is effectively the largest path inside the SVG.
+      <span
+        ref={contentContext.onArrowChange}
         style={{
-          ...arrowProps.style,
-          // ensures the element can be measured correctly (mostly for if SVG)
-          display: 'block',
+          position: 'absolute',
+          left: contentContext.arrowX,
+          top: contentContext.arrowY,
+          [baseSide]: 0,
+          transformOrigin: {
+            top: '',
+            right: '0 0',
+            bottom: 'center 0',
+            left: '100% 0',
+          }[contentContext.placedSide],
+          transform: {
+            top: 'translateY(100%)',
+            right: 'translateY(50%) rotate(90deg) translateX(-50%)',
+            bottom: `rotate(180deg)`,
+            left: 'translateY(50%) rotate(-90deg) translateX(50%)',
+          }[contentContext.placedSide],
+          visibility: contentContext.shouldHideArrow ? 'hidden' : undefined,
         }}
-      />
-    </span>
-  );
-});
-
-PopperArrow.displayName = ARROW_NAME;
+      >
+        <ArrowPrimitive.Root
+          {...arrowProps}
+          ref={forwardedRef}
+          style={{
+            ...arrowProps.style,
+            // ensures the element can be measured correctly (mostly for if SVG)
+            display: 'block',
+          }}
+        />
+      </span>
+    );
+  },
+);
 
 /* -----------------------------------------------------------------------------------------------*/
 

@@ -1,12 +1,11 @@
 import * as React from 'react';
+import { IS_DEVELOPMENT } from '@radix-ui/primitive/is-development';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { createContextScope } from '@radix-ui/react-context';
 import { Primitive } from '@radix-ui/react-primitive';
 import * as MenuPrimitive from '@radix-ui/react-menu';
 import { createMenuScope } from '@radix-ui/react-menu';
-import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
-
 import type { Scope } from '@radix-ui/react-context';
 
 type Direction = 'ltr' | 'rtl';
@@ -24,57 +23,73 @@ const [createContextMenuContext, createContextMenuScope] = createContextScope(CO
 ]);
 const useMenuScope = createMenuScope();
 
-type ContextMenuContextValue = {
+interface ContextMenuContextValue {
   open: boolean;
   onOpenChange(open: boolean): void;
   modal: boolean;
-};
+  hasInteractedRef: React.RefObject<boolean>;
+}
 
 const [ContextMenuProvider, useContextMenuContext] =
   createContextMenuContext<ContextMenuContextValue>(CONTEXT_MENU_NAME);
 
 interface ContextMenuProps {
   children?: React.ReactNode;
+  open?: boolean;
   onOpenChange?(open: boolean): void;
   dir?: Direction;
   modal?: boolean;
 }
 
 const ContextMenu: React.FC<ContextMenuProps> = (props: ScopedProps<ContextMenuProps>) => {
-  const { __scopeContextMenu, children, onOpenChange, dir, modal = true } = props;
-  const [open, setOpen] = React.useState(false);
-  const menuScope = useMenuScope(__scopeContextMenu);
-  const handleOpenChangeProp = useCallbackRef(onOpenChange);
+  const { __scopeContextMenu, children, onOpenChange, open: openProp, dir, modal = true } = props;
 
-  const handleOpenChange = React.useCallback(
-    (open: boolean) => {
-      setOpen(open);
-      handleOpenChangeProp(open);
-    },
-    [handleOpenChangeProp]
-  );
+  // OK to disable conditionally calling hooks here because they will always run
+  // consistently in the same environment. Bundlers should be able to remove the
+  // code block entirely in production.
+  /* eslint-disable react-hooks/rules-of-hooks */
+  const hasInteractedRef = React.useRef(false);
+  if (IS_DEVELOPMENT) {
+    const hasWarnedRef = React.useRef(false);
+    React.useEffect(() => {
+      if (openProp === true && !hasInteractedRef.current && !hasWarnedRef.current) {
+        hasWarnedRef.current = true;
+        // dev warning: open prop is controllable but its position has not been set
+        // because the user has not interacted with the trigger. The controllable
+        // state is only enabled so that the user can read or programatically close
+        // the menu. Programatically opening the menu will anchor it to the most
+        // recently interacted position.
+        console.warn(
+          'ContextMenu: The `open` prop has been set to `true` before the user has interacted with the trigger, so its position is indeterminate. This is likely unintended and will result in the menu being anchored to the top-left corner of the viewport.',
+        );
+      }
+    }, [openProp]);
+  }
+  /* eslint-enable react-hooks/rules-of-hooks */
+
+  const [open, setOpen] = useControllableState({
+    prop: openProp,
+    defaultProp: false,
+    onChange: onOpenChange,
+    caller: CONTEXT_MENU_NAME,
+  });
+
+  const menuScope = useMenuScope(__scopeContextMenu);
 
   return (
     <ContextMenuProvider
       scope={__scopeContextMenu}
       open={open}
-      onOpenChange={handleOpenChange}
+      onOpenChange={setOpen}
       modal={modal}
+      hasInteractedRef={hasInteractedRef}
     >
-      <MenuPrimitive.Root
-        {...menuScope}
-        dir={dir}
-        open={open}
-        onOpenChange={handleOpenChange}
-        modal={modal}
-      >
+      <MenuPrimitive.Root {...menuScope} dir={dir} open={open} onOpenChange={setOpen} modal={modal}>
         {children}
       </MenuPrimitive.Root>
     </ContextMenuProvider>
   );
 };
-
-ContextMenu.displayName = CONTEXT_MENU_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * ContextMenuTrigger
@@ -82,28 +97,42 @@ ContextMenu.displayName = CONTEXT_MENU_NAME;
 
 const TRIGGER_NAME = 'ContextMenuTrigger';
 
-type ContextMenuTriggerElement = React.ElementRef<typeof Primitive.span>;
+type ContextMenuTriggerElement = React.ComponentRef<typeof Primitive.span>;
 type PrimitiveSpanProps = React.ComponentPropsWithoutRef<typeof Primitive.span>;
 interface ContextMenuTriggerProps extends PrimitiveSpanProps {
   disabled?: boolean;
 }
 
-const ContextMenuTrigger = React.forwardRef<ContextMenuTriggerElement, ContextMenuTriggerProps>(
-  (props: ScopedProps<ContextMenuTriggerProps>, forwardedRef) => {
+const ContextMenuTrigger = /* @__PURE__ */ React.forwardRef<
+  ContextMenuTriggerElement,
+  ContextMenuTriggerProps
+>(
+  // blank line to reduce diff noise
+  function ContextMenuTrigger(props: ScopedProps<ContextMenuTriggerProps>, forwardedRef) {
     const { __scopeContextMenu, disabled = false, ...triggerProps } = props;
     const context = useContextMenuContext(TRIGGER_NAME, __scopeContextMenu);
     const menuScope = useMenuScope(__scopeContextMenu);
-    const pointRef = React.useRef<Point>({ x: 0, y: 0 });
-    const virtualRef = React.useRef({
-      getBoundingClientRect: () => DOMRect.fromRect({ width: 0, height: 0, ...pointRef.current }),
-    });
+    const [point, setPoint] = React.useState<Point>({ x: 0, y: 0 });
+
+    // Re-create the virtual anchor whenever the pointer position changes so the
+    // content re-anchors to the latest point when the menu is re-triggered while
+    // already open (e.g. right-clicking in a new location, #2611).
+    const virtualRef = React.useMemo(
+      () => ({
+        current: {
+          getBoundingClientRect: () => DOMRect.fromRect({ width: 0, height: 0, ...point }),
+        },
+      }),
+      [point],
+    );
     const longPressTimerRef = React.useRef(0);
     const clearLongPress = React.useCallback(
       () => window.clearTimeout(longPressTimerRef.current),
-      []
+      [],
     );
     const handleOpen = (event: React.MouseEvent | React.PointerEvent) => {
-      pointRef.current = { x: event.clientX, y: event.clientY };
+      context.hasInteractedRef.current = true;
+      setPoint({ x: event.clientX, y: event.clientY });
       context.onOpenChange(true);
     };
 
@@ -140,8 +169,11 @@ const ContextMenuTrigger = React.forwardRef<ContextMenuTriggerElement, ContextMe
                   whenTouchOrPen((event) => {
                     // clear the long press here in case there's multiple touch points
                     clearLongPress();
+                    if (context.open) {
+                      context.onOpenChange(false);
+                    }
                     longPressTimerRef.current = window.setTimeout(() => handleOpen(event), 700);
-                  })
+                  }),
                 )
           }
           onPointerMove={
@@ -162,29 +194,23 @@ const ContextMenuTrigger = React.forwardRef<ContextMenuTriggerElement, ContextMe
         />
       </>
     );
-  }
+  },
 );
-
-ContextMenuTrigger.displayName = TRIGGER_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * ContextMenuPortal
  * -----------------------------------------------------------------------------------------------*/
 
-const PORTAL_NAME = 'ContextMenuPortal';
-
 type MenuPortalProps = React.ComponentPropsWithoutRef<typeof MenuPrimitive.Portal>;
 interface ContextMenuPortalProps extends MenuPortalProps {}
 
 const ContextMenuPortal: React.FC<ContextMenuPortalProps> = (
-  props: ScopedProps<ContextMenuPortalProps>
+  props: ScopedProps<ContextMenuPortalProps>,
 ) => {
   const { __scopeContextMenu, ...portalProps } = props;
   const menuScope = useMenuScope(__scopeContextMenu);
   return <MenuPrimitive.Portal {...menuScope} {...portalProps} />;
 };
-
-ContextMenuPortal.displayName = PORTAL_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * ContextMenuContent
@@ -192,13 +218,19 @@ ContextMenuPortal.displayName = PORTAL_NAME;
 
 const CONTENT_NAME = 'ContextMenuContent';
 
-type ContextMenuContentElement = React.ElementRef<typeof MenuPrimitive.Content>;
+type ContextMenuContentElement = React.ComponentRef<typeof MenuPrimitive.Content>;
 type MenuContentProps = React.ComponentPropsWithoutRef<typeof MenuPrimitive.Content>;
-interface ContextMenuContentProps
-  extends Omit<MenuContentProps, 'onEntryFocus' | 'side' | 'sideOffset' | 'align'> {}
+interface ContextMenuContentProps extends Omit<
+  MenuContentProps,
+  'onEntryFocus' | 'side' | 'sideOffset' | 'align'
+> {}
 
-const ContextMenuContent = React.forwardRef<ContextMenuContentElement, ContextMenuContentProps>(
-  (props: ScopedProps<ContextMenuContentProps>, forwardedRef) => {
+const ContextMenuContent = /* @__PURE__ */ React.forwardRef<
+  ContextMenuContentElement,
+  ContextMenuContentProps
+>(
+  // blank line to reduce diff noise
+  function ContextMenuContent(props: ScopedProps<ContextMenuContentProps>, forwardedRef) {
     const { __scopeContextMenu, ...contentProps } = props;
     const context = useContextMenuContext(CONTENT_NAME, __scopeContextMenu);
     const menuScope = useMenuScope(__scopeContextMenu);
@@ -239,195 +271,176 @@ const ContextMenuContent = React.forwardRef<ContextMenuContentElement, ContextMe
         }}
       />
     );
-  }
+  },
 );
-
-ContextMenuContent.displayName = CONTENT_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * ContextMenuGroup
  * -----------------------------------------------------------------------------------------------*/
 
-const GROUP_NAME = 'ContextMenuGroup';
-
-type ContextMenuGroupElement = React.ElementRef<typeof MenuPrimitive.Group>;
+type ContextMenuGroupElement = React.ComponentRef<typeof MenuPrimitive.Group>;
 type MenuGroupProps = React.ComponentPropsWithoutRef<typeof MenuPrimitive.Group>;
 interface ContextMenuGroupProps extends MenuGroupProps {}
 
-const ContextMenuGroup = React.forwardRef<ContextMenuGroupElement, ContextMenuGroupProps>(
-  (props: ScopedProps<ContextMenuGroupProps>, forwardedRef) => {
+const ContextMenuGroup = /* @__PURE__ */ React.forwardRef<
+  ContextMenuGroupElement,
+  ContextMenuGroupProps
+>(
+  // blank line to reduce diff noise
+  function ContextMenuGroup(props: ScopedProps<ContextMenuGroupProps>, forwardedRef) {
     const { __scopeContextMenu, ...groupProps } = props;
     const menuScope = useMenuScope(__scopeContextMenu);
     return <MenuPrimitive.Group {...menuScope} {...groupProps} ref={forwardedRef} />;
-  }
+  },
 );
-
-ContextMenuGroup.displayName = GROUP_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * ContextMenuLabel
  * -----------------------------------------------------------------------------------------------*/
 
-const LABEL_NAME = 'ContextMenuLabel';
-
-type ContextMenuLabelElement = React.ElementRef<typeof MenuPrimitive.Label>;
+type ContextMenuLabelElement = React.ComponentRef<typeof MenuPrimitive.Label>;
 type MenuLabelProps = React.ComponentPropsWithoutRef<typeof MenuPrimitive.Label>;
 interface ContextMenuLabelProps extends MenuLabelProps {}
 
-const ContextMenuLabel = React.forwardRef<ContextMenuLabelElement, ContextMenuLabelProps>(
-  (props: ScopedProps<ContextMenuLabelProps>, forwardedRef) => {
+const ContextMenuLabel = /* @__PURE__ */ React.forwardRef<
+  ContextMenuLabelElement,
+  ContextMenuLabelProps
+>(
+  // blank line to reduce diff noise
+  function ContextMenuLabel(props: ScopedProps<ContextMenuLabelProps>, forwardedRef) {
     const { __scopeContextMenu, ...labelProps } = props;
     const menuScope = useMenuScope(__scopeContextMenu);
     return <MenuPrimitive.Label {...menuScope} {...labelProps} ref={forwardedRef} />;
-  }
+  },
 );
-
-ContextMenuLabel.displayName = LABEL_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * ContextMenuItem
  * -----------------------------------------------------------------------------------------------*/
 
-const ITEM_NAME = 'ContextMenuItem';
-
-type ContextMenuItemElement = React.ElementRef<typeof MenuPrimitive.Item>;
+type ContextMenuItemElement = React.ComponentRef<typeof MenuPrimitive.Item>;
 type MenuItemProps = React.ComponentPropsWithoutRef<typeof MenuPrimitive.Item>;
 interface ContextMenuItemProps extends MenuItemProps {}
 
-const ContextMenuItem = React.forwardRef<ContextMenuItemElement, ContextMenuItemProps>(
-  (props: ScopedProps<ContextMenuItemProps>, forwardedRef) => {
+const ContextMenuItem = /* @__PURE__ */ React.forwardRef<
+  ContextMenuItemElement,
+  ContextMenuItemProps
+>(
+  // blank line to reduce diff noise
+  function ContextMenuItem(props: ScopedProps<ContextMenuItemProps>, forwardedRef) {
     const { __scopeContextMenu, ...itemProps } = props;
     const menuScope = useMenuScope(__scopeContextMenu);
     return <MenuPrimitive.Item {...menuScope} {...itemProps} ref={forwardedRef} />;
-  }
+  },
 );
-
-ContextMenuItem.displayName = ITEM_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * ContextMenuCheckboxItem
  * -----------------------------------------------------------------------------------------------*/
 
-const CHECKBOX_ITEM_NAME = 'ContextMenuCheckboxItem';
-
-type ContextMenuCheckboxItemElement = React.ElementRef<typeof MenuPrimitive.CheckboxItem>;
+type ContextMenuCheckboxItemElement = React.ComponentRef<typeof MenuPrimitive.CheckboxItem>;
 type MenuCheckboxItemProps = React.ComponentPropsWithoutRef<typeof MenuPrimitive.CheckboxItem>;
 interface ContextMenuCheckboxItemProps extends MenuCheckboxItemProps {}
 
-const ContextMenuCheckboxItem = React.forwardRef<
+const ContextMenuCheckboxItem = /* @__PURE__ */ React.forwardRef<
   ContextMenuCheckboxItemElement,
   ContextMenuCheckboxItemProps
->((props: ScopedProps<ContextMenuCheckboxItemProps>, forwardedRef) => {
+>(function ContextMenuCheckboxItem(props: ScopedProps<ContextMenuCheckboxItemProps>, forwardedRef) {
   const { __scopeContextMenu, ...checkboxItemProps } = props;
   const menuScope = useMenuScope(__scopeContextMenu);
   return <MenuPrimitive.CheckboxItem {...menuScope} {...checkboxItemProps} ref={forwardedRef} />;
 });
 
-ContextMenuCheckboxItem.displayName = CHECKBOX_ITEM_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * ContextMenuRadioGroup
  * -----------------------------------------------------------------------------------------------*/
 
-const RADIO_GROUP_NAME = 'ContextMenuRadioGroup';
-
-type ContextMenuRadioGroupElement = React.ElementRef<typeof MenuPrimitive.RadioGroup>;
+type ContextMenuRadioGroupElement = React.ComponentRef<typeof MenuPrimitive.RadioGroup>;
 type MenuRadioGroupProps = React.ComponentPropsWithoutRef<typeof MenuPrimitive.RadioGroup>;
 interface ContextMenuRadioGroupProps extends MenuRadioGroupProps {}
 
-const ContextMenuRadioGroup = React.forwardRef<
+const ContextMenuRadioGroup = /* @__PURE__ */ React.forwardRef<
   ContextMenuRadioGroupElement,
   ContextMenuRadioGroupProps
->((props: ScopedProps<ContextMenuRadioGroupProps>, forwardedRef) => {
+>(function ContextMenuRadioGroup(props: ScopedProps<ContextMenuRadioGroupProps>, forwardedRef) {
   const { __scopeContextMenu, ...radioGroupProps } = props;
   const menuScope = useMenuScope(__scopeContextMenu);
   return <MenuPrimitive.RadioGroup {...menuScope} {...radioGroupProps} ref={forwardedRef} />;
 });
 
-ContextMenuRadioGroup.displayName = RADIO_GROUP_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * ContextMenuRadioItem
  * -----------------------------------------------------------------------------------------------*/
 
-const RADIO_ITEM_NAME = 'ContextMenuRadioItem';
-
-type ContextMenuRadioItemElement = React.ElementRef<typeof MenuPrimitive.RadioItem>;
+type ContextMenuRadioItemElement = React.ComponentRef<typeof MenuPrimitive.RadioItem>;
 type MenuRadioItemProps = React.ComponentPropsWithoutRef<typeof MenuPrimitive.RadioItem>;
 interface ContextMenuRadioItemProps extends MenuRadioItemProps {}
 
-const ContextMenuRadioItem = React.forwardRef<
+const ContextMenuRadioItem = /* @__PURE__ */ React.forwardRef<
   ContextMenuRadioItemElement,
   ContextMenuRadioItemProps
->((props: ScopedProps<ContextMenuRadioItemProps>, forwardedRef) => {
+>(function ContextMenuRadioItem(props: ScopedProps<ContextMenuRadioItemProps>, forwardedRef) {
   const { __scopeContextMenu, ...radioItemProps } = props;
   const menuScope = useMenuScope(__scopeContextMenu);
   return <MenuPrimitive.RadioItem {...menuScope} {...radioItemProps} ref={forwardedRef} />;
 });
 
-ContextMenuRadioItem.displayName = RADIO_ITEM_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * ContextMenuItemIndicator
  * -----------------------------------------------------------------------------------------------*/
 
-const INDICATOR_NAME = 'ContextMenuItemIndicator';
-
-type ContextMenuItemIndicatorElement = React.ElementRef<typeof MenuPrimitive.ItemIndicator>;
+type ContextMenuItemIndicatorElement = React.ComponentRef<typeof MenuPrimitive.ItemIndicator>;
 type MenuItemIndicatorProps = React.ComponentPropsWithoutRef<typeof MenuPrimitive.ItemIndicator>;
 interface ContextMenuItemIndicatorProps extends MenuItemIndicatorProps {}
 
-const ContextMenuItemIndicator = React.forwardRef<
+const ContextMenuItemIndicator = /* @__PURE__ */ React.forwardRef<
   ContextMenuItemIndicatorElement,
   ContextMenuItemIndicatorProps
->((props: ScopedProps<ContextMenuItemIndicatorProps>, forwardedRef) => {
+>(function ContextMenuItemIndicator(
+  props: ScopedProps<ContextMenuItemIndicatorProps>,
+  forwardedRef,
+) {
   const { __scopeContextMenu, ...itemIndicatorProps } = props;
   const menuScope = useMenuScope(__scopeContextMenu);
   return <MenuPrimitive.ItemIndicator {...menuScope} {...itemIndicatorProps} ref={forwardedRef} />;
 });
 
-ContextMenuItemIndicator.displayName = INDICATOR_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * ContextMenuSeparator
  * -----------------------------------------------------------------------------------------------*/
 
-const SEPARATOR_NAME = 'ContextMenuSeparator';
-
-type ContextMenuSeparatorElement = React.ElementRef<typeof MenuPrimitive.Separator>;
+type ContextMenuSeparatorElement = React.ComponentRef<typeof MenuPrimitive.Separator>;
 type MenuSeparatorProps = React.ComponentPropsWithoutRef<typeof MenuPrimitive.Separator>;
 interface ContextMenuSeparatorProps extends MenuSeparatorProps {}
 
-const ContextMenuSeparator = React.forwardRef<
+const ContextMenuSeparator = /* @__PURE__ */ React.forwardRef<
   ContextMenuSeparatorElement,
   ContextMenuSeparatorProps
->((props: ScopedProps<ContextMenuSeparatorProps>, forwardedRef) => {
+>(function ContextMenuSeparator(props: ScopedProps<ContextMenuSeparatorProps>, forwardedRef) {
   const { __scopeContextMenu, ...separatorProps } = props;
   const menuScope = useMenuScope(__scopeContextMenu);
   return <MenuPrimitive.Separator {...menuScope} {...separatorProps} ref={forwardedRef} />;
 });
 
-ContextMenuSeparator.displayName = SEPARATOR_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * ContextMenuArrow
  * -----------------------------------------------------------------------------------------------*/
 
-const ARROW_NAME = 'ContextMenuArrow';
-
-type ContextMenuArrowElement = React.ElementRef<typeof MenuPrimitive.Arrow>;
+type ContextMenuArrowElement = React.ComponentRef<typeof MenuPrimitive.Arrow>;
 type MenuArrowProps = React.ComponentPropsWithoutRef<typeof MenuPrimitive.Arrow>;
 interface ContextMenuArrowProps extends MenuArrowProps {}
 
-const ContextMenuArrow = React.forwardRef<ContextMenuArrowElement, ContextMenuArrowProps>(
-  (props: ScopedProps<ContextMenuArrowProps>, forwardedRef) => {
+const ContextMenuArrow = /* @__PURE__ */ React.forwardRef<
+  ContextMenuArrowElement,
+  ContextMenuArrowProps
+>(
+  // blank line to reduce diff noise
+  function ContextMenuArrow(props: ScopedProps<ContextMenuArrowProps>, forwardedRef) {
     const { __scopeContextMenu, ...arrowProps } = props;
     const menuScope = useMenuScope(__scopeContextMenu);
     return <MenuPrimitive.Arrow {...menuScope} {...arrowProps} ref={forwardedRef} />;
-  }
+  },
 );
-
-ContextMenuArrow.displayName = ARROW_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * ContextMenuSub
@@ -447,8 +460,9 @@ const ContextMenuSub: React.FC<ContextMenuSubProps> = (props: ScopedProps<Contex
   const menuScope = useMenuScope(__scopeContextMenu);
   const [open, setOpen] = useControllableState({
     prop: openProp,
-    defaultProp: defaultOpen,
+    defaultProp: defaultOpen ?? false,
     onChange: onOpenChange,
+    caller: SUB_NAME,
   });
 
   return (
@@ -458,43 +472,35 @@ const ContextMenuSub: React.FC<ContextMenuSubProps> = (props: ScopedProps<Contex
   );
 };
 
-ContextMenuSub.displayName = SUB_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * ContextMenuSubTrigger
  * -----------------------------------------------------------------------------------------------*/
 
-const SUB_TRIGGER_NAME = 'ContextMenuSubTrigger';
-
-type ContextMenuSubTriggerElement = React.ElementRef<typeof MenuPrimitive.SubTrigger>;
+type ContextMenuSubTriggerElement = React.ComponentRef<typeof MenuPrimitive.SubTrigger>;
 type MenuSubTriggerProps = React.ComponentPropsWithoutRef<typeof MenuPrimitive.SubTrigger>;
 interface ContextMenuSubTriggerProps extends MenuSubTriggerProps {}
 
-const ContextMenuSubTrigger = React.forwardRef<
+const ContextMenuSubTrigger = /* @__PURE__ */ React.forwardRef<
   ContextMenuSubTriggerElement,
   ContextMenuSubTriggerProps
->((props: ScopedProps<ContextMenuSubTriggerProps>, forwardedRef) => {
+>(function ContextMenuSubTrigger(props: ScopedProps<ContextMenuSubTriggerProps>, forwardedRef) {
   const { __scopeContextMenu, ...triggerItemProps } = props;
   const menuScope = useMenuScope(__scopeContextMenu);
   return <MenuPrimitive.SubTrigger {...menuScope} {...triggerItemProps} ref={forwardedRef} />;
 });
 
-ContextMenuSubTrigger.displayName = SUB_TRIGGER_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * ContextMenuSubContent
  * -----------------------------------------------------------------------------------------------*/
 
-const SUB_CONTENT_NAME = 'ContextMenuSubContent';
-
-type ContextMenuSubContentElement = React.ElementRef<typeof MenuPrimitive.Content>;
+type ContextMenuSubContentElement = React.ComponentRef<typeof MenuPrimitive.Content>;
 type MenuSubContentProps = React.ComponentPropsWithoutRef<typeof MenuPrimitive.SubContent>;
 interface ContextMenuSubContentProps extends MenuSubContentProps {}
 
-const ContextMenuSubContent = React.forwardRef<
+const ContextMenuSubContent = /* @__PURE__ */ React.forwardRef<
   ContextMenuSubContentElement,
   ContextMenuSubContentProps
->((props: ScopedProps<ContextMenuSubContentProps>, forwardedRef) => {
+>(function ContextMenuSubContent(props: ScopedProps<ContextMenuSubContentProps>, forwardedRef) {
   const { __scopeContextMenu, ...subContentProps } = props;
   const menuScope = useMenuScope(__scopeContextMenu);
 
@@ -517,8 +523,6 @@ const ContextMenuSubContent = React.forwardRef<
     />
   );
 });
-
-ContextMenuSubContent.displayName = SUB_CONTENT_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 

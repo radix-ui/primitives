@@ -1,8 +1,9 @@
-import React from 'react';
+import * as React from 'react';
 import { axe } from 'vitest-axe';
 import type { RenderResult } from '@testing-library/react';
-import { render, fireEvent } from '@testing-library/react';
-import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@radix-ui/react-collapsible';
+import { cleanup, render, fireEvent } from '@testing-library/react';
+import { Collapsible, CollapsibleTrigger, CollapsibleContent } from './collapsible';
+import { afterEach, describe, it, beforeEach, vi, expect } from 'vitest';
 
 const TRIGGER_TEXT = 'Trigger';
 const CONTENT_TEXT = 'Content';
@@ -18,6 +19,8 @@ describe('given a default Collapsible', () => {
   let rendered: RenderResult;
   let trigger: HTMLElement;
   let content: HTMLElement | null;
+
+  afterEach(cleanup);
 
   beforeEach(() => {
     rendered = render(<CollapsibleTest />);
@@ -50,10 +53,33 @@ describe('given a default Collapsible', () => {
   });
 });
 
+describe('aria-controls', () => {
+  afterEach(cleanup);
+
+  it('should not reference a non-existent element while closed', () => {
+    const rendered = render(<CollapsibleTest />);
+    const trigger = rendered.getByText(TRIGGER_TEXT);
+
+    expect(rendered.queryByText(CONTENT_TEXT)).not.toBeInTheDocument();
+    expect(trigger).not.toHaveAttribute('aria-controls');
+  });
+
+  it('should reference the rendered content while open', () => {
+    const rendered = render(<CollapsibleTest defaultOpen />);
+    const trigger = rendered.getByText(TRIGGER_TEXT);
+    const content = rendered.getByText(CONTENT_TEXT);
+    expect(content.id).toBeTruthy();
+    expect(trigger).toHaveAttribute('aria-controls', content.id);
+    expect(document.getElementById(content.id)).toBe(content);
+  });
+});
+
 describe('given an open uncontrolled Collapsible', () => {
   let rendered: RenderResult;
   let content: HTMLElement | null;
   const onOpenChange = vi.fn();
+
+  afterEach(cleanup);
 
   beforeEach(() => {
     rendered = render(<CollapsibleTest defaultOpen onOpenChange={onOpenChange} />);
@@ -80,6 +106,8 @@ describe('given an open controlled Collapsible', () => {
   let rendered: RenderResult;
   let content: HTMLElement;
   const onOpenChange = vi.fn();
+
+  afterEach(cleanup);
 
   beforeEach(() => {
     rendered = render(<CollapsibleTest open onOpenChange={onOpenChange} />);

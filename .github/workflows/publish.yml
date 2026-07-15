@@ -1,0 +1,147 @@
+name: Publish release
+
+on:
+  push:
+    branches:
+      - main
+      - stable
+  workflow_dispatch:
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  detect-snapshot-changes:
+    if: github.repository == 'radix-ui/primitives' && github.ref == 'refs/heads/main'
+    name: Detect snapshot changes
+    runs-on: ubuntu-latest
+    outputs:
+      should_publish: ${{ steps.detect.outputs.should_publish }}
+      reason: ${{ steps.detect.outputs.reason }}
+      last_snapshot_version: ${{ steps.detect.outputs.last_snapshot_version }}
+      last_snapshot_published_at: ${{ steps.detect.outputs.last_snapshot_published_at }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Detect snapshot changes
+        id: detect
+        uses: ./.github/actions/detect-snapshot-changes
+
+  publish-snapshot:
+    if: github.repository == 'radix-ui/primitives' && github.ref == 'refs/heads/main' && needs.detect-snapshot-changes.outputs.should_publish == 'true'
+    name: Publish snapshot release
+    needs: detect-snapshot-changes
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      pull-requests: read
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Publish snapshot
+        uses: ./.github/actions/publish-snapshot
+
+  publish-stable:
+    if: github.repository == 'radix-ui/primitives' && github.ref == 'refs/heads/stable'
+    name: Publish stable release
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    outputs:
+      published: ${{ steps.publish-stable.outputs.published }}
+    permissions:
+      contents: write
+      pull-requests: write
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Publish stable
+        id: publish-stable
+        uses: ./.github/actions/publish-stable
+
+  open-stable-backport-pr:
+    if: github.repository == 'radix-ui/primitives' && github.ref == 'refs/heads/stable' && needs.publish-stable.result == 'success' && needs.publish-stable.outputs.published == 'true'
+    name: Open stable backport PR
+    needs: publish-stable
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Open PR from stable to main
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git fetch origin main stable
+
+          AHEAD_COUNT=$(git rev-list --right-only --count origin/main...origin/stable)
+          if [ "$AHEAD_COUNT" -eq 0 ]; then
+            echo "stable has no changes to merge back into main"
+            exit 0
+          fi
+
+          # Use `// empty` so jq emits nothing (instead of the string "null")
+          # when there is no open backport PR. Otherwise `[ -n "$PR_NUMBER" ]`
+          # would treat "null" as a truthy match and skip creation.
+          PR_NUMBER=$(gh pr list --base main --head stable --state open --json number --jq '.[0].number // empty')
+          if [ -n "$PR_NUMBER" ]; then
+            echo "PR #$PR_NUMBER from stable to main already exists"
+          else
+            PR_TITLE=$(git log -1 --pretty=%s origin/stable)
+
+            PR_BODY="$(cat <<'EOF'
+          ## Summary
+
+          - Sync the latest published changes from `stable` back into `main`.
+          - Opened automatically after a successful stable publish.
+          EOF
+          )"
+
+            # Capture `gh pr create`'s output and exit code separately from the
+            # sed extraction so a failure in `gh pr create` fails the step
+            # instead of being masked by sed's success on empty input.
+            PR_URL=$(gh pr create \
+              --base main \
+              --head stable \
+              --title "$PR_TITLE" \
+              --body "$PR_BODY")
+            PR_NUMBER=$(echo "$PR_URL" | sed -E 's|.*/([0-9]+)$|\1|')
+          fi
+
+          # Skip enablement if auto-merge is already on (re-runs on a PR that was
+          # found via the existing-PR branch above can land here a second time).
+          AUTO_MERGE_STATE=$(gh pr view "$PR_NUMBER" --json autoMergeRequest --jq '.autoMergeRequest')
+          if [ "$AUTO_MERGE_STATE" != "null" ] && [ -n "$AUTO_MERGE_STATE" ]; then
+            echo "Auto-merge is already enabled on PR #$PR_NUMBER"
+            exit 0
+          fi
+
+          # Enable auto-merge so the PR merges itself once required checks pass.
+          # If auto-merge is disabled at the repository level, log it and continue
+          # (a human will need to merge the backport PR manually). Any other
+          # failure - auth, permissions, merge conflicts, etc. - is real and
+          # should fail the job rather than silently leaving the backport unmerged.
+          if ! AUTO_MERGE_OUTPUT=$(gh pr merge --auto --squash "$PR_NUMBER" 2>&1); then
+            if echo "$AUTO_MERGE_OUTPUT" | grep -qiE 'auto[- ]merge is not allowed|auto[- ]merge is not enabled'; then
+              echo "Auto-merge is not enabled on this repository; backport PR #$PR_NUMBER must be merged manually."
+              echo "$AUTO_MERGE_OUTPUT"
+            else
+              echo "Failed to enable auto-merge on PR #$PR_NUMBER:" >&2
+              echo "$AUTO_MERGE_OUTPUT" >&2
+              exit 1
+            fi
+          fi

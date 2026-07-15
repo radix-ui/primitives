@@ -1,12 +1,10 @@
-/// <reference types="resize-observer-browser" />
-
 import * as React from 'react';
-import ReactDOM from 'react-dom';
+import * as ReactDOM from 'react-dom';
 import { createContextScope } from '@radix-ui/react-context';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { Primitive, dispatchDiscreteCustomEvent } from '@radix-ui/react-primitive';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
-import { composeRefs, useComposedRefs } from '@radix-ui/react-compose-refs';
+import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { useDirection } from '@radix-ui/react-direction';
 import { Presence } from '@radix-ui/react-presence';
 import { useId } from '@radix-ui/react-id';
@@ -39,7 +37,7 @@ const [FocusGroupCollection, useFocusGroupCollection, createFocusGroupCollection
 type ScopedProps<P> = P & { __scopeNavigationMenu?: Scope };
 const [createNavigationMenuContext, createNavigationMenuScope] = createContextScope(
   NAVIGATION_MENU_NAME,
-  [createCollectionScope, createFocusGroupCollectionScope]
+  [createCollectionScope, createFocusGroupCollectionScope],
 );
 
 type ContentData = {
@@ -75,10 +73,11 @@ const [ViewportContentProvider, useViewportContentContext] = createNavigationMen
   items: Map<string, ContentData>;
 }>(NAVIGATION_MENU_NAME);
 
-type NavigationMenuElement = React.ElementRef<typeof Primitive.nav>;
+type NavigationMenuElement = React.ComponentRef<typeof Primitive.nav>;
 type PrimitiveNavProps = React.ComponentPropsWithoutRef<typeof Primitive.nav>;
 interface NavigationMenuProps
-  extends Omit<NavigationMenuProviderProps, keyof NavigationMenuProviderPrivateProps>,
+  extends
+    Omit<NavigationMenuProviderProps, keyof NavigationMenuProviderPrivateProps>,
     PrimitiveNavProps {
   value?: string;
   defaultValue?: string;
@@ -97,8 +96,8 @@ interface NavigationMenuProps
   skipDelayDuration?: number;
 }
 
-const NavigationMenu = React.forwardRef<NavigationMenuElement, NavigationMenuProps>(
-  (props: ScopedProps<NavigationMenuProps>, forwardedRef) => {
+const NavigationMenu = /* @__PURE__ */ React.forwardRef<NavigationMenuElement, NavigationMenuProps>(
+  function NavigationMenu(props: ScopedProps<NavigationMenuProps>, forwardedRef) {
     const {
       __scopeNavigationMenu,
       value: valueProp,
@@ -111,13 +110,13 @@ const NavigationMenu = React.forwardRef<NavigationMenuElement, NavigationMenuPro
       ...NavigationMenuProps
     } = props;
     const [navigationMenu, setNavigationMenu] = React.useState<NavigationMenuElement | null>(null);
-    const composedRef = useComposedRefs(forwardedRef, (node) => setNavigationMenu(node));
+    const composedRef = useComposedRefs(forwardedRef, setNavigationMenu);
     const direction = useDirection(dir);
     const openTimerRef = React.useRef(0);
     const closeTimerRef = React.useRef(0);
     const skipDelayTimerRef = React.useRef(0);
     const [isOpenDelayed, setIsOpenDelayed] = React.useState(true);
-    const [value = '', setValue] = useControllableState({
+    const [value, setValue] = useControllableState({
       prop: valueProp,
       onChange: (value) => {
         const isOpen = value !== '';
@@ -130,13 +129,14 @@ const NavigationMenu = React.forwardRef<NavigationMenuElement, NavigationMenuPro
           window.clearTimeout(skipDelayTimerRef.current);
           skipDelayTimerRef.current = window.setTimeout(
             () => setIsOpenDelayed(true),
-            skipDelayDuration
+            skipDelayDuration,
           );
         }
 
         onValueChange?.(value);
       },
-      defaultProp: defaultValue,
+      defaultProp: defaultValue ?? '',
+      caller: NAVIGATION_MENU_NAME,
     });
 
     const startCloseTimer = React.useCallback(() => {
@@ -149,7 +149,7 @@ const NavigationMenu = React.forwardRef<NavigationMenuElement, NavigationMenuPro
         window.clearTimeout(closeTimerRef.current);
         setValue(itemValue);
       },
-      [setValue]
+      [setValue],
     );
 
     const handleDelayedOpen = React.useCallback(
@@ -166,7 +166,7 @@ const NavigationMenu = React.forwardRef<NavigationMenuElement, NavigationMenuPro
           }, delayDuration);
         }
       },
-      [value, setValue, delayDuration]
+      [value, setValue, delayDuration],
     );
 
     React.useEffect(() => {
@@ -210,10 +210,8 @@ const NavigationMenu = React.forwardRef<NavigationMenuElement, NavigationMenuPro
         />
       </NavigationMenuProvider>
     );
-  }
+  },
 );
-
-NavigationMenu.displayName = NAVIGATION_MENU_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * NavigationMenuSub
@@ -221,10 +219,11 @@ NavigationMenu.displayName = NAVIGATION_MENU_NAME;
 
 const SUB_NAME = 'NavigationMenuSub';
 
-type NavigationMenuSubElement = React.ElementRef<typeof Primitive.div>;
+type NavigationMenuSubElement = React.ComponentRef<typeof Primitive.div>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface NavigationMenuSubProps
-  extends Omit<NavigationMenuProviderProps, keyof NavigationMenuProviderPrivateProps>,
+  extends
+    Omit<NavigationMenuProviderProps, keyof NavigationMenuProviderPrivateProps>,
     PrimitiveDivProps {
   value?: string;
   defaultValue?: string;
@@ -232,8 +231,12 @@ interface NavigationMenuSubProps
   orientation?: Orientation;
 }
 
-const NavigationMenuSub = React.forwardRef<NavigationMenuSubElement, NavigationMenuSubProps>(
-  (props: ScopedProps<NavigationMenuSubProps>, forwardedRef) => {
+const NavigationMenuSub = /* @__PURE__ */ React.forwardRef<
+  NavigationMenuSubElement,
+  NavigationMenuSubProps
+>(
+  // blank line to reduce diff noise
+  function NavigationMenuSub(props: ScopedProps<NavigationMenuSubProps>, forwardedRef) {
     const {
       __scopeNavigationMenu,
       value: valueProp,
@@ -243,10 +246,11 @@ const NavigationMenuSub = React.forwardRef<NavigationMenuSubElement, NavigationM
       ...subProps
     } = props;
     const context = useNavigationMenuContext(SUB_NAME, __scopeNavigationMenu);
-    const [value = '', setValue] = useControllableState({
+    const [value, setValue] = useControllableState({
       prop: valueProp,
       onChange: onValueChange,
-      defaultProp: defaultValue,
+      defaultProp: defaultValue ?? '',
+      caller: SUB_NAME,
     });
 
     return (
@@ -264,10 +268,8 @@ const NavigationMenuSub = React.forwardRef<NavigationMenuSubElement, NavigationM
         <Primitive.div data-orientation={orientation} {...subProps} ref={forwardedRef} />
       </NavigationMenuProvider>
     );
-  }
+  },
 );
-
-NavigationMenuSub.displayName = SUB_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
@@ -290,7 +292,7 @@ interface NavigationMenuProviderPrivateProps {
 interface NavigationMenuProviderProps extends NavigationMenuProviderPrivateProps {}
 
 const NavigationMenuProvider: React.FC<NavigationMenuProviderProps> = (
-  props: ScopedProps<NavigationMenuProviderProps>
+  props: ScopedProps<NavigationMenuProviderProps>,
 ) => {
   const {
     scope,
@@ -360,12 +362,16 @@ const NavigationMenuProvider: React.FC<NavigationMenuProviderProps> = (
 
 const LIST_NAME = 'NavigationMenuList';
 
-type NavigationMenuListElement = React.ElementRef<typeof Primitive.ul>;
+type NavigationMenuListElement = React.ComponentRef<typeof Primitive.ul>;
 type PrimitiveUnorderedListProps = React.ComponentPropsWithoutRef<typeof Primitive.ul>;
 interface NavigationMenuListProps extends PrimitiveUnorderedListProps {}
 
-const NavigationMenuList = React.forwardRef<NavigationMenuListElement, NavigationMenuListProps>(
-  (props: ScopedProps<NavigationMenuListProps>, forwardedRef) => {
+const NavigationMenuList = /* @__PURE__ */ React.forwardRef<
+  NavigationMenuListElement,
+  NavigationMenuListProps
+>(
+  // blank line to reduce diff noise
+  function NavigationMenuList(props: ScopedProps<NavigationMenuListProps>, forwardedRef) {
     const { __scopeNavigationMenu, ...listProps } = props;
     const context = useNavigationMenuContext(LIST_NAME, __scopeNavigationMenu);
 
@@ -380,10 +386,8 @@ const NavigationMenuList = React.forwardRef<NavigationMenuListElement, Navigatio
         </Collection.Slot>
       </Primitive.div>
     );
-  }
+  },
 );
-
-NavigationMenuList.displayName = LIST_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * NavigationMenuItem
@@ -391,7 +395,7 @@ NavigationMenuList.displayName = LIST_NAME;
 
 const ITEM_NAME = 'NavigationMenuItem';
 
-type FocusProxyElement = React.ElementRef<typeof VisuallyHiddenPrimitive.Root>;
+type FocusProxyElement = React.ComponentRef<typeof VisuallyHiddenPrimitive.Root>;
 
 type NavigationMenuItemContextValue = {
   value: string;
@@ -408,14 +412,18 @@ type NavigationMenuItemContextValue = {
 const [NavigationMenuItemContextProvider, useNavigationMenuItemContext] =
   createNavigationMenuContext<NavigationMenuItemContextValue>(ITEM_NAME);
 
-type NavigationMenuItemElement = React.ElementRef<typeof Primitive.li>;
+type NavigationMenuItemElement = React.ComponentRef<typeof Primitive.li>;
 type PrimitiveListItemProps = React.ComponentPropsWithoutRef<typeof Primitive.li>;
 interface NavigationMenuItemProps extends PrimitiveListItemProps {
   value?: string;
 }
 
-const NavigationMenuItem = React.forwardRef<NavigationMenuItemElement, NavigationMenuItemProps>(
-  (props: ScopedProps<NavigationMenuItemProps>, forwardedRef) => {
+const NavigationMenuItem = /* @__PURE__ */ React.forwardRef<
+  NavigationMenuItemElement,
+  NavigationMenuItemProps
+>(
+  // blank line to reduce diff noise
+  function NavigationMenuItem(props: ScopedProps<NavigationMenuItemProps>, forwardedRef) {
     const { __scopeNavigationMenu, value: valueProp, ...itemProps } = props;
     const autoValue = useId();
     // We need to provide an initial deterministic value as `useId` will return
@@ -458,10 +466,8 @@ const NavigationMenuItem = React.forwardRef<NavigationMenuItemElement, Navigatio
         <Primitive.li {...itemProps} ref={forwardedRef} />
       </NavigationMenuItemContextProvider>
     );
-  }
+  },
 );
-
-NavigationMenuItem.displayName = ITEM_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * NavigationMenuTrigger
@@ -469,14 +475,14 @@ NavigationMenuItem.displayName = ITEM_NAME;
 
 const TRIGGER_NAME = 'NavigationMenuTrigger';
 
-type NavigationMenuTriggerElement = React.ElementRef<typeof Primitive.button>;
+type NavigationMenuTriggerElement = React.ComponentRef<typeof Primitive.button>;
 type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
 interface NavigationMenuTriggerProps extends PrimitiveButtonProps {}
 
-const NavigationMenuTrigger = React.forwardRef<
+const NavigationMenuTrigger = /* @__PURE__ */ React.forwardRef<
   NavigationMenuTriggerElement,
   NavigationMenuTriggerProps
->((props: ScopedProps<NavigationMenuTriggerProps>, forwardedRef) => {
+>(function NavigationMenuTrigger(props: ScopedProps<NavigationMenuTriggerProps>, forwardedRef) {
   const { __scopeNavigationMenu, disabled, ...triggerProps } = props;
   const context = useNavigationMenuContext(TRIGGER_NAME, props.__scopeNavigationMenu);
   const itemContext = useNavigationMenuItemContext(TRIGGER_NAME, props.__scopeNavigationMenu);
@@ -498,7 +504,7 @@ const NavigationMenuTrigger = React.forwardRef<
             data-disabled={disabled ? '' : undefined}
             data-state={getOpenState(open)}
             aria-expanded={open}
-            aria-controls={contentId}
+            aria-controls={open ? contentId : undefined}
             {...triggerProps}
             ref={composedRefs}
             onPointerEnter={composeEventHandlers(props.onPointerEnter, () => {
@@ -517,7 +523,7 @@ const NavigationMenuTrigger = React.forwardRef<
                   return;
                 context.onTriggerEnter(itemContext.value);
                 hasPointerMoveOpenedRef.current = true;
-              })
+              }),
             )}
             onPointerLeave={composeEventHandlers(
               props.onPointerLeave,
@@ -525,7 +531,7 @@ const NavigationMenuTrigger = React.forwardRef<
                 if (disabled) return;
                 context.onTriggerLeave();
                 hasPointerMoveOpenedRef.current = false;
-              })
+              }),
             )}
             onClick={composeEventHandlers(props.onClick, () => {
               context.onItemSelect(itemContext.value);
@@ -573,24 +579,24 @@ const NavigationMenuTrigger = React.forwardRef<
   );
 });
 
-NavigationMenuTrigger.displayName = TRIGGER_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * NavigationMenuLink
  * -----------------------------------------------------------------------------------------------*/
-
-const LINK_NAME = 'NavigationMenuLink';
 const LINK_SELECT = 'navigationMenu.linkSelect';
 
-type NavigationMenuLinkElement = React.ElementRef<typeof Primitive.a>;
+type NavigationMenuLinkElement = React.ComponentRef<typeof Primitive.a>;
 type PrimitiveLinkProps = React.ComponentPropsWithoutRef<typeof Primitive.a>;
 interface NavigationMenuLinkProps extends Omit<PrimitiveLinkProps, 'onSelect'> {
   active?: boolean;
   onSelect?: (event: Event) => void;
 }
 
-const NavigationMenuLink = React.forwardRef<NavigationMenuLinkElement, NavigationMenuLinkProps>(
-  (props: ScopedProps<NavigationMenuLinkProps>, forwardedRef) => {
+const NavigationMenuLink = /* @__PURE__ */ React.forwardRef<
+  NavigationMenuLinkElement,
+  NavigationMenuLinkProps
+>(
+  // blank line to reduce diff noise
+  function NavigationMenuLink(props: ScopedProps<NavigationMenuLinkProps>, forwardedRef) {
     const { __scopeNavigationMenu, active, onSelect, ...linkProps } = props;
 
     return (
@@ -619,15 +625,13 @@ const NavigationMenuLink = React.forwardRef<NavigationMenuLinkElement, Navigatio
                 dispatchDiscreteCustomEvent(target, rootContentDismissEvent);
               }
             },
-            { checkForDefaultPrevented: false }
+            { checkForDefaultPrevented: false },
           )}
         />
       </FocusGroupItem>
     );
-  }
+  },
 );
-
-NavigationMenuLink.displayName = LINK_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * NavigationMenuIndicator
@@ -644,10 +648,10 @@ interface NavigationMenuIndicatorProps extends NavigationMenuIndicatorImplProps 
   forceMount?: true;
 }
 
-const NavigationMenuIndicator = React.forwardRef<
+const NavigationMenuIndicator = /* @__PURE__ */ React.forwardRef<
   NavigationMenuIndicatorElement,
   NavigationMenuIndicatorProps
->((props: ScopedProps<NavigationMenuIndicatorProps>, forwardedRef) => {
+>(function NavigationMenuIndicator(props: ScopedProps<NavigationMenuIndicatorProps>, forwardedRef) {
   const { forceMount, ...indicatorProps } = props;
   const context = useNavigationMenuContext(INDICATOR_NAME, props.__scopeNavigationMenu);
   const isVisible = Boolean(context.value);
@@ -657,25 +661,26 @@ const NavigationMenuIndicator = React.forwardRef<
         <Presence present={forceMount || isVisible}>
           <NavigationMenuIndicatorImpl {...indicatorProps} ref={forwardedRef} />
         </Presence>,
-        context.indicatorTrack
+        context.indicatorTrack,
       )
     : null;
 });
 
-NavigationMenuIndicator.displayName = INDICATOR_NAME;
-
-type NavigationMenuIndicatorImplElement = React.ElementRef<typeof Primitive.div>;
+type NavigationMenuIndicatorImplElement = React.ComponentRef<typeof Primitive.div>;
 interface NavigationMenuIndicatorImplProps extends PrimitiveDivProps {}
 
-const NavigationMenuIndicatorImpl = React.forwardRef<
+const NavigationMenuIndicatorImpl = /* @__PURE__ */ React.forwardRef<
   NavigationMenuIndicatorImplElement,
   NavigationMenuIndicatorImplProps
->((props: ScopedProps<NavigationMenuIndicatorImplProps>, forwardedRef) => {
+>(function NavigationMenuIndicatorImpl(
+  props: ScopedProps<NavigationMenuIndicatorImplProps>,
+  forwardedRef,
+) {
   const { __scopeNavigationMenu, ...indicatorProps } = props;
   const context = useNavigationMenuContext(INDICATOR_NAME, __scopeNavigationMenu);
   const getItems = useCollection(__scopeNavigationMenu);
   const [activeTrigger, setActiveTrigger] = React.useState<NavigationMenuTriggerElement | null>(
-    null
+    null,
   );
   const [position, setPosition] = React.useState<{ size: number; offset: number } | null>(null);
   const isHorizontal = context.orientation === 'horizontal';
@@ -717,11 +722,13 @@ const NavigationMenuIndicatorImpl = React.forwardRef<
               left: 0,
               width: position.size + 'px',
               transform: `translateX(${position.offset}px)`,
+              '--radix-navigation-menu-indicator-translate-x': `${position.offset}px`,
             }
           : {
               top: 0,
               height: position.size + 'px',
               transform: `translateY(${position.offset}px)`,
+              '--radix-navigation-menu-indicator-translate-y': `${position.offset}px`,
             }),
         ...indicatorProps.style,
       }}
@@ -736,8 +743,10 @@ const NavigationMenuIndicatorImpl = React.forwardRef<
 const CONTENT_NAME = 'NavigationMenuContent';
 
 type NavigationMenuContentElement = NavigationMenuContentImplElement;
-interface NavigationMenuContentProps
-  extends Omit<NavigationMenuContentImplProps, keyof NavigationMenuContentImplPrivateProps> {
+interface NavigationMenuContentProps extends Omit<
+  NavigationMenuContentImplProps,
+  keyof NavigationMenuContentImplPrivateProps
+> {
   /**
    * Used to force mounting when more control is needed. Useful when
    * controlling animation with React animation libraries.
@@ -745,10 +754,10 @@ interface NavigationMenuContentProps
   forceMount?: true;
 }
 
-const NavigationMenuContent = React.forwardRef<
+const NavigationMenuContent = /* @__PURE__ */ React.forwardRef<
   NavigationMenuContentElement,
   NavigationMenuContentProps
->((props: ScopedProps<NavigationMenuContentProps>, forwardedRef) => {
+>(function NavigationMenuContent(props: ScopedProps<NavigationMenuContentProps>, forwardedRef) {
   const { forceMount, ...contentProps } = props;
   const context = useNavigationMenuContext(CONTENT_NAME, props.__scopeNavigationMenu);
   const itemContext = useNavigationMenuItemContext(CONTENT_NAME, props.__scopeNavigationMenu);
@@ -774,7 +783,7 @@ const NavigationMenuContent = React.forwardRef<
         onPointerEnter={composeEventHandlers(props.onPointerEnter, context.onContentEnter)}
         onPointerLeave={composeEventHandlers(
           props.onPointerLeave,
-          whenMouse(context.onContentLeave)
+          whenMouse(context.onContentLeave),
         )}
         style={{
           // Prevent interaction when animating out
@@ -788,8 +797,6 @@ const NavigationMenuContent = React.forwardRef<
   );
 });
 
-NavigationMenuContent.displayName = CONTENT_NAME;
-
 /* -----------------------------------------------------------------------------------------------*/
 
 type ViewportContentMounterElement = NavigationMenuContentImplElement;
@@ -801,10 +808,10 @@ interface ViewportContentMounterProps extends NavigationMenuContentImplProps {
   forceMount?: true;
 }
 
-const ViewportContentMounter = React.forwardRef<
+const ViewportContentMounter = /* @__PURE__ */ React.forwardRef<
   ViewportContentMounterElement,
   ViewportContentMounterProps
->((props: ScopedProps<ViewportContentMounterProps>, forwardedRef) => {
+>(function ViewportContentMounter(props: ScopedProps<ViewportContentMounterProps>, forwardedRef) {
   const context = useNavigationMenuContext(CONTENT_NAME, props.__scopeNavigationMenu);
   const { onViewportContentChange, onViewportContentRemove } = context;
 
@@ -828,7 +835,7 @@ const ViewportContentMounter = React.forwardRef<
 const ROOT_CONTENT_DISMISS = 'navigationMenu.rootContentDismiss';
 
 type MotionAttribute = 'to-start' | 'to-end' | 'from-start' | 'from-end';
-type NavigationMenuContentImplElement = React.ElementRef<typeof DismissableLayer>;
+type NavigationMenuContentImplElement = React.ComponentRef<typeof DismissableLayer>;
 type DismissableLayerProps = React.ComponentPropsWithoutRef<typeof DismissableLayer>;
 
 interface NavigationMenuContentImplPrivateProps {
@@ -840,13 +847,17 @@ interface NavigationMenuContentImplPrivateProps {
   onRootContentClose(): void;
 }
 interface NavigationMenuContentImplProps
-  extends Omit<DismissableLayerProps, 'onDismiss' | 'disableOutsidePointerEvents'>,
+  extends
+    Omit<DismissableLayerProps, 'onDismiss' | 'disableOutsidePointerEvents'>,
     NavigationMenuContentImplPrivateProps {}
 
-const NavigationMenuContentImpl = React.forwardRef<
+const NavigationMenuContentImpl = /* @__PURE__ */ React.forwardRef<
   NavigationMenuContentImplElement,
   NavigationMenuContentImplProps
->((props: ScopedProps<NavigationMenuContentImplProps>, forwardedRef) => {
+>(function NavigationMenuContentImpl(
+  props: ScopedProps<NavigationMenuContentImplProps>,
+  forwardedRef,
+) {
   const {
     __scopeNavigationMenu,
     value,
@@ -981,8 +992,10 @@ const NavigationMenuContentImpl = React.forwardRef<
 const VIEWPORT_NAME = 'NavigationMenuViewport';
 
 type NavigationMenuViewportElement = NavigationMenuViewportImplElement;
-interface NavigationMenuViewportProps
-  extends Omit<NavigationMenuViewportImplProps, 'activeContentValue'> {
+interface NavigationMenuViewportProps extends Omit<
+  NavigationMenuViewportImplProps,
+  'activeContentValue'
+> {
   /**
    * Used to force mounting when more control is needed. Useful when
    * controlling animation with React animation libraries.
@@ -990,10 +1003,10 @@ interface NavigationMenuViewportProps
   forceMount?: true;
 }
 
-const NavigationMenuViewport = React.forwardRef<
+const NavigationMenuViewport = /* @__PURE__ */ React.forwardRef<
   NavigationMenuViewportElement,
   NavigationMenuViewportProps
->((props: ScopedProps<NavigationMenuViewportProps>, forwardedRef) => {
+>(function NavigationMenuViewport(props: ScopedProps<NavigationMenuViewportProps>, forwardedRef) {
   const { forceMount, ...viewportProps } = props;
   const context = useNavigationMenuContext(VIEWPORT_NAME, props.__scopeNavigationMenu);
   const open = Boolean(context.value);
@@ -1005,23 +1018,24 @@ const NavigationMenuViewport = React.forwardRef<
   );
 });
 
-NavigationMenuViewport.displayName = VIEWPORT_NAME;
-
 /* -----------------------------------------------------------------------------------------------*/
 
-type NavigationMenuViewportImplElement = React.ElementRef<typeof Primitive.div>;
+type NavigationMenuViewportImplElement = React.ComponentRef<typeof Primitive.div>;
 interface NavigationMenuViewportImplProps extends PrimitiveDivProps {}
 
-const NavigationMenuViewportImpl = React.forwardRef<
+const NavigationMenuViewportImpl = /* @__PURE__ */ React.forwardRef<
   NavigationMenuViewportImplElement,
   NavigationMenuViewportImplProps
->((props: ScopedProps<NavigationMenuViewportImplProps>, forwardedRef) => {
+>(function NavigationMenuViewportImpl(
+  props: ScopedProps<NavigationMenuViewportImplProps>,
+  forwardedRef,
+) {
   const { __scopeNavigationMenu, children, ...viewportImplProps } = props;
   const context = useNavigationMenuContext(VIEWPORT_NAME, __scopeNavigationMenu);
   const composedRefs = useComposedRefs(forwardedRef, context.onViewportChange);
   const viewportContentContext = useViewportContentContext(
     CONTENT_NAME,
-    props.__scopeNavigationMenu
+    props.__scopeNavigationMenu,
   );
   const [size, setSize] = React.useState<{ width: number; height: number } | null>(null);
   const [content, setContent] = React.useState<NavigationMenuContentElement | null>(null);
@@ -1052,8 +1066,8 @@ const NavigationMenuViewportImpl = React.forwardRef<
       style={{
         // Prevent interaction when animating out
         pointerEvents: !open && context.isRootMenu ? 'none' : undefined,
-        ['--radix-navigation-menu-viewport-width' as any]: viewportWidth,
-        ['--radix-navigation-menu-viewport-height' as any]: viewportHeight,
+        '--radix-navigation-menu-viewport-width': viewportWidth,
+        '--radix-navigation-menu-viewport-height': viewportHeight,
         ...viewportImplProps.style,
       }}
       onPointerEnter={composeEventHandlers(props.onPointerEnter, context.onContentEnter)}
@@ -1063,13 +1077,11 @@ const NavigationMenuViewportImpl = React.forwardRef<
         const isActive = activeContentValue === value;
         return (
           <Presence key={value} present={forceMount || isActive}>
-            <NavigationMenuContentImpl
+            <NavigationMenuViewportItem
               {...props}
-              ref={composeRefs(ref, (node) => {
-                // We only want to update the stored node when another is available
-                // as we need to smoothly transition between them.
-                if (isActive && node) setContent(node);
-              })}
+              contentRef={ref}
+              isActive={isActive}
+              onActiveContentChange={setContent}
             />
           </Presence>
         );
@@ -1080,13 +1092,41 @@ const NavigationMenuViewportImpl = React.forwardRef<
 
 /* -----------------------------------------------------------------------------------------------*/
 
+interface NavigationMenuViewportItemProps extends NavigationMenuContentImplProps {
+  contentRef?: React.Ref<ViewportContentMounterElement>;
+  isActive: boolean;
+  onActiveContentChange: (node: NavigationMenuContentElement | null) => void;
+}
+
+const NavigationMenuViewportItem = ({
+  contentRef,
+  isActive,
+  onActiveContentChange,
+  ...props
+}: ScopedProps<NavigationMenuViewportItemProps>) => {
+  const handleContentChange = React.useCallback(
+    (node: NavigationMenuContentElement | null) => {
+      // We only want to update the stored node when another is available
+      // as we need to smoothly transition between them.
+      if (isActive && node) {
+        onActiveContentChange(node);
+      }
+    },
+    [isActive, onActiveContentChange],
+  );
+  const composedRefs = useComposedRefs(contentRef, handleContentChange);
+  return <NavigationMenuContentImpl {...props} ref={composedRefs} />;
+};
+
+/* -----------------------------------------------------------------------------------------------*/
+
 const FOCUS_GROUP_NAME = 'FocusGroup';
 
-type FocusGroupElement = React.ElementRef<typeof Primitive.div>;
+type FocusGroupElement = React.ComponentRef<typeof Primitive.div>;
 interface FocusGroupProps extends PrimitiveDivProps {}
 
-const FocusGroup = React.forwardRef<FocusGroupElement, FocusGroupProps>(
-  (props: ScopedProps<FocusGroupProps>, forwardedRef) => {
+const FocusGroup = /* @__PURE__ */ React.forwardRef<FocusGroupElement, FocusGroupProps>(
+  function FocusGroup(props: ScopedProps<FocusGroupProps>, forwardedRef) {
     const { __scopeNavigationMenu, ...groupProps } = props;
     const context = useNavigationMenuContext(FOCUS_GROUP_NAME, __scopeNavigationMenu);
 
@@ -1097,7 +1137,7 @@ const FocusGroup = React.forwardRef<FocusGroupElement, FocusGroupProps>(
         </FocusGroupCollection.Slot>
       </FocusGroupCollection.Provider>
     );
-  }
+  },
 );
 
 /* -----------------------------------------------------------------------------------------------*/
@@ -1105,11 +1145,11 @@ const FocusGroup = React.forwardRef<FocusGroupElement, FocusGroupProps>(
 const ARROW_KEYS = ['ArrowRight', 'ArrowLeft', 'ArrowUp', 'ArrowDown'];
 const FOCUS_GROUP_ITEM_NAME = 'FocusGroupItem';
 
-type FocusGroupItemElement = React.ElementRef<typeof Primitive.button>;
+type FocusGroupItemElement = React.ComponentRef<typeof Primitive.button>;
 interface FocusGroupItemProps extends PrimitiveButtonProps {}
 
-const FocusGroupItem = React.forwardRef<FocusGroupItemElement, FocusGroupItemProps>(
-  (props: ScopedProps<FocusGroupItemProps>, forwardedRef) => {
+const FocusGroupItem = /* @__PURE__ */ React.forwardRef<FocusGroupItemElement, FocusGroupItemProps>(
+  function FocusGroupItem(props: ScopedProps<FocusGroupItemProps>, forwardedRef) {
     const { __scopeNavigationMenu, ...groupProps } = props;
     const getItems = useFocusGroupCollection(__scopeNavigationMenu);
     const context = useNavigationMenuContext(FOCUS_GROUP_ITEM_NAME, __scopeNavigationMenu);
@@ -1143,7 +1183,7 @@ const FocusGroupItem = React.forwardRef<FocusGroupItemElement, FocusGroupItemPro
         />
       </FocusGroupCollection.ItemSlot>
     );
-  }
+  },
 );
 
 /**

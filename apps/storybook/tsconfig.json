@@ -1,0 +1,4 @@
+{
+  "extends": "@repo/typescript-config/react-library.json",
+  "include": ["stories", "index.d.ts"]
+}

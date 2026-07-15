@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Portal } from '@radix-ui/react-portal';
+import { Portal } from 'radix-ui';
 import { CustomPortalContainer } from './custom-portal-container';
 import { ConditionalPortal } from './conditional-portal';
 
@@ -21,13 +21,13 @@ export default function Page() {
           laboriosam necessitatibus eius pariatur.
         </p>
 
-        <Portal>
+        <Portal.Root>
           <h1>This content is rendered in a portal (another DOM tree)</h1>
           <p>
             Because of the portal, it can appear in a different DOM tree from the main one (by
             default a new element inside the body), even though it is part of the same React tree.
           </p>
-        </Portal>
+        </Portal.Root>
       </div>
 
       <br />

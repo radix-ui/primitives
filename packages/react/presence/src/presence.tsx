@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { useStateMachine } from './use-state-machine';
 
@@ -18,12 +17,10 @@ const Presence: React.FC<PresenceProps> = (props) => {
       : React.Children.only(children)
   ) as React.ReactElement<{ ref?: React.Ref<HTMLElement> }>;
 
-  const ref = useComposedRefs(presence.ref, getElementRef(child));
+  const ref = useStableComposedRefs(presence.ref, getElementRef(child));
   const forceMount = typeof children === 'function';
   return forceMount || presence.isPresent ? React.cloneElement(child, { ref }) : null;
 };
-
-Presence.displayName = 'Presence';
 
 /* -------------------------------------------------------------------------------------------------
  * usePresence
@@ -31,9 +28,10 @@ Presence.displayName = 'Presence';
 
 function usePresence(present: boolean) {
   const [node, setNode] = React.useState<HTMLElement>();
-  const stylesRef = React.useRef<CSSStyleDeclaration>({} as any);
+  const stylesRef = React.useRef<CSSStyleDeclaration | null>(null);
   const prevPresentRef = React.useRef(present);
   const prevAnimationNameRef = React.useRef<string>('none');
+  const mountAnimationNameRef = React.useRef<string | undefined>(undefined);
   const initialState = present ? 'mounted' : 'unmounted';
   const [state, send] = useStateMachine(initialState, {
     mounted: {
@@ -50,8 +48,19 @@ function usePresence(present: boolean) {
   });
 
   React.useEffect(() => {
-    const currentAnimationName = getAnimationName(stylesRef.current);
-    prevAnimationNameRef.current = state === 'mounted' ? currentAnimationName : 'none';
+    if (state === 'mounted') {
+      // Use the animation name captured during the layout phase (or the ref
+      // callback on first mount). By the time this passive effect runs,
+      // sibling effects like react-remove-scroll and DismissableLayer may have
+      // dirtied body styles, so re-reading from the live CSSStyleDeclaration
+      // here would force an expensive synchronous style recalculation.
+      // See: https://github.com/radix-ui/primitives/issues/1634
+      prevAnimationNameRef.current =
+        mountAnimationNameRef.current ?? getAnimationName(stylesRef.current);
+      mountAnimationNameRef.current = undefined;
+    } else {
+      prevAnimationNameRef.current = 'none';
+    }
   }, [state]);
 
   useLayoutEffect(() => {
@@ -64,6 +73,11 @@ function usePresence(present: boolean) {
       const currentAnimationName = getAnimationName(styles);
 
       if (present) {
+        // Capture the animation name now, while styles are still "clean"
+        // (before sibling passive effects dirty the body). The later passive
+        // effect will read from this ref instead of the live
+        // CSSStyleDeclaration, avoiding a forced style recalculation.
+        mountAnimationNameRef.current = currentAnimationName;
         send('MOUNT');
       } else if (currentAnimationName === 'none' || styles?.display === 'none') {
         // If there is no exit animation or the element is hidden, animations won't run
@@ -100,7 +114,9 @@ function usePresence(present: boolean) {
        */
       const handleAnimationEnd = (event: AnimationEvent) => {
         const currentAnimationName = getAnimationName(stylesRef.current);
-        const isCurrentAnimation = currentAnimationName.includes(event.animationName);
+        // The event.animationName is unescaped for CSS syntax,
+        // so we need to escape it to compare with the animationName computed from the style.
+        const isCurrentAnimation = currentAnimationName.includes(CSS.escape(event.animationName));
         if (event.target === node && isCurrentAnimation) {
           // With React 18 concurrency this update is applied a frame after the
           // animation ends, creating a flash of visible content. By setting the
@@ -153,7 +169,18 @@ function usePresence(present: boolean) {
   return {
     isPresent: ['mounted', 'unmountSuspended'].includes(state),
     ref: React.useCallback((node: HTMLElement) => {
-      if (node) stylesRef.current = getComputedStyle(node);
+      if (node) {
+        const styles = getComputedStyle(node);
+        stylesRef.current = styles;
+        // Eagerly read the animation name while styles are clean. Ref
+        // callbacks fire during the commit phase, before any passive effects
+        // can dirty body styles. This cached value is consumed by the passive
+        // effect that records prevAnimationNameRef, letting it skip a
+        // redundant (and expensive) live-style read.
+        mountAnimationNameRef.current = getAnimationName(styles);
+      } else {
+        stylesRef.current = null;
+      }
       setNode(node);
     }, []),
   };
@@ -161,7 +188,63 @@ function usePresence(present: boolean) {
 
 /* -----------------------------------------------------------------------------------------------*/
 
-function getAnimationName(styles?: CSSStyleDeclaration) {
+type PossibleRef<T> = React.Ref<T> | undefined;
+
+function setRef<T>(ref: PossibleRef<T>, value: T | null) {
+  if (typeof ref === 'function') {
+    return ref(value);
+  } else if (ref !== null && ref !== undefined) {
+    ref.current = value;
+  }
+}
+
+/**
+ * Unlike `useComposedRefs`, the returned callback never changes identity, even
+ * when the composed refs do. This matters in React 19: when a callback ref's
+ * identity changes between renders, React detaches the previous ref (calls it
+ * with `null`) and attaches the new one on every commit. Because `Presence`
+ * calls `setNode` from its own ref, an unstable consumer ref would otherwise
+ * cause React to re-run that update on every commit, resulting in a "Maximum
+ * update depth exceeded" loop.
+ *
+ * The latest refs are always read at attach/detach time, so the most recent
+ * consumer ref still receives the node when it mounts or unmounts.
+ *
+ * @see https://github.com/radix-ui/primitives/issues/3664
+ */
+function useStableComposedRefs<T>(...refs: PossibleRef<T>[]): React.RefCallback<T> {
+  // Keep the latest refs without changing the callback identity. Assigning during render is
+  // safe here because we only ever read `.current` later (at commit time, in the ref callback).
+  const refsRef = React.useRef(refs);
+  refsRef.current = refs;
+
+  return React.useCallback((node: T | null) => {
+    const currentRefs = refsRef.current;
+    let hasCleanup = false;
+    const cleanups = currentRefs.map((ref) => {
+      const cleanup = setRef(ref, node);
+      if (!hasCleanup && typeof cleanup === 'function') {
+        hasCleanup = true;
+      }
+      return cleanup;
+    });
+
+    if (hasCleanup) {
+      return () => {
+        for (let i = 0; i < cleanups.length; i++) {
+          const cleanup = cleanups[i];
+          if (typeof cleanup === 'function') {
+            cleanup();
+          } else {
+            setRef(currentRefs[i], null);
+          }
+        }
+      };
+    }
+  }, []);
+}
+
+function getAnimationName(styles: CSSStyleDeclaration | null) {
   return styles?.animationName || 'none';
 }
 

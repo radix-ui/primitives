@@ -29,7 +29,7 @@ type CollapsibleContextValue = {
 const [CollapsibleProvider, useCollapsibleContext] =
   createCollapsibleContext<CollapsibleContextValue>(COLLAPSIBLE_NAME);
 
-type CollapsibleElement = React.ElementRef<typeof Primitive.div>;
+type CollapsibleElement = React.ComponentRef<typeof Primitive.div>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface CollapsibleProps extends PrimitiveDivProps {
   defaultOpen?: boolean;
@@ -38,8 +38,8 @@ interface CollapsibleProps extends PrimitiveDivProps {
   onOpenChange?(open: boolean): void;
 }
 
-const Collapsible = React.forwardRef<CollapsibleElement, CollapsibleProps>(
-  (props: ScopedProps<CollapsibleProps>, forwardedRef) => {
+const Collapsible = /* @__PURE__ */ React.forwardRef<CollapsibleElement, CollapsibleProps>(
+  function Collapsible(props: ScopedProps<CollapsibleProps>, forwardedRef) {
     const {
       __scopeCollapsible,
       open: openProp,
@@ -49,10 +49,11 @@ const Collapsible = React.forwardRef<CollapsibleElement, CollapsibleProps>(
       ...collapsibleProps
     } = props;
 
-    const [open = false, setOpen] = useControllableState({
+    const [open, setOpen] = useControllableState({
       prop: openProp,
-      defaultProp: defaultOpen,
+      defaultProp: defaultOpen ?? false,
       onChange: onOpenChange,
+      caller: COLLAPSIBLE_NAME,
     });
 
     return (
@@ -71,10 +72,8 @@ const Collapsible = React.forwardRef<CollapsibleElement, CollapsibleProps>(
         />
       </CollapsibleProvider>
     );
-  }
+  },
 );
-
-Collapsible.displayName = COLLAPSIBLE_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * CollapsibleTrigger
@@ -82,18 +81,22 @@ Collapsible.displayName = COLLAPSIBLE_NAME;
 
 const TRIGGER_NAME = 'CollapsibleTrigger';
 
-type CollapsibleTriggerElement = React.ElementRef<typeof Primitive.button>;
+type CollapsibleTriggerElement = React.ComponentRef<typeof Primitive.button>;
 type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
 interface CollapsibleTriggerProps extends PrimitiveButtonProps {}
 
-const CollapsibleTrigger = React.forwardRef<CollapsibleTriggerElement, CollapsibleTriggerProps>(
-  (props: ScopedProps<CollapsibleTriggerProps>, forwardedRef) => {
+const CollapsibleTrigger = /* @__PURE__ */ React.forwardRef<
+  CollapsibleTriggerElement,
+  CollapsibleTriggerProps
+>(
+  // blank line to reduce diff noise
+  function CollapsibleTrigger(props: ScopedProps<CollapsibleTriggerProps>, forwardedRef) {
     const { __scopeCollapsible, ...triggerProps } = props;
     const context = useCollapsibleContext(TRIGGER_NAME, __scopeCollapsible);
     return (
       <Primitive.button
         type="button"
-        aria-controls={context.contentId}
+        aria-controls={context.open ? context.contentId : undefined}
         aria-expanded={context.open || false}
         data-state={getState(context.open)}
         data-disabled={context.disabled ? '' : undefined}
@@ -103,10 +106,8 @@ const CollapsibleTrigger = React.forwardRef<CollapsibleTriggerElement, Collapsib
         onClick={composeEventHandlers(props.onClick, context.onOpenToggle)}
       />
     );
-  }
+  },
 );
-
-CollapsibleTrigger.displayName = TRIGGER_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * CollapsibleContent
@@ -123,8 +124,12 @@ interface CollapsibleContentProps extends Omit<CollapsibleContentImplProps, 'pre
   forceMount?: true;
 }
 
-const CollapsibleContent = React.forwardRef<CollapsibleContentElement, CollapsibleContentProps>(
-  (props: ScopedProps<CollapsibleContentProps>, forwardedRef) => {
+const CollapsibleContent = /* @__PURE__ */ React.forwardRef<
+  CollapsibleContentElement,
+  CollapsibleContentProps
+>(
+  // blank line to reduce diff noise
+  function CollapsibleContent(props: ScopedProps<CollapsibleContentProps>, forwardedRef) {
     const { forceMount, ...contentProps } = props;
     const context = useCollapsibleContext(CONTENT_NAME, props.__scopeCollapsible);
     return (
@@ -134,22 +139,20 @@ const CollapsibleContent = React.forwardRef<CollapsibleContentElement, Collapsib
         )}
       </Presence>
     );
-  }
+  },
 );
-
-CollapsibleContent.displayName = CONTENT_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
-type CollapsibleContentImplElement = React.ElementRef<typeof Primitive.div>;
+type CollapsibleContentImplElement = React.ComponentRef<typeof Primitive.div>;
 interface CollapsibleContentImplProps extends PrimitiveDivProps {
   present: boolean;
 }
 
-const CollapsibleContentImpl = React.forwardRef<
+const CollapsibleContentImpl = /* @__PURE__ */ React.forwardRef<
   CollapsibleContentImplElement,
   CollapsibleContentImplProps
->((props: ScopedProps<CollapsibleContentImplProps>, forwardedRef) => {
+>(function CollapsibleContentImpl(props: ScopedProps<CollapsibleContentImplProps>, forwardedRef) {
   const { __scopeCollapsible, present, children, ...contentProps } = props;
   const context = useCollapsibleContext(CONTENT_NAME, __scopeCollapsible);
   const [isPresent, setIsPresent] = React.useState(present);
@@ -188,8 +191,8 @@ const CollapsibleContentImpl = React.forwardRef<
 
       // kick off any animations/transitions that were originally set up if it isn't the initial mount
       if (!isMountAnimationPreventedRef.current) {
-        node.style.transitionDuration = originalStylesRef.current.transitionDuration;
-        node.style.animationName = originalStylesRef.current.animationName;
+        node.style.transitionDuration = originalStylesRef.current.transitionDuration!;
+        node.style.animationName = originalStylesRef.current.animationName!;
       }
 
       setIsPresent(present);

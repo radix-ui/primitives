@@ -1,0 +1,15 @@
+packages:
+  - 'apps/*'
+  - 'internal/*'
+  - 'packages/*/*'
+allowBuilds:
+  '@swc/core': true
+  esbuild: true
+  sharp: true
+overrides:
+  # When GitHub Actions moved to Node 24, @changesets/get-github-info breaks
+  # because of its dependency on node-fetch@^2 (which is incompatible with
+  # Node.js 24). Resolve to use native fetch in any node environment.
+  node-fetch: npm:node-fetch-native@^1.6.0
+patchedDependencies:
+  '@changesets/apply-release-plan': patches/@changesets__apply-release-plan.patch

@@ -1,32 +1,38 @@
 {
   "name": "@radix-ui/react-scroll-area",
-  "version": "1.2.4-rc.6",
+  "version": "1.2.14",
   "license": "MIT",
-  "exports": {
-    ".": {
-      "import": {
-        "types": "./dist/index.d.mts",
-        "default": "./dist/index.mjs"
-      },
-      "require": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
+  "source": "./src/index.ts",
+  "main": "./src/index.ts",
+  "module": "./src/index.ts",
+  "publishConfig": {
+    "main": "./dist/index.js",
+    "module": "./dist/index.mjs",
+    "types": "./dist/index.d.ts",
+    "exports": {
+      ".": {
+        "import": {
+          "types": "./dist/index.d.mts",
+          "default": "./dist/index.mjs"
+        },
+        "require": {
+          "types": "./dist/index.d.ts",
+          "default": "./dist/index.js"
+        }
       }
     }
   },
-  "source": "./src/index.ts",
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
   "files": [
     "dist",
     "README.md"
   ],
   "sideEffects": false,
   "scripts": {
-    "lint": "eslint --max-warnings 0 src",
+    "lint": "oxlint --max-warnings 0 src",
     "clean": "rm -rf dist",
-    "version": "yarn version"
+    "reset": "rm -rf dist node_modules",
+    "typecheck": "tsc --noEmit",
+    "build": "radix-build"
   },
   "dependencies": {
     "@radix-ui/number": "workspace:*",
@@ -40,15 +46,14 @@
     "@radix-ui/react-use-layout-effect": "workspace:*"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
+    "@repo/builder": "workspace:*",
+    "@repo/test-utils": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@types/react": "^19.0.7",
-    "@types/react-dom": "^19.0.3",
-    "@types/resize-observer-browser": "^0.1.4",
-    "eslint": "^9.18.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "typescript": "^5.7.3"
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "typescript": "^5.9.3"
   },
   "peerDependencies": {
     "@types/react": "*",
@@ -67,10 +72,10 @@
   "homepage": "https://radix-ui.com/primitives",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/radix-ui/primitives.git"
+    "url": "git+https://github.com/radix-ui/primitives.git",
+    "directory": "packages/react/scroll-area"
   },
   "bugs": {
     "url": "https://github.com/radix-ui/primitives/issues"
-  },
-  "stableVersion": "1.2.3"
+  }
 }

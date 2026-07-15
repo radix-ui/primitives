@@ -8,6 +8,20 @@ Radix Primitives is a low-level UI component library with a focus on accessibili
 
 ---
 
+## Installation
+
+First, install pnpm if you haven't already. Open your terminal and run:
+
+```bash
+npm install -g pnpm
+```
+
+Then, install the dependencies:
+
+```bash
+pnpm install
+```
+
 ## Documentation
 
 For full documentation, visit [radix-ui.com/primitives/docs](https://www.radix-ui.com/primitives/docs).

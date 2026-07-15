@@ -3,10 +3,13 @@ import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 
 /**
  * Listens for when the escape key is down
+ *
+ * @deprecated Attach listeners directly via useEffect for more granular control
+ * over how callbacks are stabilized, when to detach listeners, etc.
  */
 function useEscapeKeydown(
   onEscapeKeyDownProp?: (event: KeyboardEvent) => void,
-  ownerDocument: Document = globalThis?.document
+  ownerDocument: Document = globalThis?.document,
 ) {
   const onEscapeKeyDown = useCallbackRef(onEscapeKeyDownProp);
 

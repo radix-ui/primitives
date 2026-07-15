@@ -7,5 +7,5 @@ This is a testing playground for SSR support in our primitives using a [Next.js]
 From the root of the repo, run the development server:
 
 ```sh
-yarn dev:ssr
+pnpm dev:ssr
 ```

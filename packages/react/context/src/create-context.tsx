@@ -1,12 +1,36 @@
 import * as React from 'react';
 
+type ContextProvider<ContextValueType extends object | null> = React.FC<
+  ContextValueType & {
+    children: React.ReactNode;
+  }
+>;
+
+interface UseAssertedContext<ContextValueType extends object | null> {
+  (consumerName: string): ContextValueType;
+}
+
+interface UseContext<ContextValueType extends object | null> {
+  (consumerName: string): ContextValueType;
+  (consumerName: string, options: { optional: true }): ContextValueType | undefined;
+}
+
 function createContext<ContextValueType extends object | null>(
   rootComponentName: string,
-  defaultContext?: ContextValueType
-) {
-  const Context = React.createContext<ContextValueType | undefined>(defaultContext);
+): readonly [ContextProvider<ContextValueType>, UseContext<ContextValueType>];
+function createContext<ContextValueType extends object | null>(
+  rootComponentName: string,
+  defaultContext: ContextValueType,
+): readonly [ContextProvider<ContextValueType>, UseAssertedContext<ContextValueType>];
 
-  const Provider: React.FC<ContextValueType & { children: React.ReactNode }> = (props) => {
+/* @__NO_SIDE_EFFECTS__ */ function createContext<ContextValueType extends object | null>(
+  rootComponentName: string,
+  defaultContext?: ContextValueType,
+): readonly [ContextProvider<ContextValueType>, UseContext<ContextValueType>] {
+  const Context = React.createContext<ContextValueType | undefined>(defaultContext);
+  Context.displayName = rootComponentName + 'Context';
+
+  const Provider: ContextProvider<ContextValueType> = (props) => {
     const { children, ...context } = props;
     // Only re-memoize when prop values change
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -16,15 +40,26 @@ function createContext<ContextValueType extends object | null>(
 
   Provider.displayName = rootComponentName + 'Provider';
 
-  function useContext(consumerName: string) {
+  function useContext(consumerName: string): ContextValueType;
+  function useContext(
+    consumerName: string,
+    options: { optional: true },
+  ): ContextValueType | undefined;
+
+  function useContext(
+    consumerName: string,
+    options: { optional?: boolean } = {},
+  ): ContextValueType | undefined {
+    const { optional = false } = options;
     const context = React.useContext(Context);
     if (context) return context;
     if (defaultContext !== undefined) return defaultContext;
+    if (optional) return undefined;
     // if a defaultContext wasn't specified, it's a required context.
     throw new Error(`\`${consumerName}\` must be used within \`${rootComponentName}\``);
   }
 
-  return [Provider, useContext] as const;
+  return [Provider, useContext];
 }
 
 /* -------------------------------------------------------------------------------------------------
@@ -38,7 +73,40 @@ interface CreateScope {
   (): ScopeHook;
 }
 
-function createContextScope(scopeName: string, createContextScopeDeps: CreateScope[] = []) {
+type ScopedContextProvider<ContextValueType extends object | null> = React.FC<
+  ContextValueType & {
+    scope: Scope<ContextValueType>;
+    children: React.ReactNode;
+  }
+>;
+
+interface UseScopedContext<ContextValueType extends object | null> {
+  (consumerName: string, scope: Scope<ContextValueType | undefined>): ContextValueType;
+  (
+    consumerName: string,
+    scope: Scope<ContextValueType | undefined>,
+    options: { optional?: true },
+  ): ContextValueType | undefined;
+}
+
+interface UseAssertedScopedContext<ContextValueType extends object | null> {
+  (consumerName: string, scope: Scope<ContextValueType | undefined>): ContextValueType;
+}
+
+interface CreateScopedContext {
+  <ContextValueType extends object | null>(
+    rootComponentName: string,
+  ): readonly [ScopedContextProvider<ContextValueType>, UseScopedContext<ContextValueType>];
+  <ContextValueType extends object | null>(
+    rootComponentName: string,
+    defaultContext: ContextValueType,
+  ): readonly [ScopedContextProvider<ContextValueType>, UseAssertedScopedContext<ContextValueType>];
+}
+
+/* @__NO_SIDE_EFFECTS__ */ function createContextScope(
+  scopeName: string,
+  createContextScopeDeps: CreateScope[] = [],
+): readonly [CreateScopedContext, CreateScope] {
   let defaultContexts: any[] = [];
 
   /* -----------------------------------------------------------------------------------------------
@@ -47,15 +115,14 @@ function createContextScope(scopeName: string, createContextScopeDeps: CreateSco
 
   function createContext<ContextValueType extends object | null>(
     rootComponentName: string,
-    defaultContext?: ContextValueType
+    defaultContext?: ContextValueType,
   ) {
     const BaseContext = React.createContext<ContextValueType | undefined>(defaultContext);
+    BaseContext.displayName = rootComponentName + 'Context';
     const index = defaultContexts.length;
     defaultContexts = [...defaultContexts, defaultContext];
 
-    const Provider: React.FC<
-      ContextValueType & { scope: Scope<ContextValueType>; children: React.ReactNode }
-    > = (props) => {
+    const Provider: ScopedContextProvider<ContextValueType> = (props) => {
       const { scope, children, ...context } = props;
       const Context = scope?.[scopeName]?.[index] || BaseContext;
       // Only re-memoize when prop values change
@@ -66,11 +133,27 @@ function createContextScope(scopeName: string, createContextScopeDeps: CreateSco
 
     Provider.displayName = rootComponentName + 'Provider';
 
-    function useContext(consumerName: string, scope: Scope<ContextValueType | undefined>) {
+    function useContext(
+      consumerName: string,
+      scope: Scope<ContextValueType | undefined>,
+    ): ContextValueType;
+    function useContext(
+      consumerName: string,
+      scope: Scope<ContextValueType | undefined>,
+      options: { optional: true },
+    ): ContextValueType | undefined;
+
+    function useContext(
+      consumerName: string,
+      scope: Scope<ContextValueType | undefined>,
+      options: { optional?: boolean } = {},
+    ): ContextValueType | undefined {
+      const { optional = false } = options;
       const Context = scope?.[scopeName]?.[index] || BaseContext;
       const context = React.useContext(Context);
       if (context) return context;
       if (defaultContext !== undefined) return defaultContext;
+      if (optional) return undefined;
       // if a defaultContext wasn't specified, it's a required context.
       throw new Error(`\`${consumerName}\` must be used within \`${rootComponentName}\``);
     }
@@ -90,7 +173,7 @@ function createContextScope(scopeName: string, createContextScopeDeps: CreateSco
       const contexts = scope?.[scopeName] || scopeContexts;
       return React.useMemo(
         () => ({ [`__scope${scopeName}`]: { ...scope, [scopeName]: contexts } }),
-        [scope, contexts]
+        [scope, contexts],
       );
     };
   };
@@ -103,7 +186,7 @@ function createContextScope(scopeName: string, createContextScopeDeps: CreateSco
  * composeContextScopes
  * -----------------------------------------------------------------------------------------------*/
 
-function composeContextScopes(...scopes: CreateScope[]) {
+function composeContextScopes(...scopes: [CreateScope, ...CreateScope[]]): CreateScope {
   const baseScope = scopes[0];
   if (scopes.length === 1) return baseScope;
 
@@ -134,4 +217,12 @@ function composeContextScopes(...scopes: CreateScope[]) {
 /* -----------------------------------------------------------------------------------------------*/
 
 export { createContext, createContextScope };
-export type { CreateScope, Scope };
+export type {
+  CreateScope,
+  CreateScopedContext,
+  Scope,
+  UseAssertedContext,
+  UseAssertedScopedContext,
+  UseContext,
+  UseScopedContext,
+};

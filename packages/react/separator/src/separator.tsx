@@ -4,13 +4,11 @@ import { Primitive } from '@radix-ui/react-primitive';
 /* -------------------------------------------------------------------------------------------------
  *  Separator
  * -----------------------------------------------------------------------------------------------*/
-
-const NAME = 'Separator';
 const DEFAULT_ORIENTATION = 'horizontal';
 const ORIENTATIONS = ['horizontal', 'vertical'] as const;
 
 type Orientation = (typeof ORIENTATIONS)[number];
-type SeparatorElement = React.ElementRef<typeof Primitive.div>;
+type SeparatorElement = React.ComponentRef<typeof Primitive.div>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface SeparatorProps extends PrimitiveDivProps {
   /**
@@ -24,26 +22,26 @@ interface SeparatorProps extends PrimitiveDivProps {
   decorative?: boolean;
 }
 
-const Separator = React.forwardRef<SeparatorElement, SeparatorProps>((props, forwardedRef) => {
-  const { decorative, orientation: orientationProp = DEFAULT_ORIENTATION, ...domProps } = props;
-  const orientation = isValidOrientation(orientationProp) ? orientationProp : DEFAULT_ORIENTATION;
-  // `aria-orientation` defaults to `horizontal` so we only need it if `orientation` is vertical
-  const ariaOrientation = orientation === 'vertical' ? orientation : undefined;
-  const semanticProps = decorative
-    ? { role: 'none' }
-    : { 'aria-orientation': ariaOrientation, role: 'separator' };
+const Separator = /* @__PURE__ */ React.forwardRef<SeparatorElement, SeparatorProps>(
+  function Separator(props, forwardedRef) {
+    const { decorative, orientation: orientationProp = DEFAULT_ORIENTATION, ...domProps } = props;
+    const orientation = isValidOrientation(orientationProp) ? orientationProp : DEFAULT_ORIENTATION;
+    // `aria-orientation` defaults to `horizontal` so we only need it if `orientation` is vertical
+    const ariaOrientation = orientation === 'vertical' ? orientation : undefined;
+    const semanticProps = decorative
+      ? { role: 'none' }
+      : { 'aria-orientation': ariaOrientation, role: 'separator' };
 
-  return (
-    <Primitive.div
-      data-orientation={orientation}
-      {...semanticProps}
-      {...domProps}
-      ref={forwardedRef}
-    />
-  );
-});
-
-Separator.displayName = NAME;
+    return (
+      <Primitive.div
+        data-orientation={orientation}
+        {...semanticProps}
+        {...domProps}
+        ref={forwardedRef}
+      />
+    );
+  },
+);
 
 /* -----------------------------------------------------------------------------------------------*/
 

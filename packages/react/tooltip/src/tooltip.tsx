@@ -9,8 +9,9 @@ import { createPopperScope } from '@radix-ui/react-popper';
 import { Portal as PortalPrimitive } from '@radix-ui/react-portal';
 import { Presence } from '@radix-ui/react-presence';
 import { Primitive } from '@radix-ui/react-primitive';
-import { Slottable } from '@radix-ui/react-slot';
+import { createSlottable } from '@radix-ui/react-slot';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
+import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import * as VisuallyHiddenPrimitive from '@radix-ui/react-visually-hidden';
 
 import type { Scope } from '@radix-ui/react-context';
@@ -29,15 +30,15 @@ const PROVIDER_NAME = 'TooltipProvider';
 const DEFAULT_DELAY_DURATION = 700;
 const TOOLTIP_OPEN = 'tooltip.open';
 
-type TooltipProviderContextValue = {
-  isOpenDelayedRef: React.MutableRefObject<boolean>;
+interface TooltipProviderContextValue {
+  isOpenDelayedRef: React.RefObject<boolean>;
   delayDuration: number;
   onOpen(): void;
   onClose(): void;
   onPointerInTransitChange(inTransit: boolean): void;
-  isPointerInTransitRef: React.MutableRefObject<boolean>;
+  isPointerInTransitRef: React.RefObject<boolean>;
   disableHoverableContent: boolean;
-};
+}
 
 const [TooltipProviderContextProvider, useTooltipProviderContext] =
   createTooltipContext<TooltipProviderContextValue>(PROVIDER_NAME);
@@ -62,7 +63,7 @@ interface TooltipProviderProps {
 }
 
 const TooltipProvider: React.FC<TooltipProviderProps> = (
-  props: ScopedProps<TooltipProviderProps>
+  props: ScopedProps<TooltipProviderProps>,
 ) => {
   const {
     __scopeTooltip,
@@ -86,14 +87,16 @@ const TooltipProvider: React.FC<TooltipProviderProps> = (
       isOpenDelayedRef={isOpenDelayedRef}
       delayDuration={delayDuration}
       onOpen={React.useCallback(() => {
+        if (skipDelayDuration <= 0) return;
         window.clearTimeout(skipDelayTimerRef.current);
         isOpenDelayedRef.current = false;
-      }, [])}
+      }, [skipDelayDuration])}
       onClose={React.useCallback(() => {
+        if (skipDelayDuration <= 0) return;
         window.clearTimeout(skipDelayTimerRef.current);
         skipDelayTimerRef.current = window.setTimeout(
           () => (isOpenDelayedRef.current = true),
-          skipDelayDuration
+          skipDelayDuration,
         );
       }, [skipDelayDuration])}
       isPointerInTransitRef={isPointerInTransitRef}
@@ -107,15 +110,13 @@ const TooltipProvider: React.FC<TooltipProviderProps> = (
   );
 };
 
-TooltipProvider.displayName = PROVIDER_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * Tooltip
  * -----------------------------------------------------------------------------------------------*/
 
 const TOOLTIP_NAME = 'Tooltip';
 
-type TooltipContextValue = {
+interface TooltipContextValue {
   contentId: string;
   open: boolean;
   stateAttribute: 'closed' | 'delayed-open' | 'instant-open';
@@ -126,7 +127,8 @@ type TooltipContextValue = {
   onOpen(): void;
   onClose(): void;
   disableHoverableContent: boolean;
-};
+  setContentId: React.Dispatch<React.SetStateAction<string | undefined>>;
+}
 
 const [TooltipContextProvider, useTooltipContext] =
   createTooltipContext<TooltipContextValue>(TOOLTIP_NAME);
@@ -154,7 +156,7 @@ const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
     __scopeTooltip,
     children,
     open: openProp,
-    defaultOpen = false,
+    defaultOpen,
     onOpenChange,
     disableHoverableContent: disableHoverableContentProp,
     delayDuration: delayDurationProp,
@@ -162,15 +164,16 @@ const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
   const providerContext = useTooltipProviderContext(TOOLTIP_NAME, props.__scopeTooltip);
   const popperScope = usePopperScope(__scopeTooltip);
   const [trigger, setTrigger] = React.useState<HTMLButtonElement | null>(null);
-  const contentId = useId();
+  const [contentIdState, setContentId] = React.useState<string | undefined>(undefined);
+  const generatedContentId = useId();
   const openTimerRef = React.useRef(0);
   const disableHoverableContent =
     disableHoverableContentProp ?? providerContext.disableHoverableContent;
   const delayDuration = delayDurationProp ?? providerContext.delayDuration;
   const wasOpenDelayedRef = React.useRef(false);
-  const [open = false, setOpen] = useControllableState({
+  const [open, setOpen] = useControllableState({
     prop: openProp,
-    defaultProp: defaultOpen,
+    defaultProp: defaultOpen ?? false,
     onChange: (open) => {
       if (open) {
         providerContext.onOpen();
@@ -183,6 +186,7 @@ const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
       }
       onOpenChange?.(open);
     },
+    caller: TOOLTIP_NAME,
   });
   const stateAttribute = React.useMemo(() => {
     return open ? (wasOpenDelayedRef.current ? 'delayed-open' : 'instant-open') : 'closed';
@@ -219,11 +223,14 @@ const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
     };
   }, []);
 
+  const contentId = contentIdState ?? generatedContentId;
+
   return (
     <PopperPrimitive.Root {...popperScope}>
       <TooltipContextProvider
         scope={__scopeTooltip}
         contentId={contentId}
+        setContentId={setContentId}
         open={open}
         stateAttribute={stateAttribute}
         trigger={trigger}
@@ -251,20 +258,18 @@ const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
   );
 };
 
-Tooltip.displayName = TOOLTIP_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * TooltipTrigger
  * -----------------------------------------------------------------------------------------------*/
 
 const TRIGGER_NAME = 'TooltipTrigger';
 
-type TooltipTriggerElement = React.ElementRef<typeof Primitive.button>;
+type TooltipTriggerElement = React.ComponentRef<typeof Primitive.button>;
 type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
 interface TooltipTriggerProps extends PrimitiveButtonProps {}
 
-const TooltipTrigger = React.forwardRef<TooltipTriggerElement, TooltipTriggerProps>(
-  (props: ScopedProps<TooltipTriggerProps>, forwardedRef) => {
+const TooltipTrigger = /* @__PURE__ */ React.forwardRef<TooltipTriggerElement, TooltipTriggerProps>(
+  function TooltipTrigger(props: ScopedProps<TooltipTriggerProps>, forwardedRef) {
     const { __scopeTooltip, ...triggerProps } = props;
     const context = useTooltipContext(TRIGGER_NAME, __scopeTooltip);
     const providerContext = useTooltipProviderContext(TRIGGER_NAME, __scopeTooltip);
@@ -317,10 +322,8 @@ const TooltipTrigger = React.forwardRef<TooltipTriggerElement, TooltipTriggerPro
         />
       </PopperPrimitive.Anchor>
     );
-  }
+  },
 );
-
-TooltipTrigger.displayName = TRIGGER_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * TooltipPortal
@@ -361,8 +364,6 @@ const TooltipPortal: React.FC<TooltipPortalProps> = (props: ScopedProps<TooltipP
   );
 };
 
-TooltipPortal.displayName = PORTAL_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * TooltipContent
  * -----------------------------------------------------------------------------------------------*/
@@ -378,8 +379,8 @@ interface TooltipContentProps extends TooltipContentImplProps {
   forceMount?: true;
 }
 
-const TooltipContent = React.forwardRef<TooltipContentElement, TooltipContentProps>(
-  (props: ScopedProps<TooltipContentProps>, forwardedRef) => {
+const TooltipContent = /* @__PURE__ */ React.forwardRef<TooltipContentElement, TooltipContentProps>(
+  function TooltipContent(props: ScopedProps<TooltipContentProps>, forwardedRef) {
     const portalContext = usePortalContext(CONTENT_NAME, props.__scopeTooltip);
     const { forceMount = portalContext.forceMount, side = 'top', ...contentProps } = props;
     const context = useTooltipContext(CONTENT_NAME, props.__scopeTooltip);
@@ -393,7 +394,7 @@ const TooltipContent = React.forwardRef<TooltipContentElement, TooltipContentPro
         )}
       </Presence>
     );
-  }
+  },
 );
 
 type Point = { x: number; y: number };
@@ -402,10 +403,10 @@ type Polygon = Point[];
 type TooltipContentHoverableElement = TooltipContentImplElement;
 interface TooltipContentHoverableProps extends TooltipContentImplProps {}
 
-const TooltipContentHoverable = React.forwardRef<
+const TooltipContentHoverable = /* @__PURE__ */ React.forwardRef<
   TooltipContentHoverableElement,
   TooltipContentHoverableProps
->((props: ScopedProps<TooltipContentHoverableProps>, forwardedRef) => {
+>(function TooltipContentHoverable(props: ScopedProps<TooltipContentHoverableProps>, forwardedRef) {
   const context = useTooltipContext(CONTENT_NAME, props.__scopeTooltip);
   const providerContext = useTooltipProviderContext(CONTENT_NAME, props.__scopeTooltip);
   const ref = React.useRef<TooltipContentHoverableElement>(null);
@@ -433,7 +434,7 @@ const TooltipContentHoverable = React.forwardRef<
       setPointerGraceArea(graceArea);
       onPointerInTransitChange(true);
     },
-    [onPointerInTransitChange]
+    [onPointerInTransitChange],
   );
 
   React.useEffect(() => {
@@ -477,10 +478,7 @@ const TooltipContentHoverable = React.forwardRef<
   return <TooltipContentImpl {...props} ref={composedRefs} />;
 });
 
-const [VisuallyHiddenContentContextProvider, useVisuallyHiddenContentContext] =
-  createTooltipContext(TOOLTIP_NAME, { isInside: false });
-
-type TooltipContentImplElement = React.ElementRef<typeof PopperPrimitive.Content>;
+type TooltipContentImplElement = React.ComponentRef<typeof PopperPrimitive.Content>;
 type DismissableLayerProps = React.ComponentPropsWithoutRef<typeof DismissableLayer>;
 type PopperContentProps = React.ComponentPropsWithoutRef<typeof PopperPrimitive.Content>;
 interface TooltipContentImplProps extends Omit<PopperContentProps, 'onPlaced'> {
@@ -501,12 +499,19 @@ interface TooltipContentImplProps extends Omit<PopperContentProps, 'onPlaced'> {
   onPointerDownOutside?: DismissableLayerProps['onPointerDownOutside'];
 }
 
-const TooltipContentImpl = React.forwardRef<TooltipContentImplElement, TooltipContentImplProps>(
-  (props: ScopedProps<TooltipContentImplProps>, forwardedRef) => {
+const Slottable = createSlottable('TooltipContent');
+
+const TooltipContentImpl = /* @__PURE__ */ React.forwardRef<
+  TooltipContentImplElement,
+  TooltipContentImplProps
+>(
+  // blank line to reduce diff noise
+  function TooltipContentImpl(props: ScopedProps<TooltipContentImplProps>, forwardedRef) {
     const {
       __scopeTooltip,
       children,
       'aria-label': ariaLabel,
+      id: idProp,
       onEscapeKeyDown,
       onPointerDownOutside,
       ...contentProps
@@ -525,13 +530,22 @@ const TooltipContentImpl = React.forwardRef<TooltipContentImplElement, TooltipCo
     React.useEffect(() => {
       if (context.trigger) {
         const handleScroll = (event: Event) => {
-          const target = event.target as HTMLElement;
-          if (target?.contains(context.trigger)) onClose();
+          if (event.target instanceof Node && event.target.contains(context.trigger)) {
+            onClose();
+          }
         };
         window.addEventListener('scroll', handleScroll, { capture: true });
         return () => window.removeEventListener('scroll', handleScroll, { capture: true });
       }
     }, [context.trigger, onClose]);
+
+    const { setContentId } = context;
+    useLayoutEffect(() => {
+      setContentId(idProp);
+      return () => {
+        setContentId(undefined);
+      };
+    }, [idProp, setContentId]);
 
     return (
       <DismissableLayer
@@ -544,6 +558,13 @@ const TooltipContentImpl = React.forwardRef<TooltipContentImplElement, TooltipCo
       >
         <PopperPrimitive.Content
           data-state={context.stateAttribute}
+          // Following the ARIA tooltip pattern, the visible content acts as the
+          // accessible description (referenced by the trigger's
+          // `aria-describedby`) when no `aria-label` override is provided. This
+          // lets `children` render a single time instead of being duplicated
+          // into a visually hidden copy.
+          role={ariaLabel ? undefined : 'tooltip'}
+          id={ariaLabel ? undefined : context.contentId}
           {...popperScope}
           {...contentProps}
           ref={forwardedRef}
@@ -560,46 +581,32 @@ const TooltipContentImpl = React.forwardRef<TooltipContentImplElement, TooltipCo
           }}
         >
           <Slottable>{children}</Slottable>
-          <VisuallyHiddenContentContextProvider scope={__scopeTooltip} isInside={true}>
+          {ariaLabel ? (
             <VisuallyHiddenPrimitive.Root id={context.contentId} role="tooltip">
-              {ariaLabel || children}
+              {ariaLabel}
             </VisuallyHiddenPrimitive.Root>
-          </VisuallyHiddenContentContextProvider>
+          ) : null}
         </PopperPrimitive.Content>
       </DismissableLayer>
     );
-  }
+  },
 );
-
-TooltipContent.displayName = CONTENT_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * TooltipArrow
  * -----------------------------------------------------------------------------------------------*/
 
-const ARROW_NAME = 'TooltipArrow';
-
-type TooltipArrowElement = React.ElementRef<typeof PopperPrimitive.Arrow>;
+type TooltipArrowElement = React.ComponentRef<typeof PopperPrimitive.Arrow>;
 type PopperArrowProps = React.ComponentPropsWithoutRef<typeof PopperPrimitive.Arrow>;
 interface TooltipArrowProps extends PopperArrowProps {}
 
-const TooltipArrow = React.forwardRef<TooltipArrowElement, TooltipArrowProps>(
-  (props: ScopedProps<TooltipArrowProps>, forwardedRef) => {
+const TooltipArrow = /* @__PURE__ */ React.forwardRef<TooltipArrowElement, TooltipArrowProps>(
+  function TooltipArrow(props: ScopedProps<TooltipArrowProps>, forwardedRef) {
     const { __scopeTooltip, ...arrowProps } = props;
     const popperScope = usePopperScope(__scopeTooltip);
-    const visuallyHiddenContentContext = useVisuallyHiddenContentContext(
-      ARROW_NAME,
-      __scopeTooltip
-    );
-    // if the arrow is inside the `VisuallyHidden`, we don't want to render it all to
-    // prevent issues in positioning the arrow due to the duplicate
-    return visuallyHiddenContentContext.isInside ? null : (
-      <PopperPrimitive.Arrow {...popperScope} {...arrowProps} ref={forwardedRef} />
-    );
-  }
+    return <PopperPrimitive.Arrow {...popperScope} {...arrowProps} ref={forwardedRef} />;
+  },
 );
-
-TooltipArrow.displayName = ARROW_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
@@ -631,25 +638,25 @@ function getPaddedExitPoints(exitPoint: Point, exitSide: Side, padding = 5) {
     case 'top':
       paddedExitPoints.push(
         { x: exitPoint.x - padding, y: exitPoint.y + padding },
-        { x: exitPoint.x + padding, y: exitPoint.y + padding }
+        { x: exitPoint.x + padding, y: exitPoint.y + padding },
       );
       break;
     case 'bottom':
       paddedExitPoints.push(
         { x: exitPoint.x - padding, y: exitPoint.y - padding },
-        { x: exitPoint.x + padding, y: exitPoint.y - padding }
+        { x: exitPoint.x + padding, y: exitPoint.y - padding },
       );
       break;
     case 'left':
       paddedExitPoints.push(
         { x: exitPoint.x + padding, y: exitPoint.y - padding },
-        { x: exitPoint.x + padding, y: exitPoint.y + padding }
+        { x: exitPoint.x + padding, y: exitPoint.y + padding },
       );
       break;
     case 'right':
       paddedExitPoints.push(
         { x: exitPoint.x - padding, y: exitPoint.y - padding },
-        { x: exitPoint.x - padding, y: exitPoint.y + padding }
+        { x: exitPoint.x - padding, y: exitPoint.y + padding },
       );
       break;
   }
@@ -672,12 +679,14 @@ function isPointInPolygon(point: Point, polygon: Polygon) {
   const { x, y } = point;
   let inside = false;
   for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
-    const xi = polygon[i].x;
-    const yi = polygon[i].y;
-    const xj = polygon[j].x;
-    const yj = polygon[j].y;
+    const ii = polygon[i]!;
+    const jj = polygon[j]!;
+    const xi = ii.x;
+    const yi = ii.y;
+    const xj = jj.x;
+    const yj = jj.y;
 
-    // prettier-ignore
+    // oxfmt-ignore
     const intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
     if (intersect) inside = !inside;
   }
@@ -705,10 +714,10 @@ function getHullPresorted<P extends Point>(points: Readonly<Array<P>>): Array<P>
 
   const upperHull: Array<P> = [];
   for (let i = 0; i < points.length; i++) {
-    const p = points[i];
+    const p = points[i]!;
     while (upperHull.length >= 2) {
-      const q = upperHull[upperHull.length - 1];
-      const r = upperHull[upperHull.length - 2];
+      const q = upperHull[upperHull.length - 1]!;
+      const r = upperHull[upperHull.length - 2]!;
       if ((q.x - r.x) * (p.y - r.y) >= (q.y - r.y) * (p.x - r.x)) upperHull.pop();
       else break;
     }
@@ -718,10 +727,10 @@ function getHullPresorted<P extends Point>(points: Readonly<Array<P>>): Array<P>
 
   const lowerHull: Array<P> = [];
   for (let i = points.length - 1; i >= 0; i--) {
-    const p = points[i];
+    const p = points[i]!;
     while (lowerHull.length >= 2) {
-      const q = lowerHull[lowerHull.length - 1];
-      const r = lowerHull[lowerHull.length - 2];
+      const q = lowerHull[lowerHull.length - 1]!;
+      const r = lowerHull[lowerHull.length - 2]!;
       if ((q.x - r.x) * (p.y - r.y) >= (q.y - r.y) * (p.x - r.x)) lowerHull.pop();
       else break;
     }
@@ -732,8 +741,8 @@ function getHullPresorted<P extends Point>(points: Readonly<Array<P>>): Array<P>
   if (
     upperHull.length === 1 &&
     lowerHull.length === 1 &&
-    upperHull[0].x === lowerHull[0].x &&
-    upperHull[0].y === lowerHull[0].y
+    upperHull[0]!.x === lowerHull[0]!.x &&
+    upperHull[0]!.y === lowerHull[0]!.y
   ) {
     return upperHull;
   } else {

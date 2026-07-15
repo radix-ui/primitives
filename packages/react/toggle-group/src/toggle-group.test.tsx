@@ -1,9 +1,10 @@
 import * as React from 'react';
 import { axe } from 'vitest-axe';
 import type { RenderResult } from '@testing-library/react';
-import { render, fireEvent } from '@testing-library/react';
-import * as ToggleGroup from '@radix-ui/react-toggle-group';
+import { cleanup, render, fireEvent } from '@testing-library/react';
+import * as ToggleGroup from './toggle-group';
 import type { Mock } from 'vitest';
+import { afterEach, describe, it, beforeEach, vi, expect } from 'vitest';
 
 describe('given a single ToggleGroup', () => {
   let handleValueChange: Mock;
@@ -18,6 +19,8 @@ describe('given a single ToggleGroup', () => {
     two = rendered.getByText('Two');
   });
 
+  afterEach(cleanup);
+
   it('should have no accessibility violations', async () => {
     expect(await axe(rendered.container)).toHaveNoViolations();
   });
@@ -29,6 +32,10 @@ describe('given a single ToggleGroup', () => {
 
     it('should have no accessibility violations', async () => {
       expect(await axe(rendered.container)).toHaveNoViolations();
+    });
+
+    it('should have radiogroup role', () => {
+      expect(rendered.getByRole('radiogroup')).toBeInTheDocument();
     });
 
     it('should change value to `One`', () => {
@@ -70,8 +77,14 @@ describe('given a multiple ToggleGroup', () => {
     two = rendered.getByText('Two');
   });
 
+  afterEach(cleanup);
+
   it('should have no accessibility violations', async () => {
     expect(await axe(rendered.container)).toHaveNoViolations();
+  });
+
+  it('should have toolbar role', () => {
+    expect(rendered.getByRole('toolbar')).toBeInTheDocument();
   });
 
   describe('when clicking `One`', () => {

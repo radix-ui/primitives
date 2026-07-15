@@ -3,13 +3,10 @@ import { composeEventHandlers } from '@radix-ui/primitive';
 import { Primitive, dispatchDiscreteCustomEvent } from '@radix-ui/react-primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
-import { useEscapeKeydown } from '@radix-ui/react-use-escape-keydown';
 
 /* -------------------------------------------------------------------------------------------------
  * DismissableLayer
  * -----------------------------------------------------------------------------------------------*/
-
-const DISMISSABLE_LAYER_NAME = 'DismissableLayer';
 const CONTEXT_UPDATE = 'dismissableLayer.update';
 const POINTER_DOWN_OUTSIDE = 'dismissableLayer.pointerDownOutside';
 const FOCUS_OUTSIDE = 'dismissableLayer.focusOutside';
@@ -20,9 +17,16 @@ const DismissableLayerContext = React.createContext({
   layers: new Set<DismissableLayerElement>(),
   layersWithOutsidePointerEventsDisabled: new Set<DismissableLayerElement>(),
   branches: new Set<DismissableLayerBranchElement>(),
+
+  // Outside elements that belong to a layer's own dismiss affordance (eg, a
+  // dialog overlay). Pressing them should dismiss the layer regardless of
+  // whether or not they stop propagation.
+  //
+  // See https://github.com/radix-ui/primitives/issues/3346
+  dismissableSurfaces: new Set<DismissableLayerBranchElement>(),
 });
 
-type DismissableLayerElement = React.ElementRef<typeof Primitive.div>;
+type DismissableLayerElement = React.ComponentRef<typeof Primitive.div>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface DismissableLayerProps extends PrimitiveDivProps {
   /**
@@ -31,6 +35,12 @@ interface DismissableLayerProps extends PrimitiveDivProps {
    * interact with them: once to close the `DismissableLayer`, and again to trigger the element.
    */
   disableOutsidePointerEvents?: boolean;
+  /**
+   * When `true`, a `'pointerdown'` event outside of the layered element will
+   * wait for the interaction's click event before dispatching, allowing
+   * third-party code to stop propagation of later events and cancel dismissal.
+   */
+  deferPointerDownOutside?: boolean;
   /**
    * Event handler called when the escape key is down.
    * Can be prevented.
@@ -58,10 +68,15 @@ interface DismissableLayerProps extends PrimitiveDivProps {
   onDismiss?: () => void;
 }
 
-const DismissableLayer = React.forwardRef<DismissableLayerElement, DismissableLayerProps>(
-  (props, forwardedRef) => {
+const DismissableLayer = /* @__PURE__ */ React.forwardRef<
+  DismissableLayerElement,
+  DismissableLayerProps
+>(
+  // blank line to reduce diff noise
+  function DismissableLayer(props, forwardedRef) {
     const {
       disableOutsidePointerEvents = false,
+      deferPointerDownOutside = false,
       onEscapeKeyDown,
       onPointerDownOutside,
       onFocusOutside,
@@ -73,24 +88,52 @@ const DismissableLayer = React.forwardRef<DismissableLayerElement, DismissableLa
     const [node, setNode] = React.useState<DismissableLayerElement | null>(null);
     const ownerDocument = node?.ownerDocument ?? globalThis?.document;
     const [, force] = React.useState({});
-    const composedRefs = useComposedRefs(forwardedRef, (node) => setNode(node));
+    const composedRefs = useComposedRefs(forwardedRef, setNode);
     const layers = Array.from(context.layers);
-    const [highestLayerWithOutsidePointerEventsDisabled] = [...context.layersWithOutsidePointerEventsDisabled].slice(-1); // prettier-ignore
-    const highestLayerWithOutsidePointerEventsDisabledIndex = layers.indexOf(highestLayerWithOutsidePointerEventsDisabled); // prettier-ignore
+    const [highestLayerWithOutsidePointerEventsDisabled] = [
+      ...context.layersWithOutsidePointerEventsDisabled,
+    ].slice(-1);
+    const highestLayerWithOutsidePointerEventsDisabledIndex =
+      highestLayerWithOutsidePointerEventsDisabled
+        ? layers.indexOf(highestLayerWithOutsidePointerEventsDisabled)
+        : -1;
     const index = node ? layers.indexOf(node) : -1;
     const isBodyPointerEventsDisabled = context.layersWithOutsidePointerEventsDisabled.size > 0;
     const isPointerEventsEnabled = index >= highestLayerWithOutsidePointerEventsDisabledIndex;
+    const isDeferredPointerDownOutsideRef = React.useRef(false);
 
-    const pointerDownOutside = usePointerDownOutside((event) => {
-      const target = event.target as HTMLElement;
-      const isPointerDownOnBranch = [...context.branches].some((branch) => branch.contains(target));
-      if (!isPointerEventsEnabled || isPointerDownOnBranch) return;
-      onPointerDownOutside?.(event);
-      onInteractOutside?.(event);
-      if (!event.defaultPrevented) onDismiss?.();
-    }, ownerDocument);
+    const pointerDownOutside = usePointerDownOutside(
+      (event) => {
+        onPointerDownOutside?.(event);
+        onInteractOutside?.(event);
+        if (!event.defaultPrevented) onDismiss?.();
+      },
+      {
+        ownerDocument,
+        deferPointerDownOutside,
+        isDeferredPointerDownOutsideRef,
+        dismissableSurfaces: context.dismissableSurfaces,
+        shouldHandlePointerDownOutside: React.useCallback(
+          (target: EventTarget | null) => {
+            if (!(target instanceof Node)) {
+              return false;
+            }
+
+            const isPointerDownOnBranch = [...context.branches].some((branch) =>
+              branch.contains(target),
+            );
+            return isPointerEventsEnabled && !isPointerDownOnBranch;
+          },
+          [context.branches, isPointerEventsEnabled],
+        ),
+      },
+    );
 
     const focusOutside = useFocusOutside((event) => {
+      if (deferPointerDownOutside && isDeferredPointerDownOutsideRef.current) {
+        return;
+      }
+
       const target = event.target as HTMLElement;
       const isFocusInBranch = [...context.branches].some((branch) => branch.contains(target));
       if (isFocusInBranch) return;
@@ -99,15 +142,37 @@ const DismissableLayer = React.forwardRef<DismissableLayerElement, DismissableLa
       if (!event.defaultPrevented) onDismiss?.();
     }, ownerDocument);
 
-    useEscapeKeydown((event) => {
-      const isHighestLayer = index === context.layers.size - 1;
-      if (!isHighestLayer) return;
+    const isHighestLayer = node ? index === layers.length - 1 : false;
+
+    // Stabilize via `useCallbackRef` rather than `useEffectEvent`: React's
+    // native `useEffectEvent` returns a stale closure inside `forwardRef`
+    // components on React 19.2.x, which caused escape handlers to observe
+    // mount-time props/state instead of the latest values.
+    //
+    // We should revert this to use useEffectEvent when the fix lands in React.
+    //
+    // - https://github.com/radix-ui/primitives/issues/4014
+    // - https://github.com/react/react/pull/34831
+    const handleKeyDown = useCallbackRef((event: KeyboardEvent) => {
+      if (event.key !== 'Escape') {
+        return;
+      }
+
       onEscapeKeyDown?.(event);
       if (!event.defaultPrevented && onDismiss) {
         event.preventDefault();
         onDismiss();
       }
-    }, ownerDocument);
+    });
+
+    React.useEffect(() => {
+      if (!isHighestLayer) {
+        return;
+      }
+
+      ownerDocument.addEventListener('keydown', handleKeyDown, { capture: true });
+      return () => ownerDocument.removeEventListener('keydown', handleKeyDown, { capture: true });
+    }, [ownerDocument, isHighestLayer, handleKeyDown]);
 
     React.useEffect(() => {
       if (!node) return;
@@ -121,11 +186,17 @@ const DismissableLayer = React.forwardRef<DismissableLayerElement, DismissableLa
       context.layers.add(node);
       dispatchUpdate();
       return () => {
-        if (
-          disableOutsidePointerEvents &&
-          context.layersWithOutsidePointerEventsDisabled.size === 1
-        ) {
-          ownerDocument.body.style.pointerEvents = originalBodyPointerEvents ?? "";
+        // We must remove this layer from the disabled set whenever
+        // `disableOutsidePointerEvents` becomes `false` (eg, when a modal
+        // closes but stays mounted during an exit animation) and not only on
+        // unmount. Otherwise the `body` `pointer-events` could be left as
+        // `none` when multiple layers overlap.
+        // See: https://github.com/radix-ui/primitives/issues/3645
+        if (disableOutsidePointerEvents) {
+          context.layersWithOutsidePointerEventsDisabled.delete(node);
+          if (context.layersWithOutsidePointerEventsDisabled.size === 0) {
+            ownerDocument.body.style.pointerEvents = originalBodyPointerEvents ?? "";
+          }
         }
       };
     }, [node, ownerDocument, disableOutsidePointerEvents, context]);
@@ -167,28 +238,24 @@ const DismissableLayer = React.forwardRef<DismissableLayerElement, DismissableLa
         onBlurCapture={composeEventHandlers(props.onBlurCapture, focusOutside.onBlurCapture)}
         onPointerDownCapture={composeEventHandlers(
           props.onPointerDownCapture,
-          pointerDownOutside.onPointerDownCapture
+          pointerDownOutside.onPointerDownCapture,
         )}
       />
     );
-  }
+  },
 );
-
-DismissableLayer.displayName = DISMISSABLE_LAYER_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * DismissableLayerBranch
  * -----------------------------------------------------------------------------------------------*/
 
-const BRANCH_NAME = 'DismissableLayerBranch';
-
-type DismissableLayerBranchElement = React.ElementRef<typeof Primitive.div>;
+type DismissableLayerBranchElement = React.ComponentRef<typeof Primitive.div>;
 interface DismissableLayerBranchProps extends PrimitiveDivProps {}
 
-const DismissableLayerBranch = React.forwardRef<
+const DismissableLayerBranch = /* @__PURE__ */ React.forwardRef<
   DismissableLayerBranchElement,
   DismissableLayerBranchProps
->((props, forwardedRef) => {
+>(function DismissableLayerBranch(props, forwardedRef) {
   const context = React.useContext(DismissableLayerContext);
   const ref = React.useRef<DismissableLayerBranchElement>(null);
   const composedRefs = useComposedRefs(forwardedRef, ref);
@@ -206,66 +273,186 @@ const DismissableLayerBranch = React.forwardRef<
   return <Primitive.div {...props} ref={composedRefs} />;
 });
 
-DismissableLayerBranch.displayName = BRANCH_NAME;
-
 /* -----------------------------------------------------------------------------------------------*/
+
+/**
+ * Registers a node as a "dismiss surface" for the enclosing DismissableLayer
+ */
+function useDismissableLayerSurface(): React.RefCallback<DismissableLayerBranchElement> {
+  const context = React.useContext(DismissableLayerContext);
+  const [node, setNode] = React.useState<DismissableLayerBranchElement | null>(null);
+
+  React.useEffect(() => {
+    if (!node) {
+      return;
+    }
+    context.dismissableSurfaces.add(node);
+    return () => {
+      context.dismissableSurfaces.delete(node);
+    };
+  }, [node, context.dismissableSurfaces]);
+
+  return setNode;
+}
 
 type PointerDownOutsideEvent = CustomEvent<{ originalEvent: PointerEvent }>;
 type FocusOutsideEvent = CustomEvent<{ originalEvent: FocusEvent }>;
 
+const IS_TRUE = () => true;
+
 /**
- * Listens for `pointerdown` outside a react subtree. We use `pointerdown` rather than `pointerup`
- * to mimic layer dismissing behaviour present in OS.
+ * Listens for `pointerdown` outside a react subtree. We detect the start of the interaction on
+ * `pointerdown`, then wait for `click` so external code can intercept later mouse events.
  * Returns props to pass to the node we want to check for outside events.
  */
 function usePointerDownOutside(
-  onPointerDownOutside?: (event: PointerDownOutsideEvent) => void,
-  ownerDocument: Document = globalThis?.document
+  onPointerDownOutside: ((event: PointerDownOutsideEvent) => void) | undefined,
+  args: {
+    ownerDocument: Document | undefined;
+    deferPointerDownOutside: boolean;
+    isDeferredPointerDownOutsideRef: React.RefObject<boolean>;
+    dismissableSurfaces: Set<DismissableLayerBranchElement>;
+    shouldHandlePointerDownOutside?: (target: EventTarget | null) => boolean;
+  },
 ) {
+  const {
+    ownerDocument = globalThis?.document,
+    deferPointerDownOutside = false,
+    isDeferredPointerDownOutsideRef,
+    dismissableSurfaces,
+    shouldHandlePointerDownOutside = IS_TRUE,
+  } = args;
   const handlePointerDownOutside = useCallbackRef(onPointerDownOutside) as EventListener;
   const isPointerInsideReactTreeRef = React.useRef(false);
+  const isPointerDownOutsideRef = React.useRef(false);
+  const interceptedOutsideInteractionEventsRef = React.useRef<Map<string, boolean>>(new Map());
   const handleClickRef = React.useRef(() => {});
 
   React.useEffect(() => {
+    function resetOutsideInteraction() {
+      isPointerDownOutsideRef.current = false;
+      isDeferredPointerDownOutsideRef.current = false;
+      interceptedOutsideInteractionEventsRef.current.clear();
+    }
+
+    function isOutsideInteractionIntercepted() {
+      return Array.from(interceptedOutsideInteractionEventsRef.current.values()).some(Boolean);
+    }
+
+    function handleInteractionCapture(event: Event) {
+      if (!isPointerDownOutsideRef.current) {
+        return;
+      }
+
+      const target = event.target;
+      const isDismissableSurface =
+        target instanceof Node &&
+        [...dismissableSurfaces].some((surface) => surface.contains(target as Node));
+
+      if (!isDismissableSurface) {
+        interceptedOutsideInteractionEventsRef.current.set(event.type, true);
+      }
+
+      if (event.type === 'click') {
+        window.setTimeout(() => {
+          if (isPointerDownOutsideRef.current) {
+            handleClickRef.current();
+          }
+        }, 0);
+      }
+    }
+
+    function handleInteractionBubble(event: Event) {
+      if (isPointerDownOutsideRef.current) {
+        interceptedOutsideInteractionEventsRef.current.set(event.type, false);
+      }
+    }
+
     const handlePointerDown = (event: PointerEvent) => {
       if (event.target && !isPointerInsideReactTreeRef.current) {
+        if (!shouldHandlePointerDownOutside(event.target)) {
+          ownerDocument.removeEventListener('click', handleClickRef.current);
+          resetOutsideInteraction();
+          isPointerInsideReactTreeRef.current = false;
+          return;
+        }
+
         const eventDetail = { originalEvent: event };
+        isPointerDownOutsideRef.current = true;
+        isDeferredPointerDownOutsideRef.current = deferPointerDownOutside && event.button === 0;
+        interceptedOutsideInteractionEventsRef.current.clear();
 
         function handleAndDispatchPointerDownOutsideEvent() {
-          handleAndDispatchCustomEvent(
-            POINTER_DOWN_OUTSIDE,
-            handlePointerDownOutside,
-            eventDetail,
-            { discrete: true }
-          );
+          ownerDocument.removeEventListener('click', handleClickRef.current);
+          const wasOutsideInteractionIntercepted = isOutsideInteractionIntercepted();
+          resetOutsideInteraction();
+
+          if (!wasOutsideInteractionIntercepted) {
+            handleAndDispatchCustomEvent(
+              POINTER_DOWN_OUTSIDE,
+              handlePointerDownOutside,
+              eventDetail,
+              { discrete: true },
+            );
+          }
         }
 
         /**
-         * On touch devices, we need to wait for a click event because browsers implement
-         * a ~350ms delay between the time the user stops touching the display and when the
-         * browser executres events. We need to ensure we don't reactivate pointer-events within
-         * this timeframe otherwise the browser may execute events that should have been prevented.
+         * When deferring, we need to wait for a click event because:
          *
-         * Additionally, this also lets us deal automatically with cancellations when a click event
-         * isn't raised because the page was considered scrolled/drag-scrolled, long-pressed, etc.
+         * 1. On touch devices, browsers implement a ~350ms delay between the
+         *    time the user stops touching the display and when the browser
+         *    executes events. We need to ensure we don't reactivate
+         *    pointer-events within this timeframe otherwise the browser may
+         *    execute events that should have been prevented.
          *
-         * This is why we also continuously remove the previous listener, because we cannot be
-         * certain that it was raised, and therefore cleaned-up.
+         * 2. Browser extensions and other third-party code may call
+         *    `stopPropagation` on later mouse events like `mousedown`,
+         *    `mouseup`, or `click`. Waiting lets those intercepted events
+         *    cancel the outside interaction before we dismiss the layer. See
+         *    https://github.com/radix-ui/primitives/issues/2055
+         *
+         * Additionally, this also lets us deal automatically with cancellations
+         * when a click event isn't raised because the page was considered
+         * scrolled/drag-scrolled, long-pressed, etc.
+         *
+         * This is why we also continuously remove the previous listener,
+         * because we cannot be certain that it was raised, and therefore
+         * cleaned-up.
+         *
+         * For non-primary buttons, we dispatch the event immediately because we
+         * cannot be certain that the event was canceled.
          */
-        if (event.pointerType === 'touch') {
+        if (!deferPointerDownOutside || event.button !== 0) {
+          handleAndDispatchPointerDownOutsideEvent();
+        } else {
           ownerDocument.removeEventListener('click', handleClickRef.current);
           handleClickRef.current = handleAndDispatchPointerDownOutsideEvent;
           ownerDocument.addEventListener('click', handleClickRef.current, { once: true });
-        } else {
-          handleAndDispatchPointerDownOutsideEvent();
         }
       } else {
         // We need to remove the event listener in case the outside click has been canceled.
         // See: https://github.com/radix-ui/primitives/issues/2171
         ownerDocument.removeEventListener('click', handleClickRef.current);
+        resetOutsideInteraction();
       }
       isPointerInsideReactTreeRef.current = false;
     };
+
+    const outsideInteractionEvents = [
+      'pointerup',
+      'mousedown',
+      'mouseup',
+      'touchstart',
+      'touchend',
+      'click',
+    ];
+
+    for (const eventName of outsideInteractionEvents) {
+      ownerDocument.addEventListener(eventName, handleInteractionCapture, true);
+      ownerDocument.addEventListener(eventName, handleInteractionBubble);
+    }
+
     /**
      * if this hook executes in a component that mounts via a `pointerdown` event, the event
      * would bubble up to the document and trigger a `pointerDownOutside` event. We avoid
@@ -286,8 +473,19 @@ function usePointerDownOutside(
       window.clearTimeout(timerId);
       ownerDocument.removeEventListener('pointerdown', handlePointerDown);
       ownerDocument.removeEventListener('click', handleClickRef.current);
+      for (const eventName of outsideInteractionEvents) {
+        ownerDocument.removeEventListener(eventName, handleInteractionCapture, true);
+        ownerDocument.removeEventListener(eventName, handleInteractionBubble);
+      }
     };
-  }, [ownerDocument, handlePointerDownOutside]);
+  }, [
+    ownerDocument,
+    handlePointerDownOutside,
+    deferPointerDownOutside,
+    isDeferredPointerDownOutsideRef,
+    dismissableSurfaces,
+    shouldHandlePointerDownOutside,
+  ]);
 
   return {
     // ensures we check React component tree (not just DOM tree)
@@ -301,7 +499,7 @@ function usePointerDownOutside(
  */
 function useFocusOutside(
   onFocusOutside?: (event: FocusOutsideEvent) => void,
-  ownerDocument: Document = globalThis?.document
+  ownerDocument: Document = globalThis?.document,
 ) {
   const handleFocusOutside = useCallbackRef(onFocusOutside) as EventListener;
   const isFocusInsideReactTreeRef = React.useRef(false);
@@ -334,7 +532,7 @@ function handleAndDispatchCustomEvent<E extends CustomEvent, OriginalEvent exten
   name: string,
   handler: ((event: E) => void) | undefined,
   detail: { originalEvent: OriginalEvent } & (E extends CustomEvent<infer D> ? D : never),
-  { discrete }: { discrete: boolean }
+  { discrete }: { discrete: boolean },
 ) {
   const target = detail.originalEvent.target;
   const event = new CustomEvent(name, { bubbles: false, cancelable: true, detail });
@@ -353,6 +551,7 @@ const Branch = DismissableLayerBranch;
 export {
   DismissableLayer,
   DismissableLayerBranch,
+  useDismissableLayerSurface,
   //
   Root,
   Branch,

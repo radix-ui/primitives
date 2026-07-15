@@ -1,0 +1,40 @@
+diff --git a/dist/changesets-apply-release-plan.cjs.js b/dist/changesets-apply-release-plan.cjs.js
+index e71b99fa922361c1d91d591ec15b4ed9c3689779..a013da83fde9acfef0c6b605f0589933643dde0a 100644
+--- a/dist/changesets-apply-release-plan.cjs.js
++++ b/dist/changesets-apply-release-plan.cjs.js
+@@ -208,6 +208,15 @@ async function getChangelogEntry(cwd, release, releases, changesets, changelogFu
+   });
+   let relevantChangesets = changesets.filter(cs => relevantChangesetIds.has(cs.id));
+   changelogLines.patch.push(changelogFuncs.getDependencyReleaseLine(relevantChangesets, dependentReleases, changelogOpts));
++
++  if (typeof changelogFuncs.getChangelogEntry === "function") {
++    return await changelogFuncs.getChangelogEntry(
++      release,
++      changelogLines,
++      changelogOpts
++    );
++  }
++
+   return [`## ${release.newVersion}`, await generateChangesForVersionTypeMarkdown(changelogLines, "major"), await generateChangesForVersionTypeMarkdown(changelogLines, "minor"), await generateChangesForVersionTypeMarkdown(changelogLines, "patch")].filter(line => line).join("\n");
+ }
+ 
+diff --git a/dist/changesets-apply-release-plan.esm.js b/dist/changesets-apply-release-plan.esm.js
+index eab5122f9005b06b49589041bfb750e07bb0dcaa..bbb1e379e696c111445a0c2030f7ee5e70d99fec 100644
+--- a/dist/changesets-apply-release-plan.esm.js
++++ b/dist/changesets-apply-release-plan.esm.js
+@@ -170,6 +170,15 @@ async function getChangelogEntry(cwd, release, releases, changesets, changelogFu
+   });
+   let relevantChangesets = changesets.filter(cs => relevantChangesetIds.has(cs.id));
+   changelogLines.patch.push(changelogFuncs.getDependencyReleaseLine(relevantChangesets, dependentReleases, changelogOpts));
++
++  if (typeof changelogFuncs.getChangelogEntry === "function") {
++    return await changelogFuncs.getChangelogEntry(
++      release,
++      changelogLines,
++      changelogOpts
++    );
++  }
++
+   return [`## ${release.newVersion}`, await generateChangesForVersionTypeMarkdown(changelogLines, "major"), await generateChangesForVersionTypeMarkdown(changelogLines, "minor"), await generateChangesForVersionTypeMarkdown(changelogLines, "patch")].filter(line => line).join("\n");
+ }
+ 

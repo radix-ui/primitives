@@ -1,0 +1,118 @@
+import { axe } from 'vitest-axe';
+import type { RenderResult } from '@testing-library/react';
+import { act, cleanup, render, screen } from '@testing-library/react';
+import * as OneTimePasswordField from './one-time-password-field';
+import { afterEach, describe, it, beforeEach, expect } from 'vitest';
+import { userEvent, type UserEvent } from '@testing-library/user-event';
+
+describe('given a default OneTimePasswordField', () => {
+  let rendered: RenderResult;
+  let user: UserEvent;
+
+  afterEach(cleanup);
+
+  beforeEach(() => {
+    user = userEvent.setup();
+    rendered = render(
+      <OneTimePasswordField.Root>
+        <OneTimePasswordField.Input />
+        <OneTimePasswordField.Input />
+        <OneTimePasswordField.Input />
+        <OneTimePasswordField.Input />
+        <OneTimePasswordField.Input />
+        <OneTimePasswordField.Input />
+        <OneTimePasswordField.HiddenInput name="code" />
+      </OneTimePasswordField.Root>,
+    );
+  });
+
+  afterEach(cleanup);
+
+  it('should have no accessibility violations', async () => {
+    expect(await axe(rendered.container)).toHaveNoViolations();
+  });
+
+  it('should mask input value when type is password', async () => {
+    rendered.rerender(
+      <OneTimePasswordField.Root type="password">
+        <OneTimePasswordField.Input />
+        <OneTimePasswordField.HiddenInput name="code" />
+      </OneTimePasswordField.Root>,
+    );
+
+    const input = rendered.container.querySelector(
+      'input:not([type="hidden"])',
+    ) as HTMLInputElement;
+
+    await userEvent.type(input, '1');
+    expect(input.type).toBe('password');
+
+    const hiddenInput = rendered.container.querySelector(
+      'input[type="hidden"]',
+    ) as HTMLInputElement;
+    expect(hiddenInput.value).toBe('1');
+  });
+
+  it('should disable all inputs when Root is disabled', () => {
+    rendered.rerender(
+      <OneTimePasswordField.Root disabled>
+        <OneTimePasswordField.Input />
+        <OneTimePasswordField.Input />
+        <OneTimePasswordField.HiddenInput name="code" />
+      </OneTimePasswordField.Root>,
+    );
+
+    const inputs = rendered.container.querySelectorAll('input:not([type="hidden"])');
+    inputs.forEach((input) => {
+      expect(input).toBeDisabled();
+    });
+  });
+
+  it('should type digits and advance focus', async () => {
+    const inputs = screen.getAllByRole<HTMLInputElement>('textbox', { hidden: false });
+    await user.click(inputs[0]!);
+    await user.keyboard('1');
+    expect(inputs[0]!.value).toBe('1');
+    // focus should have moved to second input
+    expect(document.activeElement).toBe(inputs[1]);
+    await user.keyboard('2');
+    expect(inputs[1]!.value).toBe('2');
+    expect(document.activeElement).toBe(inputs[2]);
+  });
+
+  it('should navigate with arrow keys', async () => {
+    const inputs = screen.getAllByRole<HTMLInputElement>('textbox', { hidden: false });
+    await user.click(inputs[0]!);
+    await user.keyboard('1');
+    // now on input 1
+    expect(document.activeElement).toBe(inputs[1]);
+    await user.keyboard('{ArrowLeft}');
+    expect(document.activeElement).toBe(inputs[0]);
+    await user.keyboard('{ArrowRight}');
+    expect(document.activeElement).toBe(inputs[1]);
+  });
+
+  it('pastes the code into the input', async () => {
+    const inputs = screen.getAllByRole<HTMLInputElement>('textbox', {
+      hidden: false,
+    });
+    const firstInput = inputs[0]!;
+    await user.click(firstInput);
+    await act(async () => await user.paste('1,2,3,4,5,6'));
+    expect(getInputValues(inputs)).toBe('1,2,3,4,5,6');
+  });
+
+  it('should truncate pasted characters to the number of inputs', async () => {
+    const inputs = screen.getAllByRole<HTMLInputElement>('textbox', {
+      hidden: false,
+    });
+    const firstInput = inputs[0]!;
+    await user.click(firstInput);
+    await act(async () => await user.paste('123456789'));
+    expect(getInputValues(inputs)).toBe('1,2,3,4,5,6');
+  });
+});
+
+function getInputValues(inputs: HTMLInputElement[]) {
+  return inputs.map((input) => input.value).join(',');
+}

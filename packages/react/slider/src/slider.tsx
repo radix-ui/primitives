@@ -25,6 +25,21 @@ const BACK_KEYS: Record<SlideDirection, string[]> = {
   'from-top': ['Home', 'PageDown', 'ArrowUp', 'ArrowLeft'],
 };
 
+declare global {
+  interface FocusOptions {
+    /**
+     * A boolean value that should be set to `true` to force, or `false` to prevent
+     * visible indication that the element is focused. If the property is not
+     * specified, a browser will provide visible indication if it determines
+     * that this would improve accessibility for users.
+     *
+     * @see
+     * https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus#focusvisible
+     */
+    focusVisible?: boolean;
+  }
+}
+
 /* -------------------------------------------------------------------------------------------------
  * Slider
  * -----------------------------------------------------------------------------------------------*/
@@ -54,11 +69,10 @@ type SliderContextValue = {
 const [SliderProvider, useSliderContext] = createSliderContext<SliderContextValue>(SLIDER_NAME);
 
 type SliderElement = SliderHorizontalElement | SliderVerticalElement;
-interface SliderProps
-  extends Omit<
-    SliderHorizontalProps | SliderVerticalProps,
-    keyof SliderOrientationPrivateProps | 'defaultValue'
-  > {
+interface SliderProps extends Omit<
+  SliderHorizontalProps | SliderVerticalProps,
+  keyof SliderOrientationPrivateProps | 'defaultValue'
+> {
   name?: string;
   disabled?: boolean;
   orientation?: React.AriaAttributes['aria-orientation'];
@@ -75,8 +89,9 @@ interface SliderProps
   form?: string;
 }
 
-const Slider = React.forwardRef<SliderElement, SliderProps>(
-  (props: ScopedProps<SliderProps>, forwardedRef) => {
+const Slider = /* @__PURE__ */ React.forwardRef<SliderElement, SliderProps>(
+  // blank line to reduce diff noise
+  function Slider(props: ScopedProps<SliderProps>, forwardedRef) {
     const {
       name,
       min = 0,
@@ -95,19 +110,38 @@ const Slider = React.forwardRef<SliderElement, SliderProps>(
     } = props;
     const thumbRefs = React.useRef<SliderContextValue['thumbs']>(new Set());
     const valueIndexToChangeRef = React.useRef<number>(0);
+    const isKeyboardInteractionRef = React.useRef(false);
     const isHorizontal = orientation === 'horizontal';
     const SliderOrientation = isHorizontal ? SliderHorizontal : SliderVertical;
+    const [control, setControl] = React.useState<SliderElement | null>(null);
+    const composedRefs = useComposedRefs(forwardedRef, setControl);
 
     const [values = [], setValues] = useControllableState({
       prop: value,
       defaultProp: defaultValue,
       onChange: (value) => {
         const thumbs = [...thumbRefs.current];
-        thumbs[valueIndexToChangeRef.current]?.focus();
+        thumbs[valueIndexToChangeRef.current]?.focus({
+          preventScroll: true,
+          focusVisible: isKeyboardInteractionRef.current,
+        });
+        isKeyboardInteractionRef.current = false;
         onValueChange(value);
       },
     });
     const valuesBeforeSlideStartRef = React.useRef(values);
+
+    const initialValuesRef = React.useRef(values);
+    React.useEffect(() => {
+      const associatedForm = form
+        ? control?.ownerDocument.getElementById(form)
+        : control?.closest('form');
+      if (associatedForm instanceof HTMLFormElement) {
+        const reset = () => setValues(initialValuesRef.current);
+        associatedForm.addEventListener('reset', reset);
+        return () => associatedForm.removeEventListener('reset', reset);
+      }
+    }, [control, form, setValues]);
 
     function handleSlideStart(value: number) {
       const closestIndex = getClosestValueIndex(values, value);
@@ -119,9 +153,7 @@ const Slider = React.forwardRef<SliderElement, SliderProps>(
     }
 
     function handleSlideEnd() {
-      const prevValue = valuesBeforeSlideStartRef.current[valueIndexToChangeRef.current];
-      const nextValue = values[valueIndexToChangeRef.current];
-      const hasChanged = nextValue !== prevValue;
+      const hasChanged = String(values) !== String(valuesBeforeSlideStartRef.current);
       if (hasChanged) onValueCommit(values);
     }
 
@@ -162,9 +194,12 @@ const Slider = React.forwardRef<SliderElement, SliderProps>(
               aria-disabled={disabled}
               data-disabled={disabled ? '' : undefined}
               {...sliderProps}
-              ref={forwardedRef}
+              ref={composedRefs}
               onPointerDown={composeEventHandlers(sliderProps.onPointerDown, () => {
-                if (!disabled) valuesBeforeSlideStartRef.current = values;
+                if (!disabled) {
+                  valuesBeforeSlideStartRef.current = values;
+                  isKeyboardInteractionRef.current = false;
+                }
               })}
               min={min}
               max={max}
@@ -172,19 +207,33 @@ const Slider = React.forwardRef<SliderElement, SliderProps>(
               onSlideStart={disabled ? undefined : handleSlideStart}
               onSlideMove={disabled ? undefined : handleSlideMove}
               onSlideEnd={disabled ? undefined : handleSlideEnd}
-              onHomeKeyDown={() => !disabled && updateValues(min, 0, { commit: true })}
-              onEndKeyDown={() =>
-                !disabled && updateValues(max, values.length - 1, { commit: true })
-              }
+              onHomeKeyDown={() => {
+                if (!disabled) {
+                  isKeyboardInteractionRef.current = true;
+                  updateValues(min, 0, { commit: true });
+                }
+              }}
+              onEndKeyDown={() => {
+                if (!disabled) {
+                  isKeyboardInteractionRef.current = true;
+                  updateValues(max, values.length - 1, { commit: true });
+                }
+              }}
               onStepKeyDown={({ event, direction: stepDirection }) => {
                 if (!disabled) {
+                  isKeyboardInteractionRef.current = true;
                   const isPageKey = PAGE_KEYS.includes(event.key);
                   const isSkipKey = isPageKey || (event.shiftKey && ARROW_KEYS.includes(event.key));
                   const multiplier = isSkipKey ? 10 : 1;
                   const atIndex = valueIndexToChangeRef.current;
-                  const value = values[atIndex];
-                  const stepInDirection = step * multiplier * stepDirection;
-                  updateValues(value + stepInDirection, atIndex, { commit: true });
+                  const value = values[atIndex]!;
+                  const nextValue = getNextStepValue(value, {
+                    min,
+                    step,
+                    direction: stepDirection,
+                    multiplier,
+                  });
+                  updateValues(nextValue, atIndex, { commit: true });
                 }
               }}
             />
@@ -192,10 +241,8 @@ const Slider = React.forwardRef<SliderElement, SliderProps>(
         </Collection.Provider>
       </SliderProvider>
     );
-  }
+  },
 );
-
-Slider.displayName = SLIDER_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * SliderHorizontal
@@ -227,16 +274,19 @@ type SliderOrientationPrivateProps = {
   onStepKeyDown(step: { event: React.KeyboardEvent; direction: number }): void;
 };
 interface SliderOrientationProps
-  extends Omit<SliderImplProps, keyof SliderImplPrivateProps>,
-    SliderOrientationPrivateProps {}
+  extends Omit<SliderImplProps, keyof SliderImplPrivateProps>, SliderOrientationPrivateProps {}
 
 type SliderHorizontalElement = SliderImplElement;
 interface SliderHorizontalProps extends SliderOrientationProps {
   dir?: Direction;
 }
 
-const SliderHorizontal = React.forwardRef<SliderHorizontalElement, SliderHorizontalProps>(
-  (props: ScopedProps<SliderHorizontalProps>, forwardedRef) => {
+const SliderHorizontal = /* @__PURE__ */ React.forwardRef<
+  SliderHorizontalElement,
+  SliderHorizontalProps
+>(
+  // blank line to reduce diff noise
+  function SliderHorizontal(props: ScopedProps<SliderHorizontalProps>, forwardedRef) {
     const {
       min,
       max,
@@ -249,7 +299,7 @@ const SliderHorizontal = React.forwardRef<SliderHorizontalElement, SliderHorizon
       ...sliderProps
     } = props;
     const [slider, setSlider] = React.useState<SliderImplElement | null>(null);
-    const composedRefs = useComposedRefs(forwardedRef, (node) => setSlider(node));
+    const composedRefs = useComposedRefs(forwardedRef, setSlider);
     const rectRef = React.useRef<DOMRect>(undefined);
     const direction = useDirection(dir);
     const isDirectionLTR = direction === 'ltr';
@@ -280,7 +330,7 @@ const SliderHorizontal = React.forwardRef<SliderHorizontalElement, SliderHorizon
           ref={composedRefs}
           style={{
             ...sliderProps.style,
-            ['--radix-slider-thumb-transform' as any]: 'translateX(-50%)',
+            '--radix-slider-thumb-transform': 'translateX(-50%)',
           }}
           onSlideStart={(event) => {
             const value = getValueFromPointer(event.clientX);
@@ -302,7 +352,7 @@ const SliderHorizontal = React.forwardRef<SliderHorizontalElement, SliderHorizon
         />
       </SliderOrientationProvider>
     );
-  }
+  },
 );
 
 /* -------------------------------------------------------------------------------------------------
@@ -312,8 +362,8 @@ const SliderHorizontal = React.forwardRef<SliderHorizontalElement, SliderHorizon
 type SliderVerticalElement = SliderImplElement;
 interface SliderVerticalProps extends SliderOrientationProps {}
 
-const SliderVertical = React.forwardRef<SliderVerticalElement, SliderVerticalProps>(
-  (props: ScopedProps<SliderVerticalProps>, forwardedRef) => {
+const SliderVertical = /* @__PURE__ */ React.forwardRef<SliderVerticalElement, SliderVerticalProps>(
+  function SliderVertical(props: ScopedProps<SliderVerticalProps>, forwardedRef) {
     const {
       min,
       max,
@@ -353,7 +403,7 @@ const SliderVertical = React.forwardRef<SliderVerticalElement, SliderVerticalPro
           ref={ref}
           style={{
             ...sliderProps.style,
-            ['--radix-slider-thumb-transform' as any]: 'translateY(50%)',
+            '--radix-slider-thumb-transform': 'translateY(50%)',
           }}
           onSlideStart={(event) => {
             const value = getValueFromPointer(event.clientY);
@@ -375,14 +425,14 @@ const SliderVertical = React.forwardRef<SliderVerticalElement, SliderVerticalPro
         />
       </SliderOrientationProvider>
     );
-  }
+  },
 );
 
 /* -------------------------------------------------------------------------------------------------
  * SliderImpl
  * -----------------------------------------------------------------------------------------------*/
 
-type SliderImplElement = React.ElementRef<typeof Primitive.span>;
+type SliderImplElement = React.ComponentRef<typeof Primitive.span>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 type SliderImplPrivateProps = {
   onSlideStart(event: React.PointerEvent): void;
@@ -394,8 +444,8 @@ type SliderImplPrivateProps = {
 };
 interface SliderImplProps extends PrimitiveDivProps, SliderImplPrivateProps {}
 
-const SliderImpl = React.forwardRef<SliderImplElement, SliderImplProps>(
-  (props: ScopedProps<SliderImplProps>, forwardedRef) => {
+const SliderImpl = /* @__PURE__ */ React.forwardRef<SliderImplElement, SliderImplProps>(
+  function SliderImpl(props: ScopedProps<SliderImplProps>, forwardedRef) {
     const {
       __scopeSlider,
       onSlideStart,
@@ -435,7 +485,8 @@ const SliderImpl = React.forwardRef<SliderImplElement, SliderImplProps>(
           // Touch devices have a delay before focusing so won't focus if touch immediately moves
           // away from target (sliding). We want thumb to focus regardless.
           if (context.thumbs.has(target)) {
-            target.focus();
+            // Pointer interaction, so avoid showing the focus ring (`:focus-visible`).
+            target.focus({ preventScroll: true, focusVisible: false });
           } else {
             onSlideStart(event);
           }
@@ -453,7 +504,7 @@ const SliderImpl = React.forwardRef<SliderImplElement, SliderImplProps>(
         })}
       />
     );
-  }
+  },
 );
 
 /* -------------------------------------------------------------------------------------------------
@@ -462,12 +513,12 @@ const SliderImpl = React.forwardRef<SliderImplElement, SliderImplProps>(
 
 const TRACK_NAME = 'SliderTrack';
 
-type SliderTrackElement = React.ElementRef<typeof Primitive.span>;
+type SliderTrackElement = React.ComponentRef<typeof Primitive.span>;
 type PrimitiveSpanProps = React.ComponentPropsWithoutRef<typeof Primitive.span>;
 interface SliderTrackProps extends PrimitiveSpanProps {}
 
-const SliderTrack = React.forwardRef<SliderTrackElement, SliderTrackProps>(
-  (props: ScopedProps<SliderTrackProps>, forwardedRef) => {
+const SliderTrack = /* @__PURE__ */ React.forwardRef<SliderTrackElement, SliderTrackProps>(
+  function SliderTrack(props: ScopedProps<SliderTrackProps>, forwardedRef) {
     const { __scopeSlider, ...trackProps } = props;
     const context = useSliderContext(TRACK_NAME, __scopeSlider);
     return (
@@ -478,10 +529,8 @@ const SliderTrack = React.forwardRef<SliderTrackElement, SliderTrackProps>(
         ref={forwardedRef}
       />
     );
-  }
+  },
 );
-
-SliderTrack.displayName = TRACK_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * SliderRange
@@ -489,11 +538,11 @@ SliderTrack.displayName = TRACK_NAME;
 
 const RANGE_NAME = 'SliderRange';
 
-type SliderRangeElement = React.ElementRef<typeof Primitive.span>;
+type SliderRangeElement = React.ComponentRef<typeof Primitive.span>;
 interface SliderRangeProps extends PrimitiveSpanProps {}
 
-const SliderRange = React.forwardRef<SliderRangeElement, SliderRangeProps>(
-  (props: ScopedProps<SliderRangeProps>, forwardedRef) => {
+const SliderRange = /* @__PURE__ */ React.forwardRef<SliderRangeElement, SliderRangeProps>(
+  function SliderRange(props: ScopedProps<SliderRangeProps>, forwardedRef) {
     const { __scopeSlider, ...rangeProps } = props;
     const context = useSliderContext(RANGE_NAME, __scopeSlider);
     const orientation = useSliderOrientationContext(RANGE_NAME, __scopeSlider);
@@ -501,7 +550,7 @@ const SliderRange = React.forwardRef<SliderRangeElement, SliderRangeProps>(
     const composedRefs = useComposedRefs(forwardedRef, ref);
     const valuesCount = context.values.length;
     const percentages = context.values.map((value) =>
-      convertValueToPercentage(value, context.min, context.max)
+      convertValueToPercentage(value, context.min, context.max),
     );
     const offsetStart = valuesCount > 1 ? Math.min(...percentages) : 0;
     const offsetEnd = 100 - Math.max(...percentages);
@@ -519,10 +568,8 @@ const SliderRange = React.forwardRef<SliderRangeElement, SliderRangeProps>(
         }}
       />
     );
-  }
+  },
 );
-
-SliderRange.displayName = RANGE_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * SliderThumb
@@ -530,56 +577,113 @@ SliderRange.displayName = RANGE_NAME;
 
 const THUMB_NAME = 'SliderThumb';
 
-type SliderThumbElement = SliderThumbImplElement;
-interface SliderThumbProps extends Omit<SliderThumbImplProps, 'index'> {}
-
-const SliderThumb = React.forwardRef<SliderThumbElement, SliderThumbProps>(
-  (props: ScopedProps<SliderThumbProps>, forwardedRef) => {
-    const getItems = useCollection(props.__scopeSlider);
-    const [thumb, setThumb] = React.useState<SliderThumbImplElement | null>(null);
-    const composedRefs = useComposedRefs(forwardedRef, (node) => setThumb(node));
-    const index = React.useMemo(
-      () => (thumb ? getItems().findIndex((item) => item.ref.current === thumb) : -1),
-      [getItems, thumb]
-    );
-    return <SliderThumbImpl {...props} ref={composedRefs} index={index} />;
-  }
-);
-
-type SliderThumbImplElement = React.ElementRef<typeof Primitive.span>;
-interface SliderThumbImplProps extends PrimitiveSpanProps {
+type SliderThumbContextValue = {
+  value: number | undefined;
+  name: string | undefined;
+  form: string | undefined;
+  isFormControl: boolean;
   index: number;
+  thumb: SliderThumbTriggerElement | null;
+  onThumbChange(thumb: SliderThumbTriggerElement | null): void;
+  percent: number;
+  size: ReturnType<typeof useSize>;
+};
+
+const [SliderThumbContextProvider, useSliderThumbContext] =
+  createSliderContext<SliderThumbContextValue>(THUMB_NAME);
+
+/* -------------------------------------------------------------------------------------------------
+ * SliderThumbProvider
+ * -----------------------------------------------------------------------------------------------*/
+
+const THUMB_PROVIDER_NAME = 'SliderThumbProvider';
+
+interface SliderThumbProviderProps {
   name?: string;
+  children?: React.ReactNode;
 }
 
-const SliderThumbImpl = React.forwardRef<SliderThumbImplElement, SliderThumbImplProps>(
-  (props: ScopedProps<SliderThumbImplProps>, forwardedRef) => {
-    const { __scopeSlider, index, name, ...thumbProps } = props;
-    const context = useSliderContext(THUMB_NAME, __scopeSlider);
-    const orientation = useSliderOrientationContext(THUMB_NAME, __scopeSlider);
-    const [thumb, setThumb] = React.useState<HTMLSpanElement | null>(null);
-    const composedRefs = useComposedRefs(forwardedRef, (node) => setThumb(node));
-    // We set this to true by default so that events bubble to forms without JS (SSR)
-    const isFormControl = thumb ? context.form || !!thumb.closest('form') : true;
-    const size = useSize(thumb);
-    // We cast because index could be `-1` which would return undefined
-    const value = context.values[index] as number | undefined;
-    const percent =
-      value === undefined ? 0 : convertValueToPercentage(value, context.min, context.max);
+function SliderThumbProvider(props: ScopedProps<SliderThumbProviderProps>) {
+  const {
+    __scopeSlider,
+    name,
+    children,
+    // @ts-expect-error internal render prop
+    internal_do_not_use_render,
+  } = props;
+  const context = useSliderContext(THUMB_PROVIDER_NAME, __scopeSlider);
+  const getItems = useCollection(__scopeSlider);
+  const [thumb, setThumb] = React.useState<SliderThumbTriggerElement | null>(null);
+  const index = React.useMemo(
+    () => (thumb ? getItems().findIndex((item) => item.ref.current === thumb) : -1),
+    [getItems, thumb],
+  );
+  const size = useSize(thumb);
+  // We set this to true by default so that events bubble to forms without JS (SSR)
+  const isFormControl = thumb ? !!context.form || !!thumb.closest('form') : true;
+  // We cast because index could be `-1` which would return undefined
+  const value = context.values[index] as number | undefined;
+  const resolvedName =
+    name ?? (context.name ? context.name + (context.values.length > 1 ? '[]' : '') : undefined);
+  const percent =
+    value === undefined ? 0 : convertValueToPercentage(value, context.min, context.max);
+
+  React.useEffect(() => {
+    if (thumb) {
+      context.thumbs.add(thumb);
+      return () => {
+        context.thumbs.delete(thumb);
+      };
+    }
+  }, [thumb, context.thumbs]);
+
+  const thumbContext: SliderThumbContextValue = {
+    value,
+    name: resolvedName,
+    form: context.form,
+    isFormControl,
+    index,
+    thumb,
+    onThumbChange: setThumb,
+    percent,
+    size,
+  };
+
+  return (
+    <SliderThumbContextProvider scope={__scopeSlider} {...thumbContext}>
+      {isFunction(internal_do_not_use_render) ? internal_do_not_use_render(thumbContext) : children}
+    </SliderThumbContextProvider>
+  );
+}
+
+/* -------------------------------------------------------------------------------------------------
+ * SliderThumbTrigger
+ * -----------------------------------------------------------------------------------------------*/
+
+const THUMB_TRIGGER_NAME = 'SliderThumbTrigger';
+
+type SliderThumbTriggerElement = React.ComponentRef<typeof Primitive.span>;
+interface SliderThumbTriggerProps extends PrimitiveSpanProps {}
+
+const SliderThumbTrigger = /* @__PURE__ */ React.forwardRef<
+  SliderThumbTriggerElement,
+  SliderThumbTriggerProps
+>(
+  // blank line to reduce diff noise
+  function SliderThumbTrigger(props: ScopedProps<SliderThumbTriggerProps>, forwardedRef) {
+    const { __scopeSlider, ...thumbProps } = props;
+    const context = useSliderContext(THUMB_TRIGGER_NAME, __scopeSlider);
+    const orientation = useSliderOrientationContext(THUMB_TRIGGER_NAME, __scopeSlider);
+    const { index, value, percent, size, onThumbChange } = useSliderThumbContext(
+      THUMB_TRIGGER_NAME,
+      __scopeSlider,
+    );
+    const composedRefs = useComposedRefs(forwardedRef, onThumbChange);
     const label = getLabel(index, context.values.length);
     const orientationSize = size?.[orientation.size];
     const thumbInBoundsOffset = orientationSize
       ? getThumbInBoundsOffset(orientationSize, percent, orientation.direction)
       : 0;
-
-    React.useEffect(() => {
-      if (thumb) {
-        context.thumbs.add(thumb);
-        return () => {
-          context.thumbs.delete(thumb);
-        };
-      }
-    }, [thumb, context.thumbs]);
 
     return (
       <span
@@ -589,7 +693,7 @@ const SliderThumbImpl = React.forwardRef<SliderThumbImplElement, SliderThumbImpl
           [orientation.startEdge]: `calc(${percent}% + ${thumbInBoundsOffset}px)`,
         }}
       >
-        <Collection.ItemSlot scope={props.__scopeSlider}>
+        <Collection.ItemSlot scope={__scopeSlider}>
           <Primitive.span
             role="slider"
             aria-label={props['aria-label'] || label}
@@ -614,56 +718,110 @@ const SliderThumbImpl = React.forwardRef<SliderThumbImplElement, SliderThumbImpl
             })}
           />
         </Collection.ItemSlot>
-
-        {isFormControl && (
-          <BubbleInput
-            key={index}
-            name={
-              name ??
-              (context.name ? context.name + (context.values.length > 1 ? '[]' : '') : undefined)
-            }
-            form={context.form}
-            value={value}
-          />
-        )}
       </span>
     );
-  }
+  },
 );
-
-SliderThumb.displayName = THUMB_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
-const BubbleInput = (props: React.ComponentPropsWithoutRef<'input'>) => {
-  const { value, ...inputProps } = props;
-  const ref = React.useRef<HTMLInputElement>(null);
-  const prevValue = usePrevious(value);
+type SliderThumbElement = SliderThumbTriggerElement;
+interface SliderThumbProps extends SliderThumbTriggerProps {
+  name?: string;
+}
 
-  // Bubble value change to parents (e.g form change event)
-  React.useEffect(() => {
-    const input = ref.current!;
-    const inputProto = window.HTMLInputElement.prototype;
-    const descriptor = Object.getOwnPropertyDescriptor(inputProto, 'value') as PropertyDescriptor;
-    const setValue = descriptor.set;
-    if (prevValue !== value && setValue) {
-      const event = new Event('input', { bubbles: true });
-      setValue.call(input, value);
-      input.dispatchEvent(event);
-    }
-  }, [prevValue, value]);
+const SliderThumb = /* @__PURE__ */ React.forwardRef<SliderThumbElement, SliderThumbProps>(
+  function SliderThumb(props: ScopedProps<SliderThumbProps>, forwardedRef) {
+    const { __scopeSlider, name, ...thumbProps } = props;
+    return (
+      <SliderThumbProvider
+        __scopeSlider={__scopeSlider}
+        name={name}
+        // @ts-expect-error internal render prop
+        internal_do_not_use_render={({ index, isFormControl }: SliderThumbContextValue) => (
+          <>
+            <SliderThumbTrigger
+              {...thumbProps}
+              ref={forwardedRef}
+              // @ts-expect-error
+              __scopeSlider={__scopeSlider}
+            />
+            {isFormControl ? (
+              <SliderBubbleInput
+                key={index}
+                // @ts-expect-error
+                __scopeSlider={__scopeSlider}
+              />
+            ) : null}
+          </>
+        )}
+      />
+    );
+  },
+);
 
-  /**
-   * We purposefully do not use `type="hidden"` here otherwise forms that
-   * wrap it will not be able to access its value via the FormData API.
-   *
-   * We purposefully do not add the `value` attribute here to allow the value
-   * to be set programmatically and bubble to any parent form `onChange` event.
-   * Adding the `value` will cause React to consider the programmatic
-   * dispatch a duplicate and it will get swallowed.
-   */
-  return <input style={{ display: 'none' }} {...inputProps} ref={ref} defaultValue={value} />;
-};
+/* -------------------------------------------------------------------------------------------------
+ * SliderBubbleInput
+ * -----------------------------------------------------------------------------------------------*/
+
+const BUBBLE_INPUT_NAME = 'SliderBubbleInput';
+
+type SliderBubbleInputElement = React.ComponentRef<typeof Primitive.input>;
+type PrimitiveInputProps = React.ComponentPropsWithoutRef<typeof Primitive.input>;
+interface SliderBubbleInputProps extends Omit<PrimitiveInputProps, 'value'> {}
+
+const SliderBubbleInput = /* @__PURE__ */ React.forwardRef<
+  SliderBubbleInputElement,
+  SliderBubbleInputProps
+>(
+  // blank line to reduce diff noise
+  function SliderBubbleInput(
+    { __scopeSlider, ...props }: ScopedProps<SliderBubbleInputProps>,
+    forwardedRef,
+  ) {
+    const { value, name, form } = useSliderThumbContext(BUBBLE_INPUT_NAME, __scopeSlider);
+    const ref = React.useRef<SliderBubbleInputElement>(null);
+    const composedRefs = useComposedRefs(ref, forwardedRef);
+    const prevValue = usePrevious(value);
+
+    // Bubble value change to parents (e.g form change event)
+    React.useEffect(() => {
+      const input = ref.current;
+      if (!input) return;
+
+      const inputProto = window.HTMLInputElement.prototype;
+      const descriptor = Object.getOwnPropertyDescriptor(inputProto, 'value') as PropertyDescriptor;
+      const setValue = descriptor.set;
+      if (prevValue !== value && setValue) {
+        const event = new Event('input', { bubbles: true });
+        setValue.call(input, value);
+        input.dispatchEvent(event);
+      }
+    }, [prevValue, value]);
+
+    /**
+     * We purposefully do not use `type="hidden"` here otherwise forms that
+     * wrap it will not be able to access its value via the FormData API.
+     *
+     * We purposefully do not add the `value` attribute here to allow the value
+     * to be set programmatically and bubble to any parent form `onChange` event.
+     * Adding the `value` will cause React to consider the programmatic
+     * dispatch a duplicate and it will get swallowed.
+     */
+    return (
+      <Primitive.input
+        style={{ display: 'none' }}
+        name={name}
+        form={form}
+        {...props}
+        ref={composedRefs}
+        defaultValue={value}
+      />
+    );
+  },
+);
+
+/* -----------------------------------------------------------------------------------------------*/
 
 function getNextSortedValues(prevValues: number[] = [], nextValue: number, atIndex: number) {
   const nextValues = [...prevValues];
@@ -725,7 +883,7 @@ function getThumbInBoundsOffset(width: number, left: number, direction: number) 
  * getStepsBetweenValues([10, 11, 20]);
  */
 function getStepsBetweenValues(values: number[]) {
-  return values.slice(0, -1).map((value, index) => values[index + 1] - value);
+  return values.slice(0, -1).map((value, index) => values[index + 1]! - value);
 }
 
 /**
@@ -759,7 +917,23 @@ function linearScale(input: readonly [number, number], output: readonly [number,
 }
 
 function getDecimalCount(value: number) {
-  return (String(value).split('.')[1] || '').length;
+  if (!Number.isFinite(value)) return 0;
+
+  const str = value.toString();
+
+  // Numbers with a magnitude below 1e-6 (or very large numbers) are serialized
+  // in scientific notation (e.g. `1e-7`), so we can't just count the digits
+  // after the decimal point.
+  // https://github.com/radix-ui/primitives/issues/3852
+  if (str.includes('e')) {
+    const [coefficient, exponent] = str.split('e');
+    const decimalPart = coefficient!.split('.')[1] || '';
+    const exponentNum = Number(exponent);
+    return Math.max(0, decimalPart.length - exponentNum);
+  }
+
+  const decimalPart = str.split('.')[1];
+  return decimalPart ? decimalPart.length : 0;
 }
 
 function roundValue(value: number, decimalCount: number) {
@@ -767,10 +941,41 @@ function roundValue(value: number, decimalCount: number) {
   return Math.round(value * rounder) / rounder;
 }
 
-const Root = Slider;
-const Track = SliderTrack;
-const Range = SliderRange;
-const Thumb = SliderThumb;
+function getNextStepValue(
+  value: number,
+  {
+    min,
+    step,
+    direction,
+    multiplier,
+  }: {
+    min: number;
+    step: number;
+    direction: number;
+    multiplier: number;
+  },
+) {
+  const decimalCount = getDecimalCount(step);
+  const stepsFromMin = (value - min) / step;
+  const nearestSteps = Math.round(stepsFromMin);
+  const isAligned =
+    roundValue(nearestSteps * step + min, decimalCount) === roundValue(value, decimalCount);
+
+  let nextSteps: number;
+  if (isAligned) {
+    nextSteps = nearestSteps + multiplier * direction;
+  } else if (direction > 0) {
+    nextSteps = Math.ceil(stepsFromMin);
+  } else {
+    nextSteps = Math.floor(stepsFromMin);
+  }
+
+  return roundValue(nextSteps * step + min, decimalCount);
+}
+
+function isFunction(value: unknown): value is (...args: any[]) => any {
+  return typeof value === 'function';
+}
 
 export {
   createSliderScope,
@@ -779,10 +984,24 @@ export {
   SliderTrack,
   SliderRange,
   SliderThumb,
+  SliderThumbProvider,
+  SliderThumbTrigger,
+  SliderBubbleInput,
   //
-  Root,
-  Track,
-  Range,
-  Thumb,
+  Slider as Root,
+  SliderTrack as Track,
+  SliderRange as Range,
+  SliderThumb as Thumb,
+  SliderThumbProvider as ThumbProvider,
+  SliderThumbTrigger as ThumbTrigger,
+  SliderBubbleInput as BubbleInput,
 };
-export type { SliderProps, SliderTrackProps, SliderRangeProps, SliderThumbProps };
+export type {
+  SliderProps,
+  SliderTrackProps,
+  SliderRangeProps,
+  SliderThumbProps,
+  SliderThumbProviderProps,
+  SliderThumbTriggerProps,
+  SliderBubbleInputProps,
+};

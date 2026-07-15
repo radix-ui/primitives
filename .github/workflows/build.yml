@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - main
+      - stable
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -14,24 +15,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
-      - name: Set Node version
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: '.nvmrc'
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
-      - uses: actions/cache@v3
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-      - name: Install dependencies
-        if: steps.yarn-cache-dir-path.outputs.cache-hit != 'true'
-        run: yarn
+        uses: actions/checkout@v6
+
+      - name: CI setup
+        uses: ./.github/actions/ci-setup
+
       - name: Lint
-        run: yarn lint
+        run: pnpm lint
+
+      - name: Check composed refs
+        run: node scripts/check-composed-refs.mjs
+
       - name: Run build
-        run: yarn build
+        run: pnpm build:ci
+
       - name: Run tests
-        run: yarn test:ci
+        run: pnpm test:ci

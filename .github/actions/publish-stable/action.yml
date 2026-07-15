@@ -1,0 +1,33 @@
+name: Publish stable
+description: Build, version, and publish stable packages
+
+outputs:
+  published:
+    description: Whether a stable release was published to npm
+    value: ${{ steps.changesets.outputs.published }}
+
+runs:
+  using: composite
+  steps:
+    - name: CI Setup
+      uses: ./.github/actions/ci-setup
+
+    - name: Build packages
+      shell: bash
+      run: pnpm build:ci
+
+    - name: Create release PR or publish to npm
+      id: changesets
+      uses: changesets/action@v1
+      env:
+        # Force npm publish to attach a provenance attestation. Setting this
+        # via env (rather than a CLI flag) keeps it portable across the
+        # underlying publish command `changeset publish` chooses for the
+        # workspace's package manager.
+        NPM_CONFIG_PROVENANCE: true
+      with:
+        title: New release
+        commit: New release
+        version: pnpm run bump:stable
+        publish: pnpm run release:stable:ci
+        createGithubReleases: false

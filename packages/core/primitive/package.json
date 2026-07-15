@@ -1,46 +1,87 @@
 {
   "name": "@radix-ui/primitive",
-  "version": "1.1.2-rc.5",
+  "version": "1.1.5",
   "license": "MIT",
+  "source": "./src/index.ts",
+  "main": "./src/index.ts",
+  "module": "./src/index.ts",
   "exports": {
-    ".": {
-      "import": {
-        "types": "./dist/index.d.mts",
-        "default": "./dist/index.mjs"
+    ".": "./src/index.ts",
+    "./is-development": "./src/internal/is-development.true.ts"
+  },
+  "publishConfig": {
+    "main": "./dist/index.js",
+    "module": "./dist/index.mjs",
+    "types": "./dist/index.d.ts",
+    "exports": {
+      ".": {
+        "import": {
+          "types": "./dist/index.d.mts",
+          "default": "./dist/index.mjs"
+        },
+        "require": {
+          "types": "./dist/index.d.ts",
+          "default": "./dist/index.js"
+        }
       },
-      "require": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
+      "./is-development": {
+        "development": {
+          "import": {
+            "types": "./dist/internal/is-development.true.d.mts",
+            "default": "./dist/internal/is-development.true.mjs"
+          },
+          "require": {
+            "types": "./dist/internal/is-development.true.d.ts",
+            "default": "./dist/internal/is-development.true.js"
+          }
+        },
+        "production": {
+          "import": {
+            "types": "./dist/internal/is-development.false.d.mts",
+            "default": "./dist/internal/is-development.false.mjs"
+          },
+          "require": {
+            "types": "./dist/internal/is-development.false.d.ts",
+            "default": "./dist/internal/is-development.false.js"
+          }
+        },
+        "default": {
+          "import": {
+            "types": "./dist/internal/is-development.false.d.mts",
+            "default": "./dist/internal/is-development.false.mjs"
+          },
+          "require": {
+            "types": "./dist/internal/is-development.false.d.ts",
+            "default": "./dist/internal/is-development.false.js"
+          }
+        }
       }
     }
   },
-  "source": "./src/index.ts",
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
   "files": [
     "dist",
     "README.md"
   ],
   "sideEffects": false,
   "scripts": {
-    "lint": "eslint --max-warnings 0 src",
+    "lint": "oxlint --max-warnings 0 src",
     "clean": "rm -rf dist",
-    "version": "yarn version"
+    "reset": "rm -rf dist node_modules",
+    "typecheck": "tsc --noEmit",
+    "build": "radix-build"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
+    "@repo/builder": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "eslint": "^9.18.0",
-    "typescript": "^5.7.3"
+    "typescript": "^5.9.3"
   },
   "homepage": "https://radix-ui.com/primitives",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/radix-ui/primitives.git"
+    "url": "git+https://github.com/radix-ui/primitives.git",
+    "directory": "packages/core/primitive"
   },
   "bugs": {
     "url": "https://github.com/radix-ui/primitives/issues"
-  },
-  "stableVersion": "1.1.1"
+  }
 }

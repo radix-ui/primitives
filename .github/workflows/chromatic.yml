@@ -16,16 +16,14 @@ jobs:
   chromatic-deployment:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - name: Set Node version
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: '.nvmrc'
-      - name: Install dependencies
-        run: yarn
+
+      - name: CI setup
+        uses: ./.github/actions/ci-setup
+
       - name: Publish to Chromatic
         uses: chromaui/action@v1
         with:
