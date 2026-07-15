@@ -487,6 +487,9 @@ importers:
 
   packages/react/avatar:
     dependencies:
+      '@radix-ui/primitive':
+        specifier: workspace:*
+        version: link:../../core/primitive
       '@radix-ui/react-context':
         specifier: workspace:*
         version: link:../context
@@ -2659,6 +2662,9 @@ importers:
 
   packages/react/use-controllable-state:
     dependencies:
+      '@radix-ui/primitive':
+        specifier: workspace:*
+        version: link:../../core/primitive
       '@radix-ui/react-use-effect-event':
         specifier: workspace:*
         version: link:../use-effect-event

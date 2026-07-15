@@ -33,6 +33,7 @@ export async function build(relativePath) {
   const tasks = [];
   const pkg = packageJson.name;
   const files = ['index.ts'];
+
   if (pkg === 'radix-ui') {
     // The `radix-ui` package exposes every module in `src` as its own subpath
     // entry point (eg. `radix-ui/accordion`, `radix-ui/unstable/dismissable-layer`),
@@ -45,6 +46,13 @@ export async function build(relativePath) {
       .filter((file) => file.endsWith('.ts') && !file.endsWith('.d.ts') && file !== 'index.ts')
       .sort();
     files.push(...additionalEntryFiles);
+  } else if (pkg === '@radix-ui/primitive') {
+    // Additional files exposed to consumers
+    files.push(
+      //
+      'internal/is-development.false.ts',
+      'internal/is-development.true.ts',
+    );
   }
 
   const entryPoints = files.map((file) => `${relativePath || '.'}/src/${file}`);

@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { IS_DEVELOPMENT } from '@radix-ui/primitive/is-development';
 import { createContextScope } from '@radix-ui/react-context';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
@@ -189,7 +190,7 @@ function getImageLoadingStatus(image: HTMLImageElement) {
 // oxlint-disable react-hooks/rules-of-hooks
 function useImageCount() {
   let state = STATIC_IMAGE_COUNT_STATE;
-  if (process.env.NODE_ENV !== 'production') {
+  if (IS_DEVELOPMENT) {
     state = React.useState(0);
     const [imageCount] = state;
     const hasWarnedRef = React.useRef(false);
@@ -207,7 +208,7 @@ function useImageCount() {
 }
 
 function useUpdateImageCount(setImageCount: React.Dispatch<React.SetStateAction<number>>) {
-  if (process.env.NODE_ENV !== 'production') {
+  if (IS_DEVELOPMENT) {
     React.useEffect(() => {
       setImageCount((imageCount) => imageCount + 1);
       return () => {

@@ -5,6 +5,10 @@
   "source": "./src/index.ts",
   "main": "./src/index.ts",
   "module": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./is-development": "./src/internal/is-development.true.ts"
+  },
   "publishConfig": {
     "main": "./dist/index.js",
     "module": "./dist/index.mjs",
@@ -18,6 +22,38 @@
         "require": {
           "types": "./dist/index.d.ts",
           "default": "./dist/index.js"
+        }
+      },
+      "./is-development": {
+        "development": {
+          "import": {
+            "types": "./dist/internal/is-development.true.d.mts",
+            "default": "./dist/internal/is-development.true.mjs"
+          },
+          "require": {
+            "types": "./dist/internal/is-development.true.d.ts",
+            "default": "./dist/internal/is-development.true.js"
+          }
+        },
+        "production": {
+          "import": {
+            "types": "./dist/internal/is-development.false.d.mts",
+            "default": "./dist/internal/is-development.false.mjs"
+          },
+          "require": {
+            "types": "./dist/internal/is-development.false.d.ts",
+            "default": "./dist/internal/is-development.false.js"
+          }
+        },
+        "default": {
+          "import": {
+            "types": "./dist/internal/is-development.false.d.mts",
+            "default": "./dist/internal/is-development.false.mjs"
+          },
+          "require": {
+            "types": "./dist/internal/is-development.false.d.ts",
+            "default": "./dist/internal/is-development.false.js"
+          }
         }
       }
     }

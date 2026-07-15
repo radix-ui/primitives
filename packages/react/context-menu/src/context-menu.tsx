@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { IS_DEVELOPMENT } from '@radix-ui/primitive/is-development';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { createContextScope } from '@radix-ui/react-context';
 import { Primitive } from '@radix-ui/react-primitive';
@@ -48,7 +49,7 @@ const ContextMenu: React.FC<ContextMenuProps> = (props: ScopedProps<ContextMenuP
   // code block entirely in production.
   /* eslint-disable react-hooks/rules-of-hooks */
   const hasInteractedRef = React.useRef(false);
-  if (process.env.NODE_ENV !== 'production') {
+  if (IS_DEVELOPMENT) {
     const hasWarnedRef = React.useRef(false);
     React.useEffect(() => {
       if (openProp === true && !hasInteractedRef.current && !hasWarnedRef.current) {
