@@ -258,6 +258,98 @@ describe('Tooltip', () => {
     expect(commitCounts.c! - initial.c!).toBe(0);
   });
 
+  // Regression tests for https://github.com/radix-ui/primitives/issues/2248
+  // A trigger can receive focus without the user directly interacting with
+  // it, e.g. when a `Popover` or `Dialog` auto-focuses its content on open
+  // and the trigger happens to be the first focusable descendant. The
+  // tooltip should only open for focus that genuinely originates from the
+  // user (such as keyboard navigation), not from that kind of programmatic
+  // focus transfer.
+  describe('focus origin', () => {
+    it('does not open when the trigger is focused programmatically', async () => {
+      render(
+        <Tooltip.Provider>
+          <Tooltip.Root delayDuration={0}>
+            <Tooltip.Trigger>Tooltip Trigger</Tooltip.Trigger>
+            <Tooltip.Portal>
+              <Tooltip.Content>Tooltip Content</Tooltip.Content>
+            </Tooltip.Portal>
+          </Tooltip.Root>
+        </Tooltip.Provider>,
+      );
+
+      const trigger = screen.getByText('Tooltip Trigger');
+
+      // Simulates what a parent like `Popover.Content`'s auto-focus does: a
+      // plain, non-keyboard-driven `element.focus()` call.
+      act(() => trigger.focus());
+      expect(trigger).toHaveFocus();
+
+      // Give any (regressed) open timers a chance to run.
+      await new Promise((resolve) => setTimeout(resolve, 10));
+
+      expect(screen.queryByText('Tooltip Content')).not.toBeInTheDocument();
+      expect(trigger).toHaveAttribute('data-state', 'closed');
+
+      // Avoid leaking a focused-but-detached element into the next test's
+      // `:focus-visible` tracking once this tree unmounts.
+      act(() => trigger.blur());
+    });
+
+    it('still opens when the trigger is focused via keyboard navigation', async () => {
+      render(
+        <Tooltip.Provider>
+          <Tooltip.Root delayDuration={0}>
+            <Tooltip.Trigger>Tooltip Trigger</Tooltip.Trigger>
+            <Tooltip.Portal>
+              <Tooltip.Content>Tooltip Content</Tooltip.Content>
+            </Tooltip.Portal>
+          </Tooltip.Root>
+        </Tooltip.Provider>,
+      );
+
+      const user = userEvent.setup();
+      await user.tab();
+
+      const trigger = screen.getByText('Tooltip Trigger');
+      expect(trigger).toHaveFocus();
+
+      await waitFor(() => {
+        expect(screen.getByText('Tooltip Content')).toBeVisible();
+      });
+      expect(trigger).toHaveAttribute('data-state', 'instant-open');
+
+      // Avoid leaking a focused-but-detached element into the next test's
+      // `:focus-visible` tracking once this tree unmounts.
+      act(() => trigger.blur());
+    });
+
+    it('still closes on blur after a genuine keyboard focus', async () => {
+      render(
+        <Tooltip.Provider>
+          <Tooltip.Root delayDuration={0}>
+            <Tooltip.Trigger>Tooltip Trigger</Tooltip.Trigger>
+            <Tooltip.Portal>
+              <Tooltip.Content>Tooltip Content</Tooltip.Content>
+            </Tooltip.Portal>
+          </Tooltip.Root>
+          <button>Next</button>
+        </Tooltip.Provider>,
+      );
+
+      const user = userEvent.setup();
+      await user.tab();
+      await waitFor(() => {
+        expect(screen.getByText('Tooltip Content')).toBeVisible();
+      });
+
+      await user.tab();
+      await waitFor(() => {
+        expect(screen.queryByText('Tooltip Content')).not.toBeInTheDocument();
+      });
+    });
+  });
+
   describe('skipDelayDuration', () => {
     function renderTwoTriggers(providerProps: Omit<Tooltip.TooltipProviderProps, 'children'>) {
       render(

@@ -314,8 +314,17 @@ const TooltipTrigger = /* @__PURE__ */ React.forwardRef<TooltipTriggerElement, T
             isPointerDownRef.current = true;
             document.addEventListener('pointerup', handlePointerUp, { once: true });
           })}
-          onFocus={composeEventHandlers(props.onFocus, () => {
-            if (!isPointerDownRef.current) context.onOpen();
+          onFocus={composeEventHandlers(props.onFocus, (event) => {
+            // A trigger can receive focus without any direct user interaction
+            // with it, e.g. when a `Popover` or `Dialog` auto-focuses its
+            // content on open and the trigger happens to be the first
+            // focusable descendant. `:focus-visible` reflects the browser's
+            // own judgement of whether this focus event stems from a real
+            // keyboard/user-driven interaction, so we use it to avoid
+            // opening the tooltip for that kind of programmatic focus while
+            // still opening it for genuine keyboard navigation.
+            const isFocusFromUserInteraction = event.currentTarget.matches(':focus-visible');
+            if (!isPointerDownRef.current && isFocusFromUserInteraction) context.onOpen();
           })}
           onBlur={composeEventHandlers(props.onBlur, context.onClose)}
           onClick={composeEventHandlers(props.onClick, context.onClose)}
