@@ -333,9 +333,10 @@ const PopperContent = /* @__PURE__ */ React.forwardRef<PopperContentElement, Pop
             ref={composedRefs}
             style={{
               ...contentProps.style,
-              // if the PopperContent hasn't been placed yet (not all measurements done)
-              // we prevent animations so that users's animation don't kick in too early referring wrong sides
-              animation: !isPositioned ? 'none' : undefined,
+              // if the PopperContent hasn't been placed yet (not all
+              // measurements done) we prevent animations so that users'
+              // animations don't kick in too early from the wrong sides.
+              animation: !isPositioned ? 'none' : contentProps.style?.animation,
             }}
           />
         </PopperContentProvider>
