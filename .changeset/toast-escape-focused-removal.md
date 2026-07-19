@@ -1,4 +1,5 @@
 ---
+"radix-ui": patch
 "@radix-ui/react-toast": patch
 ---
 
