@@ -1,5 +1,10 @@
 # @radix-ui/react-dropdown-menu
 
+## 2.1.21
+
+- Improved tree-shaking so bundlers can drop unused components. Component parts are now marked `/* @__PURE__ */` and use named render functions instead of `Component.displayName = ...` assignments, which previously prevented dead-code elimination with some bundlers.
+- Updated dependencies: `@radix-ui/react-menu@2.1.21`, `@radix-ui/react-use-controllable-state@1.2.4`, `@radix-ui/primitive@1.1.6`, `@radix-ui/react-compose-refs@1.1.3`, `@radix-ui/react-context@1.2.0`, `@radix-ui/react-id@1.1.2`, `@radix-ui/react-primitive@2.1.7`
+
 ## 2.1.20
 
 - Fixed menu items, tab triggers, toolbar links, and select items intercepting `Space`/`Enter` keys that originate from focusable descendants.

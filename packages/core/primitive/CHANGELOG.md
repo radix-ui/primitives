@@ -1,5 +1,9 @@
 # @radix-ui/primitive
 
+## 1.1.6
+
+- Fix dev-only checks with conditional exports to drop dev-warnings from production builds.
+
 ## 1.1.5
 
 - Accounted for missing event arguments passed to `composeEventHandlers`

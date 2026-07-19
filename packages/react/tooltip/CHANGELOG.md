@@ -1,5 +1,11 @@
 # @radix-ui/react-tooltip
 
+## 1.2.13
+
+- Fixed a bug where `Tooltip.Content` children were mounted to the DOM twice.
+- Improved tree-shaking so bundlers can drop unused components. Component parts are now marked `/* @__PURE__ */` and use named render functions instead of `Component.displayName = ...` assignments, which previously prevented dead-code elimination with some bundlers.
+- Updated dependencies: `@radix-ui/react-popper@1.3.4`, `@radix-ui/react-dismissable-layer@1.1.16`, `@radix-ui/react-portal@1.1.14`, `@radix-ui/react-presence@1.1.8`, `@radix-ui/react-visually-hidden@1.2.8`, `@radix-ui/react-use-controllable-state@1.2.4`, `@radix-ui/primitive@1.1.6`, `@radix-ui/react-compose-refs@1.1.3`, `@radix-ui/react-context@1.2.0`, `@radix-ui/react-id@1.1.2`, `@radix-ui/react-primitive@2.1.7`, `@radix-ui/react-slot@1.3.0`, `@radix-ui/react-use-layout-effect@1.1.2`
+
 ## 1.2.12
 
 - Updated dependencies: `@radix-ui/react-dismissable-layer@1.1.15`, `@radix-ui/primitive@1.1.5`, `@radix-ui/react-context@1.2.0`, `@radix-ui/react-presence@1.1.7`, `@radix-ui/react-popper@1.3.3`
