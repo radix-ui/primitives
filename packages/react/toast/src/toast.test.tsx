@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, cleanup } from '@testing-library/react';
+import { render, cleanup, fireEvent, screen } from '@testing-library/react';
 import * as Toast from './toast';
 import { describe, it, afterEach, beforeEach, vi, expect, type Mock } from 'vitest';
 import { assertStableComposedRef } from '@repo/test-utils/ref-stability';
@@ -17,6 +17,52 @@ describe('ref stability', () => {
         <Toast.Viewport />
       </Toast.Provider>
     ));
+  });
+});
+
+// Regression test for https://github.com/radix-ui/primitives/issues/2906
+describe('escape key removal', () => {
+  afterEach(cleanup);
+
+  function renderToasts(onOpenChange: { first: Mock; second: Mock; third: Mock }) {
+    render(
+      <Toast.Provider>
+        <Toast.Root open duration={Infinity} onOpenChange={onOpenChange.first}>
+          <Toast.Title>Toast 1</Toast.Title>
+        </Toast.Root>
+        <Toast.Root open duration={Infinity} onOpenChange={onOpenChange.second}>
+          <Toast.Title>Toast 2</Toast.Title>
+        </Toast.Root>
+        <Toast.Root open duration={Infinity} onOpenChange={onOpenChange.third}>
+          <Toast.Title>Toast 3</Toast.Title>
+        </Toast.Root>
+        <Toast.Viewport />
+      </Toast.Provider>,
+    );
+  }
+
+  it('closes only the focused (non-topmost) toast on Escape', () => {
+    const onOpenChange = { first: vi.fn(), second: vi.fn(), third: vi.fn() };
+    renderToasts(onOpenChange);
+
+    const focusedToast = screen.getByText('Toast 2').closest('li')!;
+    focusedToast.focus();
+    fireEvent.keyDown(focusedToast, { key: 'Escape' });
+
+    expect(onOpenChange.second).toHaveBeenCalledWith(false);
+    expect(onOpenChange.first).not.toHaveBeenCalled();
+    expect(onOpenChange.third).not.toHaveBeenCalled();
+  });
+
+  it('closes the topmost toast on Escape when focus is outside any toast', () => {
+    const onOpenChange = { first: vi.fn(), second: vi.fn(), third: vi.fn() };
+    renderToasts(onOpenChange);
+
+    fireEvent.keyDown(document.body, { key: 'Escape' });
+
+    expect(onOpenChange.third).toHaveBeenCalledWith(false);
+    expect(onOpenChange.first).not.toHaveBeenCalled();
+    expect(onOpenChange.second).not.toHaveBeenCalled();
   });
 });
 
