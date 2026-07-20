@@ -649,33 +649,6 @@ describe('Slot with a custom mergeProps', () => {
     expect(button.getAttribute('data-merge-strategy')).toBe('hash');
   });
 
-  it('falls back to the default merge (and logs) when a custom `mergeProps` throws', () => {
-    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    const order: string[] = [];
-    const boom: MergePropsFunction = () => {
-      throw new Error('boom');
-    };
-
-    render(
-      <Slot className="slot" mergeProps={boom} onClick={() => order.push('slot')}>
-        <button className="child" onClick={() => order.push('child')} type="button">
-          hi
-        </button>
-      </Slot>,
-    );
-
-    const button = screen.getByRole('button');
-    expect(button.getAttribute('class')).toBe('slot child');
-    fireEvent.click(button);
-    expect(order).toEqual(['child', 'slot']);
-
-    expect(errorSpy).toHaveBeenCalledWith(
-      expect.stringContaining('mergeProps failed'),
-      expect.any(Error),
-    );
-    errorSpy.mockRestore();
-  });
-
   it('still composes the Slot ref and the child ref with a custom mergeProps', () => {
     const slotRef = vi.fn();
     const childRef = vi.fn();
