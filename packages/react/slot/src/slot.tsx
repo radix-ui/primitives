@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { IS_DEVELOPMENT } from '@radix-ui/primitive/is-development';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import type { AnyProps, MergePropsFunction } from './merge-props';
 import { mergeProps } from './merge-props';
