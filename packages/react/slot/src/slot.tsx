@@ -114,18 +114,21 @@ type SlotProps<Elem extends Element = HTMLElement, Props = React.HTMLAttributes<
         ? slotProps
         : { ...slotProps, ref: forwardedRef ? composedRef : slottableElementRef };
 
-    const mergedProps = (() => {
-      try {
-        return mergePropsProp(propsToMerge, childProps);
-      } catch (error) {
-        console.error(
-          'Slot: mergeProps failed with the following error. Falling back to default behavior.',
-          error,
-        );
+    const mergedProps =
+      mergePropsProp === mergeProps
+        ? mergeProps(propsToMerge, childProps)
+        : (() => {
+            try {
+              return mergePropsProp(propsToMerge, childProps);
+            } catch (error) {
+              console.error(
+                'Slot: mergeProps failed with the following error. Falling back to default behavior.',
+                error,
+              );
 
-        return mergeProps(propsToMerge, childProps);
-      }
-    })();
+              return mergeProps(propsToMerge, childProps);
+            }
+          })();
 
     return React.cloneElement(slottableElement, mergedProps);
   });
