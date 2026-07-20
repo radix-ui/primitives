@@ -426,6 +426,39 @@ describe('DismissableLayer', () => {
     expect(onParentDismiss).not.toHaveBeenCalled();
   });
 
+  // Regression test for https://github.com/radix-ui/primitives/issues/3461
+  it('does not dismiss a deferred modal parent when a nested layer is dismissed by an outside touch tap', async () => {
+    const onParentDismiss = vi.fn();
+    const onChildDismiss = vi.fn();
+
+    render(
+      <>
+        <DismissableLayer.Root
+          disableOutsidePointerEvents
+          deferPointerDownOutside
+          onDismiss={onParentDismiss}
+        >
+          <button type="button">parent</button>
+        </DismissableLayer.Root>
+        <DismissableLayer.Root disableOutsidePointerEvents onDismiss={onChildDismiss}>
+          <button type="button">child</button>
+        </DismissableLayer.Root>
+        <button type="button">outside</button>
+      </>,
+    );
+    await waitForDocumentPointerDownListener();
+
+    const outside = screen.getByText('outside');
+    fireEvent.pointerDown(outside, { pointerType: 'touch' });
+    fireEvent.touchStart(outside);
+    fireEvent.touchEnd(outside);
+    fireEvent.click(outside);
+    await waitForDocumentPointerDownListener();
+
+    expect(onChildDismiss).toHaveBeenCalledTimes(1);
+    expect(onParentDismiss).not.toHaveBeenCalled();
+  });
+
   // Regression test for https://github.com/radix-ui/primitives/issues/3963
   it('keeps a stable composed ref (no infinite render loop)', () => {
     assertStableComposedRef((ref) => (
