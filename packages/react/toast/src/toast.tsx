@@ -551,7 +551,16 @@ const ToastImpl = /* @__PURE__ */ React.forwardRef<ToastImplElement, ToastImplPr
     // we include `open` in deps because closed !== unmounted when animating
     // so it could reopen before being completely unmounted
     React.useEffect(() => {
-      if (open && !context.isClosePausedRef.current) startTimer(duration);
+      // Reset the remaining time to the duration so a stale value isn't reused
+      // when the timer resumes. Without this, a toast that was paused while its
+      // duration was `Infinity` (eg. a loading toast) would keep that
+      // remaining time after being updated to a finite duration, so it would
+      // never close on resume.
+      // See https://github.com/radix-ui/primitives/issues/2233
+      closeTimerRemainingTimeRef.current = duration;
+      if (open && !context.isClosePausedRef.current) {
+        startTimer(duration);
+      }
     }, [open, duration, context.isClosePausedRef, startTimer]);
 
     // Clear close timer on unmount to prevent memory leaks and errors in test environments
