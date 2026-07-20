@@ -1,5 +1,12 @@
 # @radix-ui/react-popper
 
+## 1.3.4
+
+- Fixed overriding inline animation style in `Popper.Content`.
+- Improved tree-shaking so bundlers can drop unused components. Component parts are now marked `/* @__PURE__ */` and use named render functions instead of `Component.displayName = ...` assignments, which previously prevented dead-code elimination with some bundlers.
+- Fix `virtualRef` prop type to allow `RefObject<Measurable | null>` in popover components.
+- Updated dependencies: `@radix-ui/react-arrow@1.1.12`, `@radix-ui/rect@1.1.2`, `@radix-ui/react-compose-refs@1.1.3`, `@radix-ui/react-context@1.2.0`, `@radix-ui/react-primitive@2.1.7`, `@radix-ui/react-use-callback-ref@1.1.2`, `@radix-ui/react-use-layout-effect@1.1.2`, `@radix-ui/react-use-rect@1.1.2`, `@radix-ui/react-use-size@1.1.2`
+
 ## 1.3.3
 
 - Updated dependencies: `@radix-ui/react-context@1.2.0`

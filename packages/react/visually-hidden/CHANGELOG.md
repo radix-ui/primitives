@@ -1,5 +1,10 @@
 # @radix-ui/react-visually-hidden
 
+## 1.2.8
+
+- Improved tree-shaking so bundlers can drop unused components. Component parts are now marked `/* @__PURE__ */` and use named render functions instead of `Component.displayName = ...` assignments, which previously prevented dead-code elimination with some bundlers.
+- Updated dependencies: `@radix-ui/react-primitive@2.1.7`
+
 ## 1.2.7
 
 - Updated dependencies: `@radix-ui/react-primitive@2.1.7`

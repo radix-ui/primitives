@@ -1,5 +1,10 @@
 # @radix-ui/react-focus-scope
 
+## 1.1.13
+
+- Improved tree-shaking so bundlers can drop unused components. Component parts are now marked `/* @__PURE__ */` and use named render functions instead of `Component.displayName = ...` assignments, which previously prevented dead-code elimination with some bundlers.
+- Updated dependencies: `@radix-ui/react-compose-refs@1.1.3`, `@radix-ui/react-primitive@2.1.7`, `@radix-ui/react-use-callback-ref@1.1.2`
+
 ## 1.1.12
 
 - Improved performance by reducing forced reflow in `FocusScope` and `Presence`
