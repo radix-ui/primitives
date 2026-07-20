@@ -3,8 +3,11 @@ import { customMergeProps } from './custom-merge-props';
 import { Dialog, NavigationMenu, Direction, Slot } from 'radix-ui';
 import styles from './navigation-menu.stories.module.css';
 import dialogStyles from './dialog.stories.module.css';
+import type { Meta, StoryObj } from '@storybook/react-webpack5';
 
-export default { title: 'Components/NavigationMenu' };
+export default {
+  title: 'Components/NavigationMenu',
+} satisfies Meta<typeof NavigationMenu.Root>;
 
 export const Basic = () => {
   return (
@@ -184,15 +187,34 @@ export const Viewport = () => {
   );
 };
 
-export const Submenus = () => {
-  return (
+type SubmenusStory = StoryObj<{
+  activationMode?: NavigationMenu.ActivationMode;
+  submenuActivationMode?: NavigationMenu.ActivationMode;
+}>;
+
+export const Submenus = {
+  argTypes: {
+    activationMode: {
+      control: 'select',
+      options: ['automatic', 'manual'],
+    },
+    submenuActivationMode: {
+      control: 'select',
+      options: ['automatic', 'manual'],
+    },
+  },
+  render: (args) => (
     <StoryFrame>
-      <NavigationMenu.Root>
+      <NavigationMenu.Root activationMode={args.activationMode || undefined}>
         <NavigationMenu.List className={styles.mainList}>
           <NavigationMenu.Item>
             <TriggerWithIndicator>Products</TriggerWithIndicator>
             <NavigationMenu.Content className={styles.submenusContent}>
-              <NavigationMenu.Sub className={styles.submenusRoot} defaultValue="extensibility">
+              <NavigationMenu.Sub
+                className={styles.submenusRoot}
+                defaultValue="extensibility"
+                activationMode={args.submenuActivationMode || undefined}
+              >
                 <NavigationMenu.List className={styles.mainList}>
                   <NavigationMenu.Item value="extensibility">
                     <NavigationMenu.Trigger className={styles.submenusSubTrigger}>
@@ -367,8 +389,8 @@ export const Submenus = () => {
         <NavigationMenu.Viewport className={styles.submenusViewport} />
       </NavigationMenu.Root>
     </StoryFrame>
-  );
-};
+  ),
+} satisfies SubmenusStory;
 
 export const WithCustomMergeProps = () => (
   <Slot.Provider mergeProps={customMergeProps}>
@@ -584,12 +606,22 @@ export const InsideDialog = () => {
 
 /* -----------------------------------------------------------------------------------------------*/
 
-const StoryFrame: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const StoryFrame: React.FC<{
+  children: React.ReactNode;
+}> = ({ children }) => {
   const [rtl, setRtl] = React.useState(false);
 
   return (
     <div style={{ height: '100vh', backgroundColor: '#e5e8eb' }}>
-      <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 20, paddingBottom: 30 }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          paddingTop: 20,
+          paddingBottom: 30,
+          gap: 16,
+        }}
+      >
         <label>
           <input
             type="checkbox"
@@ -685,132 +717,6 @@ const DurationNavigation = (props: React.ComponentProps<typeof NavigationMenu.Ro
           </NavigationMenu.Content>
         </NavigationMenu.Item>
       </NavigationMenu.List>
-    </NavigationMenu.Root>
-  );
-};
-
-export const ActivationMode = () => {
-  return (
-    <div
-      style={{
-        minHeight: '100vh',
-        backgroundColor: '#e5e8eb',
-        paddingBottom: 150,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-      }}
-    >
-      <h1>Root activation mode</h1>
-      <h2>Default (&quot;automatic&quot;): hovering or focusing a trigger opens its item</h2>
-      <ActivationModeNavigation />
-
-      <h2>&quot;manual&quot;: hover does nothing; click a trigger to toggle its item</h2>
-      <ActivationModeNavigation activationMode="manual" />
-
-      <h1 style={{ marginTop: 50 }}>Submenu activation mode</h1>
-      <h2>Submenu inherits &quot;manual&quot; from the root (click to toggle)</h2>
-      <SubActivationModeNavigation rootActivationMode="manual" />
-
-      <h2>Submenu overrides the root&apos;s &quot;manual&quot; back to &quot;automatic&quot;</h2>
-      <SubActivationModeNavigation rootActivationMode="manual" subActivationMode="automatic" />
-    </div>
-  );
-};
-
-const ActivationModeNavigation = (props: React.ComponentProps<typeof NavigationMenu.Root>) => {
-  return (
-    <NavigationMenu.Root
-      {...props}
-      style={{ backgroundColor: 'white', borderRadius: 500, padding: '2px 12px', ...props.style }}
-    >
-      <NavigationMenu.List className={styles.mainList}>
-        <NavigationMenu.Item className={styles.expandableItem}>
-          <TriggerWithIndicator>Products</TriggerWithIndicator>
-          <NavigationMenu.Content className={styles.basicContent}>
-            <LinkGroup
-              bordered={false}
-              items={['Fusce pellentesque', 'Aliquam porttitor', 'Pellentesque']}
-            />
-          </NavigationMenu.Content>
-        </NavigationMenu.Item>
-
-        <NavigationMenu.Item className={styles.expandableItem}>
-          <TriggerWithIndicator>Company</TriggerWithIndicator>
-          <NavigationMenu.Content className={styles.basicContent}>
-            <LinkGroup
-              bordered={false}
-              items={['Fusce pellentesque', 'Aliquam porttitor', 'Pellentesque']}
-            />
-          </NavigationMenu.Content>
-        </NavigationMenu.Item>
-      </NavigationMenu.List>
-    </NavigationMenu.Root>
-  );
-};
-
-const SubActivationModeNavigation = ({
-  rootActivationMode,
-  subActivationMode,
-}: {
-  rootActivationMode?: React.ComponentProps<typeof NavigationMenu.Root>['activationMode'];
-  subActivationMode?: React.ComponentProps<typeof NavigationMenu.Sub>['activationMode'];
-}) => {
-  return (
-    <NavigationMenu.Root
-      activationMode={rootActivationMode}
-      style={{ backgroundColor: 'white', borderRadius: 500, padding: '2px 12px' }}
-    >
-      <NavigationMenu.List className={styles.mainList}>
-        <NavigationMenu.Item>
-          <TriggerWithIndicator>Products</TriggerWithIndicator>
-          <NavigationMenu.Content className={styles.submenusContent}>
-            <NavigationMenu.Sub
-              className={styles.submenusRoot}
-              defaultValue="extensibility"
-              activationMode={subActivationMode}
-            >
-              <NavigationMenu.List className={styles.mainList}>
-                <NavigationMenu.Item value="extensibility">
-                  <NavigationMenu.Trigger className={styles.submenusSubTrigger}>
-                    Extensibility
-                  </NavigationMenu.Trigger>
-                  <NavigationMenu.Content
-                    className={styles.submenusSubContent}
-                    style={{ gridTemplateColumns: '1fr 1fr' }}
-                  >
-                    <LinkGroup items={['Donec quis dui', 'Vestibulum', 'Nunc dignissim']} />
-                    <LinkGroup
-                      items={['Fusce pellentesque', 'Aliquam porttitor', 'Pellentesque']}
-                    />
-                  </NavigationMenu.Content>
-                </NavigationMenu.Item>
-
-                <NavigationMenu.Item value="security">
-                  <NavigationMenu.Trigger className={styles.submenusSubTrigger}>
-                    Security
-                  </NavigationMenu.Trigger>
-                  <NavigationMenu.Content
-                    className={styles.submenusSubContent}
-                    style={{ gridTemplateColumns: '1fr 1fr' }}
-                  >
-                    <LinkGroup
-                      items={['Fusce pellentesque', 'Aliquam porttitor', 'Pellentesque']}
-                    />
-                    <LinkGroup items={['Fusce pellentesque', 'Aliquam porttitor']} />
-                  </NavigationMenu.Content>
-                </NavigationMenu.Item>
-
-                <NavigationMenu.Indicator className={styles.submenusSubIndicator} />
-              </NavigationMenu.List>
-
-              <NavigationMenu.Viewport className={styles.submenusSubViewport} />
-            </NavigationMenu.Sub>
-          </NavigationMenu.Content>
-        </NavigationMenu.Item>
-      </NavigationMenu.List>
-
-      <NavigationMenu.Viewport className={styles.submenusViewport} />
     </NavigationMenu.Root>
   );
 };
