@@ -9,6 +9,7 @@ import { Portal as PortalPrimitive } from '@radix-ui/react-portal';
 import { Presence } from '@radix-ui/react-presence';
 import { Primitive } from '@radix-ui/react-primitive';
 import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
+import { useFocusScopeBranch } from '@radix-ui/react-focus-scope';
 
 import type { Scope } from '@radix-ui/react-context';
 
@@ -269,7 +270,15 @@ const HoverCardContentImpl = /* @__PURE__ */ React.forwardRef<
   const context = useHoverCardContext(CONTENT_NAME, __scopeHoverCard);
   const popperScope = usePopperScope(__scopeHoverCard);
   const ref = React.useRef<HoverCardContentImplElement>(null);
-  const composedRefs = useComposedRefs(forwardedRef, ref);
+
+  // When this `HoverCard` is nested inside a modal layer (eg. a `Dialog`) but portalled outside of
+  // it, register its content with the ancestor layer so focus isn't reclaimed and scroll isn't
+  // locked for any interactive content within it. No-ops when there is no ancestor layer.
+  // See: https://github.com/radix-ui/primitives/issues/3423
+  const [branchNode, setBranchNode] = React.useState<HTMLElement | null>(null);
+  const composedRefs = useComposedRefs(forwardedRef, ref, setBranchNode);
+  useFocusScopeBranch(branchNode);
+
   const [containSelection, setContainSelection] = React.useState(false);
 
   React.useEffect(() => {

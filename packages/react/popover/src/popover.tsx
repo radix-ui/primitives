@@ -5,7 +5,13 @@ import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
 import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
 import { useFocusGuards } from '@radix-ui/react-focus-guards';
-import { FocusScope } from '@radix-ui/react-focus-scope';
+import {
+  FocusScope,
+  FocusScopeBranchProvider,
+  useFocusScopeBranch,
+  useFocusScopeBranchRegistry,
+} from '@radix-ui/react-focus-scope';
+import type { FocusScopeBranchRegistry } from '@radix-ui/react-focus-scope';
 import { useId } from '@radix-ui/react-id';
 import * as PopperPrimitive from '@radix-ui/react-popper';
 import { createPopperScope } from '@radix-ui/react-popper';
@@ -254,7 +260,7 @@ const Slot = createSlot('PopoverContent.RemoveScroll');
 type PopoverContentTypeElement = PopoverContentImplElement;
 interface PopoverContentTypeProps extends Omit<
   PopoverContentImplProps,
-  'trapFocus' | 'disableOutsidePointerEvents'
+  'trapFocus' | 'disableOutsidePointerEvents' | 'branchRegistry' | 'branchNodes'
 > {}
 
 const PopoverContentModal = /* @__PURE__ */ React.forwardRef<
@@ -268,6 +274,11 @@ const PopoverContentModal = /* @__PURE__ */ React.forwardRef<
     const composedRefs = useComposedRefs(forwardedRef, contentRef);
     const isRightClickOutsideRef = React.useRef(false);
 
+    // Allows nested portalled layers to register themselves as branches of this
+    // modal `Popover` so focus isn't reclaimed and scroll isn't locked for
+    // them. See: https://github.com/radix-ui/primitives/issues/3423
+    const { nodes: branchNodes, registry: branchRegistry } = useFocusScopeBranchRegistry();
+
     // aria-hide everything except the content (better supported equivalent to setting aria-modal)
     React.useEffect(() => {
       const content = contentRef.current;
@@ -275,10 +286,19 @@ const PopoverContentModal = /* @__PURE__ */ React.forwardRef<
     }, []);
 
     return (
-      <RemoveScroll as={Slot} allowPinchZoom>
+      <RemoveScroll
+        as={Slot}
+        allowPinchZoom
+        shards={React.useMemo(
+          () => [contentRef, ...branchNodes.map((node) => ({ current: node }))],
+          [contentRef, branchNodes],
+        )}
+      >
         <PopoverContentImpl
           {...props}
           ref={composedRefs}
+          branchNodes={branchNodes}
+          branchRegistry={branchRegistry}
           // we make sure we're not trapping once it's been closed
           // (closed !== unmounted when animating out)
           trapFocus={context.open}
@@ -394,6 +414,21 @@ interface PopoverContentImplProps
    * Can be prevented.
    */
   onCloseAutoFocus?: FocusScopeProps['onUnmountAutoFocus'];
+
+  /**
+   * Branch nodes registered by nested, portalled layers. Passed to the trapped
+   * `FocusScope` so focus isn't reclaimed from them. Only provided by the modal
+   * variant.
+   * @internal
+   */
+  branchNodes?: HTMLElement[];
+
+  /**
+   * Registry that nested, portalled layers use to register themselves as branches of this modal
+   * `Popover`. Only provided by the modal variant.
+   * @internal
+   */
+  branchRegistry?: FocusScopeBranchRegistry;
 }
 
 const PopoverContentImpl = /* @__PURE__ */ React.forwardRef<
@@ -413,10 +448,22 @@ const PopoverContentImpl = /* @__PURE__ */ React.forwardRef<
       onFocusOutside,
       onInteractOutside,
       'aria-describedby': ariaDescribedby,
+      branchNodes,
+      branchRegistry,
+      children,
       ...contentProps
     } = props;
     const context = usePopoverContext(CONTENT_NAME, __scopePopover);
     const popperScope = usePopperScope(__scopePopover);
+
+    // When this `Popover` is nested inside a modal layer (eg. a `Dialog`) but
+    // portalled outside of it, register its content with the ancestor layer so
+    // focus isn't reclaimed and scroll isn't locked for it. No-ops when there
+    // is no ancestor layer. See:
+    // https://github.com/radix-ui/primitives/issues/3423
+    const [contentNode, setContentNode] = React.useState<PopoverContentImplElement | null>(null);
+    const composedRefs = useComposedRefs(forwardedRef, setContentNode);
+    useFocusScopeBranch(contentNode);
 
     // Make sure the whole tree has focus guards as our `Popover` may be
     // the last element in the DOM (because of the `Portal`)
@@ -427,6 +474,7 @@ const PopoverContentImpl = /* @__PURE__ */ React.forwardRef<
         asChild
         loop
         trapped={trapFocus}
+        branches={branchNodes}
         onMountAutoFocus={onOpenAutoFocus}
         onUnmountAutoFocus={onCloseAutoFocus}
       >
@@ -452,7 +500,7 @@ const PopoverContentImpl = /* @__PURE__ */ React.forwardRef<
             }
             {...popperScope}
             {...contentProps}
-            ref={forwardedRef}
+            ref={composedRefs}
             style={{
               ...contentProps.style,
               // re-namespace exposed content custom properties
@@ -464,7 +512,13 @@ const PopoverContentImpl = /* @__PURE__ */ React.forwardRef<
                 '--radix-popover-trigger-height': 'var(--radix-popper-anchor-height)',
               },
             }}
-          />
+          >
+            {branchRegistry ? (
+              <FocusScopeBranchProvider value={branchRegistry}>{children}</FocusScopeBranchProvider>
+            ) : (
+              children
+            )}
+          </PopperPrimitive.Content>
         </DismissableLayer>
       </FocusScope>
     );

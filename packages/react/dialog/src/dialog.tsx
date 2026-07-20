@@ -5,7 +5,11 @@ import { createContextScope } from '@radix-ui/react-context';
 import { useId } from '@radix-ui/react-id';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { DismissableLayer, useDismissableLayerSurface } from '@radix-ui/react-dismissable-layer';
-import { FocusScope } from '@radix-ui/react-focus-scope';
+import {
+  FocusScope,
+  FocusScopeBranchProvider,
+  useFocusScopeBranchRegistry,
+} from '@radix-ui/react-focus-scope';
 import { Portal as PortalPrimitive } from '@radix-ui/react-portal';
 import { Presence } from '@radix-ui/react-presence';
 import { Primitive } from '@radix-ui/react-primitive';
@@ -16,6 +20,7 @@ import { hideOthers } from 'aria-hidden';
 import { createSlot } from '@radix-ui/react-slot';
 
 import type { Scope } from '@radix-ui/react-context';
+import type { FocusScopeBranchRegistry } from '@radix-ui/react-focus-scope';
 
 /* -------------------------------------------------------------------------------------------------
  * Dialog
@@ -40,6 +45,11 @@ type DialogContextValue = {
   onOpenChange(open: boolean): void;
   onOpenToggle(): void;
   modal: boolean;
+  // Nodes of nested, portalled layers (eg. a non-modal `Popover`) that should
+  // be treated as part of this Dialog for focus trapping and scroll locking.
+  // See https://github.com/radix-ui/primitives/issues/3423
+  branchNodes: HTMLElement[];
+  branchRegistry: FocusScopeBranchRegistry;
 };
 
 const [DialogProvider, useDialogContext] = createDialogContext<DialogContextValue>(DIALOG_NAME);
@@ -63,6 +73,7 @@ const Dialog: React.FC<DialogProps> = (props: ScopedProps<DialogProps>) => {
   } = props;
   const triggerRef = React.useRef<HTMLButtonElement>(null);
   const contentRef = React.useRef<DialogContentElement>(null);
+  const { nodes: branchNodes, registry: branchRegistry } = useFocusScopeBranchRegistry();
   const [open, setOpen] = useControllableState({
     prop: openProp,
     defaultProp: defaultOpen ?? false,
@@ -89,6 +100,8 @@ const Dialog: React.FC<DialogProps> = (props: ScopedProps<DialogProps>) => {
       onOpenChange={setOpen}
       onOpenToggle={React.useCallback(() => setOpen((prevOpen) => !prevOpen), [setOpen])}
       modal={modal}
+      branchNodes={branchNodes}
+      branchRegistry={branchRegistry}
     >
       {children}
     </DialogProvider>
@@ -216,9 +229,18 @@ const DialogOverlayImpl = /* @__PURE__ */ React.forwardRef<
     const composedRefs = useComposedRefs(forwardedRef, registerDismissableSurface);
 
     return (
-      // Make sure `Content` is scrollable even when it doesn't live inside `RemoveScroll`
-      // ie. when `Overlay` and `Content` are siblings
-      <RemoveScroll as={Slot} allowPinchZoom shards={[context.contentRef]}>
+      // Make sure `Content` is scrollable even when it doesn't live inside
+      // `RemoveScroll` (eg. when `Overlay` and `Content` are siblings). Nested
+      // layers are registered as branches and added as shards so they remain
+      // scrollable too. See https://github.com/radix-ui/primitives/issues/3423
+      <RemoveScroll
+        as={Slot}
+        allowPinchZoom
+        shards={React.useMemo(
+          () => [context.contentRef, ...context.branchNodes.map((node) => ({ current: node }))],
+          [context.contentRef, context.branchNodes],
+        )}
+      >
         <Primitive.div
           data-state={getState(context.open)}
           {...overlayProps}
@@ -418,6 +440,7 @@ const DialogContentImpl = /* @__PURE__ */ React.forwardRef<
       'aria-describedby': ariaDescribedby,
       ...contentProps
     } = props;
+    const { children, ...layerProps } = contentProps;
     const context = useDialogContext(CONTENT_NAME, __scopeDialog);
 
     // Make sure the whole tree has focus guards as our `Dialog` will be
@@ -430,6 +453,7 @@ const DialogContentImpl = /* @__PURE__ */ React.forwardRef<
           asChild
           loop
           trapped={trapFocus}
+          branches={context.branchNodes}
           onMountAutoFocus={onOpenAutoFocus}
           onUnmountAutoFocus={onCloseAutoFocus}
         >
@@ -443,11 +467,16 @@ const DialogContentImpl = /* @__PURE__ */ React.forwardRef<
                 : ariaDescribedby
             }
             data-state={getState(context.open)}
-            {...contentProps}
+            {...layerProps}
             ref={forwardedRef}
             deferPointerDownOutside
             onDismiss={() => context.onOpenChange(false)}
-          />
+          >
+            {/* Lets nested, portalled layers register themselves as branches of this Dialog. */}
+            <FocusScopeBranchProvider value={context.branchRegistry}>
+              {children}
+            </FocusScopeBranchProvider>
+          </DismissableLayer>
         </FocusScope>
       </>
     );
