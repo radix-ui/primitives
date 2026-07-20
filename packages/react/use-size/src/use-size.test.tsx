@@ -156,7 +156,7 @@ describe('useSize', () => {
     mockOffsetHeight = 66;
     render(<Harness />);
     act(() => {
-      // No `borderBoxSize` key > should read `offsetWidth`/`offsetHeight`.
+      // No `borderBoxSize` key; read `offsetWidth`/`offsetHeight`.
       MockResizeObserver.latest.emit([{}]);
     });
     await waitFor(() => expect(getOutput()).toBe('55x66'));
@@ -205,9 +205,11 @@ describe('useSize', () => {
       await waitFor(() => expect(getOutput()).toBe('300x300'));
     });
 
-    it('coalesces rapid observations, cancelling the previously scheduled frame', async () => {
-      const cancelSpy = vi.spyOn(window, 'cancelAnimationFrame');
+    it('coalesces rapid observations, cancelling the previously scheduled frames', async () => {
       render(<Harness />);
+      // Spy after mount so we only capture frames scheduled by the observations.
+      const rafSpy = vi.spyOn(window, 'requestAnimationFrame');
+      const cancelSpy = vi.spyOn(window, 'cancelAnimationFrame');
 
       act(() => {
         MockResizeObserver.latest.emit([{ borderBoxSize: { inlineSize: 1, blockSize: 1 } }]);
@@ -215,8 +217,14 @@ describe('useSize', () => {
         MockResizeObserver.latest.emit([{ borderBoxSize: { inlineSize: 3, blockSize: 3 } }]);
       });
 
-      // Each new observation cancels the frame scheduled by the previous one.
-      expect(cancelSpy).toHaveBeenCalled();
+      // Each new observation cancels the frame scheduled by the previous one, so
+      // the frames from the first two observations are explicitly cancelled.
+      const scheduledIds = rafSpy.mock.results.map((result) => result.value as number);
+      expect(scheduledIds).toHaveLength(3);
+      expect(cancelSpy).toHaveBeenCalledWith(scheduledIds[0]);
+      expect(cancelSpy).toHaveBeenCalledWith(scheduledIds[1]);
+
+      // Only the final observation is reflected in the measured size.
       await waitFor(() => expect(getOutput()).toBe('3x3'));
     });
 
@@ -238,17 +246,20 @@ describe('useSize', () => {
       expect(observer.observed.has(box)).toBe(false);
     });
 
-    it('does not throw or update after the element is unmounted', async () => {
+    it('does not warn or error when unmounted before a pending frame runs', async () => {
+      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
       render(<Harness />);
       const observer = MockResizeObserver.latest;
       act(() => {
         observer.emit([{ borderBoxSize: { inlineSize: 999, blockSize: 999 } }]);
       });
-      // Unmount before the scheduled frame runs.
+
+      // Unmount before the scheduled frame runs. Because the pending frame is
+      // cancelled on cleanup, no state update happens on the unmounted
+      // component and React does not log a warning/error.
       cleanup();
-      await expect(
-        new Promise((resolve) => requestAnimationFrame(() => resolve(null))),
-      ).resolves.toBeNull();
+      await new Promise((resolve) => requestAnimationFrame(() => resolve(null)));
+      expect(consoleError).not.toHaveBeenCalled();
     });
   });
 });
