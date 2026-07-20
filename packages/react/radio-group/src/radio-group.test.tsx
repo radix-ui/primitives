@@ -396,6 +396,41 @@ describe('RadioGroup', () => {
       expect(onParentClick).not.toHaveBeenCalled();
     });
 
+    // regression test for https://github.com/radix-ui/primitives/issues/1982
+    it('should not re-select the previously checked radio when another is clicked programmatically via a ref', () => {
+      function App() {
+        const aRef = React.useRef<HTMLButtonElement>(null);
+        const bRef = React.useRef<HTMLButtonElement>(null);
+        return (
+          <form>
+            <RadioGroup.Root aria-label="pets" name="pet" defaultValue="1">
+              <div onClick={() => aRef.current?.click()}>
+                <RadioGroup.Item ref={aRef} value="1" aria-label={LABELS['1']}>
+                  <RadioGroup.Indicator data-testid={`${INDICATOR_TEST_ID}-1`} />
+                </RadioGroup.Item>
+              </div>
+              <div onClick={() => bRef.current?.click()}>
+                <RadioGroup.Item ref={bRef} value="2" aria-label={LABELS['2']}>
+                  <RadioGroup.Indicator data-testid={`${INDICATOR_TEST_ID}-2`} />
+                </RadioGroup.Item>
+              </div>
+            </RadioGroup.Root>
+          </form>
+        );
+      }
+
+      render(<App />);
+      const radios = screen.getAllByRole(RADIO_ROLE);
+      expect(radios[0]).toHaveAttribute('aria-checked', 'true');
+
+      // Clicking the wrapper of the currently unchecked radio programmatically
+      // clicks it. Deselecting the default radio must not bubble a click that
+      // re-triggers the wrapper `onClick` and re-selects it.
+      act(() => fireEvent.click(radios[1]!.parentElement!));
+      expect(radios[0]).toHaveAttribute('aria-checked', 'false');
+      expect(radios[1]).toHaveAttribute('aria-checked', 'true');
+    });
+
     it('should expose the group as required for native validation', () => {
       const { container } = render(
         <form>
