@@ -81,6 +81,14 @@ interface SliderProps extends Omit<
   max?: number;
   step?: number;
   minStepsBetweenThumbs?: number;
+  /**
+   * When `true`, thumbs keep their relative order and won't cross over one
+   * another while dragging. Each thumb is constrained to the values of its
+   * neighbors instead of swapping positions when dragged past them.
+   *
+   * @defaultValue false
+   */
+  preserveThumbOrder?: boolean;
   value?: number[];
   defaultValue?: number[];
   onValueChange?(value: number[]): void;
@@ -100,6 +108,7 @@ const Slider = /* @__PURE__ */ React.forwardRef<SliderElement, SliderProps>(
       orientation = 'horizontal',
       disabled = false,
       minStepsBetweenThumbs = 0,
+      preserveThumbOrder = false,
       defaultValue = [min],
       value,
       onValueChange = () => {},
@@ -163,9 +172,26 @@ const Slider = /* @__PURE__ */ React.forwardRef<SliderElement, SliderProps>(
       const nextValue = clamp(snapToStep, [min, max]);
 
       setValues((prevValues = []) => {
-        const nextValues = getNextSortedValues(prevValues, nextValue, atIndex);
-        if (hasMinStepsBetweenValues(nextValues, minStepsBetweenThumbs * step)) {
-          valueIndexToChangeRef.current = nextValues.indexOf(nextValue);
+        const minStepsDistance = minStepsBetweenThumbs * step;
+        // When thumb order is preserved, constrain the thumb to its neighbors
+        // so it stops at their boundaries (respecting `minStepsBetweenThumbs`)
+        // rather than crossing over and being reordered.
+        const constrainedValue = preserveThumbOrder
+          ? clamp(nextValue, [
+              prevValues[atIndex - 1] === undefined
+                ? min
+                : prevValues[atIndex - 1]! + minStepsDistance,
+              prevValues[atIndex + 1] === undefined
+                ? max
+                : prevValues[atIndex + 1]! - minStepsDistance,
+            ])
+          : nextValue;
+
+        const nextValues = getNextSortedValues(prevValues, constrainedValue, atIndex);
+        if (hasMinStepsBetweenValues(nextValues, minStepsDistance)) {
+          valueIndexToChangeRef.current = preserveThumbOrder
+            ? atIndex
+            : nextValues.indexOf(constrainedValue);
           const hasChanged = String(nextValues) !== String(prevValues);
           if (hasChanged && commit) onValueCommit(nextValues);
           return hasChanged ? nextValues : prevValues;
