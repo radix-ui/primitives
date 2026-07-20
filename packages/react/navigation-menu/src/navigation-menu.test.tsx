@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { cleanup, render, screen, waitFor } from '@testing-library/react';
-import { afterEach, describe, it, expect } from 'vitest';
+import { cleanup, render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { assertStableComposedRef } from '@repo/test-utils/ref-stability';
+import { afterEach, describe, it, expect, vi } from 'vitest';
 import * as NavigationMenu from './navigation-menu';
 
 const TRIGGER_TEXT = 'Item One';
@@ -81,5 +81,51 @@ describe('NavigationMenu ref stability', () => {
         <NavigationMenu.Viewport />
       </NavigationMenu.Root>
     ));
+  });
+});
+// See: https://github.com/radix-ui/primitives/issues/3473
+describe('focus outside', () => {
+  afterEach(cleanup);
+
+  it('should not dismiss an open menu when focus moves between elements outside the menu', async () => {
+    const onValueChange = vi.fn();
+    render(
+      <div>
+        <NavigationMenuTest defaultValue="one" onValueChange={onValueChange} />
+        <button type="button" data-testid="outside">
+          Outside
+        </button>
+      </div>,
+    );
+    await waitFor(() => expect(screen.getByText(CONTENT_TEXT)).toBeInTheDocument());
+
+    // Mimics an external layer (e.g. a Dialog) auto-focusing an element on open.
+    // Focus never originated from within the menu, so it should stay open.
+    const outside = screen.getByTestId('outside');
+    outside.focus();
+    fireEvent.focusIn(outside);
+
+    expect(onValueChange).not.toHaveBeenCalledWith('');
+    expect(screen.getByText(CONTENT_TEXT)).toBeInTheDocument();
+  });
+
+  it('should dismiss an open menu when focus actually leaves the menu', async () => {
+    const onValueChange = vi.fn();
+    render(
+      <div>
+        <NavigationMenuTest defaultValue="one" onValueChange={onValueChange} />
+        <button type="button" data-testid="outside">
+          Outside
+        </button>
+      </div>,
+    );
+    await waitFor(() => expect(screen.getByText(CONTENT_TEXT)).toBeInTheDocument());
+
+    // Focus leaving the menu content for an outside element should dismiss it.
+    const link = screen.getByText(CONTENT_TEXT);
+    const outside = screen.getByTestId('outside');
+    fireEvent.focusIn(outside, { relatedTarget: link });
+
+    expect(onValueChange).toHaveBeenCalledWith('');
   });
 });
