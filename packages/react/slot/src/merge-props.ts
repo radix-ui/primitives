@@ -1,3 +1,5 @@
+import { IS_DEVELOPMENT } from '@radix-ui/primitive/is-development';
+
 const mergeProps = (<
   SlotProps extends AnyProps = AnyProps,
   ChildProps extends AnyProps = SlotProps,
@@ -17,7 +19,7 @@ const mergeProps = (<
       if (slotPropValue && childPropValue) {
         const slotIsFunction = typeof slotPropValue === 'function';
         const childIsFunction = typeof childPropValue === 'function';
-        if (process.env.NODE_ENV === 'development') {
+        if (IS_DEVELOPMENT) {
           if (!slotIsFunction || !childIsFunction) {
             console.warn(
               `Slot: Expected a function for ${propName}, but received ${[typeof slotPropValue, typeof childPropValue].filter((v) => v !== 'function').join(' and ')}.`,
