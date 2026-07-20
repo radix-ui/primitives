@@ -378,16 +378,13 @@ function wrapArray<T>(array: T[], startIndex: number) {
   return array.map<T>((_, index) => array[(startIndex + index) % array.length]!);
 }
 
-const Root = RovingFocusGroup;
-const Item = RovingFocusGroupItem;
-
 export {
   createRovingFocusGroupScope,
   //
   RovingFocusGroup,
   RovingFocusGroupItem,
   //
-  Root,
-  Item,
+  RovingFocusGroup as Root,
+  RovingFocusGroupItem as Item,
 };
 export type { RovingFocusGroupProps, RovingFocusItemProps };

@@ -456,11 +456,6 @@ function getSideAndAlignFromPlacement(placement: Placement) {
   return [side as Side, align as Align] as const;
 }
 
-const Root = Popper;
-const Anchor = PopperAnchor;
-const Content = PopperContent;
-const Arrow = PopperArrow;
-
 export {
   createPopperScope,
   //
@@ -469,10 +464,10 @@ export {
   PopperContent,
   PopperArrow,
   //
-  Root,
-  Anchor,
-  Content,
-  Arrow,
+  Popper as Root,
+  PopperAnchor as Anchor,
+  PopperContent as Content,
+  PopperArrow as Arrow,
   //
   SIDE_OPTIONS,
   ALIGN_OPTIONS,

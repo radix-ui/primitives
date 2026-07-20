@@ -654,24 +654,6 @@ function wrapArray<T>(array: T[], startIndex: number) {
   return array.map<T>((_, index) => array[(startIndex + index) % array.length]!);
 }
 
-const Root = Menubar;
-const Menu = MenubarMenu;
-const Trigger = MenubarTrigger;
-const Portal = MenubarPortal;
-const Content = MenubarContent;
-const Group = MenubarGroup;
-const Label = MenubarLabel;
-const Item = MenubarItem;
-const CheckboxItem = MenubarCheckboxItem;
-const RadioGroup = MenubarRadioGroup;
-const RadioItem = MenubarRadioItem;
-const ItemIndicator = MenubarItemIndicator;
-const Separator = MenubarSeparator;
-const Arrow = MenubarArrow;
-const Sub = MenubarSub;
-const SubTrigger = MenubarSubTrigger;
-const SubContent = MenubarSubContent;
-
 export {
   createMenubarScope,
   //
@@ -693,23 +675,23 @@ export {
   MenubarSubTrigger,
   MenubarSubContent,
   //
-  Root,
-  Menu,
-  Trigger,
-  Portal,
-  Content,
-  Group,
-  Label,
-  Item,
-  CheckboxItem,
-  RadioGroup,
-  RadioItem,
-  ItemIndicator,
-  Separator,
-  Arrow,
-  Sub,
-  SubTrigger,
-  SubContent,
+  Menubar as Root,
+  MenubarMenu as Menu,
+  MenubarTrigger as Trigger,
+  MenubarPortal as Portal,
+  MenubarContent as Content,
+  MenubarGroup as Group,
+  MenubarLabel as Label,
+  MenubarItem as Item,
+  MenubarCheckboxItem as CheckboxItem,
+  MenubarRadioGroup as RadioGroup,
+  MenubarRadioItem as RadioItem,
+  MenubarItemIndicator as ItemIndicator,
+  MenubarSeparator as Separator,
+  MenubarArrow as Arrow,
+  MenubarSub as Sub,
+  MenubarSubTrigger as SubTrigger,
+  MenubarSubContent as SubContent,
 };
 export type {
   MenubarProps,

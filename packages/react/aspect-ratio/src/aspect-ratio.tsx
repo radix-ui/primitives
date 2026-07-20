@@ -45,11 +45,9 @@ const AspectRatio = /* @__PURE__ */ React.forwardRef<AspectRatioElement, AspectR
 
 /* -----------------------------------------------------------------------------------------------*/
 
-const Root = AspectRatio;
-
 export {
   AspectRatio,
   //
-  Root,
+  AspectRatio as Root,
 };
 export type { AspectRatioProps };

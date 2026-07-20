@@ -30,11 +30,9 @@ const Arrow = /* @__PURE__ */ React.forwardRef<ArrowElement, ArrowProps>(
 
 /* -----------------------------------------------------------------------------------------------*/
 
-const Root = Arrow;
-
 export {
   Arrow,
   //
-  Root,
+  Arrow as Root,
 };
 export type { ArrowProps };

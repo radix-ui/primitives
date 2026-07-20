@@ -1341,23 +1341,6 @@ function whenMouse<E>(handler: React.PointerEventHandler<E>): React.PointerEvent
   return (event) => (event.pointerType === 'mouse' ? handler(event) : undefined);
 }
 
-const Root = Menu;
-const Anchor = MenuAnchor;
-const Portal = MenuPortal;
-const Content = MenuContent;
-const Group = MenuGroup;
-const Label = MenuLabel;
-const Item = MenuItem;
-const CheckboxItem = MenuCheckboxItem;
-const RadioGroup = MenuRadioGroup;
-const RadioItem = MenuRadioItem;
-const ItemIndicator = MenuItemIndicator;
-const Separator = MenuSeparator;
-const Arrow = MenuArrow;
-const Sub = MenuSub;
-const SubTrigger = MenuSubTrigger;
-const SubContent = MenuSubContent;
-
 export {
   createMenuScope,
   //
@@ -1378,22 +1361,22 @@ export {
   MenuSubTrigger,
   MenuSubContent,
   //
-  Root,
-  Anchor,
-  Portal,
-  Content,
-  Group,
-  Label,
-  Item,
-  CheckboxItem,
-  RadioGroup,
-  RadioItem,
-  ItemIndicator,
-  Separator,
-  Arrow,
-  Sub,
-  SubTrigger,
-  SubContent,
+  Menu as Root,
+  MenuAnchor as Anchor,
+  MenuPortal as Portal,
+  MenuContent as Content,
+  MenuGroup as Group,
+  MenuLabel as Label,
+  MenuItem as Item,
+  MenuCheckboxItem as CheckboxItem,
+  MenuRadioGroup as RadioGroup,
+  MenuRadioItem as RadioItem,
+  MenuItemIndicator as ItemIndicator,
+  MenuSeparator as Separator,
+  MenuArrow as Arrow,
+  MenuSub as Sub,
+  MenuSubTrigger as SubTrigger,
+  MenuSubContent as SubContent,
 };
 export type {
   MenuProps,

@@ -530,23 +530,6 @@ function whenTouchOrPen<E>(handler: React.PointerEventHandler<E>): React.Pointer
   return (event) => (event.pointerType !== 'mouse' ? handler(event) : undefined);
 }
 
-const Root = ContextMenu;
-const Trigger = ContextMenuTrigger;
-const Portal = ContextMenuPortal;
-const Content = ContextMenuContent;
-const Group = ContextMenuGroup;
-const Label = ContextMenuLabel;
-const Item = ContextMenuItem;
-const CheckboxItem = ContextMenuCheckboxItem;
-const RadioGroup = ContextMenuRadioGroup;
-const RadioItem = ContextMenuRadioItem;
-const ItemIndicator = ContextMenuItemIndicator;
-const Separator = ContextMenuSeparator;
-const Arrow = ContextMenuArrow;
-const Sub = ContextMenuSub;
-const SubTrigger = ContextMenuSubTrigger;
-const SubContent = ContextMenuSubContent;
-
 export {
   createContextMenuScope,
   //
@@ -567,22 +550,22 @@ export {
   ContextMenuSubTrigger,
   ContextMenuSubContent,
   //
-  Root,
-  Trigger,
-  Portal,
-  Content,
-  Group,
-  Label,
-  Item,
-  CheckboxItem,
-  RadioGroup,
-  RadioItem,
-  ItemIndicator,
-  Separator,
-  Arrow,
-  Sub,
-  SubTrigger,
-  SubContent,
+  ContextMenu as Root,
+  ContextMenuTrigger as Trigger,
+  ContextMenuPortal as Portal,
+  ContextMenuContent as Content,
+  ContextMenuGroup as Group,
+  ContextMenuLabel as Label,
+  ContextMenuItem as Item,
+  ContextMenuCheckboxItem as CheckboxItem,
+  ContextMenuRadioGroup as RadioGroup,
+  ContextMenuRadioItem as RadioItem,
+  ContextMenuItemIndicator as ItemIndicator,
+  ContextMenuSeparator as Separator,
+  ContextMenuArrow as Arrow,
+  ContextMenuSub as Sub,
+  ContextMenuSubTrigger as SubTrigger,
+  ContextMenuSubContent as SubContent,
 };
 export type {
   ContextMenuProps,

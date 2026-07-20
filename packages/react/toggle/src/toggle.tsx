@@ -59,11 +59,9 @@ const Toggle = /* @__PURE__ */ React.forwardRef<ToggleElement, ToggleProps>(
 
 /* ---------------------------------------------------------------------------------------------- */
 
-const Root = Toggle;
-
 export {
   Toggle,
   //
-  Root,
+  Toggle as Root,
 };
 export type { ToggleProps };

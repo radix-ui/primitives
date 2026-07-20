@@ -30,11 +30,9 @@ const Portal = /* @__PURE__ */ React.forwardRef<PortalElement, PortalProps>(
 
 /* -----------------------------------------------------------------------------------------------*/
 
-const Root = Portal;
-
 export {
   Portal,
   //
-  Root,
+  Portal as Root,
 };
 export type { PortalProps };

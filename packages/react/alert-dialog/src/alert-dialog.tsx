@@ -194,16 +194,6 @@ const AlertDialogCancel = React.forwardRef<AlertDialogCancelElement, AlertDialog
 
 /* ---------------------------------------------------------------------------------------------- */
 
-const Root = AlertDialog;
-const Trigger = AlertDialogTrigger;
-const Portal = AlertDialogPortal;
-const Overlay = AlertDialogOverlay;
-const Content = AlertDialogContent;
-const Action = AlertDialogAction;
-const Cancel = AlertDialogCancel;
-const Title = AlertDialogTitle;
-const Description = AlertDialogDescription;
-
 export {
   createAlertDialogScope,
   //
@@ -217,15 +207,15 @@ export {
   AlertDialogTitle,
   AlertDialogDescription,
   //
-  Root,
-  Trigger,
-  Portal,
-  Overlay,
-  Content,
-  Action,
-  Cancel,
-  Title,
-  Description,
+  AlertDialog as Root,
+  AlertDialogTrigger as Trigger,
+  AlertDialogPortal as Portal,
+  AlertDialogOverlay as Overlay,
+  AlertDialogContent as Content,
+  AlertDialogAction as Action,
+  AlertDialogCancel as Cancel,
+  AlertDialogTitle as Title,
+  AlertDialogDescription as Description,
 };
 export type {
   AlertDialogProps,

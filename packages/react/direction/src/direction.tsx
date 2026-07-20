@@ -23,12 +23,10 @@ function useDirection(localDir?: Direction) {
   return localDir || globalDir || 'ltr';
 }
 
-const Provider = DirectionProvider;
-
 export {
   useDirection,
   //
-  Provider,
+  DirectionProvider as Provider,
   //
   DirectionProvider,
 };

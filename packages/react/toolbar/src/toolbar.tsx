@@ -217,13 +217,6 @@ const ToolbarToggleItem = /* @__PURE__ */ React.forwardRef<
 
 /* ---------------------------------------------------------------------------------------------- */
 
-const Root = Toolbar;
-const Separator = ToolbarSeparator;
-const Button = ToolbarButton;
-const Link = ToolbarLink;
-const ToggleGroup = ToolbarToggleGroup;
-const ToggleItem = ToolbarToggleItem;
-
 export {
   createToolbarScope,
   //
@@ -234,12 +227,12 @@ export {
   ToolbarToggleGroup,
   ToolbarToggleItem,
   //
-  Root,
-  Separator,
-  Button,
-  Link,
-  ToggleGroup,
-  ToggleItem,
+  Toolbar as Root,
+  ToolbarSeparator as Separator,
+  ToolbarButton as Button,
+  ToolbarLink as Link,
+  ToolbarToggleGroup as ToggleGroup,
+  ToolbarToggleItem as ToggleItem,
 };
 export type {
   ToolbarProps,

@@ -49,11 +49,9 @@ function isValidOrientation(orientation: any): orientation is Orientation {
   return ORIENTATIONS.includes(orientation);
 }
 
-const Root = Separator;
-
 export {
   Separator,
   //
-  Root,
+  Separator as Root,
 };
 export type { SeparatorProps };

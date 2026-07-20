@@ -230,10 +230,6 @@ function getState(open?: boolean) {
   return open ? 'open' : 'closed';
 }
 
-const Root = Collapsible;
-const Trigger = CollapsibleTrigger;
-const Content = CollapsibleContent;
-
 export {
   createCollapsibleScope,
   //
@@ -241,8 +237,8 @@ export {
   CollapsibleTrigger,
   CollapsibleContent,
   //
-  Root,
-  Trigger,
-  Content,
+  Collapsible as Root,
+  CollapsibleTrigger as Trigger,
+  CollapsibleContent as Content,
 };
 export type { CollapsibleProps, CollapsibleTriggerProps, CollapsibleContentProps };

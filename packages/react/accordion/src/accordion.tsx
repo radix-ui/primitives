@@ -521,12 +521,6 @@ function getState(open?: boolean) {
   return open ? 'open' : 'closed';
 }
 
-const Root = Accordion;
-const Item = AccordionItem;
-const Header = AccordionHeader;
-const Trigger = AccordionTrigger;
-const Content = AccordionContent;
-
 export {
   createAccordionScope,
   //
@@ -536,11 +530,11 @@ export {
   AccordionTrigger,
   AccordionContent,
   //
-  Root,
-  Item,
-  Header,
-  Trigger,
-  Content,
+  Accordion as Root,
+  AccordionItem as Item,
+  AccordionHeader as Header,
+  AccordionTrigger as Trigger,
+  AccordionContent as Content,
 };
 export type {
   AccordionSingleProps,

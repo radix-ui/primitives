@@ -354,11 +354,9 @@ function removeLinks(items: HTMLElement[]) {
   return items.filter((item) => item.tagName !== 'A');
 }
 
-const Root = FocusScope;
-
 export {
   FocusScope,
   //
-  Root,
+  FocusScope as Root,
 };
 export type { FocusScopeProps };

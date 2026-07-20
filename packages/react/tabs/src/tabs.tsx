@@ -282,11 +282,6 @@ function makeContentId(baseId: string, value: string) {
   return `${baseId}-content-${value}`;
 }
 
-const Root = Tabs;
-const List = TabsList;
-const Trigger = TabsTrigger;
-const Content = TabsContent;
-
 export {
   createTabsScope,
   //
@@ -295,9 +290,9 @@ export {
   TabsTrigger,
   TabsContent,
   //
-  Root,
-  List,
-  Trigger,
-  Content,
+  Tabs as Root,
+  TabsList as List,
+  TabsTrigger as Trigger,
+  TabsContent as Content,
 };
 export type { TabsProps, TabsListProps, TabsTriggerProps, TabsContentProps };

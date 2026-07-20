@@ -495,14 +495,6 @@ function getState(open: boolean) {
   return open ? 'open' : 'closed';
 }
 
-const Root = Popover;
-const Anchor = PopoverAnchor;
-const Trigger = PopoverTrigger;
-const Portal = PopoverPortal;
-const Content = PopoverContent;
-const Close = PopoverClose;
-const Arrow = PopoverArrow;
-
 export {
   createPopoverScope,
   //
@@ -514,13 +506,13 @@ export {
   PopoverClose,
   PopoverArrow,
   //
-  Root,
-  Anchor,
-  Trigger,
-  Portal,
-  Content,
-  Close,
-  Arrow,
+  Popover as Root,
+  PopoverAnchor as Anchor,
+  PopoverTrigger as Trigger,
+  PopoverPortal as Portal,
+  PopoverContent as Content,
+  PopoverClose as Close,
+  PopoverArrow as Arrow,
 };
 export type {
   PopoverProps,

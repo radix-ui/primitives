@@ -403,12 +403,6 @@ function getTabbableNodes(container: HTMLElement) {
   return nodes;
 }
 
-const Root = HoverCard;
-const Trigger = HoverCardTrigger;
-const Portal = HoverCardPortal;
-const Content = HoverCardContent;
-const Arrow = HoverCardArrow;
-
 export {
   createHoverCardScope,
   //
@@ -418,11 +412,11 @@ export {
   HoverCardContent,
   HoverCardArrow,
   //
-  Root,
-  Trigger,
-  Portal,
-  Content,
-  Arrow,
+  HoverCard as Root,
+  HoverCardTrigger as Trigger,
+  HoverCardPortal as Portal,
+  HoverCardContent as Content,
+  HoverCardArrow as Arrow,
 };
 export type {
   HoverCardProps,

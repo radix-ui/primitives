@@ -272,11 +272,9 @@ function getElementRef(element: React.ReactElement<{ ref?: React.Ref<unknown> }>
   return element.props.ref || (element as any).ref;
 }
 
-const Root = Presence;
-
 export {
   Presence,
   //
-  Root,
+  Presence as Root,
 };
 export type { PresenceProps };

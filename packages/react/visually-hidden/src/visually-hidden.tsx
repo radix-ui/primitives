@@ -37,12 +37,10 @@ const VisuallyHidden = /* @__PURE__ */ React.forwardRef<VisuallyHiddenElement, V
 
 /* -----------------------------------------------------------------------------------------------*/
 
-const Root = VisuallyHidden;
-
 export {
   VisuallyHidden,
   //
-  Root,
+  VisuallyHidden as Root,
   //
   VISUALLY_HIDDEN_STYLES,
 };

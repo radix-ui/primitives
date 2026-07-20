@@ -224,11 +224,9 @@ function getLiveRegionPartDataAttr(id?: string) {
   return 'data-radix-announce-region' + (id ? `-${id}` : '');
 }
 
-const Root = Announce;
-
 export {
   Announce,
   //
-  Root,
+  Announce as Root,
 };
 export type { AnnounceProps };

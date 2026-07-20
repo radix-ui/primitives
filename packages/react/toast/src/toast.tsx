@@ -958,14 +958,6 @@ function focusFirst(candidates: HTMLElement[]) {
   });
 }
 
-const Provider = ToastProvider;
-const Viewport = ToastViewport;
-const Root = Toast;
-const Title = ToastTitle;
-const Description = ToastDescription;
-const Action = ToastAction;
-const Close = ToastClose;
-
 export {
   createToastScope,
   //
@@ -977,13 +969,13 @@ export {
   ToastAction,
   ToastClose,
   //
-  Provider,
-  Viewport,
-  Root,
-  Title,
-  Description,
-  Action,
-  Close,
+  ToastProvider as Provider,
+  ToastViewport as Viewport,
+  Toast as Root,
+  ToastTitle as Title,
+  ToastDescription as Description,
+  ToastAction as Action,
+  ToastClose as Close,
 };
 export type {
   ToastProviderProps,

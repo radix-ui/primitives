@@ -24,11 +24,9 @@ const AccessibleIcon: React.FC<AccessibleIconProps> = ({ children, label }) => {
   );
 };
 
-const Root = AccessibleIcon;
-
 export {
   AccessibleIcon,
   //
-  Root,
+  AccessibleIcon as Root,
 };
 export type { AccessibleIconProps };

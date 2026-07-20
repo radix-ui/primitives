@@ -1280,16 +1280,6 @@ function whenMouse<E>(handler: React.PointerEventHandler<E>): React.PointerEvent
 
 /* -----------------------------------------------------------------------------------------------*/
 
-const Root = NavigationMenu;
-const Sub = NavigationMenuSub;
-const List = NavigationMenuList;
-const Item = NavigationMenuItem;
-const Trigger = NavigationMenuTrigger;
-const Link = NavigationMenuLink;
-const Indicator = NavigationMenuIndicator;
-const Content = NavigationMenuContent;
-const Viewport = NavigationMenuViewport;
-
 export {
   createNavigationMenuScope,
   //
@@ -1303,15 +1293,15 @@ export {
   NavigationMenuContent,
   NavigationMenuViewport,
   //
-  Root,
-  Sub,
-  List,
-  Item,
-  Trigger,
-  Link,
-  Indicator,
-  Content,
-  Viewport,
+  NavigationMenu as Root,
+  NavigationMenuSub as Sub,
+  NavigationMenuList as List,
+  NavigationMenuItem as Item,
+  NavigationMenuTrigger as Trigger,
+  NavigationMenuLink as Link,
+  NavigationMenuIndicator as Indicator,
+  NavigationMenuContent as Content,
+  NavigationMenuViewport as Viewport,
 };
 export type {
   NavigationMenuProps,

@@ -469,23 +469,6 @@ const DropdownMenuSubContent = /* @__PURE__ */ React.forwardRef<
 
 /* -----------------------------------------------------------------------------------------------*/
 
-const Root = DropdownMenu;
-const Trigger = DropdownMenuTrigger;
-const Portal = DropdownMenuPortal;
-const Content = DropdownMenuContent;
-const Group = DropdownMenuGroup;
-const Label = DropdownMenuLabel;
-const Item = DropdownMenuItem;
-const CheckboxItem = DropdownMenuCheckboxItem;
-const RadioGroup = DropdownMenuRadioGroup;
-const RadioItem = DropdownMenuRadioItem;
-const ItemIndicator = DropdownMenuItemIndicator;
-const Separator = DropdownMenuSeparator;
-const Arrow = DropdownMenuArrow;
-const Sub = DropdownMenuSub;
-const SubTrigger = DropdownMenuSubTrigger;
-const SubContent = DropdownMenuSubContent;
-
 export {
   createDropdownMenuScope,
   //
@@ -506,22 +489,22 @@ export {
   DropdownMenuSubTrigger,
   DropdownMenuSubContent,
   //
-  Root,
-  Trigger,
-  Portal,
-  Content,
-  Group,
-  Label,
-  Item,
-  CheckboxItem,
-  RadioGroup,
-  RadioItem,
-  ItemIndicator,
-  Separator,
-  Arrow,
-  Sub,
-  SubTrigger,
-  SubContent,
+  DropdownMenu as Root,
+  DropdownMenuTrigger as Trigger,
+  DropdownMenuPortal as Portal,
+  DropdownMenuContent as Content,
+  DropdownMenuGroup as Group,
+  DropdownMenuLabel as Label,
+  DropdownMenuItem as Item,
+  DropdownMenuCheckboxItem as CheckboxItem,
+  DropdownMenuRadioGroup as RadioGroup,
+  DropdownMenuRadioItem as RadioItem,
+  DropdownMenuItemIndicator as ItemIndicator,
+  DropdownMenuSeparator as Separator,
+  DropdownMenuArrow as Arrow,
+  DropdownMenuSub as Sub,
+  DropdownMenuSubTrigger as SubTrigger,
+  DropdownMenuSubContent as SubContent,
 };
 export type {
   DropdownMenuProps,

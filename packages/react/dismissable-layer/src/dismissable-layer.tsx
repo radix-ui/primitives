@@ -545,15 +545,12 @@ function handleAndDispatchCustomEvent<E extends CustomEvent, OriginalEvent exten
   }
 }
 
-const Root = DismissableLayer;
-const Branch = DismissableLayerBranch;
-
 export {
   DismissableLayer,
   DismissableLayerBranch,
   useDismissableLayerSurface,
   //
-  Root,
-  Branch,
+  DismissableLayer as Root,
+  DismissableLayerBranch as Branch,
 };
 export type { DismissableLayerProps };

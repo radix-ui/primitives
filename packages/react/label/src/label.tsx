@@ -31,11 +31,9 @@ const Label = /* @__PURE__ */ React.forwardRef<LabelElement, LabelProps>(
 
 /* -----------------------------------------------------------------------------------------------*/
 
-const Root = Label;
-
 export {
   Label,
   //
-  Root,
+  Label as Root,
 };
 export type { LabelProps };

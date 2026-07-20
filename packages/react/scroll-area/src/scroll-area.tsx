@@ -1051,12 +1051,6 @@ function useResizeObserver(element: HTMLElement | null, onResize: () => void) {
 
 /* -----------------------------------------------------------------------------------------------*/
 
-const Root = ScrollArea;
-const Viewport = ScrollAreaViewport;
-const Scrollbar = ScrollAreaScrollbar;
-const Thumb = ScrollAreaThumb;
-const Corner = ScrollAreaCorner;
-
 export {
   createScrollAreaScope,
   //
@@ -1066,11 +1060,11 @@ export {
   ScrollAreaThumb,
   ScrollAreaCorner,
   //
-  Root,
-  Viewport,
-  Scrollbar,
-  Thumb,
-  Corner,
+  ScrollArea as Root,
+  ScrollAreaViewport as Viewport,
+  ScrollAreaScrollbar as Scrollbar,
+  ScrollAreaThumb as Thumb,
+  ScrollAreaCorner as Corner,
 };
 export type {
   ScrollAreaProps,

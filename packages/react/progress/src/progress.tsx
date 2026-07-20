@@ -146,16 +146,13 @@ function getInvalidValueError(propValue: string, componentName: string) {
 Defaulting to \`null\`.`;
 }
 
-const Root = Progress;
-const Indicator = ProgressIndicator;
-
 export {
   createProgressScope,
   //
   Progress,
   ProgressIndicator,
   //
-  Root,
-  Indicator,
+  Progress as Root,
+  ProgressIndicator as Indicator,
 };
 export type { ProgressProps, ProgressIndicatorProps };
