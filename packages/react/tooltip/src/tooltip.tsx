@@ -270,7 +270,7 @@ interface TooltipTriggerProps extends PrimitiveButtonProps {}
 
 const TooltipTrigger = /* @__PURE__ */ React.forwardRef<TooltipTriggerElement, TooltipTriggerProps>(
   function TooltipTrigger(props: ScopedProps<TooltipTriggerProps>, forwardedRef) {
-    const { __scopeTooltip, ...triggerProps } = props;
+    const { __scopeTooltip, 'aria-describedby': ariaDescribedby, ...triggerProps } = props;
     const context = useTooltipContext(TRIGGER_NAME, __scopeTooltip);
     const providerContext = useTooltipProviderContext(TRIGGER_NAME, __scopeTooltip);
     const popperScope = usePopperScope(__scopeTooltip);
@@ -289,7 +289,11 @@ const TooltipTrigger = /* @__PURE__ */ React.forwardRef<TooltipTriggerElement, T
         <Primitive.button
           // We purposefully avoid adding `type=button` here because tooltip triggers are also
           // commonly anchors and the anchor `type` attribute signifies MIME type.
-          aria-describedby={context.open ? context.contentId : undefined}
+          aria-describedby={
+            context.open
+              ? concatAriaDescribedby(ariaDescribedby, context.contentId)
+              : ariaDescribedby
+          }
           data-state={context.stateAttribute}
           {...triggerProps}
           ref={composedRefs}
@@ -750,12 +754,18 @@ function getHullPresorted<P extends Point>(points: Readonly<Array<P>>): Array<P>
   }
 }
 
-const Provider = TooltipProvider;
-const Root = Tooltip;
-const Trigger = TooltipTrigger;
-const Portal = TooltipPortal;
-const Content = TooltipContent;
-const Arrow = TooltipArrow;
+// TODO: Move to primitive once that package exposed individual sub-modules
+function concatAriaDescribedby(...values: unknown[]): string | undefined {
+  const ids = new Set<string>();
+  for (const value of values) {
+    if (typeof value !== 'string') continue;
+    for (const id of String(value).trim().split(/\s+/)) {
+      if (id) ids.add(id);
+    }
+  }
+
+  return ids.size > 0 ? Array.from(ids).join(' ') : undefined;
+}
 
 export {
   createTooltipScope,
@@ -767,12 +777,12 @@ export {
   TooltipContent,
   TooltipArrow,
   //
-  Provider,
-  Root,
-  Trigger,
-  Portal,
-  Content,
-  Arrow,
+  TooltipProvider as Provider,
+  Tooltip as Root,
+  TooltipTrigger as Trigger,
+  TooltipPortal as Portal,
+  TooltipContent as Content,
+  TooltipArrow as Arrow,
 };
 export type {
   TooltipProviderProps,

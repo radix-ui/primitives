@@ -410,7 +410,14 @@ const DialogContentImpl = /* @__PURE__ */ React.forwardRef<
 >(
   // blank line to reduce diff noise
   function DialogContentImpl(props: ScopedProps<DialogContentImplProps>, forwardedRef) {
-    const { __scopeDialog, trapFocus, onOpenAutoFocus, onCloseAutoFocus, ...contentProps } = props;
+    const {
+      __scopeDialog,
+      trapFocus,
+      onOpenAutoFocus,
+      onCloseAutoFocus,
+      'aria-describedby': ariaDescribedby,
+      ...contentProps
+    } = props;
     const context = useDialogContext(CONTENT_NAME, __scopeDialog);
 
     // Make sure the whole tree has focus guards as our `Dialog` will be
@@ -429,8 +436,12 @@ const DialogContentImpl = /* @__PURE__ */ React.forwardRef<
           <DismissableLayer
             role="dialog"
             id={context.contentId}
-            aria-describedby={context.descriptionPresent ? context.descriptionId : undefined}
             aria-labelledby={context.titlePresent ? context.titleId : undefined}
+            aria-describedby={
+              context.descriptionPresent
+                ? concatAriaDescribedby(ariaDescribedby, context.descriptionId)
+                : ariaDescribedby
+            }
             data-state={getState(context.open)}
             {...contentProps}
             ref={forwardedRef}
@@ -530,6 +541,19 @@ export const WarningProvider: React.FC<
 };
 
 /* -----------------------------------------------------------------------------------------------*/
+
+// TODO: Move to primitive once that package exposed individual sub-modules
+function concatAriaDescribedby(...values: unknown[]): string | undefined {
+  const ids = new Set<string>();
+  for (const value of values) {
+    if (typeof value !== 'string') continue;
+    for (const id of String(value).trim().split(/\s+/)) {
+      if (id) ids.add(id);
+    }
+  }
+
+  return ids.size > 0 ? Array.from(ids).join(' ') : undefined;
+}
 
 function getState(open: boolean) {
   return open ? 'open' : 'closed';

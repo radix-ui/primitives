@@ -169,6 +169,8 @@ function mergeProps(slotProps: AnyProps, childProps: AnyProps) {
       overrideProps[propName] = { ...slotPropValue, ...childPropValue };
     } else if (propName === 'className') {
       overrideProps[propName] = [slotPropValue, childPropValue].filter(Boolean).join(' ');
+    } else if (propName === 'aria-describedby') {
+      overrideProps[propName] = concatAriaDescribedby(childPropValue, slotPropValue);
     }
   }
 
@@ -238,6 +240,19 @@ function isLazyComponent(element: React.ReactNode): element is LazyReactElement 
 
 function isPromiseLike(value: unknown): value is PromiseLike<unknown> {
   return typeof value === 'object' && value !== null && 'then' in value;
+}
+
+// TODO: Move to primitive once that package exposed individual sub-modules
+function concatAriaDescribedby(...values: unknown[]): string | undefined {
+  const ids = new Set<string>();
+  for (const value of values) {
+    if (typeof value !== 'string') continue;
+    for (const id of String(value).trim().split(/\s+/)) {
+      if (id) ids.add(id);
+    }
+  }
+
+  return ids.size > 0 ? Array.from(ids).join(' ') : undefined;
 }
 
 const createSlotError = (ownerName: string) => {
