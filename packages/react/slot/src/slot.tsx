@@ -33,10 +33,6 @@ const SlotProvider: React.FC<SlotProviderProps> = ({ children, mergeProps }) => 
 
 export type Usable<T> = PromiseLike<T> | React.Context<T>;
 
-// taken from: https://stackoverflow.com/questions/51603250/typescript-3-parameter-list-intersection-type/51604379#51604379
-// https://github.com/adobe/react-spectrum/blob/main@%7B2025-05-19T15:10:25.000Z%7D/packages/%40react-aria/utils/src/mergeProps.ts
-// double-taken from React Aria
-// Copyright 2019 Adobe, Apache License, Version 2.0
 type SlotProps<Elem extends Element = HTMLElement, Props = React.HTMLAttributes<Elem>> = Props & {
   children?: React.ReactNode;
   mergeProps?: MergePropsFunction;
