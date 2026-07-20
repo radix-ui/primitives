@@ -15,7 +15,7 @@
     "@repo/typescript-config": "workspace:*",
     "@testing-library/react": "^16.3.2",
     "@types/react": "^19.2.15",
-    "react": "^19.2.6",
+    "react": "^19.2.7",
     "typescript": "^5.9.3",
     "vitest": "^4.1.7"
   },
