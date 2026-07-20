@@ -66,6 +66,48 @@ describe('escape key removal', () => {
   });
 });
 
+// Regression test for https://github.com/radix-ui/primitives/issues/2233
+describe('pause/resume with changing duration', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    cleanup();
+    vi.useRealTimers();
+  });
+
+  it('closes after resume when duration changes from Infinity to a finite value while paused', () => {
+    const onOpenChange = vi.fn();
+
+    function renderToast(duration: number) {
+      return (
+        <Toast.Provider>
+          <Toast.Root open duration={duration} onOpenChange={onOpenChange}>
+            <Toast.Title>Title</Toast.Title>
+          </Toast.Root>
+          <Toast.Viewport />
+        </Toast.Provider>
+      );
+    }
+
+    const { rerender } = render(renderToast(Infinity));
+
+    // window blur pauses the toast
+    fireEvent.blur(window);
+
+    // update the toast to a finite duration
+    rerender(renderToast(3000));
+
+    // resume the toast
+    fireEvent.focus(window);
+
+    // advancing past the new duration should now close the toast
+    vi.advanceTimersByTime(3000);
+    expect(onOpenChange).toHaveBeenCalledWith(false);
+  });
+});
+
 // Regression test for https://github.com/radix-ui/primitives/pull/3703
 describe('timer cleanup', () => {
   let clearTimeoutSpy: Mock<(id: number | undefined) => void>;
