@@ -1370,10 +1370,8 @@ const SelectItem = /* @__PURE__ */ React.forwardRef<SelectItemElement, SelectIte
     const pointerTypeRef = React.useRef<React.PointerEvent['pointerType']>('touch');
 
     const handleSelect = () => {
-      if (!disabled) {
-        context.onValueChange(value);
-        context.onOpenChange(false);
-      }
+      context.onValueChange(value);
+      context.onOpenChange(false);
     };
 
     return (
@@ -1408,13 +1406,25 @@ const SelectItem = /* @__PURE__ */ React.forwardRef<SelectItemElement, SelectIte
             onFocus={composeEventHandlers(itemProps.onFocus, () => setIsFocused(true))}
             onBlur={composeEventHandlers(itemProps.onBlur, () => setIsFocused(false))}
             onClick={composeEventHandlers(itemProps.onClick, () => {
+              if (disabled) {
+                return;
+              }
+
               // Open on click when using a touch or pen device
-              if (pointerTypeRef.current !== 'mouse') handleSelect();
+              if (pointerTypeRef.current !== 'mouse') {
+                handleSelect();
+              }
             })}
             onPointerUp={composeEventHandlers(itemProps.onPointerUp, () => {
+              if (disabled) {
+                return;
+              }
+
               // Using a mouse you should be able to do pointer down, move through
               // the list, and release the pointer over the item to select it.
-              if (pointerTypeRef.current === 'mouse') handleSelect();
+              if (pointerTypeRef.current === 'mouse') {
+                handleSelect();
+              }
             })}
             onPointerDown={composeEventHandlers(itemProps.onPointerDown, (event) => {
               pointerTypeRef.current = event.pointerType;
