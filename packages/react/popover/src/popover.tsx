@@ -471,16 +471,14 @@ const PopoverContentImpl = /* @__PURE__ */ React.forwardRef<
  * PopoverTitle
  * -----------------------------------------------------------------------------------------------*/
 
-const TITLE_NAME = 'PopoverTitle';
-
 type PopoverTitleElement = React.ComponentRef<typeof Primitive.h2>;
 type PrimitiveHeading2Props = React.ComponentPropsWithoutRef<typeof Primitive.h2>;
 interface PopoverTitleProps extends PrimitiveHeading2Props {}
 
-const PopoverTitle = React.forwardRef<PopoverTitleElement, PopoverTitleProps>(
-  (props: ScopedProps<PopoverTitleProps>, forwardedRef) => {
+const PopoverTitle = /* @__PURE__ */ React.forwardRef<PopoverTitleElement, PopoverTitleProps>(
+  function PopoverTitle(props: ScopedProps<PopoverTitleProps>, forwardedRef) {
     const { __scopePopover, ...titleProps } = props;
-    const context = usePopoverContext(TITLE_NAME, __scopePopover);
+    const context = usePopoverContext('PopoverTitle', __scopePopover);
     const { setHasTitle } = context;
 
     React.useEffect(() => {
@@ -492,34 +490,29 @@ const PopoverTitle = React.forwardRef<PopoverTitleElement, PopoverTitleProps>(
   },
 );
 
-PopoverTitle.displayName = TITLE_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * PopoverDescription
  * -----------------------------------------------------------------------------------------------*/
-
-const DESCRIPTION_NAME = 'PopoverDescription';
 
 type PopoverDescriptionElement = React.ComponentRef<typeof Primitive.p>;
 type PrimitiveParagraphProps = React.ComponentPropsWithoutRef<typeof Primitive.p>;
 interface PopoverDescriptionProps extends PrimitiveParagraphProps {}
 
-const PopoverDescription = React.forwardRef<PopoverDescriptionElement, PopoverDescriptionProps>(
-  (props: ScopedProps<PopoverDescriptionProps>, forwardedRef) => {
-    const { __scopePopover, ...descriptionProps } = props;
-    const context = usePopoverContext(DESCRIPTION_NAME, __scopePopover);
-    const { setHasDescription } = context;
+const PopoverDescription = /* @__PURE__ */ React.forwardRef<
+  PopoverDescriptionElement,
+  PopoverDescriptionProps
+>(function PopoverDescription(props: ScopedProps<PopoverDescriptionProps>, forwardedRef) {
+  const { __scopePopover, ...descriptionProps } = props;
+  const context = usePopoverContext('PopoverDescription', __scopePopover);
+  const { setHasDescription } = context;
 
-    React.useEffect(() => {
-      setHasDescription(true);
-      return () => setHasDescription(false);
-    }, [setHasDescription]);
+  React.useEffect(() => {
+    setHasDescription(true);
+    return () => setHasDescription(false);
+  }, [setHasDescription]);
 
-    return <Primitive.p id={context.descriptionId} {...descriptionProps} ref={forwardedRef} />;
-  },
-);
-
-PopoverDescription.displayName = DESCRIPTION_NAME;
+  return <Primitive.p id={context.descriptionId} {...descriptionProps} ref={forwardedRef} />;
+});
 
 /* -------------------------------------------------------------------------------------------------
  * PopoverClose
