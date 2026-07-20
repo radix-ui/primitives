@@ -185,9 +185,16 @@ const TabsTrigger = /* @__PURE__ */ React.forwardRef<TabsTriggerElement, TabsTri
           {...triggerProps}
           ref={forwardedRef}
           onMouseDown={composeEventHandlers(props.onMouseDown, (event) => {
-            // only call handler if it's the left button (mousedown gets triggered by all mouse buttons)
-            // but not when the control key is pressed (avoiding MacOS right click)
+            // only call handler if it's the left button (mousedown gets
+            // triggered by all mouse buttons) but not when the control key is
+            // pressed (avoiding MacOS right click)
             if (!disabled && event.button === 0 && event.ctrlKey === false) {
+              // Move focus to the trigger before changing the value. If focus
+              // is currently in the active tab, the element will be removed
+              // from the DOM before its blur event fires, and focus gets lost
+              // to the document until click is completed.
+              // See https://github.com/radix-ui/primitives/issues/3600
+              event.currentTarget.focus();
               context.onValueChange(value);
             } else {
               // prevent focus to avoid accidental activation
