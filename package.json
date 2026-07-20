@@ -32,7 +32,7 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.12.1",
-    "@changesets/cli": "^2.31.0",
+    "@changesets/cli": "^2.31.1",
     "@playwright/test": "^1.61.1",
     "@radix-ui/colors": "^3.0.0",
     "@testing-library/dom": "^10.4.1",
