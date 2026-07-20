@@ -127,6 +127,31 @@ describe('aria-labelledby / aria-describedby references', () => {
     expect(document.getElementById(describedBy!)).toHaveTextContent('Description');
   });
 
+  // Regression test for https://github.com/radix-ui/primitives/issues/2598
+  it('should normalize existing aria-describedby ids and append the Description id', () => {
+    const rendered = render(
+      <>
+        <span id="existing-description">Existing description</span>
+        <span id="shared-description">Shared description</span>
+        <Dialog.Root defaultOpen>
+          <Dialog.Content
+            aria-describedby={' existing-description\texisting-description shared-description '}
+          >
+            <Dialog.Title>Title</Dialog.Title>
+            <Dialog.Description>Description</Dialog.Description>
+          </Dialog.Content>
+        </Dialog.Root>
+      </>,
+    );
+
+    const content = rendered.getByRole('dialog');
+    const description = rendered.getByText('Description');
+    expect(content).toHaveAttribute(
+      'aria-describedby',
+      `existing-description shared-description ${description.id}`,
+    );
+  });
+
   it('should not set `aria-labelledby` when no `Title` is rendered', () => {
     const rendered = render(
       <Dialog.Root defaultOpen>

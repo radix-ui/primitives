@@ -50,6 +50,96 @@ describe('Tooltip', () => {
     });
   });
 
+  // Regression test for https://github.com/radix-ui/primitives/issues/2598
+  it('appends the tooltip id to an existing aria-describedby', async () => {
+    render(
+      <Tooltip.Provider>
+        <Tooltip.Root delayDuration={0}>
+          <Tooltip.Trigger aria-describedby="existing-description">Tooltip Trigger</Tooltip.Trigger>
+          <Tooltip.Portal>
+            <Tooltip.Content id="tooltip-description">Tooltip Content</Tooltip.Content>
+          </Tooltip.Portal>
+        </Tooltip.Root>
+        <span id="existing-description">Existing description</span>
+      </Tooltip.Provider>,
+    );
+
+    const trigger = screen.getByText('Tooltip Trigger');
+    expect(trigger).toHaveAttribute('aria-describedby', 'existing-description');
+
+    await userEvent.hover(trigger);
+    await waitFor(() => {
+      expect(trigger).toHaveAttribute(
+        'aria-describedby',
+        'existing-description tooltip-description',
+      );
+    });
+
+    await userEvent.click(trigger);
+    await waitFor(() => {
+      expect(trigger).toHaveAttribute('aria-describedby', 'existing-description');
+    });
+  });
+
+  it('normalizes and deduplicates aria-describedby ids when the tooltip opens', async () => {
+    render(
+      <Tooltip.Provider>
+        <Tooltip.Root delayDuration={0}>
+          <Tooltip.Trigger
+            aria-describedby={' existing-description\texisting-description tooltip-description '}
+          >
+            Tooltip Trigger
+          </Tooltip.Trigger>
+          <Tooltip.Portal>
+            <Tooltip.Content id="tooltip-description">Tooltip Content</Tooltip.Content>
+          </Tooltip.Portal>
+        </Tooltip.Root>
+      </Tooltip.Provider>,
+    );
+
+    const trigger = screen.getByText('Tooltip Trigger');
+    await userEvent.hover(trigger);
+    await waitFor(() => {
+      expect(trigger).toHaveAttribute(
+        'aria-describedby',
+        'existing-description tooltip-description',
+      );
+    });
+  });
+
+  // Regression test for https://github.com/radix-ui/primitives/issues/2598
+  it('appends the tooltip id to aria-describedby on an asChild trigger', async () => {
+    render(
+      <Tooltip.Provider>
+        <Tooltip.Root delayDuration={0}>
+          <Tooltip.Trigger asChild>
+            <button aria-describedby="existing-description">Tooltip Trigger</button>
+          </Tooltip.Trigger>
+          <Tooltip.Portal>
+            <Tooltip.Content id="tooltip-description">Tooltip Content</Tooltip.Content>
+          </Tooltip.Portal>
+        </Tooltip.Root>
+        <span id="existing-description">Existing description</span>
+      </Tooltip.Provider>,
+    );
+
+    const trigger = screen.getByText('Tooltip Trigger');
+    expect(trigger).toHaveAttribute('aria-describedby', 'existing-description');
+
+    await userEvent.hover(trigger);
+    await waitFor(() => {
+      expect(trigger).toHaveAttribute(
+        'aria-describedby',
+        'existing-description tooltip-description',
+      );
+    });
+
+    await userEvent.click(trigger);
+    await waitFor(() => {
+      expect(trigger).toHaveAttribute('aria-describedby', 'existing-description');
+    });
+  });
+
   // Regression test for https://github.com/radix-ui/primitives/issues/3034
   // Content children must be mounted to the DOM a single time so that their
   // effects (analytics, fetches, etc.) do not run twice.

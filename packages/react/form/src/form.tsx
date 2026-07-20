@@ -284,7 +284,13 @@ interface FormControlProps extends PrimitiveInputProps {}
 
 const FormControl = /* @__PURE__ */ React.forwardRef<FormControlElement, FormControlProps>(
   function FormControl(props: ScopedProps<FormControlProps>, forwardedRef) {
-    const { __scopeForm, name: nameProp, id: idProp, ...controlProps } = props;
+    const {
+      __scopeForm,
+      name: nameProp,
+      id: idProp,
+      'aria-describedby': ariaDescribedby,
+      ...controlProps
+    } = props;
 
     const validationContext = useValidationContext(CONTROL_NAME, __scopeForm);
     const fieldContext = useFormFieldContext(CONTROL_NAME, __scopeForm, { optional: true });
@@ -425,7 +431,10 @@ const FormControl = /* @__PURE__ */ React.forwardRef<FormControlElement, FormCon
         data-valid={getValidAttribute(validity, serverInvalid)}
         data-invalid={getInvalidAttribute(validity, serverInvalid)}
         aria-invalid={serverInvalid || undefined}
-        aria-describedby={ariaDescriptionContext.getFieldDescription(name)}
+        aria-describedby={concatAriaDescribedby(
+          ariaDescribedby,
+          ariaDescriptionContext.getFieldDescription(name),
+        )}
         // disable default browser behaviour of showing built-in error message on hover
         title=""
         {...controlProps}
@@ -724,20 +733,26 @@ function getValidAttribute(validity: ValidityState | undefined, serverInvalid: b
   if (validity?.valid === true && !serverInvalid) return true;
   return undefined;
 }
+
 function getInvalidAttribute(validity: ValidityState | undefined, serverInvalid: boolean) {
   if (validity?.valid === false || serverInvalid) return true;
   return undefined;
 }
 
-/* -----------------------------------------------------------------------------------------------*/
+// TODO: Move to primitive once that package exposed individual sub-modules
+function concatAriaDescribedby(...values: unknown[]): string | undefined {
+  const ids = new Set<string>();
+  for (const value of values) {
+    if (typeof value !== 'string') continue;
+    for (const id of String(value).trim().split(/\s+/)) {
+      if (id) ids.add(id);
+    }
+  }
 
-const Root = Form;
-const Field = FormField;
-const Label = FormLabel;
-const Control = FormControl;
-const Message = FormMessage;
-const ValidityState = FormValidityState;
-const Submit = FormSubmit;
+  return ids.size > 0 ? Array.from(ids).join(' ') : undefined;
+}
+
+/* -----------------------------------------------------------------------------------------------*/
 
 export {
   createFormScope,
@@ -750,13 +765,13 @@ export {
   FormValidityState,
   FormSubmit,
   //
-  Root,
-  Field,
-  Label,
-  Control,
-  Message,
-  ValidityState,
-  Submit,
+  Form as Root,
+  FormField as Field,
+  FormLabel as Label,
+  FormControl as Control,
+  FormMessage as Message,
+  FormValidityState as ValidityState,
+  FormSubmit as Submit,
 };
 
 export type {

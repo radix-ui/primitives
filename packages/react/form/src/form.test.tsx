@@ -120,6 +120,42 @@ describe('Form', () => {
       expect(control.getAttribute('aria-describedby')).toContain(message.id);
     });
 
+    // Regression test for https://github.com/radix-ui/primitives/issues/2598
+    it('should normalize existing aria-describedby ids and append a matching message id', async () => {
+      render(
+        <Form.Root>
+          <Form.Control
+            aria-describedby={' existing-description\texisting-description shared-description '}
+            name="email"
+            id="email"
+            type="email"
+            required
+          />
+          <Form.Message match="valueMissing" name="email">
+            Please enter your email address.
+          </Form.Message>
+          <span id="existing-description">Existing description</span>
+          <span id="shared-description">Shared description</span>
+        </Form.Root>,
+      );
+
+      const control = screen.getByRole('textbox');
+      expect(control).toHaveAttribute(
+        'aria-describedby',
+        'existing-description shared-description',
+      );
+
+      await act(async () => {
+        fireEvent.invalid(control);
+      });
+
+      const message = screen.getByText('Please enter your email address.');
+      expect(control).toHaveAttribute(
+        'aria-describedby',
+        `existing-description shared-description ${message.id}`,
+      );
+    });
+
     it('should expose validity through `Form.ValidityState` via `name`', async () => {
       render(
         <Form.Root>

@@ -324,6 +324,24 @@ describe('Slot prop and ref merging (single element child)', () => {
     expect(order).toEqual(['child', 'slot']);
   });
 
+  it('merges, normalizes, and deduplicates aria-describedby with the child ids first', () => {
+    render(
+      <Slot aria-describedby={' shared-description  slot-description '}>
+        <button
+          aria-describedby={' child-description\tshared-description child-description '}
+          type="button"
+        >
+          hi
+        </button>
+      </Slot>,
+    );
+
+    expect(screen.getByRole('button')).toHaveAttribute(
+      'aria-describedby',
+      'child-description shared-description slot-description',
+    );
+  });
+
   it('composes the Slot ref and the child ref onto the same node', () => {
     const slotRef = vi.fn();
     const childRef = vi.fn();
