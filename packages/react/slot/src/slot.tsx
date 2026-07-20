@@ -88,23 +88,6 @@ type SlotProps<Elem extends Element = HTMLElement, Props = React.HTMLAttributes<
     const slottableElementRef = slottableElement ? getElementRef(slottableElement) : undefined;
     const composedRef = useComposedRefs(forwardedRef, slottableElementRef);
 
-    // OK to conditionally call hooks here because they consistently run in the
-    // same environment. This should be written in a way that bundlers can
-    // easily remove the dead code in production.
-    let errorToLog: unknown,
-      setErrorToLog: (error: unknown) => void = () => void 0;
-    if (IS_DEVELOPMENT) {
-      [errorToLog, setErrorToLog] = React.useState<unknown>();
-      React.useEffect(() => {
-        if (errorToLog) {
-          console.error(
-            'Slot: mergeProps failed with the following error. Falling back to default behavior.',
-            errorToLog,
-          );
-        }
-      }, [errorToLog]);
-    }
-
     if (!slottableElement) {
       // Empty/falsy children (`null`, `undefined`, `false`, no children, etc.)
       // are valid and render nothing. Anything else is content we couldn't slot
@@ -118,36 +101,10 @@ type SlotProps<Elem extends Element = HTMLElement, Props = React.HTMLAttributes<
       return children;
     }
 
-    const mergedProps =
-      mergePropsProp === mergeProps
-        ? mergeProps(slotProps, (slottableElement.props ?? {}) as Record<string, unknown>)
-        : (() => {
-            try {
-              const result = mergePropsProp(
-                slotProps,
-                (slottableElement.props ?? {}) as Record<string, unknown>,
-              );
-
-              if (IS_DEVELOPMENT) {
-                if (errorToLog) {
-                  setErrorToLog(undefined);
-                }
-              }
-
-              return result;
-            } catch (error) {
-              if (IS_DEVELOPMENT) {
-                if (error && !errorToLog) {
-                  setErrorToLog(error);
-                }
-              }
-
-              return mergeProps(
-                slotProps,
-                (slottableElement.props ?? {}) as Record<string, unknown>,
-              );
-            }
-          })();
+    const mergedProps = mergePropsProp(
+      slotProps,
+      (slottableElement.props ?? {}) as Record<string, unknown>,
+    );
 
     // do not pass ref to React.Fragment for React 19 compatibility
     if (slottableElement.type !== React.Fragment) {
