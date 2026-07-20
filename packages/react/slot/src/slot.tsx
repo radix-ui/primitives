@@ -99,36 +99,32 @@ type SlotProps<Elem extends Element = HTMLElement, Props = React.HTMLAttributes<
       return children;
     }
 
-    // `ref` is treated as a normal prop when merging, but the composition
-    // itself stays memoized here: `mergeProps` may be a plain (or
-    // user-provided) function that can't call hooks, and composing on every
-    // render would detach/reattach the ref. We hand `mergeProps` the
-    // already-composed, stable ref via `slotProps` and strip the child's raw
-    // ref so it isn't applied twice.
-    const childProps: Record<string, unknown> = { ...(slottableElement.props ?? {}) };
-    delete childProps.ref;
-
-    const propsToMerge: Record<string, unknown> =
-      // do not pass ref to React.Fragment for React 19 compatibility
-      slottableElement.type === React.Fragment
-        ? slotProps
-        : { ...slotProps, ref: forwardedRef ? composedRef : slottableElementRef };
-
     const mergedProps =
       mergePropsProp === mergeProps
-        ? mergeProps(propsToMerge, childProps)
+        ? mergeProps(slotProps, (slottableElement.props ?? {}) as Record<string, unknown>)
         : (() => {
             try {
-              return mergePropsProp(propsToMerge, childProps);
+              return mergePropsProp(
+                slotProps,
+                (slottableElement.props ?? {}) as Record<string, unknown>,
+              );
             } catch (error) {
               console.error(
                 'Slot: mergeProps failed with the following error. Falling back to default behavior.',
                 error,
               );
 
-              return mergeProps(propsToMerge, childProps);
+              return mergeProps(
+                slotProps,
+                (slottableElement.props ?? {}) as Record<string, unknown>,
+              );
             }
           })();
+
+    // do not pass ref to React.Fragment for React 19 compatibility
+    if (slottableElement.type !== React.Fragment) {
+      mergedProps.ref = forwardedRef ? composedRef : slottableElementRef;
+    }
 
     return React.cloneElement(slottableElement, mergedProps);
   });

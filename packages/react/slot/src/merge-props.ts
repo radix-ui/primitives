@@ -1,5 +1,3 @@
-import { composeRefs } from '@radix-ui/react-compose-refs';
-
 const mergeProps = (<
   SlotProps extends AnyProps = AnyProps,
   ChildProps extends AnyProps = SlotProps,
@@ -54,10 +52,6 @@ const mergeProps = (<
       (overrideProps as any)[propName] = [slotPropValue, childPropValue].filter(Boolean).join(' ');
     } else if (propName === 'aria-describedby') {
       (overrideProps as any)[propName] = concatAriaDescribedby(childPropValue, slotPropValue);
-    } else if (propName === 'ref') {
-      (overrideProps as any)[propName] = slotPropValue
-        ? composeRefs(slotPropValue, childPropValue)
-        : childPropValue;
     }
   }
 
