@@ -3,8 +3,11 @@ import { customMergeProps } from './custom-merge-props';
 import { Dialog, NavigationMenu, Direction, Slot } from 'radix-ui';
 import styles from './navigation-menu.stories.module.css';
 import dialogStyles from './dialog.stories.module.css';
+import type { Meta, StoryObj } from '@storybook/react-webpack5';
 
-export default { title: 'Components/NavigationMenu' };
+export default {
+  title: 'Components/NavigationMenu',
+} satisfies Meta<typeof NavigationMenu.Root>;
 
 export const Basic = () => {
   return (
@@ -184,15 +187,39 @@ export const Viewport = () => {
   );
 };
 
-export const Submenus = () => {
-  return (
+type SubmenusStory = StoryObj<{
+  activationMode?: NavigationMenu.ActivationMode;
+  submenuActivationMode?: NavigationMenu.ActivationMode;
+  submenuDisableToggle?: boolean;
+}>;
+
+export const Submenus = {
+  argTypes: {
+    activationMode: {
+      control: 'select',
+      options: ['automatic', 'manual'],
+    },
+    submenuActivationMode: {
+      control: 'select',
+      options: ['automatic', 'manual'],
+    },
+    submenuDisableToggle: {
+      control: 'boolean',
+    },
+  },
+  render: (args) => (
     <StoryFrame>
-      <NavigationMenu.Root>
+      <NavigationMenu.Root activationMode={args.activationMode}>
         <NavigationMenu.List className={styles.mainList}>
           <NavigationMenu.Item>
             <TriggerWithIndicator>Products</TriggerWithIndicator>
             <NavigationMenu.Content className={styles.submenusContent}>
-              <NavigationMenu.Sub className={styles.submenusRoot} defaultValue="extensibility">
+              <NavigationMenu.Sub
+                className={styles.submenusRoot}
+                defaultValue="extensibility"
+                activationMode={args.submenuActivationMode}
+                disableToggle={args.submenuDisableToggle}
+              >
                 <NavigationMenu.List className={styles.mainList}>
                   <NavigationMenu.Item value="extensibility">
                     <NavigationMenu.Trigger className={styles.submenusSubTrigger}>
@@ -367,8 +394,8 @@ export const Submenus = () => {
         <NavigationMenu.Viewport className={styles.submenusViewport} />
       </NavigationMenu.Root>
     </StoryFrame>
-  );
-};
+  ),
+} satisfies SubmenusStory;
 
 export const WithCustomMergeProps = () => (
   <Slot.Provider mergeProps={customMergeProps}>
@@ -584,12 +611,22 @@ export const InsideDialog = () => {
 
 /* -----------------------------------------------------------------------------------------------*/
 
-const StoryFrame: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const StoryFrame: React.FC<{
+  children: React.ReactNode;
+}> = ({ children }) => {
   const [rtl, setRtl] = React.useState(false);
 
   return (
     <div style={{ height: '100vh', backgroundColor: '#e5e8eb' }}>
-      <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 20, paddingBottom: 30 }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          paddingTop: 20,
+          paddingBottom: 30,
+          gap: 16,
+        }}
+      >
         <label>
           <input
             type="checkbox"

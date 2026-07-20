@@ -32,4 +32,8 @@ export type {
   NavigationMenuIndicatorProps,
   NavigationMenuContentProps,
   NavigationMenuViewportProps,
+  //
+  ActivationMode,
+  Direction,
+  Orientation,
 } from './navigation-menu';
