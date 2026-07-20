@@ -48,6 +48,7 @@
     "@radix-ui/react-primitive": "workspace:*",
     "@radix-ui/react-slot": "workspace:*",
     "@radix-ui/react-use-controllable-state": "workspace:*",
+    "@radix-ui/react-use-layout-effect": "workspace:*",
     "aria-hidden": "^1.2.4",
     "react-remove-scroll": "^2.7.2"
   },

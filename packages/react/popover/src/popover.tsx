@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
@@ -30,25 +31,23 @@ const [createPopoverContext, createPopoverScope] = createContextScope(POPOVER_NA
 ]);
 const usePopperScope = createPopperScope();
 
-type PopoverContextValue = {
+interface PopoverContextValue {
   triggerRef: React.RefObject<HTMLButtonElement | null>;
   contentId: string;
   titleId: string;
   descriptionId: string;
+  titlePresent: boolean;
+  descriptionPresent: boolean;
+  setTitleCount: React.Dispatch<React.SetStateAction<number>>;
+  setDescriptionCount: React.Dispatch<React.SetStateAction<number>>;
   open: boolean;
   onOpenChange(open: boolean): void;
   onOpenToggle(): void;
   hasCustomAnchor: boolean;
   onCustomAnchorAdd(): void;
   onCustomAnchorRemove(): void;
-  // `Title` and `Description` are optional, so we only reference them from the
-  // content (via `aria-labelledby`/`aria-describedby`) once they are rendered.
-  hasTitle: boolean;
-  setHasTitle: React.Dispatch<React.SetStateAction<boolean>>;
-  hasDescription: boolean;
-  setHasDescription: React.Dispatch<React.SetStateAction<boolean>>;
   modal: boolean;
-};
+}
 
 const [PopoverProvider, usePopoverContext] =
   createPopoverContext<PopoverContextValue>(POPOVER_NAME);
@@ -73,8 +72,8 @@ const Popover: React.FC<PopoverProps> = (props: ScopedProps<PopoverProps>) => {
   const popperScope = usePopperScope(__scopePopover);
   const triggerRef = React.useRef<HTMLButtonElement>(null);
   const [hasCustomAnchor, setHasCustomAnchor] = React.useState(false);
-  const [hasTitle, setHasTitle] = React.useState(false);
-  const [hasDescription, setHasDescription] = React.useState(false);
+  const [titleCount, setTitleCount] = React.useState(0);
+  const [descriptionCount, setDescriptionCount] = React.useState(0);
   const [open, setOpen] = useControllableState({
     prop: openProp,
     defaultProp: defaultOpen ?? false,
@@ -89,6 +88,10 @@ const Popover: React.FC<PopoverProps> = (props: ScopedProps<PopoverProps>) => {
         contentId={useId()}
         titleId={useId()}
         descriptionId={useId()}
+        titlePresent={titleCount > 0}
+        descriptionPresent={descriptionCount > 0}
+        setTitleCount={setTitleCount}
+        setDescriptionCount={setDescriptionCount}
         triggerRef={triggerRef}
         open={open}
         onOpenChange={setOpen}
@@ -96,10 +99,6 @@ const Popover: React.FC<PopoverProps> = (props: ScopedProps<PopoverProps>) => {
         hasCustomAnchor={hasCustomAnchor}
         onCustomAnchorAdd={React.useCallback(() => setHasCustomAnchor(true), [])}
         onCustomAnchorRemove={React.useCallback(() => setHasCustomAnchor(false), [])}
-        hasTitle={hasTitle}
-        setHasTitle={setHasTitle}
-        hasDescription={hasDescription}
-        setHasDescription={setHasDescription}
         modal={modal}
       >
         {children}
@@ -413,6 +412,7 @@ const PopoverContentImpl = /* @__PURE__ */ React.forwardRef<
       onPointerDownOutside,
       onFocusOutside,
       onInteractOutside,
+      'aria-describedby': ariaDescribedby,
       ...contentProps
     } = props;
     const context = usePopoverContext(CONTENT_NAME, __scopePopover);
@@ -444,8 +444,12 @@ const PopoverContentImpl = /* @__PURE__ */ React.forwardRef<
             data-state={getState(context.open)}
             role="dialog"
             id={context.contentId}
-            aria-labelledby={context.hasTitle ? context.titleId : undefined}
-            aria-describedby={context.hasDescription ? context.descriptionId : undefined}
+            aria-labelledby={context.titlePresent ? context.titleId : undefined}
+            aria-describedby={
+              context.descriptionPresent
+                ? concatAriaDescribedby(ariaDescribedby, context.descriptionId)
+                : ariaDescribedby
+            }
             {...popperScope}
             {...contentProps}
             ref={forwardedRef}
@@ -479,12 +483,11 @@ const PopoverTitle = /* @__PURE__ */ React.forwardRef<PopoverTitleElement, Popov
   function PopoverTitle(props: ScopedProps<PopoverTitleProps>, forwardedRef) {
     const { __scopePopover, ...titleProps } = props;
     const context = usePopoverContext('PopoverTitle', __scopePopover);
-    const { setHasTitle } = context;
-
-    React.useEffect(() => {
-      setHasTitle(true);
-      return () => setHasTitle(false);
-    }, [setHasTitle]);
+    const { setTitleCount } = context;
+    useLayoutEffect(() => {
+      setTitleCount((count) => count + 1);
+      return () => setTitleCount((count) => count - 1);
+    }, [setTitleCount]);
 
     return <Primitive.h2 id={context.titleId} {...titleProps} ref={forwardedRef} />;
   },
@@ -504,12 +507,11 @@ const PopoverDescription = /* @__PURE__ */ React.forwardRef<
 >(function PopoverDescription(props: ScopedProps<PopoverDescriptionProps>, forwardedRef) {
   const { __scopePopover, ...descriptionProps } = props;
   const context = usePopoverContext('PopoverDescription', __scopePopover);
-  const { setHasDescription } = context;
-
-  React.useEffect(() => {
-    setHasDescription(true);
-    return () => setHasDescription(false);
-  }, [setHasDescription]);
+  const { setDescriptionCount } = context;
+  useLayoutEffect(() => {
+    setDescriptionCount((count) => count + 1);
+    return () => setDescriptionCount((count) => count - 1);
+  }, [setDescriptionCount]);
 
   return <Primitive.p id={context.descriptionId} {...descriptionProps} ref={forwardedRef} />;
 });
@@ -558,6 +560,19 @@ const PopoverArrow = /* @__PURE__ */ React.forwardRef<PopoverArrowElement, Popov
 
 function getState(open: boolean) {
   return open ? 'open' : 'closed';
+}
+
+// TODO: Move to primitive once that package exposed individual sub-modules
+function concatAriaDescribedby(...values: unknown[]): string | undefined {
+  const ids = new Set<string>();
+  for (const value of values) {
+    if (typeof value !== 'string') continue;
+    for (const id of String(value).trim().split(/\s+/)) {
+      if (id) ids.add(id);
+    }
+  }
+
+  return ids.size > 0 ? Array.from(ids).join(' ') : undefined;
 }
 
 export {

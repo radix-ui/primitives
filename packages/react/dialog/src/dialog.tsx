@@ -458,8 +458,6 @@ const DialogContentImpl = /* @__PURE__ */ React.forwardRef<
  * DialogTitle
  * -----------------------------------------------------------------------------------------------*/
 
-const TITLE_NAME = 'DialogTitle';
-
 type DialogTitleElement = React.ComponentRef<typeof Primitive.h2>;
 type PrimitiveHeading2Props = React.ComponentPropsWithoutRef<typeof Primitive.h2>;
 interface DialogTitleProps extends PrimitiveHeading2Props {}
@@ -467,7 +465,7 @@ interface DialogTitleProps extends PrimitiveHeading2Props {}
 const DialogTitle = /* @__PURE__ */ React.forwardRef<DialogTitleElement, DialogTitleProps>(
   function DialogTitle(props: ScopedProps<DialogTitleProps>, forwardedRef) {
     const { __scopeDialog, ...titleProps } = props;
-    const context = useDialogContext(TITLE_NAME, __scopeDialog);
+    const context = useDialogContext('DialogTitle', __scopeDialog);
     const { setTitleCount } = context;
     useLayoutEffect(() => {
       setTitleCount((count) => count + 1);
@@ -481,8 +479,6 @@ const DialogTitle = /* @__PURE__ */ React.forwardRef<DialogTitleElement, DialogT
  * DialogDescription
  * -----------------------------------------------------------------------------------------------*/
 
-const DESCRIPTION_NAME = 'DialogDescription';
-
 type DialogDescriptionElement = React.ComponentRef<typeof Primitive.p>;
 type PrimitiveParagraphProps = React.ComponentPropsWithoutRef<typeof Primitive.p>;
 interface DialogDescriptionProps extends PrimitiveParagraphProps {}
@@ -494,7 +490,7 @@ const DialogDescription = /* @__PURE__ */ React.forwardRef<
   // blank line to reduce diff noise
   function DialogDescription(props: ScopedProps<DialogDescriptionProps>, forwardedRef) {
     const { __scopeDialog, ...descriptionProps } = props;
-    const context = useDialogContext(DESCRIPTION_NAME, __scopeDialog);
+    const context = useDialogContext('DialogDescription', __scopeDialog);
     const { setDescriptionCount } = context;
     useLayoutEffect(() => {
       setDescriptionCount((count) => count + 1);
