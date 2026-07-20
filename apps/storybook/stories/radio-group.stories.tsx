@@ -1,7 +1,8 @@
 /* eslint-disable react/jsx-pascal-case */
 import * as React from 'react';
-import { Direction, Label as LabelPrimitive, RadioGroup } from 'radix-ui';
+import { Direction, Label as LabelPrimitive, RadioGroup, Slot } from 'radix-ui';
 import styles from './radio-group.stories.module.css';
+import { customMergeProps } from './custom-merge-props';
 
 export default { title: 'Components/RadioGroup' };
 
@@ -138,6 +139,20 @@ export const WithinFormReset = () => {
     </form>
   );
 };
+export const WithCustomMergeProps = () => (
+  <Slot.Provider mergeProps={customMergeProps}>
+    <RadioGroup.Root className={styles.root} defaultValue="1">
+      <RadioGroup.Item className={styles.item} value="1" asChild>
+        <button data-custom-merge>
+          <RadioGroup.Indicator className={styles.indicator} />
+        </button>
+      </RadioGroup.Item>
+      <RadioGroup.Item className={styles.item} value="2">
+        <RadioGroup.Indicator className={styles.indicator} />
+      </RadioGroup.Item>
+    </RadioGroup.Root>
+  </Slot.Provider>
+);
 
 export const LegacyStyled = () => (
   <Label>

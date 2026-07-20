@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { Dialog, DropdownMenu } from 'radix-ui';
+import { Dialog, DropdownMenu, Slot } from 'radix-ui';
 import styles from './dialog.stories.module.css';
 import { ExternalOverlayTrigger } from './external-overlay';
+import { customMergeProps } from './custom-merge-props';
 
 export default { title: 'Components/Dialog' };
 
@@ -305,6 +306,26 @@ export const OuterScrollable = () => (
       </Dialog.Overlay>
     </Dialog.Portal>
   </Dialog.Root>
+);
+
+export const WithCustomMergeProps = () => (
+  <Slot.Provider mergeProps={customMergeProps}>
+    <Dialog.Root>
+      <Dialog.Trigger className={styles.trigger} asChild>
+        <button data-custom-merge>open (asChild)</button>
+      </Dialog.Trigger>
+      <Dialog.Portal>
+        <Dialog.Overlay className={styles.overlay} />
+        <Dialog.Content className={styles.contentDefault}>
+          <Dialog.Title>Booking info</Dialog.Title>
+          <Dialog.Description>Please enter the info for your booking below.</Dialog.Description>
+          <Dialog.Close className={styles.close} asChild>
+            <button>close (asChild)</button>
+          </Dialog.Close>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
+  </Slot.Provider>
 );
 
 export const Chromatic = () => (

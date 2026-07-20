@@ -1,8 +1,9 @@
 import * as React from 'react';
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import { useArgs } from 'storybook/preview-api';
-import { unstable_PasswordToggleField as PasswordToggleField } from 'radix-ui';
+import { Slot, unstable_PasswordToggleField as PasswordToggleField } from 'radix-ui';
 import styles from './password-toggle-field.stories.module.css';
+import { customMergeProps } from './custom-merge-props';
 
 export default {
   title: 'Components/PasswordToggleField',
@@ -116,6 +117,29 @@ export const InsideForm = {
     );
   },
 } satisfies Story;
+
+export const WithCustomMergeProps = () => (
+  <Slot.Provider mergeProps={customMergeProps}>
+    <div className={styles.viewport}>
+      <PasswordToggleField.Root>
+        <div className={styles.field}>
+          <PasswordToggleField.Input className={styles.input} asChild>
+            <input data-custom-merge />
+          </PasswordToggleField.Input>
+          <PasswordToggleField.Toggle className={styles.toggle} asChild>
+            <button>
+              <PasswordToggleField.Icon
+                className={styles.toggleIcon}
+                visible={<EyeOpenIcon />}
+                hidden={<EyeClosedIcon />}
+              />
+            </button>
+          </PasswordToggleField.Toggle>
+        </div>
+      </PasswordToggleField.Root>
+    </div>
+  </Slot.Provider>
+);
 
 const EyeClosedIcon = () => (
   <svg

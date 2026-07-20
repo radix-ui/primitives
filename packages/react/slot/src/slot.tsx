@@ -1,11 +1,31 @@
 import * as React from 'react';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
+import type { AnyProps, MergePropsFunction } from './merge-props';
+import { mergeProps } from './merge-props';
 
 declare module 'react' {
   interface ReactElement {
     $$typeof?: symbol | string;
   }
 }
+
+type SlotContextValue = MergePropsFunction;
+
+const SlotContext = React.createContext<SlotContextValue>(mergeProps);
+SlotContext.displayName = 'SlotContext';
+
+/* -------------------------------------------------------------------------------------------------
+ * SlotProvider
+ * -----------------------------------------------------------------------------------------------*/
+
+interface SlotProviderProps {
+  children: React.ReactNode;
+  mergeProps: MergePropsFunction<AnyProps, AnyProps, AnyProps>;
+}
+
+const SlotProvider: React.FC<SlotProviderProps> = ({ children, mergeProps }) => {
+  return <SlotContext.Provider value={mergeProps}>{children}</SlotContext.Provider>;
+};
 
 /* -------------------------------------------------------------------------------------------------
  * Slot
@@ -15,6 +35,7 @@ export type Usable<T> = PromiseLike<T> | React.Context<T>;
 
 type SlotProps<Elem extends Element = HTMLElement, Props = React.HTMLAttributes<Elem>> = Props & {
   children?: React.ReactNode;
+  mergeProps?: MergePropsFunction;
 };
 
 /* @__NO_SIDE_EFFECTS__ */ export function createSlot<
@@ -22,7 +43,8 @@ type SlotProps<Elem extends Element = HTMLElement, Props = React.HTMLAttributes<
   Props = React.HTMLAttributes<Elem>,
 >(ownerName: string) {
   const Slot = React.forwardRef<Elem, SlotProps<Elem, Props>>((props, forwardedRef) => {
-    let { children, ...slotProps } = props;
+    const context = React.useContext(SlotContext);
+    let { children, mergeProps: mergePropsProp = context, ...slotProps } = props;
     let slottableElement: React.ReactElement | null = null;
     let hasSlottable = false;
     const newChildren: React.ReactNode[] = [];
@@ -66,9 +88,10 @@ type SlotProps<Elem extends Element = HTMLElement, Props = React.HTMLAttributes<
     const composedRef = useComposedRefs(forwardedRef, slottableElementRef);
 
     if (!slottableElement) {
-      // Empty/falsy children (`null`, `undefined`, `false`, no children, etc.) are valid and
-      // render nothing. Anything else is content we couldn't slot onto a single element, which
-      // is a usage error, so we fail loudly with a clear message.
+      // Empty/falsy children (`null`, `undefined`, `false`, no children, etc.)
+      // are valid and render nothing. Anything else is content we couldn't slot
+      // onto a single element, which is a usage error, so we fail loudly with a
+      // clear message.
       if (children || children === 0) {
         throw new Error(
           hasSlottable ? createSlottableError(ownerName) : createSlotError(ownerName),
@@ -77,7 +100,10 @@ type SlotProps<Elem extends Element = HTMLElement, Props = React.HTMLAttributes<
       return children;
     }
 
-    const mergedProps = mergeProps(slotProps, slottableElement.props ?? {});
+    const mergedProps = mergePropsProp(
+      slotProps,
+      (slottableElement.props ?? {}) as Record<string, unknown>,
+    );
 
     // do not pass ref to React.Fragment for React 19 compatibility
     if (slottableElement.type !== React.Fragment) {
@@ -134,48 +160,6 @@ const getSlottableElementFromSlottable = (slottable: SlottableElement, child: Re
 
   return React.isValidElement(child) ? child : null;
 };
-
-/* -------------------------------------------------------------------------------------------------
- * mergeProps
- * -----------------------------------------------------------------------------------------------*/
-
-type AnyProps = Record<string, any>;
-
-function mergeProps(slotProps: AnyProps, childProps: AnyProps) {
-  // all child props should override
-  const overrideProps = { ...childProps };
-
-  for (const propName in childProps) {
-    const slotPropValue = slotProps[propName];
-    const childPropValue = childProps[propName];
-
-    const isHandler = /^on[A-Z]/.test(propName);
-    if (isHandler) {
-      // if the handler exists on both, we compose them
-      if (slotPropValue && childPropValue) {
-        overrideProps[propName] = (...args: unknown[]) => {
-          const result = childPropValue(...args);
-          slotPropValue(...args);
-          return result;
-        };
-      }
-      // but if it exists only on the slot, we use only this one
-      else if (slotPropValue) {
-        overrideProps[propName] = slotPropValue;
-      }
-    }
-    // if it's `style`, we merge them
-    else if (propName === 'style') {
-      overrideProps[propName] = { ...slotPropValue, ...childPropValue };
-    } else if (propName === 'className') {
-      overrideProps[propName] = [slotPropValue, childPropValue].filter(Boolean).join(' ');
-    } else if (propName === 'aria-describedby') {
-      overrideProps[propName] = concatAriaDescribedby(childPropValue, slotPropValue);
-    }
-  }
-
-  return { ...slotProps, ...overrideProps };
-}
 
 /* -------------------------------------------------------------------------------------------------
  * getElementRef
@@ -242,19 +226,6 @@ function isPromiseLike(value: unknown): value is PromiseLike<unknown> {
   return typeof value === 'object' && value !== null && 'then' in value;
 }
 
-// TODO: Move to primitive once that package exposed individual sub-modules
-function concatAriaDescribedby(...values: unknown[]): string | undefined {
-  const ids = new Set<string>();
-  for (const value of values) {
-    if (typeof value !== 'string') continue;
-    for (const id of String(value).trim().split(/\s+/)) {
-      if (id) ids.add(id);
-    }
-  }
-
-  return ids.size > 0 ? Array.from(ids).join(' ') : undefined;
-}
-
 const createSlotError = (ownerName: string) => {
   return `${ownerName} failed to slot onto its children. Expected a single React element child or \`Slottable\`.`;
 };
@@ -268,7 +239,12 @@ const use: typeof React.use | undefined = (React as any)[' use '.trim().toString
 export {
   Slot,
   Slottable,
+  SlotProvider,
   //
   Slot as Root,
+  SlotProvider as Provider,
+  //
+  mergeProps,
 };
 export type { SlotProps };
+export type { MergePropsFunction } from './merge-props';
