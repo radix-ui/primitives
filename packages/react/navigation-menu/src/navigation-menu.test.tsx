@@ -46,26 +46,159 @@ describe('aria-controls', () => {
   });
 });
 
-describe('NavigationMenuSub triggerBehavior', () => {
+describe('NavigationMenu activationMode', () => {
+  afterEach(cleanup);
+
+  describe('"automatic" activationMode', () => {
+    it('opens the item on pointer enter', async () => {
+      render(<NavigationMenuTest activationMode="automatic" />);
+      const trigger = screen.getByText(TRIGGER_TEXT);
+      fireEvent.pointerEnter(trigger, { pointerType: 'mouse' });
+      fireEvent.pointerMove(trigger, { pointerType: 'mouse' });
+      await waitFor(() => expect(screen.getByText(CONTENT_TEXT)).toBeInTheDocument());
+      expect(trigger).toHaveAttribute('aria-expanded', 'true');
+    });
+
+    it('toggles item on click', async () => {
+      render(<NavigationMenuTest defaultValue="one" />);
+      const trigger = screen.getByText(TRIGGER_TEXT);
+      await waitFor(() => expect(screen.getByText(CONTENT_TEXT)).toBeInTheDocument());
+
+      fireEvent.click(trigger);
+      await waitFor(() => expect(screen.queryByText(CONTENT_TEXT)).not.toBeInTheDocument());
+      expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    });
+  });
+
+  describe('"manual" activationMode', () => {
+    it('does not open on pointer enter', async () => {
+      render(<NavigationMenuTest activationMode="manual" />);
+      const trigger = screen.getByText(TRIGGER_TEXT);
+
+      fireEvent.pointerEnter(trigger, { pointerType: 'mouse' });
+      fireEvent.pointerMove(trigger, { pointerType: 'mouse' });
+
+      // Wait past the default open delay to catch a hover-open regression.
+      await new Promise((resolve) => setTimeout(resolve, 250));
+      expect(screen.queryByText(CONTENT_TEXT)).not.toBeInTheDocument();
+      expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    });
+
+    it('toggles item on click', async () => {
+      render(<NavigationMenuTest activationMode="manual" />);
+      const trigger = screen.getByText(TRIGGER_TEXT);
+      expect(screen.queryByText(CONTENT_TEXT)).not.toBeInTheDocument();
+
+      fireEvent.click(trigger);
+      await waitFor(() => expect(screen.getByText(CONTENT_TEXT)).toBeInTheDocument());
+      expect(trigger).toHaveAttribute('aria-expanded', 'true');
+
+      fireEvent.click(trigger);
+      await waitFor(() => expect(screen.queryByText(CONTENT_TEXT)).not.toBeInTheDocument());
+      expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    });
+  });
+});
+
+describe('NavigationMenuSub activationMode', () => {
   afterEach(cleanup);
 
   const NavigationMenuSubTest = (props: React.ComponentProps<typeof NavigationMenu.Sub>) => (
-    <NavigationMenu.Root>
-      <NavigationMenu.Sub defaultValue="one" {...props}>
-        <NavigationMenu.List>
-          <NavigationMenu.Item value="one">
-            <NavigationMenu.Trigger>{TRIGGER_TEXT}</NavigationMenu.Trigger>
-            <NavigationMenu.Content>
-              <NavigationMenu.Link href="#">{CONTENT_TEXT}</NavigationMenu.Link>
-            </NavigationMenu.Content>
-          </NavigationMenu.Item>
-        </NavigationMenu.List>
-      </NavigationMenu.Sub>
-    </NavigationMenu.Root>
+    <NavigationMenu.Sub defaultValue="one" {...props}>
+      <NavigationMenu.List>
+        <NavigationMenu.Item value="one">
+          <NavigationMenu.Trigger>{TRIGGER_TEXT}</NavigationMenu.Trigger>
+          <NavigationMenu.Content>
+            <NavigationMenu.Link href="#">{CONTENT_TEXT}</NavigationMenu.Link>
+          </NavigationMenu.Content>
+        </NavigationMenu.Item>
+      </NavigationMenu.List>
+    </NavigationMenu.Sub>
   );
 
-  it('keeps the open item open when clicking its trigger by default ("open")', async () => {
-    render(<NavigationMenuSubTest />);
+  describe('"automatic" activationMode', () => {
+    it('opens the item on pointer enter', async () => {
+      render(
+        <NavigationMenu.Root>
+          <NavigationMenuSubTest defaultValue="" />
+        </NavigationMenu.Root>,
+      );
+      const trigger = screen.getByText(TRIGGER_TEXT);
+      expect(screen.queryByText(CONTENT_TEXT)).not.toBeInTheDocument();
+
+      fireEvent.pointerMove(trigger, { pointerType: 'mouse' });
+      await waitFor(() => expect(screen.getByText(CONTENT_TEXT)).toBeInTheDocument());
+      expect(trigger).toHaveAttribute('aria-expanded', 'true');
+    });
+
+    it('keeps the open item open on click', async () => {
+      render(
+        <NavigationMenu.Root>
+          <NavigationMenuSubTest />
+        </NavigationMenu.Root>,
+      );
+      const trigger = screen.getByText(TRIGGER_TEXT);
+      await waitFor(() => expect(screen.getByText(CONTENT_TEXT)).toBeInTheDocument());
+
+      fireEvent.click(trigger);
+      expect(screen.getByText(CONTENT_TEXT)).toBeInTheDocument();
+      expect(trigger).toHaveAttribute('aria-expanded', 'true');
+    });
+  });
+
+  describe('"manual" activationMode', () => {
+    it('does not open on pointer enter', async () => {
+      render(
+        <NavigationMenu.Root>
+          <NavigationMenuSubTest activationMode="manual" defaultValue="" />
+        </NavigationMenu.Root>,
+      );
+      const trigger = screen.getByText(TRIGGER_TEXT);
+      expect(screen.queryByText(CONTENT_TEXT)).not.toBeInTheDocument();
+
+      fireEvent.pointerEnter(trigger, { pointerType: 'mouse' });
+      fireEvent.pointerMove(trigger, { pointerType: 'mouse' });
+
+      await new Promise((resolve) => setTimeout(resolve, 50));
+      expect(screen.queryByText(CONTENT_TEXT)).not.toBeInTheDocument();
+      expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    });
+
+    it('closes the open item on click', async () => {
+      render(
+        <NavigationMenu.Root>
+          <NavigationMenuSubTest activationMode="manual" />
+        </NavigationMenu.Root>,
+      );
+      const trigger = screen.getByText(TRIGGER_TEXT);
+      await waitFor(() => expect(screen.getByText(CONTENT_TEXT)).toBeInTheDocument());
+
+      fireEvent.click(trigger);
+      await waitFor(() => expect(screen.queryByText(CONTENT_TEXT)).not.toBeInTheDocument());
+      expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    });
+  });
+
+  it('inherits "manual" from the parent NavigationMenu', async () => {
+    render(
+      <NavigationMenu.Root activationMode="manual">
+        <NavigationMenuSubTest />
+      </NavigationMenu.Root>,
+    );
+    const trigger = screen.getByText(TRIGGER_TEXT);
+    await waitFor(() => expect(screen.getByText(CONTENT_TEXT)).toBeInTheDocument());
+
+    fireEvent.click(trigger);
+    await waitFor(() => expect(screen.queryByText(CONTENT_TEXT)).not.toBeInTheDocument());
+    expect(trigger).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  it('inherits "automatic" from the parent NavigationMenu', async () => {
+    render(
+      <NavigationMenu.Root activationMode="automatic">
+        <NavigationMenuSubTest />
+      </NavigationMenu.Root>,
+    );
     const trigger = screen.getByText(TRIGGER_TEXT);
     await waitFor(() => expect(screen.getByText(CONTENT_TEXT)).toBeInTheDocument());
 
@@ -74,8 +207,26 @@ describe('NavigationMenuSub triggerBehavior', () => {
     expect(trigger).toHaveAttribute('aria-expanded', 'true');
   });
 
-  it('closes the open item when clicking its trigger with triggerBehavior="toggle"', async () => {
-    render(<NavigationMenuSubTest triggerBehavior="toggle" />);
+  it('overrides inherited "manual" with activationMode="automatic"', async () => {
+    render(
+      <NavigationMenu.Root activationMode="manual">
+        <NavigationMenuSubTest activationMode="automatic" />
+      </NavigationMenu.Root>,
+    );
+    const trigger = screen.getByText(TRIGGER_TEXT);
+    await waitFor(() => expect(screen.getByText(CONTENT_TEXT)).toBeInTheDocument());
+
+    fireEvent.click(trigger);
+    expect(screen.getByText(CONTENT_TEXT)).toBeInTheDocument();
+    expect(trigger).toHaveAttribute('aria-expanded', 'true');
+  });
+
+  it('overrides inherited "automatic" with activationMode="manual"', async () => {
+    render(
+      <NavigationMenu.Root activationMode="automatic">
+        <NavigationMenuSubTest activationMode="manual" />
+      </NavigationMenu.Root>,
+    );
     const trigger = screen.getByText(TRIGGER_TEXT);
     await waitFor(() => expect(screen.getByText(CONTENT_TEXT)).toBeInTheDocument());
 

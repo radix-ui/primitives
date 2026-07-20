@@ -17,8 +17,24 @@ import * as VisuallyHiddenPrimitive from '@radix-ui/react-visually-hidden';
 
 import type { Scope } from '@radix-ui/react-context';
 
-type Orientation = 'vertical' | 'horizontal';
-type Direction = 'ltr' | 'rtl';
+const ActivationMode = {
+  Automatic: 'automatic',
+  Manual: 'manual',
+} as const;
+
+const Orientation = {
+  Vertical: 'vertical',
+  Horizontal: 'horizontal',
+} as const;
+
+const Direction = {
+  LTR: 'ltr',
+  RTL: 'rtl',
+} as const;
+
+type Orientation = (typeof Orientation)[keyof typeof Orientation];
+type Direction = (typeof Direction)[keyof typeof Direction];
+type ActivationMode = (typeof ActivationMode)[keyof typeof ActivationMode];
 
 /* -------------------------------------------------------------------------------------------------
  * NavigationMenu
@@ -44,13 +60,14 @@ type ContentData = {
   ref?: React.Ref<ViewportContentMounterElement>;
 } & ViewportContentMounterProps;
 
-type NavigationMenuContextValue = {
+interface NavigationMenuContextValue {
   isRootMenu: boolean;
   value: string;
   previousValue: string;
   baseId: string;
   dir: Direction;
   orientation: Orientation;
+  activationMode: ActivationMode;
   rootNavigationMenu: NavigationMenuElement | null;
   indicatorTrack: HTMLDivElement | null;
   onIndicatorTrackChange(indicatorTrack: HTMLDivElement | null): void;
@@ -64,7 +81,7 @@ type NavigationMenuContextValue = {
   onContentLeave(): void;
   onItemSelect(itemValue: string): void;
   onItemDismiss(): void;
-};
+}
 
 const [NavigationMenuProviderImpl, useNavigationMenuContext] =
   createNavigationMenuContext<NavigationMenuContextValue>(NAVIGATION_MENU_NAME);
@@ -94,6 +111,15 @@ interface NavigationMenuProps
    * @defaultValue 300
    */
   skipDelayDuration?: number;
+  /**
+   * Whether an item is activated automatically or manually.
+   * - `"automatic"`: hovering or focusing a trigger opens its item, and moving
+   *   away closes it after a short delay.
+   * - `"manual"`: clicking a trigger toggles the item; hover and focus are ignored
+   *
+   * @defaultValue automatic
+   */
+  activationMode?: ActivationMode;
 }
 
 const NavigationMenu = /* @__PURE__ */ React.forwardRef<NavigationMenuElement, NavigationMenuProps>(
@@ -105,8 +131,9 @@ const NavigationMenu = /* @__PURE__ */ React.forwardRef<NavigationMenuElement, N
       defaultValue,
       delayDuration = 200,
       skipDelayDuration = 300,
-      orientation = 'horizontal',
+      orientation = Orientation.Horizontal,
       dir,
+      activationMode = ActivationMode.Automatic,
       ...NavigationMenuProps
     } = props;
     const [navigationMenu, setNavigationMenu] = React.useState<NavigationMenuElement | null>(null);
@@ -184,18 +211,34 @@ const NavigationMenu = /* @__PURE__ */ React.forwardRef<NavigationMenuElement, N
         value={value}
         dir={direction}
         orientation={orientation}
+        activationMode={activationMode}
         rootNavigationMenu={navigationMenu}
         onTriggerEnter={(itemValue) => {
-          window.clearTimeout(openTimerRef.current);
-          if (isOpenDelayed) handleDelayedOpen(itemValue);
-          else handleOpen(itemValue);
+          if (activationMode === ActivationMode.Automatic) {
+            window.clearTimeout(openTimerRef.current);
+            if (isOpenDelayed) {
+              handleDelayedOpen(itemValue);
+            } else {
+              handleOpen(itemValue);
+            }
+          }
         }}
         onTriggerLeave={() => {
-          window.clearTimeout(openTimerRef.current);
-          startCloseTimer();
+          if (activationMode === ActivationMode.Automatic) {
+            window.clearTimeout(openTimerRef.current);
+            startCloseTimer();
+          }
         }}
-        onContentEnter={() => window.clearTimeout(closeTimerRef.current)}
-        onContentLeave={startCloseTimer}
+        onContentEnter={() => {
+          if (activationMode === ActivationMode.Automatic) {
+            window.clearTimeout(closeTimerRef.current);
+          }
+        }}
+        onContentLeave={() => {
+          if (activationMode === ActivationMode.Automatic) {
+            startCloseTimer();
+          }
+        }}
         onItemSelect={(itemValue) => {
           setValue((prevValue) => (prevValue === itemValue ? '' : itemValue));
         }}
@@ -230,15 +273,17 @@ interface NavigationMenuSubProps
   onValueChange?: (value: string) => void;
   orientation?: Orientation;
   /**
-   * Controls how clicking a trigger affects its item.
-   * - `"open"`: clicking a trigger only ever opens its item, leaving the
-   *   currently open item unchanged.
-   * - `"toggle"`: clicking the trigger of an already open item closes it,
-   *   matching the toggle behavior of the root `NavigationMenu`.
+   * Whether an item is activated automatically or manually.
+   * - `"automatic"`: hovering or focusing a trigger opens its item, and moving
+   *   away closes it after a short delay.
+   * - `"manual"`: clicking a trigger toggles the item; hover and focus are
+   *   ignored
    *
-   * @defaultValue "open"
+   * The default value is inherited from the parent Navigation Menu root
+   * component. If no value is provided to the parent, the default value is
+   * `"automatic"`.
    */
-  triggerBehavior?: 'open' | 'toggle';
+  activationMode?: ActivationMode;
 }
 
 const NavigationMenuSub = /* @__PURE__ */ React.forwardRef<
@@ -252,11 +297,12 @@ const NavigationMenuSub = /* @__PURE__ */ React.forwardRef<
       value: valueProp,
       onValueChange,
       defaultValue,
-      orientation = 'horizontal',
-      triggerBehavior = 'open',
+      orientation = Orientation.Horizontal,
+      activationMode: activationModeProp,
       ...subProps
     } = props;
     const context = useNavigationMenuContext(SUB_NAME, __scopeNavigationMenu);
+    const activationMode = activationModeProp ?? context.activationMode;
     const [value, setValue] = useControllableState({
       prop: valueProp,
       onChange: onValueChange,
@@ -271,11 +317,17 @@ const NavigationMenuSub = /* @__PURE__ */ React.forwardRef<
         value={value}
         dir={context.dir}
         orientation={orientation}
+        activationMode={activationMode}
         rootNavigationMenu={context.rootNavigationMenu}
-        onTriggerEnter={(itemValue) => setValue(itemValue)}
+        onTriggerEnter={(itemValue) => {
+          if (activationMode === ActivationMode.Automatic) {
+            setValue(itemValue);
+          }
+        }}
         onItemSelect={(itemValue) => {
+          // In manual mode, clicking an open item's trigger toggles it closed
           setValue((prevValue) =>
-            triggerBehavior === 'toggle' && prevValue === itemValue ? '' : itemValue,
+            activationMode === ActivationMode.Manual && prevValue === itemValue ? '' : itemValue,
           );
         }}
         onItemDismiss={() => setValue('')}
@@ -294,6 +346,7 @@ interface NavigationMenuProviderPrivateProps {
   children: React.ReactNode;
   orientation: Orientation;
   dir: Direction;
+  activationMode: ActivationMode;
   rootNavigationMenu: NavigationMenuElement | null;
   value: string;
   onTriggerEnter(itemValue: string): void;
@@ -315,6 +368,7 @@ const NavigationMenuProvider: React.FC<NavigationMenuProviderProps> = (
     rootNavigationMenu,
     dir,
     orientation,
+    activationMode,
     children,
     value,
     onItemSelect,
@@ -338,6 +392,7 @@ const NavigationMenuProvider: React.FC<NavigationMenuProviderProps> = (
       baseId={useId()}
       dir={dir}
       orientation={orientation}
+      activationMode={activationMode}
       viewport={viewport}
       onViewportChange={setViewport}
       indicatorTrack={indicatorTrack}
@@ -553,7 +608,7 @@ const NavigationMenuTrigger = /* @__PURE__ */ React.forwardRef<
               wasClickCloseRef.current = open;
             })}
             onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
-              const verticalEntryKey = context.dir === 'rtl' ? 'ArrowLeft' : 'ArrowRight';
+              const verticalEntryKey = context.dir === Direction.RTL ? 'ArrowLeft' : 'ArrowRight';
               const entryKey = { horizontal: 'ArrowDown', vertical: verticalEntryKey }[
                 context.orientation
               ];
@@ -698,7 +753,7 @@ const NavigationMenuIndicatorImpl = /* @__PURE__ */ React.forwardRef<
     null,
   );
   const [position, setPosition] = React.useState<{ size: number; offset: number } | null>(null);
-  const isHorizontal = context.orientation === 'horizontal';
+  const isHorizontal = context.orientation === Orientation.Horizontal;
   const isVisible = Boolean(context.value);
 
   React.useEffect(() => {
@@ -911,7 +966,7 @@ const NavigationMenuContentImpl = /* @__PURE__ */ React.forwardRef<
   const motionAttribute = React.useMemo(() => {
     const items = getItems();
     const values = items.map((item) => item.value);
-    if (context.dir === 'rtl') values.reverse();
+    if (context.dir === Direction.RTL) values.reverse();
     const index = values.indexOf(context.value);
     const prevIndex = values.indexOf(context.previousValue);
     const isSelected = value === context.value;
@@ -1187,7 +1242,7 @@ const FocusGroupItem = /* @__PURE__ */ React.forwardRef<FocusGroupItemElement, F
             const isFocusNavigationKey = ['Home', 'End', ...ARROW_KEYS].includes(event.key);
             if (isFocusNavigationKey) {
               let candidateNodes = getItems().map((item) => item.ref.current!);
-              const prevItemKey = context.dir === 'rtl' ? 'ArrowRight' : 'ArrowLeft';
+              const prevItemKey = context.dir === Direction.RTL ? 'ArrowRight' : 'ArrowLeft';
               const prevKeys = [prevItemKey, 'ArrowUp', 'End'];
               if (prevKeys.includes(event.key)) candidateNodes.reverse();
               if (ARROW_KEYS.includes(event.key)) {
