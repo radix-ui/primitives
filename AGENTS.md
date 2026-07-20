@@ -18,10 +18,6 @@ This project is a monorepo managed with [pnpm](https://pnpm.io/). It uses the fo
 - **pnpm** only
 - **TypeScript** only (local scripts can use JavaScript with `// @ts-check` and type annotations)
 
-## Commit Conventions
-
-[Conventional Commits](https://www.conventionalcommits.org/) — release-please auto-generates changelog. Use `!` suffix for breaking changes (e.g., `feat!:`).
-
 ## Commands
 
 ```bash
