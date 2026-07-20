@@ -16,7 +16,14 @@ const AVATAR_NAME = 'Avatar';
 type ScopedProps<P> = P & { __scopeAvatar?: Scope };
 const [createAvatarContext, createAvatarScope] = createContextScope(AVATAR_NAME);
 
-type ImageLoadingStatus = 'idle' | 'loading' | 'loaded' | 'error';
+const ImageLoadingStatus = {
+  Idle: 'idle',
+  Loading: 'loading',
+  Loaded: 'loaded',
+  Error: 'error',
+} as const;
+
+type ImageLoadingStatus = (typeof ImageLoadingStatus)[keyof typeof ImageLoadingStatus];
 
 type AvatarContextValue = {
   imageLoadingStatus: ImageLoadingStatus;
@@ -40,7 +47,9 @@ const Avatar = /* @__PURE__ */ React.forwardRef<AvatarElement, AvatarProps>(
   // blank line to reduce diff noise
   function Avatar(props: ScopedProps<AvatarProps>, forwardedRef) {
     const { __scopeAvatar, ...avatarProps } = props;
-    const [imageLoadingStatus, setImageLoadingStatus] = React.useState<ImageLoadingStatus>('idle');
+    const [imageLoadingStatus, setImageLoadingStatus] = React.useState<ImageLoadingStatus>(
+      ImageLoadingStatus.Idle,
+    );
     const [imageCount, setImageCount] = useImageCount();
 
     return (
@@ -96,7 +105,7 @@ const AvatarImage = /* @__PURE__ */ React.forwardRef<AvatarImageElement, AvatarI
       }
     }, [imageLoadingStatus, handleLoadingStatusChange]);
 
-    return imageLoadingStatus === 'loaded' ? (
+    return imageLoadingStatus === ImageLoadingStatus.Loaded ? (
       <Primitive.img {...imageProps} ref={forwardedRef} src={src} />
     ) : null;
   },
@@ -126,7 +135,7 @@ const AvatarFallback = /* @__PURE__ */ React.forwardRef<AvatarFallbackElement, A
       }
     }, [delayMs]);
 
-    return canRender && context.imageLoadingStatus !== 'loaded' ? (
+    return canRender && context.imageLoadingStatus !== ImageLoadingStatus.Loaded ? (
       <Primitive.span {...fallbackProps} ref={forwardedRef} />
     ) : null;
   },
@@ -150,7 +159,7 @@ function useImageLoadingStatus(
 ) {
   useLayoutEffect(() => {
     if (!src) {
-      setLoadingStatus('error');
+      setLoadingStatus(ImageLoadingStatus.Error);
       return;
     }
 
@@ -159,7 +168,7 @@ function useImageLoadingStatus(
       const image = event.currentTarget as HTMLImageElement;
       setLoadingStatus(getImageLoadingStatus(image));
     };
-    const handleError = () => setLoadingStatus('error');
+    const handleError = () => setLoadingStatus(ImageLoadingStatus.Error);
     image.addEventListener('load', handleLoad);
     image.addEventListener('error', handleError);
     if (referrerPolicy) {
@@ -172,7 +181,7 @@ function useImageLoadingStatus(
     return () => {
       image.removeEventListener('load', handleLoad);
       image.removeEventListener('error', handleError);
-      setLoadingStatus('idle');
+      setLoadingStatus(ImageLoadingStatus.Idle);
     };
   }, [src, crossOrigin, referrerPolicy, setLoadingStatus]);
 
@@ -180,7 +189,11 @@ function useImageLoadingStatus(
 }
 
 function getImageLoadingStatus(image: HTMLImageElement) {
-  return image.complete ? (image.naturalWidth > 0 ? 'loaded' : 'error') : 'loading';
+  return image.complete
+    ? image.naturalWidth > 0
+      ? ImageLoadingStatus.Loaded
+      : ImageLoadingStatus.Error
+    : ImageLoadingStatus.Loading;
 }
 
 // Image count is only used in development to warn about multiple images, which

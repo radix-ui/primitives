@@ -27,7 +27,12 @@ import { RemoveScroll } from 'react-remove-scroll';
 
 import type { Scope } from '@radix-ui/react-context';
 
-type Direction = 'ltr' | 'rtl';
+const Direction = {
+  LTR: 'ltr',
+  RTL: 'rtl',
+} as const;
+
+type Direction = (typeof Direction)[keyof typeof Direction];
 
 const SELECTION_KEYS = ['Enter', ' '];
 const FIRST_KEYS = ['ArrowDown', 'PageUp', 'Home'];
@@ -1243,7 +1248,7 @@ const MenuSubContent = /* @__PURE__ */ React.forwardRef<MenuSubContentElement, M
               {...subContentProps}
               ref={composedRefs}
               align={align}
-              side={rootContext.dir === 'rtl' ? 'left' : 'right'}
+              side={rootContext.dir === Direction.RTL ? 'left' : 'right'}
               disableOutsidePointerEvents={false}
               disableOutsideScroll={false}
               trapFocus={false}

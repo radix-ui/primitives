@@ -11,6 +11,13 @@ import { useId } from '@radix-ui/react-id';
 
 import type { Scope } from '@radix-ui/react-context';
 
+const ActivationMode = {
+  Automatic: 'automatic',
+  Manual: 'manual',
+} as const;
+
+type ActivationMode = (typeof ActivationMode)[keyof typeof ActivationMode];
+
 /* -------------------------------------------------------------------------------------------------
  * Tabs
  * -----------------------------------------------------------------------------------------------*/
@@ -58,7 +65,7 @@ interface TabsProps extends PrimitiveDivProps {
    * Whether a tab is activated automatically or manually.
    * @defaultValue automatic
    * */
-  activationMode?: 'automatic' | 'manual';
+  activationMode?: ActivationMode;
 }
 
 const Tabs = /* @__PURE__ */ React.forwardRef<TabsElement, TabsProps>(
@@ -71,7 +78,7 @@ const Tabs = /* @__PURE__ */ React.forwardRef<TabsElement, TabsProps>(
       defaultValue,
       orientation = 'horizontal',
       dir,
-      activationMode = 'automatic',
+      activationMode = ActivationMode.Automatic,
       ...tabsProps
     } = props;
     const direction = useDirection(dir);
@@ -204,7 +211,7 @@ const TabsTrigger = /* @__PURE__ */ React.forwardRef<TabsTriggerElement, TabsTri
           onFocus={composeEventHandlers(props.onFocus, () => {
             // handle "automatic" activation if necessary
             // ie. activate tab following focus
-            const isAutomaticActivation = context.activationMode !== 'manual';
+            const isAutomaticActivation = context.activationMode !== ActivationMode.Manual;
             if (!isSelected && !disabled && isAutomaticActivation) {
               context.onValueChange(value);
             }

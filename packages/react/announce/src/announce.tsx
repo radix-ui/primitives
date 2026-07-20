@@ -4,13 +4,26 @@ import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { Primitive } from '@radix-ui/react-primitive';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 
-type RegionType = 'polite' | 'assertive' | 'off';
-type RegionRole = 'status' | 'alert' | 'log' | 'none';
+const RegionType = {
+  Polite: 'polite',
+  Assertive: 'assertive',
+  Off: 'off',
+} as const;
+
+const RegionRole = {
+  Status: 'status',
+  Alert: 'alert',
+  Log: 'log',
+  None: 'none',
+} as const;
+
+type RegionType = (typeof RegionType)[keyof typeof RegionType];
+type RegionRole = (typeof RegionRole)[keyof typeof RegionRole];
 
 const ROLES: { [key in RegionType]: RegionRole } = {
-  polite: 'status',
-  assertive: 'alert',
-  off: 'none',
+  polite: RegionRole.Status,
+  assertive: RegionRole.Alert,
+  off: RegionRole.None,
 };
 
 const listenerMap = new Map<Element, number>();
@@ -85,7 +98,7 @@ const Announce = /* @__PURE__ */ React.forwardRef<AnnounceElement, AnnounceProps
     const {
       'aria-relevant': ariaRelevant,
       children,
-      type = 'polite',
+      type = RegionType.Polite,
       role = ROLES[type],
       regionIdentifier,
       ...regionProps
@@ -133,7 +146,7 @@ const Announce = /* @__PURE__ */ React.forwardRef<AnnounceElement, AnnounceProps
     React.useEffect(() => {
       const ownerDocument = ownerDocumentRef.current;
       function updateAttributesOnVisibilityChange() {
-        regionElement.setAttribute('role', ownerDocument.hidden ? 'none' : role);
+        regionElement.setAttribute('role', ownerDocument.hidden ? RegionRole.None : role);
         regionElement.setAttribute('aria-live', ownerDocument.hidden ? 'off' : type);
       }
 

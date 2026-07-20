@@ -28,6 +28,19 @@ const ALIGN_OPTIONS = ['start', 'center', 'end'] as const;
 type Side = (typeof SIDE_OPTIONS)[number];
 type Align = (typeof ALIGN_OPTIONS)[number];
 
+const Sticky = {
+  Partial: 'partial',
+  Always: 'always',
+} as const;
+
+const UpdatePositionStrategy = {
+  Optimized: 'optimized',
+  Always: 'always',
+} as const;
+
+type Sticky = (typeof Sticky)[keyof typeof Sticky];
+type UpdatePositionStrategy = (typeof UpdatePositionStrategy)[keyof typeof UpdatePositionStrategy];
+
 /* -------------------------------------------------------------------------------------------------
  * Popper
  * -----------------------------------------------------------------------------------------------*/
@@ -160,9 +173,9 @@ interface PopperContentProps extends PrimitiveDivProps {
   avoidCollisions?: boolean;
   collisionBoundary?: Boundary | Boundary[];
   collisionPadding?: number | Partial<Record<Side, number>>;
-  sticky?: 'partial' | 'always';
+  sticky?: Sticky;
   hideWhenDetached?: boolean;
-  updatePositionStrategy?: 'optimized' | 'always';
+  updatePositionStrategy?: UpdatePositionStrategy;
   onPlaced?: () => void;
 }
 
@@ -178,9 +191,9 @@ const PopperContent = /* @__PURE__ */ React.forwardRef<PopperContentElement, Pop
       avoidCollisions = true,
       collisionBoundary = [],
       collisionPadding: collisionPaddingProp = 0,
-      sticky = 'partial',
+      sticky = Sticky.Partial,
       hideWhenDetached = false,
-      updatePositionStrategy = 'optimized',
+      updatePositionStrategy = UpdatePositionStrategy.Optimized,
       onPlaced,
       ...contentProps
     } = props;
@@ -218,7 +231,7 @@ const PopperContent = /* @__PURE__ */ React.forwardRef<PopperContentElement, Pop
       placement: desiredPlacement,
       whileElementsMounted: (...args) => {
         const cleanup = autoUpdate(...args, {
-          animationFrame: updatePositionStrategy === 'always',
+          animationFrame: updatePositionStrategy === UpdatePositionStrategy.Always,
         });
         return cleanup;
       },
@@ -231,7 +244,7 @@ const PopperContent = /* @__PURE__ */ React.forwardRef<PopperContentElement, Pop
           shift({
             mainAxis: true,
             crossAxis: false,
-            limiter: sticky === 'partial' ? limitShift() : undefined,
+            limiter: sticky === Sticky.Partial ? limitShift() : undefined,
             ...detectOverflowOptions,
           }),
         avoidCollisions && flip({ ...detectOverflowOptions }),

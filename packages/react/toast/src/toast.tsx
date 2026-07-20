@@ -23,7 +23,21 @@ const PROVIDER_NAME = 'ToastProvider';
 
 const [Collection, useCollection, createCollectionScope] = createCollection<ToastElement>('Toast');
 
-type SwipeDirection = 'up' | 'down' | 'left' | 'right';
+const SwipeDirection = {
+  Up: 'up',
+  Down: 'down',
+  Left: 'left',
+  Right: 'right',
+} as const;
+
+const ToastType = {
+  Foreground: 'foreground',
+  Background: 'background',
+} as const;
+
+type SwipeDirection = (typeof SwipeDirection)[keyof typeof SwipeDirection];
+type ToastType = (typeof ToastType)[keyof typeof ToastType];
+
 type ToastProviderContextValue = {
   label: string;
   duration: number;
@@ -80,7 +94,7 @@ const ToastProvider: React.FC<ToastProviderProps> = (props: ScopedProps<ToastPro
     __scopeToast,
     label = 'Notification',
     duration = 5000,
-    swipeDirection = 'right',
+    swipeDirection = SwipeDirection.Right,
     swipeThreshold = 50,
     announcerContainer,
     children,
@@ -450,7 +464,7 @@ type DismissableLayerProps = React.ComponentPropsWithoutRef<typeof DismissableLa
 type ToastImplPrivateProps = { open: boolean; onClose(): void };
 type PrimitiveListItemProps = React.ComponentPropsWithoutRef<typeof Primitive.li>;
 interface ToastImplProps extends ToastImplPrivateProps, PrimitiveListItemProps {
-  type?: 'foreground' | 'background';
+  type?: ToastType;
   /**
    * Time in milliseconds that toast should remain visible for. Overrides value
    * given to `ToastProvider`.
@@ -469,7 +483,7 @@ const ToastImpl = /* @__PURE__ */ React.forwardRef<ToastImplElement, ToastImplPr
   function ToastImpl(props: ScopedProps<ToastImplProps>, forwardedRef) {
     const {
       __scopeToast,
-      type = 'foreground',
+      type = ToastType.Foreground,
       duration: durationProp,
       open,
       onClose,
@@ -565,7 +579,7 @@ const ToastImpl = /* @__PURE__ */ React.forwardRef<ToastImplElement, ToastImplPr
             __scopeToast={__scopeToast}
             // Toasts are always role=status to avoid stuttering issues with role=alert in SRs.
             role="status"
-            aria-live={type === 'foreground' ? 'assertive' : 'polite'}
+            aria-live={type === ToastType.Foreground ? 'assertive' : 'polite'}
           >
             {announceTextContent}
           </ToastAnnounce>
@@ -896,7 +910,7 @@ const isDeltaInDirection = (
   const deltaX = Math.abs(delta.x);
   const deltaY = Math.abs(delta.y);
   const isDeltaX = deltaX > deltaY;
-  if (direction === 'left' || direction === 'right') {
+  if (direction === SwipeDirection.Left || direction === SwipeDirection.Right) {
     return isDeltaX && deltaX > threshold;
   } else {
     return !isDeltaX && deltaY > threshold;

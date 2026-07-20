@@ -13,6 +13,13 @@ import { createContextScope } from '@radix-ui/react-context';
 
 const PASSWORD_TOGGLE_FIELD_NAME = 'PasswordToggleField';
 
+const AutoComplete = {
+  CurrentPassword: 'current-password',
+  NewPassword: 'new-password',
+} as const;
+
+type AutoComplete = (typeof AutoComplete)[keyof typeof AutoComplete];
+
 /* -------------------------------------------------------------------------------------------------
  * PasswordToggleFieldProvider
  * -----------------------------------------------------------------------------------------------*/
@@ -130,14 +137,14 @@ const PASSWORD_TOGGLE_FIELD_INPUT_NAME = PASSWORD_TOGGLE_FIELD_NAME + 'Input';
 type PrimitiveInputProps = PrimitivePropsWithRef<'input'>;
 
 interface PasswordToggleFieldOwnProps {
-  autoComplete?: 'current-password' | 'new-password';
+  autoComplete?: AutoComplete;
 }
 
 interface PasswordToggleFieldInputProps
   extends
     PasswordToggleFieldOwnProps,
     Omit<PrimitiveInputProps, keyof PasswordToggleFieldOwnProps | 'type'> {
-  autoComplete?: 'current-password' | 'new-password';
+  autoComplete?: AutoComplete;
 }
 
 const PasswordToggleFieldInput = /* @__PURE__ */ React.forwardRef<
@@ -148,7 +155,7 @@ const PasswordToggleFieldInput = /* @__PURE__ */ React.forwardRef<
   function PasswordToggleFieldInput(
     {
       __scopePasswordToggleField,
-      autoComplete = 'current-password',
+      autoComplete = AutoComplete.CurrentPassword,
       autoCapitalize = 'off',
       spellCheck = false,
       id: idProp,

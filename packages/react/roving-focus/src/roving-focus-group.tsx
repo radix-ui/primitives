@@ -34,8 +34,18 @@ const [createRovingFocusGroupContext, createRovingFocusGroupScope] = createConte
   [createCollectionScope],
 );
 
-type Orientation = React.AriaAttributes['aria-orientation'];
-type Direction = 'ltr' | 'rtl';
+const Orientation = {
+  Vertical: 'vertical',
+  Horizontal: 'horizontal',
+} as const;
+
+const Direction = {
+  LTR: 'ltr',
+  RTL: 'rtl',
+} as const;
+
+type Orientation = (typeof Orientation)[keyof typeof Orientation];
+type Direction = (typeof Direction)[keyof typeof Direction];
 
 interface RovingFocusGroupOptions {
   /**
@@ -347,7 +357,7 @@ const MAP_KEY_TO_FOCUS_INTENT: Record<string, FocusIntent> = {
 };
 
 function getDirectionAwareKey(key: string, dir?: Direction) {
-  if (dir !== 'rtl') return key;
+  if (dir !== Direction.RTL) return key;
   return key === 'ArrowLeft' ? 'ArrowRight' : key === 'ArrowRight' ? 'ArrowLeft' : key;
 }
 
@@ -355,8 +365,12 @@ type FocusIntent = 'first' | 'last' | 'prev' | 'next';
 
 function getFocusIntent(event: React.KeyboardEvent, orientation?: Orientation, dir?: Direction) {
   const key = getDirectionAwareKey(event.key, dir);
-  if (orientation === 'vertical' && ['ArrowLeft', 'ArrowRight'].includes(key)) return undefined;
-  if (orientation === 'horizontal' && ['ArrowUp', 'ArrowDown'].includes(key)) return undefined;
+  if (orientation === Orientation.Vertical && ['ArrowLeft', 'ArrowRight'].includes(key)) {
+    return undefined;
+  }
+  if (orientation === Orientation.Horizontal && ['ArrowUp', 'ArrowDown'].includes(key)) {
+    return undefined;
+  }
   return MAP_KEY_TO_FOCUS_INTENT[key];
 }
 

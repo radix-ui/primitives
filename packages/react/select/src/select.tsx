@@ -26,7 +26,18 @@ import { RemoveScroll } from 'react-remove-scroll';
 
 import type { Scope } from '@radix-ui/react-context';
 
-type Direction = 'ltr' | 'rtl';
+const Position = {
+  ItemAligned: 'item-aligned',
+  Popper: 'popper',
+} as const;
+
+const Direction = {
+  LTR: 'ltr',
+  RTL: 'rtl',
+} as const;
+
+type Position = (typeof Position)[keyof typeof Position];
+type Direction = (typeof Direction)[keyof typeof Direction];
 
 const OPEN_KEYS = [' ', 'Enter', 'ArrowUp', 'ArrowDown'];
 const SELECTION_KEYS = [' ', 'Enter'];
@@ -619,7 +630,7 @@ interface SelectContentImplProps
    */
   onPointerDownOutside?: DismissableLayerProps['onPointerDownOutside'];
 
-  position?: 'item-aligned' | 'popper';
+  position?: Position;
 }
 
 const Slot = createSlot('SelectContent.RemoveScroll');
@@ -632,7 +643,7 @@ const SelectContentImpl = /* @__PURE__ */ React.forwardRef<
   function SelectContentImpl(props: ScopedProps<SelectContentImplProps>, forwardedRef) {
     const { __scopeSelect } = props;
     const {
-      position = 'item-aligned',
+      position = Position.ItemAligned,
       onCloseAutoFocus,
       onEscapeKeyDown,
       onPointerDownOutside,
@@ -793,7 +804,8 @@ const SelectContentImpl = /* @__PURE__ */ React.forwardRef<
       [context.value],
     );
 
-    const SelectPosition = position === 'popper' ? SelectPopperPosition : SelectItemAlignedPosition;
+    const SelectPosition =
+      position === Position.Popper ? SelectPopperPosition : SelectItemAlignedPosition;
 
     // Silently ignore props that are not supported by `SelectItemAlignedPosition`
     const popperContentProps =
@@ -954,7 +966,7 @@ const SelectItemAlignedPosition = /* @__PURE__ */ React.forwardRef<
       const valueNodeRect = context.valueNode.getBoundingClientRect();
       const itemTextRect = selectedItemText.getBoundingClientRect();
 
-      if (context.dir !== 'rtl') {
+      if (context.dir !== Direction.RTL) {
         const itemTextOffset = itemTextRect.left - contentRect.left;
         const left = valueNodeRect.left - itemTextOffset;
         const leftDelta = triggerRect.left - left;
@@ -1722,7 +1734,7 @@ const SelectArrow = /* @__PURE__ */ React.forwardRef<SelectArrowElement, SelectA
     const { __scopeSelect, ...arrowProps } = props;
     const popperScope = usePopperScope(__scopeSelect);
     const contentContext = useSelectContentContext(ARROW_NAME, __scopeSelect);
-    return contentContext.position === 'popper' ? (
+    return contentContext.position === Position.Popper ? (
       <PopperPrimitive.Arrow {...popperScope} {...arrowProps} ref={forwardedRef} />
     ) : null;
   },

@@ -188,8 +188,8 @@ export const Viewport = () => {
 };
 
 type SubmenusStory = StoryObj<{
-  activationMode?: NavigationMenu.ActivationMode;
-  submenuActivationMode?: NavigationMenu.ActivationMode;
+  activationMode?: NavigationMenu.NavigationMenuProps['activationMode'];
+  submenuActivationMode?: NavigationMenu.NavigationMenuSubProps['activationMode'];
   submenuDisableToggle?: boolean;
 }>;
 

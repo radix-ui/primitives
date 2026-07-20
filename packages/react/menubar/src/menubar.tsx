@@ -14,7 +14,12 @@ import { useControllableState } from '@radix-ui/react-use-controllable-state';
 
 import type { Scope } from '@radix-ui/react-context';
 
-type Direction = 'ltr' | 'rtl';
+const Direction = {
+  LTR: 'ltr',
+  RTL: 'rtl',
+} as const;
+
+type Direction = (typeof Direction)[keyof typeof Direction];
 
 /* -------------------------------------------------------------------------------------------------
  * Menubar
@@ -346,7 +351,7 @@ const MenubarContent = /* @__PURE__ */ React.forwardRef<MenubarContentElement, M
               const isKeyDownInsideSubMenu =
                 target.closest('[data-radix-menubar-content]') !== event.currentTarget;
 
-              const prevMenuKey = context.dir === 'rtl' ? 'ArrowRight' : 'ArrowLeft';
+              const prevMenuKey = context.dir === Direction.RTL ? 'ArrowRight' : 'ArrowLeft';
               const isPrevKey = prevMenuKey === event.key;
               const isNextKey = !isPrevKey;
 

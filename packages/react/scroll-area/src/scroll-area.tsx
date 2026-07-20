@@ -12,7 +12,27 @@ import { useStateMachine } from './use-state-machine';
 
 import type { Scope } from '@radix-ui/react-context';
 
-type Direction = 'ltr' | 'rtl';
+const ScrollAreaType = {
+  Auto: 'auto',
+  Always: 'always',
+  Scroll: 'scroll',
+  Hover: 'hover',
+} as const;
+
+const Orientation = {
+  Vertical: 'vertical',
+  Horizontal: 'horizontal',
+} as const;
+
+const Direction = {
+  LTR: 'ltr',
+  RTL: 'rtl',
+} as const;
+
+type ScrollAreaType = (typeof ScrollAreaType)[keyof typeof ScrollAreaType];
+type Orientation = (typeof Orientation)[keyof typeof Orientation];
+type Direction = (typeof Direction)[keyof typeof Direction];
+
 type Sizes = {
   content: number;
   viewport: number;
@@ -33,7 +53,7 @@ type ScopedProps<P> = P & { __scopeScrollArea?: Scope };
 const [createScrollAreaContext, createScrollAreaScope] = createContextScope(SCROLL_AREA_NAME);
 
 type ScrollAreaContextValue = {
-  type: 'auto' | 'always' | 'scroll' | 'hover';
+  type: ScrollAreaType;
   dir: Direction;
   scrollHideDelay: number;
   scrollArea: ScrollAreaElement | null;
@@ -68,7 +88,7 @@ const ScrollArea = /* @__PURE__ */ React.forwardRef<ScrollAreaElement, ScrollAre
   function ScrollArea(props: ScopedProps<ScrollAreaProps>, forwardedRef) {
     const {
       __scopeScrollArea,
-      type = 'hover',
+      type = ScrollAreaType.Hover,
       dir,
       scrollHideDelay = 600,
       ...scrollAreaProps
@@ -220,7 +240,7 @@ const ScrollAreaScrollbar = /* @__PURE__ */ React.forwardRef<
     const { forceMount, ...scrollbarProps } = props;
     const context = useScrollAreaContext(SCROLLBAR_NAME, props.__scopeScrollArea);
     const { onScrollbarXEnabledChange, onScrollbarYEnabledChange } = context;
-    const isHorizontal = props.orientation === 'horizontal';
+    const isHorizontal = props.orientation === Orientation.Horizontal;
 
     React.useEffect(() => {
       isHorizontal ? onScrollbarXEnabledChange(true) : onScrollbarYEnabledChange(true);
@@ -229,13 +249,13 @@ const ScrollAreaScrollbar = /* @__PURE__ */ React.forwardRef<
       };
     }, [isHorizontal, onScrollbarXEnabledChange, onScrollbarYEnabledChange]);
 
-    return context.type === 'hover' ? (
+    return context.type === ScrollAreaType.Hover ? (
       <ScrollAreaScrollbarHover {...scrollbarProps} ref={forwardedRef} forceMount={forceMount} />
-    ) : context.type === 'scroll' ? (
+    ) : context.type === ScrollAreaType.Scroll ? (
       <ScrollAreaScrollbarScroll {...scrollbarProps} ref={forwardedRef} forceMount={forceMount} />
-    ) : context.type === 'auto' ? (
+    ) : context.type === ScrollAreaType.Auto ? (
       <ScrollAreaScrollbarAuto {...scrollbarProps} ref={forwardedRef} forceMount={forceMount} />
-    ) : context.type === 'always' ? (
+    ) : context.type === ScrollAreaType.Always ? (
       <ScrollAreaScrollbarVisible {...scrollbarProps} ref={forwardedRef} data-state="visible" />
     ) : null;
   },
@@ -305,7 +325,7 @@ const ScrollAreaScrollbarScroll = /* @__PURE__ */ React.forwardRef<
 ) {
   const { forceMount, ...scrollbarProps } = props;
   const context = useScrollAreaContext(SCROLLBAR_NAME, props.__scopeScrollArea);
-  const isHorizontal = props.orientation === 'horizontal';
+  const isHorizontal = props.orientation === Orientation.Horizontal;
   const debounceScrollEnd = useDebounceCallback(() => send('SCROLL_END'), 100);
   const [state, send] = useStateMachine('hidden', {
     hidden: {
@@ -378,7 +398,7 @@ const ScrollAreaScrollbarAuto = /* @__PURE__ */ React.forwardRef<
   const context = useScrollAreaContext(SCROLLBAR_NAME, props.__scopeScrollArea);
   const { forceMount, ...scrollbarProps } = props;
   const [visible, setVisible] = React.useState(false);
-  const isHorizontal = props.orientation === 'horizontal';
+  const isHorizontal = props.orientation === Orientation.Horizontal;
   const handleResize = useDebounceCallback(() => {
     if (context.viewport) {
       const isOverflowX = context.viewport.offsetWidth < context.viewport.scrollWidth;
@@ -408,7 +428,7 @@ interface ScrollAreaScrollbarVisibleProps extends Omit<
   ScrollAreaScrollbarAxisProps,
   keyof ScrollAreaScrollbarAxisPrivateProps
 > {
-  orientation?: 'horizontal' | 'vertical';
+  orientation?: Orientation;
 }
 
 const ScrollAreaScrollbarVisible = /* @__PURE__ */ React.forwardRef<
@@ -418,7 +438,7 @@ const ScrollAreaScrollbarVisible = /* @__PURE__ */ React.forwardRef<
   props: ScopedProps<ScrollAreaScrollbarVisibleProps>,
   forwardedRef,
 ) {
-  const { orientation = 'vertical', ...scrollbarProps } = props;
+  const { orientation = Orientation.Vertical, ...scrollbarProps } = props;
   const context = useScrollAreaContext(SCROLLBAR_NAME, props.__scopeScrollArea);
   const thumbRef = React.useRef<ScrollAreaThumbElement | null>(null);
   const pointerOffsetRef = React.useRef(0);
@@ -444,7 +464,7 @@ const ScrollAreaScrollbarVisible = /* @__PURE__ */ React.forwardRef<
     return getScrollPositionFromPointer(pointerPos, pointerOffsetRef.current, sizes, dir);
   }
 
-  if (orientation === 'horizontal') {
+  if (orientation === Orientation.Horizontal) {
     return (
       <ScrollAreaScrollbarX
         {...commonProps}
@@ -468,7 +488,7 @@ const ScrollAreaScrollbarVisible = /* @__PURE__ */ React.forwardRef<
     );
   }
 
-  if (orientation === 'vertical') {
+  if (orientation === Orientation.Vertical) {
     return (
       <ScrollAreaScrollbarY
         {...commonProps}
@@ -535,8 +555,8 @@ const ScrollAreaScrollbarX = /* @__PURE__ */ React.forwardRef<
       sizes={sizes}
       style={{
         bottom: 0,
-        left: context.dir === 'rtl' ? 'var(--radix-scroll-area-corner-width)' : 0,
-        right: context.dir === 'ltr' ? 'var(--radix-scroll-area-corner-width)' : 0,
+        left: context.dir === Direction.RTL ? 'var(--radix-scroll-area-corner-width)' : 0,
+        right: context.dir === Direction.LTR ? 'var(--radix-scroll-area-corner-width)' : 0,
         '--radix-scroll-area-thumb-width': getThumbSize(sizes) + 'px',
         ...props.style,
       }}
@@ -591,8 +611,8 @@ const ScrollAreaScrollbarY = /* @__PURE__ */ React.forwardRef<
       sizes={sizes}
       style={{
         top: 0,
-        right: context.dir === 'ltr' ? 0 : undefined,
-        left: context.dir === 'rtl' ? 0 : undefined,
+        right: context.dir === Direction.LTR ? 0 : undefined,
+        left: context.dir === Direction.RTL ? 0 : undefined,
         bottom: 'var(--radix-scroll-area-corner-height)',
         '--radix-scroll-area-thumb-height': getThumbSize(sizes) + 'px',
         ...props.style,
@@ -875,7 +895,7 @@ const ScrollAreaCorner = /* @__PURE__ */ React.forwardRef<
   function ScrollAreaCorner(props: ScopedProps<ScrollAreaCornerProps>, forwardedRef) {
     const context = useScrollAreaContext(CORNER_NAME, props.__scopeScrollArea);
     const hasBothScrollbarsVisible = Boolean(context.scrollbarX && context.scrollbarY);
-    const hasCorner = context.type !== 'scroll' && hasBothScrollbarsVisible;
+    const hasCorner = context.type !== ScrollAreaType.Scroll && hasBothScrollbarsVisible;
     return hasCorner ? <ScrollAreaCornerImpl {...props} ref={forwardedRef} /> : null;
   },
 );
@@ -927,8 +947,8 @@ const ScrollAreaCornerImpl = /* @__PURE__ */ React.forwardRef<
         width,
         height,
         position: 'absolute',
-        right: context.dir === 'ltr' ? 0 : undefined,
-        left: context.dir === 'rtl' ? 0 : undefined,
+        right: context.dir === Direction.LTR ? 0 : undefined,
+        left: context.dir === Direction.RTL ? 0 : undefined,
         bottom: 0,
         ...props.style,
       }}
@@ -959,7 +979,7 @@ function getScrollPositionFromPointer(
   pointerPos: number,
   pointerOffset: number,
   sizes: Sizes,
-  dir: Direction = 'ltr',
+  dir: Direction = Direction.LTR,
 ) {
   const thumbSizePx = getThumbSize(sizes);
   const thumbCenter = thumbSizePx / 2;
@@ -968,18 +988,18 @@ function getScrollPositionFromPointer(
   const minPointerPos = sizes.scrollbar.paddingStart + offset;
   const maxPointerPos = sizes.scrollbar.size - sizes.scrollbar.paddingEnd - thumbOffsetFromEnd;
   const maxScrollPos = sizes.content - sizes.viewport;
-  const scrollRange = dir === 'ltr' ? [0, maxScrollPos] : [maxScrollPos * -1, 0];
+  const scrollRange = dir === Direction.LTR ? [0, maxScrollPos] : [maxScrollPos * -1, 0];
   const interpolate = linearScale([minPointerPos, maxPointerPos], scrollRange as [number, number]);
   return interpolate(pointerPos);
 }
 
-function getThumbOffsetFromScroll(scrollPos: number, sizes: Sizes, dir: Direction = 'ltr') {
+function getThumbOffsetFromScroll(scrollPos: number, sizes: Sizes, dir: Direction = Direction.LTR) {
   const thumbSizePx = getThumbSize(sizes);
   const scrollbarPadding = sizes.scrollbar.paddingStart + sizes.scrollbar.paddingEnd;
   const scrollbar = sizes.scrollbar.size - scrollbarPadding;
   const maxScrollPos = sizes.content - sizes.viewport;
   const maxThumbPos = scrollbar - thumbSizePx;
-  const scrollClampRange = dir === 'ltr' ? [0, maxScrollPos] : [maxScrollPos * -1, 0];
+  const scrollClampRange = dir === Direction.LTR ? [0, maxScrollPos] : [maxScrollPos * -1, 0];
   const scrollWithoutMomentum = clamp(scrollPos, scrollClampRange as [number, number]);
   const interpolate = linearScale([0, maxScrollPos], [0, maxThumbPos]);
   return interpolate(scrollWithoutMomentum);

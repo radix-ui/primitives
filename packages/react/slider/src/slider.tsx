@@ -12,7 +12,18 @@ import { createCollection } from '@radix-ui/react-collection';
 
 import type { Scope } from '@radix-ui/react-context';
 
-type Direction = 'ltr' | 'rtl';
+const Orientation = {
+  Vertical: 'vertical',
+  Horizontal: 'horizontal',
+} as const;
+
+const Direction = {
+  LTR: 'ltr',
+  RTL: 'rtl',
+} as const;
+
+type Orientation = (typeof Orientation)[keyof typeof Orientation];
+type Direction = (typeof Direction)[keyof typeof Direction];
 
 const PAGE_KEYS = ['PageUp', 'PageDown'];
 const ARROW_KEYS = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
@@ -75,7 +86,7 @@ interface SliderProps extends Omit<
 > {
   name?: string;
   disabled?: boolean;
-  orientation?: React.AriaAttributes['aria-orientation'];
+  orientation?: Orientation;
   dir?: Direction;
   min?: number;
   max?: number;
@@ -105,7 +116,7 @@ const Slider = /* @__PURE__ */ React.forwardRef<SliderElement, SliderProps>(
       min = 0,
       max = 100,
       step = 1,
-      orientation = 'horizontal',
+      orientation = Orientation.Horizontal,
       disabled = false,
       minStepsBetweenThumbs = 0,
       preserveThumbOrder = false,
@@ -120,7 +131,7 @@ const Slider = /* @__PURE__ */ React.forwardRef<SliderElement, SliderProps>(
     const thumbRefs = React.useRef<SliderContextValue['thumbs']>(new Set());
     const valueIndexToChangeRef = React.useRef<number>(0);
     const isKeyboardInteractionRef = React.useRef(false);
-    const isHorizontal = orientation === 'horizontal';
+    const isHorizontal = orientation === Orientation.Horizontal;
     const SliderOrientation = isHorizontal ? SliderHorizontal : SliderVertical;
     const [control, setControl] = React.useState<SliderElement | null>(null);
     const composedRefs = useComposedRefs(forwardedRef, setControl);
@@ -328,7 +339,7 @@ const SliderHorizontal = /* @__PURE__ */ React.forwardRef<
     const composedRefs = useComposedRefs(forwardedRef, setSlider);
     const rectRef = React.useRef<DOMRect>(undefined);
     const direction = useDirection(dir);
-    const isDirectionLTR = direction === 'ltr';
+    const isDirectionLTR = direction === Direction.LTR;
     const isSlidingFromLeft = (isDirectionLTR && !inverted) || (!isDirectionLTR && inverted);
 
     function getValueFromPointer(pointerPosition: number) {

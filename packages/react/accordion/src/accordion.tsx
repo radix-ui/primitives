@@ -12,7 +12,24 @@ import { useId } from '@radix-ui/react-id';
 import type { Scope } from '@radix-ui/react-context';
 import { useDirection } from '@radix-ui/react-direction';
 
-type Direction = 'ltr' | 'rtl';
+const AccordionType = {
+  Single: 'single',
+  Multiple: 'multiple',
+} as const;
+
+const Orientation = {
+  Vertical: 'vertical',
+  Horizontal: 'horizontal',
+} as const;
+
+const Direction = {
+  LTR: 'ltr',
+  RTL: 'rtl',
+} as const;
+
+type AccordionType = (typeof AccordionType)[keyof typeof AccordionType];
+type Orientation = (typeof Orientation)[keyof typeof Orientation];
+type Direction = (typeof Direction)[keyof typeof Direction];
 
 /* -------------------------------------------------------------------------------------------------
  * Accordion
@@ -33,10 +50,10 @@ const useCollapsibleScope = createCollapsibleScope();
 
 type AccordionElement = AccordionImplMultipleElement | AccordionImplSingleElement;
 interface AccordionSingleProps extends AccordionImplSingleProps {
-  type: 'single';
+  type: typeof AccordionType.Single;
 }
 interface AccordionMultipleProps extends AccordionImplMultipleProps {
-  type: 'multiple';
+  type: typeof AccordionType.Multiple;
 }
 
 const Accordion = /* @__PURE__ */ React.forwardRef<
@@ -53,7 +70,7 @@ const Accordion = /* @__PURE__ */ React.forwardRef<
     const multipleProps = accordionProps as AccordionImplMultipleProps;
     return (
       <Collection.Provider scope={props.__scopeAccordion}>
-        {type === 'multiple' ? (
+        {type === AccordionType.Multiple ? (
           <AccordionImplMultiple {...multipleProps} ref={forwardedRef} />
         ) : (
           <AccordionImplSingle {...singleProps} ref={forwardedRef} />
@@ -223,7 +240,7 @@ interface AccordionImplProps extends PrimitiveDivProps {
    * The layout in which the Accordion operates.
    * @default vertical
    */
-  orientation?: React.AriaAttributes['aria-orientation'];
+  orientation?: Orientation;
   /**
    * The language read direction.
    */
@@ -232,12 +249,18 @@ interface AccordionImplProps extends PrimitiveDivProps {
 
 const AccordionImpl = /* @__PURE__ */ React.forwardRef<AccordionImplElement, AccordionImplProps>(
   function AccordionImpl(props: ScopedProps<AccordionImplProps>, forwardedRef) {
-    const { __scopeAccordion, disabled, dir, orientation = 'vertical', ...accordionProps } = props;
+    const {
+      __scopeAccordion,
+      disabled,
+      dir,
+      orientation = Orientation.Vertical,
+      ...accordionProps
+    } = props;
     const accordionRef = React.useRef<AccordionImplElement>(null);
     const composedRefs = useComposedRefs(accordionRef, forwardedRef);
     const getItems = useCollection(__scopeAccordion);
     const direction = useDirection(dir);
-    const isDirectionLTR = direction === 'ltr';
+    const isDirectionLTR = direction === Direction.LTR;
 
     const handleKeyDown = composeEventHandlers(props.onKeyDown, (event) => {
       if (!ACCORDION_KEYS.includes(event.key)) return;
@@ -277,7 +300,7 @@ const AccordionImpl = /* @__PURE__ */ React.forwardRef<AccordionImplElement, Acc
           nextIndex = endIndex;
           break;
         case 'ArrowRight':
-          if (orientation === 'horizontal') {
+          if (orientation === Orientation.Horizontal) {
             if (isDirectionLTR) {
               moveNext();
             } else {
@@ -286,12 +309,12 @@ const AccordionImpl = /* @__PURE__ */ React.forwardRef<AccordionImplElement, Acc
           }
           break;
         case 'ArrowDown':
-          if (orientation === 'vertical') {
+          if (orientation === Orientation.Vertical) {
             moveNext();
           }
           break;
         case 'ArrowLeft':
-          if (orientation === 'horizontal') {
+          if (orientation === Orientation.Horizontal) {
             if (isDirectionLTR) {
               movePrev();
             } else {
@@ -300,7 +323,7 @@ const AccordionImpl = /* @__PURE__ */ React.forwardRef<AccordionImplElement, Acc
           }
           break;
         case 'ArrowUp':
-          if (orientation === 'vertical') {
+          if (orientation === Orientation.Vertical) {
             movePrev();
           }
           break;

@@ -4,10 +4,16 @@ import { Primitive } from '@radix-ui/react-primitive';
 /* -------------------------------------------------------------------------------------------------
  *  Separator
  * -----------------------------------------------------------------------------------------------*/
-const DEFAULT_ORIENTATION = 'horizontal';
-const ORIENTATIONS = ['horizontal', 'vertical'] as const;
+const Orientation = {
+  Horizontal: 'horizontal',
+  Vertical: 'vertical',
+} as const;
 
-type Orientation = (typeof ORIENTATIONS)[number];
+const DEFAULT_ORIENTATION = Orientation.Horizontal;
+const ORIENTATIONS = Object.values(Orientation);
+
+type Orientation = (typeof Orientation)[keyof typeof Orientation];
+
 type SeparatorElement = React.ComponentRef<typeof Primitive.div>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface SeparatorProps extends PrimitiveDivProps {
@@ -27,7 +33,7 @@ const Separator = /* @__PURE__ */ React.forwardRef<SeparatorElement, SeparatorPr
     const { decorative, orientation: orientationProp = DEFAULT_ORIENTATION, ...domProps } = props;
     const orientation = isValidOrientation(orientationProp) ? orientationProp : DEFAULT_ORIENTATION;
     // `aria-orientation` defaults to `horizontal` so we only need it if `orientation` is vertical
-    const ariaOrientation = orientation === 'vertical' ? orientation : undefined;
+    const ariaOrientation = orientation === Orientation.Vertical ? orientation : undefined;
     const semanticProps = decorative
       ? { role: 'none' }
       : { 'aria-orientation': ariaOrientation, role: 'separator' };

@@ -1,6 +1,12 @@
 import * as React from 'react';
 
-type Direction = 'ltr' | 'rtl';
+const Direction = {
+  LTR: 'ltr',
+  RTL: 'rtl',
+} as const;
+
+type Direction = (typeof Direction)[keyof typeof Direction];
+
 const DirectionContext = React.createContext<Direction | undefined>(undefined);
 
 /* -------------------------------------------------------------------------------------------------
@@ -20,7 +26,7 @@ const DirectionProvider: React.FC<DirectionProviderProps> = (props) => {
 
 function useDirection(localDir?: Direction) {
   const globalDir = React.useContext(DirectionContext);
-  return localDir || globalDir || 'ltr';
+  return localDir || globalDir || Direction.LTR;
 }
 
 export {

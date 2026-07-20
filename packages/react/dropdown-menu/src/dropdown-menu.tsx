@@ -10,7 +10,12 @@ import { useId } from '@radix-ui/react-id';
 
 import type { Scope } from '@radix-ui/react-context';
 
-type Direction = 'ltr' | 'rtl';
+const Direction = {
+  LTR: 'ltr',
+  RTL: 'rtl',
+} as const;
+
+type Direction = (typeof Direction)[keyof typeof Direction];
 
 /* -------------------------------------------------------------------------------------------------
  * DropdownMenu

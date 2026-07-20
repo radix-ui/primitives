@@ -8,7 +8,13 @@ import { createMenuScope } from '@radix-ui/react-menu';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import type { Scope } from '@radix-ui/react-context';
 
-type Direction = 'ltr' | 'rtl';
+const Direction = {
+  LTR: 'ltr',
+  RTL: 'rtl',
+} as const;
+
+type Direction = (typeof Direction)[keyof typeof Direction];
+
 type Point = { x: number; y: number };
 
 /* -------------------------------------------------------------------------------------------------
