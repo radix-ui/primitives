@@ -198,6 +198,9 @@ describe('Slider', () => {
       fireEvent.pointerUp(slider, { pointerId: 1, clientX: 70 });
 
       expect(handleValueCommit).not.toHaveBeenCalled();
+    });
+  });
+
   describe('preserveThumbOrder', () => {
     it('allows thumbs to swap by default', async () => {
       const user = userEvent.setup();
