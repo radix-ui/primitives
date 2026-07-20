@@ -1,5 +1,32 @@
 # radix-ui
 
+## 1.6.3
+
+### Dialog
+
+- Fixed broken ARIA references in Dialogs where title or description elements are not rendered.
+
+### Slider
+
+- Fixed a bug where `onValueCommit` was not called when a slider thumb was dragged across another thumb.
+
+### Toast
+
+- Fixed `Toast` removing non-focused toasts when pressing `Escape`.
+
+### Tooltip
+
+- Fixed a bug where `Tooltip.Content` children were mounted to the DOM twice.
+
+### Other updates
+
+- Fixed overriding inline animation style in `Popper.Content`.
+- Improved tree-shaking so bundlers can drop unused components. Component parts are now marked `/* @__PURE__ */` and use named render functions instead of `Component.displayName = ...` assignments, which previously prevented dead-code elimination with some bundlers.
+- Widened `virtualRef` prop type to allow `RefObject<Measurable | null>` in popover components.
+- Fixed dev-only checks with conditional exports to drop dev-warnings from production builds.
+- Added per-primitive subpath entry points so each primitive can be imported directly, eg. `import { Accordion } from 'radix-ui/accordion'` or `import * as Accordion from 'radix-ui/accordion'`. This mirrors the namespaced exports available from the root `radix-ui` entry point.
+- Fixed a bug where updating a `Checkbox`, `Switch`, or `RadioGroup` value programmatically (eg. a "select all" control) while inside a `<form>` would dispatch a `click` event from the hidden bubble input that propagated to ancestor `onClick` handlers.
+
 ## 1.6.2
 
 ### Other updates

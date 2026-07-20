@@ -1,5 +1,10 @@
 # @radix-ui/react-presence
 
+## 1.1.8
+
+- Improved tree-shaking so bundlers can drop unused components. Component parts are now marked `/* @__PURE__ */` and use named render functions instead of `Component.displayName = ...` assignments, which previously prevented dead-code elimination with some bundlers.
+- Updated dependencies: `@radix-ui/react-use-layout-effect@1.1.2`
+
 ## 1.1.7
 
 - Improved performance by reducing forced reflow in `FocusScope` and `Presence`

@@ -1,5 +1,11 @@
 # @radix-ui/react-password-toggle-field
 
+## 0.1.8
+
+- Improved tree-shaking so bundlers can drop unused components. Component parts are now marked `/* @__PURE__ */` and use named render functions instead of `Component.displayName = ...` assignments, which previously prevented dead-code elimination with some bundlers.
+- Fix dev-only checks with conditional exports to drop dev-warnings from production builds.
+- Updated dependencies: `@radix-ui/react-use-controllable-state@1.2.4`, `@radix-ui/primitive@1.1.6`, `@radix-ui/react-compose-refs@1.1.3`, `@radix-ui/react-context@1.2.0`, `@radix-ui/react-id@1.1.2`, `@radix-ui/react-primitive@2.1.7`, `@radix-ui/react-use-effect-event@0.0.3`, `@radix-ui/react-use-is-hydrated@0.1.1`
+
 ## 0.1.7
 
 - Updated dependencies: `@radix-ui/primitive@1.1.5`, `@radix-ui/react-context@1.2.0`

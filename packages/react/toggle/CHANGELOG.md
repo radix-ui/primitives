@@ -1,5 +1,10 @@
 # @radix-ui/react-toggle
 
+## 1.1.15
+
+- Improved tree-shaking so bundlers can drop unused components. Component parts are now marked `/* @__PURE__ */` and use named render functions instead of `Component.displayName = ...` assignments, which previously prevented dead-code elimination with some bundlers.
+- Updated dependencies: `@radix-ui/react-use-controllable-state@1.2.4`, `@radix-ui/primitive@1.1.6`, `@radix-ui/react-primitive@2.1.7`
+
 ## 1.1.14
 
 - Updated dependencies: `@radix-ui/primitive@1.1.5`

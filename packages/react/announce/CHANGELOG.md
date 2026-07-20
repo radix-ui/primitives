@@ -1,5 +1,10 @@
 # @radix-ui/react-announce
 
+## 0.2.12
+
+- Improved tree-shaking so bundlers can drop unused components. Component parts are now marked `/* @__PURE__ */` and use named render functions instead of `Component.displayName = ...` assignments, which previously prevented dead-code elimination with some bundlers.
+- Updated dependencies: `@radix-ui/react-compose-refs@1.1.3`, `@radix-ui/react-primitive@2.1.7`, `@radix-ui/react-use-layout-effect@1.1.2`
+
 ## 0.2.11
 
 - Updated dependencies: `@radix-ui/react-primitive@2.1.7`

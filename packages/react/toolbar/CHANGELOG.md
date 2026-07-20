@@ -1,5 +1,10 @@
 # @radix-ui/react-toolbar
 
+## 1.1.16
+
+- Improved tree-shaking so bundlers can drop unused components. Component parts are now marked `/* @__PURE__ */` and use named render functions instead of `Component.displayName = ...` assignments, which previously prevented dead-code elimination with some bundlers.
+- Updated dependencies: `@radix-ui/react-roving-focus@1.1.16`, `@radix-ui/react-separator@1.1.12`, `@radix-ui/react-toggle-group@1.1.16`, `@radix-ui/primitive@1.1.6`, `@radix-ui/react-context@1.2.0`, `@radix-ui/react-direction@1.1.2`, `@radix-ui/react-primitive@2.1.7`
+
 ## 1.1.15
 
 - Fixed menu items, tab triggers, toolbar links, and select items intercepting `Space`/`Enter` keys that originate from focusable descendants.
