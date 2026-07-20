@@ -673,6 +673,122 @@ describe('Slot with a custom mergeProps', () => {
   });
 });
 
+describe('Slot ref composition', () => {
+  afterEach(cleanup);
+
+  it('composes the forwarded ref and the child ref by default (no custom merge)', () => {
+    const slotRef = vi.fn();
+    const childRef = vi.fn();
+    render(
+      <Slot ref={slotRef}>
+        <button ref={childRef} type="button">
+          hi
+        </button>
+      </Slot>,
+    );
+
+    const button = screen.getByRole('button');
+    expect(slotRef).toHaveBeenCalledWith(button);
+    expect(childRef).toHaveBeenCalledWith(button);
+  });
+
+  it('exposes the composed ref on `slotProps` so a custom merge can pass it through', () => {
+    const slotRef = vi.fn();
+    const childRef = vi.fn();
+    // A custom strategy that never touches `ref` explicitly: it just spreads
+    // `slotProps`, which now carries the composed ref.
+    const passthrough: MergePropsFunction = (slotProps: AnyProps, childProps: AnyProps) => ({
+      ...childProps,
+      ...slotProps,
+      'data-custom': 'true',
+    });
+
+    render(
+      <Slot mergeProps={passthrough} ref={slotRef}>
+        <button ref={childRef} type="button">
+          hi
+        </button>
+      </Slot>,
+    );
+
+    const button = screen.getByRole('button');
+    expect(button.getAttribute('data-custom')).toBe('true');
+    expect(slotRef).toHaveBeenCalledWith(button);
+    expect(childRef).toHaveBeenCalledWith(button);
+  });
+
+  it('drops the forwarded ref when a custom merge omits `ref` (child keeps its own)', () => {
+    const slotRef = vi.fn();
+    const childRef = vi.fn();
+    const dropRef: MergePropsFunction = (slotProps: AnyProps, childProps: AnyProps) => {
+      const { ref: _ref, ...rest } = mergeProps(slotProps, childProps);
+      return rest;
+    };
+
+    render(
+      <Slot mergeProps={dropRef} ref={slotRef}>
+        <button ref={childRef} type="button">
+          hi
+        </button>
+      </Slot>,
+    );
+
+    const button = screen.getByRole('button');
+    // The Slot's forwarded ref was dropped by the custom merge...
+    expect(slotRef).not.toHaveBeenCalled();
+    // ...but the child keeps its own ref, since `React.cloneElement` preserves
+    // props (including `ref`) that the merged props don't override.
+    expect(childRef).toHaveBeenCalledWith(button);
+  });
+
+  it('does not attach a ref (or any props) to a Fragment child', () => {
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const slotRef = vi.fn();
+
+    render(
+      <Slot ref={slotRef}>
+        <>
+          <span>a</span>
+          <span>b</span>
+        </>
+      </Slot>,
+    );
+
+    // React logs an error if a `ref` (or any non-`key`/`children` prop) is
+    // passed to a Fragment. A clean render proves nothing leaked onto it.
+    expect(consoleErrorSpy).not.toHaveBeenCalled();
+    expect(slotRef).not.toHaveBeenCalled();
+    consoleErrorSpy.mockRestore();
+  });
+
+  it('keeps a stable composed ref across re-renders (no detach/reattach)', () => {
+    const childRef = vi.fn();
+
+    function Wrapper() {
+      const [, forceRender] = React.useState(0);
+      const slotRef = React.useRef<HTMLButtonElement>(null);
+      return (
+        <div>
+          <button data-testid="rerender" type="button" onClick={() => forceRender((n) => n + 1)}>
+            rerender
+          </button>
+          <Slot ref={slotRef}>
+            <span ref={childRef}>hi</span>
+          </Slot>
+        </div>
+      );
+    }
+
+    render(<Wrapper />);
+    expect(childRef).toHaveBeenCalledTimes(1);
+
+    // If the composed ref identity changed on re-render, React would call the
+    // child ref again (with `null`, then the node).
+    fireEvent.click(screen.getByTestId('rerender'));
+    expect(childRef).toHaveBeenCalledTimes(1);
+  });
+});
+
 type TriggerProps = React.ComponentProps<'button'> & { as: React.ElementType };
 
 const Trigger = ({ as: Comp = 'button', ...props }: TriggerProps) => <Comp {...props} />;
