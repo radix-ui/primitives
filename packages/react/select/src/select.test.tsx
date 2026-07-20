@@ -143,6 +143,55 @@ describe('clearing an optional value (#2706)', () => {
   });
 });
 
+describe('disabled item', () => {
+  afterEach(cleanup);
+
+  const SelectWithDisabledItem = (
+    props: React.ComponentProps<typeof Select.Root> & { onItemClick?: () => void },
+  ) => {
+    const { onItemClick, ...rootProps } = props;
+    return (
+      <Select.Root defaultOpen {...rootProps}>
+        <Select.Trigger aria-label="Choice">
+          <Select.Value placeholder={PLACEHOLDER_TEXT} />
+        </Select.Trigger>
+        <Select.Portal>
+          <Select.Content position="popper">
+            <Select.Viewport>
+              <Select.Item value="apple">
+                <Select.ItemText>Apple</Select.ItemText>
+              </Select.Item>
+              <Select.Item value="banana" disabled onClick={onItemClick}>
+                <Select.ItemText>Banana</Select.ItemText>
+              </Select.Item>
+            </Select.Viewport>
+          </Select.Content>
+        </Select.Portal>
+      </Select.Root>
+    );
+  };
+
+  it('does not select a disabled item that is clicked', async () => {
+    const onValueChange = vi.fn();
+    render(<SelectWithDisabledItem onValueChange={onValueChange} />);
+    const banana = await waitFor(() =>
+      screen.getByRole('option', { name: 'Banana', hidden: true }),
+    );
+    fireEvent.click(banana);
+    expect(onValueChange).not.toHaveBeenCalled();
+  });
+
+  it('still calls a consumer-provided `onClick` on a disabled item', async () => {
+    const onItemClick = vi.fn();
+    render(<SelectWithDisabledItem onItemClick={onItemClick} />);
+    const banana = await waitFor(() =>
+      screen.getByRole('option', { name: 'Banana', hidden: true }),
+    );
+    fireEvent.click(banana);
+    expect(onItemClick).toHaveBeenCalledTimes(1);
+  });
+});
+
 // Regression tests for https://github.com/radix-ui/primitives/issues/3232
 describe('keys from focusable descendants', () => {
   afterEach(cleanup);
