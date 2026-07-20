@@ -102,13 +102,17 @@ interface NavigationMenuProps
   dir?: Direction;
   orientation?: Orientation;
   /**
-   * The duration from when the pointer enters the trigger until the tooltip gets opened.
-   * @defaultValue 200
+   * The duration from when the pointer enters the trigger until the tooltip
+   * gets opened. When `activationMode` is `manual`, this prop is ignored.
+   *
+   * @default 200
    */
   delayDuration?: number;
   /**
-   * How much time a user has to enter another trigger without incurring a delay again.
-   * @defaultValue 300
+   * How much time a user has to enter another trigger without incurring a delay
+   * again. When `activationMode` is `manual`, this prop is ignored.
+   *
+   * @default 300
    */
   skipDelayDuration?: number;
   /**
@@ -117,7 +121,7 @@ interface NavigationMenuProps
    *   away closes it after a short delay.
    * - `"manual"`: clicking a trigger toggles the item; hover and focus are ignored
    *
-   * @defaultValue automatic
+   * @default "automatic"
    */
   activationMode?: ActivationMode;
 }
@@ -284,6 +288,12 @@ interface NavigationMenuSubProps
    * `"automatic"`.
    */
   activationMode?: ActivationMode;
+  /**
+   * When true, clicking a sub-menu item's trigger once it's active will not deactivate it.
+   *
+   * @default true
+   */
+  disableToggle?: boolean;
 }
 
 const NavigationMenuSub = /* @__PURE__ */ React.forwardRef<
@@ -299,6 +309,7 @@ const NavigationMenuSub = /* @__PURE__ */ React.forwardRef<
       defaultValue,
       orientation = Orientation.Horizontal,
       activationMode: activationModeProp,
+      disableToggle = true,
       ...subProps
     } = props;
     const context = useNavigationMenuContext(SUB_NAME, __scopeNavigationMenu);
@@ -325,10 +336,7 @@ const NavigationMenuSub = /* @__PURE__ */ React.forwardRef<
           }
         }}
         onItemSelect={(itemValue) => {
-          // In manual mode, clicking an open item's trigger toggles it closed
-          setValue((prevValue) =>
-            activationMode === ActivationMode.Manual && prevValue === itemValue ? '' : itemValue,
-          );
+          setValue((prevValue) => (disableToggle || prevValue !== itemValue ? itemValue : ''));
         }}
         onItemDismiss={() => setValue('')}
       >

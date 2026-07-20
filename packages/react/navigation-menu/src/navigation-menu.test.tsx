@@ -100,27 +100,27 @@ describe('NavigationMenu activationMode', () => {
   });
 });
 
+const NavigationMenuSubTest = (props: React.ComponentProps<typeof NavigationMenu.Sub>) => (
+  <NavigationMenu.Sub defaultValue="one" {...props}>
+    <NavigationMenu.List>
+      <NavigationMenu.Item value="one">
+        <NavigationMenu.Trigger>{TRIGGER_TEXT}</NavigationMenu.Trigger>
+        <NavigationMenu.Content>
+          <NavigationMenu.Link href="#">{CONTENT_TEXT}</NavigationMenu.Link>
+        </NavigationMenu.Content>
+      </NavigationMenu.Item>
+    </NavigationMenu.List>
+  </NavigationMenu.Sub>
+);
+
 describe('NavigationMenuSub activationMode', () => {
   afterEach(cleanup);
-
-  const NavigationMenuSubTest = (props: React.ComponentProps<typeof NavigationMenu.Sub>) => (
-    <NavigationMenu.Sub defaultValue="one" {...props}>
-      <NavigationMenu.List>
-        <NavigationMenu.Item value="one">
-          <NavigationMenu.Trigger>{TRIGGER_TEXT}</NavigationMenu.Trigger>
-          <NavigationMenu.Content>
-            <NavigationMenu.Link href="#">{CONTENT_TEXT}</NavigationMenu.Link>
-          </NavigationMenu.Content>
-        </NavigationMenu.Item>
-      </NavigationMenu.List>
-    </NavigationMenu.Sub>
-  );
 
   describe('"automatic" activationMode', () => {
     it('opens the item on pointer enter', async () => {
       render(
         <NavigationMenu.Root>
-          <NavigationMenuSubTest defaultValue="" />
+          <NavigationMenuSubTest activationMode="automatic" defaultValue="" />
         </NavigationMenu.Root>,
       );
       const trigger = screen.getByText(TRIGGER_TEXT);
@@ -128,20 +128,6 @@ describe('NavigationMenuSub activationMode', () => {
 
       fireEvent.pointerMove(trigger, { pointerType: 'mouse' });
       await waitFor(() => expect(screen.getByText(CONTENT_TEXT)).toBeInTheDocument());
-      expect(trigger).toHaveAttribute('aria-expanded', 'true');
-    });
-
-    it('keeps the open item open on click', async () => {
-      render(
-        <NavigationMenu.Root>
-          <NavigationMenuSubTest />
-        </NavigationMenu.Root>,
-      );
-      const trigger = screen.getByText(TRIGGER_TEXT);
-      await waitFor(() => expect(screen.getByText(CONTENT_TEXT)).toBeInTheDocument());
-
-      fireEvent.click(trigger);
-      expect(screen.getByText(CONTENT_TEXT)).toBeInTheDocument();
       expect(trigger).toHaveAttribute('aria-expanded', 'true');
     });
   });
@@ -164,25 +150,121 @@ describe('NavigationMenuSub activationMode', () => {
       expect(trigger).toHaveAttribute('aria-expanded', 'false');
     });
 
-    it('closes the open item on click', async () => {
+    it('opens the item on click', async () => {
       render(
         <NavigationMenu.Root>
-          <NavigationMenuSubTest activationMode="manual" />
+          <NavigationMenuSubTest activationMode="manual" defaultValue="" />
         </NavigationMenu.Root>,
       );
       const trigger = screen.getByText(TRIGGER_TEXT);
-      await waitFor(() => expect(screen.getByText(CONTENT_TEXT)).toBeInTheDocument());
+      expect(screen.queryByText(CONTENT_TEXT)).not.toBeInTheDocument();
 
       fireEvent.click(trigger);
-      await waitFor(() => expect(screen.queryByText(CONTENT_TEXT)).not.toBeInTheDocument());
-      expect(trigger).toHaveAttribute('aria-expanded', 'false');
+      await waitFor(() => expect(screen.getByText(CONTENT_TEXT)).toBeInTheDocument());
+      expect(trigger).toHaveAttribute('aria-expanded', 'true');
     });
   });
 
-  it('inherits "manual" from the parent NavigationMenu', async () => {
+  // `activationMode` governs pointer/focus activation, so inheritance is asserted
+  // via hover behavior (open on pointer enter) rather than click.
+  describe('inheritance', () => {
+    it('inherits "manual" from the parent NavigationMenu', async () => {
+      render(
+        <NavigationMenu.Root activationMode="manual">
+          <NavigationMenuSubTest defaultValue="" />
+        </NavigationMenu.Root>,
+      );
+      const trigger = screen.getByText(TRIGGER_TEXT);
+
+      fireEvent.pointerEnter(trigger, { pointerType: 'mouse' });
+      fireEvent.pointerMove(trigger, { pointerType: 'mouse' });
+
+      await new Promise((resolve) => setTimeout(resolve, 50));
+      expect(screen.queryByText(CONTENT_TEXT)).not.toBeInTheDocument();
+      expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    });
+
+    it('inherits "automatic" from the parent NavigationMenu', async () => {
+      render(
+        <NavigationMenu.Root activationMode="automatic">
+          <NavigationMenuSubTest defaultValue="" />
+        </NavigationMenu.Root>,
+      );
+      const trigger = screen.getByText(TRIGGER_TEXT);
+      expect(screen.queryByText(CONTENT_TEXT)).not.toBeInTheDocument();
+
+      fireEvent.pointerMove(trigger, { pointerType: 'mouse' });
+      await waitFor(() => expect(screen.getByText(CONTENT_TEXT)).toBeInTheDocument());
+      expect(trigger).toHaveAttribute('aria-expanded', 'true');
+    });
+
+    it('overrides inherited "manual" with activationMode="automatic"', async () => {
+      render(
+        <NavigationMenu.Root activationMode="manual">
+          <NavigationMenuSubTest activationMode="automatic" defaultValue="" />
+        </NavigationMenu.Root>,
+      );
+      const trigger = screen.getByText(TRIGGER_TEXT);
+      expect(screen.queryByText(CONTENT_TEXT)).not.toBeInTheDocument();
+
+      fireEvent.pointerMove(trigger, { pointerType: 'mouse' });
+      await waitFor(() => expect(screen.getByText(CONTENT_TEXT)).toBeInTheDocument());
+      expect(trigger).toHaveAttribute('aria-expanded', 'true');
+    });
+
+    it('overrides inherited "automatic" with activationMode="manual"', async () => {
+      render(
+        <NavigationMenu.Root activationMode="automatic">
+          <NavigationMenuSubTest activationMode="manual" defaultValue="" />
+        </NavigationMenu.Root>,
+      );
+      const trigger = screen.getByText(TRIGGER_TEXT);
+
+      fireEvent.pointerEnter(trigger, { pointerType: 'mouse' });
+      fireEvent.pointerMove(trigger, { pointerType: 'mouse' });
+
+      await new Promise((resolve) => setTimeout(resolve, 50));
+      expect(screen.queryByText(CONTENT_TEXT)).not.toBeInTheDocument();
+      expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    });
+  });
+});
+
+describe('NavigationMenuSub disableToggle', () => {
+  afterEach(cleanup);
+
+  it('does not close an open item when clicking its trigger by default', async () => {
+    render(
+      <NavigationMenu.Root>
+        <NavigationMenuSubTest defaultValue="one" />
+      </NavigationMenu.Root>,
+    );
+    const trigger = screen.getByText(TRIGGER_TEXT);
+    await waitFor(() => expect(screen.getByText(CONTENT_TEXT)).toBeInTheDocument());
+
+    fireEvent.click(trigger);
+    expect(screen.getByText(CONTENT_TEXT)).toBeInTheDocument();
+    expect(trigger).toHaveAttribute('aria-expanded', 'true');
+  });
+
+  it('keeps an open item open on click in manual mode by default', async () => {
     render(
       <NavigationMenu.Root activationMode="manual">
-        <NavigationMenuSubTest />
+        <NavigationMenuSubTest defaultValue="one" />
+      </NavigationMenu.Root>,
+    );
+    const trigger = screen.getByText(TRIGGER_TEXT);
+    await waitFor(() => expect(screen.getByText(CONTENT_TEXT)).toBeInTheDocument());
+
+    fireEvent.click(trigger);
+    expect(screen.getByText(CONTENT_TEXT)).toBeInTheDocument();
+    expect(trigger).toHaveAttribute('aria-expanded', 'true');
+  });
+
+  it('closes an open item when clicking its trigger with disableToggle={false}', async () => {
+    render(
+      <NavigationMenu.Root>
+        <NavigationMenuSubTest defaultValue="one" disableToggle={false} />
       </NavigationMenu.Root>,
     );
     const trigger = screen.getByText(TRIGGER_TEXT);
@@ -193,38 +275,10 @@ describe('NavigationMenuSub activationMode', () => {
     expect(trigger).toHaveAttribute('aria-expanded', 'false');
   });
 
-  it('inherits "automatic" from the parent NavigationMenu', async () => {
-    render(
-      <NavigationMenu.Root activationMode="automatic">
-        <NavigationMenuSubTest />
-      </NavigationMenu.Root>,
-    );
-    const trigger = screen.getByText(TRIGGER_TEXT);
-    await waitFor(() => expect(screen.getByText(CONTENT_TEXT)).toBeInTheDocument());
-
-    fireEvent.click(trigger);
-    expect(screen.getByText(CONTENT_TEXT)).toBeInTheDocument();
-    expect(trigger).toHaveAttribute('aria-expanded', 'true');
-  });
-
-  it('overrides inherited "manual" with activationMode="automatic"', async () => {
+  it('closes an open item on click with disableToggle={false} in manual mode', async () => {
     render(
       <NavigationMenu.Root activationMode="manual">
-        <NavigationMenuSubTest activationMode="automatic" />
-      </NavigationMenu.Root>,
-    );
-    const trigger = screen.getByText(TRIGGER_TEXT);
-    await waitFor(() => expect(screen.getByText(CONTENT_TEXT)).toBeInTheDocument());
-
-    fireEvent.click(trigger);
-    expect(screen.getByText(CONTENT_TEXT)).toBeInTheDocument();
-    expect(trigger).toHaveAttribute('aria-expanded', 'true');
-  });
-
-  it('overrides inherited "automatic" with activationMode="manual"', async () => {
-    render(
-      <NavigationMenu.Root activationMode="automatic">
-        <NavigationMenuSubTest activationMode="manual" />
+        <NavigationMenuSubTest defaultValue="one" disableToggle={false} />
       </NavigationMenu.Root>,
     );
     const trigger = screen.getByText(TRIGGER_TEXT);

@@ -190,6 +190,7 @@ export const Viewport = () => {
 type SubmenusStory = StoryObj<{
   activationMode?: NavigationMenu.ActivationMode;
   submenuActivationMode?: NavigationMenu.ActivationMode;
+  submenuDisableToggle?: boolean;
 }>;
 
 export const Submenus = {
@@ -202,10 +203,13 @@ export const Submenus = {
       control: 'select',
       options: ['automatic', 'manual'],
     },
+    submenuDisableToggle: {
+      control: 'boolean',
+    },
   },
   render: (args) => (
     <StoryFrame>
-      <NavigationMenu.Root activationMode={args.activationMode || undefined}>
+      <NavigationMenu.Root activationMode={args.activationMode}>
         <NavigationMenu.List className={styles.mainList}>
           <NavigationMenu.Item>
             <TriggerWithIndicator>Products</TriggerWithIndicator>
@@ -213,7 +217,8 @@ export const Submenus = {
               <NavigationMenu.Sub
                 className={styles.submenusRoot}
                 defaultValue="extensibility"
-                activationMode={args.submenuActivationMode || undefined}
+                activationMode={args.submenuActivationMode}
+                disableToggle={args.submenuDisableToggle}
               >
                 <NavigationMenu.List className={styles.mainList}>
                   <NavigationMenu.Item value="extensibility">
