@@ -289,7 +289,10 @@ const PopoverContentModal = /* @__PURE__ */ React.forwardRef<
       <RemoveScroll
         as={Slot}
         allowPinchZoom
-        shards={[contentRef, ...branchNodes.map((node) => ({ current: node }))]}
+        shards={React.useMemo(
+          () => [contentRef, ...branchNodes.map((node) => ({ current: node }))],
+          [contentRef, branchNodes],
+        )}
       >
         <PopoverContentImpl
           {...props}

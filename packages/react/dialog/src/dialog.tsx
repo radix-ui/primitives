@@ -236,7 +236,10 @@ const DialogOverlayImpl = /* @__PURE__ */ React.forwardRef<
       <RemoveScroll
         as={Slot}
         allowPinchZoom
-        shards={[context.contentRef, ...context.branchNodes.map((node) => ({ current: node }))]}
+        shards={React.useMemo(
+          () => [context.contentRef, ...context.branchNodes.map((node) => ({ current: node }))],
+          [context.contentRef, context.branchNodes],
+        )}
       >
         <Primitive.div
           data-state={getState(context.open)}

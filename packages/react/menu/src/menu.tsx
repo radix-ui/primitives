@@ -425,13 +425,18 @@ const MenuContentImpl = /* @__PURE__ */ React.forwardRef<
     const pointerGraceIntentRef = React.useRef<GraceIntent | null>(null);
     const pointerDirRef = React.useRef<Side>('right');
     const lastPointerXRef = React.useRef(0);
+    const shards = React.useMemo(
+      () =>
+        disableOutsideScroll ? [contentRef, ...branchNodes.map((node) => ({ current: node }))] : [],
+      [contentRef, branchNodes, disableOutsideScroll],
+    );
 
     const ScrollLockWrapper = disableOutsideScroll ? RemoveScroll : React.Fragment;
     const scrollLockWrapperProps = disableOutsideScroll
       ? {
           as: Slot,
           allowPinchZoom: true,
-          shards: [contentRef, ...branchNodes.map((node) => ({ current: node }))],
+          shards,
         }
       : undefined;
 
