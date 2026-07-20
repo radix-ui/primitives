@@ -1,5 +1,10 @@
 # @radix-ui/react-accessible-icon
 
+## 1.1.12
+
+- Improved tree-shaking so bundlers can drop unused components. Component parts are now marked `/* @__PURE__ */` and use named render functions instead of `Component.displayName = ...` assignments, which previously prevented dead-code elimination with some bundlers.
+- Updated dependencies: `@radix-ui/react-visually-hidden@1.2.8`
+
 ## 1.1.11
 
 - Updated dependencies: `@radix-ui/react-visually-hidden@1.2.7`

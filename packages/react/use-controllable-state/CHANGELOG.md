@@ -1,5 +1,10 @@
 # @radix-ui/react-use-controllable-state
 
+## 1.2.4
+
+- Fix dev-only checks with conditional exports to drop dev-warnings from production builds.
+- Updated dependencies: `@radix-ui/primitive@1.1.6`, `@radix-ui/react-use-effect-event@0.0.3`, `@radix-ui/react-use-layout-effect@1.1.2`
+
 ## 1.2.3
 
 - Added repository.directory to all package.json files
