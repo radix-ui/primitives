@@ -29,3 +29,26 @@ const mergeProps: Slot.MergePropsFunction = (slotProps, childProps) => {
   <App />
 </Slot.Provider>
 ```
+
+**IMPORTANT:** The `mergeProps` function should be stable across renders to avoid excessive rendering of Slot components. We recommend defining it outside of the component scope.
+
+```tsx
+// good, mergeProps is stable across renders
+const mergeProps = (slotProps, childProps) => {
+  // ...
+};
+function Good() {
+  return <Slot.Root mergeProps={mergeProps} />;
+}
+
+// not so good, mergeProps is recreated on every render
+function LessGood() {
+  return (
+    <Slot.Root
+      mergeProps={(slotProps, childProps) => {
+        // ...
+      }}
+    />
+  );
+}
+```
