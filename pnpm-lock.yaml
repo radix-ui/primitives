@@ -34,7 +34,7 @@ importers:
         version: 6.9.1
       '@testing-library/react':
         specifier: ^16.3.2
-        version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.15))(@types/react@19.2.15)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+        version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@testing-library/user-event':
         specifier: ^14.6.1
         version: 14.6.1(@testing-library/dom@10.4.1)
@@ -45,11 +45,11 @@ importers:
         specifier: ^24
         version: 24.12.4
       '@types/react':
-        specifier: ^19.2.15
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
         specifier: ^19.2.3
-        version: 19.2.3(@types/react@19.2.15)
+        version: 19.2.3(@types/react@19.2.17)
       '@types/react-test-renderer':
         specifier: ^19.1.0
         version: 19.1.0
@@ -85,7 +85,7 @@ importers:
         version: 19.2.7
       react-remove-scroll:
         specifier: ^2.7.2
-        version: 2.7.2(@types/react@19.2.15)(react@19.2.7)
+        version: 2.7.2(@types/react@19.2.17)(react@19.2.7)
       react-test-renderer:
         specifier: ^19.2.7
         version: 19.2.7(react@19.2.7)
@@ -108,27 +108,27 @@ importers:
   apps/ssr-testing:
     dependencies:
       next:
-        specifier: ^15.3.1
-        version: 15.5.18(@playwright/test@1.61.1)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+        specifier: ^16.2.10
+        version: 16.2.10(@playwright/test@1.61.1)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       radix-ui:
         specifier: workspace:*
         version: link:../../packages/react/radix-ui
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
     devDependencies:
       '@repo/typescript-config':
         specifier: workspace:*
         version: link:../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -148,14 +148,14 @@ importers:
         specifier: workspace:*
         version: link:../../packages/react/radix-ui
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       react-remove-scroll:
         specifier: ^2.7.2
-        version: 2.7.2(@types/react@19.2.15)(react@19.2.6)
+        version: 2.7.2(@types/react@19.2.17)(react@19.2.7)
     devDependencies:
       '@chromatic-com/storybook':
         specifier: ^4.1.1
@@ -165,22 +165,22 @@ importers:
         version: link:../../internal/typescript-config
       '@storybook/addon-docs':
         specifier: ^9.1.15
-        version: 9.1.20(@types/react@19.2.15)(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0)))
+        version: 9.1.20(@types/react@19.2.17)(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0)))
       '@storybook/addon-webpack5-compiler-swc':
         specifier: ^4.0.1
-        version: 4.0.3(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0)))(webpack@5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.15))
+        version: 4.0.3(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0)))(webpack@5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.19))
       '@storybook/react-webpack5':
         specifier: ^9.1.15
-        version: 9.1.20(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0)))(typescript@5.9.3)
+        version: 9.1.20(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.19)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0)))(typescript@5.9.3)
       '@types/form-serialize':
         specifier: ^0
         version: 0.7.4
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
@@ -223,10 +223,10 @@ importers:
         version: link:../typescript-config
       '@testing-library/react':
         specifier: ^16.3.2
-        version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.15))(@types/react@19.2.15)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+        version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@types/react':
-        specifier: ^19.2.15
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       react:
         specifier: ^19.2.7
         version: 19.2.7
@@ -288,17 +288,17 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -340,17 +340,17 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -380,17 +380,17 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -414,17 +414,17 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -442,17 +442,17 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -470,17 +470,17 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -513,17 +513,17 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -559,17 +559,17 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -608,17 +608,17 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -645,17 +645,17 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -669,17 +669,17 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -693,17 +693,17 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -736,17 +736,17 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -797,7 +797,7 @@ importers:
         version: 1.2.6
       react-remove-scroll:
         specifier: ^2.7.2
-        version: 2.7.2(@types/react@19.2.15)(react@19.2.6)
+        version: 2.7.2(@types/react@19.2.17)(react@19.2.7)
     devDependencies:
       '@repo/builder':
         specifier: workspace:*
@@ -806,17 +806,17 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -830,17 +830,17 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -873,20 +873,20 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       react-remove-scroll:
         specifier: ^2.7.2
-        version: 2.7.2(@types/react@19.2.15)(react@19.2.6)
+        version: 2.7.2(@types/react@19.2.17)(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -928,17 +928,17 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -952,17 +952,17 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -989,17 +989,17 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1032,17 +1032,17 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1084,17 +1084,17 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1112,17 +1112,17 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1140,17 +1140,17 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1210,7 +1210,7 @@ importers:
         version: 1.2.6
       react-remove-scroll:
         specifier: ^2.7.2
-        version: 2.7.2(@types/react@19.2.15)(react@19.2.6)
+        version: 2.7.2(@types/react@19.2.17)(react@19.2.7)
     devDependencies:
       '@repo/builder':
         specifier: workspace:*
@@ -1222,17 +1222,17 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1280,17 +1280,17 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1350,17 +1350,17 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1411,17 +1411,17 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1460,17 +1460,17 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1521,7 +1521,7 @@ importers:
         version: 1.2.6
       react-remove-scroll:
         specifier: ^2.7.2
-        version: 2.7.2(@types/react@19.2.15)(react@19.2.6)
+        version: 2.7.2(@types/react@19.2.17)(react@19.2.7)
     devDependencies:
       '@repo/builder':
         specifier: workspace:*
@@ -1530,17 +1530,17 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1549,7 +1549,7 @@ importers:
     dependencies:
       '@floating-ui/react-dom':
         specifier: ^2.0.0
-        version: 2.1.8(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+        version: 2.1.8(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@radix-ui/react-arrow':
         specifier: workspace:*
         version: link:../arrow
@@ -1588,17 +1588,17 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1619,17 +1619,17 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1647,17 +1647,17 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1675,17 +1675,17 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1706,17 +1706,17 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1758,17 +1758,17 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1948,17 +1948,17 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2006,17 +2006,17 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2061,17 +2061,17 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2143,7 +2143,7 @@ importers:
         version: 1.2.6
       react-remove-scroll:
         specifier: ^2.7.2
-        version: 2.7.2(@types/react@19.2.15)(react@19.2.6)
+        version: 2.7.2(@types/react@19.2.17)(react@19.2.7)
     devDependencies:
       '@repo/builder':
         specifier: workspace:*
@@ -2158,17 +2158,17 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2186,17 +2186,17 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2247,17 +2247,17 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2275,17 +2275,17 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2318,17 +2318,17 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2367,17 +2367,17 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2431,17 +2431,17 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2465,17 +2465,17 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2511,17 +2511,17 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2557,17 +2557,17 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2621,17 +2621,17 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2645,17 +2645,17 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2679,17 +2679,17 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2707,20 +2707,20 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       '@types/use-sync-external-store':
         specifier: ^0.0.6
         version: 0.0.6
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2738,17 +2738,17 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2762,17 +2762,17 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2786,17 +2786,17 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2810,17 +2810,17 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2838,17 +2838,17 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2866,17 +2866,17 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2894,17 +2894,17 @@ importers:
         specifier: workspace:*
         version: link:../../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.15
+        specifier: ^19.2.17
+        version: 19.2.17
       '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.15)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: ^19.2.7
+        version: 19.2.7
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -3801,57 +3801,57 @@ packages:
   '@neoconfetti/react@1.0.0':
     resolution: {integrity: sha512-klcSooChXXOzIm+SE5IISIAn3bYzYfPjbX7D7HoqZL84oAfgREeSg5vSIaSFH+DaGzzvImTyWe1OyrJ67vik4A==}
 
-  '@next/env@15.5.18':
-    resolution: {integrity: sha512-hAV85Ckd9QR6RvH04MEKwsfLTksvFpO47j9xwtoIuvuPnlwecpSi+uZTtm8HirVbtlI2Fnz//xpcSTjFdyJk+g==}
+  '@next/env@16.2.10':
+    resolution: {integrity: sha512-zLPxg9M0MEHmygpj5OuxjQ+vHMiy/K7cSp74G8ecYolmgUWw0RwN02tF56npup/+qaI8JB97hQgS/r2Hb6QwVA==}
 
-  '@next/swc-darwin-arm64@15.5.18':
-    resolution: {integrity: sha512-w0WvQf1n+txiwns/9pwIQteCJpZTbxzO2SE0FLcwuD4v0WEh1JPOjdyxWL21XwJsdpx8cFRjyzxzCS/siP7HcQ==}
+  '@next/swc-darwin-arm64@16.2.10':
+    resolution: {integrity: sha512-v9IdJCa0H0mbo+8z5zwUpOk1Vj7RjkcI5uNYf5Ws1y6szf/p3Mzl9hLaST8SCt6L9h8NGnruZcd2+o0NTNwDhA==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [darwin]
 
-  '@next/swc-darwin-x64@15.5.18':
-    resolution: {integrity: sha512-znn71QmDuxm+BOaglihMZfvyySMnNljkVIY5Z2TCssBmm+WqL6c19VhtH5ktFkHa8EZ2bnTUpcNcmNSQsg67og==}
+  '@next/swc-darwin-x64@16.2.10':
+    resolution: {integrity: sha512-17IS0jJRViROGmA9uGdNR8VPJpfbnaVG7E9qhso5jDLkmyd0lSDORWxbcKINzcFqzZqGwGtMSnrFRxBpuUYjLQ==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [darwin]
 
-  '@next/swc-linux-arm64-gnu@15.5.18':
-    resolution: {integrity: sha512-yPPe5MNL+igZUa+OsqQJisqSfh6oarIuA1Q0BDxljGJhRQyZeP+WRHh7rs/jZUGMh5aY0YdIjXZG0VohkKkUdw==}
+  '@next/swc-linux-arm64-gnu@16.2.10':
+    resolution: {integrity: sha512-GRQRsRtuciNJvB54AvvuQTiq0oZtFwa1owQqtZD8wwnGpM2L39MV22kpI72YSXLKIyY40LC66EiLFv4PiicXxg==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
     libc: [glibc]
 
-  '@next/swc-linux-arm64-musl@15.5.18':
-    resolution: {integrity: sha512-glaCczEWIrHsokFZ3pP08U4BpKxwIdnT+txdOM32OBgpL9Yw4aqx8NejmgtZQZOdstQ5f0L3CasIZudzCuD+nw==}
+  '@next/swc-linux-arm64-musl@16.2.10':
+    resolution: {integrity: sha512-zkN9MQYS7UQBro+FnISUq1itaQjXI9xqISzuQ+2bc921NcJ1x4yPCqrn77tVN6/dOOXaaWVX3k6/bR07pPwK+A==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
     libc: [musl]
 
-  '@next/swc-linux-x64-gnu@15.5.18':
-    resolution: {integrity: sha512-oUfg2EgJmU3R0OCOWiokGFUTvZiPfXtriXiuF3YNxRoROCdgvTedHIzYoeKH34gsZxS/V7mHbfq2hpAHwhH1/A==}
+  '@next/swc-linux-x64-gnu@16.2.10':
+    resolution: {integrity: sha512-iCVJnwvrPYECvA6WM/7+oo+OiTvedIKLxtCLAZP4xZR3nXa1zmzZyLPbYCmWvpd4CvMYF1EMTafd0ii3DygLvA==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
     libc: [glibc]
 
-  '@next/swc-linux-x64-musl@15.5.18':
-    resolution: {integrity: sha512-JLxSP3KTd9iu/bvUMQxH7RJo9xKSHf55/6RPE4a6FTSZygGn7uvZbCej0AHXydwkggQGSD9UddSjwv6Xz5ESfA==}
+  '@next/swc-linux-x64-musl@16.2.10':
+    resolution: {integrity: sha512-ov2g4H0dHY9bPoOU83m91hWT7Iq5qy13bUnyyshLU3HGR1Ownn0X9QpmDPc5iIUaahTp7f7LeGAhV4DSFtackw==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
     libc: [musl]
 
-  '@next/swc-win32-arm64-msvc@15.5.18':
-    resolution: {integrity: sha512-ir1v7enP52K2HNz3tQQvwF+x7VNxBk1ciiZ18WBPvxf4C59IqdfmHPJYK3vH7rSxpuCVw/8C712wTXNAtEp+NA==}
+  '@next/swc-win32-arm64-msvc@16.2.10':
+    resolution: {integrity: sha512-DwAnhLX76HQiFFQNgWlcK+JzlnD1rZ+UK/WY0ZMI/deXpvgnesjNYrqcfo1JzBuz4Kf7o3brIBL0glI1junatA==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [win32]
 
-  '@next/swc-win32-x64-msvc@15.5.18':
-    resolution: {integrity: sha512-LIu5me6QTANCd25E7I5uIEfvgQ06RK7tvHAbYo3zCb3VpxQEPvMcSpd87NwUABDT6MbGPdEGR5VRiK4PPTJhQg==}
+  '@next/swc-win32-x64-msvc@16.2.10':
+    resolution: {integrity: sha512-0JXq3b85Jk9Jg4ntLUbXSPvoDw3gpZou7twuKdoFG2jOw635v7+IiXfTaa0TxVMyx78pUjnrVYwLgjKfX4e6/A==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [win32]
@@ -4691,6 +4691,9 @@ packages:
 
   '@types/react@19.2.15':
     resolution: {integrity: sha512-eRwcGNHve+E8qtEQSSRl6urh+rFop4v8gm6O8rGv25CodbvFdLjA1vVQ1KkiFE0w0UPOnb8tDiFKL5lp0rtY5Q==}
+
+  '@types/react@19.2.17':
+    resolution: {integrity: sha512-MXfmqaVPEVgkBT/aY0aGCkRWWtByiYQXo3xdQ8r5RzuFrPiRn8Gar2tQdXSUQ2GKV3bkXckek89V8wQBY2Q/Aw==}
 
   '@types/resolve@1.20.6':
     resolution: {integrity: sha512-A4STmOXPhMUtHH+S6ymgE2GiBSMqf4oTvcQZMcHzokuTLVYzXTB8ttjcgxOVaAp2lGwEdzZ0J+cRbbeevQj1UQ==}
@@ -5911,9 +5914,9 @@ packages:
   neo-async@2.6.2:
     resolution: {integrity: sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==}
 
-  next@15.5.18:
-    resolution: {integrity: sha512-eKL8zUJkX9Y5lE+RX/2YJoItVdGlIscyVyboeD9wSpp0PaGqjoA4tTpT2qPqz9ax+5IzGESyLSeZ/RCwbSZ2uQ==}
-    engines: {node: ^18.18.0 || ^19.8.0 || >= 20.0.0}
+  next@16.2.10:
+    resolution: {integrity: sha512-2som5AVXb3kE6Yjine3/mNbBayYF58eguBWIVVUdr1y/L426xyVEgYxgBG+1QC34P2x5E+tcDup6XkuOAX3dCA==}
+    engines: {node: '>=20.9.0'}
     hasBin: true
     peerDependencies:
       '@opentelemetry/api': ^1.1.0
@@ -6258,11 +6261,6 @@ packages:
     resolution: {integrity: sha512-hlSJDQ2synMPKFZOsKo9Hi8WWZTC7POR8EmWvTSjow+VDgKzkmjQvFm2fk0tmRw+f0vTOIYKlarR0iL4996pdg==}
     engines: {node: '>=16.14.0'}
 
-  react-dom@19.2.6:
-    resolution: {integrity: sha512-0prMI+hvBbPjsWnxDLxlCGyM8PN6UuWjEUCYmZhO67xIV9Xasa/r/vDnq+Xyq4Lo27g8QSbO5YzARu0D1Sps3g==}
-    peerDependencies:
-      react: ^19.2.6
-
   react-dom@19.2.7:
     resolution: {integrity: sha512-t0BRVXvbiE/o20Hfw669rLbMCDWtYZLvmJigy2f0MxsXF+71pxhR3xOkspmsO8h3ZlNzyibAmtCa3l4lYKk6gQ==}
     peerDependencies:
@@ -6308,10 +6306,6 @@ packages:
     resolution: {integrity: sha512-U4TyPDJ9MsC8rFimXuJum8w40aPc9kbOZYO8Pc2/4A884i8hwJsMNA/JNyuOc/f2/37wHvk7HjpVl1V4re7Dig==}
     peerDependencies:
       react: ^19.2.7
-
-  react@19.2.6:
-    resolution: {integrity: sha512-sfWGGfavi0xr8Pg0sVsyHMAOziVYKgPLNrS7ig+ivMNb3wbCBw3KxtflsGBAwD3gYQlE/AEZsTLgToRrSCjb0Q==}
-    engines: {node: '>=0.10.0'}
 
   react@19.2.7:
     resolution: {integrity: sha512-HNe9WslTbXmFK8o8cmwgAeJFSBvt1bPdHCVKtaaV+WlAN36mpT4hcRpwbf3fY56ar2oIXzsBpOAiIRHAdY0OlQ==}
@@ -7619,11 +7613,11 @@ snapshots:
       '@floating-ui/core': 1.7.5
       '@floating-ui/utils': 0.2.11
 
-  '@floating-ui/react-dom@2.1.8(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
+  '@floating-ui/react-dom@2.1.8(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
     dependencies:
       '@floating-ui/dom': 1.7.6
-      react: 19.2.6
-      react-dom: 19.2.6(react@19.2.6)
+      react: 19.2.7
+      react-dom: 19.2.7(react@19.2.7)
 
   '@floating-ui/utils@0.2.11': {}
 
@@ -7780,38 +7774,38 @@ snapshots:
       globby: 11.1.0
       read-yaml-file: 1.1.0
 
-  '@mdx-js/react@3.1.1(@types/react@19.2.15)(react@19.2.6)':
+  '@mdx-js/react@3.1.1(@types/react@19.2.17)(react@19.2.7)':
     dependencies:
       '@types/mdx': 2.0.13
-      '@types/react': 19.2.15
-      react: 19.2.6
+      '@types/react': 19.2.17
+      react: 19.2.7
 
   '@neoconfetti/react@1.0.0': {}
 
-  '@next/env@15.5.18': {}
+  '@next/env@16.2.10': {}
 
-  '@next/swc-darwin-arm64@15.5.18':
+  '@next/swc-darwin-arm64@16.2.10':
     optional: true
 
-  '@next/swc-darwin-x64@15.5.18':
+  '@next/swc-darwin-x64@16.2.10':
     optional: true
 
-  '@next/swc-linux-arm64-gnu@15.5.18':
+  '@next/swc-linux-arm64-gnu@16.2.10':
     optional: true
 
-  '@next/swc-linux-arm64-musl@15.5.18':
+  '@next/swc-linux-arm64-musl@16.2.10':
     optional: true
 
-  '@next/swc-linux-x64-gnu@15.5.18':
+  '@next/swc-linux-x64-gnu@16.2.10':
     optional: true
 
-  '@next/swc-linux-x64-musl@15.5.18':
+  '@next/swc-linux-x64-musl@16.2.10':
     optional: true
 
-  '@next/swc-win32-arm64-msvc@15.5.18':
+  '@next/swc-win32-arm64-msvc@16.2.10':
     optional: true
 
-  '@next/swc-win32-x64-msvc@15.5.18':
+  '@next/swc-win32-x64-msvc@16.2.10':
     optional: true
 
   '@nodelib/fs.scandir@2.1.5':
@@ -8105,44 +8099,44 @@ snapshots:
 
   '@standard-schema/spec@1.1.0': {}
 
-  '@storybook/addon-docs@9.1.20(@types/react@19.2.15)(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0)))':
+  '@storybook/addon-docs@9.1.20(@types/react@19.2.17)(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0)))':
     dependencies:
-      '@mdx-js/react': 3.1.1(@types/react@19.2.15)(react@19.2.6)
+      '@mdx-js/react': 3.1.1(@types/react@19.2.17)(react@19.2.7)
       '@storybook/csf-plugin': 9.1.20(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0)))
-      '@storybook/icons': 1.6.0(react-dom@19.2.7(react@19.2.6))(react@19.2.6)
-      '@storybook/react-dom-shim': 9.1.20(react-dom@19.2.7(react@19.2.6))(react@19.2.6)(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0)))
-      react: 19.2.6
-      react-dom: 19.2.7(react@19.2.6)
+      '@storybook/icons': 1.6.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      '@storybook/react-dom-shim': 9.1.20(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0)))
+      react: 19.2.7
+      react-dom: 19.2.7(react@19.2.7)
       storybook: 9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0))
       ts-dedent: 2.2.0
     transitivePeerDependencies:
       - '@types/react'
 
-  '@storybook/addon-webpack5-compiler-swc@4.0.3(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0)))(webpack@5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.15))':
+  '@storybook/addon-webpack5-compiler-swc@4.0.3(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0)))(webpack@5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.19))':
     dependencies:
       '@swc/core': 1.15.40
       storybook: 9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0))
-      swc-loader: 0.2.7(@swc/core@1.15.40)(webpack@5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.15))
+      swc-loader: 0.2.7(@swc/core@1.15.40)(webpack@5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.19))
     transitivePeerDependencies:
       - '@swc/helpers'
       - webpack
 
-  '@storybook/builder-webpack5@9.1.20(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.15)(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0)))(typescript@5.9.3)':
+  '@storybook/builder-webpack5@9.1.20(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.19)(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0)))(typescript@5.9.3)':
     dependencies:
       '@storybook/core-webpack': 9.1.20(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0)))
       case-sensitive-paths-webpack-plugin: 2.4.0
       cjs-module-lexer: 1.4.3
-      css-loader: 6.11.0(webpack@5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.15))
+      css-loader: 6.11.0(webpack@5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.19))
       es-module-lexer: 1.7.0
-      fork-ts-checker-webpack-plugin: 8.0.0(typescript@5.9.3)(webpack@5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.15))
-      html-webpack-plugin: 5.6.7(webpack@5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.15))
+      fork-ts-checker-webpack-plugin: 8.0.0(typescript@5.9.3)(webpack@5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.19))
+      html-webpack-plugin: 5.6.7(webpack@5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.19))
       magic-string: 0.30.21
       storybook: 9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0))
-      style-loader: 3.3.4(webpack@5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.15))
-      terser-webpack-plugin: 5.6.1(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.15)(webpack@5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.15))
+      style-loader: 3.3.4(webpack@5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.19))
+      terser-webpack-plugin: 5.6.1(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.19)(webpack@5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.19))
       ts-dedent: 2.2.0
-      webpack: 5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.15)
-      webpack-dev-middleware: 6.1.3(webpack@5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.15))
+      webpack: 5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.19)
+      webpack-dev-middleware: 6.1.3(webpack@5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.19))
       webpack-hot-middleware: 2.26.1
       webpack-virtual-modules: 0.6.2
     optionalDependencies:
@@ -8175,26 +8169,26 @@ snapshots:
 
   '@storybook/global@5.0.0': {}
 
-  '@storybook/icons@1.6.0(react-dom@19.2.7(react@19.2.6))(react@19.2.6)':
+  '@storybook/icons@1.6.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
     dependencies:
-      react: 19.2.6
-      react-dom: 19.2.7(react@19.2.6)
+      react: 19.2.7
+      react-dom: 19.2.7(react@19.2.7)
 
-  '@storybook/preset-react-webpack@9.1.20(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0)))(typescript@5.9.3)':
+  '@storybook/preset-react-webpack@9.1.20(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.19)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0)))(typescript@5.9.3)':
     dependencies:
       '@storybook/core-webpack': 9.1.20(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0)))
-      '@storybook/react-docgen-typescript-plugin': 1.0.6--canary.9.0c3f3b7.0(typescript@5.9.3)(webpack@5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.15))
+      '@storybook/react-docgen-typescript-plugin': 1.0.6--canary.9.0c3f3b7.0(typescript@5.9.3)(webpack@5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.19))
       '@types/semver': 7.7.1
       find-up: 7.0.0
       magic-string: 0.30.21
-      react: 19.2.6
+      react: 19.2.7
       react-docgen: 7.1.1
-      react-dom: 19.2.6(react@19.2.6)
+      react-dom: 19.2.7(react@19.2.7)
       resolve: 1.22.12
       semver: 7.8.1
       storybook: 9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0))
       tsconfig-paths: 4.2.0
-      webpack: 5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.15)
+      webpack: 5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.19)
     optionalDependencies:
       typescript: 5.9.3
     transitivePeerDependencies:
@@ -8213,7 +8207,7 @@ snapshots:
       - uglify-js
       - webpack-cli
 
-  '@storybook/react-docgen-typescript-plugin@1.0.6--canary.9.0c3f3b7.0(typescript@5.9.3)(webpack@5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.15))':
+  '@storybook/react-docgen-typescript-plugin@1.0.6--canary.9.0c3f3b7.0(typescript@5.9.3)(webpack@5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.19))':
     dependencies:
       debug: 4.4.3
       endent: 2.1.0
@@ -8223,29 +8217,23 @@ snapshots:
       react-docgen-typescript: 2.4.0(typescript@5.9.3)
       tslib: 2.8.1
       typescript: 5.9.3
-      webpack: 5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.15)
+      webpack: 5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.19)
     transitivePeerDependencies:
       - supports-color
 
-  '@storybook/react-dom-shim@9.1.20(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0)))':
+  '@storybook/react-dom-shim@9.1.20(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0)))':
     dependencies:
-      react: 19.2.6
-      react-dom: 19.2.6(react@19.2.6)
+      react: 19.2.7
+      react-dom: 19.2.7(react@19.2.7)
       storybook: 9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0))
 
-  '@storybook/react-dom-shim@9.1.20(react-dom@19.2.7(react@19.2.6))(react@19.2.6)(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0)))':
+  '@storybook/react-webpack5@9.1.20(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.19)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0)))(typescript@5.9.3)':
     dependencies:
-      react: 19.2.6
-      react-dom: 19.2.7(react@19.2.6)
-      storybook: 9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0))
-
-  '@storybook/react-webpack5@9.1.20(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0)))(typescript@5.9.3)':
-    dependencies:
-      '@storybook/builder-webpack5': 9.1.20(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.15)(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0)))(typescript@5.9.3)
-      '@storybook/preset-react-webpack': 9.1.20(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0)))(typescript@5.9.3)
-      '@storybook/react': 9.1.20(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0)))(typescript@5.9.3)
-      react: 19.2.6
-      react-dom: 19.2.6(react@19.2.6)
+      '@storybook/builder-webpack5': 9.1.20(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.19)(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0)))(typescript@5.9.3)
+      '@storybook/preset-react-webpack': 9.1.20(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.19)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0)))(typescript@5.9.3)
+      '@storybook/react': 9.1.20(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0)))(typescript@5.9.3)
+      react: 19.2.7
+      react-dom: 19.2.7(react@19.2.7)
       storybook: 9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0))
     optionalDependencies:
       typescript: 5.9.3
@@ -8266,12 +8254,12 @@ snapshots:
       - uglify-js
       - webpack-cli
 
-  '@storybook/react@9.1.20(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0)))(typescript@5.9.3)':
+  '@storybook/react@9.1.20(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0)))(typescript@5.9.3)':
     dependencies:
       '@storybook/global': 5.0.0
-      '@storybook/react-dom-shim': 9.1.20(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0)))
-      react: 19.2.6
-      react-dom: 19.2.6(react@19.2.6)
+      '@storybook/react-dom-shim': 9.1.20(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0)))
+      react: 19.2.7
+      react-dom: 19.2.7(react@19.2.7)
       storybook: 9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0))
     optionalDependencies:
       typescript: 5.9.3
@@ -8360,15 +8348,15 @@ snapshots:
       picocolors: 1.1.1
       redent: 3.0.0
 
-  '@testing-library/react@16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.15))(@types/react@19.2.15)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
+  '@testing-library/react@16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
     dependencies:
       '@babel/runtime': 7.29.7
       '@testing-library/dom': 10.4.1
       react: 19.2.7
       react-dom: 19.2.7(react@19.2.7)
     optionalDependencies:
-      '@types/react': 19.2.15
-      '@types/react-dom': 19.2.3(@types/react@19.2.15)
+      '@types/react': 19.2.17
+      '@types/react-dom': 19.2.3(@types/react@19.2.17)
 
   '@testing-library/user-event@14.6.1(@testing-library/dom@10.4.1)':
     dependencies:
@@ -8435,15 +8423,19 @@ snapshots:
 
   '@types/parse-json@4.0.2': {}
 
-  '@types/react-dom@19.2.3(@types/react@19.2.15)':
+  '@types/react-dom@19.2.3(@types/react@19.2.17)':
     dependencies:
-      '@types/react': 19.2.15
+      '@types/react': 19.2.17
 
   '@types/react-test-renderer@19.1.0':
     dependencies:
       '@types/react': 19.2.15
 
   '@types/react@19.2.15':
+    dependencies:
+      csstype: 3.2.3
+
+  '@types/react@19.2.17':
     dependencies:
       csstype: 3.2.3
 
@@ -8914,18 +8906,18 @@ snapshots:
       shebang-command: 2.0.0
       which: 2.0.2
 
-  css-loader@6.11.0(webpack@5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.15)):
+  css-loader@6.11.0(webpack@5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.19)):
     dependencies:
-      icss-utils: 5.1.0(postcss@8.5.15)
-      postcss: 8.5.15
-      postcss-modules-extract-imports: 3.1.0(postcss@8.5.15)
-      postcss-modules-local-by-default: 4.2.0(postcss@8.5.15)
-      postcss-modules-scope: 3.2.1(postcss@8.5.15)
-      postcss-modules-values: 4.0.0(postcss@8.5.15)
+      icss-utils: 5.1.0(postcss@8.5.19)
+      postcss: 8.5.19
+      postcss-modules-extract-imports: 3.1.0(postcss@8.5.19)
+      postcss-modules-local-by-default: 4.2.0(postcss@8.5.19)
+      postcss-modules-scope: 3.2.1(postcss@8.5.19)
+      postcss-modules-values: 4.0.0(postcss@8.5.19)
       postcss-value-parser: 4.2.0
       semver: 7.8.5
     optionalDependencies:
-      webpack: 5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.15)
+      webpack: 5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.19)
 
   css-select@4.3.0:
     dependencies:
@@ -9287,7 +9279,7 @@ snapshots:
       cross-spawn: 7.0.6
       signal-exit: 4.1.0
 
-  fork-ts-checker-webpack-plugin@8.0.0(typescript@5.9.3)(webpack@5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.15)):
+  fork-ts-checker-webpack-plugin@8.0.0(typescript@5.9.3)(webpack@5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.19)):
     dependencies:
       '@babel/code-frame': 7.29.7
       chalk: 4.1.2
@@ -9302,7 +9294,7 @@ snapshots:
       semver: 7.8.5
       tapable: 2.3.3
       typescript: 5.9.3
-      webpack: 5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.15)
+      webpack: 5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.19)
 
   form-serialize@0.7.2: {}
 
@@ -9414,7 +9406,7 @@ snapshots:
       relateurl: 0.2.7
       terser: 5.48.0
 
-  html-webpack-plugin@5.6.7(webpack@5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.15)):
+  html-webpack-plugin@5.6.7(webpack@5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.19)):
     dependencies:
       '@types/html-minifier-terser': 6.1.0
       html-minifier-terser: 6.1.0
@@ -9422,7 +9414,7 @@ snapshots:
       pretty-error: 4.0.0
       tapable: 2.3.3
     optionalDependencies:
-      webpack: 5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.15)
+      webpack: 5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.19)
 
   htmlparser2@6.1.0:
     dependencies:
@@ -9441,9 +9433,9 @@ snapshots:
     dependencies:
       safer-buffer: 2.1.2
 
-  icss-utils@5.1.0(postcss@8.5.15):
+  icss-utils@5.1.0(postcss@8.5.19):
     dependencies:
-      postcss: 8.5.15
+      postcss: 8.5.19
 
   ignore@5.3.2: {}
 
@@ -9706,24 +9698,25 @@ snapshots:
 
   neo-async@2.6.2: {}
 
-  next@15.5.18(@playwright/test@1.61.1)(react-dom@19.2.6(react@19.2.6))(react@19.2.6):
+  next@16.2.10(@playwright/test@1.61.1)(react-dom@19.2.7(react@19.2.7))(react@19.2.7):
     dependencies:
-      '@next/env': 15.5.18
+      '@next/env': 16.2.10
       '@swc/helpers': 0.5.15
+      baseline-browser-mapping: 2.10.32
       caniuse-lite: 1.0.30001793
       postcss: 8.4.31
-      react: 19.2.6
-      react-dom: 19.2.6(react@19.2.6)
-      styled-jsx: 5.1.6(react@19.2.6)
+      react: 19.2.7
+      react-dom: 19.2.7(react@19.2.7)
+      styled-jsx: 5.1.6(react@19.2.7)
     optionalDependencies:
-      '@next/swc-darwin-arm64': 15.5.18
-      '@next/swc-darwin-x64': 15.5.18
-      '@next/swc-linux-arm64-gnu': 15.5.18
-      '@next/swc-linux-arm64-musl': 15.5.18
-      '@next/swc-linux-x64-gnu': 15.5.18
-      '@next/swc-linux-x64-musl': 15.5.18
-      '@next/swc-win32-arm64-msvc': 15.5.18
-      '@next/swc-win32-x64-msvc': 15.5.18
+      '@next/swc-darwin-arm64': 16.2.10
+      '@next/swc-darwin-x64': 16.2.10
+      '@next/swc-linux-arm64-gnu': 16.2.10
+      '@next/swc-linux-arm64-musl': 16.2.10
+      '@next/swc-linux-x64-gnu': 16.2.10
+      '@next/swc-linux-x64-musl': 16.2.10
+      '@next/swc-win32-arm64-msvc': 16.2.10
+      '@next/swc-win32-x64-msvc': 16.2.10
       '@playwright/test': 1.61.1
       sharp: 0.34.5
     transitivePeerDependencies:
@@ -9944,26 +9937,26 @@ snapshots:
     optionalDependencies:
       postcss: 8.5.19
 
-  postcss-modules-extract-imports@3.1.0(postcss@8.5.15):
+  postcss-modules-extract-imports@3.1.0(postcss@8.5.19):
     dependencies:
-      postcss: 8.5.15
+      postcss: 8.5.19
 
-  postcss-modules-local-by-default@4.2.0(postcss@8.5.15):
+  postcss-modules-local-by-default@4.2.0(postcss@8.5.19):
     dependencies:
-      icss-utils: 5.1.0(postcss@8.5.15)
-      postcss: 8.5.15
+      icss-utils: 5.1.0(postcss@8.5.19)
+      postcss: 8.5.19
       postcss-selector-parser: 7.1.1
       postcss-value-parser: 4.2.0
 
-  postcss-modules-scope@3.2.1(postcss@8.5.15):
+  postcss-modules-scope@3.2.1(postcss@8.5.19):
     dependencies:
-      postcss: 8.5.15
+      postcss: 8.5.19
       postcss-selector-parser: 7.1.1
 
-  postcss-modules-values@4.0.0(postcss@8.5.15):
+  postcss-modules-values@4.0.0(postcss@8.5.19):
     dependencies:
-      icss-utils: 5.1.0(postcss@8.5.15)
-      postcss: 8.5.15
+      icss-utils: 5.1.0(postcss@8.5.19)
+      postcss: 8.5.19
 
   postcss-selector-parser@7.1.1:
     dependencies:
@@ -9974,7 +9967,7 @@ snapshots:
 
   postcss@8.4.31:
     dependencies:
-      nanoid: 3.3.12
+      nanoid: 3.3.16
       picocolors: 1.1.1
       source-map-js: 1.2.1
 
@@ -10043,16 +10036,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  react-dom@19.2.6(react@19.2.6):
-    dependencies:
-      react: 19.2.6
-      scheduler: 0.27.0
-
-  react-dom@19.2.7(react@19.2.6):
-    dependencies:
-      react: 19.2.6
-      scheduler: 0.27.0
-
   react-dom@19.2.7(react@19.2.7):
     dependencies:
       react: 19.2.7
@@ -10062,67 +10045,38 @@ snapshots:
 
   react-is@19.2.7: {}
 
-  react-remove-scroll-bar@2.3.8(@types/react@19.2.15)(react@19.2.6):
-    dependencies:
-      react: 19.2.6
-      react-style-singleton: 2.2.3(@types/react@19.2.15)(react@19.2.6)
-      tslib: 2.8.1
-    optionalDependencies:
-      '@types/react': 19.2.15
-
-  react-remove-scroll-bar@2.3.8(@types/react@19.2.15)(react@19.2.7):
+  react-remove-scroll-bar@2.3.8(@types/react@19.2.17)(react@19.2.7):
     dependencies:
       react: 19.2.7
-      react-style-singleton: 2.2.3(@types/react@19.2.15)(react@19.2.7)
+      react-style-singleton: 2.2.3(@types/react@19.2.17)(react@19.2.7)
       tslib: 2.8.1
     optionalDependencies:
-      '@types/react': 19.2.15
+      '@types/react': 19.2.17
 
-  react-remove-scroll@2.7.2(@types/react@19.2.15)(react@19.2.6):
-    dependencies:
-      react: 19.2.6
-      react-remove-scroll-bar: 2.3.8(@types/react@19.2.15)(react@19.2.6)
-      react-style-singleton: 2.2.3(@types/react@19.2.15)(react@19.2.6)
-      tslib: 2.8.1
-      use-callback-ref: 1.3.3(@types/react@19.2.15)(react@19.2.6)
-      use-sidecar: 1.1.3(@types/react@19.2.15)(react@19.2.6)
-    optionalDependencies:
-      '@types/react': 19.2.15
-
-  react-remove-scroll@2.7.2(@types/react@19.2.15)(react@19.2.7):
+  react-remove-scroll@2.7.2(@types/react@19.2.17)(react@19.2.7):
     dependencies:
       react: 19.2.7
-      react-remove-scroll-bar: 2.3.8(@types/react@19.2.15)(react@19.2.7)
-      react-style-singleton: 2.2.3(@types/react@19.2.15)(react@19.2.7)
+      react-remove-scroll-bar: 2.3.8(@types/react@19.2.17)(react@19.2.7)
+      react-style-singleton: 2.2.3(@types/react@19.2.17)(react@19.2.7)
       tslib: 2.8.1
-      use-callback-ref: 1.3.3(@types/react@19.2.15)(react@19.2.7)
-      use-sidecar: 1.1.3(@types/react@19.2.15)(react@19.2.7)
+      use-callback-ref: 1.3.3(@types/react@19.2.17)(react@19.2.7)
+      use-sidecar: 1.1.3(@types/react@19.2.17)(react@19.2.7)
     optionalDependencies:
-      '@types/react': 19.2.15
+      '@types/react': 19.2.17
 
-  react-style-singleton@2.2.3(@types/react@19.2.15)(react@19.2.6):
-    dependencies:
-      get-nonce: 1.0.1
-      react: 19.2.6
-      tslib: 2.8.1
-    optionalDependencies:
-      '@types/react': 19.2.15
-
-  react-style-singleton@2.2.3(@types/react@19.2.15)(react@19.2.7):
+  react-style-singleton@2.2.3(@types/react@19.2.17)(react@19.2.7):
     dependencies:
       get-nonce: 1.0.1
       react: 19.2.7
       tslib: 2.8.1
     optionalDependencies:
-      '@types/react': 19.2.15
+      '@types/react': 19.2.17
 
   react-test-renderer@19.2.7(react@19.2.7):
     dependencies:
       react: 19.2.7
       react-is: 19.2.7
       scheduler: 0.27.0
-
-  react@19.2.6: {}
 
   react@19.2.7: {}
 
@@ -10323,7 +10277,7 @@ snapshots:
     dependencies:
       '@img/colour': 1.1.0
       detect-libc: 2.1.2
-      semver: 7.8.1
+      semver: 7.8.5
     optionalDependencies:
       '@img/sharp-darwin-arm64': 0.34.5
       '@img/sharp-darwin-x64': 0.34.5
@@ -10445,14 +10399,14 @@ snapshots:
 
   strip-json-comments@2.0.1: {}
 
-  style-loader@3.3.4(webpack@5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.15)):
+  style-loader@3.3.4(webpack@5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.19)):
     dependencies:
-      webpack: 5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.15)
+      webpack: 5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.19)
 
-  styled-jsx@5.1.6(react@19.2.6):
+  styled-jsx@5.1.6(react@19.2.7):
     dependencies:
       client-only: 0.0.1
-      react: 19.2.6
+      react: 19.2.7
 
   sucrase@3.35.1:
     dependencies:
@@ -10474,11 +10428,11 @@ snapshots:
 
   supports-preserve-symlinks-flag@1.0.0: {}
 
-  swc-loader@0.2.7(@swc/core@1.15.40)(webpack@5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.15)):
+  swc-loader@0.2.7(@swc/core@1.15.40)(webpack@5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.19)):
     dependencies:
       '@swc/core': 1.15.40
       '@swc/counter': 0.1.3
-      webpack: 5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.15)
+      webpack: 5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.19)
 
   symbol-tree@3.2.4: {}
 
@@ -10486,17 +10440,17 @@ snapshots:
 
   term-size@2.2.1: {}
 
-  terser-webpack-plugin@5.6.1(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.15)(webpack@5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.15)):
+  terser-webpack-plugin@5.6.1(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.19)(webpack@5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.19)):
     dependencies:
       '@jridgewell/trace-mapping': 0.3.31
       jest-worker: 27.5.1
       schema-utils: 4.3.3
       terser: 5.48.0
-      webpack: 5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.15)
+      webpack: 5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.19)
     optionalDependencies:
       '@swc/core': 1.15.40
       esbuild: 0.25.12
-      postcss: 8.5.15
+      postcss: 8.5.19
 
   terser@5.48.0:
     dependencies:
@@ -10638,35 +10592,20 @@ snapshots:
     dependencies:
       punycode: 2.3.1
 
-  use-callback-ref@1.3.3(@types/react@19.2.15)(react@19.2.6):
-    dependencies:
-      react: 19.2.6
-      tslib: 2.8.1
-    optionalDependencies:
-      '@types/react': 19.2.15
-
-  use-callback-ref@1.3.3(@types/react@19.2.15)(react@19.2.7):
+  use-callback-ref@1.3.3(@types/react@19.2.17)(react@19.2.7):
     dependencies:
       react: 19.2.7
       tslib: 2.8.1
     optionalDependencies:
-      '@types/react': 19.2.15
+      '@types/react': 19.2.17
 
-  use-sidecar@1.1.3(@types/react@19.2.15)(react@19.2.6):
-    dependencies:
-      detect-node-es: 1.1.0
-      react: 19.2.6
-      tslib: 2.8.1
-    optionalDependencies:
-      '@types/react': 19.2.15
-
-  use-sidecar@1.1.3(@types/react@19.2.15)(react@19.2.7):
+  use-sidecar@1.1.3(@types/react@19.2.17)(react@19.2.7):
     dependencies:
       detect-node-es: 1.1.0
       react: 19.2.7
       tslib: 2.8.1
     optionalDependencies:
-      '@types/react': 19.2.15
+      '@types/react': 19.2.17
 
   util-deprecate@1.0.2: {}
 
@@ -10775,7 +10714,7 @@ snapshots:
 
   webidl-conversions@8.0.1: {}
 
-  webpack-dev-middleware@6.1.3(webpack@5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.15)):
+  webpack-dev-middleware@6.1.3(webpack@5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.19)):
     dependencies:
       colorette: 2.0.20
       memfs: 3.5.3
@@ -10783,7 +10722,7 @@ snapshots:
       range-parser: 1.2.1
       schema-utils: 4.3.3
     optionalDependencies:
-      webpack: 5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.15)
+      webpack: 5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.19)
 
   webpack-hot-middleware@2.26.1:
     dependencies:
@@ -10795,7 +10734,7 @@ snapshots:
 
   webpack-virtual-modules@0.6.2: {}
 
-  webpack@5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.15):
+  webpack@5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.19):
     dependencies:
       '@types/estree': 1.0.9
       '@types/json-schema': 7.0.15
@@ -10817,7 +10756,7 @@ snapshots:
       neo-async: 2.6.2
       schema-utils: 4.3.3
       tapable: 2.3.3
-      terser-webpack-plugin: 5.6.1(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.15)(webpack@5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.15))
+      terser-webpack-plugin: 5.6.1(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.19)(webpack@5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.19))
       watchpack: 2.5.1
       webpack-sources: 3.5.0
     transitivePeerDependencies:

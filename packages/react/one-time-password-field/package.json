@@ -36,12 +36,12 @@
     "build": "radix-build"
   },
   "dependencies": {
+    "@radix-ui/number": "workspace:*",
     "@radix-ui/primitive": "workspace:*",
     "@radix-ui/react-collection": "workspace:*",
     "@radix-ui/react-compose-refs": "workspace:*",
     "@radix-ui/react-context": "workspace:*",
     "@radix-ui/react-direction": "workspace:*",
-    "@radix-ui/number": "workspace:*",
     "@radix-ui/react-primitive": "workspace:*",
     "@radix-ui/react-roving-focus": "workspace:*",
     "@radix-ui/react-use-controllable-state": "workspace:*",
@@ -52,10 +52,10 @@
   "devDependencies": {
     "@repo/builder": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@types/react": "^19.2.2",
-    "@types/react-dom": "^19.2.2",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
     "typescript": "^5.9.3"
   },
   "peerDependencies": {
