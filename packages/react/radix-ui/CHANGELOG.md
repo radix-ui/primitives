@@ -1,5 +1,9 @@
 # radix-ui
 
+## 1.6.4
+
+- Fixed a regression where importing primitives from the root `radix-ui` entry point erased every primitive's types to `any`.
+
 ## 1.6.3
 
 ### Dialog
