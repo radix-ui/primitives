@@ -27,6 +27,29 @@ export const Styled = () => {
   );
 };
 
+// Original issue: https://github.com/radix-ui/primitives/issues/2443
+export const WithTitleAndDescription = () => {
+  return (
+    <div
+      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '50vh' }}
+    >
+      <Popover.Root>
+        <Popover.Trigger className={styles.trigger}>open</Popover.Trigger>
+        <Popover.Portal>
+          <Popover.Content className={styles.content} sideOffset={5}>
+            <Popover.Title style={{ margin: 0 }}>Notifications</Popover.Title>
+            <Popover.Description style={{ marginBottom: 0 }}>
+              Choose how you receive notifications.
+            </Popover.Description>
+            <Popover.Close className={styles.close}>close</Popover.Close>
+            <Popover.Arrow className={styles.arrow} width={20} height={10} />
+          </Popover.Content>
+        </Popover.Portal>
+      </Popover.Root>
+    </div>
+  );
+};
+
 // Original issue: https://github.com/radix-ui/primitives/issues/2128
 export const Boundary = () => {
   const [boundary, setBoundary] = React.useState<HTMLDivElement | null>(null);

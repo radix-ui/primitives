@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
@@ -30,9 +31,15 @@ const [createPopoverContext, createPopoverScope] = createContextScope(POPOVER_NA
 ]);
 const usePopperScope = createPopperScope();
 
-type PopoverContextValue = {
+interface PopoverContextValue {
   triggerRef: React.RefObject<HTMLButtonElement | null>;
   contentId: string;
+  titleId: string;
+  descriptionId: string;
+  titlePresent: boolean;
+  descriptionPresent: boolean;
+  setTitleCount: React.Dispatch<React.SetStateAction<number>>;
+  setDescriptionCount: React.Dispatch<React.SetStateAction<number>>;
   open: boolean;
   onOpenChange(open: boolean): void;
   onOpenToggle(): void;
@@ -40,7 +47,7 @@ type PopoverContextValue = {
   onCustomAnchorAdd(): void;
   onCustomAnchorRemove(): void;
   modal: boolean;
-};
+}
 
 const [PopoverProvider, usePopoverContext] =
   createPopoverContext<PopoverContextValue>(POPOVER_NAME);
@@ -65,6 +72,8 @@ const Popover: React.FC<PopoverProps> = (props: ScopedProps<PopoverProps>) => {
   const popperScope = usePopperScope(__scopePopover);
   const triggerRef = React.useRef<HTMLButtonElement>(null);
   const [hasCustomAnchor, setHasCustomAnchor] = React.useState(false);
+  const [titleCount, setTitleCount] = React.useState(0);
+  const [descriptionCount, setDescriptionCount] = React.useState(0);
   const [open, setOpen] = useControllableState({
     prop: openProp,
     defaultProp: defaultOpen ?? false,
@@ -77,6 +86,12 @@ const Popover: React.FC<PopoverProps> = (props: ScopedProps<PopoverProps>) => {
       <PopoverProvider
         scope={__scopePopover}
         contentId={useId()}
+        titleId={useId()}
+        descriptionId={useId()}
+        titlePresent={titleCount > 0}
+        descriptionPresent={descriptionCount > 0}
+        setTitleCount={setTitleCount}
+        setDescriptionCount={setDescriptionCount}
         triggerRef={triggerRef}
         open={open}
         onOpenChange={setOpen}
@@ -397,6 +412,7 @@ const PopoverContentImpl = /* @__PURE__ */ React.forwardRef<
       onPointerDownOutside,
       onFocusOutside,
       onInteractOutside,
+      'aria-describedby': ariaDescribedby,
       ...contentProps
     } = props;
     const context = usePopoverContext(CONTENT_NAME, __scopePopover);
@@ -428,6 +444,12 @@ const PopoverContentImpl = /* @__PURE__ */ React.forwardRef<
             data-state={getState(context.open)}
             role="dialog"
             id={context.contentId}
+            aria-labelledby={context.titlePresent ? context.titleId : undefined}
+            aria-describedby={
+              context.descriptionPresent
+                ? concatAriaDescribedby(ariaDescribedby, context.descriptionId)
+                : ariaDescribedby
+            }
             {...popperScope}
             {...contentProps}
             ref={forwardedRef}
@@ -448,6 +470,51 @@ const PopoverContentImpl = /* @__PURE__ */ React.forwardRef<
     );
   },
 );
+
+/* -------------------------------------------------------------------------------------------------
+ * PopoverTitle
+ * -----------------------------------------------------------------------------------------------*/
+
+type PopoverTitleElement = React.ComponentRef<typeof Primitive.h2>;
+type PrimitiveHeading2Props = React.ComponentPropsWithoutRef<typeof Primitive.h2>;
+interface PopoverTitleProps extends PrimitiveHeading2Props {}
+
+const PopoverTitle = /* @__PURE__ */ React.forwardRef<PopoverTitleElement, PopoverTitleProps>(
+  function PopoverTitle(props: ScopedProps<PopoverTitleProps>, forwardedRef) {
+    const { __scopePopover, ...titleProps } = props;
+    const context = usePopoverContext('PopoverTitle', __scopePopover);
+    const { setTitleCount } = context;
+    useLayoutEffect(() => {
+      setTitleCount((count) => count + 1);
+      return () => setTitleCount((count) => count - 1);
+    }, [setTitleCount]);
+
+    return <Primitive.h2 id={context.titleId} {...titleProps} ref={forwardedRef} />;
+  },
+);
+
+/* -------------------------------------------------------------------------------------------------
+ * PopoverDescription
+ * -----------------------------------------------------------------------------------------------*/
+
+type PopoverDescriptionElement = React.ComponentRef<typeof Primitive.p>;
+type PrimitiveParagraphProps = React.ComponentPropsWithoutRef<typeof Primitive.p>;
+interface PopoverDescriptionProps extends PrimitiveParagraphProps {}
+
+const PopoverDescription = /* @__PURE__ */ React.forwardRef<
+  PopoverDescriptionElement,
+  PopoverDescriptionProps
+>(function PopoverDescription(props: ScopedProps<PopoverDescriptionProps>, forwardedRef) {
+  const { __scopePopover, ...descriptionProps } = props;
+  const context = usePopoverContext('PopoverDescription', __scopePopover);
+  const { setDescriptionCount } = context;
+  useLayoutEffect(() => {
+    setDescriptionCount((count) => count + 1);
+    return () => setDescriptionCount((count) => count - 1);
+  }, [setDescriptionCount]);
+
+  return <Primitive.p id={context.descriptionId} {...descriptionProps} ref={forwardedRef} />;
+});
 
 /* -------------------------------------------------------------------------------------------------
  * PopoverClose
@@ -495,6 +562,19 @@ function getState(open: boolean) {
   return open ? 'open' : 'closed';
 }
 
+// TODO: Move to primitive once that package exposed individual sub-modules
+function concatAriaDescribedby(...values: unknown[]): string | undefined {
+  const ids = new Set<string>();
+  for (const value of values) {
+    if (typeof value !== 'string') continue;
+    for (const id of String(value).trim().split(/\s+/)) {
+      if (id) ids.add(id);
+    }
+  }
+
+  return ids.size > 0 ? Array.from(ids).join(' ') : undefined;
+}
+
 export {
   createPopoverScope,
   //
@@ -503,6 +583,8 @@ export {
   PopoverTrigger,
   PopoverPortal,
   PopoverContent,
+  PopoverTitle,
+  PopoverDescription,
   PopoverClose,
   PopoverArrow,
   //
@@ -511,6 +593,8 @@ export {
   PopoverTrigger as Trigger,
   PopoverPortal as Portal,
   PopoverContent as Content,
+  PopoverTitle as Title,
+  PopoverDescription as Description,
   PopoverClose as Close,
   PopoverArrow as Arrow,
 };
@@ -520,6 +604,8 @@ export type {
   PopoverTriggerProps,
   PopoverPortalProps,
   PopoverContentProps,
+  PopoverTitleProps,
+  PopoverDescriptionProps,
   PopoverCloseProps,
   PopoverArrowProps,
 };

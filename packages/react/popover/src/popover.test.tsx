@@ -41,3 +41,77 @@ describe('aria-controls', () => {
     expect(document.getElementById(content.id)).toBe(content);
   });
 });
+
+describe('Title and Description', () => {
+  afterEach(cleanup);
+
+  const TITLE_TEXT = 'Title';
+  const DESCRIPTION_TEXT = 'Description';
+
+  const openContent = (rendered: RenderResult) => {
+    fireEvent.click(rendered.getByText(TRIGGER_TEXT));
+    return rendered.getByRole('dialog');
+  };
+
+  it('should not reference a title or description when none are rendered', () => {
+    const rendered = render(<PopoverTest />);
+    const content = openContent(rendered);
+    expect(content).not.toHaveAttribute('aria-labelledby');
+    expect(content).not.toHaveAttribute('aria-describedby');
+  });
+
+  it('should label the content via aria-labelledby when a Title is rendered', () => {
+    const rendered = render(
+      <Popover.Root>
+        <Popover.Trigger>{TRIGGER_TEXT}</Popover.Trigger>
+        <Popover.Portal>
+          <Popover.Content>
+            <Popover.Title>{TITLE_TEXT}</Popover.Title>
+            {CONTENT_TEXT}
+          </Popover.Content>
+        </Popover.Portal>
+      </Popover.Root>,
+    );
+    const content = openContent(rendered);
+    const title = rendered.getByText(TITLE_TEXT);
+    expect(title.id).toBeTruthy();
+    expect(content).toHaveAttribute('aria-labelledby', title.id);
+    expect(content).not.toHaveAttribute('aria-describedby');
+  });
+
+  it('should describe the content via aria-describedby when a Description is rendered', () => {
+    const rendered = render(
+      <Popover.Root>
+        <Popover.Trigger>{TRIGGER_TEXT}</Popover.Trigger>
+        <Popover.Portal>
+          <Popover.Content>
+            <Popover.Description>{DESCRIPTION_TEXT}</Popover.Description>
+            {CONTENT_TEXT}
+          </Popover.Content>
+        </Popover.Portal>
+      </Popover.Root>,
+    );
+    const content = openContent(rendered);
+    const description = rendered.getByText(DESCRIPTION_TEXT);
+    expect(description.id).toBeTruthy();
+    expect(content).toHaveAttribute('aria-describedby', description.id);
+    expect(content).not.toHaveAttribute('aria-labelledby');
+  });
+
+  it('should reference both Title and Description when rendered together', () => {
+    const rendered = render(
+      <Popover.Root>
+        <Popover.Trigger>{TRIGGER_TEXT}</Popover.Trigger>
+        <Popover.Portal>
+          <Popover.Content>
+            <Popover.Title>{TITLE_TEXT}</Popover.Title>
+            <Popover.Description>{DESCRIPTION_TEXT}</Popover.Description>
+          </Popover.Content>
+        </Popover.Portal>
+      </Popover.Root>,
+    );
+    const content = openContent(rendered);
+    expect(content).toHaveAttribute('aria-labelledby', rendered.getByText(TITLE_TEXT).id);
+    expect(content).toHaveAttribute('aria-describedby', rendered.getByText(DESCRIPTION_TEXT).id);
+  });
+});
