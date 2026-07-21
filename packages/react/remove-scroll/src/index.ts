@@ -1,3 +1,4 @@
+'use client';
 // Fork of https://github.com/theKashey/react-remove-scroll
 // MIT License, Copyright (c) Anton Korzunov
 export {
