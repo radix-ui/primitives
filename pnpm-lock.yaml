@@ -141,6 +141,9 @@ importers:
       '@repo/test-data':
         specifier: workspace:*
         version: link:../../internal/test-data
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
       form-serialize:
         specifier: ^0.7.2
         version: 0.7.2
@@ -181,9 +184,6 @@ importers:
       '@types/react-dom':
         specifier: ^19.2.3
         version: 19.2.3(@types/react@19.2.17)
-      clsx:
-        specifier: ^2.1.1
-        version: 2.1.1
       serve:
         specifier: ^14.2.5
         version: 14.2.6
@@ -1883,6 +1883,9 @@ importers:
       '@radix-ui/react-radio-group':
         specifier: workspace:*
         version: link:../radio-group
+      '@radix-ui/react-remove-scroll':
+        specifier: workspace:*
+        version: link:../remove-scroll
       '@radix-ui/react-roving-focus':
         specifier: workspace:*
         version: link:../roving-focus
@@ -1946,6 +1949,43 @@ importers:
       '@radix-ui/react-visually-hidden':
         specifier: workspace:*
         version: link:../visually-hidden
+    devDependencies:
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../../../internal/typescript-config
+      '@types/react':
+        specifier: ^19.2.17
+        version: 19.2.17
+      '@types/react-dom':
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
+      react:
+        specifier: ^19.2.7
+        version: 19.2.7
+      react-dom:
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/react/remove-scroll:
+    dependencies:
+      '@radix-ui/primitive':
+        specifier: workspace:*
+        version: link:../../core/primitive
+      '@radix-ui/react-compose-refs':
+        specifier: workspace:*
+        version: link:../compose-refs
+      '@radix-ui/react-primitive':
+        specifier: workspace:*
+        version: link:../primitive
+      '@radix-ui/react-use-callback-ref':
+        specifier: workspace:*
+        version: link:../use-callback-ref
     devDependencies:
       '@repo/builder':
         specifier: workspace:*
