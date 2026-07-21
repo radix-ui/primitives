@@ -41,3 +41,37 @@ describe('keys from focusable descendants', () => {
     expect(onValueChange).toHaveBeenCalledWith('two');
   });
 });
+
+// Regression test for https://github.com/radix-ui/primitives/issues/2915
+describe('keys from an editable descendant trigger', () => {
+  afterEach(cleanup);
+
+  const TabsWithEditableTriggers = (props: React.ComponentProps<typeof Tabs.Root>) => (
+    <Tabs.Root defaultValue="one" activationMode="manual" {...props}>
+      <Tabs.List>
+        <Tabs.Trigger value="one" asChild>
+          <div>
+            <input data-testid="input-one" defaultValue="Foo" />
+          </div>
+        </Tabs.Trigger>
+        <Tabs.Trigger value="two" asChild>
+          <div>
+            <input data-testid="input-two" defaultValue="Bar" />
+          </div>
+        </Tabs.Trigger>
+      </Tabs.List>
+      <Tabs.Content value="one">One content</Tabs.Content>
+      <Tabs.Content value="two">Two content</Tabs.Content>
+    </Tabs.Root>
+  );
+
+  it('does not activate a tab from Space typed into a nested editable input', () => {
+    const onValueChange = vi.fn();
+    render(<TabsWithEditableTriggers onValueChange={onValueChange} />);
+    const inputTwo = screen.getByTestId('input-two');
+    inputTwo.focus();
+    fireEvent.keyDown(inputTwo, { key: ' ' });
+    fireEvent.keyDown(inputTwo, { key: 'Enter' });
+    expect(onValueChange).not.toHaveBeenCalled();
+  });
+});
