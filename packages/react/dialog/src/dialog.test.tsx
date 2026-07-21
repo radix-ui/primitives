@@ -215,6 +215,38 @@ describe('given a modal Dialog', () => {
     fireEvent.click(getByText(CLOSE_TEXT));
     expect(document.body.style.pointerEvents).toBe('');
   });
+
+  // Regression test for https://github.com/radix-ui/primitives/issues/2860
+  // Ctrl + mouse wheel is the browser zoom gesture on Windows (and pinch-zoom on
+  // macOS trackpads emits a `wheel` event with `ctrlKey`).
+  it('should not prevent ctrl + wheel (page zoom) while open', async () => {
+    render(<DialogTest />);
+    fireEvent.click(screen.getByText(OPEN_TEXT));
+
+    // `RemoveScroll` attaches its document `wheel` listener from an
+    // asynchronously loaded sidecar. Poll until a plain wheel over the isolated
+    // `body` is prevented, which confirms the scroll lock is active. If this
+    // never happens the test fails loudly rather than passing spuriously.
+    async function waitForScrollLock() {
+      for (let i = 0; i < 50; i++) {
+        const notPrevented = fireEvent.wheel(document.body, { deltaY: 10 });
+        if (!notPrevented) {
+          return;
+        }
+        await act(async () => {
+          await new Promise((resolve) => window.setTimeout(resolve, 10));
+        });
+      }
+      throw new Error('RemoveScroll did not attach its `wheel` listener');
+    }
+
+    await waitForScrollLock();
+
+    // The ctrl + wheel zoom gesture over the dialog must NOT be prevented.
+    const content = screen.getByRole('dialog');
+    const zoomWheelPrevented = !fireEvent.wheel(content, { ctrlKey: true, deltaY: 10 });
+    expect(zoomWheelPrevented).toBe(false);
+  });
 });
 
 describe('given two overlapping modal Dialogs (forceMount)', () => {
