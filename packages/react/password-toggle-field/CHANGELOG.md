@@ -1,5 +1,10 @@
 # @radix-ui/react-password-toggle-field
 
+## 0.1.9
+
+- Republish through CI to attach provenance attestations. The previous versions of these packages were published manually outside of CI and therefore shipped without provenance; this patch re-releases the same code through the CI pipeline so every package includes an attestation.
+- Updated dependencies: `@radix-ui/primitive@1.1.7`, `@radix-ui/react-compose-refs@1.1.4`, `@radix-ui/react-context@1.2.1`, `@radix-ui/react-id@1.1.3`, `@radix-ui/react-primitive@2.1.8`, `@radix-ui/react-use-controllable-state@1.2.5`, `@radix-ui/react-use-effect-event@0.0.4`, `@radix-ui/react-use-is-hydrated@0.1.2`
+
 ## 0.1.8
 
 - Improved tree-shaking so bundlers can drop unused components. Component parts are now marked `/* @__PURE__ */` and use named render functions instead of `Component.displayName = ...` assignments, which previously prevented dead-code elimination with some bundlers.
@@ -51,14 +56,17 @@ This new primitive provides components for rendering a password input alongside 
 This API is currently unstable, and we hope you'll help us test it out! Import the primitive using the `unstable_` prefix.
 
 ```tsx
-import { unstable_PasswordToggleField as PasswordToggleField } from 'radix-ui';
+import { unstable_PasswordToggleField as PasswordToggleField } from "radix-ui";
 
 function FieldWithIconToggle() {
   return (
     <PasswordToggleField.Root>
       <PasswordToggleField.Input />
       <PasswordToggleField.Toggle>
-        <PasswordToggleField.Icon visible={<EyeOpenIcon />} hidden={<EyeClosedIcon />} />
+        <PasswordToggleField.Icon
+          visible={<EyeOpenIcon />}
+          hidden={<EyeClosedIcon />}
+        />
       </PasswordToggleField.Toggle>
     </PasswordToggleField.Root>
   );
@@ -69,7 +77,10 @@ function FieldWithTextToggle() {
     <PasswordToggleField.Root>
       <PasswordToggleField.Input />
       <PasswordToggleField.Toggle>
-        <PasswordToggleField.Slot visible="Hide password" hidden="Show password" />
+        <PasswordToggleField.Slot
+          visible="Hide password"
+          hidden="Show password"
+        />
       </PasswordToggleField.Toggle>
     </PasswordToggleField.Root>
   );

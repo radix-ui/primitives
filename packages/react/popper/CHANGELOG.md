@@ -1,5 +1,10 @@
 # @radix-ui/react-popper
 
+## 1.3.5
+
+- Republish through CI to attach provenance attestations. The previous versions of these packages were published manually outside of CI and therefore shipped without provenance; this patch re-releases the same code through the CI pipeline so every package includes an attestation.
+- Updated dependencies: `@radix-ui/react-arrow@1.1.13`, `@radix-ui/react-compose-refs@1.1.4`, `@radix-ui/react-context@1.2.1`, `@radix-ui/react-primitive@2.1.8`, `@radix-ui/react-use-callback-ref@1.1.3`, `@radix-ui/react-use-layout-effect@1.1.3`, `@radix-ui/react-use-rect@1.1.3`, `@radix-ui/react-use-size@1.1.3`, `@radix-ui/rect@1.1.3`
+
 ## 1.3.4
 
 - Fixed overriding inline animation style in `Popper.Content`.
