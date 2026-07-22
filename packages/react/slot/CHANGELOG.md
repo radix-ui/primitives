@@ -1,5 +1,10 @@
 # @radix-ui/react-slot
 
+## 1.3.1
+
+- Republish through CI to attach provenance attestations. The previous versions of these packages were published manually outside of CI and therefore shipped without provenance; this patch re-releases the same code through the CI pipeline so every package includes an attestation.
+- Updated dependencies: `@radix-ui/primitive@1.1.7`, `@radix-ui/react-compose-refs@1.1.4`
+
 ## 1.3.0
 
 ### Added generic type arguments for `SlotProps` and `createSlot`
@@ -7,7 +12,7 @@
 `SlotProps` and `createSlot` now accept generic type arguments to specify the type of element a slot should render, as well as its props.
 
 ```tsx
-const Slot = createSlot<HTMLButtonElement, MyCustomButtonProps>('Slot');
+const Slot = createSlot<HTMLButtonElement, MyCustomButtonProps>("Slot");
 ```
 
 ## 1.2.5
