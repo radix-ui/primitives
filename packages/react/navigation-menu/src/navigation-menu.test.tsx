@@ -373,3 +373,44 @@ describe('focus outside', () => {
     expect(onValueChange).toHaveBeenCalledWith('');
   });
 });
+
+// See: https://github.com/radix-ui/primitives/issues/3786
+describe('data-state on forceMount viewport content', () => {
+  afterEach(cleanup);
+
+  it('should have data-state="open" on active viewport content', async () => {
+    render(
+      <NavigationMenu.Root defaultValue="one">
+        <NavigationMenu.List>
+          <NavigationMenu.Item value="one">
+            <NavigationMenu.Trigger>{TRIGGER_TEXT}</NavigationMenu.Trigger>
+            <NavigationMenu.Content forceMount>
+              <NavigationMenu.Link href="#">{CONTENT_TEXT}</NavigationMenu.Link>
+            </NavigationMenu.Content>
+          </NavigationMenu.Item>
+        </NavigationMenu.List>
+        <NavigationMenu.Viewport />
+      </NavigationMenu.Root>,
+    );
+    await waitFor(() => expect(screen.getByText(CONTENT_TEXT)).toBeInTheDocument());
+    expect(screen.getByText(CONTENT_TEXT).closest('[data-state]')).toHaveAttribute('data-state', 'open');
+  });
+
+  it('should have data-state="closed" on inactive forceMount viewport content', async () => {
+    render(
+      <NavigationMenu.Root value="two">
+        <NavigationMenu.List>
+          <NavigationMenu.Item value="one">
+            <NavigationMenu.Trigger>{TRIGGER_TEXT}</NavigationMenu.Trigger>
+            <NavigationMenu.Content forceMount>
+              <NavigationMenu.Link href="#">{CONTENT_TEXT}</NavigationMenu.Link>
+            </NavigationMenu.Content>
+          </NavigationMenu.Item>
+        </NavigationMenu.List>
+        <NavigationMenu.Viewport />
+      </NavigationMenu.Root>,
+    );
+    await waitFor(() => expect(screen.getByText(CONTENT_TEXT)).toBeInTheDocument());
+    expect(screen.getByText(CONTENT_TEXT).closest('[data-state]')).toHaveAttribute('data-state', 'closed');
+  });
+});
