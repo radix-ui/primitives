@@ -74,7 +74,7 @@ jobs:
     needs: publish-stable
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
       pull-requests: write
     steps:
       - name: Checkout
@@ -108,6 +108,7 @@ jobs:
 
           - Sync the latest published changes from `stable` back into `main`.
           - Opened automatically after a successful stable publish.
+          - Review and merge manually.
           EOF
           )"
 
@@ -121,27 +122,4 @@ jobs:
               --body "$PR_BODY")
             PR_NUMBER=$(echo "$PR_URL" | sed -E 's|.*/([0-9]+)$|\1|')
           fi
-
-          # Skip enablement if auto-merge is already on (re-runs on a PR that was
-          # found via the existing-PR branch above can land here a second time).
-          AUTO_MERGE_STATE=$(gh pr view "$PR_NUMBER" --json autoMergeRequest --jq '.autoMergeRequest')
-          if [ "$AUTO_MERGE_STATE" != "null" ] && [ -n "$AUTO_MERGE_STATE" ]; then
-            echo "Auto-merge is already enabled on PR #$PR_NUMBER"
-            exit 0
-          fi
-
-          # Enable auto-merge so the PR merges itself once required checks pass.
-          # If auto-merge is disabled at the repository level, log it and continue
-          # (a human will need to merge the backport PR manually). Any other
-          # failure - auth, permissions, merge conflicts, etc. - is real and
-          # should fail the job rather than silently leaving the backport unmerged.
-          if ! AUTO_MERGE_OUTPUT=$(gh pr merge --auto --squash "$PR_NUMBER" 2>&1); then
-            if echo "$AUTO_MERGE_OUTPUT" | grep -qiE 'auto[- ]merge is not allowed|auto[- ]merge is not enabled'; then
-              echo "Auto-merge is not enabled on this repository; backport PR #$PR_NUMBER must be merged manually."
-              echo "$AUTO_MERGE_OUTPUT"
-            else
-              echo "Failed to enable auto-merge on PR #$PR_NUMBER:" >&2
-              echo "$AUTO_MERGE_OUTPUT" >&2
-              exit 1
-            fi
-          fi
+          echo "Backport PR #$PR_NUMBER is open and awaiting review."
