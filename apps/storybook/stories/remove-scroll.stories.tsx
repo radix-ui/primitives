@@ -295,3 +295,94 @@ export const TextAreaOverflow = () => (
     </div>
   </RemoveScroll.Root>
 );
+
+/**
+ * Purpose-built for e2e: an `outer` scroll container holding a `RemoveScroll` region that wraps an
+ * independently scrollable `inner` box (plus filler so `outer` overflows). A toggle enables/disables
+ * the lock. This lets tests assert the core guarantee via self-contained elements (independent of
+ * the iframe's viewport scroll model): while locked, wheeling over `inner` scrolls only `inner` and
+ * never propagates to `outer`; while unlocked, the scroll chains to `outer` as usual.
+ */
+export const ScrollIsolation = () => {
+  const [enabled, setEnabled] = React.useState(true);
+  return (
+    <div>
+      <button data-testid="toggle" onClick={() => setEnabled((value) => !value)}>
+        toggle
+      </button>
+      <div
+        data-testid="outer"
+        style={{ height: 300, width: 260, overflow: 'auto', border: '1px solid' }}
+      >
+        <div style={{ height: 20 }}>above</div>
+        <RemoveScroll.Root enabled={enabled}>
+          <div data-testid="inner" style={{ height: 120, overflow: 'auto' }}>
+            <div style={{ height: 1000 }}>inner content</div>
+          </div>
+        </RemoveScroll.Root>
+        <div style={{ height: 1000 }}>below</div>
+      </div>
+    </div>
+  );
+};
+
+/**
+ * Purpose-built for e2e: a lock plus a `shard` (a scrollable element registered via `shards`) that
+ * lives outside the lock's subtree. While locked, wheeling over the shard must still scroll it (it
+ * is treated as part of the lock — radix #3423), while wheeling over unrelated background is blocked.
+ */
+export const ShardScroll = () => {
+  const shardRef = React.useRef<HTMLDivElement>(null);
+  return (
+    <div>
+      <div
+        data-testid="outer"
+        style={{ height: 200, width: 260, overflow: 'auto', border: '1px solid' }}
+      >
+        <RemoveScroll.Root shards={[shardRef]}>
+          <div data-testid="inner" style={{ height: 100, overflow: 'auto' }}>
+            <div style={{ height: 1000 }}>inner content</div>
+          </div>
+        </RemoveScroll.Root>
+        <div style={{ height: 1000 }}>below</div>
+      </div>
+      <div
+        data-testid="shard"
+        ref={shardRef}
+        style={{ height: 120, width: 260, overflow: 'auto', border: '1px solid' }}
+      >
+        <div style={{ height: 1000 }}>shard content</div>
+      </div>
+    </div>
+  );
+};
+
+/**
+ * Purpose-built for e2e: an `inert` lock. Inert disables pointer interaction everywhere except the
+ * lock and its shards, so clicking the `outside` button is blocked while clicking the `shard` and
+ * `inside` buttons still works.
+ */
+export const InertLock = () => {
+  const shardRef = React.useRef<HTMLButtonElement>(null);
+  const [outside, setOutside] = React.useState(0);
+  const [inside, setInside] = React.useState(0);
+  const [shard, setShard] = React.useState(0);
+  return (
+    <div>
+      <button data-testid="outside" onClick={() => setOutside((count) => count + 1)}>
+        outside
+      </button>
+      <div data-testid="outside-count">{outside}</div>
+      <RemoveScroll.Root inert shards={[shardRef]}>
+        <button data-testid="inside" onClick={() => setInside((count) => count + 1)}>
+          inside
+        </button>
+      </RemoveScroll.Root>
+      <div data-testid="inside-count">{inside}</div>
+      <button data-testid="shard" ref={shardRef} onClick={() => setShard((count) => count + 1)}>
+        shard
+      </button>
+      <div data-testid="shard-count">{shard}</div>
+    </div>
+  );
+};
