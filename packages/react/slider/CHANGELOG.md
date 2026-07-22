@@ -1,5 +1,10 @@
 # @radix-ui/react-slider
 
+## 1.4.5
+
+- Republish through CI to attach provenance attestations. The previous versions of these packages were published manually outside of CI and therefore shipped without provenance; this patch re-releases the same code through the CI pipeline so every package includes an attestation.
+- Updated dependencies: `@radix-ui/number@1.1.3`, `@radix-ui/primitive@1.1.7`, `@radix-ui/react-collection@1.1.13`, `@radix-ui/react-compose-refs@1.1.4`, `@radix-ui/react-context@1.2.1`, `@radix-ui/react-direction@1.1.3`, `@radix-ui/react-primitive@2.1.8`, `@radix-ui/react-use-controllable-state@1.2.5`, `@radix-ui/react-use-layout-effect@1.1.3`, `@radix-ui/react-use-previous@1.1.3`, `@radix-ui/react-use-size@1.1.3`
+
 ## 1.4.4
 
 - Fixed a bug where `onValueCommit` was not called when a slider thumb was dragged across another thumb.

@@ -1,5 +1,9 @@
 # @radix-ui/react-context
 
+## 1.2.1
+
+- Republish through CI to attach provenance attestations. The previous versions of these packages were published manually outside of CI and therefore shipped without provenance; this patch re-releases the same code through the CI pipeline so every package includes an attestation.
+
 ## 1.2.0
 
 ### > IMPORTANT: `@radix-ui/react-context` is marked for a minor release since it introduces additive overloaded types and function arguments. At release time, changesets will determine that its dependents should also be marked for a minor release, but this is not the case since it the only change for those packages impacts internal usage. In `radix-ui` this export is exposed from the `internal` module, whose exports do not impact public API and therefore do not follow semver.
