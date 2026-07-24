@@ -43,7 +43,7 @@ type DialogContextValue = {
   setDescriptionCount: React.Dispatch<React.SetStateAction<number>>;
   open: boolean;
   onOpenChange(open: boolean): void;
-  onOpenToggle(): void;
+  onOpenToggle(event: React.MouseEvent): void;
   modal: boolean;
   // Nodes of nested, portalled layers (eg. a non-modal `Popover`) that should
   // be treated as part of this Dialog for focus trapping and scroll locking.
@@ -98,7 +98,13 @@ const Dialog: React.FC<DialogProps> = (props: ScopedProps<DialogProps>) => {
       setDescriptionCount={setDescriptionCount}
       open={open}
       onOpenChange={setOpen}
-      onOpenToggle={React.useCallback(() => setOpen((prevOpen) => !prevOpen), [setOpen])}
+      onOpenToggle={React.useCallback(
+        (e) => {
+          e.stopPropagation();
+          setOpen((prevOpen) => !prevOpen);
+        },
+        [setOpen],
+      )}
       modal={modal}
       branchNodes={branchNodes}
       branchRegistry={branchRegistry}
@@ -319,9 +325,11 @@ const DialogContentModal = /* @__PURE__ */ React.forwardRef<
         disableOutsidePointerEvents={context.open}
         onCloseAutoFocus={composeEventHandlers(props.onCloseAutoFocus, (event) => {
           event.preventDefault();
+          event.stopPropagation();
           context.triggerRef.current?.focus();
         })}
         onPointerDownOutside={composeEventHandlers(props.onPointerDownOutside, (event) => {
+          event.stopPropagation();
           const originalEvent = event.detail.originalEvent;
           const ctrlLeftClick = originalEvent.button === 0 && originalEvent.ctrlKey === true;
           const isRightClick = originalEvent.button === 2 || ctrlLeftClick;
@@ -332,9 +340,10 @@ const DialogContentModal = /* @__PURE__ */ React.forwardRef<
         })}
         // When focus is trapped, a `focusout` event may still happen.
         // We make sure we don't trigger our `onDismiss` in such case.
-        onFocusOutside={composeEventHandlers(props.onFocusOutside, (event) =>
-          event.preventDefault(),
-        )}
+        onFocusOutside={composeEventHandlers(props.onFocusOutside, (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+        })}
       />
     );
   },
@@ -547,7 +556,10 @@ const DialogClose = /* @__PURE__ */ React.forwardRef<DialogCloseElement, DialogC
         type="button"
         {...closeProps}
         ref={forwardedRef}
-        onClick={composeEventHandlers(props.onClick, () => context.onOpenChange(false))}
+        onClick={composeEventHandlers(props.onClick, (event) => {
+          event.stopPropagation();
+          context.onOpenChange(false);
+        })}
       />
     );
   },
