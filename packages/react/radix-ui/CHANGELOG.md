@@ -1,5 +1,9 @@
 # radix-ui
 
+## 1.6.6
+
+- Added `"use client"` directive to the `Slot` entrypoint to fix compatibility issues with React Server Components.
+
 ## 1.6.5
 
 - Republish through CI to attach provenance attestations. The previous versions of these packages were published manually outside of CI and therefore shipped without provenance; this patch re-releases the same code through the CI pipeline so every package includes an attestation.

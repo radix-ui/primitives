@@ -1,5 +1,9 @@
 # @radix-ui/react-slider
 
+## 1.4.6
+
+- Updated dependencies: `@radix-ui/react-collection@1.1.14`, `@radix-ui/react-primitive@2.1.9`
+
 ## 1.4.5
 
 - Republish through CI to attach provenance attestations. The previous versions of these packages were published manually outside of CI and therefore shipped without provenance; this patch re-releases the same code through the CI pipeline so every package includes an attestation.

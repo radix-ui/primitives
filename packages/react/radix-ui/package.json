@@ -1,6 +1,6 @@
 {
   "name": "radix-ui",
-  "version": "1.6.5",
+  "version": "1.6.6",
   "license": "MIT",
   "source": "./src/index.ts",
   "main": "./src/index.ts",
