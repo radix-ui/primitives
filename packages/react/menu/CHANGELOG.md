@@ -1,5 +1,10 @@
 # @radix-ui/react-menu
 
+## 2.1.24
+
+- Reverted breaking changes that caused compatibility issues with React Server Components.
+- Updated dependencies: `@radix-ui/react-collection@1.1.15`, `@radix-ui/react-compose-refs@1.1.5`, `@radix-ui/react-context@1.2.2`, `@radix-ui/react-direction@1.1.4`, `@radix-ui/react-dismissable-layer@1.1.19`, `@radix-ui/react-focus-guards@1.1.6`, `@radix-ui/react-focus-scope@1.1.16`, `@radix-ui/react-id@1.1.4`, `@radix-ui/react-popper@1.3.7`, `@radix-ui/react-portal@1.1.17`, `@radix-ui/react-presence@1.1.10`, `@radix-ui/react-primitive@2.1.10`, `@radix-ui/react-roving-focus@1.1.19`, `@radix-ui/react-slot@1.3.3`, `@radix-ui/react-use-callback-ref@1.1.4`
+
 ## 2.1.23
 
 - Updated dependencies: `@radix-ui/react-slot@1.3.2`, `@radix-ui/react-collection@1.1.14`, `@radix-ui/react-primitive@2.1.9`, `@radix-ui/react-roving-focus@1.1.18`, `@radix-ui/react-dismissable-layer@1.1.18`, `@radix-ui/react-focus-scope@1.1.15`, `@radix-ui/react-popper@1.3.6`, `@radix-ui/react-portal@1.1.16`

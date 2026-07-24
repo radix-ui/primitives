@@ -1,5 +1,10 @@
 # @radix-ui/react-separator
 
+## 1.1.15
+
+- Reverted breaking changes that caused compatibility issues with React Server Components.
+- Updated dependencies: `@radix-ui/react-primitive@2.1.10`
+
 ## 1.1.14
 
 - Updated dependencies: `@radix-ui/react-primitive@2.1.9`

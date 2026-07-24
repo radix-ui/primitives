@@ -1,5 +1,10 @@
 # @radix-ui/react-collapsible
 
+## 1.1.20
+
+- Reverted breaking changes that caused compatibility issues with React Server Components.
+- Updated dependencies: `@radix-ui/react-compose-refs@1.1.5`, `@radix-ui/react-context@1.2.2`, `@radix-ui/react-id@1.1.4`, `@radix-ui/react-presence@1.1.10`, `@radix-ui/react-primitive@2.1.10`, `@radix-ui/react-use-controllable-state@1.2.6`, `@radix-ui/react-use-layout-effect@1.1.4`
+
 ## 1.1.19
 
 - Updated dependencies: `@radix-ui/react-primitive@2.1.9`

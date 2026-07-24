@@ -1,5 +1,10 @@
 # @radix-ui/react-scroll-area
 
+## 1.2.18
+
+- Reverted breaking changes that caused compatibility issues with React Server Components.
+- Updated dependencies: `@radix-ui/react-compose-refs@1.1.5`, `@radix-ui/react-context@1.2.2`, `@radix-ui/react-direction@1.1.4`, `@radix-ui/react-presence@1.1.10`, `@radix-ui/react-primitive@2.1.10`, `@radix-ui/react-use-callback-ref@1.1.4`, `@radix-ui/react-use-layout-effect@1.1.4`
+
 ## 1.2.17
 
 - Updated dependencies: `@radix-ui/react-primitive@2.1.9`
