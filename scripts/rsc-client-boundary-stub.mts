@@ -65,14 +65,33 @@ export function rscClientBoundaryStub(): Plugin {
         }
       }
 
+      // A client reference may be imported, referenced, and rendered, but
+      // calling it as a function on the server throws. This behaves exactly
+      // like React's runtime.
       const lines = [
-        `const __rscClientBoundary = new Proxy(function () {}, {`,
-        `  get: (_target, prop) => (prop === '__esModule' ? true : __rscClientBoundary),`,
-        `  apply: () => __rscClientBoundary,`,
-        `  construct: () => __rscClientBoundary,`,
-        `});`,
-        ...[...namedExports].map((name) => `export const ${name} = __rscClientBoundary;`),
-        `export default __rscClientBoundary;`,
+        `function __rscClientReference(name) {`,
+        `  return new Proxy(function () {}, {`,
+        `    apply() {`,
+        `      throw new Error(`,
+        `        "Attempted to call " + name + "() from the server but " + name + " is on the client. " +`,
+        `        "It's not possible to invoke a client function from the server, it can only be " +`,
+        `        "rendered as a Component or passed to props of a Client Component."`,
+        `      );`,
+        `    },`,
+        `    construct() {`,
+        `      throw new Error("Attempted to construct " + name + " from the server but it is on the client.");`,
+        `    },`,
+        `    get(_target, prop) {`,
+        `      if (prop === '__esModule') return true;`,
+        `      if (prop === 'then' || typeof prop === 'symbol') return undefined;`,
+        `      return __rscClientReference(name + '.' + String(prop));`,
+        `    },`,
+        `  });`,
+        `}`,
+        ...[...namedExports].map(
+          (name) => `export const ${name} = __rscClientReference(${JSON.stringify(name)});`,
+        ),
+        `export default __rscClientReference('default');`,
       ];
 
       return { code: lines.join('\n'), map: null };

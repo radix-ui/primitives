@@ -30,6 +30,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <Link href="/portal">Portal</Link>
               <Link href="/progress">Progress</Link>
               <Link href="/radio-group">RadioGroup</Link>
+              <Link href="/rsc">RSC (server import guard)</Link>
               <Link href="/roving-focus-group">RovingFocusGroup</Link>
               <Link href="/scroll-area">ScrollArea</Link>
               <Link href="/select">Select</Link>

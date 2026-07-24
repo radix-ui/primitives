@@ -1,0 +1,31 @@
+name: SSR build
+
+on:
+  pull_request:
+    branches:
+      - main
+      - stable
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ssr-build:
+    name: RSC/SSR import guard
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: CI setup
+        uses: ./.github/actions/ci-setup
+
+      # Production build of the Next.js app router playground. This evaluates
+      # every page's server graph and prerenders it, so it fails on import-time
+      # RSC regressions (eg. a module-scope `React.createContext`, or calling a
+      # client-only export like `createSlot` from the server).
+      #
+      # See `apps/ssr-testing/app/rsc/page.tsx`
+      - name: Build SSR testing app
+        run: pnpm --filter @repo/ssr-testing build
