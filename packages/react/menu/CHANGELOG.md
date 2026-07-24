@@ -1,5 +1,9 @@
 # @radix-ui/react-menu
 
+## 2.1.23
+
+- Updated dependencies: `@radix-ui/react-slot@1.3.2`, `@radix-ui/react-collection@1.1.14`, `@radix-ui/react-primitive@2.1.9`, `@radix-ui/react-roving-focus@1.1.18`, `@radix-ui/react-dismissable-layer@1.1.18`, `@radix-ui/react-focus-scope@1.1.15`, `@radix-ui/react-popper@1.3.6`, `@radix-ui/react-portal@1.1.16`
+
 ## 2.1.22
 
 - Republish through CI to attach provenance attestations. The previous versions of these packages were published manually outside of CI and therefore shipped without provenance; this patch re-releases the same code through the CI pipeline so every package includes an attestation.

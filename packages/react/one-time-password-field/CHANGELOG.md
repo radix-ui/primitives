@@ -1,5 +1,9 @@
 # @radix-ui/react-one-time-password-field
 
+## 0.1.15
+
+- Updated dependencies: `@radix-ui/react-collection@1.1.14`, `@radix-ui/react-primitive@2.1.9`, `@radix-ui/react-roving-focus@1.1.18`
+
 ## 0.1.14
 
 - Republish through CI to attach provenance attestations. The previous versions of these packages were published manually outside of CI and therefore shipped without provenance; this patch re-releases the same code through the CI pipeline so every package includes an attestation.
