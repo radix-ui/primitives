@@ -29,7 +29,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <Link href="/popover">Popover</Link>
               <Link href="/portal">Portal</Link>
               <Link href="/progress">Progress</Link>
+              <Link href="/primitive-merge">Primitive merge (RSC boundary)</Link>
               <Link href="/radio-group">RadioGroup</Link>
+              <Link href="/rsc">RSC (server import guard)</Link>
               <Link href="/roving-focus-group">RovingFocusGroup</Link>
               <Link href="/scroll-area">ScrollArea</Link>
               <Link href="/select">Select</Link>
