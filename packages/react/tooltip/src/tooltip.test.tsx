@@ -300,6 +300,41 @@ describe('Tooltip', () => {
     });
   });
 
+  // Regression test for https://github.com/radix-ui/primitives/issues/1800
+  // Switching away from and back to the browser tab refocuses the previously-focused
+  // trigger, firing a synthetic `focus` event that must not reopen the tooltip.
+  it('does not open on focus caused by the window regaining focus', () => {
+    render(
+      <Tooltip.Provider>
+        <Tooltip.Root delayDuration={0}>
+          <Tooltip.Trigger>Tooltip Trigger</Tooltip.Trigger>
+          <Tooltip.Portal>
+            <Tooltip.Content>Tooltip Content</Tooltip.Content>
+          </Tooltip.Portal>
+        </Tooltip.Root>
+      </Tooltip.Provider>,
+    );
+
+    const trigger = screen.getByText('Tooltip Trigger');
+
+    // A genuine focus opens the tooltip.
+    act(() => void fireEvent.focus(trigger));
+    expect(trigger).toHaveAttribute('data-state', 'instant-open');
+    act(() => void fireEvent.blur(trigger));
+    expect(trigger).toHaveAttribute('data-state', 'closed');
+
+    // Simulate the window losing focus, then the tab regaining focus and refocusing
+    // the trigger. The synthetic refocus must NOT reopen the tooltip.
+    act(() => void window.dispatchEvent(new FocusEvent('blur')));
+    act(() => void fireEvent.focus(trigger));
+    expect(trigger).toHaveAttribute('data-state', 'closed');
+    expect(screen.queryByText('Tooltip Content')).not.toBeInTheDocument();
+
+    // A subsequent genuine focus still opens it (the guard is consumed once).
+    act(() => void fireEvent.focus(trigger));
+    expect(trigger).toHaveAttribute('data-state', 'instant-open');
+  });
+
   // Regression test for https://github.com/radix-ui/primitives/issues/2375
   // Hovering a trigger inside a shared `TooltipProvider` must not re-render
   // sibling tooltips. The provider keeps its "open delayed" flag in a ref so
