@@ -38,6 +38,7 @@ type DropdownMenuContextValue = {
   onOpenChange(open: boolean): void;
   onOpenToggle(): void;
   modal: boolean;
+  focusLastOnOpenRef: React.MutableRefObject<boolean>;
 };
 
 const [DropdownMenuProvider, useDropdownMenuContext] =
@@ -64,6 +65,7 @@ const DropdownMenu: React.FC<DropdownMenuProps> = (props: ScopedProps<DropdownMe
   } = props;
   const menuScope = useMenuScope(__scopeDropdownMenu);
   const triggerRef = React.useRef<HTMLButtonElement>(null);
+  const focusLastOnOpenRef = React.useRef(false);
   const [open, setOpen] = useControllableState({
     prop: openProp,
     defaultProp: defaultOpen ?? false,
@@ -81,6 +83,7 @@ const DropdownMenu: React.FC<DropdownMenuProps> = (props: ScopedProps<DropdownMe
       onOpenChange={setOpen}
       onOpenToggle={React.useCallback(() => setOpen((prevOpen) => !prevOpen), [setOpen])}
       modal={modal}
+      focusLastOnOpenRef={focusLastOnOpenRef}
     >
       <MenuPrimitive.Root {...menuScope} open={open} onOpenChange={setOpen} dir={dir} modal={modal}>
         {children}
@@ -135,10 +138,17 @@ const DropdownMenuTrigger = /* @__PURE__ */ React.forwardRef<
           onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
             if (disabled) return;
             if (['Enter', ' '].includes(event.key)) context.onOpenToggle();
-            if (event.key === 'ArrowDown') context.onOpenChange(true);
+            if (event.key === 'ArrowDown') {
+              context.focusLastOnOpenRef.current = false;
+              context.onOpenChange(true);
+            }
+            if (event.key === 'ArrowUp') {
+              context.focusLastOnOpenRef.current = true;
+              context.onOpenChange(true);
+            }
             // prevent keydown from scrolling window / first focused item to execute
             // that keydown (inadvertently closing the menu)
-            if (['Enter', ' ', 'ArrowDown'].includes(event.key)) event.preventDefault();
+            if (['Enter', ' ', 'ArrowDown', 'ArrowUp'].includes(event.key)) event.preventDefault();
           })}
         />
       </MenuPrimitive.Anchor>
@@ -169,7 +179,7 @@ const CONTENT_NAME = 'DropdownMenuContent';
 
 type DropdownMenuContentElement = React.ComponentRef<typeof MenuPrimitive.Content>;
 type MenuContentProps = React.ComponentPropsWithoutRef<typeof MenuPrimitive.Content>;
-interface DropdownMenuContentProps extends Omit<MenuContentProps, 'onEntryFocus'> {}
+interface DropdownMenuContentProps extends MenuContentProps {}
 
 const DropdownMenuContent = /* @__PURE__ */ React.forwardRef<
   DropdownMenuContentElement,
@@ -181,6 +191,25 @@ const DropdownMenuContent = /* @__PURE__ */ React.forwardRef<
     const context = useDropdownMenuContext(CONTENT_NAME, __scopeDropdownMenu);
     const menuScope = useMenuScope(__scopeDropdownMenu);
     const hasInteractedOutsideRef = React.useRef(false);
+    const contentRef = React.useRef<DropdownMenuContentElement>(null);
+    const composedRefs = useComposedRefs(forwardedRef, contentRef);
+
+    // Focus last item when opened with ArrowUp
+    React.useEffect(() => {
+      if (context.open && context.focusLastOnOpenRef.current) {
+        // Small delay to let the menu mount and RovingFocusGroup settle
+        requestAnimationFrame(() => {
+          const content = contentRef.current;
+          if (!content) return;
+          const items = content.querySelectorAll<HTMLElement>('[role="menuitem"]');
+          const lastItem = items[items.length - 1];
+          if (lastItem && !lastItem.hasAttribute('disabled')) {
+            lastItem.focus();
+          }
+        });
+        context.focusLastOnOpenRef.current = false;
+      }
+    }, [context.open, context.focusLastOnOpenRef]);
 
     return (
       <MenuPrimitive.Content
@@ -188,7 +217,7 @@ const DropdownMenuContent = /* @__PURE__ */ React.forwardRef<
         aria-labelledby={context.triggerId}
         {...menuScope}
         {...contentProps}
-        ref={forwardedRef}
+        ref={composedRefs}
         onCloseAutoFocus={composeEventHandlers(props.onCloseAutoFocus, (event) => {
           if (!hasInteractedOutsideRef.current) context.triggerRef.current?.focus();
           hasInteractedOutsideRef.current = false;
