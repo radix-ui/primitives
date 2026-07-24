@@ -1,5 +1,10 @@
 # @radix-ui/react-context-menu
 
+## 2.3.7
+
+- Reverted breaking changes that caused compatibility issues with React Server Components.
+- Updated dependencies: `@radix-ui/react-context@1.2.2`, `@radix-ui/react-menu@2.1.24`, `@radix-ui/react-primitive@2.1.10`, `@radix-ui/react-use-controllable-state@1.2.6`
+
 ## 2.3.6
 
 - Updated dependencies: `@radix-ui/react-menu@2.1.23`, `@radix-ui/react-primitive@2.1.9`

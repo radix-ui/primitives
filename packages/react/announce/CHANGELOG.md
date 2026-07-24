@@ -1,5 +1,10 @@
 # @radix-ui/react-announce
 
+## 0.2.15
+
+- Reverted breaking changes that caused compatibility issues with React Server Components.
+- Updated dependencies: `@radix-ui/react-compose-refs@1.1.5`, `@radix-ui/react-primitive@2.1.10`, `@radix-ui/react-use-layout-effect@1.1.4`
+
 ## 0.2.14
 
 - Updated dependencies: `@radix-ui/react-primitive@2.1.9`

@@ -1,5 +1,10 @@
 # @radix-ui/react-visually-hidden
 
+## 1.2.11
+
+- Reverted breaking changes that caused compatibility issues with React Server Components.
+- Updated dependencies: `@radix-ui/react-primitive@2.1.10`
+
 ## 1.2.10
 
 - Updated dependencies: `@radix-ui/react-primitive@2.1.9`

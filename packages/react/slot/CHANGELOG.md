@@ -1,5 +1,10 @@
 # @radix-ui/react-slot
 
+## 1.3.3
+
+- Reverted breaking changes that caused compatibility issues with React Server Components.
+- Updated dependencies: `@radix-ui/react-compose-refs@1.1.5`
+
 ## 1.3.2
 
 - Added `"use client"` directive to the `Slot` entrypoint to fix compatibility issues with React Server Components.

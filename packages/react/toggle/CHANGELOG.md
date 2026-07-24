@@ -1,5 +1,10 @@
 # @radix-ui/react-toggle
 
+## 1.1.18
+
+- Reverted breaking changes that caused compatibility issues with React Server Components.
+- Updated dependencies: `@radix-ui/react-primitive@2.1.10`, `@radix-ui/react-use-controllable-state@1.2.6`
+
 ## 1.1.17
 
 - Updated dependencies: `@radix-ui/react-primitive@2.1.9`
