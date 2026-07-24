@@ -1,5 +1,10 @@
 # @radix-ui/react-progress
 
+## 1.1.16
+
+- Reverted breaking changes that caused compatibility issues with React Server Components.
+- Updated dependencies: `@radix-ui/react-context@1.2.2`, `@radix-ui/react-primitive@2.1.10`
+
 ## 1.1.15
 
 - Updated dependencies: `@radix-ui/react-primitive@2.1.9`

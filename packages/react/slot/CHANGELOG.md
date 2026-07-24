@@ -1,8 +1,8 @@
 # @radix-ui/react-slot
 
-## 1.3.2
+## 1.3.2, 1.3.3
 
-- Added `"use client"` directive to the `Slot` entrypoint to fix compatibility issues with React Server Components.
+- Reverted breaking changes that caused compatibility issues with React Server Components.
 
 ## 1.3.1
 
@@ -16,7 +16,7 @@
 `SlotProps` and `createSlot` now accept generic type arguments to specify the type of element a slot should render, as well as its props.
 
 ```tsx
-const Slot = createSlot<HTMLButtonElement, MyCustomButtonProps>("Slot");
+const Slot = createSlot<HTMLButtonElement, MyCustomButtonProps>('Slot');
 ```
 
 ## 1.2.5

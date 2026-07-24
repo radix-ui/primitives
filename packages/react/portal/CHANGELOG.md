@@ -1,5 +1,10 @@
 # @radix-ui/react-portal
 
+## 1.1.17
+
+- Reverted breaking changes that caused compatibility issues with React Server Components.
+- Updated dependencies: `@radix-ui/react-primitive@2.1.10`, `@radix-ui/react-use-layout-effect@1.1.4`
+
 ## 1.1.16
 
 - Updated dependencies: `@radix-ui/react-primitive@2.1.9`

@@ -1,8 +1,8 @@
 # radix-ui
 
-## 1.6.6
+## 1.6.6, 1.6.7
 
-- Added `"use client"` directive to the `Slot` entrypoint to fix compatibility issues with React Server Components.
+- Reverted breaking changes that caused compatibility issues with React Server Components.
 
 ## 1.6.5
 
@@ -65,7 +65,7 @@
 ## 1.6.0
 
 ```tsx
-const Slot = createSlot<HTMLButtonElement, MyCustomButtonProps>("Slot");
+const Slot = createSlot<HTMLButtonElement, MyCustomButtonProps>('Slot');
 ```
 
 ### Avatar
@@ -156,12 +156,12 @@ const Slot = createSlot<HTMLButtonElement, MyCustomButtonProps>("Slot");
 - Added unstable `RadioGroupItemProvider`, `RadioGroupItemTrigger` and `RadioGroupItemBubbleInput` parts. These expose the previously internal composition of a radio item that included a visually hidden `input` so consumers can directly access and recompose them. The `RadioGroupItem` component continues to render them by default.
 
   ```tsx
-  import { RadioGroup } from "radix-ui";
+  import { RadioGroup } from 'radix-ui';
 
   function ExampleRadioGroup() {
     return (
       <RadioGroup.Root>
-        {["one", "two", "three"].map((value) => (
+        {['one', 'two', 'three'].map((value) => (
           <RadioGroup.unstable_ItemProvider key={value} value={value}>
             <RadioGroup.unstable_ItemTrigger>
               <RadioGroup.Indicator />
@@ -180,7 +180,7 @@ const Slot = createSlot<HTMLButtonElement, MyCustomButtonProps>("Slot");
 - Added unstable `Provider` and `BubbleInput` parts to Select. These expose the previously internal composition that included a visually hidden `select` so consumers can directly access and recompose them. `Select` continues to render them by default.
 
   ```tsx
-  import { Select } from "radix-ui";
+  import { Select } from 'radix-ui';
 
   function ExampleSelect() {
     return (
@@ -204,7 +204,7 @@ const Slot = createSlot<HTMLButtonElement, MyCustomButtonProps>("Slot");
 - Added unstable `ThumbProvider`, `ThumbTrigger`, and `BubbleInput` parts to Slider. `SliderThumb` was previously a single component that implicitly rendered a hidden native input for form submission. It is now composed from these new parts, which are exposed so consumers can decouple the visually hidden input from the thumb. `SliderThumb` continues to render them by default.
 
   ```tsx
-  import { Slider } from "radix-ui";
+  import { Slider } from 'radix-ui';
 
   function ExampleSlider() {
     return (
@@ -243,7 +243,7 @@ const Slot = createSlot<HTMLButtonElement, MyCustomButtonProps>("Slot");
 - Added unstable `Provider`, `Trigger` and `BubbleInput` parts to Switch. These expose the previously internal composition that included a visually hidden `input` so consumers can directly access and recompose them. The `Switch` component continues to render them by default.
 
   ```tsx
-  import { Switch } from "radix-ui";
+  import { Switch } from 'radix-ui';
 
   function ExampleSwitch() {
     return (
@@ -325,17 +325,14 @@ This new primitive provides components for rendering a password input alongside 
 This API is currently unstable, and we hope you'll help us test it out! Import the primitive using the `unstable_` prefix.
 
 ```tsx
-import { unstable_PasswordToggleField as PasswordToggleField } from "radix-ui";
+import { unstable_PasswordToggleField as PasswordToggleField } from 'radix-ui';
 
 function FieldWithIconToggle() {
   return (
     <PasswordToggleField.Root>
       <PasswordToggleField.Input />
       <PasswordToggleField.Toggle>
-        <PasswordToggleField.Icon
-          visible={<EyeOpenIcon />}
-          hidden={<EyeClosedIcon />}
-        />
+        <PasswordToggleField.Icon visible={<EyeOpenIcon />} hidden={<EyeClosedIcon />} />
       </PasswordToggleField.Toggle>
     </PasswordToggleField.Root>
   );
@@ -346,10 +343,7 @@ function FieldWithTextToggle() {
     <PasswordToggleField.Root>
       <PasswordToggleField.Input />
       <PasswordToggleField.Toggle>
-        <PasswordToggleField.Slot
-          visible="Hide password"
-          hidden="Show password"
-        />
+        <PasswordToggleField.Slot visible="Hide password" hidden="Show password" />
       </PasswordToggleField.Toggle>
     </PasswordToggleField.Root>
   );
@@ -394,7 +388,7 @@ This new primitive is designed to implement the common design pattern for one-ti
 This API is currently unstable, and we hope you'll help us test it out! Import the primitive using the `unstable_` prefix.
 
 ```tsx
-import { unstable_OneTimePasswordField as OneTimePasswordField } from "radix-ui";
+import { unstable_OneTimePasswordField as OneTimePasswordField } from 'radix-ui';
 
 export function Verify() {
   return (

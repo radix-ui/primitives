@@ -1,5 +1,10 @@
 # @radix-ui/react-primitive
 
+## 2.1.10
+
+- Reverted breaking changes that caused compatibility issues with React Server Components.
+- Updated dependencies: `@radix-ui/react-slot@1.3.3`
+
 ## 2.1.9
 
 - Updated dependencies: `@radix-ui/react-slot@1.3.2`

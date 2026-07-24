@@ -1,5 +1,10 @@
 # @radix-ui/react-accessible-icon
 
+## 1.1.15
+
+- Reverted breaking changes that caused compatibility issues with React Server Components.
+- Updated dependencies: `@radix-ui/react-visually-hidden@1.2.11`
+
 ## 1.1.14
 
 - Updated dependencies: `@radix-ui/react-visually-hidden@1.2.10`

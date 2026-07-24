@@ -1,5 +1,10 @@
 # @radix-ui/react-toolbar
 
+## 1.1.19
+
+- Reverted breaking changes that caused compatibility issues with React Server Components.
+- Updated dependencies: `@radix-ui/react-context@1.2.2`, `@radix-ui/react-direction@1.1.4`, `@radix-ui/react-primitive@2.1.10`, `@radix-ui/react-roving-focus@1.1.19`, `@radix-ui/react-separator@1.1.15`, `@radix-ui/react-toggle-group@1.1.19`
+
 ## 1.1.18
 
 - Updated dependencies: `@radix-ui/react-primitive@2.1.9`, `@radix-ui/react-roving-focus@1.1.18`, `@radix-ui/react-separator@1.1.14`, `@radix-ui/react-toggle-group@1.1.18`
