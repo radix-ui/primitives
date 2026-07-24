@@ -13,6 +13,7 @@
   "dependencies": {
     "@radix-ui/colors": "^3.0.0",
     "@repo/test-data": "workspace:*",
+    "clsx": "^2.1.1",
     "form-serialize": "^0.7.2",
     "radix-ui": "workspace:*",
     "react": "^19.2.7",

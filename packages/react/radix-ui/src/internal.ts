@@ -10,6 +10,7 @@ export * as Menu from '@radix-ui/react-menu';
 export * as Popper from '@radix-ui/react-popper';
 export * as Presence from '@radix-ui/react-presence';
 export type { PrimitivePropsWithRef } from '@radix-ui/react-primitive';
+export * as RemoveScroll from '@radix-ui/react-remove-scroll';
 export * as RovingFocus from '@radix-ui/react-roving-focus';
 export { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 export {

@@ -19,6 +19,21 @@ const config: StorybookConfig = {
     },
   },
 
+  webpackFinal: async (config) => {
+    config.resolve ??= {};
+    // Resolve TypeScript's ESM-style `.js` import specifiers (e.g. `./remove-scroll.js`) to their
+    // `.ts`/`.tsx` sources. This lets packages authored for native `tsc` ESM emit (which requires
+    // explicit `.js` extensions on relative imports) be consumed from source by webpack. Real `.js`
+    // files still resolve via the trailing fallback.
+    config.resolve.extensionAlias = {
+      ...config.resolve.extensionAlias,
+      '.js': ['.ts', '.tsx', '.js'],
+      '.mjs': ['.mts', '.mjs'],
+      '.cjs': ['.cts', '.cjs'],
+    };
+    return config;
+  },
+
   swc: (config: any) => ({
     ...config,
     jsc: {
