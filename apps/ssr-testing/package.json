@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "test:merge": "node --test ./scripts/assert-primitive-merge.mjs",
+    "test:merge:build": "next build && node --test ./scripts/assert-primitive-merge.mjs"
   },
   "dependencies": {
     "next": "^16.2.10",

@@ -29,3 +29,6 @@ jobs:
       # See `apps/ssr-testing/app/rsc/page.tsx`
       - name: Build SSR testing app
         run: pnpm --filter @repo/ssr-testing build
+
+      - name: Assert Slot.Provider merge across the RSC boundary
+        run: pnpm --filter @repo/ssr-testing test:merge
