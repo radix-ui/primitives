@@ -871,7 +871,7 @@ const NavigationMenuContent = /* @__PURE__ */ React.forwardRef<
       />
     </Presence>
   ) : (
-    <ViewportContentMounter forceMount={forceMount} {...commonProps} ref={composedRefs} />
+    <ViewportContentMounter forceMount={forceMount} data-state={getOpenState(open)} {...commonProps} ref={composedRefs} />
   );
 });
 

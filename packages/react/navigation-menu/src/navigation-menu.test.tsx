@@ -373,3 +373,31 @@ describe('focus outside', () => {
     expect(onValueChange).toHaveBeenCalledWith('');
   });
 });
+
+// Reproduction for https://github.com/radix-ui/primitives/issues/3786
+describe('data-state on forceMount viewport content (repro)', () => {
+  afterEach(cleanup);
+
+  it('should have data-state on content element with forceMount + Viewport', async () => {
+    render(
+      <NavigationMenu.Root defaultValue="one">
+        <NavigationMenu.List>
+          <NavigationMenu.Item value="one">
+            <NavigationMenu.Trigger>{TRIGGER_TEXT}</NavigationMenu.Trigger>
+            <NavigationMenu.Content forceMount>
+              <NavigationMenu.Link href="#">{CONTENT_TEXT}</NavigationMenu.Link>
+            </NavigationMenu.Content>
+          </NavigationMenu.Item>
+        </NavigationMenu.List>
+        <NavigationMenu.Viewport />
+      </NavigationMenu.Root>,
+    );
+    await waitFor(() => expect(screen.getByText(CONTENT_TEXT)).toBeInTheDocument());
+
+    // DismissableLayer (the content element) has data-orientation.
+    // Going up from the link, the first [data-orientation] ancestor is the
+    // content element itself — not the viewport wrapper further up.
+    const contentEl = screen.getByText(CONTENT_TEXT).closest('[data-orientation]');
+    expect(contentEl).toHaveAttribute('data-state', 'open');
+  });
+});
