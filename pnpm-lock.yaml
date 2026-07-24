@@ -6,6 +6,10 @@ settings:
 
 overrides:
   node-fetch: npm:node-fetch-native@^1.6.0
+  react: 19.2.8
+  react-dom: 19.2.8
+  react-is: 19.2.8
+  react-test-renderer: 19.2.8
 
 patchedDependencies:
   '@changesets/apply-release-plan': 07a08c92a179c60bea9ec7b945a1c1c57ecfc8fdaa76edfb99ed9ea2f46808ea
@@ -34,7 +38,7 @@ importers:
         version: 6.9.1
       '@testing-library/react':
         specifier: ^16.3.2
-        version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.15))(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+        version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.15))(@types/react@19.2.15)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@testing-library/user-event':
         specifier: ^14.6.1
         version: 14.6.1(@testing-library/dom@10.4.1)
@@ -75,20 +79,20 @@ importers:
         specifier: ^1.67.0
         version: 1.67.0
       react:
-        specifier: ^19.2.6
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.6
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       react-is:
-        specifier: ^19.2.6
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-remove-scroll:
         specifier: ^2.7.2
-        version: 2.7.2(@types/react@19.2.15)(react@19.2.6)
+        version: 2.7.2(@types/react@19.2.15)(react@19.2.8)
       react-test-renderer:
-        specifier: ^19.2.6
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       replace-in-files:
         specifier: ^3.0.0
         version: 3.0.0
@@ -108,26 +112,26 @@ importers:
   apps/ssr-testing:
     dependencies:
       next:
-        specifier: ^15.3.1
-        version: 15.5.18(@playwright/test@1.61.1)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+        specifier: ^16.2.11
+        version: 16.2.11(@playwright/test@1.61.1)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       radix-ui:
         specifier: workspace:*
         version: link:../../packages/react/radix-ui
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
     devDependencies:
       '@repo/typescript-config':
         specifier: workspace:*
         version: link:../../internal/typescript-config
       '@types/react':
-        specifier: ^19.2.2
+        specifier: ^19.2.15
         version: 19.2.15
       '@types/react-dom':
-        specifier: ^19.2.2
+        specifier: ^19.2.3
         version: 19.2.3(@types/react@19.2.15)
       typescript:
         specifier: ^5.9.3
@@ -148,14 +152,14 @@ importers:
         specifier: workspace:*
         version: link:../../packages/react/radix-ui
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       react-remove-scroll:
         specifier: ^2.7.2
-        version: 2.7.2(@types/react@19.2.15)(react@19.2.6)
+        version: 2.7.2(@types/react@19.2.15)(react@19.2.8)
     devDependencies:
       '@chromatic-com/storybook':
         specifier: ^4.1.1
@@ -171,7 +175,7 @@ importers:
         version: 4.0.3(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0)))(webpack@5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.15))
       '@storybook/react-webpack5':
         specifier: ^9.1.15
-        version: 9.1.20(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0)))(typescript@5.9.3)
+        version: 9.1.20(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.15)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0)))(typescript@5.9.3)
       '@types/form-serialize':
         specifier: ^0
         version: 0.7.4
@@ -223,13 +227,13 @@ importers:
         version: link:../typescript-config
       '@testing-library/react':
         specifier: ^16.3.2
-        version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.15))(@types/react@19.2.15)(react-dom@19.2.7(react@19.2.6))(react@19.2.6)
+        version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.15))(@types/react@19.2.15)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@types/react':
         specifier: ^19.2.15
         version: 19.2.15
       react:
-        specifier: ^19.2.6
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -294,11 +298,11 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -346,11 +350,11 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -386,11 +390,11 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -420,11 +424,11 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -448,11 +452,11 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -476,11 +480,11 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -519,11 +523,11 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -565,11 +569,11 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -614,11 +618,11 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -651,11 +655,11 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -675,11 +679,11 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -699,11 +703,11 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -742,11 +746,11 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -797,7 +801,7 @@ importers:
         version: 1.2.6
       react-remove-scroll:
         specifier: ^2.7.2
-        version: 2.7.2(@types/react@19.2.15)(react@19.2.6)
+        version: 2.7.2(@types/react@19.2.15)(react@19.2.8)
     devDependencies:
       '@repo/builder':
         specifier: workspace:*
@@ -812,11 +816,11 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -836,11 +840,11 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -879,14 +883,14 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       react-remove-scroll:
         specifier: ^2.7.2
-        version: 2.7.2(@types/react@19.2.15)(react@19.2.6)
+        version: 2.7.2(@types/react@19.2.15)(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -934,11 +938,11 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -958,11 +962,11 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -995,11 +999,11 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1038,11 +1042,11 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1090,11 +1094,11 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1118,11 +1122,11 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1146,11 +1150,11 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1210,7 +1214,7 @@ importers:
         version: 1.2.6
       react-remove-scroll:
         specifier: ^2.7.2
-        version: 2.7.2(@types/react@19.2.15)(react@19.2.6)
+        version: 2.7.2(@types/react@19.2.15)(react@19.2.8)
     devDependencies:
       '@repo/builder':
         specifier: workspace:*
@@ -1228,11 +1232,11 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1286,11 +1290,11 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1356,11 +1360,11 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1417,11 +1421,11 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1466,11 +1470,11 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1521,7 +1525,7 @@ importers:
         version: 1.2.6
       react-remove-scroll:
         specifier: ^2.7.2
-        version: 2.7.2(@types/react@19.2.15)(react@19.2.6)
+        version: 2.7.2(@types/react@19.2.15)(react@19.2.8)
     devDependencies:
       '@repo/builder':
         specifier: workspace:*
@@ -1536,11 +1540,11 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1549,7 +1553,7 @@ importers:
     dependencies:
       '@floating-ui/react-dom':
         specifier: ^2.0.0
-        version: 2.1.8(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+        version: 2.1.8(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@radix-ui/react-arrow':
         specifier: workspace:*
         version: link:../arrow
@@ -1594,11 +1598,11 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1625,11 +1629,11 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1653,11 +1657,11 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1681,11 +1685,11 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1712,11 +1716,11 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1764,11 +1768,11 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1954,11 +1958,11 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2012,11 +2016,11 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2067,11 +2071,11 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2143,7 +2147,7 @@ importers:
         version: 1.2.6
       react-remove-scroll:
         specifier: ^2.7.2
-        version: 2.7.2(@types/react@19.2.15)(react@19.2.6)
+        version: 2.7.2(@types/react@19.2.15)(react@19.2.8)
     devDependencies:
       '@repo/builder':
         specifier: workspace:*
@@ -2164,11 +2168,11 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2192,11 +2196,11 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2253,11 +2257,11 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2281,11 +2285,11 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2324,11 +2328,11 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2373,11 +2377,11 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2437,11 +2441,11 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2471,11 +2475,11 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2517,11 +2521,11 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2563,11 +2567,11 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2627,11 +2631,11 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2651,11 +2655,11 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2685,11 +2689,11 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2716,11 +2720,11 @@ importers:
         specifier: ^0.0.6
         version: 0.0.6
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2744,11 +2748,11 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2768,11 +2772,11 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2792,11 +2796,11 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2816,11 +2820,11 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2844,11 +2848,11 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2872,11 +2876,11 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2900,11 +2904,11 @@ importers:
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
       react:
-        specifier: ^19.2.0
-        version: 19.2.6
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: ^19.2.0
-        version: 19.2.6(react@19.2.6)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -3595,8 +3599,8 @@ packages:
   '@floating-ui/react-dom@2.1.8':
     resolution: {integrity: sha512-cC52bHwM/n/CxS87FH0yWdngEZrjdtLW/qVruo68qg+prK7ZQ4YGdut2GyDVpoGeAYe/h899rVeOVm6Oi40k2A==}
     peerDependencies:
-      react: '>=16.8.0'
-      react-dom: '>=16.8.0'
+      react: 19.2.8
+      react-dom: 19.2.8
 
   '@floating-ui/utils@0.2.11':
     resolution: {integrity: sha512-RiB/yIh78pcIxl6lLMG0CgBXAZ2Y0eVHqMPYugu+9U0AeT6YBeiJpf7lbdJNIugFP5SIjwNRgo4DhR1Qxi26Gg==}
@@ -3796,62 +3800,62 @@ packages:
     resolution: {integrity: sha512-f++rKLQgUVYDAtECQ6fn/is15GkEH9+nZPM3MS0RcxVqoTfawHvDlSCH7JbMhAM6uJ32v3eXLvLmLvjGu7PTQw==}
     peerDependencies:
       '@types/react': '>=16'
-      react: '>=16'
+      react: 19.2.8
 
   '@neoconfetti/react@1.0.0':
     resolution: {integrity: sha512-klcSooChXXOzIm+SE5IISIAn3bYzYfPjbX7D7HoqZL84oAfgREeSg5vSIaSFH+DaGzzvImTyWe1OyrJ67vik4A==}
 
-  '@next/env@15.5.18':
-    resolution: {integrity: sha512-hAV85Ckd9QR6RvH04MEKwsfLTksvFpO47j9xwtoIuvuPnlwecpSi+uZTtm8HirVbtlI2Fnz//xpcSTjFdyJk+g==}
+  '@next/env@16.2.11':
+    resolution: {integrity: sha512-0do5A3BJ2gxWr0ZCMcD6BhW+e595jyxdTl3rXTS6lOtD8ektMiW6CO+EPwt1Eca1DBnm90r/7GdiKWBKxH++DA==}
 
-  '@next/swc-darwin-arm64@15.5.18':
-    resolution: {integrity: sha512-w0WvQf1n+txiwns/9pwIQteCJpZTbxzO2SE0FLcwuD4v0WEh1JPOjdyxWL21XwJsdpx8cFRjyzxzCS/siP7HcQ==}
+  '@next/swc-darwin-arm64@16.2.11':
+    resolution: {integrity: sha512-wryL4pjKmDwGv2ox6+GZDFxvmtSRLqApBR8kL1j4+vhB7Z5vJC/zAnXpiR9Xkfzl0AS8WLMnsuGV/UKI67/rrw==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [darwin]
 
-  '@next/swc-darwin-x64@15.5.18':
-    resolution: {integrity: sha512-znn71QmDuxm+BOaglihMZfvyySMnNljkVIY5Z2TCssBmm+WqL6c19VhtH5ktFkHa8EZ2bnTUpcNcmNSQsg67og==}
+  '@next/swc-darwin-x64@16.2.11':
+    resolution: {integrity: sha512-aZl2j4f/fLyjQvOhv0Oe9UaMAQHolYpKhctsoYzplSumKJKPUmgjcf6545aBtysLTcu994TREd0+pSgNE4ohmg==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [darwin]
 
-  '@next/swc-linux-arm64-gnu@15.5.18':
-    resolution: {integrity: sha512-yPPe5MNL+igZUa+OsqQJisqSfh6oarIuA1Q0BDxljGJhRQyZeP+WRHh7rs/jZUGMh5aY0YdIjXZG0VohkKkUdw==}
+  '@next/swc-linux-arm64-gnu@16.2.11':
+    resolution: {integrity: sha512-5jEriyEnH/LWFy27L2ZG0XaLlyEJIjhsImEsiS9P563PKEVp2BVups/xfOucIrsvVntp11oNcZwjHvaDPYVB5g==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
     libc: [glibc]
 
-  '@next/swc-linux-arm64-musl@15.5.18':
-    resolution: {integrity: sha512-glaCczEWIrHsokFZ3pP08U4BpKxwIdnT+txdOM32OBgpL9Yw4aqx8NejmgtZQZOdstQ5f0L3CasIZudzCuD+nw==}
+  '@next/swc-linux-arm64-musl@16.2.11':
+    resolution: {integrity: sha512-eIjcpx2fnnFSSkZDbTxy74KnokUXDjfoLClpWelfgHLf621aTqswhwXQ7GkD5K5rplrS6LZ/Bj+mVuvzluBOEg==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
     libc: [musl]
 
-  '@next/swc-linux-x64-gnu@15.5.18':
-    resolution: {integrity: sha512-oUfg2EgJmU3R0OCOWiokGFUTvZiPfXtriXiuF3YNxRoROCdgvTedHIzYoeKH34gsZxS/V7mHbfq2hpAHwhH1/A==}
+  '@next/swc-linux-x64-gnu@16.2.11':
+    resolution: {integrity: sha512-8WgzpaWMs46qJT9kiV47cje86L0x/Mu9t8/Gwj+pnbgW3rETVfCnaScPjlYUwNScpOozdcIMHWmAvuZJUonR2w==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
     libc: [glibc]
 
-  '@next/swc-linux-x64-musl@15.5.18':
-    resolution: {integrity: sha512-JLxSP3KTd9iu/bvUMQxH7RJo9xKSHf55/6RPE4a6FTSZygGn7uvZbCej0AHXydwkggQGSD9UddSjwv6Xz5ESfA==}
+  '@next/swc-linux-x64-musl@16.2.11':
+    resolution: {integrity: sha512-I3UgPds7G4ZYnTb/H+5GBGuUT2DhAk6j0mL6A4s63RjFs74wB2hOWP0vaxsK+3NJraExt3eYEPQ/UtT0x/64Nw==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
     libc: [musl]
 
-  '@next/swc-win32-arm64-msvc@15.5.18':
-    resolution: {integrity: sha512-ir1v7enP52K2HNz3tQQvwF+x7VNxBk1ciiZ18WBPvxf4C59IqdfmHPJYK3vH7rSxpuCVw/8C712wTXNAtEp+NA==}
+  '@next/swc-win32-arm64-msvc@16.2.11':
+    resolution: {integrity: sha512-n89CjtcThnjrwgJMAiI5xbqwLY51zvwC9tSlArmVndAJLYVl9T9UAdlkXTmZvE++idoXe8KdglQlhNRdUp1c6g==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [win32]
 
-  '@next/swc-win32-x64-msvc@15.5.18':
-    resolution: {integrity: sha512-LIu5me6QTANCd25E7I5uIEfvgQ06RK7tvHAbYo3zCb3VpxQEPvMcSpd87NwUABDT6MbGPdEGR5VRiK4PPTJhQg==}
+  '@next/swc-win32-x64-msvc@16.2.11':
+    resolution: {integrity: sha512-md8CLNggS1Dx9pUgApzps5uAf+N8GN9xywzmNx9vHAWo94HtBwCCqkSnhIrdfQe83Dhz8Lfo/20Nb1Zxal092w==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [win32]
@@ -4447,15 +4451,15 @@ packages:
     resolution: {integrity: sha512-hcFZIjW8yQz8O8//2WTIXylm5Xsgc+lW9ISLgUk1xGmptIJQRdlhVIXCpSyLrQaaRiyhQRaVg7l3BD9S216BHw==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
-      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
+      react: 19.2.8
+      react-dom: 19.2.8
 
   '@storybook/preset-react-webpack@9.1.20':
     resolution: {integrity: sha512-/PPsRJVqRhW5P0Ff58AN7wuPxda2et8a5iUN3ebkol9r/zmc17QPzhqbIEDoa1jTC7DYa1pYgXvxbU+fY6lhrQ==}
     engines: {node: '>=20.0.0'}
     peerDependencies:
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
-      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
+      react: 19.2.8
+      react-dom: 19.2.8
       storybook: ^9.1.20
       typescript: '*'
     peerDependenciesMeta:
@@ -4471,16 +4475,16 @@ packages:
   '@storybook/react-dom-shim@9.1.20':
     resolution: {integrity: sha512-UYdZavfPwHEqCKMqPssUOlyFVZiJExLxnSHwkICSZBmw3gxXJcp1aXWs7PvoZdWz2K4ztl3IcKErXXHeiY6w+A==}
     peerDependencies:
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
-      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
+      react: 19.2.8
+      react-dom: 19.2.8
       storybook: ^9.1.20
 
   '@storybook/react-webpack5@9.1.20':
     resolution: {integrity: sha512-t5/+UenrE5h0hfsxcB6FOj3pV2YhrrPVpzaHlybgdhzzkPEQSUd34laWi82N74exqcjVLoDwWSkl3M2g1xoaMg==}
     engines: {node: '>=20.0.0'}
     peerDependencies:
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
-      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
+      react: 19.2.8
+      react-dom: 19.2.8
       storybook: ^9.1.20
       typescript: '>= 4.9.x'
     peerDependenciesMeta:
@@ -4491,8 +4495,8 @@ packages:
     resolution: {integrity: sha512-TJhqzggs7HCvLhTXKfx8HodnVq9YizsB2J31s9v6olU0UCxbCY+FYaCF+XdE8qUCyefGRZgHKzGBIczJ/q9e2g==}
     engines: {node: '>=20.0.0'}
     peerDependencies:
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
-      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
+      react: 19.2.8
+      react-dom: 19.2.8
       storybook: ^9.1.20
       typescript: '>= 4.9.x'
     peerDependenciesMeta:
@@ -4610,8 +4614,8 @@ packages:
       '@testing-library/dom': ^10.0.0
       '@types/react': ^18.0.0 || ^19.0.0
       '@types/react-dom': ^18.0.0 || ^19.0.0
-      react: ^18.0.0 || ^19.0.0
-      react-dom: ^18.0.0 || ^19.0.0
+      react: 19.2.8
+      react-dom: 19.2.8
     peerDependenciesMeta:
       '@types/react':
         optional: true
@@ -5911,16 +5915,16 @@ packages:
   neo-async@2.6.2:
     resolution: {integrity: sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==}
 
-  next@15.5.18:
-    resolution: {integrity: sha512-eKL8zUJkX9Y5lE+RX/2YJoItVdGlIscyVyboeD9wSpp0PaGqjoA4tTpT2qPqz9ax+5IzGESyLSeZ/RCwbSZ2uQ==}
-    engines: {node: ^18.18.0 || ^19.8.0 || >= 20.0.0}
+  next@16.2.11:
+    resolution: {integrity: sha512-B339zaqbyK8cmxhoAvLrcwoabwCP1wz21zSzfqxqXAemTu2BXnH7tQnfcglKv1vnMUIDBc+Hth7XODQriTZiRQ==}
+    engines: {node: '>=20.9.0'}
     hasBin: true
     peerDependencies:
       '@opentelemetry/api': ^1.1.0
       '@playwright/test': ^1.51.1
       babel-plugin-react-compiler: '*'
-      react: ^18.2.0 || 19.0.0-rc-de68d2f4-20241204 || ^19.0.0
-      react-dom: ^18.2.0 || 19.0.0-rc-de68d2f4-20241204 || ^19.0.0
+      react: 19.2.8
+      react-dom: 19.2.8
       sass: ^1.3.0
     peerDependenciesMeta:
       '@opentelemetry/api':
@@ -6258,28 +6262,20 @@ packages:
     resolution: {integrity: sha512-hlSJDQ2synMPKFZOsKo9Hi8WWZTC7POR8EmWvTSjow+VDgKzkmjQvFm2fk0tmRw+f0vTOIYKlarR0iL4996pdg==}
     engines: {node: '>=16.14.0'}
 
-  react-dom@19.2.6:
-    resolution: {integrity: sha512-0prMI+hvBbPjsWnxDLxlCGyM8PN6UuWjEUCYmZhO67xIV9Xasa/r/vDnq+Xyq4Lo27g8QSbO5YzARu0D1Sps3g==}
+  react-dom@19.2.8:
+    resolution: {integrity: sha512-rVprimfGBG3DR+Tq0IQG2DT5PxKth1WIGDmj5yPmlzr4YBe7uyE+Du4oVqTDXZSHGGGXRtTJEGSSePyQCMBglQ==}
     peerDependencies:
-      react: ^19.2.6
+      react: 19.2.8
 
-  react-dom@19.2.7:
-    resolution: {integrity: sha512-t0BRVXvbiE/o20Hfw669rLbMCDWtYZLvmJigy2f0MxsXF+71pxhR3xOkspmsO8h3ZlNzyibAmtCa3l4lYKk6gQ==}
-    peerDependencies:
-      react: ^19.2.7
-
-  react-is@17.0.2:
-    resolution: {integrity: sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==}
-
-  react-is@19.2.6:
-    resolution: {integrity: sha512-XjBR15BhXuylgWGuslhDKqlSayuqvqBX91BP8pauG8kd1zY8kotkNWbXksTCNRarse4kuGbe2kIY05ARtwNIvw==}
+  react-is@19.2.8:
+    resolution: {integrity: sha512-s5un28nYxKJw5gvUHyW5PCC28CvBqLu9r3cWgzHT4Vo/5fqqkFcdRYsGcKf50WMPpjjFZS5d76fn3YCo2njKwQ==}
 
   react-remove-scroll-bar@2.3.8:
     resolution: {integrity: sha512-9r+yi9+mgU33AKcj6IbT9oRCO78WriSj6t/cF8DWBZJ9aOGPOTEDvdUDz1FwKim7QXWwmHqtdHnRJfhAxEG46Q==}
     engines: {node: '>=10'}
     peerDependencies:
       '@types/react': '*'
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+      react: 19.2.8
     peerDependenciesMeta:
       '@types/react':
         optional: true
@@ -6289,7 +6285,7 @@ packages:
     engines: {node: '>=10'}
     peerDependencies:
       '@types/react': '*'
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc
+      react: 19.2.8
     peerDependenciesMeta:
       '@types/react':
         optional: true
@@ -6299,18 +6295,18 @@ packages:
     engines: {node: '>=10'}
     peerDependencies:
       '@types/react': '*'
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc
+      react: 19.2.8
     peerDependenciesMeta:
       '@types/react':
         optional: true
 
-  react-test-renderer@19.2.6:
-    resolution: {integrity: sha512-GbS6V23YduFTPiWJ5xICbKEjRcqx1Z90js/V5miqhz7qp/d6xSe9Dd6NjSQODFRdzdsqRMPW82E/sFpPRbY5Mw==}
+  react-test-renderer@19.2.8:
+    resolution: {integrity: sha512-GHKPaDRaNYU24PHTLG8Bx8VMY9t+qNfxQbt/Yjp7aMWBkKU6766SR0n6TnYu7P5I1MfEuAMUadqiyDHyI4Yy9Q==}
     peerDependencies:
-      react: ^19.2.6
+      react: 19.2.8
 
-  react@19.2.6:
-    resolution: {integrity: sha512-sfWGGfavi0xr8Pg0sVsyHMAOziVYKgPLNrS7ig+ivMNb3wbCBw3KxtflsGBAwD3gYQlE/AEZsTLgToRrSCjb0Q==}
+  react@19.2.8:
+    resolution: {integrity: sha512-PWaYA1L/q9u2u7xYQi+Y3L3Yfnie7XyLeaJICV1MGD6LprsBxcAqGjYyr0eY3p+QdsA+x/Irkt4Qif8D63+Sbw==}
     engines: {node: '>=0.10.0'}
 
   read-yaml-file@1.1.0:
@@ -6547,7 +6543,7 @@ packages:
     peerDependencies:
       '@babel/core': '*'
       babel-plugin-macros: '*'
-      react: '>= 16.8.0 || 17.x.x || ^18.0.0-0 || ^19.0.0-0'
+      react: 19.2.8
     peerDependenciesMeta:
       '@babel/core':
         optional: true
@@ -6792,7 +6788,7 @@ packages:
     engines: {node: '>=10'}
     peerDependencies:
       '@types/react': '*'
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc
+      react: 19.2.8
     peerDependenciesMeta:
       '@types/react':
         optional: true
@@ -6802,7 +6798,7 @@ packages:
     engines: {node: '>=10'}
     peerDependencies:
       '@types/react': '*'
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc
+      react: 19.2.8
     peerDependenciesMeta:
       '@types/react':
         optional: true
@@ -7615,11 +7611,11 @@ snapshots:
       '@floating-ui/core': 1.7.5
       '@floating-ui/utils': 0.2.11
 
-  '@floating-ui/react-dom@2.1.8(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
+  '@floating-ui/react-dom@2.1.8(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
     dependencies:
       '@floating-ui/dom': 1.7.6
-      react: 19.2.6
-      react-dom: 19.2.6(react@19.2.6)
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
 
   '@floating-ui/utils@0.2.11': {}
 
@@ -7776,38 +7772,38 @@ snapshots:
       globby: 11.1.0
       read-yaml-file: 1.1.0
 
-  '@mdx-js/react@3.1.1(@types/react@19.2.15)(react@19.2.6)':
+  '@mdx-js/react@3.1.1(@types/react@19.2.15)(react@19.2.8)':
     dependencies:
       '@types/mdx': 2.0.13
       '@types/react': 19.2.15
-      react: 19.2.6
+      react: 19.2.8
 
   '@neoconfetti/react@1.0.0': {}
 
-  '@next/env@15.5.18': {}
+  '@next/env@16.2.11': {}
 
-  '@next/swc-darwin-arm64@15.5.18':
+  '@next/swc-darwin-arm64@16.2.11':
     optional: true
 
-  '@next/swc-darwin-x64@15.5.18':
+  '@next/swc-darwin-x64@16.2.11':
     optional: true
 
-  '@next/swc-linux-arm64-gnu@15.5.18':
+  '@next/swc-linux-arm64-gnu@16.2.11':
     optional: true
 
-  '@next/swc-linux-arm64-musl@15.5.18':
+  '@next/swc-linux-arm64-musl@16.2.11':
     optional: true
 
-  '@next/swc-linux-x64-gnu@15.5.18':
+  '@next/swc-linux-x64-gnu@16.2.11':
     optional: true
 
-  '@next/swc-linux-x64-musl@15.5.18':
+  '@next/swc-linux-x64-musl@16.2.11':
     optional: true
 
-  '@next/swc-win32-arm64-msvc@15.5.18':
+  '@next/swc-win32-arm64-msvc@16.2.11':
     optional: true
 
-  '@next/swc-win32-x64-msvc@15.5.18':
+  '@next/swc-win32-x64-msvc@16.2.11':
     optional: true
 
   '@nodelib/fs.scandir@2.1.5':
@@ -8103,12 +8099,12 @@ snapshots:
 
   '@storybook/addon-docs@9.1.20(@types/react@19.2.15)(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0)))':
     dependencies:
-      '@mdx-js/react': 3.1.1(@types/react@19.2.15)(react@19.2.6)
+      '@mdx-js/react': 3.1.1(@types/react@19.2.15)(react@19.2.8)
       '@storybook/csf-plugin': 9.1.20(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0)))
-      '@storybook/icons': 1.6.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      '@storybook/react-dom-shim': 9.1.20(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0)))
-      react: 19.2.6
-      react-dom: 19.2.6(react@19.2.6)
+      '@storybook/icons': 1.6.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@storybook/react-dom-shim': 9.1.20(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0)))
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
       storybook: 9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0))
       ts-dedent: 2.2.0
     transitivePeerDependencies:
@@ -8171,21 +8167,21 @@ snapshots:
 
   '@storybook/global@5.0.0': {}
 
-  '@storybook/icons@1.6.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
+  '@storybook/icons@1.6.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
     dependencies:
-      react: 19.2.6
-      react-dom: 19.2.6(react@19.2.6)
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
 
-  '@storybook/preset-react-webpack@9.1.20(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0)))(typescript@5.9.3)':
+  '@storybook/preset-react-webpack@9.1.20(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.15)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0)))(typescript@5.9.3)':
     dependencies:
       '@storybook/core-webpack': 9.1.20(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0)))
       '@storybook/react-docgen-typescript-plugin': 1.0.6--canary.9.0c3f3b7.0(typescript@5.9.3)(webpack@5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.15))
       '@types/semver': 7.7.1
       find-up: 7.0.0
       magic-string: 0.30.21
-      react: 19.2.6
+      react: 19.2.8
       react-docgen: 7.1.1
-      react-dom: 19.2.6(react@19.2.6)
+      react-dom: 19.2.8(react@19.2.8)
       resolve: 1.22.12
       semver: 7.8.1
       storybook: 9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0))
@@ -8223,19 +8219,19 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@storybook/react-dom-shim@9.1.20(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0)))':
+  '@storybook/react-dom-shim@9.1.20(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0)))':
     dependencies:
-      react: 19.2.6
-      react-dom: 19.2.6(react@19.2.6)
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
       storybook: 9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0))
 
-  '@storybook/react-webpack5@9.1.20(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0)))(typescript@5.9.3)':
+  '@storybook/react-webpack5@9.1.20(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.15)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0)))(typescript@5.9.3)':
     dependencies:
       '@storybook/builder-webpack5': 9.1.20(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.15)(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0)))(typescript@5.9.3)
-      '@storybook/preset-react-webpack': 9.1.20(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0)))(typescript@5.9.3)
-      '@storybook/react': 9.1.20(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0)))(typescript@5.9.3)
-      react: 19.2.6
-      react-dom: 19.2.6(react@19.2.6)
+      '@storybook/preset-react-webpack': 9.1.20(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.15)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0)))(typescript@5.9.3)
+      '@storybook/react': 9.1.20(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0)))(typescript@5.9.3)
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
       storybook: 9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0))
     optionalDependencies:
       typescript: 5.9.3
@@ -8256,12 +8252,12 @@ snapshots:
       - uglify-js
       - webpack-cli
 
-  '@storybook/react@9.1.20(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0)))(typescript@5.9.3)':
+  '@storybook/react@9.1.20(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0)))(typescript@5.9.3)':
     dependencies:
       '@storybook/global': 5.0.0
-      '@storybook/react-dom-shim': 9.1.20(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0)))
-      react: 19.2.6
-      react-dom: 19.2.6(react@19.2.6)
+      '@storybook/react-dom-shim': 9.1.20(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0)))
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
       storybook: 9.1.20(@testing-library/dom@10.4.1)(prettier@2.8.8)(vite@7.3.6(@types/node@24.12.4)(terser@5.48.0))
     optionalDependencies:
       typescript: 5.9.3
@@ -8350,22 +8346,12 @@ snapshots:
       picocolors: 1.1.1
       redent: 3.0.0
 
-  '@testing-library/react@16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.15))(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
+  '@testing-library/react@16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.15))(@types/react@19.2.15)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
     dependencies:
       '@babel/runtime': 7.29.7
       '@testing-library/dom': 10.4.1
-      react: 19.2.6
-      react-dom: 19.2.6(react@19.2.6)
-    optionalDependencies:
-      '@types/react': 19.2.15
-      '@types/react-dom': 19.2.3(@types/react@19.2.15)
-
-  '@testing-library/react@16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.15))(@types/react@19.2.15)(react-dom@19.2.7(react@19.2.6))(react@19.2.6)':
-    dependencies:
-      '@babel/runtime': 7.29.7
-      '@testing-library/dom': 10.4.1
-      react: 19.2.6
-      react-dom: 19.2.7(react@19.2.6)
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
     optionalDependencies:
       '@types/react': 19.2.15
       '@types/react-dom': 19.2.3(@types/react@19.2.15)
@@ -9706,24 +9692,25 @@ snapshots:
 
   neo-async@2.6.2: {}
 
-  next@15.5.18(@playwright/test@1.61.1)(react-dom@19.2.6(react@19.2.6))(react@19.2.6):
+  next@16.2.11(@playwright/test@1.61.1)(react-dom@19.2.8(react@19.2.8))(react@19.2.8):
     dependencies:
-      '@next/env': 15.5.18
+      '@next/env': 16.2.11
       '@swc/helpers': 0.5.15
+      baseline-browser-mapping: 2.10.32
       caniuse-lite: 1.0.30001793
       postcss: 8.4.31
-      react: 19.2.6
-      react-dom: 19.2.6(react@19.2.6)
-      styled-jsx: 5.1.6(react@19.2.6)
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
+      styled-jsx: 5.1.6(react@19.2.8)
     optionalDependencies:
-      '@next/swc-darwin-arm64': 15.5.18
-      '@next/swc-darwin-x64': 15.5.18
-      '@next/swc-linux-arm64-gnu': 15.5.18
-      '@next/swc-linux-arm64-musl': 15.5.18
-      '@next/swc-linux-x64-gnu': 15.5.18
-      '@next/swc-linux-x64-musl': 15.5.18
-      '@next/swc-win32-arm64-msvc': 15.5.18
-      '@next/swc-win32-x64-msvc': 15.5.18
+      '@next/swc-darwin-arm64': 16.2.11
+      '@next/swc-darwin-x64': 16.2.11
+      '@next/swc-linux-arm64-gnu': 16.2.11
+      '@next/swc-linux-arm64-musl': 16.2.11
+      '@next/swc-linux-x64-gnu': 16.2.11
+      '@next/swc-linux-x64-musl': 16.2.11
+      '@next/swc-win32-arm64-msvc': 16.2.11
+      '@next/swc-win32-x64-msvc': 16.2.11
       '@playwright/test': 1.61.1
       sharp: 0.34.5
     transitivePeerDependencies:
@@ -9974,7 +9961,7 @@ snapshots:
 
   postcss@8.4.31:
     dependencies:
-      nanoid: 3.3.12
+      nanoid: 3.3.16
       picocolors: 1.1.1
       source-map-js: 1.2.1
 
@@ -10001,7 +9988,7 @@ snapshots:
     dependencies:
       ansi-regex: 5.0.1
       ansi-styles: 5.2.0
-      react-is: 17.0.2
+      react-is: 19.2.8
 
   pretty-ms@9.3.0:
     dependencies:
@@ -10043,54 +10030,47 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  react-dom@19.2.6(react@19.2.6):
+  react-dom@19.2.8(react@19.2.8):
     dependencies:
-      react: 19.2.6
+      react: 19.2.8
       scheduler: 0.27.0
 
-  react-dom@19.2.7(react@19.2.6):
+  react-is@19.2.8: {}
+
+  react-remove-scroll-bar@2.3.8(@types/react@19.2.15)(react@19.2.8):
     dependencies:
-      react: 19.2.6
-      scheduler: 0.27.0
-
-  react-is@17.0.2: {}
-
-  react-is@19.2.6: {}
-
-  react-remove-scroll-bar@2.3.8(@types/react@19.2.15)(react@19.2.6):
-    dependencies:
-      react: 19.2.6
-      react-style-singleton: 2.2.3(@types/react@19.2.15)(react@19.2.6)
+      react: 19.2.8
+      react-style-singleton: 2.2.3(@types/react@19.2.15)(react@19.2.8)
       tslib: 2.8.1
     optionalDependencies:
       '@types/react': 19.2.15
 
-  react-remove-scroll@2.7.2(@types/react@19.2.15)(react@19.2.6):
+  react-remove-scroll@2.7.2(@types/react@19.2.15)(react@19.2.8):
     dependencies:
-      react: 19.2.6
-      react-remove-scroll-bar: 2.3.8(@types/react@19.2.15)(react@19.2.6)
-      react-style-singleton: 2.2.3(@types/react@19.2.15)(react@19.2.6)
+      react: 19.2.8
+      react-remove-scroll-bar: 2.3.8(@types/react@19.2.15)(react@19.2.8)
+      react-style-singleton: 2.2.3(@types/react@19.2.15)(react@19.2.8)
       tslib: 2.8.1
-      use-callback-ref: 1.3.3(@types/react@19.2.15)(react@19.2.6)
-      use-sidecar: 1.1.3(@types/react@19.2.15)(react@19.2.6)
+      use-callback-ref: 1.3.3(@types/react@19.2.15)(react@19.2.8)
+      use-sidecar: 1.1.3(@types/react@19.2.15)(react@19.2.8)
     optionalDependencies:
       '@types/react': 19.2.15
 
-  react-style-singleton@2.2.3(@types/react@19.2.15)(react@19.2.6):
+  react-style-singleton@2.2.3(@types/react@19.2.15)(react@19.2.8):
     dependencies:
       get-nonce: 1.0.1
-      react: 19.2.6
+      react: 19.2.8
       tslib: 2.8.1
     optionalDependencies:
       '@types/react': 19.2.15
 
-  react-test-renderer@19.2.6(react@19.2.6):
+  react-test-renderer@19.2.8(react@19.2.8):
     dependencies:
-      react: 19.2.6
-      react-is: 19.2.6
+      react: 19.2.8
+      react-is: 19.2.8
       scheduler: 0.27.0
 
-  react@19.2.6: {}
+  react@19.2.8: {}
 
   read-yaml-file@1.1.0:
     dependencies:
@@ -10289,7 +10269,7 @@ snapshots:
     dependencies:
       '@img/colour': 1.1.0
       detect-libc: 2.1.2
-      semver: 7.8.1
+      semver: 7.8.5
     optionalDependencies:
       '@img/sharp-darwin-arm64': 0.34.5
       '@img/sharp-darwin-x64': 0.34.5
@@ -10415,10 +10395,10 @@ snapshots:
     dependencies:
       webpack: 5.107.2(@swc/core@1.15.40)(esbuild@0.25.12)(postcss@8.5.15)
 
-  styled-jsx@5.1.6(react@19.2.6):
+  styled-jsx@5.1.6(react@19.2.8):
     dependencies:
       client-only: 0.0.1
-      react: 19.2.6
+      react: 19.2.8
 
   sucrase@3.35.1:
     dependencies:
@@ -10604,17 +10584,17 @@ snapshots:
     dependencies:
       punycode: 2.3.1
 
-  use-callback-ref@1.3.3(@types/react@19.2.15)(react@19.2.6):
+  use-callback-ref@1.3.3(@types/react@19.2.15)(react@19.2.8):
     dependencies:
-      react: 19.2.6
+      react: 19.2.8
       tslib: 2.8.1
     optionalDependencies:
       '@types/react': 19.2.15
 
-  use-sidecar@1.1.3(@types/react@19.2.15)(react@19.2.6):
+  use-sidecar@1.1.3(@types/react@19.2.15)(react@19.2.8):
     dependencies:
       detect-node-es: 1.1.0
-      react: 19.2.6
+      react: 19.2.8
       tslib: 2.8.1
     optionalDependencies:
       '@types/react': 19.2.15
