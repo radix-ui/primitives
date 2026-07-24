@@ -8,7 +8,7 @@ import { createContextScope } from '@radix-ui/react-context';
 import { useDirection } from '@radix-ui/react-direction';
 import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
 import { useFocusGuards } from '@radix-ui/react-focus-guards';
-import { FocusScope } from '@radix-ui/react-focus-scope';
+import { FocusScope, useFocusScopeBranch } from '@radix-ui/react-focus-scope';
 import { useId } from '@radix-ui/react-id';
 import * as PopperPrimitive from '@radix-ui/react-popper';
 import { createPopperScope } from '@radix-ui/react-popper';
@@ -678,6 +678,12 @@ const SelectContentImpl = /* @__PURE__ */ React.forwardRef<
     React.useEffect(() => {
       if (content) return hideOthers(content);
     }, [content]);
+
+    // Register this content as a branch of the nearest ancestor FocusScope
+    // (e.g. a Dialog). Without this, a trapped FocusScope above us (like
+    // Dialog's) would reclaim focus when the Select portal receives it,
+    // freezing focus. See https://github.com/radix-ui/primitives/issues/3701
+    useFocusScopeBranch(content);
 
     // Make sure the whole tree has focus guards as our `Select` may be
     // the last element in the DOM (because of the `Portal`)
