@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-announce",
-  "version": "0.2.13",
+  "version": "0.2.14",
   "license": "MIT",
   "source": "./src/index.ts",
   "main": "./src/index.ts",

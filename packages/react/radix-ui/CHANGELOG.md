@@ -1,5 +1,10 @@
 # radix-ui
 
+## 1.6.6
+
+- Added `"use client"` directive to the `Slot` entrypoint to fix compatibility issues with React Server Components.
+- Updated dependencies: `@radix-ui/react-slot@1.3.2`, `@radix-ui/react-collection@1.1.14`, `@radix-ui/react-dialog@1.1.22`, `@radix-ui/react-menu@2.1.23`, `@radix-ui/react-popover@1.1.22`, `@radix-ui/react-primitive@2.1.9`, `@radix-ui/react-select@2.3.6`, `@radix-ui/react-tooltip@1.2.15`, `@radix-ui/react-accordion@1.2.19`, `@radix-ui/react-menubar@1.1.23`, `@radix-ui/react-navigation-menu@1.2.21`, `@radix-ui/react-one-time-password-field@0.1.15`, `@radix-ui/react-roving-focus@1.1.18`, `@radix-ui/react-slider@1.4.6`, `@radix-ui/react-toast@1.2.22`, `@radix-ui/react-alert-dialog@1.1.22`, `@radix-ui/react-context-menu@2.3.6`, `@radix-ui/react-dropdown-menu@2.1.23`, `@radix-ui/react-arrow@1.1.14`, `@radix-ui/react-aspect-ratio@1.1.14`, `@radix-ui/react-avatar@1.2.5`, `@radix-ui/react-checkbox@1.3.10`, `@radix-ui/react-collapsible@1.1.19`, `@radix-ui/react-dismissable-layer@1.1.18`, `@radix-ui/react-focus-scope@1.1.15`, `@radix-ui/react-form@0.1.15`, `@radix-ui/react-hover-card@1.1.22`, `@radix-ui/react-label@2.1.14`, `@radix-ui/react-password-toggle-field@0.1.10`, `@radix-ui/react-popper@1.3.6`, `@radix-ui/react-portal@1.1.16`, `@radix-ui/react-progress@1.1.15`, `@radix-ui/react-radio-group@1.4.6`, `@radix-ui/react-scroll-area@1.2.17`, `@radix-ui/react-separator@1.1.14`, `@radix-ui/react-switch@1.3.6`, `@radix-ui/react-tabs@1.1.20`, `@radix-ui/react-toggle@1.1.17`, `@radix-ui/react-toggle-group@1.1.18`, `@radix-ui/react-toolbar@1.1.18`, `@radix-ui/react-visually-hidden@1.2.10`, `@radix-ui/react-accessible-icon@1.1.14`
+
 ## 1.6.5
 
 - Republish through CI to attach provenance attestations. The previous versions of these packages were published manually outside of CI and therefore shipped without provenance; this patch re-releases the same code through the CI pipeline so every package includes an attestation.

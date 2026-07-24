@@ -1,5 +1,9 @@
 # @radix-ui/react-accordion
 
+## 1.2.19
+
+- Updated dependencies: `@radix-ui/react-collection@1.1.14`, `@radix-ui/react-primitive@2.1.9`, `@radix-ui/react-collapsible@1.1.19`
+
 ## 1.2.18
 
 - Republish through CI to attach provenance attestations. The previous versions of these packages were published manually outside of CI and therefore shipped without provenance; this patch re-releases the same code through the CI pipeline so every package includes an attestation.
