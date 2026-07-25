@@ -10,10 +10,10 @@
     "test:merge:build": "next build && node --test ./scripts/assert-primitive-merge.mjs"
   },
   "dependencies": {
-    "next": "^16.2.10",
+    "next": "^16.2.11",
     "radix-ui": "workspace:*",
-    "react": "^19.2.7",
-    "react-dom": "^19.2.7"
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
