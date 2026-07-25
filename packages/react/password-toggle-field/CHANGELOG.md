@@ -1,5 +1,14 @@
 # @radix-ui/react-password-toggle-field
 
+## 0.1.11
+
+- Reverted breaking changes that caused compatibility issues with React Server Components.
+- Updated dependencies: `@radix-ui/react-compose-refs@1.1.5`, `@radix-ui/react-context@1.2.2`, `@radix-ui/react-id@1.1.4`, `@radix-ui/react-primitive@2.1.10`, `@radix-ui/react-use-controllable-state@1.2.6`, `@radix-ui/react-use-effect-event@0.0.5`, `@radix-ui/react-use-is-hydrated@0.1.3`
+
+## 0.1.10
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.9`
+
 ## 0.1.9
 
 - Republish through CI to attach provenance attestations. The previous versions of these packages were published manually outside of CI and therefore shipped without provenance; this patch re-releases the same code through the CI pipeline so every package includes an attestation.
@@ -56,17 +65,14 @@ This new primitive provides components for rendering a password input alongside 
 This API is currently unstable, and we hope you'll help us test it out! Import the primitive using the `unstable_` prefix.
 
 ```tsx
-import { unstable_PasswordToggleField as PasswordToggleField } from "radix-ui";
+import { unstable_PasswordToggleField as PasswordToggleField } from 'radix-ui';
 
 function FieldWithIconToggle() {
   return (
     <PasswordToggleField.Root>
       <PasswordToggleField.Input />
       <PasswordToggleField.Toggle>
-        <PasswordToggleField.Icon
-          visible={<EyeOpenIcon />}
-          hidden={<EyeClosedIcon />}
-        />
+        <PasswordToggleField.Icon visible={<EyeOpenIcon />} hidden={<EyeClosedIcon />} />
       </PasswordToggleField.Toggle>
     </PasswordToggleField.Root>
   );
@@ -77,10 +83,7 @@ function FieldWithTextToggle() {
     <PasswordToggleField.Root>
       <PasswordToggleField.Input />
       <PasswordToggleField.Toggle>
-        <PasswordToggleField.Slot
-          visible="Hide password"
-          hidden="Show password"
-        />
+        <PasswordToggleField.Slot visible="Hide password" hidden="Show password" />
       </PasswordToggleField.Toggle>
     </PasswordToggleField.Root>
   );

@@ -1,5 +1,14 @@
 # @radix-ui/react-popper
 
+## 1.3.7
+
+- Reverted breaking changes that caused compatibility issues with React Server Components.
+- Updated dependencies: `@radix-ui/react-arrow@1.1.15`, `@radix-ui/react-compose-refs@1.1.5`, `@radix-ui/react-context@1.2.2`, `@radix-ui/react-primitive@2.1.10`, `@radix-ui/react-use-callback-ref@1.1.4`, `@radix-ui/react-use-layout-effect@1.1.4`, `@radix-ui/react-use-rect@1.1.4`, `@radix-ui/react-use-size@1.1.4`
+
+## 1.3.6
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.9`, `@radix-ui/react-arrow@1.1.14`
+
 ## 1.3.5
 
 - Republish through CI to attach provenance attestations. The previous versions of these packages were published manually outside of CI and therefore shipped without provenance; this patch re-releases the same code through the CI pipeline so every package includes an attestation.

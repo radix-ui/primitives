@@ -1,5 +1,9 @@
 # @radix-ui/react-context
 
+## 1.2.2
+
+- Reverted breaking changes that caused compatibility issues with React Server Components.
+
 ## 1.2.1
 
 - Republish through CI to attach provenance attestations. The previous versions of these packages were published manually outside of CI and therefore shipped without provenance; this patch re-releases the same code through the CI pipeline so every package includes an attestation.

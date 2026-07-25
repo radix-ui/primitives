@@ -1,5 +1,14 @@
 # @radix-ui/react-navigation-menu
 
+## 1.2.22
+
+- Reverted breaking changes that caused compatibility issues with React Server Components.
+- Updated dependencies: `@radix-ui/react-collection@1.1.15`, `@radix-ui/react-compose-refs@1.1.5`, `@radix-ui/react-context@1.2.2`, `@radix-ui/react-direction@1.1.4`, `@radix-ui/react-dismissable-layer@1.1.19`, `@radix-ui/react-id@1.1.4`, `@radix-ui/react-presence@1.1.10`, `@radix-ui/react-primitive@2.1.10`, `@radix-ui/react-use-callback-ref@1.1.4`, `@radix-ui/react-use-controllable-state@1.2.6`, `@radix-ui/react-use-layout-effect@1.1.4`, `@radix-ui/react-use-previous@1.1.4`, `@radix-ui/react-visually-hidden@1.2.11`
+
+## 1.2.21
+
+- Updated dependencies: `@radix-ui/react-collection@1.1.14`, `@radix-ui/react-primitive@2.1.9`, `@radix-ui/react-dismissable-layer@1.1.18`, `@radix-ui/react-visually-hidden@1.2.10`
+
 ## 1.2.20
 
 - Republish through CI to attach provenance attestations. The previous versions of these packages were published manually outside of CI and therefore shipped without provenance; this patch re-releases the same code through the CI pipeline so every package includes an attestation.
