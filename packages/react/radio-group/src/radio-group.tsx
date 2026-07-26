@@ -122,6 +122,7 @@ const RadioGroup = /* @__PURE__ */ React.forwardRef<RadioGroupElement, RadioGrou
             role="radiogroup"
             aria-required={required}
             aria-orientation={orientation}
+            aria-disabled={disabled}
             data-disabled={disabled ? '' : undefined}
             dir={direction}
             {...groupProps}
