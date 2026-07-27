@@ -1,6 +1,5 @@
-import { Direction, DropdownMenu, Slot, Toggle, Toolbar } from 'radix-ui';
+import { Direction, DropdownMenu, Toggle, Toolbar } from 'radix-ui';
 import styles from './toolbar.stories.module.css';
-import { customMergeProps } from './custom-merge-props';
 
 export default { title: 'Components/Toolbar' };
 
@@ -9,21 +8,6 @@ export const Styled = () => (
     <ToolbarExample title="Horizontal"></ToolbarExample>
     <ToolbarExample title="Vertical" orientation="vertical"></ToolbarExample>
   </>
-);
-
-export const WithCustomMergeProps = () => (
-  <Slot.Provider mergeProps={customMergeProps}>
-    <Toolbar.Root className={styles.toolbar} aria-label="Custom merge toolbar">
-      <Toolbar.Button className={styles.toolbarItem} asChild>
-        <button data-custom-merge>Button (asChild)</button>
-      </Toolbar.Button>
-      <Toolbar.Link className={[styles.toolbarItem, styles.toolbarLink].join(' ')} asChild>
-        <a href="https://radix-ui.com" data-custom-merge>
-          Link (asChild)
-        </a>
-      </Toolbar.Link>
-    </Toolbar.Root>
-  </Slot.Provider>
 );
 
 export const Chromatic = () => (

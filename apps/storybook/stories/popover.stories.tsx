@@ -1,9 +1,8 @@
 import * as React from 'react';
-import { Dialog, Popover, Slot } from 'radix-ui';
+import { Dialog, Popover } from 'radix-ui';
 import { Popper } from 'radix-ui/internal';
 import styles from './popover.stories.module.css';
 import { ExternalOverlayTrigger } from './external-overlay';
-import { customMergeProps } from './custom-merge-props';
 
 const { SIDE_OPTIONS, ALIGN_OPTIONS } = Popper;
 
@@ -400,23 +399,6 @@ export const WithSlottedTrigger = () => {
     </Popover.Root>
   );
 };
-
-export const WithCustomMergeProps = () => (
-  <Slot.Provider mergeProps={customMergeProps}>
-    <Popover.Root>
-      <Popover.Trigger className={styles.trigger} asChild>
-        <button data-custom-merge>open (asChild)</button>
-      </Popover.Trigger>
-      <Popover.Portal>
-        <Popover.Content className={styles.content} sideOffset={5}>
-          <Popover.Close className={styles.close} asChild>
-            <button data-custom-merge>close (asChild)</button>
-          </Popover.Close>
-        </Popover.Content>
-      </Popover.Portal>
-    </Popover.Root>
-  </Slot.Provider>
-);
 
 // change order slightly for more pleasing visual
 const SIDES = [...SIDE_OPTIONS.filter((side) => side !== 'bottom'), 'bottom' as const];

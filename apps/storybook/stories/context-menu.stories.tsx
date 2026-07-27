@@ -1,9 +1,8 @@
 import * as React from 'react';
-import { ContextMenu, Dialog, Slot } from 'radix-ui';
+import { ContextMenu, Dialog } from 'radix-ui';
 import { foodGroups } from '@repo/test-data/foods';
 import styles from './context-menu.stories.module.css';
 import { ExternalOverlayTrigger } from './external-overlay';
-import { customMergeProps } from './custom-merge-props';
 
 export default { title: 'Components/ContextMenu' };
 
@@ -878,26 +877,6 @@ export const Nested = () => (
       </ContextMenu.Portal>
     </ContextMenu.Root>
   </div>
-);
-
-export const WithCustomMergeProps = () => (
-  <Slot.Provider mergeProps={customMergeProps}>
-    <ContextMenu.Root>
-      <ContextMenu.Trigger className={styles.trigger} asChild>
-        <span data-custom-merge>Right click here (asChild)</span>
-      </ContextMenu.Trigger>
-      <ContextMenu.Portal>
-        <ContextMenu.Content className={styles.content} alignOffset={-5}>
-          <ContextMenu.Item className={styles.item} asChild onSelect={() => console.log('undo')}>
-            <div>Undo (asChild)</div>
-          </ContextMenu.Item>
-          <ContextMenu.Item className={styles.item} onSelect={() => console.log('redo')}>
-            Redo
-          </ContextMenu.Item>
-        </ContextMenu.Content>
-      </ContextMenu.Portal>
-    </ContextMenu.Root>
-  </Slot.Provider>
 );
 
 const TickIcon = () => (

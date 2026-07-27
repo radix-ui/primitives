@@ -7,14 +7,6 @@ import { PrimitiveNode } from './primitive-node';
 // way. For every `Primitive.<node>`, it authors the `asChild` child element
 // HERE (on the server) and renders it inside a client `Slot.Provider` (see
 // `providers.tsx`).
-//
-// Because `@radix-ui/react-primitive` is a client component, each primitive's
-// internal `Slot` renders on the client under the provider and must honor the
-// consumer's custom `mergeProps`, even if the child crossed the server/client
-// boundary.
-//
-// `scripts/assert-primitive-merge.mjs` reads the prerendered HTML for this
-// route and asserts the marker landed on each primitive.
 
 export default function Page() {
   return (

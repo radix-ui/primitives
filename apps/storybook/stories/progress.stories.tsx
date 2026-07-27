@@ -1,7 +1,6 @@
 import * as React from 'react';
-import { Progress, Slot } from 'radix-ui';
+import { Progress } from 'radix-ui';
 import styles from './progress.stories.module.css';
-import { customMergeProps } from './custom-merge-props';
 
 export default {
   title: 'Components/Progress',
@@ -25,18 +24,6 @@ export const Styled = () => {
     </div>
   );
 };
-
-export const WithCustomMergeProps = () => (
-  <Slot.Provider mergeProps={customMergeProps}>
-    <Progress.Root className={styles.root} value={50} max={100} asChild>
-      <div data-custom-merge>
-        <Progress.Indicator className={styles.indicator} style={{ width: '50%' }} asChild>
-          <span data-custom-merge />
-        </Progress.Indicator>
-      </div>
-    </Progress.Root>
-  </Slot.Provider>
-);
 
 export const Chromatic = () => (
   <>
