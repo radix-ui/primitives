@@ -68,14 +68,45 @@ function getElementRef(element: React.ReactElement) {
 
 type SlottableElement = React.ReactElement<SlottableProps, SlottableComponent>;
 
+/**
+ * Resolves an element's `type` to the underlying component.
+ *
+ * When a client component is referenced from a Server Component, it crosses the
+ * RSC boundary as a `React.lazy` wrapper rather than the original function, so
+ * any static marker on the component isn't directly reachable. During SSR the
+ * lazy payload is already resolved, so we can unwrap it synchronously to
+ * inspect the real component.
+ */
+function resolveElementType(type: unknown): unknown {
+  if (
+    type != null &&
+    typeof type === 'object' &&
+    '$$typeof' in type &&
+    type.$$typeof === REACT_LAZY_TYPE
+  ) {
+    const lazy = type as unknown as { _payload: unknown; _init?: (payload: unknown) => unknown };
+    if (typeof lazy._init === 'function') {
+      try {
+        return lazy._init(lazy._payload);
+      } catch {
+        // Not resolved yet or not a standard lazy wrapper; fall back to the
+        // wrapper so detection fails gracefully rather than throwing.
+        return type;
+      }
+    }
+  }
+  return type;
+}
+
 function isSlottable(
   child: React.ReactNode,
 ): child is React.ReactElement<SlottableProps, typeof Slottable> {
+  if (!React.isValidElement(child)) return false;
+  const elementType = resolveElementType(child.type);
   return (
-    React.isValidElement(child) &&
-    typeof child.type === 'function' &&
-    '__radixId' in child.type &&
-    child.type.__radixId === SLOTTABLE_IDENTIFIER
+    typeof elementType === 'function' &&
+    '__radixId' in elementType &&
+    elementType.__radixId === SLOTTABLE_IDENTIFIER
   );
 }
 
