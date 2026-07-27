@@ -1,4 +1,4 @@
-import { Slot } from 'radix-ui';
+import { mergeProps, type MergePropsFunction } from 'radix-ui/slot/merge-props';
 
 /**
  * A demonstration `mergeProps` strategy shared by the "WithCustomMergeProps" stories across
@@ -9,11 +9,11 @@ import { Slot } from 'radix-ui';
  * Drop it onto a single `Slot.Root` via the `mergeProps` prop for one-off needs, or onto a
  * `Slot.Provider` to apply it to every nested Radix component that renders via `asChild`.
  */
-export const customMergeProps: Slot.MergePropsFunction = (
+export const customMergeProps: MergePropsFunction = (
   slotProps: Record<string, any>,
   childProps: Record<string, any>,
 ) => {
-  const merged = Slot.mergeProps(slotProps, childProps);
+  const merged = mergeProps(slotProps, childProps);
   return {
     ...merged,
     'data-custom-merge': 'true',

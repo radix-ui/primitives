@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { AspectRatio, Label, Separator, Slot, VisuallyHidden } from 'radix-ui';
+import { mergeProps, type MergePropsFunction } from 'radix-ui/slot/merge-props';
 
 // IMPORTANT: This is intentionally a Server Component. This page is a
 // build-time guard against import-time RSC regressions.
@@ -10,8 +11,8 @@ const ServerSlottable = Slot.createSlottable('SsrTest.Slottable');
 // A consumer-defined `mergeProps` passed directly to a Slot must still work in a
 // Server Component. The per-instance prop bypasses context (which is client
 // only), so it applies during server render just like on the client.
-const serverMergeProps: Slot.MergePropsFunction = (slotProps, childProps) => ({
-  ...Slot.mergeProps(slotProps, childProps),
+const serverMergeProps: MergePropsFunction = (slotProps, childProps) => ({
+  ...mergeProps(slotProps, childProps),
   'data-server-merged': 'true',
 });
 
