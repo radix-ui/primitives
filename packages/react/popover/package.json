@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-popover",
-  "version": "1.1.17",
+  "version": "1.1.23",
   "license": "MIT",
   "source": "./src/index.ts",
   "main": "./src/index.ts",
@@ -48,16 +48,17 @@
     "@radix-ui/react-primitive": "workspace:*",
     "@radix-ui/react-slot": "workspace:*",
     "@radix-ui/react-use-controllable-state": "workspace:*",
+    "@radix-ui/react-use-layout-effect": "workspace:*",
     "aria-hidden": "^1.2.4",
     "react-remove-scroll": "^2.7.2"
   },
   "devDependencies": {
     "@repo/builder": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@types/react": "^19.2.2",
-    "@types/react-dom": "^19.2.2",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
     "typescript": "^5.9.3"
   },
   "peerDependencies": {

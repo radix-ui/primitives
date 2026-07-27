@@ -1,5 +1,35 @@
 # @radix-ui/react-context-menu
 
+## 2.3.7
+
+- Reverted breaking changes that caused compatibility issues with React Server Components.
+- Updated dependencies: `@radix-ui/react-context@1.2.2`, `@radix-ui/react-menu@2.1.24`, `@radix-ui/react-primitive@2.1.10`, `@radix-ui/react-use-controllable-state@1.2.6`
+
+## 2.3.6
+
+- Updated dependencies: `@radix-ui/react-menu@2.1.23`, `@radix-ui/react-primitive@2.1.9`
+
+## 2.3.5
+
+- Republish through CI to attach provenance attestations. The previous versions of these packages were published manually outside of CI and therefore shipped without provenance; this patch re-releases the same code through the CI pipeline so every package includes an attestation.
+- Updated dependencies: `@radix-ui/primitive@1.1.7`, `@radix-ui/react-context@1.2.1`, `@radix-ui/react-menu@2.1.22`, `@radix-ui/react-primitive@2.1.8`, `@radix-ui/react-use-controllable-state@1.2.5`
+
+## 2.3.4
+
+- Improved tree-shaking so bundlers can drop unused components. Component parts are now marked `/* @__PURE__ */` and use named render functions instead of `Component.displayName = ...` assignments, which previously prevented dead-code elimination with some bundlers.
+- Fix dev-only checks with conditional exports to drop dev-warnings from production builds.
+- Updated dependencies: `@radix-ui/react-menu@2.1.21`, `@radix-ui/react-use-controllable-state@1.2.4`, `@radix-ui/primitive@1.1.6`, `@radix-ui/react-context@1.2.0`, `@radix-ui/react-primitive@2.1.7`
+
+## 2.3.3
+
+- Fixed `ContextMenu` not re-anchoring to the latest pointer position when re-triggered while already open.
+- Fixed menu items, tab triggers, toolbar links, and select items intercepting `Space`/`Enter` keys that originate from focusable descendants.
+- Updated dependencies: `@radix-ui/primitive@1.1.5`, `@radix-ui/react-context@1.2.0`, `@radix-ui/react-menu@2.1.20`
+
+## 2.3.2
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.7`, `@radix-ui/react-menu@2.1.19`
+
 ## 2.3.1
 
 - Fixed a bug where menus and submenus remained open after a window loses focus.

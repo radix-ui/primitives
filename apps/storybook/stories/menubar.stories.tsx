@@ -1,8 +1,9 @@
 import * as React from 'react';
-import { Menubar } from 'radix-ui';
+import { Dialog, Menubar, Slot } from 'radix-ui';
 import { foodGroups } from '@repo/test-data/foods';
 import styles from './menubar.stories.module.css';
 import { ExternalOverlayTrigger } from './external-overlay';
+import { customMergeProps } from './custom-merge-props';
 
 const subTriggerClass = [styles.item, styles.subTrigger].join(' ');
 
@@ -216,6 +217,83 @@ export const WithExtensionOverlay = () => {
     </div>
   );
 };
+
+// Regression story for https://github.com/radix-ui/primitives/issues/3971
+export const DismissesOnlyMenubarInsideDialog = () => {
+  const [dialogOpen, setDialogOpen] = React.useState(false);
+  const [menuValue, setMenuValue] = React.useState('');
+
+  if (!dialogOpen && menuValue !== '') {
+    setMenuValue('');
+  }
+
+  return (
+    <div style={{ display: 'grid', gap: 16, padding: 40, justifyItems: 'start' }}>
+      <Dialog.Root open={dialogOpen} onOpenChange={setDialogOpen}>
+        <Dialog.Trigger className={styles.trigger}>Open dialog</Dialog.Trigger>
+        <Dialog.Portal>
+          <Dialog.Overlay
+            data-testid="dialog-overlay"
+            style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0, 0, 0, 0.2)' }}
+          />
+          <Dialog.Content
+            style={{
+              position: 'fixed',
+              top: 100,
+              left: '50%',
+              transform: 'translateX(-50%)',
+              width: 360,
+              padding: 20,
+              backgroundColor: 'white',
+              border: '1px solid #ccc',
+              borderRadius: 8,
+            }}
+          >
+            <Dialog.Title>Dialog with nested menubar</Dialog.Title>
+            <Menubar.Root className={styles.root} value={menuValue} onValueChange={setMenuValue}>
+              <Menubar.Menu value="actions">
+                <Menubar.Trigger className={styles.trigger}>Actions</Menubar.Trigger>
+                <Menubar.Portal>
+                  <Menubar.Content className={styles.content} sideOffset={2}>
+                    <Menubar.Item className={styles.item}>Item one</Menubar.Item>
+                    <Menubar.Item className={styles.item}>Item two</Menubar.Item>
+                  </Menubar.Content>
+                </Menubar.Portal>
+              </Menubar.Menu>
+            </Menubar.Root>
+            <button type="button" className={styles.item} style={{ width: '100%', marginTop: 12 }}>
+              Dialog surface button
+            </button>
+            <p style={{ marginTop: 12, marginBottom: 0 }}>
+              dialog: {dialogOpen ? 'open' : 'closed'} | menu:{' '}
+              {menuValue === '' ? 'closed' : 'open'}
+            </p>
+            <Dialog.Close style={{ marginTop: 12 }}>Close dialog</Dialog.Close>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
+    </div>
+  );
+};
+export const WithCustomMergeProps = () => (
+  <Slot.Provider mergeProps={customMergeProps}>
+    <Menubar.Root className={styles.root}>
+      <Menubar.Menu>
+        <Menubar.Trigger className={styles.trigger} asChild>
+          <button data-custom-merge>File (asChild)</button>
+        </Menubar.Trigger>
+        <Menubar.Portal>
+          <Menubar.Content className={styles.content} sideOffset={5}>
+            <Menubar.Item className={styles.item} asChild>
+              <div data-custom-merge>New Tab (asChild)</div>
+            </Menubar.Item>
+            <Menubar.Item className={styles.item}>New Window</Menubar.Item>
+          </Menubar.Content>
+        </Menubar.Portal>
+      </Menubar.Menu>
+    </Menubar.Root>
+  </Slot.Provider>
+);
 
 export const Cypress = () => {
   const [loop, setLoop] = React.useState(false);

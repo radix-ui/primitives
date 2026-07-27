@@ -1,7 +1,8 @@
 /* eslint-disable react/jsx-pascal-case */
 import * as React from 'react';
-import { Label as LabelPrimitive, Switch } from 'radix-ui';
+import { Label as LabelPrimitive, Slot, Switch } from 'radix-ui';
 import styles from './switch.stories.module.css';
+import { customMergeProps } from './custom-merge-props';
 
 export default { title: 'Components/Switch' };
 
@@ -95,6 +96,51 @@ export const WithinForm = () => {
   );
 };
 
+export const WithinFormReset = () => {
+  const [controlled, setControlled] = React.useState(true);
+
+  return (
+    <form onSubmit={(event) => event.preventDefault()}>
+      <p>
+        Toggle the switches, then press <strong>Reset</strong>. Each switch returns to its initial
+        value (the uncontrolled switch via its <code>defaultChecked</code>, the controlled switch
+        via its initial <code>checked</code> state).
+      </p>
+
+      <fieldset>
+        <legend>Uncontrolled (defaultChecked)</legend>
+        <label>
+          <Switch.Root className={styles.root} name="uncontrolled" defaultChecked>
+            <Switch.Thumb className={styles.thumb} />
+          </Switch.Root>{' '}
+          with label
+        </label>
+      </fieldset>
+
+      <br />
+
+      <fieldset>
+        <legend>Controlled checked: {String(controlled)}</legend>
+        <label>
+          <Switch.Root
+            className={styles.root}
+            name="controlled"
+            checked={controlled}
+            onCheckedChange={setControlled}
+          >
+            <Switch.Thumb className={styles.thumb} />
+          </Switch.Root>{' '}
+          with label
+        </label>
+      </fieldset>
+
+      <br />
+
+      <button type="reset">Reset</button>
+    </form>
+  );
+};
+
 export const Parts = () => {
   const [checked, setChecked] = React.useState(true);
 
@@ -181,6 +227,16 @@ export const PartsWithinForm = () => {
     </form>
   );
 };
+
+export const WithCustomMergeProps = () => (
+  <Slot.Provider mergeProps={customMergeProps}>
+    <Switch.Root className={styles.root} asChild>
+      <button data-custom-merge>
+        <Switch.Thumb className={styles.thumb} />
+      </button>
+    </Switch.Root>
+  </Slot.Provider>
+);
 
 export const Chromatic = () => (
   <>

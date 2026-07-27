@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { cleanup, render, act } from '@testing-library/react';
 import { afterEach, describe, it, expect, vi } from 'vitest';
+import { assertStableComposedRef } from '@repo/test-utils/ref-stability';
 import * as Popper from './popper';
 
 function makeVirtual() {
@@ -82,5 +83,19 @@ describe('PopperAnchor virtualRef', () => {
     await act(async () => {});
 
     expect(anchor.getBoundingClientRect).toHaveBeenCalled();
+  });
+});
+
+// Regression test for https://github.com/radix-ui/primitives/issues/3963
+describe('PopperContent ref stability', () => {
+  afterEach(cleanup);
+
+  it('keeps a stable composed ref (no infinite render loop)', () => {
+    assertStableComposedRef((ref) => (
+      <Popper.Root>
+        <Popper.Anchor />
+        <Popper.Content ref={ref}>content</Popper.Content>
+      </Popper.Root>
+    ));
   });
 });

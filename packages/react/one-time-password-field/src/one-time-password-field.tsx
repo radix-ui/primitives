@@ -13,23 +13,42 @@ import { createContextScope } from '@radix-ui/react-context';
 import { useDirection } from '@radix-ui/react-direction';
 import { clamp } from '@radix-ui/number';
 
-type InputValidationType = 'alpha' | 'numeric' | 'alphanumeric' | 'none';
+const InputValidationType = {
+  Alpha: 'alpha',
+  Numeric: 'numeric',
+  Alphanumeric: 'alphanumeric',
+  None: 'none',
+} as const;
+
+const InputType = {
+  Password: 'password',
+  Text: 'text',
+} as const;
+
+const AutoComplete = {
+  Off: 'off',
+  OneTimeCode: 'one-time-code',
+} as const;
+
+type InputValidationType = (typeof InputValidationType)[keyof typeof InputValidationType];
+type InputType = (typeof InputType)[keyof typeof InputType];
+type AutoComplete = (typeof AutoComplete)[keyof typeof AutoComplete];
 
 const INPUT_VALIDATION_MAP = {
   numeric: {
-    type: 'numeric',
+    type: InputValidationType.Numeric,
     regexp: /[^\d]/g,
     pattern: '\\d{1}',
     inputMode: 'numeric',
   },
   alpha: {
-    type: 'alpha',
+    type: InputValidationType.Alpha,
     regexp: /[^a-zA-Z]/g,
     pattern: '[a-zA-Z]{1}',
     inputMode: 'text',
   },
   alphanumeric: {
-    type: 'alphanumeric',
+    type: InputValidationType.Alphanumeric,
     regexp: /[^a-zA-Z0-9]/g,
     pattern: '[a-zA-Z0-9]{1}',
     inputMode: 'text',
@@ -193,7 +212,11 @@ interface OneTimePasswordFieldProps
     OneTimePasswordFieldOwnProps,
     Omit<Primitive.PrimitivePropsWithRef<'div'>, keyof OneTimePasswordFieldOwnProps> {}
 
-const OneTimePasswordField = React.forwardRef<HTMLDivElement, OneTimePasswordFieldProps>(
+const OneTimePasswordField = /* @__PURE__ */ React.forwardRef<
+  HTMLDivElement,
+  OneTimePasswordFieldProps
+>(
+  // blank line to reduce diff noise
   function OneTimePasswordFieldImpl(
     {
       __scopeOneTimePasswordField,
@@ -206,16 +229,16 @@ const OneTimePasswordField = React.forwardRef<HTMLDivElement, OneTimePasswordFie
       onAutoSubmit,
       disabled = false,
       readOnly = false,
-      autoComplete = 'one-time-code',
+      autoComplete = AutoComplete.OneTimeCode,
       autoFocus = false,
       form,
       name,
       placeholder,
-      type = 'text',
+      type = InputType.Text,
       // TODO: Change default to vertical when inputs use vertical writing mode
       orientation = 'horizontal',
       dir,
-      validationType = 'numeric',
+      validationType = InputValidationType.Numeric,
       sanitizeValue: sanitizeValueProp,
       ...domProps
     }: ScopedProps<OneTimePasswordFieldProps>,
@@ -510,7 +533,7 @@ interface OneTimePasswordFieldHiddenInputProps extends Omit<
   | 'autoFocus'
 > {}
 
-const OneTimePasswordFieldHiddenInput = React.forwardRef<
+const OneTimePasswordFieldHiddenInput = /* @__PURE__ */ React.forwardRef<
   HTMLInputElement,
   OneTimePasswordFieldHiddenInputProps
 >(function OneTimePasswordFieldHiddenInput(
@@ -569,7 +592,7 @@ interface OneTimePasswordFieldInputProps extends Omit<
   index?: number;
 }
 
-const OneTimePasswordFieldInput = React.forwardRef<
+const OneTimePasswordFieldInput = /* @__PURE__ */ React.forwardRef<
   HTMLInputElement,
   OneTimePasswordFieldInputProps
 >(function OneTimePasswordFieldInput(
@@ -653,7 +676,7 @@ const OneTimePasswordFieldInput = React.forwardRef<
               type={context.type}
               disabled={disabled}
               aria-label={`Character ${index + 1} of ${collection.size}`}
-              autoComplete={supportsAutoComplete ? context.autoComplete : 'off'}
+              autoComplete={supportsAutoComplete ? context.autoComplete : AutoComplete.Off}
               data-1p-ignore={supportsAutoComplete ? undefined : 'true'}
               data-lpignore={supportsAutoComplete ? undefined : 'true'}
               data-protonpass-ignore={supportsAutoComplete ? undefined : 'true'}
@@ -940,8 +963,6 @@ function isInputEvent(event: Event): event is InputEvent {
   return event.type === 'input';
 }
 
-type InputType = 'password' | 'text';
-type AutoComplete = 'off' | 'one-time-code';
 type KeyboardActionDetails =
   | {
       type: 'keydown';

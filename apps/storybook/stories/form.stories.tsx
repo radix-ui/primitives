@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { Form } from 'radix-ui';
+import { Form, Slot } from 'radix-ui';
 import styles from './form.stories.module.css';
+import { customMergeProps } from './custom-merge-props';
 
 export default { title: 'Components/Form' };
 
@@ -73,6 +74,23 @@ export const Basic = () => {
     </>
   );
 };
+
+export const WithCustomMergeProps = () => (
+  <Slot.Provider mergeProps={customMergeProps}>
+    <Form.Root className={styles.form}>
+      <Form.Field name="email">
+        <Form.Label>Email</Form.Label>
+        <Form.Control type="email" required asChild>
+          <input data-custom-merge />
+        </Form.Control>
+        <Form.Message match="valueMissing">Email is required</Form.Message>
+      </Form.Field>
+      <Form.Submit asChild>
+        <button data-custom-merge>Submit (asChild)</button>
+      </Form.Submit>
+    </Form.Root>
+  </Slot.Provider>
+);
 
 export const Cypress = () => {
   const [data, setData] = React.useState({});
@@ -178,6 +196,47 @@ export const Cypress = () => {
         Simulate server errors?
       </label>
     </>
+  );
+};
+
+export const OutsideField = () => {
+  return (
+    <Form.Root
+      className={styles.form}
+      onSubmit={(event) => {
+        event.preventDefault();
+        const formData = new FormData(event.currentTarget);
+        window.alert(JSON.stringify(Object.fromEntries(formData), null, 2));
+      }}
+    >
+      {/* Messages declared ahead of (and outside) the control they describe. */}
+      <Form.Message match="valueMissing" name="email">
+        Please enter your email address.
+      </Form.Message>
+      <Form.Message match="typeMismatch" name="email">
+        Please enter a valid email address.
+      </Form.Message>
+
+      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+        <Form.Label name="email" htmlFor="email">
+          Email
+        </Form.Label>
+        <Form.Control
+          id="email"
+          name="email"
+          type="email"
+          required
+          placeholder="rolli@example.com"
+        />
+      </div>
+
+      <Form.ValidityState name="email">
+        {(validity) => <pre>Email validity: {JSON.stringify(validity?.valid ?? null)}</pre>}
+      </Form.ValidityState>
+
+      <Form.Submit>Submit</Form.Submit>
+      <button type="reset">Reset</button>
+    </Form.Root>
   );
 };
 

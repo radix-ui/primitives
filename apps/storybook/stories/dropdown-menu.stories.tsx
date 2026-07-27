@@ -1,10 +1,11 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom/client';
-import { Dialog, DropdownMenu, Tooltip } from 'radix-ui';
+import { Dialog, DropdownMenu, Slot, Tooltip } from 'radix-ui';
 import { Popper } from 'radix-ui/internal';
 import { foodGroups } from '@repo/test-data/foods';
 import styles from './dropdown-menu.stories.module.css';
 import { ExternalOverlayTrigger } from './external-overlay';
+import { customMergeProps } from './custom-merge-props';
 
 const { SIDE_OPTIONS, ALIGN_OPTIONS } = Popper;
 
@@ -564,27 +565,63 @@ export const NestedComposition = () => {
   );
 };
 
-export const DropdownWithinDialog = () => (
-  <Dialog.Root defaultOpen>
-    <Dialog.Portal>
-      <Dialog.Overlay />
-      <Dialog.Content className={styles.dialog} style={{ padding: 24 }}>
-        <Dialog.Title>Dialog with dropdown</Dialog.Title>
-        <DropdownMenu.Root defaultOpen>
-          <DropdownMenu.Trigger className={styles.trigger}>Open menu</DropdownMenu.Trigger>
-          <DropdownMenu.Portal>
-            <DropdownMenu.Content className={styles.content} sideOffset={5}>
-              <DropdownMenu.Item className={styles.item}>Item 1</DropdownMenu.Item>
-              <DropdownMenu.Item className={styles.item}>Item 2</DropdownMenu.Item>
-              <DropdownMenu.Arrow />
-            </DropdownMenu.Content>
-          </DropdownMenu.Portal>
-        </DropdownMenu.Root>
-        <p data-testid="dialog-open-indicator">Dialog is still open</p>
-      </Dialog.Content>
-    </Dialog.Portal>
-  </Dialog.Root>
-);
+// Regression story for https://github.com/radix-ui/primitives/issues/3971
+export const DismissesOnlyMenuInsideDialog = () => {
+  const [dialogOpen, setDialogOpen] = React.useState(false);
+  const [menuOpen, setMenuOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!dialogOpen) {
+      setMenuOpen(false);
+    }
+  }, [dialogOpen]);
+
+  return (
+    <div
+      style={{
+        display: 'grid',
+        gap: 16,
+        alignItems: 'start',
+        justifyItems: 'start',
+        padding: 40,
+      }}
+    >
+      <Dialog.Root open={dialogOpen} onOpenChange={setDialogOpen}>
+        <Dialog.Trigger className={styles.trigger}>Open dialog</Dialog.Trigger>
+        <Dialog.Portal>
+          <Dialog.Content className={styles.dialog}>
+            <Dialog.Title>Dialog with nested dropdown</Dialog.Title>
+            <DropdownMenu.Root open={menuOpen} onOpenChange={setMenuOpen}>
+              <DropdownMenu.Trigger
+                className={styles.trigger}
+                style={{ width: '100%', marginBottom: 12 }}
+              >
+                Open menu
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Portal>
+                <DropdownMenu.Content className={styles.content} sideOffset={5}>
+                  <DropdownMenu.Item className={styles.item}>Item one</DropdownMenu.Item>
+                  <DropdownMenu.Item className={styles.item}>Item two</DropdownMenu.Item>
+                  <DropdownMenu.Arrow />
+                </DropdownMenu.Content>
+              </DropdownMenu.Portal>
+            </DropdownMenu.Root>
+
+            <button type="button" className={styles.item} style={{ width: '100%' }}>
+              Dialog surface button
+            </button>
+
+            <p style={{ marginTop: 12, marginBottom: 0 }}>
+              dialog: {dialogOpen ? 'open' : 'closed'} | menu: {menuOpen ? 'open' : 'closed'}
+            </p>
+
+            <Dialog.Close style={{ marginTop: 12 }}>Close dialog</Dialog.Close>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
+    </div>
+  );
+};
 
 export const SingleItemAsDialogTrigger = () => {
   const dropdownTriggerRef = React.useRef<React.ComponentRef<typeof DropdownMenu.Trigger>>(null);
@@ -987,6 +1024,26 @@ export const InPopupWindow = () => {
     </div>
   );
 };
+
+export const WithCustomMergeProps = () => (
+  <Slot.Provider mergeProps={customMergeProps}>
+    <DropdownMenu.Root>
+      <DropdownMenu.Trigger className={styles.trigger} asChild>
+        <button data-custom-merge>Open (asChild)</button>
+      </DropdownMenu.Trigger>
+      <DropdownMenu.Portal>
+        <DropdownMenu.Content className={styles.content} sideOffset={5}>
+          <DropdownMenu.Item className={styles.item} asChild onSelect={() => console.log('undo')}>
+            <div data-custom-merge>Undo (asChild)</div>
+          </DropdownMenu.Item>
+          <DropdownMenu.Item className={styles.item} onSelect={() => console.log('redo')}>
+            Redo
+          </DropdownMenu.Item>
+        </DropdownMenu.Content>
+      </DropdownMenu.Portal>
+    </DropdownMenu.Root>
+  </Slot.Provider>
+);
 
 // change order slightly for more pleasing visual
 const SIDES = [...SIDE_OPTIONS.filter((side) => side !== 'bottom'), 'bottom' as const];

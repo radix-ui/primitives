@@ -11,6 +11,13 @@ import { useId } from '@radix-ui/react-id';
 
 import type { Scope } from '@radix-ui/react-context';
 
+const ActivationMode = {
+  Automatic: 'automatic',
+  Manual: 'manual',
+} as const;
+
+type ActivationMode = (typeof ActivationMode)[keyof typeof ActivationMode];
+
 /* -------------------------------------------------------------------------------------------------
  * Tabs
  * -----------------------------------------------------------------------------------------------*/
@@ -58,11 +65,12 @@ interface TabsProps extends PrimitiveDivProps {
    * Whether a tab is activated automatically or manually.
    * @defaultValue automatic
    * */
-  activationMode?: 'automatic' | 'manual';
+  activationMode?: ActivationMode;
 }
 
-const Tabs = React.forwardRef<TabsElement, TabsProps>(
-  (props: ScopedProps<TabsProps>, forwardedRef) => {
+const Tabs = /* @__PURE__ */ React.forwardRef<TabsElement, TabsProps>(
+  // blank line to reduce diff noise
+  function Tabs(props: ScopedProps<TabsProps>, forwardedRef) {
     const {
       __scopeTabs,
       value: valueProp,
@@ -70,7 +78,7 @@ const Tabs = React.forwardRef<TabsElement, TabsProps>(
       defaultValue,
       orientation = 'horizontal',
       dir,
-      activationMode = 'automatic',
+      activationMode = ActivationMode.Automatic,
       ...tabsProps
     } = props;
     const direction = useDirection(dir);
@@ -102,8 +110,6 @@ const Tabs = React.forwardRef<TabsElement, TabsProps>(
   },
 );
 
-Tabs.displayName = TABS_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * TabsList
  * -----------------------------------------------------------------------------------------------*/
@@ -115,8 +121,9 @@ interface TabsListProps extends PrimitiveDivProps {
   loop?: RovingFocusGroupProps['loop'];
 }
 
-const TabsList = React.forwardRef<TabsListElement, TabsListProps>(
-  (props: ScopedProps<TabsListProps>, forwardedRef) => {
+const TabsList = /* @__PURE__ */ React.forwardRef<TabsListElement, TabsListProps>(
+  // blank line to reduce diff noise
+  function TabsList(props: ScopedProps<TabsListProps>, forwardedRef) {
     const { __scopeTabs, loop = true, ...listProps } = props;
     const context = useTabsContext(TAB_LIST_NAME, __scopeTabs);
     const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeTabs);
@@ -139,8 +146,6 @@ const TabsList = React.forwardRef<TabsListElement, TabsListProps>(
   },
 );
 
-TabsList.displayName = TAB_LIST_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * TabsTrigger
  * -----------------------------------------------------------------------------------------------*/
@@ -153,8 +158,8 @@ interface TabsTriggerProps extends PrimitiveButtonProps {
   value: string;
 }
 
-const TabsTrigger = React.forwardRef<TabsTriggerElement, TabsTriggerProps>(
-  (props: ScopedProps<TabsTriggerProps>, forwardedRef) => {
+const TabsTrigger = /* @__PURE__ */ React.forwardRef<TabsTriggerElement, TabsTriggerProps>(
+  function TabsTrigger(props: ScopedProps<TabsTriggerProps>, forwardedRef) {
     const { __scopeTabs, value, disabled = false, ...triggerProps } = props;
     const context = useTabsContext(TRIGGER_NAME, __scopeTabs);
     const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeTabs);
@@ -180,9 +185,16 @@ const TabsTrigger = React.forwardRef<TabsTriggerElement, TabsTriggerProps>(
           {...triggerProps}
           ref={forwardedRef}
           onMouseDown={composeEventHandlers(props.onMouseDown, (event) => {
-            // only call handler if it's the left button (mousedown gets triggered by all mouse buttons)
-            // but not when the control key is pressed (avoiding MacOS right click)
+            // only call handler if it's the left button (mousedown gets
+            // triggered by all mouse buttons) but not when the control key is
+            // pressed (avoiding MacOS right click)
             if (!disabled && event.button === 0 && event.ctrlKey === false) {
+              // Move focus to the trigger before changing the value. If focus
+              // is currently in the active tab, the element will be removed
+              // from the DOM before its blur event fires, and focus gets lost
+              // to the document until click is completed.
+              // See https://github.com/radix-ui/primitives/issues/3600
+              event.currentTarget.focus();
               context.onValueChange(value);
             } else {
               // prevent focus to avoid accidental activation
@@ -190,12 +202,23 @@ const TabsTrigger = React.forwardRef<TabsTriggerElement, TabsTriggerProps>(
             }
           })}
           onKeyDown={composeEventHandlers(props.onKeyDown, (event) => {
-            if ([' ', 'Enter'].includes(event.key)) context.onValueChange(value);
+            // Only react to keys originating from the trigger itself. Focusable
+            // descendants (eg. content portaled out of the trigger's DOM
+            // subtree) bubble their key events here through React's event
+            // system.
+            // See: https://github.com/radix-ui/primitives/issues/3232
+            if (disabled || event.target !== event.currentTarget) {
+              return;
+            }
+
+            if ([' ', 'Enter'].includes(event.key)) {
+              context.onValueChange(value);
+            }
           })}
           onFocus={composeEventHandlers(props.onFocus, () => {
             // handle "automatic" activation if necessary
             // ie. activate tab following focus
-            const isAutomaticActivation = context.activationMode !== 'manual';
+            const isAutomaticActivation = context.activationMode !== ActivationMode.Manual;
             if (!isSelected && !disabled && isAutomaticActivation) {
               context.onValueChange(value);
             }
@@ -205,8 +228,6 @@ const TabsTrigger = React.forwardRef<TabsTriggerElement, TabsTriggerProps>(
     );
   },
 );
-
-TabsTrigger.displayName = TRIGGER_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * TabsContent
@@ -225,8 +246,8 @@ interface TabsContentProps extends PrimitiveDivProps {
   forceMount?: true;
 }
 
-const TabsContent = React.forwardRef<TabsContentElement, TabsContentProps>(
-  (props: ScopedProps<TabsContentProps>, forwardedRef) => {
+const TabsContent = /* @__PURE__ */ React.forwardRef<TabsContentElement, TabsContentProps>(
+  function TabsContent(props: ScopedProps<TabsContentProps>, forwardedRef) {
     const { __scopeTabs, value, forceMount, children, ...contentProps } = props;
     const context = useTabsContext(CONTENT_NAME, __scopeTabs);
     const triggerId = makeTriggerId(context.baseId, value);
@@ -265,8 +286,6 @@ const TabsContent = React.forwardRef<TabsContentElement, TabsContentProps>(
   },
 );
 
-TabsContent.displayName = CONTENT_NAME;
-
 /* ---------------------------------------------------------------------------------------------- */
 
 function makeTriggerId(baseId: string, value: string) {
@@ -277,11 +296,6 @@ function makeContentId(baseId: string, value: string) {
   return `${baseId}-content-${value}`;
 }
 
-const Root = Tabs;
-const List = TabsList;
-const Trigger = TabsTrigger;
-const Content = TabsContent;
-
 export {
   createTabsScope,
   //
@@ -290,9 +304,9 @@ export {
   TabsTrigger,
   TabsContent,
   //
-  Root,
-  List,
-  Trigger,
-  Content,
+  Tabs as Root,
+  TabsList as List,
+  TabsTrigger as Trigger,
+  TabsContent as Content,
 };
 export type { TabsProps, TabsListProps, TabsTriggerProps, TabsContentProps };

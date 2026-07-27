@@ -4,6 +4,9 @@ import fs from 'node:fs';
 import * as esbuild from 'esbuild';
 import * as tsup from 'tsup';
 
+const DECLARATION_FILE_REGEX = /\.d\.(ts|mts)$/;
+const REACT_MODULE_AUGMENTATION_START_REGEX = /declare module ['"]react['"]\s*\{/g;
+
 /**
  * @param {string} relativePath
  */
@@ -30,8 +33,26 @@ export async function build(relativePath) {
   const tasks = [];
   const pkg = packageJson.name;
   const files = ['index.ts'];
+
   if (pkg === 'radix-ui') {
-    files.push('internal.ts');
+    // The `radix-ui` package exposes every module in `src` as its own subpath
+    // entry point (eg. `radix-ui/accordion`, `radix-ui/unstable/dismissable-layer`),
+    // so build all of them. `recursive` is used to pick up nested modules such as
+    // those under `src/unstable`.
+    const sourceDirectory = path.resolve(relativePath || '.', 'src');
+    const additionalEntryFiles = fs
+      .readdirSync(sourceDirectory, { recursive: true })
+      .map((entry) => entry.toString().split(path.sep).join('/'))
+      .filter((file) => file.endsWith('.ts') && !file.endsWith('.d.ts') && file !== 'index.ts')
+      .sort();
+    files.push(...additionalEntryFiles);
+  } else if (pkg === '@radix-ui/primitive') {
+    // Additional files exposed to consumers
+    files.push(
+      //
+      'internal/is-development.false.ts',
+      'internal/is-development.true.ts',
+    );
   }
 
   const entryPoints = files.map((file) => `${relativePath || '.'}/src/${file}`);
@@ -47,6 +68,7 @@ export async function build(relativePath) {
     format: 'cjs',
     target: 'es2022',
     outdir: dist,
+    keepNames: true,
   };
 
   tasks.push(esbuild.build(esbuildConfig).then(() => console.log(`CJS: Built ${relativePath}`)));
@@ -81,8 +103,209 @@ export async function build(relativePath) {
   );
 
   await Promise.all(tasks);
+  await stripLeakedReactModuleAugmentations(dist);
 }
 
 /**
  * @typedef {{ name: string }} PackageJson
  */
+
+/**
+ * Prevent global React module augmentations from leaking to consumers through published types.
+ * @param {string} distDirectoryPath
+ */
+async function stripLeakedReactModuleAugmentations(distDirectoryPath) {
+  const distEntries = await fs.promises
+    .readdir(distDirectoryPath, { recursive: true })
+    .catch(() => []);
+  const declarationFilePaths = distEntries
+    .map((entry) => entry.toString())
+    .filter((fileName) => DECLARATION_FILE_REGEX.test(fileName))
+    .map((fileName) => path.resolve(distDirectoryPath, fileName));
+
+  await Promise.all(
+    declarationFilePaths.map((declarationFilePath) =>
+      stripReactModuleAugmentationsFromDeclarationFile(declarationFilePath),
+    ),
+  );
+}
+
+/**
+ * @param {string} declarationFilePath
+ */
+async function stripReactModuleAugmentationsFromDeclarationFile(declarationFilePath) {
+  const declarationContents = await fs.promises.readFile(declarationFilePath, 'utf-8');
+  const declarationContentsWithoutAugmentations =
+    removeReactModuleAugmentations(declarationContents);
+
+  if (declarationContents === declarationContentsWithoutAugmentations) {
+    return;
+  }
+
+  await fs.promises.writeFile(
+    declarationFilePath,
+    declarationContentsWithoutAugmentations,
+    'utf-8',
+  );
+}
+
+/**
+ * @param {string} declarationContents
+ */
+function removeReactModuleAugmentations(declarationContents) {
+  REACT_MODULE_AUGMENTATION_START_REGEX.lastIndex = 0;
+
+  let strippedDeclarationContents = '';
+  let contentCursor = 0;
+  let reactModuleAugmentationMatch;
+
+  while (
+    (reactModuleAugmentationMatch =
+      REACT_MODULE_AUGMENTATION_START_REGEX.exec(declarationContents)) !== null
+  ) {
+    const augmentationStartIndex = reactModuleAugmentationMatch.index;
+    const openingBraceIndex = REACT_MODULE_AUGMENTATION_START_REGEX.lastIndex - 1;
+    const augmentationEndIndex = getMatchingClosingBraceIndex(
+      declarationContents,
+      openingBraceIndex,
+    );
+
+    if (augmentationEndIndex === -1) {
+      throw new Error(
+        `Could not find end of React module augmentation near index ${augmentationStartIndex}.`,
+      );
+    }
+
+    strippedDeclarationContents += declarationContents.slice(contentCursor, augmentationStartIndex);
+    contentCursor = augmentationEndIndex + 1;
+
+    while (
+      contentCursor < declarationContents.length &&
+      /\s/.test(declarationContents.charAt(contentCursor))
+    ) {
+      contentCursor += 1;
+    }
+
+    if (declarationContents.charAt(contentCursor) === ';') {
+      contentCursor += 1;
+    }
+
+    while (
+      contentCursor < declarationContents.length &&
+      (declarationContents.charAt(contentCursor) === '\n' ||
+        declarationContents.charAt(contentCursor) === '\r')
+    ) {
+      contentCursor += 1;
+    }
+
+    REACT_MODULE_AUGMENTATION_START_REGEX.lastIndex = contentCursor;
+  }
+
+  if (contentCursor === 0) {
+    return declarationContents;
+  }
+
+  strippedDeclarationContents += declarationContents.slice(contentCursor);
+  return strippedDeclarationContents;
+}
+
+/**
+ * @param {string} content
+ * @param {number} openingBraceIndex
+ */
+function getMatchingClosingBraceIndex(content, openingBraceIndex) {
+  let braceDepth = 1;
+  let index = openingBraceIndex + 1;
+
+  while (index < content.length) {
+    const currentCharacter = content[index];
+    const nextCharacter = content[index + 1];
+
+    if (currentCharacter === "'" || currentCharacter === '"' || currentCharacter === '`') {
+      index = skipStringLiteral(content, index, currentCharacter);
+      continue;
+    }
+
+    if (currentCharacter === '/' && nextCharacter === '/') {
+      index = skipLineComment(content, index);
+      continue;
+    }
+
+    if (currentCharacter === '/' && nextCharacter === '*') {
+      index = skipBlockComment(content, index);
+      continue;
+    }
+
+    if (currentCharacter === '{') {
+      braceDepth += 1;
+    } else if (currentCharacter === '}') {
+      braceDepth -= 1;
+
+      if (braceDepth === 0) {
+        return index;
+      }
+    }
+
+    index += 1;
+  }
+
+  return -1;
+}
+
+/**
+ * @param {string} content
+ * @param {number} startIndex
+ * @param {"'" | '"' | "`"} quoteCharacter
+ */
+function skipStringLiteral(content, startIndex, quoteCharacter) {
+  let index = startIndex + 1;
+
+  while (index < content.length) {
+    const currentCharacter = content[index];
+
+    if (currentCharacter === '\\') {
+      index += 2;
+      continue;
+    }
+
+    if (currentCharacter === quoteCharacter) {
+      return index + 1;
+    }
+
+    index += 1;
+  }
+
+  return index;
+}
+
+/**
+ * @param {string} content
+ * @param {number} startIndex
+ */
+function skipLineComment(content, startIndex) {
+  let index = startIndex + 2;
+
+  while (index < content.length && content[index] !== '\n') {
+    index += 1;
+  }
+
+  return index;
+}
+
+/**
+ * @param {string} content
+ * @param {number} startIndex
+ */
+function skipBlockComment(content, startIndex) {
+  let index = startIndex + 2;
+
+  while (index < content.length - 1) {
+    if (content[index] === '*' && content[index + 1] === '/') {
+      return index + 2;
+    }
+
+    index += 1;
+  }
+
+  return content.length;
+}

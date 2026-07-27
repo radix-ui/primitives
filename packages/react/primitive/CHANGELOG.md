@@ -1,5 +1,23 @@
 # @radix-ui/react-primitive
 
+## 2.1.10
+
+- Reverted breaking changes that caused compatibility issues with React Server Components.
+- Updated dependencies: `@radix-ui/react-slot@1.3.3`
+
+## 2.1.9
+
+- Updated dependencies: `@radix-ui/react-slot@1.3.2`
+
+## 2.1.8
+
+- Republish through CI to attach provenance attestations. The previous versions of these packages were published manually outside of CI and therefore shipped without provenance; this patch re-releases the same code through the CI pipeline so every package includes an attestation.
+- Updated dependencies: `@radix-ui/react-slot@1.3.1`
+
+## 2.1.7
+
+- Removed global `React.CSSProperties` augmentation from emitted declaration files.
+
 ## 2.1.6
 
 - Fixed `Duplicate index signature` errors that surfaced when consuming multiple packages together.

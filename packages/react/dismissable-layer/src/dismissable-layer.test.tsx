@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { assertStableComposedRef } from '@repo/test-utils/ref-stability';
 import * as DismissableLayer from './dismissable-layer';
 
 async function waitForDocumentPointerDownListener() {
@@ -397,29 +398,126 @@ describe('DismissableLayer', () => {
   });
 
   // Regression test for https://github.com/radix-ui/primitives/issues/3971
-  it('does not dismiss a deferred parent when a nested deferred child dismisses first', async () => {
+  it('does not dismiss a deferred parent when a child layer dismisses first', async () => {
     const onParentDismiss = vi.fn();
     const onChildDismiss = vi.fn();
 
     render(
       <>
-        <DismissableLayer.Root deferPointerDownOutside onDismiss={onParentDismiss}>
-          <div data-testid="parent-inside">dialog</div>
-          <DismissableLayer.Root deferPointerDownOutside onDismiss={onChildDismiss}>
-            <div data-testid="child-inside">menu</div>
-          </DismissableLayer.Root>
+        <DismissableLayer.Root
+          disableOutsidePointerEvents
+          deferPointerDownOutside
+          onDismiss={onParentDismiss}
+        >
+          <button type="button">parent</button>
         </DismissableLayer.Root>
+        <DismissableLayer.Root disableOutsidePointerEvents onDismiss={onChildDismiss}>
+          <button type="button">child</button>
+        </DismissableLayer.Root>
+        <button type="button">outside</button>
       </>,
     );
     await waitForDocumentPointerDownListener();
 
-    firePointerMouseClick(screen.getByTestId('parent-inside'));
-
-    await act(async () => {
-      await new Promise((resolve) => window.setTimeout(resolve, 0));
-    });
+    firePointerMouseClick(screen.getByText('outside'));
+    await waitForDocumentPointerDownListener();
 
     expect(onChildDismiss).toHaveBeenCalledTimes(1);
     expect(onParentDismiss).not.toHaveBeenCalled();
+  });
+
+  // Regression test for https://github.com/radix-ui/primitives/issues/3461
+  it('does not dismiss a deferred modal parent when a nested layer is dismissed by an outside touch tap', async () => {
+    const onParentDismiss = vi.fn();
+    const onChildDismiss = vi.fn();
+
+    render(
+      <>
+        <DismissableLayer.Root
+          disableOutsidePointerEvents
+          deferPointerDownOutside
+          onDismiss={onParentDismiss}
+        >
+          <button type="button">parent</button>
+        </DismissableLayer.Root>
+        <DismissableLayer.Root disableOutsidePointerEvents onDismiss={onChildDismiss}>
+          <button type="button">child</button>
+        </DismissableLayer.Root>
+        <button type="button">outside</button>
+      </>,
+    );
+    await waitForDocumentPointerDownListener();
+
+    const outside = screen.getByText('outside');
+    fireEvent.pointerDown(outside, { pointerType: 'touch' });
+    fireEvent.touchStart(outside);
+    fireEvent.touchEnd(outside);
+    fireEvent.click(outside);
+    await waitForDocumentPointerDownListener();
+
+    expect(onChildDismiss).toHaveBeenCalledTimes(1);
+    expect(onParentDismiss).not.toHaveBeenCalled();
+  });
+
+  // Regression test for https://github.com/radix-ui/primitives/issues/3963
+  it('keeps a stable composed ref (no infinite render loop)', () => {
+    assertStableComposedRef((ref) => (
+      <DismissableLayer.Root ref={ref}>
+        <button type="button">inside</button>
+      </DismissableLayer.Root>
+    ));
+  });
+
+  // Regression test for https://github.com/radix-ui/primitives/issues/4014
+  it('calls the latest escape key handler after re-rendering', () => {
+    const onEscapeKeyDown = vi.fn();
+
+    function Test() {
+      const [count, setCount] = React.useState(0);
+      return (
+        <DismissableLayer.Root onEscapeKeyDown={() => onEscapeKeyDown(count)}>
+          <button type="button" onClick={() => setCount((value) => value + 1)}>
+            increment
+          </button>
+        </DismissableLayer.Root>
+      );
+    }
+
+    render(<Test />);
+
+    fireEvent.click(screen.getByText('increment'));
+    fireEvent.click(screen.getByText('increment'));
+
+    fireEvent.keyDown(document, { key: 'Escape' });
+
+    expect(onEscapeKeyDown).toHaveBeenLastCalledWith(2);
+  });
+
+  // Regression test for https://github.com/radix-ui/primitives/issues/4014
+  it('observes the latest state when preventing escape dismissal', () => {
+    const onDismiss = vi.fn();
+
+    function Test() {
+      const [blocked, setBlocked] = React.useState(false);
+      return (
+        <DismissableLayer.Root
+          onEscapeKeyDown={(event) => {
+            if (blocked) event.preventDefault();
+          }}
+          onDismiss={onDismiss}
+        >
+          <button type="button" onClick={() => setBlocked(true)}>
+            block
+          </button>
+        </DismissableLayer.Root>
+      );
+    }
+
+    render(<Test />);
+
+    fireEvent.click(screen.getByText('block'));
+    fireEvent.keyDown(document, { key: 'Escape' });
+
+    expect(onDismiss).not.toHaveBeenCalled();
   });
 });

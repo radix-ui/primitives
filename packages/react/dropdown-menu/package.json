@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-dropdown-menu",
-  "version": "2.1.18",
+  "version": "2.1.24",
   "license": "MIT",
   "source": "./src/index.ts",
   "main": "./src/index.ts",
@@ -46,11 +46,12 @@
   "devDependencies": {
     "@repo/builder": "workspace:*",
     "@repo/test-data": "workspace:*",
+    "@repo/test-utils": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@types/react": "^19.2.2",
-    "@types/react-dom": "^19.2.2",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
     "typescript": "^5.9.3"
   },
   "peerDependencies": {

@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-hover-card",
-  "version": "1.1.17",
+  "version": "1.1.23",
   "license": "MIT",
   "source": "./src/index.ts",
   "main": "./src/index.ts",
@@ -39,6 +39,7 @@
     "@radix-ui/react-compose-refs": "workspace:*",
     "@radix-ui/react-context": "workspace:*",
     "@radix-ui/react-dismissable-layer": "workspace:*",
+    "@radix-ui/react-focus-scope": "workspace:*",
     "@radix-ui/react-popper": "workspace:*",
     "@radix-ui/react-portal": "workspace:*",
     "@radix-ui/react-presence": "workspace:*",
@@ -48,10 +49,10 @@
   "devDependencies": {
     "@repo/builder": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@types/react": "^19.2.2",
-    "@types/react-dom": "^19.2.2",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
     "typescript": "^5.9.3"
   },
   "peerDependencies": {

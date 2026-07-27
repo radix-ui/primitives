@@ -91,7 +91,7 @@ runs:
         while IFS= read -r file; do
           [ -z "$file" ] && continue
           case "$file" in
-            package.json|.changeset/*|apps/*|internal/*|cypress/*|*.test.ts|*.test.tsx|*.stories.ts|*.stories.tsx|*.stories.css|*.stories.module.css|*.md)
+            package.json|.changeset/*|apps/*|internal/*|e2e/*|*.spec.ts|*.test.ts|*.test.tsx|*.stories.ts|*.stories.tsx|*.stories.css|*.stories.module.css|*.md)
               ;;
             *)
               echo "Qualified file changed: $file"

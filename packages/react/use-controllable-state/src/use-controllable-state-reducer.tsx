@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { IS_DEVELOPMENT } from '@radix-ui/primitive/is-development';
 import { useEffectEvent } from '@radix-ui/react-use-effect-event';
 
 type ChangeHandler<T> = (state: T) => void;
@@ -49,7 +50,7 @@ export function useControllableStateReducer<T, S extends {}, A extends AnyAction
   // consistently in the same environment. Bundlers should be able to remove the
   // code block entirely in production.
   /* eslint-disable react-hooks/rules-of-hooks */
-  if (process.env.NODE_ENV !== 'production') {
+  if (IS_DEVELOPMENT) {
     const isControlledRef = React.useRef(controlledState !== undefined);
     React.useEffect(() => {
       const wasControlled = isControlledRef.current;

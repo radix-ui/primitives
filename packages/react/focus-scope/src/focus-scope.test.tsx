@@ -4,6 +4,7 @@ import { cleanup, render, waitFor } from '@testing-library/react';
 import { FocusScope } from './focus-scope';
 import type { RenderResult } from '@testing-library/react';
 import { afterEach, describe, it, beforeEach, vi, expect } from 'vitest';
+import { assertStableComposedRef } from '@repo/test-utils/ref-stability';
 
 const INNER_NAME_INPUT_LABEL = 'Name';
 const INNER_EMAIL_INPUT_LABEL = 'Email';
@@ -92,6 +93,45 @@ describe('FocusScope', () => {
     });
   });
 
+  describe('given a trapped FocusScope with branches', () => {
+    function BranchHarness({ withBranch }: { withBranch: boolean }) {
+      const [branch, setBranch] = React.useState<HTMLElement | null>(null);
+      return (
+        <div>
+          <FocusScope asChild loop trapped branches={withBranch && branch ? [branch] : []}>
+            <form>
+              <TestField label={INNER_NAME_INPUT_LABEL} />
+              <button>{INNER_SUBMIT_LABEL}</button>
+            </form>
+          </FocusScope>
+          {/* Simulates portalled content of a nested layer living outside the scope's subtree */}
+          <div ref={setBranch}>
+            <input aria-label="branch-input" />
+          </div>
+        </div>
+      );
+    }
+
+    it('reclaims focus moved into an unregistered outside node', async () => {
+      const rendered = render(<BranchHarness withBranch={false} />);
+      const inner = rendered.getByLabelText(INNER_NAME_INPUT_LABEL) as HTMLInputElement;
+      const branchInput = rendered.getByLabelText('branch-input') as HTMLInputElement;
+      inner.focus();
+      branchInput.focus();
+      await waitFor(() => expect(inner).toHaveFocus());
+      expect(branchInput).not.toHaveFocus();
+    });
+
+    it('keeps focus when it moves into a registered branch', async () => {
+      const rendered = render(<BranchHarness withBranch />);
+      const inner = rendered.getByLabelText(INNER_NAME_INPUT_LABEL) as HTMLInputElement;
+      const branchInput = rendered.getByLabelText('branch-input') as HTMLInputElement;
+      inner.focus();
+      branchInput.focus();
+      await waitFor(() => expect(branchInput).toHaveFocus());
+    });
+  });
+
   describe('given a FocusScope with internal focus handlers', () => {
     const handleLastFocusableElementBlur = vi.fn();
     let rendered: RenderResult;
@@ -116,6 +156,52 @@ describe('FocusScope', () => {
       await userEvent.tab({ shift: true });
       await userEvent.tab();
       await waitFor(() => expect(handleLastFocusableElementBlur).toHaveBeenCalledTimes(1));
+    });
+  });
+
+  // Regression test for https://github.com/radix-ui/primitives/issues/3963
+  describe('ref stability', () => {
+    it('keeps a stable composed ref (no infinite render loop)', () => {
+      assertStableComposedRef((ref) => (
+        <FocusScope asChild ref={ref}>
+          <button type="button">Click me</button>
+        </FocusScope>
+      ));
+    });
+  });
+
+  describe('given a FocusScope with hidden elements', () => {
+    let rendered: RenderResult;
+    let visibleFirst: HTMLInputElement;
+    let visibleLast: HTMLButtonElement;
+
+    beforeEach(() => {
+      rendered = render(
+        <div>
+          <FocusScope asChild loop trapped>
+            <form>
+              <TestField label={INNER_NAME_INPUT_LABEL} />
+              <TestField label="hidden-display" style={{ display: 'none' }} />
+              <TestField label="hidden-visibility" style={{ visibility: 'hidden' }} />
+              <button>{INNER_SUBMIT_LABEL}</button>
+            </form>
+          </FocusScope>
+        </div>,
+      );
+      visibleFirst = rendered.getByLabelText(INNER_NAME_INPUT_LABEL) as HTMLInputElement;
+      visibleLast = rendered.getByText(INNER_SUBMIT_LABEL) as HTMLButtonElement;
+    });
+
+    it('should skip elements with display: none when looping backward', async () => {
+      visibleFirst.focus();
+      await userEvent.tab({ shift: true });
+      await waitFor(() => expect(visibleLast).toHaveFocus());
+    });
+
+    it('should skip elements with visibility: hidden when looping forward', async () => {
+      visibleLast.focus();
+      await userEvent.tab();
+      await waitFor(() => expect(visibleFirst).toHaveFocus());
     });
   });
 });

@@ -23,7 +23,21 @@ const PROVIDER_NAME = 'ToastProvider';
 
 const [Collection, useCollection, createCollectionScope] = createCollection<ToastElement>('Toast');
 
-type SwipeDirection = 'up' | 'down' | 'left' | 'right';
+const SwipeDirection = {
+  Up: 'up',
+  Down: 'down',
+  Left: 'left',
+  Right: 'right',
+} as const;
+
+const ToastType = {
+  Foreground: 'foreground',
+  Background: 'background',
+} as const;
+
+type SwipeDirection = (typeof SwipeDirection)[keyof typeof SwipeDirection];
+type ToastType = (typeof ToastType)[keyof typeof ToastType];
+
 type ToastProviderContextValue = {
   label: string;
   duration: number;
@@ -34,7 +48,6 @@ type ToastProviderContextValue = {
   onViewportChange(viewport: ToastViewportElement): void;
   onToastAdd(): void;
   onToastRemove(): void;
-  isFocusedToastEscapeKeyDownRef: React.MutableRefObject<boolean>;
   isClosePausedRef: React.MutableRefObject<boolean>;
   announcerContainer?: Element | DocumentFragment;
 };
@@ -81,14 +94,13 @@ const ToastProvider: React.FC<ToastProviderProps> = (props: ScopedProps<ToastPro
     __scopeToast,
     label = 'Notification',
     duration = 5000,
-    swipeDirection = 'right',
+    swipeDirection = SwipeDirection.Right,
     swipeThreshold = 50,
     announcerContainer,
     children,
   } = props;
   const [viewport, setViewport] = React.useState<ToastViewportElement | null>(null);
   const [toastCount, setToastCount] = React.useState(0);
-  const isFocusedToastEscapeKeyDownRef = React.useRef(false);
   const isClosePausedRef = React.useRef(false);
 
   if (!label.trim()) {
@@ -110,7 +122,6 @@ const ToastProvider: React.FC<ToastProviderProps> = (props: ScopedProps<ToastPro
         onViewportChange={setViewport}
         onToastAdd={React.useCallback(() => setToastCount((prevCount) => prevCount + 1), [])}
         onToastRemove={React.useCallback(() => setToastCount((prevCount) => prevCount - 1), [])}
-        isFocusedToastEscapeKeyDownRef={isFocusedToastEscapeKeyDownRef}
         isClosePausedRef={isClosePausedRef}
         announcerContainer={announcerContainer}
       >
@@ -119,8 +130,6 @@ const ToastProvider: React.FC<ToastProviderProps> = (props: ScopedProps<ToastPro
     </Collection.Provider>
   );
 };
-
-ToastProvider.displayName = PROVIDER_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * ToastViewport
@@ -147,8 +156,8 @@ interface ToastViewportProps extends PrimitiveOrderedListProps {
   label?: string;
 }
 
-const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>(
-  (props: ScopedProps<ToastViewportProps>, forwardedRef) => {
+const ToastViewport = /* @__PURE__ */ React.forwardRef<ToastViewportElement, ToastViewportProps>(
+  function ToastViewport(props: ScopedProps<ToastViewportProps>, forwardedRef) {
     const {
       __scopeToast,
       hotkey = VIEWPORT_DEFAULT_HOTKEY,
@@ -331,8 +340,6 @@ const ToastViewport = React.forwardRef<ToastViewportElement, ToastViewportProps>
   },
 );
 
-ToastViewport.displayName = VIEWPORT_NAME;
-
 /* -----------------------------------------------------------------------------------------------*/
 
 const FOCUS_PROXY_NAME = 'ToastFocusProxy';
@@ -343,8 +350,12 @@ interface FocusProxyProps extends VisuallyHiddenProps {
   onFocusFromOutsideViewport(): void;
 }
 
-const FocusProxy = React.forwardRef<FocusProxyElement, ScopedProps<FocusProxyProps>>(
-  (props, forwardedRef) => {
+const FocusProxy = /* @__PURE__ */ React.forwardRef<
+  FocusProxyElement,
+  ScopedProps<FocusProxyProps>
+>(
+  // blank line to reduce diff noise
+  function ToastFocusProxy(props, forwardedRef) {
     const { __scopeToast, onFocusFromOutsideViewport, ...proxyProps } = props;
     const context = useToastProviderContext(FOCUS_PROXY_NAME, __scopeToast);
 
@@ -364,8 +375,6 @@ const FocusProxy = React.forwardRef<FocusProxyElement, ScopedProps<FocusProxyPro
     );
   },
 );
-
-FocusProxy.displayName = FOCUS_PROXY_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * Toast
@@ -389,8 +398,9 @@ interface ToastProps extends Omit<ToastImplProps, keyof ToastImplPrivateProps> {
   forceMount?: true;
 }
 
-const Toast = React.forwardRef<ToastElement, ToastProps>(
-  (props: ScopedProps<ToastProps>, forwardedRef) => {
+const Toast = /* @__PURE__ */ React.forwardRef<ToastElement, ToastProps>(
+  // blank line to reduce diff noise
+  function Toast(props: ScopedProps<ToastProps>, forwardedRef) {
     const { forceMount, open: openProp, defaultOpen, onOpenChange, ...toastProps } = props;
     const [open, setOpen] = useControllableState({
       prop: openProp,
@@ -438,8 +448,6 @@ const Toast = React.forwardRef<ToastElement, ToastProps>(
   },
 );
 
-Toast.displayName = TOAST_NAME;
-
 /* -----------------------------------------------------------------------------------------------*/
 
 type SwipeEvent = { currentTarget: EventTarget & ToastElement } & Omit<
@@ -456,7 +464,7 @@ type DismissableLayerProps = React.ComponentPropsWithoutRef<typeof DismissableLa
 type ToastImplPrivateProps = { open: boolean; onClose(): void };
 type PrimitiveListItemProps = React.ComponentPropsWithoutRef<typeof Primitive.li>;
 interface ToastImplProps extends ToastImplPrivateProps, PrimitiveListItemProps {
-  type?: 'foreground' | 'background';
+  type?: ToastType;
   /**
    * Time in milliseconds that toast should remain visible for. Overrides value
    * given to `ToastProvider`.
@@ -471,11 +479,11 @@ interface ToastImplProps extends ToastImplPrivateProps, PrimitiveListItemProps {
   onSwipeEnd?(event: SwipeEvent): void;
 }
 
-const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
-  (props: ScopedProps<ToastImplProps>, forwardedRef) => {
+const ToastImpl = /* @__PURE__ */ React.forwardRef<ToastImplElement, ToastImplProps>(
+  function ToastImpl(props: ScopedProps<ToastImplProps>, forwardedRef) {
     const {
       __scopeToast,
-      type = 'foreground',
+      type = ToastType.Foreground,
       duration: durationProp,
       open,
       onClose,
@@ -489,8 +497,9 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
       ...toastProps
     } = props;
     const context = useToastProviderContext(TOAST_NAME, __scopeToast);
+    const getItems = useCollection(__scopeToast);
     const [node, setNode] = React.useState<ToastImplElement | null>(null);
-    const composedRefs = useComposedRefs(forwardedRef, (node) => setNode(node));
+    const composedRefs = useComposedRefs(forwardedRef, setNode);
     const pointerStartRef = React.useRef<{ x: number; y: number } | null>(null);
     const swipeDeltaRef = React.useRef<{ x: number; y: number } | null>(null);
     const duration = durationProp || context.duration;
@@ -542,8 +551,24 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
     // we include `open` in deps because closed !== unmounted when animating
     // so it could reopen before being completely unmounted
     React.useEffect(() => {
-      if (open && !context.isClosePausedRef.current) startTimer(duration);
+      // Reset the remaining time to the duration so a stale value isn't reused
+      // when the timer resumes. Without this, a toast that was paused while its
+      // duration was `Infinity` (eg. a loading toast) would keep that
+      // remaining time after being updated to a finite duration, so it would
+      // never close on resume.
+      // See https://github.com/radix-ui/primitives/issues/2233
+      closeTimerRemainingTimeRef.current = duration;
+      if (open && !context.isClosePausedRef.current) {
+        startTimer(duration);
+      }
     }, [open, duration, context.isClosePausedRef, startTimer]);
+
+    // Clear close timer on unmount to prevent memory leaks and errors in test environments
+    React.useEffect(() => {
+      return () => {
+        window.clearTimeout(closeTimerRef.current);
+      };
+    }, []);
 
     React.useEffect(() => {
       onToastAdd();
@@ -563,7 +588,7 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
             __scopeToast={__scopeToast}
             // Toasts are always role=status to avoid stuttering issues with role=alert in SRs.
             role="status"
-            aria-live={type === 'foreground' ? 'assertive' : 'polite'}
+            aria-live={type === ToastType.Foreground ? 'assertive' : 'polite'}
           >
             {announceTextContent}
           </ToastAnnounce>
@@ -574,9 +599,19 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
             <Collection.ItemSlot scope={__scopeToast}>
               <DismissableLayer.Root
                 asChild
-                onEscapeKeyDown={composeEventHandlers(onEscapeKeyDown, () => {
-                  if (!context.isFocusedToastEscapeKeyDownRef.current) handleClose();
-                  context.isFocusedToastEscapeKeyDownRef.current = false;
+                onEscapeKeyDown={composeEventHandlers(onEscapeKeyDown, (event) => {
+                  // Only the highest layer (most recent toast) registers the
+                  // escape listener, and it runs in the capture phase. If the
+                  // key press originated from within a focused toast, that
+                  // toast closes itself via `onKeyDown` below, so we must not
+                  // also close this (top-most) toast. Otherwise, close it.
+                  // See: https://github.com/radix-ui/primitives/issues/2906
+                  const isFocusInToast = getItems().some((item) =>
+                    item.ref.current?.contains(event.target as Node | null),
+                  );
+                  if (!isFocusInToast) {
+                    handleClose();
+                  }
                 })}
               >
                 <Primitive.li
@@ -590,7 +625,6 @@ const ToastImpl = React.forwardRef<ToastImplElement, ToastImplProps>(
                     if (event.key !== 'Escape') return;
                     onEscapeKeyDown?.(event.nativeEvent);
                     if (!event.nativeEvent.defaultPrevented) {
-                      context.isFocusedToastEscapeKeyDownRef.current = true;
                       handleClose();
                     }
                   })}
@@ -713,38 +747,34 @@ const ToastAnnounce: React.FC<ToastAnnounceProps> = (props: ScopedProps<ToastAnn
  * ToastTitle
  * -----------------------------------------------------------------------------------------------*/
 
-const TITLE_NAME = 'ToastTitle';
-
 type ToastTitleElement = React.ComponentRef<typeof Primitive.div>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface ToastTitleProps extends PrimitiveDivProps {}
 
-const ToastTitle = React.forwardRef<ToastTitleElement, ToastTitleProps>(
-  (props: ScopedProps<ToastTitleProps>, forwardedRef) => {
+const ToastTitle = /* @__PURE__ */ React.forwardRef<ToastTitleElement, ToastTitleProps>(
+  function ToastTitle(props: ScopedProps<ToastTitleProps>, forwardedRef) {
     const { __scopeToast, ...titleProps } = props;
     return <Primitive.div {...titleProps} ref={forwardedRef} />;
   },
 );
 
-ToastTitle.displayName = TITLE_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * ToastDescription
  * -----------------------------------------------------------------------------------------------*/
 
-const DESCRIPTION_NAME = 'ToastDescription';
-
 type ToastDescriptionElement = React.ComponentRef<typeof Primitive.div>;
 interface ToastDescriptionProps extends PrimitiveDivProps {}
 
-const ToastDescription = React.forwardRef<ToastDescriptionElement, ToastDescriptionProps>(
-  (props: ScopedProps<ToastDescriptionProps>, forwardedRef) => {
+const ToastDescription = /* @__PURE__ */ React.forwardRef<
+  ToastDescriptionElement,
+  ToastDescriptionProps
+>(
+  // blank line to reduce diff noise
+  function ToastDescription(props: ScopedProps<ToastDescriptionProps>, forwardedRef) {
     const { __scopeToast, ...descriptionProps } = props;
     return <Primitive.div {...descriptionProps} ref={forwardedRef} />;
   },
 );
-
-ToastDescription.displayName = DESCRIPTION_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * ToastAction
@@ -763,8 +793,8 @@ interface ToastActionProps extends ToastCloseProps {
   altText: string;
 }
 
-const ToastAction = React.forwardRef<ToastActionElement, ToastActionProps>(
-  (props: ScopedProps<ToastActionProps>, forwardedRef) => {
+const ToastAction = /* @__PURE__ */ React.forwardRef<ToastActionElement, ToastActionProps>(
+  function ToastAction(props: ScopedProps<ToastActionProps>, forwardedRef) {
     const { altText, ...actionProps } = props;
 
     if (!altText.trim()) {
@@ -782,8 +812,6 @@ const ToastAction = React.forwardRef<ToastActionElement, ToastActionProps>(
   },
 );
 
-ToastAction.displayName = ACTION_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * ToastClose
  * -----------------------------------------------------------------------------------------------*/
@@ -794,8 +822,8 @@ type ToastCloseElement = React.ComponentRef<typeof Primitive.button>;
 type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
 interface ToastCloseProps extends PrimitiveButtonProps {}
 
-const ToastClose = React.forwardRef<ToastCloseElement, ToastCloseProps>(
-  (props: ScopedProps<ToastCloseProps>, forwardedRef) => {
+const ToastClose = /* @__PURE__ */ React.forwardRef<ToastCloseElement, ToastCloseProps>(
+  function ToastClose(props: ScopedProps<ToastCloseProps>, forwardedRef) {
     const { __scopeToast, ...closeProps } = props;
     const interactiveContext = useToastInteractiveContext(CLOSE_NAME, __scopeToast);
 
@@ -812,8 +840,6 @@ const ToastClose = React.forwardRef<ToastCloseElement, ToastCloseProps>(
   },
 );
 
-ToastClose.displayName = CLOSE_NAME;
-
 /* ---------------------------------------------------------------------------------------------- */
 
 type ToastAnnounceExcludeElement = React.ComponentRef<typeof Primitive.div>;
@@ -821,10 +847,10 @@ interface ToastAnnounceExcludeProps extends PrimitiveDivProps {
   altText?: string;
 }
 
-const ToastAnnounceExclude = React.forwardRef<
+const ToastAnnounceExclude = /* @__PURE__ */ React.forwardRef<
   ToastAnnounceExcludeElement,
   ToastAnnounceExcludeProps
->((props: ScopedProps<ToastAnnounceExcludeProps>, forwardedRef) => {
+>(function ToastAnnounceExclude(props: ScopedProps<ToastAnnounceExcludeProps>, forwardedRef) {
   const { __scopeToast, altText, ...announceExcludeProps } = props;
 
   return (
@@ -893,7 +919,7 @@ const isDeltaInDirection = (
   const deltaX = Math.abs(delta.x);
   const deltaY = Math.abs(delta.y);
   const isDeltaX = deltaX > deltaY;
-  if (direction === 'left' || direction === 'right') {
+  if (direction === SwipeDirection.Left || direction === SwipeDirection.Right) {
     return isDeltaX && deltaX > threshold;
   } else {
     return !isDeltaX && deltaY > threshold;
@@ -955,14 +981,6 @@ function focusFirst(candidates: HTMLElement[]) {
   });
 }
 
-const Provider = ToastProvider;
-const Viewport = ToastViewport;
-const Root = Toast;
-const Title = ToastTitle;
-const Description = ToastDescription;
-const Action = ToastAction;
-const Close = ToastClose;
-
 export {
   createToastScope,
   //
@@ -974,13 +992,13 @@ export {
   ToastAction,
   ToastClose,
   //
-  Provider,
-  Viewport,
-  Root,
-  Title,
-  Description,
-  Action,
-  Close,
+  ToastProvider as Provider,
+  ToastViewport as Viewport,
+  Toast as Root,
+  ToastTitle as Title,
+  ToastDescription as Description,
+  ToastAction as Action,
+  ToastClose as Close,
 };
 export type {
   ToastProviderProps,

@@ -1,5 +1,6 @@
-import { Label as LabelPrimitive } from 'radix-ui';
+import { Label as LabelPrimitive, Slot } from 'radix-ui';
 import styles from './label.stories.module.css';
+import { customMergeProps } from './custom-merge-props';
 
 const Label = LabelPrimitive.Root;
 
@@ -38,3 +39,11 @@ const Control = (props: any) => {
     </button>
   );
 };
+
+export const WithCustomMergeProps = () => (
+  <Slot.Provider mergeProps={customMergeProps}>
+    <Label className={styles.root} asChild>
+      <span data-custom-merge>Label (asChild)</span>
+    </Label>
+  </Slot.Provider>
+);

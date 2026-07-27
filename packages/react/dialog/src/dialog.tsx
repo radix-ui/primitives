@@ -5,16 +5,22 @@ import { createContextScope } from '@radix-ui/react-context';
 import { useId } from '@radix-ui/react-id';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { DismissableLayer, useDismissableLayerSurface } from '@radix-ui/react-dismissable-layer';
-import { FocusScope } from '@radix-ui/react-focus-scope';
+import {
+  FocusScope,
+  FocusScopeBranchProvider,
+  useFocusScopeBranchRegistry,
+} from '@radix-ui/react-focus-scope';
 import { Portal as PortalPrimitive } from '@radix-ui/react-portal';
 import { Presence } from '@radix-ui/react-presence';
 import { Primitive } from '@radix-ui/react-primitive';
 import { useFocusGuards } from '@radix-ui/react-focus-guards';
+import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { RemoveScroll } from 'react-remove-scroll';
 import { hideOthers } from 'aria-hidden';
 import { createSlot } from '@radix-ui/react-slot';
 
 import type { Scope } from '@radix-ui/react-context';
+import type { FocusScopeBranchRegistry } from '@radix-ui/react-focus-scope';
 
 /* -------------------------------------------------------------------------------------------------
  * Dialog
@@ -31,10 +37,19 @@ type DialogContextValue = {
   contentId: string;
   titleId: string;
   descriptionId: string;
+  titlePresent: boolean;
+  descriptionPresent: boolean;
+  setTitleCount: React.Dispatch<React.SetStateAction<number>>;
+  setDescriptionCount: React.Dispatch<React.SetStateAction<number>>;
   open: boolean;
   onOpenChange(open: boolean): void;
   onOpenToggle(): void;
   modal: boolean;
+  // Nodes of nested, portalled layers (eg. a non-modal `Popover`) that should
+  // be treated as part of this Dialog for focus trapping and scroll locking.
+  // See https://github.com/radix-ui/primitives/issues/3423
+  branchNodes: HTMLElement[];
+  branchRegistry: FocusScopeBranchRegistry;
 };
 
 const [DialogProvider, useDialogContext] = createDialogContext<DialogContextValue>(DIALOG_NAME);
@@ -58,12 +73,16 @@ const Dialog: React.FC<DialogProps> = (props: ScopedProps<DialogProps>) => {
   } = props;
   const triggerRef = React.useRef<HTMLButtonElement>(null);
   const contentRef = React.useRef<DialogContentElement>(null);
+  const { nodes: branchNodes, registry: branchRegistry } = useFocusScopeBranchRegistry();
   const [open, setOpen] = useControllableState({
     prop: openProp,
     defaultProp: defaultOpen ?? false,
     onChange: onOpenChange,
     caller: DIALOG_NAME,
   });
+
+  const [titleCount, setTitleCount] = React.useState(0);
+  const [descriptionCount, setDescriptionCount] = React.useState(0);
 
   return (
     <DialogProvider
@@ -73,17 +92,21 @@ const Dialog: React.FC<DialogProps> = (props: ScopedProps<DialogProps>) => {
       contentId={useId()}
       titleId={useId()}
       descriptionId={useId()}
+      titlePresent={titleCount > 0}
+      descriptionPresent={descriptionCount > 0}
+      setTitleCount={setTitleCount}
+      setDescriptionCount={setDescriptionCount}
       open={open}
       onOpenChange={setOpen}
       onOpenToggle={React.useCallback(() => setOpen((prevOpen) => !prevOpen), [setOpen])}
       modal={modal}
+      branchNodes={branchNodes}
+      branchRegistry={branchRegistry}
     >
       {children}
     </DialogProvider>
   );
 };
-
-Dialog.displayName = DIALOG_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * DialogTrigger
@@ -95,8 +118,8 @@ type DialogTriggerElement = React.ComponentRef<typeof Primitive.button>;
 type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
 interface DialogTriggerProps extends PrimitiveButtonProps {}
 
-const DialogTrigger = React.forwardRef<DialogTriggerElement, DialogTriggerProps>(
-  (props: ScopedProps<DialogTriggerProps>, forwardedRef) => {
+const DialogTrigger = /* @__PURE__ */ React.forwardRef<DialogTriggerElement, DialogTriggerProps>(
+  function DialogTrigger(props: ScopedProps<DialogTriggerProps>, forwardedRef) {
     const { __scopeDialog, ...triggerProps } = props;
     const context = useDialogContext(TRIGGER_NAME, __scopeDialog);
     const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
@@ -114,8 +137,6 @@ const DialogTrigger = React.forwardRef<DialogTriggerElement, DialogTriggerProps>
     );
   },
 );
-
-DialogTrigger.displayName = TRIGGER_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * DialogPortal
@@ -158,8 +179,6 @@ const DialogPortal: React.FC<DialogPortalProps> = (props: ScopedProps<DialogPort
   );
 };
 
-DialogPortal.displayName = PORTAL_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * DialogOverlay
  * -----------------------------------------------------------------------------------------------*/
@@ -175,8 +194,8 @@ interface DialogOverlayProps extends DialogOverlayImplProps {
   forceMount?: true;
 }
 
-const DialogOverlay = React.forwardRef<DialogOverlayElement, DialogOverlayProps>(
-  (props: ScopedProps<DialogOverlayProps>, forwardedRef) => {
+const DialogOverlay = /* @__PURE__ */ React.forwardRef<DialogOverlayElement, DialogOverlayProps>(
+  function DialogOverlay(props: ScopedProps<DialogOverlayProps>, forwardedRef) {
     const portalContext = usePortalContext(OVERLAY_NAME, props.__scopeDialog);
     const { forceMount = portalContext.forceMount, ...overlayProps } = props;
     const context = useDialogContext(OVERLAY_NAME, props.__scopeDialog);
@@ -188,16 +207,18 @@ const DialogOverlay = React.forwardRef<DialogOverlayElement, DialogOverlayProps>
   },
 );
 
-DialogOverlay.displayName = OVERLAY_NAME;
-
 type DialogOverlayImplElement = React.ComponentRef<typeof Primitive.div>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface DialogOverlayImplProps extends PrimitiveDivProps {}
 
 const Slot = createSlot('DialogOverlay.RemoveScroll');
 
-const DialogOverlayImpl = React.forwardRef<DialogOverlayImplElement, DialogOverlayImplProps>(
-  (props: ScopedProps<DialogOverlayImplProps>, forwardedRef) => {
+const DialogOverlayImpl = /* @__PURE__ */ React.forwardRef<
+  DialogOverlayImplElement,
+  DialogOverlayImplProps
+>(
+  // blank line to reduce diff noise
+  function DialogOverlayImpl(props: ScopedProps<DialogOverlayImplProps>, forwardedRef) {
     const { __scopeDialog, ...overlayProps } = props;
     const context = useDialogContext(OVERLAY_NAME, __scopeDialog);
 
@@ -208,9 +229,18 @@ const DialogOverlayImpl = React.forwardRef<DialogOverlayImplElement, DialogOverl
     const composedRefs = useComposedRefs(forwardedRef, registerDismissableSurface);
 
     return (
-      // Make sure `Content` is scrollable even when it doesn't live inside `RemoveScroll`
-      // ie. when `Overlay` and `Content` are siblings
-      <RemoveScroll as={Slot} allowPinchZoom shards={[context.contentRef]}>
+      // Make sure `Content` is scrollable even when it doesn't live inside
+      // `RemoveScroll` (eg. when `Overlay` and `Content` are siblings). Nested
+      // layers are registered as branches and added as shards so they remain
+      // scrollable too. See https://github.com/radix-ui/primitives/issues/3423
+      <RemoveScroll
+        as={Slot}
+        allowPinchZoom
+        shards={React.useMemo(
+          () => [context.contentRef, ...context.branchNodes.map((node) => ({ current: node }))],
+          [context.contentRef, context.branchNodes],
+        )}
+      >
         <Primitive.div
           data-state={getState(context.open)}
           {...overlayProps}
@@ -238,8 +268,8 @@ interface DialogContentProps extends DialogContentTypeProps {
   forceMount?: true;
 }
 
-const DialogContent = React.forwardRef<DialogContentElement, DialogContentProps>(
-  (props: ScopedProps<DialogContentProps>, forwardedRef) => {
+const DialogContent = /* @__PURE__ */ React.forwardRef<DialogContentElement, DialogContentProps>(
+  function DialogContent(props: ScopedProps<DialogContentProps>, forwardedRef) {
     const portalContext = usePortalContext(CONTENT_NAME, props.__scopeDialog);
     const { forceMount = portalContext.forceMount, ...contentProps } = props;
     const context = useDialogContext(CONTENT_NAME, props.__scopeDialog);
@@ -255,8 +285,6 @@ const DialogContent = React.forwardRef<DialogContentElement, DialogContentProps>
   },
 );
 
-DialogContent.displayName = CONTENT_NAME;
-
 /* -----------------------------------------------------------------------------------------------*/
 
 type DialogContentTypeElement = DialogContentImplElement;
@@ -265,8 +293,12 @@ interface DialogContentTypeProps extends Omit<
   'trapFocus' | 'disableOutsidePointerEvents'
 > {}
 
-const DialogContentModal = React.forwardRef<DialogContentTypeElement, DialogContentTypeProps>(
-  (props: ScopedProps<DialogContentTypeProps>, forwardedRef) => {
+const DialogContentModal = /* @__PURE__ */ React.forwardRef<
+  DialogContentTypeElement,
+  DialogContentTypeProps
+>(
+  // blank line to reduce diff noise
+  function DialogContentModal(props: ScopedProps<DialogContentTypeProps>, forwardedRef) {
     const context = useDialogContext(CONTENT_NAME, props.__scopeDialog);
     const contentRef = React.useRef<HTMLDivElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, context.contentRef, contentRef);
@@ -310,8 +342,12 @@ const DialogContentModal = React.forwardRef<DialogContentTypeElement, DialogCont
 
 /* -----------------------------------------------------------------------------------------------*/
 
-const DialogContentNonModal = React.forwardRef<DialogContentTypeElement, DialogContentTypeProps>(
-  (props: ScopedProps<DialogContentTypeProps>, forwardedRef) => {
+const DialogContentNonModal = /* @__PURE__ */ React.forwardRef<
+  DialogContentTypeElement,
+  DialogContentTypeProps
+>(
+  // blank line to reduce diff noise
+  function DialogContentNonModal(props: ScopedProps<DialogContentTypeProps>, forwardedRef) {
     const context = useDialogContext(CONTENT_NAME, props.__scopeDialog);
     const hasInteractedOutsideRef = React.useRef(false);
     const hasPointerDownOutsideRef = React.useRef(false);
@@ -390,9 +426,21 @@ interface DialogContentImplProps extends Omit<DismissableLayerProps, 'onDismiss'
   onCloseAutoFocus?: FocusScopeProps['onUnmountAutoFocus'];
 }
 
-const DialogContentImpl = React.forwardRef<DialogContentImplElement, DialogContentImplProps>(
-  (props: ScopedProps<DialogContentImplProps>, forwardedRef) => {
-    const { __scopeDialog, trapFocus, onOpenAutoFocus, onCloseAutoFocus, ...contentProps } = props;
+const DialogContentImpl = /* @__PURE__ */ React.forwardRef<
+  DialogContentImplElement,
+  DialogContentImplProps
+>(
+  // blank line to reduce diff noise
+  function DialogContentImpl(props: ScopedProps<DialogContentImplProps>, forwardedRef) {
+    const {
+      __scopeDialog,
+      trapFocus,
+      onOpenAutoFocus,
+      onCloseAutoFocus,
+      'aria-describedby': ariaDescribedby,
+      ...contentProps
+    } = props;
+    const { children, ...layerProps } = contentProps;
     const context = useDialogContext(CONTENT_NAME, __scopeDialog);
 
     // Make sure the whole tree has focus guards as our `Dialog` will be
@@ -405,20 +453,30 @@ const DialogContentImpl = React.forwardRef<DialogContentImplElement, DialogConte
           asChild
           loop
           trapped={trapFocus}
+          branches={context.branchNodes}
           onMountAutoFocus={onOpenAutoFocus}
           onUnmountAutoFocus={onCloseAutoFocus}
         >
           <DismissableLayer
             role="dialog"
             id={context.contentId}
-            aria-describedby={context.descriptionId}
-            aria-labelledby={context.titleId}
+            aria-labelledby={context.titlePresent ? context.titleId : undefined}
+            aria-describedby={
+              context.descriptionPresent
+                ? concatAriaDescribedby(ariaDescribedby, context.descriptionId)
+                : ariaDescribedby
+            }
             data-state={getState(context.open)}
-            {...contentProps}
+            {...layerProps}
             ref={forwardedRef}
             deferPointerDownOutside
             onDismiss={() => context.onOpenChange(false)}
-          />
+          >
+            {/* Lets nested, portalled layers register themselves as branches of this Dialog. */}
+            <FocusScopeBranchProvider value={context.branchRegistry}>
+              {children}
+            </FocusScopeBranchProvider>
+          </DismissableLayer>
         </FocusScope>
       </>
     );
@@ -429,41 +487,47 @@ const DialogContentImpl = React.forwardRef<DialogContentImplElement, DialogConte
  * DialogTitle
  * -----------------------------------------------------------------------------------------------*/
 
-const TITLE_NAME = 'DialogTitle';
-
 type DialogTitleElement = React.ComponentRef<typeof Primitive.h2>;
 type PrimitiveHeading2Props = React.ComponentPropsWithoutRef<typeof Primitive.h2>;
 interface DialogTitleProps extends PrimitiveHeading2Props {}
 
-const DialogTitle = React.forwardRef<DialogTitleElement, DialogTitleProps>(
-  (props: ScopedProps<DialogTitleProps>, forwardedRef) => {
+const DialogTitle = /* @__PURE__ */ React.forwardRef<DialogTitleElement, DialogTitleProps>(
+  function DialogTitle(props: ScopedProps<DialogTitleProps>, forwardedRef) {
     const { __scopeDialog, ...titleProps } = props;
-    const context = useDialogContext(TITLE_NAME, __scopeDialog);
+    const context = useDialogContext('DialogTitle', __scopeDialog);
+    const { setTitleCount } = context;
+    useLayoutEffect(() => {
+      setTitleCount((count) => count + 1);
+      return () => setTitleCount((count) => count - 1);
+    }, [setTitleCount]);
     return <Primitive.h2 id={context.titleId} {...titleProps} ref={forwardedRef} />;
   },
 );
-
-DialogTitle.displayName = TITLE_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * DialogDescription
  * -----------------------------------------------------------------------------------------------*/
 
-const DESCRIPTION_NAME = 'DialogDescription';
-
 type DialogDescriptionElement = React.ComponentRef<typeof Primitive.p>;
 type PrimitiveParagraphProps = React.ComponentPropsWithoutRef<typeof Primitive.p>;
 interface DialogDescriptionProps extends PrimitiveParagraphProps {}
 
-const DialogDescription = React.forwardRef<DialogDescriptionElement, DialogDescriptionProps>(
-  (props: ScopedProps<DialogDescriptionProps>, forwardedRef) => {
+const DialogDescription = /* @__PURE__ */ React.forwardRef<
+  DialogDescriptionElement,
+  DialogDescriptionProps
+>(
+  // blank line to reduce diff noise
+  function DialogDescription(props: ScopedProps<DialogDescriptionProps>, forwardedRef) {
     const { __scopeDialog, ...descriptionProps } = props;
-    const context = useDialogContext(DESCRIPTION_NAME, __scopeDialog);
+    const context = useDialogContext('DialogDescription', __scopeDialog);
+    const { setDescriptionCount } = context;
+    useLayoutEffect(() => {
+      setDescriptionCount((count) => count + 1);
+      return () => setDescriptionCount((count) => count - 1);
+    }, [setDescriptionCount]);
     return <Primitive.p id={context.descriptionId} {...descriptionProps} ref={forwardedRef} />;
   },
 );
-
-DialogDescription.displayName = DESCRIPTION_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * DialogClose
@@ -474,8 +538,8 @@ const CLOSE_NAME = 'DialogClose';
 type DialogCloseElement = React.ComponentRef<typeof Primitive.button>;
 interface DialogCloseProps extends PrimitiveButtonProps {}
 
-const DialogClose = React.forwardRef<DialogCloseElement, DialogCloseProps>(
-  (props: ScopedProps<DialogCloseProps>, forwardedRef) => {
+const DialogClose = /* @__PURE__ */ React.forwardRef<DialogCloseElement, DialogCloseProps>(
+  function DialogClose(props: ScopedProps<DialogCloseProps>, forwardedRef) {
     const { __scopeDialog, ...closeProps } = props;
     const context = useDialogContext(CLOSE_NAME, __scopeDialog);
     return (
@@ -488,8 +552,6 @@ const DialogClose = React.forwardRef<DialogCloseElement, DialogCloseProps>(
     );
   },
 );
-
-DialogClose.displayName = CLOSE_NAME;
 
 /** @deprecated Noop component to avoid breaking changes. */
 export const WarningProvider: React.FC<
@@ -504,6 +566,19 @@ export const WarningProvider: React.FC<
 };
 
 /* -----------------------------------------------------------------------------------------------*/
+
+// TODO: Move to primitive once that package exposed individual sub-modules
+function concatAriaDescribedby(...values: unknown[]): string | undefined {
+  const ids = new Set<string>();
+  for (const value of values) {
+    if (typeof value !== 'string') continue;
+    for (const id of String(value).trim().split(/\s+/)) {
+      if (id) ids.add(id);
+    }
+  }
+
+  return ids.size > 0 ? Array.from(ids).join(' ') : undefined;
+}
 
 function getState(open: boolean) {
   return open ? 'open' : 'closed';

@@ -27,7 +27,10 @@ type ItemMap<ItemElement extends HTMLElement, ItemData extends BaseItemData> = O
   ItemDataWithElement<ItemData, ItemElement>
 >;
 
-function createCollection<ItemElement extends HTMLElement, ItemData extends {} = {}>(name: string) {
+/* @__NO_SIDE_EFFECTS__ */ function createCollection<
+  ItemElement extends HTMLElement,
+  ItemData extends {} = {},
+>(name: string) {
   type AllItemData = ItemData & BaseItemData;
   /* -----------------------------------------------------------------------------------------------
    * CollectionProvider

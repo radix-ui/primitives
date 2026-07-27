@@ -324,6 +324,113 @@ describe('RadioGroup', () => {
       expect(onChange).toHaveBeenCalledWith('2');
     });
 
+    // regression test for https://github.com/radix-ui/primitives/issues/3265
+    it('should not trigger a clickable ancestor `onClick` when the value is set programmatically', () => {
+      const onParentClick = vi.fn();
+      const onChange = vi.fn();
+
+      function App({ value }: { value: string | null }) {
+        return (
+          <form onChange={(event) => onChange((event.target as unknown as HTMLInputElement).value)}>
+            <div onClick={onParentClick}>
+              <RadioGroup.Root aria-label="pets" name="pet" value={value} onValueChange={() => {}}>
+                {VALUES.map((v) => (
+                  <RadioGroup.Item key={v} value={v} aria-label={LABELS[v]}>
+                    <RadioGroup.Indicator data-testid={`${INDICATOR_TEST_ID}-${v}`} />
+                  </RadioGroup.Item>
+                ))}
+              </RadioGroup.Root>
+            </div>
+          </form>
+        );
+      }
+
+      const { rerender } = render(<App value={null} />);
+      act(() => rerender(<App value="2" />));
+      expect(onParentClick).not.toHaveBeenCalled();
+      // the form should still be notified of the change
+      expect(onChange).toHaveBeenCalledWith('2');
+    });
+
+    it('should trigger a clickable ancestor `onClick` on a real user click', () => {
+      const onParentClick = vi.fn();
+      render(
+        <form>
+          <div onClick={onParentClick}>
+            <ClassicRadioGroup name="pet" />
+          </div>
+        </form>,
+      );
+      const radios = screen.getAllByRole(RADIO_ROLE);
+      act(() => fireEvent.click(radios[0]!));
+      expect(onParentClick).toHaveBeenCalledTimes(1);
+    });
+
+    // regression test for https://github.com/radix-ui/primitives/issues/3265
+    it('should not trigger a clickable ancestor `onClick` on a programmatic change after re-selecting the checked radio', () => {
+      const onParentClick = vi.fn();
+
+      function App({ value }: { value: string }) {
+        return (
+          <form>
+            <div onClick={onParentClick}>
+              <RadioGroup.Root aria-label="pets" name="pet" value={value} onValueChange={() => {}}>
+                {VALUES.map((v) => (
+                  <RadioGroup.Item key={v} value={v} aria-label={LABELS[v]}>
+                    <RadioGroup.Indicator data-testid={`${INDICATOR_TEST_ID}-${v}`} />
+                  </RadioGroup.Item>
+                ))}
+              </RadioGroup.Root>
+            </div>
+          </form>
+        );
+      }
+
+      const { rerender } = render(<App value="1" />);
+      const radios = screen.getAllByRole(RADIO_ROLE);
+      // user clicks the already-selected radio (value stays "1", no change)
+      act(() => fireEvent.click(radios[0]!));
+      onParentClick.mockClear();
+      // subsequent programmatic value change
+      act(() => rerender(<App value="2" />));
+      expect(onParentClick).not.toHaveBeenCalled();
+    });
+
+    // regression test for https://github.com/radix-ui/primitives/issues/1982
+    it('should not re-select the previously checked radio when another is clicked programmatically via a ref', () => {
+      function App() {
+        const aRef = React.useRef<HTMLButtonElement>(null);
+        const bRef = React.useRef<HTMLButtonElement>(null);
+        return (
+          <form>
+            <RadioGroup.Root aria-label="pets" name="pet" defaultValue="1">
+              <div onClick={() => aRef.current?.click()}>
+                <RadioGroup.Item ref={aRef} value="1" aria-label={LABELS['1']}>
+                  <RadioGroup.Indicator data-testid={`${INDICATOR_TEST_ID}-1`} />
+                </RadioGroup.Item>
+              </div>
+              <div onClick={() => bRef.current?.click()}>
+                <RadioGroup.Item ref={bRef} value="2" aria-label={LABELS['2']}>
+                  <RadioGroup.Indicator data-testid={`${INDICATOR_TEST_ID}-2`} />
+                </RadioGroup.Item>
+              </div>
+            </RadioGroup.Root>
+          </form>
+        );
+      }
+
+      render(<App />);
+      const radios = screen.getAllByRole(RADIO_ROLE);
+      expect(radios[0]).toHaveAttribute('aria-checked', 'true');
+
+      // Clicking the wrapper of the currently unchecked radio programmatically
+      // clicks it. Deselecting the default radio must not bubble a click that
+      // re-triggers the wrapper `onClick` and re-selects it.
+      act(() => fireEvent.click(radios[1]!.parentElement!));
+      expect(radios[0]).toHaveAttribute('aria-checked', 'false');
+      expect(radios[1]).toHaveAttribute('aria-checked', 'true');
+    });
+
     it('should expose the group as required for native validation', () => {
       const { container } = render(
         <form>
@@ -336,6 +443,143 @@ describe('RadioGroup', () => {
       const radios = screen.getAllByRole(RADIO_ROLE);
       act(() => fireEvent.click(radios[0]!));
       expect(form.checkValidity()).toBe(true);
+    });
+  });
+
+  describe('given a RadioGroup in a form that is reset', () => {
+    describe('uncontrolled', () => {
+      it('should restore its `defaultValue` selection when the form is reset', () => {
+        render(
+          <form>
+            <ClassicRadioGroup name="pet" defaultValue="1" />
+            <button type="reset">Reset</button>
+          </form>,
+        );
+
+        const radios = screen.getAllByRole(RADIO_ROLE);
+        expect(radios[0]).toHaveAttribute('aria-checked', 'true');
+
+        act(() => fireEvent.click(radios[1]!));
+        expect(radios[0]).toHaveAttribute('aria-checked', 'false');
+        expect(radios[1]).toHaveAttribute('aria-checked', 'true');
+
+        act(() => fireEvent.click(screen.getByText('Reset')));
+        expect(radios[0]).toHaveAttribute('aria-checked', 'true');
+        expect(radios[1]).toHaveAttribute('aria-checked', 'false');
+      });
+
+      it('should restore an empty selection when there is no `defaultValue`', () => {
+        render(
+          <form>
+            <ClassicRadioGroup name="pet" />
+            <button type="reset">Reset</button>
+          </form>,
+        );
+
+        const radios = screen.getAllByRole(RADIO_ROLE);
+        act(() => fireEvent.click(radios[1]!));
+        expect(radios[1]).toHaveAttribute('aria-checked', 'true');
+
+        act(() => fireEvent.click(screen.getByText('Reset')));
+        radios.forEach((radio) => expect(radio).toHaveAttribute('aria-checked', 'false'));
+      });
+    });
+
+    describe('controlled', () => {
+      it('should restore its initial `value` selection when the form is reset', () => {
+        function ControlledRadioGroup() {
+          const [value, setValue] = React.useState<string | null>('1');
+          return (
+            <form>
+              <RadioGroup.Root aria-label="pets" name="pet" value={value} onValueChange={setValue}>
+                {VALUES.map((v) => (
+                  <RadioGroup.Item key={v} value={v} aria-label={LABELS[v]}>
+                    <RadioGroup.Indicator data-testid={`${INDICATOR_TEST_ID}-${v}`} />
+                  </RadioGroup.Item>
+                ))}
+              </RadioGroup.Root>
+              <button type="reset">Reset</button>
+            </form>
+          );
+        }
+
+        render(<ControlledRadioGroup />);
+
+        const radios = screen.getAllByRole(RADIO_ROLE);
+        expect(radios[0]).toHaveAttribute('aria-checked', 'true');
+
+        act(() => fireEvent.click(radios[2]!));
+        expect(radios[2]).toHaveAttribute('aria-checked', 'true');
+
+        act(() => fireEvent.click(screen.getByText('Reset')));
+        expect(radios[0]).toHaveAttribute('aria-checked', 'true');
+        expect(radios[2]).toHaveAttribute('aria-checked', 'false');
+      });
+    });
+  });
+
+  describe('given a RadioGroup with external form association that is reset', () => {
+    describe('uncontrolled', () => {
+      it('should restore its `defaultValue` selection when the external form is reset', () => {
+        render(
+          <>
+            <form id="radio-group-reset-form">
+              <button type="reset">Reset</button>
+            </form>
+            <ClassicRadioGroup name="pet" form="radio-group-reset-form" defaultValue="1" />
+          </>,
+        );
+
+        const radios = screen.getAllByRole(RADIO_ROLE);
+        expect(radios[0]).toHaveAttribute('aria-checked', 'true');
+
+        act(() => fireEvent.click(radios[2]!));
+        expect(radios[2]).toHaveAttribute('aria-checked', 'true');
+
+        act(() => fireEvent.click(screen.getByRole('button', { name: 'Reset' })));
+        expect(radios[0]).toHaveAttribute('aria-checked', 'true');
+        expect(radios[2]).toHaveAttribute('aria-checked', 'false');
+      });
+    });
+
+    describe('controlled', () => {
+      it('should restore its initial `value` selection when the external form is reset', () => {
+        function ControlledRadioGroup() {
+          const [value, setValue] = React.useState<string | null>('1');
+          return (
+            <>
+              <form id="radio-group-reset-form">
+                <button type="reset">Reset</button>
+              </form>
+              <RadioGroup.Root
+                aria-label="pets"
+                name="pet"
+                form="radio-group-reset-form"
+                value={value}
+                onValueChange={setValue}
+              >
+                {VALUES.map((v) => (
+                  <RadioGroup.Item key={v} value={v} aria-label={LABELS[v]}>
+                    <RadioGroup.Indicator />
+                  </RadioGroup.Item>
+                ))}
+              </RadioGroup.Root>
+            </>
+          );
+        }
+
+        render(<ControlledRadioGroup />);
+
+        const radios = screen.getAllByRole(RADIO_ROLE);
+        expect(radios[0]).toHaveAttribute('aria-checked', 'true');
+
+        act(() => fireEvent.click(radios[1]!));
+        expect(radios[1]).toHaveAttribute('aria-checked', 'true');
+
+        act(() => fireEvent.click(screen.getByRole('button', { name: 'Reset' })));
+        expect(radios[0]).toHaveAttribute('aria-checked', 'true');
+        expect(radios[1]).toHaveAttribute('aria-checked', 'false');
+      });
     });
   });
 });

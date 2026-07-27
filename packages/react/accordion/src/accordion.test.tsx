@@ -398,6 +398,51 @@ describe('given a multiple Accordion', () => {
   });
 });
 
+// Regression test for https://github.com/radix-ui/primitives/issues/3478
+describe('given a controlled single collapsible Accordion', () => {
+  let handleValueChange: Mock;
+  let rendered: RenderResult;
+
+  afterEach(cleanup);
+
+  beforeEach(() => {
+    handleValueChange = vi.fn();
+    rendered = render(
+      <ControlledSingleAccordionTest collapsible onValueChange={handleValueChange} />,
+    );
+  });
+
+  describe('when clicking an open item trigger', () => {
+    let trigger: HTMLElement;
+
+    beforeEach(() => {
+      trigger = rendered.getByText('Trigger One');
+      fireEvent.click(trigger);
+    });
+
+    it('should open the item and call onValueChange once', () => {
+      expect(rendered.getByText('Content One')).toBeVisible();
+      expect(handleValueChange).toHaveBeenCalledTimes(1);
+      expect(handleValueChange).toHaveBeenLastCalledWith('One');
+    });
+
+    describe('then clicking the same trigger again', () => {
+      beforeEach(() => {
+        fireEvent.click(trigger);
+      });
+
+      it('should close the item in a single click', () => {
+        expect(rendered.queryByText('Content One')).not.toBeInTheDocument();
+      });
+
+      it('should call onValueChange exactly once more (with an empty value)', () => {
+        expect(handleValueChange).toHaveBeenCalledTimes(2);
+        expect(handleValueChange).toHaveBeenLastCalledWith('');
+      });
+    });
+  });
+});
+
 function AccordionTest(props: React.ComponentProps<typeof Accordion.Root>) {
   return (
     <Accordion.Root data-testid="container" {...props}>
@@ -410,5 +455,26 @@ function AccordionTest(props: React.ComponentProps<typeof Accordion.Root>) {
         </Accordion.Item>
       ))}
     </Accordion.Root>
+  );
+}
+
+function ControlledSingleAccordionTest({
+  onValueChange,
+  ...props
+}: Omit<
+  React.ComponentPropsWithoutRef<typeof Accordion.Root> & { type: 'single' },
+  'type' | 'value'
+>) {
+  const [value, setValue] = React.useState('');
+  return (
+    <AccordionTest
+      type="single"
+      {...props}
+      value={value}
+      onValueChange={(next: string) => {
+        setValue(next);
+        onValueChange?.(next);
+      }}
+    />
   );
 }
