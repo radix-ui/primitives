@@ -10,8 +10,9 @@ Added entrypoints to control how `Slot` merges props with its child. You can now
 
 ```tsx
 import { Slot } from "radix-ui";
+import { mergeProps, type MergePropsFunction } from "radix-ui/slot/merge-props";
 
-const mergeProps: Slot.MergePropsFunction = (slotProps, childProps) => {
+const mergeProps: MergePropsFunction = (slotProps, childProps) => {
   // your custom merge strategy, optionally delegating to the default
   const merged = Slot.mergeProps(slotProps, childProps);
   return {
