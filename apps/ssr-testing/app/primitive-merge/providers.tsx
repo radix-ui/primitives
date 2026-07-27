@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { Slot } from 'radix-ui';
+import { mergeProps, type MergePropsFunction } from 'radix-ui/slot/merge-props';
 
 // The consumer's custom merge strategy, provided via `Slot.Provider` on the
 // client. It's defined and used entirely within this "use client" module, so
@@ -9,8 +10,8 @@ import { Slot } from 'radix-ui';
 //
 // It delegates to the default `mergeProps` and then stamps a marker attribute
 // so the prerendered HTML can prove the custom strategy actually ran.
-const customMergeProps: Slot.MergePropsFunction = (slotProps, childProps) => ({
-  ...Slot.mergeProps(slotProps, childProps),
+const customMergeProps: MergePropsFunction = (slotProps, childProps) => ({
+  ...mergeProps(slotProps, childProps),
   'data-provider-merged': 'true',
 });
 

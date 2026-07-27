@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { Slot } from 'radix-ui';
-import * as Client from './client';
 
 export const Link = React.forwardRef<
   React.ComponentRef<'a'>,
@@ -54,45 +53,5 @@ export const ButtonSlottable = React.forwardRef<
       <Slot.Slottable>{children}</Slot.Slottable>
       <span>right</span>
     </Comp>
-  );
-});
-
-export const ButtonNestedSlottable = React.forwardRef<
-  React.ComponentRef<typeof Button>,
-  React.ComponentProps<typeof Button>
->(({ children, asChild = false, ...props }, forwardedRef) => {
-  const Comp = asChild ? Slot.Root : 'button';
-  return (
-    <Comp {...props} ref={forwardedRef} style={{ display: 'flex', gap: '3rem' }}>
-      <Slot.Slottable child={children}>
-        {(slottable) => (
-          <>
-            <span>left</span>
-            <b>bold {slottable}</b>
-            <span>right</span>
-          </>
-        )}
-      </Slot.Slottable>
-    </Comp>
-  );
-});
-
-export const IconButtonNestedSlottable = React.forwardRef<
-  React.ComponentRef<typeof Button>,
-  React.ComponentProps<typeof Button>
->(({ children, ...props }, forwardedRef) => {
-  return (
-    <Client.Button {...props} ref={forwardedRef} style={{ display: 'flex', gap: '3rem' }}>
-      <Slot.Root>
-        <Slot.Slottable child={children}>
-          {(slottable) => (
-            <>
-              <span>ICON</span>
-              <b>bold {slottable}</b>
-            </>
-          )}
-        </Slot.Slottable>
-      </Slot.Root>
-    </Client.Button>
   );
 });
