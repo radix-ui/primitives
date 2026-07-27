@@ -5,10 +5,11 @@ export {
   //
   Root,
   Provider,
-  //
-  createSlot,
-  createSlottable,
-  //
-  mergeProps,
 } from './slot';
-export type { SlotProps, MergePropsFunction } from './slot';
+export {
+  /** @deprecated Import from standalone entrypoint instead */
+  createSlot,
+  /** @deprecated Import from standalone entrypoint instead */
+  createSlottable,
+} from './create-slot';
+export type { SlotProps, SlottableProps, SlotProviderProps } from './slot';

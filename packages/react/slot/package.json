@@ -5,6 +5,11 @@
   "source": "./src/index.ts",
   "main": "./src/index.ts",
   "module": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./create-slot": "./src/create-slot.tsx",
+    "./merge-props": "./src/merge-props.ts"
+  },
   "publishConfig": {
     "main": "./dist/index.js",
     "module": "./dist/index.mjs",
@@ -18,6 +23,26 @@
         "require": {
           "types": "./dist/index.d.ts",
           "default": "./dist/index.js"
+        }
+      },
+      "./create-slot": {
+        "import": {
+          "types": "./dist/create-slot.d.mts",
+          "default": "./dist/create-slot.mjs"
+        },
+        "require": {
+          "types": "./dist/create-slot.d.ts",
+          "default": "./dist/create-slot.js"
+        }
+      },
+      "./merge-props": {
+        "import": {
+          "types": "./dist/merge-props.d.mts",
+          "default": "./dist/merge-props.mjs"
+        },
+        "require": {
+          "types": "./dist/merge-props.d.ts",
+          "default": "./dist/merge-props.js"
         }
       }
     }
