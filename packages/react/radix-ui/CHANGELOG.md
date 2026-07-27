@@ -1,5 +1,67 @@
 # radix-ui
 
+## 1.6.6, 1.6.7
+
+- Reverted breaking changes that caused compatibility issues with React Server Components.
+
+## 1.6.5
+
+- Republish through CI to attach provenance attestations. The previous versions of these packages were published manually outside of CI and therefore shipped without provenance; this patch re-releases the same code through the CI pipeline so every package includes an attestation.
+
+## 1.6.4
+
+- Fixed a regression where importing primitives from the root `radix-ui` entry point erased every primitive's types to `any`.
+
+## 1.6.3
+
+### Dialog
+
+- Fixed broken ARIA references in Dialogs where title or description elements are not rendered.
+
+### Slider
+
+- Fixed a bug where `onValueCommit` was not called when a slider thumb was dragged across another thumb.
+
+### Toast
+
+- Fixed `Toast` removing non-focused toasts when pressing `Escape`.
+
+### Tooltip
+
+- Fixed a bug where `Tooltip.Content` children were mounted to the DOM twice.
+
+### Other updates
+
+- Fixed overriding inline animation style in `Popper.Content`.
+- Improved tree-shaking so bundlers can drop unused components. Component parts are now marked `/* @__PURE__ */` and use named render functions instead of `Component.displayName = ...` assignments, which previously prevented dead-code elimination with some bundlers.
+- Widened `virtualRef` prop type to allow `RefObject<Measurable | null>` in popover components.
+- Fixed dev-only checks with conditional exports to drop dev-warnings from production builds.
+- Added per-primitive subpath entry points so each primitive can be imported directly, eg. `import { Accordion } from 'radix-ui/accordion'` or `import * as Accordion from 'radix-ui/accordion'`. This mirrors the namespaced exports available from the root `radix-ui` entry point.
+- Fixed a bug where updating a `Checkbox`, `Switch`, or `RadioGroup` value programmatically (eg. a "select all" control) while inside a `<form>` would dispatch a `click` event from the hidden bubble input that propagated to ancestor `onClick` handlers.
+
+## 1.6.2
+
+### Other updates
+
+- Added CSS custom properties for Navigation Menu item indicators' translate values.
+- Fixed a bug in Dismissable Layer causing background nested popovers to close all layers on outside click
+- Fixed runtime errors for `Form.Message`, `Form.Control`, `Form.Label` and `Form.ValidityState` that are correctly rendered outside of `Form.Field` components
+- Fixed a bug in form control components to ensure their values are updated when their associated form's is reset. This affects `RadioGroup`, `Slider`, `Select`, and `Switch`.
+- Fixed menu items, tab triggers, toolbar links, and select items intercepting `Space`/`Enter` keys that originate from focusable descendants.
+- Fixed a bug where calling an event handler without an argument would throw, preventing successive event handlers from being called. This affected all components that accept event handlers with internal implementations.
+- Fixed a bug in Context Menu to ensure that the menu properly re-anchors to the latest pointer position when re-triggered in its open state.
+- Fixed stale `onEscapeKeyDown`/`onDismiss` handlers on React 19.2.
+- Fixed items in a Roving Focus Group not being auto-focused on mount within a Focus Scope component.
+- Fixed a regression in Dismissable Layer originating from a [bug in React's `useEffectEvent`](https://github.com/react/react/pull/34831).
+- Fixed `--radix-scroll-area-corner-width` and `--radix-scroll-area-corner-height` not resetting to `0` when a corner is removed. Previously these values would stick around and leave a permanent gap on the remaining scrollbar.
+- Fixed a bug in Slider where stepping with the keyboard would skip a valid value when the current value is off the step grid. Stepping now snaps to the next step-aligned value in the direction of travel, matching native `<input type="range">` behavior.
+
+## 1.6.1
+
+- Cleared the close timer when unmounting `Toast` components to prevent memory leaks and errors in test environments.
+- Fixed infinite re-render loop in React 19 caused by unstable composed ref callback references.
+- Removed global `React.CSSProperties` augmentation from emitted declaration files.
+
 ## 1.6.0
 
 ```tsx

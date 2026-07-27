@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { Dialog } from 'radix-ui';
+import { Dialog, DropdownMenu, HoverCard, Popover, Slot } from 'radix-ui';
 import styles from './dialog.stories.module.css';
 import { ExternalOverlayTrigger } from './external-overlay';
+import { customMergeProps } from './custom-merge-props';
 
 export default { title: 'Components/Dialog' };
 
@@ -305,6 +306,26 @@ export const OuterScrollable = () => (
       </Dialog.Overlay>
     </Dialog.Portal>
   </Dialog.Root>
+);
+
+export const WithCustomMergeProps = () => (
+  <Slot.Provider mergeProps={customMergeProps}>
+    <Dialog.Root>
+      <Dialog.Trigger className={styles.trigger} asChild>
+        <button data-custom-merge>open (asChild)</button>
+      </Dialog.Trigger>
+      <Dialog.Portal>
+        <Dialog.Overlay className={styles.overlay} />
+        <Dialog.Content className={styles.contentDefault}>
+          <Dialog.Title>Booking info</Dialog.Title>
+          <Dialog.Description>Please enter the info for your booking below.</Dialog.Description>
+          <Dialog.Close className={styles.close} asChild>
+            <button>close (asChild)</button>
+          </Dialog.Close>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
+  </Slot.Provider>
 );
 
 export const Chromatic = () => (
@@ -629,3 +650,190 @@ function InsideShadowSuggestion() {
 
   return <div data-testid="inside-shadow-host" ref={hostRef} />;
 }
+
+// Regression test for https://github.com/radix-ui/primitives/issues/4035
+export const WithDropdownMenu = () => {
+  const [open, setOpen] = React.useState(false);
+
+  return (
+    <>
+      <Dialog.Root open={open} onOpenChange={setOpen}>
+        <Dialog.Trigger className={styles.trigger}>open</Dialog.Trigger>
+        <Dialog.Portal>
+          <Dialog.Overlay className={styles.overlay} data-testid="overlay" />
+          <Dialog.Content className={styles.contentDefault}>
+            <Dialog.Title>title</Dialog.Title>
+            <Dialog.Description>A dialog containing a dropdown menu.</Dialog.Description>
+            <DropdownMenu.Root>
+              <DropdownMenu.Trigger className={styles.trigger}>open menu</DropdownMenu.Trigger>
+              <DropdownMenu.Portal>
+                <DropdownMenu.Content
+                  sideOffset={5}
+                  style={{ background: 'white', border: '1px solid black', padding: 8 }}
+                >
+                  <DropdownMenu.Item>menu item</DropdownMenu.Item>
+                </DropdownMenu.Content>
+              </DropdownMenu.Portal>
+            </DropdownMenu.Root>
+            <Dialog.Close className={styles.close}>close</Dialog.Close>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
+      <div data-testid="dialog-state">{open ? 'open' : 'closed'}</div>
+    </>
+  );
+};
+
+/**
+ * Verification for https://github.com/radix-ui/primitives/issues/3423
+ *
+ * A `Popover` (mimicking a cmdk `Command` with an input + scrollable list) nested inside a *modal*
+ * `Dialog`. You should be able to type in the input and scroll the list with `Popover modal` either
+ * ON or OFF:
+ *
+ * - OFF (non-modal popover, the shadcn default): the popover registers its content as a branch of
+ *   the Dialog, so the Dialog's trapped `FocusScope` no longer reclaims focus and its `RemoveScroll`
+ *   treats the popover as a scroll shard.
+ * - ON (modal popover): the popover mounts its own `RemoveScroll` + trapped `FocusScope`, which
+ *   pauses the Dialog's.
+ *
+ * Before the fix, the OFF case could neither be typed in nor scrolled.
+ */
+export const PopoverInModalDialog = () => {
+  const [popoverModal, setPopoverModal] = React.useState(false);
+  return (
+    <Dialog.Root>
+      <Dialog.Trigger>open dialog</Dialog.Trigger>
+      <Dialog.Portal>
+        <Dialog.Overlay className={styles.overlay} />
+        <Dialog.Content className={styles.contentDefault}>
+          <Dialog.Title>Dialog with a nested Popover</Dialog.Title>
+          <Dialog.Description>
+            Try to type in the popover's input and scroll its list.
+          </Dialog.Description>
+
+          <label style={{ display: 'block', margin: '10px 0' }}>
+            <input
+              type="checkbox"
+              checked={popoverModal}
+              onChange={(event) => setPopoverModal(event.target.checked)}
+            />{' '}
+            Popover <code>modal</code>
+          </label>
+
+          <Popover.Root modal={popoverModal}>
+            <Popover.Trigger>open popover</Popover.Trigger>
+            <Popover.Portal>
+              <Popover.Content
+                sideOffset={5}
+                style={{
+                  background: 'white',
+                  border: '1px solid #ccc',
+                  borderRadius: 6,
+                  boxShadow: '0 2px 10px rgb(0 0 0 / 0.12)',
+                  padding: 8,
+                  width: 220,
+                }}
+              >
+                <input
+                  type="text"
+                  placeholder="type to filter…"
+                  style={{ width: '100%', boxSizing: 'border-box', marginBottom: 8 }}
+                />
+                <div style={{ maxHeight: 120, overflow: 'auto' }}>
+                  {Array.from({ length: 40 }, (_, i) => (
+                    <div key={i} style={{ padding: '4px 8px' }}>
+                      Item {i + 1}
+                    </div>
+                  ))}
+                </div>
+              </Popover.Content>
+            </Popover.Portal>
+          </Popover.Root>
+
+          <br />
+          <Dialog.Close>close</Dialog.Close>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
+  );
+};
+
+/**
+ * Verification for https://github.com/radix-ui/primitives/issues/3423 (other primitives)
+ *
+ * A *non-modal* `DropdownMenu` with a scrollable list and a `HoverCard` with a focusable link,
+ * both nested inside a *modal* `Dialog`. Before the fix, the Dialog's trapped `FocusScope` would
+ * reclaim focus from these portalled layers (and `RemoveScroll` would block scrolling). They now
+ * register their content as branches of the Dialog, so keyboard navigation, focusing the link, and
+ * scrolling all work.
+ */
+export const NestedLayersInModalDialog = () => {
+  return (
+    <Dialog.Root>
+      <Dialog.Trigger>open dialog</Dialog.Trigger>
+      <Dialog.Portal>
+        <Dialog.Overlay className={styles.overlay} />
+        <Dialog.Content className={styles.contentDefault}>
+          <Dialog.Title>Dialog with nested menu / hover card</Dialog.Title>
+          <Dialog.Description>
+            Open the menu and arrow-key through / scroll it, and hover the card to focus its link.
+          </Dialog.Description>
+
+          <div style={{ display: 'flex', gap: 12, margin: '10px 0' }}>
+            <DropdownMenu.Root modal={false}>
+              <DropdownMenu.Trigger>open menu</DropdownMenu.Trigger>
+              <DropdownMenu.Portal>
+                <DropdownMenu.Content
+                  sideOffset={5}
+                  style={{
+                    background: 'white',
+                    border: '1px solid #ccc',
+                    borderRadius: 6,
+                    boxShadow: '0 2px 10px rgb(0 0 0 / 0.12)',
+                    padding: 4,
+                    maxHeight: 160,
+                    overflow: 'auto',
+                  }}
+                >
+                  {Array.from({ length: 30 }, (_, i) => (
+                    <DropdownMenu.Item key={i} style={{ padding: '4px 8px', outline: 'none' }}>
+                      Item {i + 1}
+                    </DropdownMenu.Item>
+                  ))}
+                </DropdownMenu.Content>
+              </DropdownMenu.Portal>
+            </DropdownMenu.Root>
+
+            <HoverCard.Root openDelay={0}>
+              <HoverCard.Trigger href="#" style={{ alignSelf: 'center' }}>
+                hover me
+              </HoverCard.Trigger>
+              <HoverCard.Portal>
+                <HoverCard.Content
+                  sideOffset={5}
+                  style={{
+                    background: 'white',
+                    border: '1px solid #ccc',
+                    borderRadius: 6,
+                    boxShadow: '0 2px 10px rgb(0 0 0 / 0.12)',
+                    padding: 12,
+                    width: 220,
+                  }}
+                >
+                  This card has a{' '}
+                  <a href="https://radix-ui.com" target="_blank" rel="noreferrer">
+                    focusable link
+                  </a>
+                  .
+                </HoverCard.Content>
+              </HoverCard.Portal>
+            </HoverCard.Root>
+          </div>
+
+          <Dialog.Close>close</Dialog.Close>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
+  );
+};

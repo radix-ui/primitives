@@ -8,7 +8,7 @@ This project is a monorepo managed with [pnpm](https://pnpm.io/). It uses the fo
 
 - [vitest](https://vitest.dev/) for unit testing
 - [storybook](https://storybook.js.org/) for component documentation
-- [cypress](https://www.cypress.io/) for end-to-end testing
+- [playwright](https://playwright.dev/) for end-to-end testing
 - [changesets](https://github.com/changesets/changesets) for versioning and publishing
 - [oxlint](https://github.com/oxlint-dev/oxlint) for linting
 - [oxfmt](https://github.com/oxlint-dev/oxfmt) for formatting
@@ -17,10 +17,6 @@ This project is a monorepo managed with [pnpm](https://pnpm.io/). It uses the fo
 
 - **pnpm** only
 - **TypeScript** only (local scripts can use JavaScript with `// @ts-check` and type annotations)
-
-## Commit Conventions
-
-[Conventional Commits](https://www.conventionalcommits.org/) — release-please auto-generates changelog. Use `!` suffix for breaking changes (e.g., `feat!:`).
 
 ## Commands
 

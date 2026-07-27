@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { Dialog, HoverCard } from 'radix-ui';
+import { Dialog, HoverCard, Slot } from 'radix-ui';
 import { Popper } from 'radix-ui/internal';
 import styles from './hover-card.stories.module.css';
+import { customMergeProps } from './custom-merge-props';
 
 const { SIDE_OPTIONS, ALIGN_OPTIONS } = Popper;
 
@@ -452,6 +453,25 @@ export const WithSlottedContent = () => (
       </HoverCard.Content>
     </HoverCard.Portal>
   </HoverCard.Root>
+);
+
+export const WithCustomMergeProps = () => (
+  <Slot.Provider mergeProps={customMergeProps}>
+    <div style={{ padding: 50, display: 'flex', justifyContent: 'center' }}>
+      <HoverCard.Root>
+        <HoverCard.Trigger className={styles.trigger} asChild>
+          <a href="/" data-custom-merge>
+            trigger (asChild)
+          </a>
+        </HoverCard.Trigger>
+        <HoverCard.Portal>
+          <HoverCard.Content className={styles.content} sideOffset={5}>
+            Hover card content
+          </HoverCard.Content>
+        </HoverCard.Portal>
+      </HoverCard.Root>
+    </div>
+  </Slot.Provider>
 );
 
 // change order slightly for more pleasing visual

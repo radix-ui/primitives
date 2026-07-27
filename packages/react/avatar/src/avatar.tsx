@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { IS_DEVELOPMENT } from '@radix-ui/primitive/is-development';
 import { createContextScope } from '@radix-ui/react-context';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
@@ -15,7 +16,14 @@ const AVATAR_NAME = 'Avatar';
 type ScopedProps<P> = P & { __scopeAvatar?: Scope };
 const [createAvatarContext, createAvatarScope] = createContextScope(AVATAR_NAME);
 
-type ImageLoadingStatus = 'idle' | 'loading' | 'loaded' | 'error';
+const ImageLoadingStatus = {
+  Idle: 'idle',
+  Loading: 'loading',
+  Loaded: 'loaded',
+  Error: 'error',
+} as const;
+
+type ImageLoadingStatus = (typeof ImageLoadingStatus)[keyof typeof ImageLoadingStatus];
 
 type AvatarContextValue = {
   imageLoadingStatus: ImageLoadingStatus;
@@ -35,10 +43,13 @@ type AvatarElement = React.ComponentRef<typeof Primitive.span>;
 type PrimitiveSpanProps = React.ComponentPropsWithoutRef<typeof Primitive.span>;
 interface AvatarProps extends PrimitiveSpanProps {}
 
-const Avatar = React.forwardRef<AvatarElement, AvatarProps>(
-  (props: ScopedProps<AvatarProps>, forwardedRef) => {
+const Avatar = /* @__PURE__ */ React.forwardRef<AvatarElement, AvatarProps>(
+  // blank line to reduce diff noise
+  function Avatar(props: ScopedProps<AvatarProps>, forwardedRef) {
     const { __scopeAvatar, ...avatarProps } = props;
-    const [imageLoadingStatus, setImageLoadingStatus] = React.useState<ImageLoadingStatus>('idle');
+    const [imageLoadingStatus, setImageLoadingStatus] = React.useState<ImageLoadingStatus>(
+      ImageLoadingStatus.Idle,
+    );
     const [imageCount, setImageCount] = useImageCount();
 
     return (
@@ -55,8 +66,6 @@ const Avatar = React.forwardRef<AvatarElement, AvatarProps>(
   },
 );
 
-Avatar.displayName = AVATAR_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * AvatarImage
  * -----------------------------------------------------------------------------------------------*/
@@ -69,8 +78,8 @@ interface AvatarImageProps extends PrimitiveImageProps {
   onLoadingStatusChange?: (status: ImageLoadingStatus) => void;
 }
 
-const AvatarImage = React.forwardRef<AvatarImageElement, AvatarImageProps>(
-  (props: ScopedProps<AvatarImageProps>, forwardedRef) => {
+const AvatarImage = /* @__PURE__ */ React.forwardRef<AvatarImageElement, AvatarImageProps>(
+  function AvatarImage(props: ScopedProps<AvatarImageProps>, forwardedRef) {
     const { __scopeAvatar, src, onLoadingStatusChange, ...imageProps } = props;
     const context = useAvatarContext(IMAGE_NAME, __scopeAvatar);
     useUpdateImageCount(context.setImageCount);
@@ -96,13 +105,11 @@ const AvatarImage = React.forwardRef<AvatarImageElement, AvatarImageProps>(
       }
     }, [imageLoadingStatus, handleLoadingStatusChange]);
 
-    return imageLoadingStatus === 'loaded' ? (
+    return imageLoadingStatus === ImageLoadingStatus.Loaded ? (
       <Primitive.img {...imageProps} ref={forwardedRef} src={src} />
     ) : null;
   },
 );
-
-AvatarImage.displayName = IMAGE_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * AvatarFallback
@@ -115,8 +122,8 @@ interface AvatarFallbackProps extends PrimitiveSpanProps {
   delayMs?: number;
 }
 
-const AvatarFallback = React.forwardRef<AvatarFallbackElement, AvatarFallbackProps>(
-  (props: ScopedProps<AvatarFallbackProps>, forwardedRef) => {
+const AvatarFallback = /* @__PURE__ */ React.forwardRef<AvatarFallbackElement, AvatarFallbackProps>(
+  function AvatarFallback(props: ScopedProps<AvatarFallbackProps>, forwardedRef) {
     const { __scopeAvatar, delayMs, ...fallbackProps } = props;
     const context = useAvatarContext(FALLBACK_NAME, __scopeAvatar);
     const [canRender, setCanRender] = React.useState(delayMs === undefined);
@@ -128,13 +135,11 @@ const AvatarFallback = React.forwardRef<AvatarFallbackElement, AvatarFallbackPro
       }
     }, [delayMs]);
 
-    return canRender && context.imageLoadingStatus !== 'loaded' ? (
+    return canRender && context.imageLoadingStatus !== ImageLoadingStatus.Loaded ? (
       <Primitive.span {...fallbackProps} ref={forwardedRef} />
     ) : null;
   },
 );
-
-AvatarFallback.displayName = FALLBACK_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
@@ -154,7 +159,7 @@ function useImageLoadingStatus(
 ) {
   useLayoutEffect(() => {
     if (!src) {
-      setLoadingStatus('error');
+      setLoadingStatus(ImageLoadingStatus.Error);
       return;
     }
 
@@ -163,7 +168,7 @@ function useImageLoadingStatus(
       const image = event.currentTarget as HTMLImageElement;
       setLoadingStatus(getImageLoadingStatus(image));
     };
-    const handleError = () => setLoadingStatus('error');
+    const handleError = () => setLoadingStatus(ImageLoadingStatus.Error);
     image.addEventListener('load', handleLoad);
     image.addEventListener('error', handleError);
     if (referrerPolicy) {
@@ -176,7 +181,7 @@ function useImageLoadingStatus(
     return () => {
       image.removeEventListener('load', handleLoad);
       image.removeEventListener('error', handleError);
-      setLoadingStatus('idle');
+      setLoadingStatus(ImageLoadingStatus.Idle);
     };
   }, [src, crossOrigin, referrerPolicy, setLoadingStatus]);
 
@@ -184,7 +189,11 @@ function useImageLoadingStatus(
 }
 
 function getImageLoadingStatus(image: HTMLImageElement) {
-  return image.complete ? (image.naturalWidth > 0 ? 'loaded' : 'error') : 'loading';
+  return image.complete
+    ? image.naturalWidth > 0
+      ? ImageLoadingStatus.Loaded
+      : ImageLoadingStatus.Error
+    : ImageLoadingStatus.Loading;
 }
 
 // Image count is only used in development to warn about multiple images, which
@@ -194,7 +203,7 @@ function getImageLoadingStatus(image: HTMLImageElement) {
 // oxlint-disable react-hooks/rules-of-hooks
 function useImageCount() {
   let state = STATIC_IMAGE_COUNT_STATE;
-  if (process.env.NODE_ENV !== 'production') {
+  if (IS_DEVELOPMENT) {
     state = React.useState(0);
     const [imageCount] = state;
     const hasWarnedRef = React.useRef(false);
@@ -212,7 +221,7 @@ function useImageCount() {
 }
 
 function useUpdateImageCount(setImageCount: React.Dispatch<React.SetStateAction<number>>) {
-  if (process.env.NODE_ENV !== 'production') {
+  if (IS_DEVELOPMENT) {
     React.useEffect(() => {
       setImageCount((imageCount) => imageCount + 1);
       return () => {

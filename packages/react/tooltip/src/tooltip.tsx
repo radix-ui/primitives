@@ -11,6 +11,7 @@ import { Presence } from '@radix-ui/react-presence';
 import { Primitive } from '@radix-ui/react-primitive';
 import { createSlottable } from '@radix-ui/react-slot';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
+import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import * as VisuallyHiddenPrimitive from '@radix-ui/react-visually-hidden';
 
 import type { Scope } from '@radix-ui/react-context';
@@ -29,15 +30,15 @@ const PROVIDER_NAME = 'TooltipProvider';
 const DEFAULT_DELAY_DURATION = 700;
 const TOOLTIP_OPEN = 'tooltip.open';
 
-type TooltipProviderContextValue = {
-  isOpenDelayedRef: React.MutableRefObject<boolean>;
+interface TooltipProviderContextValue {
+  isOpenDelayedRef: React.RefObject<boolean>;
   delayDuration: number;
   onOpen(): void;
   onClose(): void;
   onPointerInTransitChange(inTransit: boolean): void;
-  isPointerInTransitRef: React.MutableRefObject<boolean>;
+  isPointerInTransitRef: React.RefObject<boolean>;
   disableHoverableContent: boolean;
-};
+}
 
 const [TooltipProviderContextProvider, useTooltipProviderContext] =
   createTooltipContext<TooltipProviderContextValue>(PROVIDER_NAME);
@@ -109,15 +110,13 @@ const TooltipProvider: React.FC<TooltipProviderProps> = (
   );
 };
 
-TooltipProvider.displayName = PROVIDER_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * Tooltip
  * -----------------------------------------------------------------------------------------------*/
 
 const TOOLTIP_NAME = 'Tooltip';
 
-type TooltipContextValue = {
+interface TooltipContextValue {
   contentId: string;
   open: boolean;
   stateAttribute: 'closed' | 'delayed-open' | 'instant-open';
@@ -128,7 +127,8 @@ type TooltipContextValue = {
   onOpen(): void;
   onClose(): void;
   disableHoverableContent: boolean;
-};
+  setContentId: React.Dispatch<React.SetStateAction<string | undefined>>;
+}
 
 const [TooltipContextProvider, useTooltipContext] =
   createTooltipContext<TooltipContextValue>(TOOLTIP_NAME);
@@ -164,7 +164,8 @@ const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
   const providerContext = useTooltipProviderContext(TOOLTIP_NAME, props.__scopeTooltip);
   const popperScope = usePopperScope(__scopeTooltip);
   const [trigger, setTrigger] = React.useState<HTMLButtonElement | null>(null);
-  const contentId = useId();
+  const [contentIdState, setContentId] = React.useState<string | undefined>(undefined);
+  const generatedContentId = useId();
   const openTimerRef = React.useRef(0);
   const disableHoverableContent =
     disableHoverableContentProp ?? providerContext.disableHoverableContent;
@@ -222,11 +223,14 @@ const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
     };
   }, []);
 
+  const contentId = contentIdState ?? generatedContentId;
+
   return (
     <PopperPrimitive.Root {...popperScope}>
       <TooltipContextProvider
         scope={__scopeTooltip}
         contentId={contentId}
+        setContentId={setContentId}
         open={open}
         stateAttribute={stateAttribute}
         trigger={trigger}
@@ -254,8 +258,6 @@ const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
   );
 };
 
-Tooltip.displayName = TOOLTIP_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * TooltipTrigger
  * -----------------------------------------------------------------------------------------------*/
@@ -266,9 +268,9 @@ type TooltipTriggerElement = React.ComponentRef<typeof Primitive.button>;
 type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
 interface TooltipTriggerProps extends PrimitiveButtonProps {}
 
-const TooltipTrigger = React.forwardRef<TooltipTriggerElement, TooltipTriggerProps>(
-  (props: ScopedProps<TooltipTriggerProps>, forwardedRef) => {
-    const { __scopeTooltip, ...triggerProps } = props;
+const TooltipTrigger = /* @__PURE__ */ React.forwardRef<TooltipTriggerElement, TooltipTriggerProps>(
+  function TooltipTrigger(props: ScopedProps<TooltipTriggerProps>, forwardedRef) {
+    const { __scopeTooltip, 'aria-describedby': ariaDescribedby, ...triggerProps } = props;
     const context = useTooltipContext(TRIGGER_NAME, __scopeTooltip);
     const providerContext = useTooltipProviderContext(TRIGGER_NAME, __scopeTooltip);
     const popperScope = usePopperScope(__scopeTooltip);
@@ -287,7 +289,11 @@ const TooltipTrigger = React.forwardRef<TooltipTriggerElement, TooltipTriggerPro
         <Primitive.button
           // We purposefully avoid adding `type=button` here because tooltip triggers are also
           // commonly anchors and the anchor `type` attribute signifies MIME type.
-          aria-describedby={context.open ? context.contentId : undefined}
+          aria-describedby={
+            context.open
+              ? concatAriaDescribedby(ariaDescribedby, context.contentId)
+              : ariaDescribedby
+          }
           data-state={context.stateAttribute}
           {...triggerProps}
           ref={composedRefs}
@@ -322,8 +328,6 @@ const TooltipTrigger = React.forwardRef<TooltipTriggerElement, TooltipTriggerPro
     );
   },
 );
-
-TooltipTrigger.displayName = TRIGGER_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * TooltipPortal
@@ -364,8 +368,6 @@ const TooltipPortal: React.FC<TooltipPortalProps> = (props: ScopedProps<TooltipP
   );
 };
 
-TooltipPortal.displayName = PORTAL_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * TooltipContent
  * -----------------------------------------------------------------------------------------------*/
@@ -381,8 +383,8 @@ interface TooltipContentProps extends TooltipContentImplProps {
   forceMount?: true;
 }
 
-const TooltipContent = React.forwardRef<TooltipContentElement, TooltipContentProps>(
-  (props: ScopedProps<TooltipContentProps>, forwardedRef) => {
+const TooltipContent = /* @__PURE__ */ React.forwardRef<TooltipContentElement, TooltipContentProps>(
+  function TooltipContent(props: ScopedProps<TooltipContentProps>, forwardedRef) {
     const portalContext = usePortalContext(CONTENT_NAME, props.__scopeTooltip);
     const { forceMount = portalContext.forceMount, side = 'top', ...contentProps } = props;
     const context = useTooltipContext(CONTENT_NAME, props.__scopeTooltip);
@@ -405,10 +407,10 @@ type Polygon = Point[];
 type TooltipContentHoverableElement = TooltipContentImplElement;
 interface TooltipContentHoverableProps extends TooltipContentImplProps {}
 
-const TooltipContentHoverable = React.forwardRef<
+const TooltipContentHoverable = /* @__PURE__ */ React.forwardRef<
   TooltipContentHoverableElement,
   TooltipContentHoverableProps
->((props: ScopedProps<TooltipContentHoverableProps>, forwardedRef) => {
+>(function TooltipContentHoverable(props: ScopedProps<TooltipContentHoverableProps>, forwardedRef) {
   const context = useTooltipContext(CONTENT_NAME, props.__scopeTooltip);
   const providerContext = useTooltipProviderContext(CONTENT_NAME, props.__scopeTooltip);
   const ref = React.useRef<TooltipContentHoverableElement>(null);
@@ -480,9 +482,6 @@ const TooltipContentHoverable = React.forwardRef<
   return <TooltipContentImpl {...props} ref={composedRefs} />;
 });
 
-const [VisuallyHiddenContentContextProvider, useVisuallyHiddenContentContext] =
-  createTooltipContext(TOOLTIP_NAME, { isInside: false });
-
 type TooltipContentImplElement = React.ComponentRef<typeof PopperPrimitive.Content>;
 type DismissableLayerProps = React.ComponentPropsWithoutRef<typeof DismissableLayer>;
 type PopperContentProps = React.ComponentPropsWithoutRef<typeof PopperPrimitive.Content>;
@@ -506,12 +505,17 @@ interface TooltipContentImplProps extends Omit<PopperContentProps, 'onPlaced'> {
 
 const Slottable = createSlottable('TooltipContent');
 
-const TooltipContentImpl = React.forwardRef<TooltipContentImplElement, TooltipContentImplProps>(
-  (props: ScopedProps<TooltipContentImplProps>, forwardedRef) => {
+const TooltipContentImpl = /* @__PURE__ */ React.forwardRef<
+  TooltipContentImplElement,
+  TooltipContentImplProps
+>(
+  // blank line to reduce diff noise
+  function TooltipContentImpl(props: ScopedProps<TooltipContentImplProps>, forwardedRef) {
     const {
       __scopeTooltip,
       children,
       'aria-label': ariaLabel,
+      id: idProp,
       onEscapeKeyDown,
       onPointerDownOutside,
       ...contentProps
@@ -539,6 +543,14 @@ const TooltipContentImpl = React.forwardRef<TooltipContentImplElement, TooltipCo
       }
     }, [context.trigger, onClose]);
 
+    const { setContentId } = context;
+    useLayoutEffect(() => {
+      setContentId(idProp);
+      return () => {
+        setContentId(undefined);
+      };
+    }, [idProp, setContentId]);
+
     return (
       <DismissableLayer
         asChild
@@ -550,6 +562,13 @@ const TooltipContentImpl = React.forwardRef<TooltipContentImplElement, TooltipCo
       >
         <PopperPrimitive.Content
           data-state={context.stateAttribute}
+          // Following the ARIA tooltip pattern, the visible content acts as the
+          // accessible description (referenced by the trigger's
+          // `aria-describedby`) when no `aria-label` override is provided. This
+          // lets `children` render a single time instead of being duplicated
+          // into a visually hidden copy.
+          role={ariaLabel ? undefined : 'tooltip'}
+          id={ariaLabel ? undefined : context.contentId}
           {...popperScope}
           {...contentProps}
           ref={forwardedRef}
@@ -566,46 +585,32 @@ const TooltipContentImpl = React.forwardRef<TooltipContentImplElement, TooltipCo
           }}
         >
           <Slottable>{children}</Slottable>
-          <VisuallyHiddenContentContextProvider scope={__scopeTooltip} isInside={true}>
+          {ariaLabel ? (
             <VisuallyHiddenPrimitive.Root id={context.contentId} role="tooltip">
-              {ariaLabel || children}
+              {ariaLabel}
             </VisuallyHiddenPrimitive.Root>
-          </VisuallyHiddenContentContextProvider>
+          ) : null}
         </PopperPrimitive.Content>
       </DismissableLayer>
     );
   },
 );
 
-TooltipContent.displayName = CONTENT_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * TooltipArrow
  * -----------------------------------------------------------------------------------------------*/
-
-const ARROW_NAME = 'TooltipArrow';
 
 type TooltipArrowElement = React.ComponentRef<typeof PopperPrimitive.Arrow>;
 type PopperArrowProps = React.ComponentPropsWithoutRef<typeof PopperPrimitive.Arrow>;
 interface TooltipArrowProps extends PopperArrowProps {}
 
-const TooltipArrow = React.forwardRef<TooltipArrowElement, TooltipArrowProps>(
-  (props: ScopedProps<TooltipArrowProps>, forwardedRef) => {
+const TooltipArrow = /* @__PURE__ */ React.forwardRef<TooltipArrowElement, TooltipArrowProps>(
+  function TooltipArrow(props: ScopedProps<TooltipArrowProps>, forwardedRef) {
     const { __scopeTooltip, ...arrowProps } = props;
     const popperScope = usePopperScope(__scopeTooltip);
-    const visuallyHiddenContentContext = useVisuallyHiddenContentContext(
-      ARROW_NAME,
-      __scopeTooltip,
-    );
-    // if the arrow is inside the `VisuallyHidden`, we don't want to render it all to
-    // prevent issues in positioning the arrow due to the duplicate
-    return visuallyHiddenContentContext.isInside ? null : (
-      <PopperPrimitive.Arrow {...popperScope} {...arrowProps} ref={forwardedRef} />
-    );
+    return <PopperPrimitive.Arrow {...popperScope} {...arrowProps} ref={forwardedRef} />;
   },
 );
-
-TooltipArrow.displayName = ARROW_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
@@ -685,7 +690,7 @@ function isPointInPolygon(point: Point, polygon: Polygon) {
     const xj = jj.x;
     const yj = jj.y;
 
-    // prettier-ignore
+    // oxfmt-ignore
     const intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
     if (intersect) inside = !inside;
   }
@@ -749,12 +754,18 @@ function getHullPresorted<P extends Point>(points: Readonly<Array<P>>): Array<P>
   }
 }
 
-const Provider = TooltipProvider;
-const Root = Tooltip;
-const Trigger = TooltipTrigger;
-const Portal = TooltipPortal;
-const Content = TooltipContent;
-const Arrow = TooltipArrow;
+// TODO: Move to primitive once that package exposed individual sub-modules
+function concatAriaDescribedby(...values: unknown[]): string | undefined {
+  const ids = new Set<string>();
+  for (const value of values) {
+    if (typeof value !== 'string') continue;
+    for (const id of String(value).trim().split(/\s+/)) {
+      if (id) ids.add(id);
+    }
+  }
+
+  return ids.size > 0 ? Array.from(ids).join(' ') : undefined;
+}
 
 export {
   createTooltipScope,
@@ -766,12 +777,12 @@ export {
   TooltipContent,
   TooltipArrow,
   //
-  Provider,
-  Root,
-  Trigger,
-  Portal,
-  Content,
-  Arrow,
+  TooltipProvider as Provider,
+  Tooltip as Root,
+  TooltipTrigger as Trigger,
+  TooltipPortal as Portal,
+  TooltipContent as Content,
+  TooltipArrow as Arrow,
 };
 export type {
   TooltipProviderProps,

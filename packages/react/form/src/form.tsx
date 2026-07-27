@@ -53,8 +53,9 @@ interface FormProps extends PrimitiveFormProps {
   onClearServerErrors?(): void;
 }
 
-const Form = React.forwardRef<FormElement, FormProps>(
-  (props: ScopedProps<FormProps>, forwardedRef) => {
+const Form = /* @__PURE__ */ React.forwardRef<FormElement, FormProps>(
+  // blank line to reduce diff noise
+  function Form(props: ScopedProps<FormProps>, forwardedRef) {
     const { __scopeForm, onClearServerErrors = () => {}, ...rootProps } = props;
     const formRef = React.useRef<HTMLFormElement>(null);
     const composedFormRef = useComposedRefs(forwardedRef, formRef);
@@ -184,8 +185,6 @@ const Form = React.forwardRef<FormElement, FormProps>(
   },
 );
 
-Form.displayName = FORM_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * FormField
  * -----------------------------------------------------------------------------------------------*/
@@ -207,8 +206,8 @@ interface FormFieldProps extends PrimitiveDivProps {
   serverInvalid?: boolean;
 }
 
-const FormField = React.forwardRef<FormFieldElement, FormFieldProps>(
-  (props: ScopedProps<FormFieldProps>, forwardedRef) => {
+const FormField = /* @__PURE__ */ React.forwardRef<FormFieldElement, FormFieldProps>(
+  function FormField(props: ScopedProps<FormFieldProps>, forwardedRef) {
     const { __scopeForm, name, serverInvalid = false, ...fieldProps } = props;
     const validationContext = useValidationContext(FIELD_NAME, __scopeForm);
     const validity = validationContext.getFieldValidity(name);
@@ -227,8 +226,6 @@ const FormField = React.forwardRef<FormFieldElement, FormFieldProps>(
   },
 );
 
-FormField.displayName = FIELD_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * FormLabel
  * -----------------------------------------------------------------------------------------------*/
@@ -237,20 +234,36 @@ const LABEL_NAME = 'FormLabel';
 
 type FormLabelElement = React.ComponentRef<typeof LabelPrimitive>;
 type LabelProps = React.ComponentPropsWithoutRef<typeof LabelPrimitive>;
-interface FormLabelProps extends LabelProps {}
+interface FormLabelProps extends LabelProps {
+  name?: string;
+}
 
-const FormLabel = React.forwardRef<FormLabelElement, FormLabelProps>(
-  (props: ScopedProps<FormLabelProps>, forwardedRef) => {
-    const { __scopeForm, ...labelProps } = props;
+const FormLabel = /* @__PURE__ */ React.forwardRef<FormLabelElement, FormLabelProps>(
+  function FormLabel(props: ScopedProps<FormLabelProps>, forwardedRef) {
+    const { __scopeForm, name: nameProp, ...labelProps } = props;
     const validationContext = useValidationContext(LABEL_NAME, __scopeForm);
-    const fieldContext = useFormFieldContext(LABEL_NAME, __scopeForm);
-    const htmlFor = labelProps.htmlFor || fieldContext.id;
-    const validity = validationContext.getFieldValidity(fieldContext.name);
+    const fieldContext = useFormFieldContext(LABEL_NAME, __scopeForm, { optional: true });
+    const name = nameProp ?? fieldContext?.name;
+    if (!name) {
+      throw new Error(
+        `\`${LABEL_NAME}\` must be used within \`${FIELD_NAME}\` or specify the \`name\` prop`,
+      );
+    }
+
+    const htmlFor = labelProps.htmlFor || fieldContext?.id;
+    if (!htmlFor) {
+      throw new Error(
+        `\`${LABEL_NAME}\` must be used within \`${FIELD_NAME}\` or specify the \`htmlFor\` prop`,
+      );
+    }
+
+    const validity = validationContext.getFieldValidity(name);
+    const serverInvalid = fieldContext?.serverInvalid ?? false;
 
     return (
       <LabelPrimitive
-        data-valid={getValidAttribute(validity, fieldContext.serverInvalid)}
-        data-invalid={getInvalidAttribute(validity, fieldContext.serverInvalid)}
+        data-valid={getValidAttribute(validity, serverInvalid)}
+        data-invalid={getInvalidAttribute(validity, serverInvalid)}
         {...labelProps}
         ref={forwardedRef}
         htmlFor={htmlFor}
@@ -258,8 +271,6 @@ const FormLabel = React.forwardRef<FormLabelElement, FormLabelProps>(
     );
   },
 );
-
-FormLabel.displayName = LABEL_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * FormControl
@@ -271,18 +282,36 @@ type FormControlElement = React.ComponentRef<typeof Primitive.input>;
 type PrimitiveInputProps = React.ComponentPropsWithoutRef<typeof Primitive.input>;
 interface FormControlProps extends PrimitiveInputProps {}
 
-const FormControl = React.forwardRef<FormControlElement, FormControlProps>(
-  (props: ScopedProps<FormControlProps>, forwardedRef) => {
-    const { __scopeForm, ...controlProps } = props;
+const FormControl = /* @__PURE__ */ React.forwardRef<FormControlElement, FormControlProps>(
+  function FormControl(props: ScopedProps<FormControlProps>, forwardedRef) {
+    const {
+      __scopeForm,
+      name: nameProp,
+      id: idProp,
+      'aria-describedby': ariaDescribedby,
+      ...controlProps
+    } = props;
 
     const validationContext = useValidationContext(CONTROL_NAME, __scopeForm);
-    const fieldContext = useFormFieldContext(CONTROL_NAME, __scopeForm);
+    const fieldContext = useFormFieldContext(CONTROL_NAME, __scopeForm, { optional: true });
     const ariaDescriptionContext = useAriaDescriptionContext(CONTROL_NAME, __scopeForm);
 
     const ref = React.useRef<FormControlElement>(null);
     const composedRef = useComposedRefs(forwardedRef, ref);
-    const name = controlProps.name || fieldContext.name;
-    const id = controlProps.id || fieldContext.id;
+    const name = nameProp || fieldContext?.name;
+    if (!name) {
+      throw new Error(
+        `\`${CONTROL_NAME}\` must be used within \`${FIELD_NAME}\` or specify the \`name\` prop`,
+      );
+    }
+
+    const id = idProp || fieldContext?.id;
+    if (!id) {
+      throw new Error(
+        `\`${CONTROL_NAME}\` must be used within \`${FIELD_NAME}\` or specify the \`id\` prop`,
+      );
+    }
+
     const customMatcherEntries = validationContext.getFieldCustomMatcherEntries(name);
 
     const { onFieldValidityChange, onFieldCustomErrorsChange, onFieldValiditionClear } =
@@ -379,24 +408,33 @@ const FormControl = React.forwardRef<FormControlElement, FormControlProps>(
       }
     }, [resetControlValidity]);
 
+    const serverInvalid = fieldContext?.serverInvalid ?? false;
+
     // focus first invalid control when fields are set as invalid by server
     React.useEffect(() => {
+      if (!serverInvalid) {
+        return;
+      }
+
       const control = ref.current;
       const form = control?.closest('form');
-      if (form && fieldContext.serverInvalid) {
-        const firstInvalidControl = getFirstInvalidControl(form);
-        if (firstInvalidControl === control) firstInvalidControl.focus();
+      const firstInvalidControl = form ? getFirstInvalidControl(form) : null;
+      if (firstInvalidControl === control) {
+        firstInvalidControl?.focus();
       }
-    }, [fieldContext.serverInvalid]);
+    }, [serverInvalid]);
 
     const validity = validationContext.getFieldValidity(name);
 
     return (
       <Primitive.input
-        data-valid={getValidAttribute(validity, fieldContext.serverInvalid)}
-        data-invalid={getInvalidAttribute(validity, fieldContext.serverInvalid)}
-        aria-invalid={fieldContext.serverInvalid ? true : undefined}
-        aria-describedby={ariaDescriptionContext.getFieldDescription(name)}
+        data-valid={getValidAttribute(validity, serverInvalid)}
+        data-invalid={getInvalidAttribute(validity, serverInvalid)}
+        aria-invalid={serverInvalid || undefined}
+        aria-describedby={concatAriaDescribedby(
+          ariaDescribedby,
+          ariaDescriptionContext.getFieldDescription(name),
+        )}
         // disable default browser behaviour of showing built-in error message on hover
         title=""
         {...controlProps}
@@ -415,8 +453,6 @@ const FormControl = React.forwardRef<FormControlElement, FormControlProps>(
     );
   },
 );
-
-FormControl.displayName = CONTROL_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * FormMessage
@@ -459,11 +495,16 @@ interface FormMessageProps extends Omit<FormMessageImplProps, 'name'> {
   name?: string;
 }
 
-const FormMessage = React.forwardRef<FormMessageElement, FormMessageProps>(
-  (props: ScopedProps<FormMessageProps>, forwardedRef) => {
+const FormMessage = /* @__PURE__ */ React.forwardRef<FormMessageElement, FormMessageProps>(
+  function FormMessage(props: ScopedProps<FormMessageProps>, forwardedRef) {
     const { match, name: nameProp, ...messageProps } = props;
-    const fieldContext = useFormFieldContext(MESSAGE_NAME, props.__scopeForm);
-    const name = nameProp ?? fieldContext.name;
+    const fieldContext = useFormFieldContext(MESSAGE_NAME, props.__scopeForm, { optional: true });
+    const name = nameProp ?? fieldContext?.name;
+    if (!name) {
+      throw new Error(
+        `\`${MESSAGE_NAME}\` must be used within \`${FIELD_NAME}\` or specify the \`name\` prop`,
+      );
+    }
 
     if (match === undefined) {
       return (
@@ -479,8 +520,6 @@ const FormMessage = React.forwardRef<FormMessageElement, FormMessageProps>(
   },
 );
 
-FormMessage.displayName = MESSAGE_NAME;
-
 type FormBuiltInMessageElement = FormMessageImplElement;
 interface FormBuiltInMessageProps extends FormMessageImplProps {
   match: ValidityMatcher;
@@ -488,8 +527,12 @@ interface FormBuiltInMessageProps extends FormMessageImplProps {
   name: string;
 }
 
-const FormBuiltInMessage = React.forwardRef<FormBuiltInMessageElement, FormBuiltInMessageProps>(
-  (props: ScopedProps<FormBuiltInMessageProps>, forwardedRef) => {
+const FormBuiltInMessage = /* @__PURE__ */ React.forwardRef<
+  FormBuiltInMessageElement,
+  FormBuiltInMessageProps
+>(
+  // blank line to reduce diff noise
+  function FormBuiltInMessage(props: ScopedProps<FormBuiltInMessageProps>, forwardedRef) {
     const { match, forceMatch = false, name, children, ...messageProps } = props;
     const validationContext = useValidationContext(MESSAGE_NAME, messageProps.__scopeForm);
     const validity = validationContext.getFieldValidity(name);
@@ -514,8 +557,12 @@ interface FormCustomMessageProps extends React.ComponentPropsWithoutRef<typeof F
   name: string;
 }
 
-const FormCustomMessage = React.forwardRef<FormCustomMessageElement, FormCustomMessageProps>(
-  (props: ScopedProps<FormCustomMessageProps>, forwardedRef) => {
+const FormCustomMessage = /* @__PURE__ */ React.forwardRef<
+  FormCustomMessageElement,
+  FormCustomMessageProps
+>(
+  // blank line to reduce diff noise
+  function FormCustomMessage(props: ScopedProps<FormCustomMessageProps>, forwardedRef) {
     const { match, forceMatch = false, name, id: idProp, children, ...messageProps } = props;
     const validationContext = useValidationContext(MESSAGE_NAME, messageProps.__scopeForm);
     const ref = React.useRef<FormCustomMessageElement>(null);
@@ -554,8 +601,12 @@ interface FormMessageImplProps extends PrimitiveSpanProps {
   name: string;
 }
 
-const FormMessageImpl = React.forwardRef<FormMessageImplElement, FormMessageImplProps>(
-  (props: ScopedProps<FormMessageImplProps>, forwardedRef) => {
+const FormMessageImpl = /* @__PURE__ */ React.forwardRef<
+  FormMessageImplElement,
+  FormMessageImplProps
+>(
+  // blank line to reduce diff noise
+  function FormMessageImpl(props: ScopedProps<FormMessageImplProps>, forwardedRef) {
     const { __scopeForm, id: idProp, name, ...messageProps } = props;
     const ariaDescriptionContext = useAriaDescriptionContext(MESSAGE_NAME, __scopeForm);
     const _id = useId();
@@ -585,32 +636,31 @@ interface FormValidityStateProps {
 const FormValidityState = (props: ScopedProps<FormValidityStateProps>) => {
   const { __scopeForm, name: nameProp, children } = props;
   const validationContext = useValidationContext(VALIDITY_STATE_NAME, __scopeForm);
-  const fieldContext = useFormFieldContext(VALIDITY_STATE_NAME, __scopeForm);
-  const name = nameProp ?? fieldContext.name;
+  const fieldContext = useFormFieldContext(VALIDITY_STATE_NAME, __scopeForm, { optional: true });
+  const name = nameProp ?? fieldContext?.name;
+  if (!name) {
+    throw new Error(
+      `\`${VALIDITY_STATE_NAME}\` must be used within \`${FIELD_NAME}\` or specify the \`name\` prop`,
+    );
+  }
   const validity = validationContext.getFieldValidity(name);
   return <>{children(validity)}</>;
 };
-
-FormValidityState.displayName = VALIDITY_STATE_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * FormSubmit
  * -----------------------------------------------------------------------------------------------*/
 
-const SUBMIT_NAME = 'FormSubmit';
-
 type FormSubmitElement = React.ComponentRef<typeof Primitive.button>;
 type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
 interface FormSubmitProps extends PrimitiveButtonProps {}
 
-const FormSubmit = React.forwardRef<FormSubmitElement, FormSubmitProps>(
-  (props: ScopedProps<FormSubmitProps>, forwardedRef) => {
+const FormSubmit = /* @__PURE__ */ React.forwardRef<FormSubmitElement, FormSubmitProps>(
+  function FormSubmit(props: ScopedProps<FormSubmitProps>, forwardedRef) {
     const { __scopeForm, ...submitProps } = props;
     return <Primitive.button type="submit" {...submitProps} ref={forwardedRef} />;
   },
 );
-
-FormSubmit.displayName = SUBMIT_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
@@ -646,10 +696,10 @@ function isInvalid(control: HTMLElement) {
   );
 }
 
-function getFirstInvalidControl(form: HTMLFormElement): HTMLElement | undefined {
+function getFirstInvalidControl(form: HTMLFormElement): HTMLElement | null {
   const elements = form.elements;
   const [firstInvalidControl] = Array.from(elements).filter(isHTMLElement).filter(isInvalid);
-  return firstInvalidControl;
+  return firstInvalidControl ?? null;
 }
 
 function isAsyncCustomMatcherEntry(
@@ -683,20 +733,26 @@ function getValidAttribute(validity: ValidityState | undefined, serverInvalid: b
   if (validity?.valid === true && !serverInvalid) return true;
   return undefined;
 }
+
 function getInvalidAttribute(validity: ValidityState | undefined, serverInvalid: boolean) {
   if (validity?.valid === false || serverInvalid) return true;
   return undefined;
 }
 
-/* -----------------------------------------------------------------------------------------------*/
+// TODO: Move to primitive once that package exposed individual sub-modules
+function concatAriaDescribedby(...values: unknown[]): string | undefined {
+  const ids = new Set<string>();
+  for (const value of values) {
+    if (typeof value !== 'string') continue;
+    for (const id of String(value).trim().split(/\s+/)) {
+      if (id) ids.add(id);
+    }
+  }
 
-const Root = Form;
-const Field = FormField;
-const Label = FormLabel;
-const Control = FormControl;
-const Message = FormMessage;
-const ValidityState = FormValidityState;
-const Submit = FormSubmit;
+  return ids.size > 0 ? Array.from(ids).join(' ') : undefined;
+}
+
+/* -----------------------------------------------------------------------------------------------*/
 
 export {
   createFormScope,
@@ -709,13 +765,13 @@ export {
   FormValidityState,
   FormSubmit,
   //
-  Root,
-  Field,
-  Label,
-  Control,
-  Message,
-  ValidityState,
-  Submit,
+  Form as Root,
+  FormField as Field,
+  FormLabel as Label,
+  FormControl as Control,
+  FormMessage as Message,
+  FormValidityState as ValidityState,
+  FormSubmit as Submit,
 };
 
 export type {

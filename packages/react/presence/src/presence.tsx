@@ -22,8 +22,6 @@ const Presence: React.FC<PresenceProps> = (props) => {
   return forceMount || presence.isPresent ? React.cloneElement(child, { ref }) : null;
 };
 
-Presence.displayName = 'Presence';
-
 /* -------------------------------------------------------------------------------------------------
  * usePresence
  * -----------------------------------------------------------------------------------------------*/
@@ -33,6 +31,7 @@ function usePresence(present: boolean) {
   const stylesRef = React.useRef<CSSStyleDeclaration | null>(null);
   const prevPresentRef = React.useRef(present);
   const prevAnimationNameRef = React.useRef<string>('none');
+  const mountAnimationNameRef = React.useRef<string | undefined>(undefined);
   const initialState = present ? 'mounted' : 'unmounted';
   const [state, send] = useStateMachine(initialState, {
     mounted: {
@@ -49,8 +48,19 @@ function usePresence(present: boolean) {
   });
 
   React.useEffect(() => {
-    const currentAnimationName = getAnimationName(stylesRef.current);
-    prevAnimationNameRef.current = state === 'mounted' ? currentAnimationName : 'none';
+    if (state === 'mounted') {
+      // Use the animation name captured during the layout phase (or the ref
+      // callback on first mount). By the time this passive effect runs,
+      // sibling effects like react-remove-scroll and DismissableLayer may have
+      // dirtied body styles, so re-reading from the live CSSStyleDeclaration
+      // here would force an expensive synchronous style recalculation.
+      // See: https://github.com/radix-ui/primitives/issues/1634
+      prevAnimationNameRef.current =
+        mountAnimationNameRef.current ?? getAnimationName(stylesRef.current);
+      mountAnimationNameRef.current = undefined;
+    } else {
+      prevAnimationNameRef.current = 'none';
+    }
   }, [state]);
 
   useLayoutEffect(() => {
@@ -63,6 +73,11 @@ function usePresence(present: boolean) {
       const currentAnimationName = getAnimationName(styles);
 
       if (present) {
+        // Capture the animation name now, while styles are still "clean"
+        // (before sibling passive effects dirty the body). The later passive
+        // effect will read from this ref instead of the live
+        // CSSStyleDeclaration, avoiding a forced style recalculation.
+        mountAnimationNameRef.current = currentAnimationName;
         send('MOUNT');
       } else if (currentAnimationName === 'none' || styles?.display === 'none') {
         // If there is no exit animation or the element is hidden, animations won't run
@@ -154,7 +169,18 @@ function usePresence(present: boolean) {
   return {
     isPresent: ['mounted', 'unmountSuspended'].includes(state),
     ref: React.useCallback((node: HTMLElement) => {
-      stylesRef.current = node ? getComputedStyle(node) : null;
+      if (node) {
+        const styles = getComputedStyle(node);
+        stylesRef.current = styles;
+        // Eagerly read the animation name while styles are clean. Ref
+        // callbacks fire during the commit phase, before any passive effects
+        // can dirty body styles. This cached value is consumed by the passive
+        // effect that records prevAnimationNameRef, letting it skip a
+        // redundant (and expensive) live-style read.
+        mountAnimationNameRef.current = getAnimationName(styles);
+      } else {
+        stylesRef.current = null;
+      }
       setNode(node);
     }, []),
   };
@@ -246,11 +272,9 @@ function getElementRef(element: React.ReactElement<{ ref?: React.Ref<unknown> }>
   return element.props.ref || (element as any).ref;
 }
 
-const Root = Presence;
-
 export {
   Presence,
   //
-  Root,
+  Presence as Root,
 };
 export type { PresenceProps };

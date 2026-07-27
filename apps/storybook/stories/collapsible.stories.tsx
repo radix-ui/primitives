@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { Collapsible } from 'radix-ui';
+import { Collapsible, Slot } from 'radix-ui';
 import styles from './collapsible.stories.module.css';
+import { customMergeProps } from './custom-merge-props';
 
 export default { title: 'Components/Collapsible' };
 
@@ -57,6 +58,19 @@ export const AnimatedHorizontal = () => {
     </Collapsible.Root>
   );
 };
+
+export const WithCustomMergeProps = () => (
+  <Slot.Provider mergeProps={customMergeProps}>
+    <Collapsible.Root className={styles.root}>
+      <Collapsible.Trigger className={styles.trigger} asChild>
+        <button data-custom-merge>Trigger (asChild)</button>
+      </Collapsible.Trigger>
+      <Collapsible.Content className={styles.content} asChild>
+        <article data-custom-merge>Content merged via a custom strategy</article>
+      </Collapsible.Content>
+    </Collapsible.Root>
+  </Slot.Provider>
+);
 
 export const Chromatic = () => (
   <>

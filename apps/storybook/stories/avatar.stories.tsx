@@ -1,6 +1,7 @@
-import { Avatar } from 'radix-ui';
+import { Avatar, Slot } from 'radix-ui';
 import styles from './avatar.stories.module.css';
 import * as React from 'react';
+import { customMergeProps } from './custom-merge-props';
 
 export default { title: 'Components/Avatar' };
 
@@ -48,6 +49,16 @@ export const Styled = () => (
       )}
     </SourceChanger>
   </>
+);
+
+export const WithCustomMergeProps = () => (
+  <Slot.Provider mergeProps={customMergeProps}>
+    <Avatar.Root className={styles.root}>
+      <Avatar.Fallback className={styles.fallback} asChild>
+        <span>JS</span>
+      </Avatar.Fallback>
+    </Avatar.Root>
+  </Slot.Provider>
 );
 
 export const Chromatic = () => (

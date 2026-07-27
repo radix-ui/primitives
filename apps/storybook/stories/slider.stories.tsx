@@ -1,8 +1,9 @@
 /* eslint-disable react/jsx-pascal-case */
 import * as React from 'react';
-import { Direction, Slider } from 'radix-ui';
+import { Direction, Slider, Slot } from 'radix-ui';
 import serialize from 'form-serialize';
 import styles from './slider.stories.module.css';
+import { customMergeProps } from './custom-merge-props';
 
 export default { title: 'Components/Slider' };
 
@@ -204,6 +205,50 @@ export const WithMinimumStepsBetweenThumbs = () => (
   </Slider.Root>
 );
 
+export const WithPreserveThumbOrder = () => (
+  <div style={{ display: 'flex', flexDirection: 'column', gap: 50 }}>
+    <div>
+      <h4>Default (thumbs can swap)</h4>
+      <Slider.Root className={styles.root} defaultValue={[10, 30]}>
+        <Slider.Track className={styles.track}>
+          <Slider.Range className={styles.range} />
+        </Slider.Track>
+        <Slider.Thumb className={styles.thumb} />
+        <Slider.Thumb className={styles.thumb} />
+      </Slider.Root>
+    </div>
+
+    <div>
+      <h4>preserveThumbOrder</h4>
+      <Slider.Root className={styles.root} defaultValue={[10, 30]} preserveThumbOrder>
+        <Slider.Track className={styles.track}>
+          <Slider.Range className={styles.range} />
+        </Slider.Track>
+        <Slider.Thumb className={styles.thumb} />
+        <Slider.Thumb className={styles.thumb} />
+      </Slider.Root>
+    </div>
+
+    <div>
+      <h4>preserveThumbOrder with minStepsBetweenThumbs</h4>
+      <Slider.Root
+        className={styles.root}
+        defaultValue={[10, 30, 60, 80]}
+        minStepsBetweenThumbs={10}
+        preserveThumbOrder
+      >
+        <Slider.Track className={styles.track}>
+          <Slider.Range className={styles.range} />
+        </Slider.Track>
+        <Slider.Thumb className={styles.thumb} />
+        <Slider.Thumb className={styles.thumb} />
+        <Slider.Thumb className={styles.thumb} />
+        <Slider.Thumb className={styles.thumb} />
+      </Slider.Root>
+    </div>
+  </div>
+);
+
 export const WithMultipleRanges = () => {
   const [minStepsBetweenThumbs, setMinStepsBetweenThumbs] = React.useState(0);
 
@@ -322,6 +367,53 @@ export const WithinForm = () => {
       </fieldset>
 
       <button type="submit">Submit</button>
+    </form>
+  );
+};
+
+export const WithinFormReset = () => {
+  const [controlled, setControlled] = React.useState([40]);
+
+  return (
+    <form onSubmit={(event) => event.preventDefault()}>
+      <p>
+        Move the thumbs, then press <strong>Reset</strong>. Each slider returns to its initial value
+        (the uncontrolled slider via its <code>defaultValue</code>, the controlled slider via its
+        initial <code>value</code> state).
+      </p>
+
+      <fieldset>
+        <legend>Uncontrolled (defaultValue)</legend>
+        <Slider.Root name="uncontrolled" defaultValue={[20]} className={styles.root}>
+          <Slider.Track className={styles.track}>
+            <Slider.Range className={styles.range} />
+          </Slider.Track>
+          <Slider.Thumb className={styles.thumb} />
+        </Slider.Root>
+      </fieldset>
+
+      <br />
+      <br />
+
+      <fieldset>
+        <legend>Controlled value: {String(controlled)}</legend>
+        <Slider.Root
+          name="controlled"
+          value={controlled}
+          onValueChange={setControlled}
+          className={styles.root}
+        >
+          <Slider.Track className={styles.track}>
+            <Slider.Range className={styles.range} />
+          </Slider.Track>
+          <Slider.Thumb className={styles.thumb} />
+        </Slider.Root>
+      </fieldset>
+
+      <br />
+      <br />
+
+      <button type="reset">Reset</button>
     </form>
   );
 };
@@ -457,6 +549,19 @@ export const InScrollableContext = () => {
     </div>
   );
 };
+
+export const WithCustomMergeProps = () => (
+  <Slot.Provider mergeProps={customMergeProps}>
+    <Slider.Root className={styles.root} defaultValue={[40]}>
+      <Slider.Track className={styles.track}>
+        <Slider.Range className={styles.range} />
+      </Slider.Track>
+      <Slider.Thumb className={styles.thumb} asChild>
+        <span data-custom-merge />
+      </Slider.Thumb>
+    </Slider.Root>
+  </Slot.Provider>
+);
 
 export const Chromatic = () => (
   <>

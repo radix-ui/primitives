@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { axe } from 'vitest-axe';
 import type { RenderResult } from '@testing-library/react';
-import { render, fireEvent, cleanup, screen } from '@testing-library/react';
+import { act, render, fireEvent, cleanup, screen } from '@testing-library/react';
+import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
 import * as Dialog from './dialog';
 import type { MockInstance } from 'vitest';
 import { describe, it, afterEach, beforeEach, vi, expect } from 'vitest';
@@ -100,6 +101,106 @@ describe('aria-controls', () => {
   });
 });
 
+describe('aria-labelledby / aria-describedby references', () => {
+  afterEach(() => {
+    cleanup();
+  });
+
+  // A referenced `aria-labelledby`/`aria-describedby` id must resolve to an
+  // element in the document, otherwise it is a broken ARIA reference.
+  // https://github.com/radix-ui/primitives/issues/2836
+  it('should reference `Title` and `Description` when they are rendered', () => {
+    const rendered = render(
+      <Dialog.Root defaultOpen>
+        <Dialog.Content>
+          <Dialog.Title>Title</Dialog.Title>
+          <Dialog.Description>Description</Dialog.Description>
+        </Dialog.Content>
+      </Dialog.Root>,
+    );
+    const content = rendered.getByRole('dialog');
+    const labelledBy = content.getAttribute('aria-labelledby');
+    const describedBy = content.getAttribute('aria-describedby');
+    expect(labelledBy).toBeTruthy();
+    expect(describedBy).toBeTruthy();
+    expect(document.getElementById(labelledBy!)).toHaveTextContent('Title');
+    expect(document.getElementById(describedBy!)).toHaveTextContent('Description');
+  });
+
+  // Regression test for https://github.com/radix-ui/primitives/issues/2598
+  it('should normalize existing aria-describedby ids and append the Description id', () => {
+    const rendered = render(
+      <>
+        <span id="existing-description">Existing description</span>
+        <span id="shared-description">Shared description</span>
+        <Dialog.Root defaultOpen>
+          <Dialog.Content
+            aria-describedby={' existing-description\texisting-description shared-description '}
+          >
+            <Dialog.Title>Title</Dialog.Title>
+            <Dialog.Description>Description</Dialog.Description>
+          </Dialog.Content>
+        </Dialog.Root>
+      </>,
+    );
+
+    const content = rendered.getByRole('dialog');
+    const description = rendered.getByText('Description');
+    expect(content).toHaveAttribute(
+      'aria-describedby',
+      `existing-description shared-description ${description.id}`,
+    );
+  });
+
+  it('should not set `aria-labelledby` when no `Title` is rendered', () => {
+    const rendered = render(
+      <Dialog.Root defaultOpen>
+        <Dialog.Content aria-label="Custom label">
+          <Dialog.Description>Description</Dialog.Description>
+        </Dialog.Content>
+      </Dialog.Root>,
+    );
+    const content = rendered.getByRole('dialog');
+    expect(content).not.toHaveAttribute('aria-labelledby');
+  });
+
+  it('should not set `aria-describedby` when no `Description` is rendered', () => {
+    const rendered = render(
+      <Dialog.Root defaultOpen>
+        <Dialog.Content>
+          <Dialog.Title>Title</Dialog.Title>
+        </Dialog.Content>
+      </Dialog.Root>,
+    );
+    const content = rendered.getByRole('dialog');
+    expect(content).not.toHaveAttribute('aria-describedby');
+  });
+
+  it('should update references when `Title`/`Description` mount and unmount', () => {
+    const Test = ({ showText }: { showText: boolean }) => (
+      <Dialog.Root defaultOpen>
+        <Dialog.Content aria-label="Custom label">
+          {showText ? <Dialog.Title>Title</Dialog.Title> : null}
+          {showText ? <Dialog.Description>Description</Dialog.Description> : null}
+        </Dialog.Content>
+      </Dialog.Root>
+    );
+
+    const rendered = render(<Test showText={false} />);
+    const content = rendered.getByRole('dialog');
+    expect(content).not.toHaveAttribute('aria-labelledby');
+    expect(content).not.toHaveAttribute('aria-describedby');
+
+    rendered.rerender(<Test showText={true} />);
+    expect(content).toHaveAttribute('aria-labelledby');
+    expect(content).toHaveAttribute('aria-describedby');
+
+    rendered.rerender(<Test showText={false} />);
+    expect(content).not.toHaveAttribute('aria-labelledby');
+    expect(content).not.toHaveAttribute('aria-describedby');
+  });
+});
+
 describe('given a modal Dialog', () => {
   afterEach(() => {
     cleanup();
@@ -113,6 +214,38 @@ describe('given a modal Dialog', () => {
     expect(document.body.style.pointerEvents).toBe('none');
     fireEvent.click(getByText(CLOSE_TEXT));
     expect(document.body.style.pointerEvents).toBe('');
+  });
+
+  // Regression test for https://github.com/radix-ui/primitives/issues/2860
+  // Ctrl + mouse wheel is the browser zoom gesture on Windows (and pinch-zoom on
+  // macOS trackpads emits a `wheel` event with `ctrlKey`).
+  it('should not prevent ctrl + wheel (page zoom) while open', async () => {
+    render(<DialogTest />);
+    fireEvent.click(screen.getByText(OPEN_TEXT));
+
+    // `RemoveScroll` attaches its document `wheel` listener from an
+    // asynchronously loaded sidecar. Poll until a plain wheel over the isolated
+    // `body` is prevented, which confirms the scroll lock is active. If this
+    // never happens the test fails loudly rather than passing spuriously.
+    async function waitForScrollLock() {
+      for (let i = 0; i < 50; i++) {
+        const notPrevented = fireEvent.wheel(document.body, { deltaY: 10 });
+        if (!notPrevented) {
+          return;
+        }
+        await act(async () => {
+          await new Promise((resolve) => window.setTimeout(resolve, 10));
+        });
+      }
+      throw new Error('RemoveScroll did not attach its `wheel` listener');
+    }
+
+    await waitForScrollLock();
+
+    // The ctrl + wheel zoom gesture over the dialog must NOT be prevented.
+    const content = screen.getByRole('dialog');
+    const zoomWheelPrevented = !fireEvent.wheel(content, { ctrlKey: true, deltaY: 10 });
+    expect(zoomWheelPrevented).toBe(false);
   });
 });
 
@@ -162,5 +295,81 @@ describe('given two overlapping modal Dialogs (forceMount)', () => {
     fireEvent.click(screen.getByText('close-a'));
     fireEvent.click(screen.getByText('close-b'));
     expect(document.body.style.pointerEvents).toBe('');
+  });
+});
+
+describe('given a modal Dialog containing a nested modal layer (eg. a DropdownMenu)', () => {
+  async function waitForDocumentPointerDownListener() {
+    // `DismissableLayer` registers its `pointerdown` listener in a `setTimeout`.
+    await act(async () => {
+      await new Promise((resolve) => window.setTimeout(resolve, 0));
+    });
+  }
+
+  function firePointerMouseClick(target: Element) {
+    fireEvent.pointerDown(target, { pointerType: 'mouse' });
+    fireEvent.mouseDown(target);
+    fireEvent.pointerUp(target, { pointerType: 'mouse' });
+    fireEvent.mouseUp(target);
+    fireEvent.click(target);
+  }
+
+  afterEach(() => {
+    cleanup();
+    document.body.style.pointerEvents = '';
+  });
+
+  // Regression test for https://github.com/radix-ui/primitives/issues/4035
+  it('does not call `onOpenChange(false)` on a controlled dialog when the nested layer is dismissed by an outside interaction', async () => {
+    const onOpenChange = vi.fn();
+    const onNestedLayerDismiss = vi.fn();
+
+    function ControlledDialog() {
+      const [open, setOpen] = React.useState(true);
+      const [menuOpen, setMenuOpen] = React.useState(false);
+      return (
+        <>
+          <Dialog.Root
+            open={open}
+            onOpenChange={(nextOpen) => {
+              onOpenChange(nextOpen);
+              setOpen(nextOpen);
+            }}
+          >
+            <Dialog.Portal>
+              <Dialog.Overlay />
+              <Dialog.Content>
+                <Dialog.Title>Title</Dialog.Title>
+                <button type="button" onClick={() => setMenuOpen(true)}>
+                  open menu
+                </button>
+                {menuOpen ? (
+                  <DismissableLayer disableOutsidePointerEvents onDismiss={onNestedLayerDismiss}>
+                    <button type="button">menu item</button>
+                  </DismissableLayer>
+                ) : null}
+              </Dialog.Content>
+            </Dialog.Portal>
+          </Dialog.Root>
+          <button type="button">outside</button>
+        </>
+      );
+    }
+
+    render(<ControlledDialog />);
+    await waitForDocumentPointerDownListener();
+
+    // Open the nested layer so it becomes the top-most layer.
+    fireEvent.click(screen.getByText('open menu'));
+    await waitForDocumentPointerDownListener();
+
+    // An outside interaction dismisses the (higher) nested layer but must leave
+    // the dialog open, since the dialog is not the top-most layer.
+    firePointerMouseClick(screen.getByText('outside'));
+    await waitForDocumentPointerDownListener();
+
+    expect(onNestedLayerDismiss).toHaveBeenCalledTimes(1);
+    expect(onOpenChange).not.toHaveBeenCalled();
+    expect(screen.getByText('open menu')).toBeInTheDocument();
   });
 });

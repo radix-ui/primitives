@@ -1,7 +1,8 @@
 /* eslint-disable react/jsx-pascal-case */
 import * as React from 'react';
-import { Direction, Label as LabelPrimitive, RadioGroup } from 'radix-ui';
+import { Direction, Label as LabelPrimitive, RadioGroup, Slot } from 'radix-ui';
 import styles from './radio-group.stories.module.css';
+import { customMergeProps } from './custom-merge-props';
 
 export default { title: 'Components/RadioGroup' };
 
@@ -89,6 +90,69 @@ export const PartsWithinForm = () => {
     </form>
   );
 };
+
+export const WithinFormReset = () => {
+  const [controlled, setControlled] = React.useState('1');
+
+  return (
+    <form onSubmit={(event) => event.preventDefault()}>
+      <p>
+        Change the selection, then press <strong>Reset</strong>. Each group returns to its initial
+        value (the uncontrolled group via its <code>defaultValue</code>, the controlled group via
+        its initial <code>value</code> state).
+      </p>
+
+      <fieldset>
+        <legend>Uncontrolled (defaultValue)</legend>
+        <RadioGroup.Root className={styles.root} name="uncontrolled" defaultValue="1">
+          {['1', '2', '3'].map((value) => (
+            <RadioGroup.Item key={value} className={styles.item} value={value}>
+              <RadioGroup.Indicator className={styles.indicator} />
+            </RadioGroup.Item>
+          ))}
+        </RadioGroup.Root>
+      </fieldset>
+
+      <br />
+      <br />
+
+      <fieldset>
+        <legend>Controlled value: {controlled}</legend>
+        <RadioGroup.Root
+          className={styles.root}
+          name="controlled"
+          value={controlled}
+          onValueChange={setControlled}
+        >
+          {['1', '2', '3'].map((value) => (
+            <RadioGroup.Item key={value} className={styles.item} value={value}>
+              <RadioGroup.Indicator className={styles.indicator} />
+            </RadioGroup.Item>
+          ))}
+        </RadioGroup.Root>
+      </fieldset>
+
+      <br />
+      <br />
+
+      <button type="reset">Reset</button>
+    </form>
+  );
+};
+export const WithCustomMergeProps = () => (
+  <Slot.Provider mergeProps={customMergeProps}>
+    <RadioGroup.Root className={styles.root} defaultValue="1">
+      <RadioGroup.Item className={styles.item} value="1" asChild>
+        <button data-custom-merge>
+          <RadioGroup.Indicator className={styles.indicator} />
+        </button>
+      </RadioGroup.Item>
+      <RadioGroup.Item className={styles.item} value="2">
+        <RadioGroup.Indicator className={styles.indicator} />
+      </RadioGroup.Item>
+    </RadioGroup.Root>
+  </Slot.Provider>
+);
 
 export const LegacyStyled = () => (
   <Label>

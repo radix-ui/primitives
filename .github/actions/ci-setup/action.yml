@@ -27,10 +27,16 @@ runs:
     # `pnpm publish` shells out to the npm CLI, and OIDC trusted publishing
     # requires npm >= 11.5.1. The npm bundled with Node isn't guaranteed to meet
     # that, so pin a known-good version explicitly.
+    #
+    # Pin to the v11 line rather than `npm@latest`: npm 12 changed
+    # `npm info --json` to always return an array, which @changesets/cli
+    # mis-parses so it treats already-published packages as unpublished and
+    # crashes mid-publish (changesets#2099). Stay on v11 until changesets
+    # fully handles npm 12.
     - name: Ensure npm supports OIDC trusted publishing
       shell: bash
       run: |
-        npm install -g npm@latest
+        npm install -g npm@11.18.0
         node -v
         npm -v
 

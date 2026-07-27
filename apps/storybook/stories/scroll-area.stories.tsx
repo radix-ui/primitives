@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { Direction, ScrollArea } from 'radix-ui';
+import { Direction, ScrollArea, Slot } from 'radix-ui';
 import styles from './scroll-area.stories.module.css';
+import { customMergeProps } from './custom-merge-props';
 
 export default { title: 'Components/ScrollArea' };
 
@@ -104,6 +105,22 @@ export const Animated = () => {
     </div>
   );
 };
+
+export const WithCustomMergeProps = () => (
+  <Slot.Provider mergeProps={customMergeProps}>
+    <ScrollArea.Root style={{ width: 200, height: 100, overflow: 'hidden' }} asChild>
+      <div data-custom-merge>
+        <ScrollArea.Viewport style={{ width: '100%', height: '100%' }}>
+          <div style={{ width: 400 }}>Scrollable content via an asChild root</div>
+        </ScrollArea.Viewport>
+        <ScrollArea.Scrollbar orientation="horizontal">
+          <ScrollArea.Thumb />
+        </ScrollArea.Scrollbar>
+        <ScrollArea.Corner />
+      </div>
+    </ScrollArea.Root>
+  </Slot.Provider>
+);
 
 export const Chromatic = () => (
   <div className={styles.root}>
@@ -366,6 +383,45 @@ export const ChromaticDynamicContentAfterLoaded = () => <ChromaticDynamicContent
 ChromaticDynamicContentAfterLoaded.parameters = {
   chromatic: { disable: false, delay: DYNAMIC_CONTENT_DELAY },
 };
+
+// Regression test for https://github.com/radix-ui/primitives/issues/2383
+export const Cypress = () => {
+  const [horizontalOverflow, setHorizontalOverflow] = React.useState(true);
+  return (
+    <div className={styles.root}>
+      <button
+        data-testid="toggle-horizontal-overflow"
+        onClick={() => setHorizontalOverflow((value) => !value)}
+      >
+        toggle horizontal overflow
+      </button>
+      <ScrollArea.Root
+        type="auto"
+        data-testid="root"
+        className={styles.scrollArea}
+        style={{ width: 200, height: 200 }}
+      >
+        <ScrollArea.Viewport className={styles.scrollAreaViewport}>
+          <div style={{ width: horizontalOverflow ? 4000 : '100%' }}>
+            {Array.from({ length: 30 }).map((_, index) => (
+              <p key={index} style={{ margin: 0 }}>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+              </p>
+            ))}
+          </div>
+        </ScrollArea.Viewport>
+        <ScrollArea.Scrollbar className={styles.scrollbar} orientation="vertical">
+          <ScrollArea.Thumb className={styles.thumb} />
+        </ScrollArea.Scrollbar>
+        <ScrollArea.Scrollbar className={styles.scrollbar} orientation="horizontal">
+          <ScrollArea.Thumb className={styles.thumb} />
+        </ScrollArea.Scrollbar>
+        <ScrollArea.Corner className={styles.corner} />
+      </ScrollArea.Root>
+    </div>
+  );
+};
+Cypress.parameters = { chromatic: { disable: true } };
 
 const ScrollAreaStory = ({
   children,
