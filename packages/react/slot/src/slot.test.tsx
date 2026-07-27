@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { cleanup, render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { Slot, Slottable, SlotProvider, mergeProps } from './slot';
+import { Slot, Slottable, SlotProvider } from './slot';
+import { mergeProps } from './merge-props';
 import type { AnyProps, MergePropsFunction } from './merge-props';
 import { afterEach, describe, it, beforeEach, vi, expect } from 'vitest';
 
