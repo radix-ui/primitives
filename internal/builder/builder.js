@@ -46,7 +46,7 @@ export async function build(relativePath) {
   // emitted as its own set of files instead of being bundled into `index`.
   const files = new Set(['index.ts', ...getEntryFilesFromExports(packageJson.exports)]);
 
-  if (unbundledPackages.includes(jhpkg)) {
+  if (unbundledPackages.includes(pkg)) {
     for (const file of getAllSourceEntryFiles(sourceDirectory)) {
       files.add(file);
     }
