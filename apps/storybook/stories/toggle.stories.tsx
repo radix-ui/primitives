@@ -1,7 +1,6 @@
 import * as React from 'react';
-import { Slot, Toggle } from 'radix-ui';
+import { Toggle } from 'radix-ui';
 import styles from './toggle.stories.module.css';
-import { customMergeProps } from './custom-merge-props';
 
 export default { title: 'Components/Toggle' };
 
@@ -16,14 +15,6 @@ export const Controlled = () => {
     </Toggle.Root>
   );
 };
-
-export const WithCustomMergeProps = () => (
-  <Slot.Provider mergeProps={customMergeProps}>
-    <Toggle.Root className={styles.root} asChild>
-      <button data-custom-merge>Toggle (asChild)</button>
-    </Toggle.Root>
-  </Slot.Provider>
-);
 
 export const Chromatic = () => (
   <>

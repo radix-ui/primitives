@@ -1,7 +1,6 @@
 import * as React from 'react';
-import { Form, Slot } from 'radix-ui';
+import { Form } from 'radix-ui';
 import styles from './form.stories.module.css';
-import { customMergeProps } from './custom-merge-props';
 
 export default { title: 'Components/Form' };
 
@@ -74,23 +73,6 @@ export const Basic = () => {
     </>
   );
 };
-
-export const WithCustomMergeProps = () => (
-  <Slot.Provider mergeProps={customMergeProps}>
-    <Form.Root className={styles.form}>
-      <Form.Field name="email">
-        <Form.Label>Email</Form.Label>
-        <Form.Control type="email" required asChild>
-          <input data-custom-merge />
-        </Form.Control>
-        <Form.Message match="valueMissing">Email is required</Form.Message>
-      </Form.Field>
-      <Form.Submit asChild>
-        <button data-custom-merge>Submit (asChild)</button>
-      </Form.Submit>
-    </Form.Root>
-  </Slot.Provider>
-);
 
 export const Cypress = () => {
   const [data, setData] = React.useState({});

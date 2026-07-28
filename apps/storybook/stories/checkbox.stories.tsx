@@ -1,8 +1,7 @@
 /* eslint-disable react/jsx-pascal-case */
 import * as React from 'react';
-import { Checkbox, Label as LabelPrimitive, Slot } from 'radix-ui';
+import { Checkbox, Label as LabelPrimitive } from 'radix-ui';
 import styles from './checkbox.stories.module.css';
-import { customMergeProps } from './custom-merge-props';
 
 export default { title: 'Components/Checkbox' };
 
@@ -193,18 +192,6 @@ export const WithinForm = () => {
     </form>
   );
 };
-
-export const WithCustomMergeProps = () => (
-  <Slot.Provider mergeProps={customMergeProps}>
-    <Checkbox.unstable_Provider>
-      <Checkbox.unstable_Trigger className={styles.root} asChild>
-        <button data-custom-merge>
-          <Checkbox.Indicator className={styles.indicator} />
-        </button>
-      </Checkbox.unstable_Trigger>
-    </Checkbox.unstable_Provider>
-  </Slot.Provider>
-);
 
 export const LegacyStyled = () => (
   <>
