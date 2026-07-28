@@ -423,3 +423,38 @@ describe('given a Select in a form that is reset', () => {
     });
   });
 });
+
+// Regression test for https://github.com/radix-ui/primitives/issues/1663
+describe('given all select items are disabled', () => {
+  afterEach(cleanup);
+
+  it('should still render visible content when opened', async () => {
+    render(
+      <Select.Root defaultOpen>
+        <Select.Trigger aria-label="Choice">
+          <Select.Value placeholder="Pick one" />
+        </Select.Trigger>
+        <Select.Portal>
+          <Select.Content>
+            <Select.Viewport>
+              <Select.Item value="a" disabled>
+                <Select.ItemText>Option A</Select.ItemText>
+              </Select.Item>
+              <Select.Item value="b" disabled>
+                <Select.ItemText>Option B</Select.ItemText>
+              </Select.Item>
+            </Select.Viewport>
+          </Select.Content>
+        </Select.Portal>
+      </Select.Root>,
+    );
+
+    const content = await waitFor(() => screen.getByRole('listbox'));
+    const options = screen.getAllByRole('option', { hidden: true });
+    expect(options).toHaveLength(2);
+
+    await waitFor(() => {
+      expect(content.parentElement?.style.minWidth).not.toBe('');
+    });
+  });
+});

@@ -673,6 +673,8 @@ const SelectContentImpl = /* @__PURE__ */ React.forwardRef<
     const getItems = useCollection(__scopeSelect);
     const [isPositioned, setIsPositioned] = React.useState(false);
     const firstValidItemFoundRef = React.useRef(false);
+    const firstItemFoundRef = React.useRef(false);
+    const firstItemTextFoundRef = React.useRef(false);
 
     // aria-hide everything except the content (better supported equivalent to setting aria-modal)
     React.useEffect(() => {
@@ -783,11 +785,18 @@ const SelectContentImpl = /* @__PURE__ */ React.forwardRef<
 
     const itemRefCallback = React.useCallback(
       (node: SelectItemElement | null, value: string, disabled: boolean) => {
+        if (!node) return;
+
+        const isFirstItem = !firstItemFoundRef.current;
+        if (isFirstItem) firstItemFoundRef.current = true;
+
         const isFirstValidItem = !firstValidItemFoundRef.current && !disabled;
         const isSelectedItem = context.value !== undefined && context.value === value;
         if (isSelectedItem || isFirstValidItem) {
           setSelectedItem(node);
           if (isFirstValidItem) firstValidItemFoundRef.current = true;
+        } else if (isFirstItem) {
+          setSelectedItem(node);
         }
       },
       [context.value],
@@ -795,9 +804,16 @@ const SelectContentImpl = /* @__PURE__ */ React.forwardRef<
     const handleItemLeave = React.useCallback(() => content?.focus(), [content]);
     const itemTextRefCallback = React.useCallback(
       (node: SelectItemTextElement | null, value: string, disabled: boolean) => {
+        if (!node) return;
+
+        const isFirstItem = !firstItemTextFoundRef.current;
+        if (isFirstItem) firstItemTextFoundRef.current = true;
+
         const isFirstValidItem = !firstValidItemFoundRef.current && !disabled;
         const isSelectedItem = context.value !== undefined && context.value === value;
         if (isSelectedItem || isFirstValidItem) {
+          setSelectedItemText(node);
+        } else if (isFirstItem) {
           setSelectedItemText(node);
         }
       },
