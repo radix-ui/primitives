@@ -528,6 +528,7 @@ const MenuContentImpl = /* @__PURE__ */ React.forwardRef<
             <DismissableLayer
               asChild
               disableOutsidePointerEvents={disableOutsidePointerEvents}
+              deferPointerDownOutside
               onEscapeKeyDown={onEscapeKeyDown}
               onPointerDownOutside={onPointerDownOutside}
               onFocusOutside={onFocusOutside}
