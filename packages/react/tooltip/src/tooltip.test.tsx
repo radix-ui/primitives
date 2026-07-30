@@ -4,7 +4,7 @@ import * as Tooltip from './tooltip';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, it, expect, vi } from 'vitest';
 
-describe('Tooltip', () => {
+describe('Tooltip rendering', () => {
   afterEach(cleanup);
 
   it('renders tooltip trigger', () => {
@@ -141,9 +141,7 @@ describe('Tooltip', () => {
   });
 
   // Regression test for https://github.com/radix-ui/primitives/issues/3034
-  // Content children must be mounted to the DOM a single time so that their
-  // effects (analytics, fetches, etc.) do not run twice.
-  it('mounts content children a single time', async () => {
+  it('does not duplicate content children', async () => {
     const onMount = vi.fn();
 
     function Child() {
@@ -176,8 +174,6 @@ describe('Tooltip', () => {
   });
 
   // Regression test for https://github.com/radix-ui/primitives/issues/3034
-  // When `aria-label` is provided, the accessible description comes from a
-  // visually hidden element while `children` still mount a single time.
   it('uses aria-label without duplicating content children', async () => {
     const onMount = vi.fn();
 
@@ -211,8 +207,6 @@ describe('Tooltip', () => {
     expect(screen.getByRole('tooltip')).toHaveTextContent('Accessible label');
   });
 
-  // A consumer-provided `id` on the content must stay in sync with the
-  // trigger's `aria-describedby` so the accessible description resolves.
   it('keeps aria-describedby in sync with a custom content id', async () => {
     render(
       <Tooltip.Provider>
@@ -234,10 +228,6 @@ describe('Tooltip', () => {
   });
 
   // Regression test for https://github.com/radix-ui/primitives/issues/3034
-  // When both `aria-label` and a custom `id` are provided, the id must live on
-  // a single element so it is not duplicated in the DOM and the trigger's
-  // `aria-describedby` resolves to the accessible label rather than the visible
-  // children.
   it('keeps a custom id unique when combined with aria-label', async () => {
     render(
       <Tooltip.Provider>
@@ -299,11 +289,12 @@ describe('Tooltip', () => {
       expect(screen.queryByText('Tooltip Content')).not.toBeInTheDocument();
     });
   });
+});
+
+describe('Tooltip behavior', () => {
+  afterEach(cleanup);
 
   // Regression test for https://github.com/radix-ui/primitives/issues/2375
-  // Hovering a trigger inside a shared `TooltipProvider` must not re-render
-  // sibling tooltips. The provider keeps its "open delayed" flag in a ref so
-  // that opening one tooltip does not change the shared provider context value.
   it('hovering one tooltip does not re-render sibling tooltips', async () => {
     const commitCounts: Record<string, number> = {};
 
@@ -348,10 +339,11 @@ describe('Tooltip', () => {
     expect(commitCounts.c! - initial.c!).toBe(0);
   });
 
-  describe('skipDelayDuration', () => {
-    function renderTwoTriggers(providerProps: Omit<Tooltip.TooltipProviderProps, 'children'>) {
+  it('skips the delay when moving between triggers within skipDelayDuration', () => {
+    vi.useFakeTimers();
+    try {
       render(
-        <Tooltip.Provider {...providerProps}>
+        <Tooltip.Provider delayDuration={100} skipDelayDuration={300}>
           <Tooltip.Root>
             <Tooltip.Trigger>Trigger A</Tooltip.Trigger>
             <Tooltip.Portal>
@@ -366,59 +358,276 @@ describe('Tooltip', () => {
           </Tooltip.Root>
         </Tooltip.Provider>,
       );
-      return {
-        triggerA: screen.getByText('Trigger A'),
-        triggerB: screen.getByText('Trigger B'),
-      };
+      const triggerA = screen.getByText('Trigger A');
+      const triggerB = screen.getByText('Trigger B');
+
+      // Hovering the first trigger opens it only after the delay elapses
+      act(() => void fireEvent.pointerMove(triggerA));
+      expect(triggerA).toHaveAttribute('data-state', 'closed');
+      act(() => void vi.advanceTimersByTime(100));
+      expect(triggerA).toHaveAttribute('data-state', 'delayed-open');
+
+      act(() => void fireEvent.click(triggerA));
+
+      // Moving to the second trigger within the skip window opens instantly
+      act(() => void fireEvent.pointerMove(triggerB));
+      expect(triggerB).toHaveAttribute('data-state', 'instant-open');
+    } finally {
+      vi.useRealTimers();
     }
+  });
 
-    it('skips the delay when moving between triggers within skipDelayDuration', () => {
-      vi.useFakeTimers();
-      try {
-        const { triggerA, triggerB } = renderTwoTriggers({
-          delayDuration: 100,
-          skipDelayDuration: 300,
-        });
+  // Regression test for https://github.com/radix-ui/primitives/issues/3873
+  it('does not skip the delay when skipDelayDuration is 0', () => {
+    vi.useFakeTimers();
+    try {
+      render(
+        <Tooltip.Provider delayDuration={100} skipDelayDuration={0}>
+          <Tooltip.Root>
+            <Tooltip.Trigger>Trigger A</Tooltip.Trigger>
+            <Tooltip.Portal>
+              <Tooltip.Content>Content A</Tooltip.Content>
+            </Tooltip.Portal>
+          </Tooltip.Root>
+          <Tooltip.Root>
+            <Tooltip.Trigger>Trigger B</Tooltip.Trigger>
+            <Tooltip.Portal>
+              <Tooltip.Content>Content B</Tooltip.Content>
+            </Tooltip.Portal>
+          </Tooltip.Root>
+        </Tooltip.Provider>,
+      );
 
-        // Hovering the first trigger opens it only after the delay elapses
-        act(() => void fireEvent.pointerMove(triggerA));
-        expect(triggerA).toHaveAttribute('data-state', 'closed');
-        act(() => void vi.advanceTimersByTime(100));
-        expect(triggerA).toHaveAttribute('data-state', 'delayed-open');
+      const triggerA = screen.getByText('Trigger A');
+      const triggerB = screen.getByText('Trigger B');
 
-        act(() => void fireEvent.click(triggerA));
+      act(() => void fireEvent.pointerMove(triggerA));
+      act(() => void vi.advanceTimersByTime(100));
+      expect(triggerA).toHaveAttribute('data-state', 'delayed-open');
+      act(() => void fireEvent.click(triggerA));
 
-        // Moving to the second trigger within the skip window opens instantly
-        act(() => void fireEvent.pointerMove(triggerB));
-        expect(triggerB).toHaveAttribute('data-state', 'instant-open');
-      } finally {
-        vi.useRealTimers();
-      }
-    });
+      // Moving to the second trigger must NOT open it instantly
+      act(() => void fireEvent.pointerMove(triggerB));
+      expect(triggerB).toHaveAttribute('data-state', 'closed');
 
-    // Regression test for https://github.com/radix-ui/primitives/issues/3873
-    it('does not skip the delay when skipDelayDuration is 0', () => {
-      vi.useFakeTimers();
-      try {
-        const { triggerA, triggerB } = renderTwoTriggers({
-          delayDuration: 100,
-          skipDelayDuration: 0,
-        });
+      act(() => void vi.advanceTimersByTime(100));
+      expect(triggerB).toHaveAttribute('data-state', 'delayed-open');
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+});
 
-        act(() => void fireEvent.pointerMove(triggerA));
-        act(() => void vi.advanceTimersByTime(100));
-        expect(triggerA).toHaveAttribute('data-state', 'delayed-open');
-        act(() => void fireEvent.click(triggerA));
+describe('Tooltip.Trigger', () => {
+  afterEach(cleanup);
 
-        // Moving to the second trigger must NOT open it instantly
-        act(() => void fireEvent.pointerMove(triggerB));
-        expect(triggerB).toHaveAttribute('data-state', 'closed');
+  it('spreads props it does not consume onto the element it renders', () => {
+    const ref = React.createRef<HTMLButtonElement>();
+    const onClick = vi.fn();
 
-        act(() => void vi.advanceTimersByTime(100));
-        expect(triggerB).toHaveAttribute('data-state', 'delayed-open');
-      } finally {
-        vi.useRealTimers();
-      }
-    });
+    render(
+      <Tooltip.Provider>
+        <Tooltip.Root>
+          <Tooltip.Trigger
+            ref={ref}
+            data-testid="trigger"
+            className="custom-class"
+            style={{ outlineColor: 'rgb(1, 2, 3)' }}
+            onClick={onClick}
+          >
+            Trigger
+          </Tooltip.Trigger>
+        </Tooltip.Root>
+      </Tooltip.Provider>,
+    );
+
+    const trigger = screen.getByTestId('trigger');
+    expect(trigger).toHaveClass('custom-class');
+    expect(trigger.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(trigger);
+
+    // Composed with the trigger's own click handler rather than replaced by it.
+    fireEvent.click(trigger);
+    expect(onClick).toHaveBeenCalled();
+  });
+
+  it('forwards props to the child element when `asChild` is set', () => {
+    const ref = React.createRef<HTMLButtonElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Tooltip.Provider>
+        <Tooltip.Root>
+          <Tooltip.Trigger
+            asChild
+            ref={ref}
+            data-testid="trigger"
+            className="custom-class"
+            style={{ outlineColor: 'rgb(1, 2, 3)' }}
+            onClick={onClick}
+          >
+            <button type="button">Trigger</button>
+          </Tooltip.Trigger>
+        </Tooltip.Root>
+      </Tooltip.Provider>,
+    );
+
+    const trigger = screen.getByTestId('trigger');
+    expect(trigger.tagName).toBe('BUTTON');
+    expect(trigger).toHaveAttribute('data-state', 'closed');
+    expect(trigger).toHaveClass('custom-class');
+    expect(trigger.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(trigger);
+
+    fireEvent.click(trigger);
+    expect(onClick).toHaveBeenCalled();
+  });
+});
+
+describe('Tooltip.Content', () => {
+  afterEach(cleanup);
+
+  it('spreads props it does not consume onto the element it renders', () => {
+    const ref = React.createRef<HTMLDivElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Tooltip.Provider>
+        <Tooltip.Root open>
+          <Tooltip.Trigger>Trigger</Tooltip.Trigger>
+          <Tooltip.Portal>
+            <Tooltip.Content
+              ref={ref}
+              data-testid="content"
+              className="custom-class"
+              style={{ outlineColor: 'rgb(1, 2, 3)' }}
+              onClick={onClick}
+            >
+              Content
+            </Tooltip.Content>
+          </Tooltip.Portal>
+        </Tooltip.Root>
+      </Tooltip.Provider>,
+    );
+
+    const content = screen.getByTestId('content');
+    expect(content).toHaveClass('custom-class');
+    expect(content.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(content);
+
+    fireEvent.click(content);
+    expect(onClick).toHaveBeenCalled();
+  });
+
+  it('forwards props to the child element when `asChild` is set', () => {
+    const ref = React.createRef<HTMLDivElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Tooltip.Provider>
+        <Tooltip.Root open>
+          <Tooltip.Trigger>Trigger</Tooltip.Trigger>
+          <Tooltip.Portal>
+            <Tooltip.Content
+              asChild
+              ref={ref}
+              data-testid="content"
+              className="custom-class"
+              style={{ outlineColor: 'rgb(1, 2, 3)' }}
+              onClick={onClick}
+            >
+              <article>Content</article>
+            </Tooltip.Content>
+          </Tooltip.Portal>
+        </Tooltip.Root>
+      </Tooltip.Provider>,
+    );
+
+    const content = screen.getByTestId('content');
+    expect(content.tagName).toBe('ARTICLE');
+    expect(content).toHaveAttribute('role', 'tooltip');
+    expect(content).toHaveAttribute('data-state', 'instant-open');
+    expect(content).toHaveClass('custom-class');
+    expect(content.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(content);
+
+    fireEvent.click(content);
+    expect(onClick).toHaveBeenCalled();
+  });
+});
+
+describe('Tooltip.Arrow', () => {
+  afterEach(cleanup);
+
+  it('spreads props it does not consume onto the element it renders', () => {
+    const ref = React.createRef<SVGSVGElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Tooltip.Provider>
+        <Tooltip.Root open>
+          <Tooltip.Trigger>Trigger</Tooltip.Trigger>
+          <Tooltip.Portal>
+            <Tooltip.Content>
+              Content
+              <Tooltip.Arrow
+                ref={ref}
+                data-testid="arrow"
+                className="custom-class"
+                style={{ outlineColor: 'rgb(1, 2, 3)' }}
+                onClick={onClick}
+              />
+            </Tooltip.Content>
+          </Tooltip.Portal>
+        </Tooltip.Root>
+      </Tooltip.Provider>,
+    );
+
+    const arrow = screen.getByTestId('arrow');
+    expect(arrow).toHaveClass('custom-class');
+    expect(arrow.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(arrow);
+
+    fireEvent.click(arrow);
+    expect(onClick).toHaveBeenCalled();
+  });
+
+  it('forwards props to the child element when `asChild` is set', () => {
+    const ref = React.createRef<SVGSVGElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Tooltip.Provider>
+        <Tooltip.Root open>
+          <Tooltip.Trigger>Trigger</Tooltip.Trigger>
+          <Tooltip.Portal>
+            <Tooltip.Content>
+              Content
+              <Tooltip.Arrow
+                asChild
+                ref={ref}
+                data-testid="arrow"
+                className="custom-class"
+                style={{ outlineColor: 'rgb(1, 2, 3)' }}
+                onClick={onClick}
+              >
+                <svg />
+              </Tooltip.Arrow>
+            </Tooltip.Content>
+          </Tooltip.Portal>
+        </Tooltip.Root>
+      </Tooltip.Provider>,
+    );
+
+    const arrow = screen.getByTestId('arrow');
+    // SVG elements report their tag name in lower case.
+    expect(arrow.tagName).toBe('svg');
+    expect(arrow).toHaveAttribute('viewBox', '0 0 30 10');
+    expect(arrow).toHaveClass('custom-class');
+    expect(arrow.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(arrow);
+
+    fireEvent.click(arrow);
+    expect(onClick).toHaveBeenCalled();
   });
 });
