@@ -450,7 +450,6 @@ const PopoverContentImpl = /* @__PURE__ */ React.forwardRef<
       'aria-describedby': ariaDescribedby,
       branchNodes,
       branchRegistry,
-      children,
       ...contentProps
     } = props;
     const context = usePopoverContext(CONTENT_NAME, __scopePopover);
@@ -470,57 +469,55 @@ const PopoverContentImpl = /* @__PURE__ */ React.forwardRef<
     useFocusGuards();
 
     return (
-      <FocusScope
-        asChild
-        loop
-        trapped={trapFocus}
-        branches={branchNodes}
-        onMountAutoFocus={onOpenAutoFocus}
-        onUnmountAutoFocus={onCloseAutoFocus}
-      >
-        <DismissableLayer
+      <FocusScopeBranchProvider registry={branchRegistry}>
+        <FocusScope
           asChild
-          disableOutsidePointerEvents={disableOutsidePointerEvents}
-          onInteractOutside={onInteractOutside}
-          onEscapeKeyDown={onEscapeKeyDown}
-          onPointerDownOutside={onPointerDownOutside}
-          onFocusOutside={onFocusOutside}
-          onDismiss={() => context.onOpenChange(false)}
-          deferPointerDownOutside
+          loop
+          trapped={trapFocus}
+          branches={branchNodes}
+          onMountAutoFocus={onOpenAutoFocus}
+          onUnmountAutoFocus={onCloseAutoFocus}
         >
-          <PopperPrimitive.Content
-            data-state={getState(context.open)}
-            role="dialog"
-            id={context.contentId}
-            aria-labelledby={context.titlePresent ? context.titleId : undefined}
-            aria-describedby={
-              context.descriptionPresent
-                ? concatAriaDescribedby(ariaDescribedby, context.descriptionId)
-                : ariaDescribedby
-            }
-            {...popperScope}
-            {...contentProps}
-            ref={composedRefs}
-            style={{
-              ...contentProps.style,
-              // re-namespace exposed content custom properties
-              ...{
-                '--radix-popover-content-transform-origin': 'var(--radix-popper-transform-origin)',
-                '--radix-popover-content-available-width': 'var(--radix-popper-available-width)',
-                '--radix-popover-content-available-height': 'var(--radix-popper-available-height)',
-                '--radix-popover-trigger-width': 'var(--radix-popper-anchor-width)',
-                '--radix-popover-trigger-height': 'var(--radix-popper-anchor-height)',
-              },
-            }}
+          <DismissableLayer
+            asChild
+            disableOutsidePointerEvents={disableOutsidePointerEvents}
+            onInteractOutside={onInteractOutside}
+            onEscapeKeyDown={onEscapeKeyDown}
+            onPointerDownOutside={onPointerDownOutside}
+            onFocusOutside={onFocusOutside}
+            onDismiss={() => context.onOpenChange(false)}
+            deferPointerDownOutside
           >
-            {branchRegistry ? (
-              <FocusScopeBranchProvider value={branchRegistry}>{children}</FocusScopeBranchProvider>
-            ) : (
-              children
-            )}
-          </PopperPrimitive.Content>
-        </DismissableLayer>
-      </FocusScope>
+            <PopperPrimitive.Content
+              data-state={getState(context.open)}
+              role="dialog"
+              id={context.contentId}
+              aria-labelledby={context.titlePresent ? context.titleId : undefined}
+              aria-describedby={
+                context.descriptionPresent
+                  ? concatAriaDescribedby(ariaDescribedby, context.descriptionId)
+                  : ariaDescribedby
+              }
+              {...popperScope}
+              {...contentProps}
+              ref={composedRefs}
+              style={{
+                ...contentProps.style,
+                // re-namespace exposed content custom properties
+                ...{
+                  '--radix-popover-content-transform-origin':
+                    'var(--radix-popper-transform-origin)',
+                  '--radix-popover-content-available-width': 'var(--radix-popper-available-width)',
+                  '--radix-popover-content-available-height':
+                    'var(--radix-popper-available-height)',
+                  '--radix-popover-trigger-width': 'var(--radix-popper-anchor-width)',
+                  '--radix-popover-trigger-height': 'var(--radix-popper-anchor-height)',
+                },
+              }}
+            />
+          </DismissableLayer>
+        </FocusScope>
+      </FocusScopeBranchProvider>
     );
   },
 );

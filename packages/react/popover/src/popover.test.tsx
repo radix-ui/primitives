@@ -1,7 +1,7 @@
 import * as React from 'react';
 import type { RenderResult } from '@testing-library/react';
-import { cleanup, fireEvent, render } from '@testing-library/react';
-import { afterEach, describe, it, expect } from 'vitest';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { afterEach, describe, it, expect, vi } from 'vitest';
 import * as Popover from './popover';
 
 const TRIGGER_TEXT = 'Open';
@@ -114,4 +114,41 @@ describe('Title and Description', () => {
     expect(content).toHaveAttribute('aria-labelledby', rendered.getByText(TITLE_TEXT).id);
     expect(content).toHaveAttribute('aria-describedby', rendered.getByText(DESCRIPTION_TEXT).id);
   });
+});
+
+describe('given a Popover with `asChild` on the Content', () => {
+  afterEach(() => {
+    cleanup();
+    document.body.style.pointerEvents = '';
+  });
+
+  // Regression test for https://github.com/radix-ui/primitives/issues/4077
+  it.each([{ modal: true }, { modal: false }])(
+    'forwards content props and the ref to the child (modal: $modal)',
+    ({ modal }) => {
+      const contentRef = React.createRef<HTMLDivElement>();
+      const onClick = vi.fn();
+
+      render(
+        <Popover.Root defaultOpen modal={modal}>
+          <Popover.Trigger>{TRIGGER_TEXT}</Popover.Trigger>
+          <Popover.Portal>
+            <Popover.Content asChild className="content" onClick={onClick} ref={contentRef}>
+              <article data-testid="content">{CONTENT_TEXT}</article>
+            </Popover.Content>
+          </Popover.Portal>
+        </Popover.Root>,
+      );
+
+      const content = screen.getByTestId('content');
+      expect(content.tagName).toBe('ARTICLE');
+      expect(content).toHaveAttribute('role', 'dialog');
+      expect(content).toHaveAttribute('data-state', 'open');
+      expect(content).toHaveClass('content');
+      expect(contentRef.current).toBe(content);
+
+      fireEvent.click(content);
+      expect(onClick).toHaveBeenCalledTimes(1);
+    },
+  );
 });

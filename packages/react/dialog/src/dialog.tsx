@@ -438,9 +438,9 @@ const DialogContentImpl = /* @__PURE__ */ React.forwardRef<
       onOpenAutoFocus,
       onCloseAutoFocus,
       'aria-describedby': ariaDescribedby,
+      children,
       ...contentProps
     } = props;
-    const { children, ...layerProps } = contentProps;
     const context = useDialogContext(CONTENT_NAME, __scopeDialog);
 
     // Make sure the whole tree has focus guards as our `Dialog` will be
@@ -448,7 +448,7 @@ const DialogContentImpl = /* @__PURE__ */ React.forwardRef<
     useFocusGuards();
 
     return (
-      <>
+      <FocusScopeBranchProvider registry={context.branchRegistry}>
         <FocusScope
           asChild
           loop
@@ -467,18 +467,15 @@ const DialogContentImpl = /* @__PURE__ */ React.forwardRef<
                 : ariaDescribedby
             }
             data-state={getState(context.open)}
-            {...layerProps}
+            {...contentProps}
             ref={forwardedRef}
             deferPointerDownOutside
             onDismiss={() => context.onOpenChange(false)}
           >
-            {/* Lets nested, portalled layers register themselves as branches of this Dialog. */}
-            <FocusScopeBranchProvider value={context.branchRegistry}>
-              {children}
-            </FocusScopeBranchProvider>
+            {children}
           </DismissableLayer>
         </FocusScope>
-      </>
+      </FocusScopeBranchProvider>
     );
   },
 );

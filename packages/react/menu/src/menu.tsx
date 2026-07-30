@@ -396,7 +396,6 @@ const MenuContentImpl = /* @__PURE__ */ React.forwardRef<
       onInteractOutside,
       onDismiss,
       disableOutsideScroll,
-      children,
       ...contentProps
     } = props;
     const context = useMenuContext(CONTENT_NAME, __scopeMenu);
@@ -512,110 +511,105 @@ const MenuContentImpl = /* @__PURE__ */ React.forwardRef<
           pointerGraceIntentRef.current = intent;
         }, [])}
       >
-        <ScrollLockWrapper {...scrollLockWrapperProps}>
-          <FocusScope
-            asChild
-            trapped={trapFocus}
-            branches={branchNodes}
-            onMountAutoFocus={composeEventHandlers(onOpenAutoFocus, (event) => {
-              // when opening, explicitly focus the content area only and leave
-              // `onEntryFocus` in  control of focusing first item
-              event.preventDefault();
-              contentRef.current?.focus({ preventScroll: true });
-            })}
-            onUnmountAutoFocus={onCloseAutoFocus}
-          >
-            <DismissableLayer
+        <FocusScopeBranchProvider registry={isModal ? branchRegistry : null}>
+          <ScrollLockWrapper {...scrollLockWrapperProps}>
+            <FocusScope
               asChild
-              disableOutsidePointerEvents={disableOutsidePointerEvents}
-              onEscapeKeyDown={onEscapeKeyDown}
-              onPointerDownOutside={onPointerDownOutside}
-              onFocusOutside={onFocusOutside}
-              onInteractOutside={onInteractOutside}
-              onDismiss={onDismiss}
+              trapped={trapFocus}
+              branches={branchNodes}
+              onMountAutoFocus={composeEventHandlers(onOpenAutoFocus, (event) => {
+                // when opening, explicitly focus the content area only and leave
+                // `onEntryFocus` in  control of focusing first item
+                event.preventDefault();
+                contentRef.current?.focus({ preventScroll: true });
+              })}
+              onUnmountAutoFocus={onCloseAutoFocus}
             >
-              <RovingFocusGroup.Root
+              <DismissableLayer
                 asChild
-                {...rovingFocusGroupScope}
-                dir={rootContext.dir}
-                orientation="vertical"
-                loop={loop}
-                currentTabStopId={currentItemId}
-                onCurrentTabStopIdChange={setCurrentItemId}
-                onEntryFocus={composeEventHandlers(onEntryFocus, (event) => {
-                  // only focus first item when using keyboard
-                  if (!rootContext.isUsingKeyboardRef.current) event.preventDefault();
-                })}
-                preventScrollOnEntryFocus
+                disableOutsidePointerEvents={disableOutsidePointerEvents}
+                onEscapeKeyDown={onEscapeKeyDown}
+                onPointerDownOutside={onPointerDownOutside}
+                onFocusOutside={onFocusOutside}
+                onInteractOutside={onInteractOutside}
+                onDismiss={onDismiss}
               >
-                <PopperPrimitive.Content
-                  role="menu"
-                  aria-orientation="vertical"
-                  data-state={getOpenState(context.open)}
-                  data-radix-menu-content=""
+                <RovingFocusGroup.Root
+                  asChild
+                  {...rovingFocusGroupScope}
                   dir={rootContext.dir}
-                  {...popperScope}
-                  {...contentProps}
-                  ref={composedRefs}
-                  style={{ outline: 'none', ...contentProps.style }}
-                  onKeyDown={composeEventHandlers(contentProps.onKeyDown, (event) => {
-                    // submenu key events bubble through portals. We only care about keys in this menu.
-                    const target = event.target as HTMLElement;
-                    const isKeyDownInside =
-                      target.closest('[data-radix-menu-content]') === event.currentTarget;
-                    const isModifierKey = event.ctrlKey || event.altKey || event.metaKey;
-                    const isCharacterKey = event.key.length === 1;
-                    if (isKeyDownInside) {
-                      // menus should not be navigated using tab key so we prevent it
-                      if (event.key === 'Tab') event.preventDefault();
-                      if (!isModifierKey && isCharacterKey) handleTypeaheadSearch(event.key);
-                    }
-                    // focus first/last item based on key pressed
-                    const content = contentRef.current;
-                    if (event.target !== content) return;
-                    if (!FIRST_LAST_KEYS.includes(event.key)) return;
-                    event.preventDefault();
-                    const items = getItems().filter((item) => !item.disabled);
-                    const candidateNodes = items.map((item) => item.ref.current!);
-                    if (LAST_KEYS.includes(event.key)) candidateNodes.reverse();
-                    focusFirst(candidateNodes);
+                  orientation="vertical"
+                  loop={loop}
+                  currentTabStopId={currentItemId}
+                  onCurrentTabStopIdChange={setCurrentItemId}
+                  onEntryFocus={composeEventHandlers(onEntryFocus, (event) => {
+                    // only focus first item when using keyboard
+                    if (!rootContext.isUsingKeyboardRef.current) event.preventDefault();
                   })}
-                  onBlur={composeEventHandlers(props.onBlur, (event) => {
-                    // clear search buffer when leaving the menu
-                    if (!event.currentTarget.contains(event.target)) {
-                      window.clearTimeout(timerRef.current);
-                      searchRef.current = '';
-                    }
-                  })}
-                  onPointerMove={composeEventHandlers(
-                    props.onPointerMove,
-                    whenMouse((event) => {
-                      const target = event.target as HTMLElement;
-                      const pointerXHasChanged = lastPointerXRef.current !== event.clientX;
-
-                      // We don't use `event.movementX` for this check because Safari will
-                      // always return `0` on a pointer event.
-                      if (event.currentTarget.contains(target) && pointerXHasChanged) {
-                        const newDir = event.clientX > lastPointerXRef.current ? 'right' : 'left';
-                        pointerDirRef.current = newDir;
-                        lastPointerXRef.current = event.clientX;
-                      }
-                    }),
-                  )}
+                  preventScrollOnEntryFocus
                 >
-                  {/* Lets nested, portalled layers register themselves as branches of this menu. */}
-                  {isModal ? (
-                    <FocusScopeBranchProvider value={branchRegistry}>
-                      {children}
-                    </FocusScopeBranchProvider>
-                  ) : (
-                    children
-                  )}
-                </PopperPrimitive.Content>
-              </RovingFocusGroup.Root>
-            </DismissableLayer>
-          </FocusScope>
-        </ScrollLockWrapper>
+                  <PopperPrimitive.Content
+                    role="menu"
+                    aria-orientation="vertical"
+                    data-state={getOpenState(context.open)}
+                    data-radix-menu-content=""
+                    dir={rootContext.dir}
+                    {...popperScope}
+                    {...contentProps}
+                    ref={composedRefs}
+                    style={{ outline: 'none', ...contentProps.style }}
+                    onKeyDown={composeEventHandlers(contentProps.onKeyDown, (event) => {
+                      // submenu key events bubble through portals. We only care
+                      // about keys in this menu.
+                      const target = event.target as HTMLElement;
+                      const isKeyDownInside =
+                        target.closest('[data-radix-menu-content]') === event.currentTarget;
+                      const isModifierKey = event.ctrlKey || event.altKey || event.metaKey;
+                      const isCharacterKey = event.key.length === 1;
+                      if (isKeyDownInside) {
+                        // menus should not be navigated using tab key so we
+                        // prevent it
+                        if (event.key === 'Tab') event.preventDefault();
+                        if (!isModifierKey && isCharacterKey) handleTypeaheadSearch(event.key);
+                      }
+                      // focus first/last item based on key pressed
+                      const content = contentRef.current;
+                      if (event.target !== content) return;
+                      if (!FIRST_LAST_KEYS.includes(event.key)) return;
+                      event.preventDefault();
+                      const items = getItems().filter((item) => !item.disabled);
+                      const candidateNodes = items.map((item) => item.ref.current!);
+                      if (LAST_KEYS.includes(event.key)) candidateNodes.reverse();
+                      focusFirst(candidateNodes);
+                    })}
+                    onBlur={composeEventHandlers(props.onBlur, (event) => {
+                      // clear search buffer when leaving the menu
+                      if (!event.currentTarget.contains(event.target)) {
+                        window.clearTimeout(timerRef.current);
+                        searchRef.current = '';
+                      }
+                    })}
+                    onPointerMove={composeEventHandlers(
+                      props.onPointerMove,
+                      whenMouse((event) => {
+                        const target = event.target as HTMLElement;
+                        const pointerXHasChanged = lastPointerXRef.current !== event.clientX;
+
+                        // We don't use `event.movementX` for this check because
+                        // Safari will always return `0` on a pointer event.
+                        if (event.currentTarget.contains(target) && pointerXHasChanged) {
+                          const newDir = event.clientX > lastPointerXRef.current ? 'right' : 'left';
+                          pointerDirRef.current = newDir;
+                          lastPointerXRef.current = event.clientX;
+                        }
+                      }),
+                    )}
+                  />
+                </RovingFocusGroup.Root>
+              </DismissableLayer>
+            </FocusScope>
+          </ScrollLockWrapper>
+        </FocusScopeBranchProvider>
       </MenuContentProvider>
     );
   },

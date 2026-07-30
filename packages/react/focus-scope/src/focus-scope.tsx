@@ -262,7 +262,24 @@ interface FocusScopeBranchRegistry {
 
 const FocusScopeBranchContext = React.createContext<FocusScopeBranchRegistry | null>(null);
 
-const FocusScopeBranchProvider = FocusScopeBranchContext.Provider;
+interface FocusScopeBranchProviderProps {
+  /**
+   * The registry nested layers should register themselves with. When nullish the provider is
+   * transparent, letting nested layers register against the next registry up the tree instead. This
+   * is the case for layers that don't trap focus or lock scroll, which have nothing to host.
+   */
+  registry: FocusScopeBranchRegistry | null | undefined;
+  children?: React.ReactNode;
+}
+
+function FocusScopeBranchProvider({ registry, children }: FocusScopeBranchProviderProps) {
+  if (!registry) {
+    return children;
+  }
+  return (
+    <FocusScopeBranchContext.Provider value={registry}>{children}</FocusScopeBranchContext.Provider>
+  );
+}
 
 function useFocusScopeBranchRegistry() {
   const [nodes, setNodes] = React.useState<HTMLElement[]>([]);
@@ -446,4 +463,4 @@ export {
   //
   FocusScope as Root,
 };
-export type { FocusScopeProps, FocusScopeBranchRegistry };
+export type { FocusScopeProps, FocusScopeBranchProviderProps, FocusScopeBranchRegistry };
