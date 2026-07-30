@@ -48,6 +48,10 @@ packages/react/
 
 Reference other packages and copy their `package.json`, `README.md`, and `tsconfig.json` structure for new packages. devDependencies and peerDependencies should use consistent version ranges across the repo.
 
+## Testing
+
+- Prefer repetition over abstraction in tests
+
 ## Code conventions
 
 - [ ] Prefer braces for control flow statements (if, for, while, etc.) over the `one-liner` syntax
