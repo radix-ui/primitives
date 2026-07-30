@@ -1,8 +1,10 @@
 import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 import { axe } from 'vitest-axe';
 import type { RenderResult } from '@testing-library/react';
 import { act, render, fireEvent, cleanup, screen } from '@testing-library/react';
 import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
+import { useFocusScopeBranch } from '@radix-ui/react-focus-scope';
 import * as Dialog from './dialog';
 import type { MockInstance } from 'vitest';
 import { describe, it, afterEach, beforeEach, vi, expect } from 'vitest';
@@ -246,6 +248,97 @@ describe('given a modal Dialog', () => {
     const content = screen.getByRole('dialog');
     const zoomWheelPrevented = !fireEvent.wheel(content, { ctrlKey: true, deltaY: 10 });
     expect(zoomWheelPrevented).toBe(false);
+  });
+});
+
+describe('given a Dialog with `asChild` on the Content', () => {
+  afterEach(() => {
+    cleanup();
+    document.body.style.pointerEvents = '';
+  });
+
+  // Regression test for https://github.com/radix-ui/primitives/issues/4077
+  it.each([{ modal: true }, { modal: false }])(
+    'forwards content props and the ref to the child (modal: $modal)',
+    ({ modal }) => {
+      const contentRef = React.createRef<HTMLDivElement>();
+      const onClick = vi.fn();
+
+      render(
+        <Dialog.Root defaultOpen modal={modal}>
+          <Dialog.Portal>
+            <Dialog.Content asChild className="content" onClick={onClick} ref={contentRef}>
+              <article data-testid="content">
+                <Dialog.Title>{TITLE_TEXT}</Dialog.Title>
+                <Dialog.Close>{CLOSE_TEXT}</Dialog.Close>
+              </article>
+            </Dialog.Content>
+          </Dialog.Portal>
+        </Dialog.Root>,
+      );
+
+      const content = screen.getByTestId('content');
+      expect(content.tagName).toBe('ARTICLE');
+      expect(content).toHaveAttribute('role', 'dialog');
+      expect(content).toHaveAttribute('data-state', 'open');
+      expect(content).toHaveAttribute('aria-labelledby', screen.getByText(TITLE_TEXT).id);
+      expect(content).toHaveClass('content');
+      expect(contentRef.current).toBe(content);
+
+      fireEvent.click(content);
+      expect(onClick).toHaveBeenCalledTimes(1);
+    },
+  );
+
+  it('registers portalled descendants as focus scope branches', () => {
+    function PortalledBranch() {
+      const [node, setNode] = React.useState<HTMLElement | null>(null);
+      useFocusScopeBranch(node);
+      return ReactDOM.createPortal(
+        <div ref={setNode}>
+          <button type="button">branch</button>
+        </div>,
+        document.body,
+      );
+    }
+
+    render(
+      <Dialog.Root defaultOpen>
+        <Dialog.Portal>
+          <Dialog.Content asChild>
+            <article>
+              <Dialog.Title>{TITLE_TEXT}</Dialog.Title>
+              <Dialog.Close>{CLOSE_TEXT}</Dialog.Close>
+              <PortalledBranch />
+            </article>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>,
+    );
+
+    // The branch lives outside the dialog's DOM subtree, so a trapped focus
+    // scope would normally reclaim focus from it.
+    const branch = screen.getByText('branch');
+    act(() => branch.focus());
+    expect(branch).toHaveFocus();
+  });
+
+  it('still dismisses on escape when slotted', () => {
+    const onOpenChange = vi.fn();
+    render(
+      <Dialog.Root defaultOpen onOpenChange={onOpenChange}>
+        <Dialog.Portal>
+          <Dialog.Content asChild>
+            <article>
+              <Dialog.Title>{TITLE_TEXT}</Dialog.Title>
+            </article>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>,
+    );
+
+    fireEvent.keyDown(document.activeElement!, { key: 'Escape' });
+    expect(onOpenChange).toHaveBeenCalledWith(false);
   });
 });
 
