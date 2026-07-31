@@ -42,6 +42,7 @@
     "@radix-ui/react-direction": "workspace:*",
     "@radix-ui/react-presence": "workspace:*",
     "@radix-ui/react-primitive": "workspace:*",
+    "@radix-ui/react-slot": "workspace:*",
     "@radix-ui/react-use-callback-ref": "workspace:*",
     "@radix-ui/react-use-layout-effect": "workspace:*"
   },

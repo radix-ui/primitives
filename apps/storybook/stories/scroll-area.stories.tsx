@@ -384,14 +384,16 @@ export const Cypress = () => {
         className={styles.scrollArea}
         style={{ width: 200, height: 200 }}
       >
-        <ScrollArea.Viewport className={styles.scrollAreaViewport}>
-          <div style={{ width: horizontalOverflow ? 4000 : '100%' }}>
-            {Array.from({ length: 30 }).map((_, index) => (
-              <p key={index} style={{ margin: 0 }}>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-              </p>
-            ))}
-          </div>
+        <ScrollArea.Viewport className={styles.scrollAreaViewport} disableImplicitContentElement>
+          <ScrollArea.Content>
+            <div style={{ width: horizontalOverflow ? 4000 : '100%' }}>
+              {Array.from({ length: 30 }).map((_, index) => (
+                <p key={index} style={{ margin: 0 }}>
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                </p>
+              ))}
+            </div>
+          </ScrollArea.Content>
         </ScrollArea.Viewport>
         <ScrollArea.Scrollbar className={styles.scrollbar} orientation="vertical">
           <ScrollArea.Thumb className={styles.thumb} />
@@ -418,7 +420,9 @@ const ScrollAreaStory = ({
     className={styles.scrollArea}
     style={{ width: 200, height: 200, ...props.style }}
   >
-    <ScrollArea.Viewport className={styles.scrollAreaViewport}>{children}</ScrollArea.Viewport>
+    <ScrollArea.Viewport className={styles.scrollAreaViewport} disableImplicitContentElement>
+      <ScrollArea.Content>{children}</ScrollArea.Content>
+    </ScrollArea.Viewport>
     {vertical && (
       <ScrollArea.Scrollbar className={styles.scrollbar} orientation="vertical">
         <ScrollArea.Thumb

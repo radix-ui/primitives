@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Primitive } from '@radix-ui/react-primitive';
 import { Presence } from '@radix-ui/react-presence';
+import { createSlottable } from '@radix-ui/react-slot';
 import { createContextScope } from '@radix-ui/react-context';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
@@ -149,10 +150,16 @@ const ScrollArea = /* @__PURE__ */ React.forwardRef<ScrollAreaElement, ScrollAre
  * -----------------------------------------------------------------------------------------------*/
 
 const VIEWPORT_NAME = 'ScrollAreaViewport';
+const Slottable = createSlottable(VIEWPORT_NAME);
 
 type ScrollAreaViewportElement = React.ComponentRef<typeof Primitive.div>;
 interface ScrollAreaViewportProps extends PrimitiveDivProps {
   nonce?: string;
+  /**
+   * @deprecated Implicit rendering of the content element will be removed in
+   * the next major release.
+   */
+  disableImplicitContentElement?: boolean;
 }
 
 const ScrollAreaViewport = /* @__PURE__ */ React.forwardRef<
@@ -161,7 +168,8 @@ const ScrollAreaViewport = /* @__PURE__ */ React.forwardRef<
 >(
   // blank line to reduce diff noise
   function ScrollAreaViewport(props: ScopedProps<ScrollAreaViewportProps>, forwardedRef) {
-    const { __scopeScrollArea, children, nonce, ...viewportProps } = props;
+    const { __scopeScrollArea, children, nonce, disableImplicitContentElement, ...viewportProps } =
+      props;
     const context = useScrollAreaContext(VIEWPORT_NAME, __scopeScrollArea);
     const ref = React.useRef<ScrollAreaViewportElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, ref, context.onViewportChange);
@@ -189,16 +197,27 @@ const ScrollAreaViewport = /* @__PURE__ */ React.forwardRef<
             ...props.style,
           }}
         >
-          {/**
-           * `display: table` ensures our content div will match the size of its children in both
-           * horizontal and vertical axis so we can determine if scroll width/height changed and
-           * recalculate thumb sizes. This doesn't account for children with *percentage*
-           * widths that change. We'll wait to see what use-cases consumers come up with there
-           * before trying to resolve it.
+          {/*
+           * Nested `Slottable` keeps the content-measuring wrapper inside the
+           * slotted element when `asChild` is set. Without it, `Slot` would
+           * target that wrapper and drop every prop on the consumer's element.
+           *
+           * See: https://github.com/radix-ui/primitives/issues/1666.
            */}
-          <div ref={context.onContentChange} style={{ minWidth: '100%', display: 'table' }}>
-            {children}
-          </div>
+          {disableImplicitContentElement ? (
+            children
+          ) : (
+            <Slottable child={children}>
+              {(slottable) => (
+                <ScrollAreaContent
+                  // @ts-expect-error
+                  __scopeScrollArea={__scopeScrollArea}
+                >
+                  {slottable}
+                </ScrollAreaContent>
+              )}
+            </Slottable>
+          )}
         </Primitive.div>
       </>
     );
@@ -219,6 +238,39 @@ const ScrollAreaViewportStyle = /* @__PURE__ */ React.memo(
   },
   (prevProps, nextProps) => prevProps.nonce === nextProps.nonce,
 );
+
+/* -------------------------------------------------------------------------------------------------
+ * ScrollAreaContent
+ * -----------------------------------------------------------------------------------------------*/
+
+const CONTENT_NAME = 'ScrollAreaContent';
+
+type ScrollAreaContentElement = React.ComponentRef<typeof Primitive.div>;
+interface ScrollAreaContentProps extends PrimitiveDivProps {}
+
+const ScrollAreaContent = /* @__PURE__ */ React.forwardRef<
+  ScrollAreaContentElement,
+  ScrollAreaContentProps
+>(function ScrollAreaContent(props: ScopedProps<ScrollAreaContentProps>, forwardedRef) {
+  const { __scopeScrollArea, children, ...contentProps } = props;
+  const context = useScrollAreaContext(CONTENT_NAME, __scopeScrollArea);
+  const composedRefs = useComposedRefs(forwardedRef, context.onContentChange);
+  return (
+    // `display: table` ensures our content div will match the size of its
+    // children in both horizontal and vertical axis so we can determine if
+    // scroll width/height changed and recalculate thumb sizes. This doesn't
+    // account for children with *percentage* widths that change. We'll wait to
+    // see what use-cases consumers come up with there before trying to resolve
+    // it.
+    <Primitive.div
+      {...contentProps}
+      ref={composedRefs}
+      style={{ minWidth: '100%', display: 'table', ...props.style }}
+    >
+      {children}
+    </Primitive.div>
+  );
+});
 
 /* -------------------------------------------------------------------------------------------------
  * ScrollAreaScrollbar
@@ -1076,12 +1128,14 @@ export {
   //
   ScrollArea,
   ScrollAreaViewport,
+  ScrollAreaContent,
   ScrollAreaScrollbar,
   ScrollAreaThumb,
   ScrollAreaCorner,
   //
   ScrollArea as Root,
   ScrollAreaViewport as Viewport,
+  ScrollAreaContent as Content,
   ScrollAreaScrollbar as Scrollbar,
   ScrollAreaThumb as Thumb,
   ScrollAreaCorner as Corner,
@@ -1089,6 +1143,7 @@ export {
 export type {
   ScrollAreaProps,
   ScrollAreaViewportProps,
+  ScrollAreaContentProps,
   ScrollAreaScrollbarProps,
   ScrollAreaThumbProps,
   ScrollAreaCornerProps,
