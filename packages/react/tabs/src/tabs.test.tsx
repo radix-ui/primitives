@@ -120,3 +120,261 @@ describe('keys from an editable descendant trigger', () => {
     expect(onValueChange).not.toHaveBeenCalled();
   });
 });
+
+describe('Tabs.Root', () => {
+  afterEach(cleanup);
+
+  it('spreads props it does not consume onto the element it renders', () => {
+    const ref = React.createRef<HTMLDivElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Tabs.Root
+        defaultValue="one"
+        ref={ref}
+        data-testid="root"
+        className="custom-class"
+        style={{ outlineColor: 'rgb(1, 2, 3)' }}
+        onClick={onClick}
+      >
+        <Tabs.List />
+      </Tabs.Root>,
+    );
+
+    const root = screen.getByTestId('root');
+    expect(root).toHaveClass('custom-class');
+    expect(root.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(root);
+
+    fireEvent.click(root);
+    expect(onClick).toHaveBeenCalled();
+  });
+
+  it('forwards props to the child element when `asChild` is set', () => {
+    const ref = React.createRef<HTMLDivElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Tabs.Root
+        defaultValue="one"
+        asChild
+        ref={ref}
+        data-testid="root"
+        className="custom-class"
+        style={{ outlineColor: 'rgb(1, 2, 3)' }}
+        onClick={onClick}
+      >
+        <article>
+          <Tabs.List />
+        </article>
+      </Tabs.Root>,
+    );
+
+    const root = screen.getByTestId('root');
+    expect(root.tagName).toBe('ARTICLE');
+    expect(root).toHaveAttribute('data-orientation', 'horizontal');
+    expect(root).toHaveClass('custom-class');
+    expect(root.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(root);
+
+    fireEvent.click(root);
+    expect(onClick).toHaveBeenCalled();
+  });
+});
+
+describe('Tabs.List', () => {
+  afterEach(cleanup);
+
+  it('spreads props it does not consume onto the element it renders', () => {
+    const ref = React.createRef<HTMLDivElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Tabs.Root defaultValue="one">
+        <Tabs.List
+          ref={ref}
+          data-testid="list"
+          className="custom-class"
+          style={{ outlineColor: 'rgb(1, 2, 3)' }}
+          onClick={onClick}
+        >
+          <Tabs.Trigger value="one">Trigger</Tabs.Trigger>
+        </Tabs.List>
+      </Tabs.Root>,
+    );
+
+    const list = screen.getByTestId('list');
+    expect(list).toHaveClass('custom-class');
+    expect(list.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(list);
+
+    fireEvent.click(list);
+    expect(onClick).toHaveBeenCalled();
+  });
+
+  it('forwards props to the child element when `asChild` is set', () => {
+    const ref = React.createRef<HTMLDivElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Tabs.Root defaultValue="one">
+        <Tabs.List
+          asChild
+          ref={ref}
+          data-testid="list"
+          className="custom-class"
+          style={{ outlineColor: 'rgb(1, 2, 3)' }}
+          onClick={onClick}
+        >
+          <article>
+            <Tabs.Trigger value="one">Trigger</Tabs.Trigger>
+          </article>
+        </Tabs.List>
+      </Tabs.Root>,
+    );
+
+    const list = screen.getByTestId('list');
+    expect(list.tagName).toBe('ARTICLE');
+    expect(list).toHaveAttribute('role', 'tablist');
+    expect(list).toHaveAttribute('aria-orientation', 'horizontal');
+    expect(list).toHaveClass('custom-class');
+    expect(list.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(list);
+
+    fireEvent.click(list);
+    expect(onClick).toHaveBeenCalled();
+  });
+});
+
+describe('Tabs.Trigger', () => {
+  afterEach(cleanup);
+
+  it('spreads props it does not consume onto the element it renders', () => {
+    const ref = React.createRef<HTMLButtonElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Tabs.Root defaultValue="one">
+        <Tabs.List>
+          <Tabs.Trigger
+            value="one"
+            ref={ref}
+            data-testid="trigger"
+            className="custom-class"
+            style={{ outlineColor: 'rgb(1, 2, 3)' }}
+            onClick={onClick}
+          >
+            Trigger
+          </Tabs.Trigger>
+        </Tabs.List>
+      </Tabs.Root>,
+    );
+
+    const trigger = screen.getByTestId('trigger');
+    expect(trigger).toHaveClass('custom-class');
+    expect(trigger.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(trigger);
+
+    fireEvent.click(trigger);
+    expect(onClick).toHaveBeenCalled();
+  });
+
+  it('forwards props to the child element when `asChild` is set', () => {
+    const ref = React.createRef<HTMLButtonElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Tabs.Root defaultValue="one">
+        <Tabs.List>
+          <Tabs.Trigger
+            value="one"
+            asChild
+            ref={ref}
+            data-testid="trigger"
+            className="custom-class"
+            style={{ outlineColor: 'rgb(1, 2, 3)' }}
+            onClick={onClick}
+          >
+            <button type="button">Trigger</button>
+          </Tabs.Trigger>
+        </Tabs.List>
+      </Tabs.Root>,
+    );
+
+    const trigger = screen.getByTestId('trigger');
+    expect(trigger.tagName).toBe('BUTTON');
+    expect(trigger).toHaveAttribute('role', 'tab');
+    expect(trigger).toHaveAttribute('aria-selected', 'true');
+    expect(trigger).toHaveAttribute('data-state', 'active');
+    expect(trigger).toHaveClass('custom-class');
+    expect(trigger.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(trigger);
+
+    fireEvent.click(trigger);
+    expect(onClick).toHaveBeenCalled();
+  });
+});
+
+describe('Tabs.Content', () => {
+  afterEach(cleanup);
+
+  it('spreads props it does not consume onto the element it renders', () => {
+    const ref = React.createRef<HTMLDivElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Tabs.Root defaultValue="one">
+        <Tabs.Content
+          value="one"
+          ref={ref}
+          data-testid="content"
+          className="custom-class"
+          style={{ outlineColor: 'rgb(1, 2, 3)' }}
+          onClick={onClick}
+        >
+          Content
+        </Tabs.Content>
+      </Tabs.Root>,
+    );
+
+    const content = screen.getByTestId('content');
+    expect(content).toHaveClass('custom-class');
+    expect(content.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(content);
+
+    fireEvent.click(content);
+    expect(onClick).toHaveBeenCalled();
+  });
+
+  it('forwards props to the child element when `asChild` is set', () => {
+    const ref = React.createRef<HTMLDivElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Tabs.Root defaultValue="one">
+        <Tabs.Content
+          value="one"
+          asChild
+          ref={ref}
+          data-testid="content"
+          className="custom-class"
+          style={{ outlineColor: 'rgb(1, 2, 3)' }}
+          onClick={onClick}
+        >
+          <article>Content</article>
+        </Tabs.Content>
+      </Tabs.Root>,
+    );
+
+    const content = screen.getByTestId('content');
+    expect(content.tagName).toBe('ARTICLE');
+    expect(content).toHaveAttribute('role', 'tabpanel');
+    expect(content).toHaveAttribute('data-state', 'active');
+    expect(content).toHaveClass('custom-class');
+    expect(content.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(content);
+
+    fireEvent.click(content);
+    expect(onClick).toHaveBeenCalled();
+  });
+});
