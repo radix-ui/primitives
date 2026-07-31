@@ -1,7 +1,7 @@
 import * as React from 'react';
 import userEvent from '@testing-library/user-event';
-import { cleanup, render, waitFor } from '@testing-library/react';
-import { FocusScope } from './focus-scope';
+import { cleanup, render, waitFor, fireEvent, screen } from '@testing-library/react';
+import * as FocusScope from './focus-scope';
 import type { RenderResult } from '@testing-library/react';
 import { afterEach, describe, it, beforeEach, vi, expect } from 'vitest';
 import { assertStableComposedRef } from '@repo/test-utils/ref-stability';
@@ -22,13 +22,13 @@ describe('FocusScope', () => {
     beforeEach(() => {
       rendered = render(
         <div>
-          <FocusScope asChild loop trapped>
+          <FocusScope.Root asChild loop trapped>
             <form>
               <TestField label={INNER_NAME_INPUT_LABEL} />
               <TestField label={INNER_EMAIL_INPUT_LABEL} />
               <button>{INNER_SUBMIT_LABEL}</button>
             </form>
-          </FocusScope>
+          </FocusScope.Root>
           <TestField label="other" />
           <button>some outer button</button>
         </div>,
@@ -65,13 +65,13 @@ describe('FocusScope', () => {
     beforeEach(() => {
       rendered = render(
         <div>
-          <FocusScope asChild loop trapped>
+          <FocusScope.Root asChild loop trapped>
             <form>
               <TestField label={INNER_NAME_INPUT_LABEL} tabIndex={-1} />
               <TestField label={INNER_EMAIL_INPUT_LABEL} />
               <button>{INNER_SUBMIT_LABEL}</button>
             </form>
-          </FocusScope>
+          </FocusScope.Root>
           <TestField label="other" />
           <button>some outer button</button>
         </div>,
@@ -98,12 +98,12 @@ describe('FocusScope', () => {
       const [branch, setBranch] = React.useState<HTMLElement | null>(null);
       return (
         <div>
-          <FocusScope asChild loop trapped branches={withBranch && branch ? [branch] : []}>
+          <FocusScope.Root asChild loop trapped branches={withBranch && branch ? [branch] : []}>
             <form>
               <TestField label={INNER_NAME_INPUT_LABEL} />
               <button>{INNER_SUBMIT_LABEL}</button>
             </form>
-          </FocusScope>
+          </FocusScope.Root>
           {/* Simulates portalled content of a nested layer living outside the scope's subtree */}
           <div ref={setBranch}>
             <input aria-label="branch-input" />
@@ -139,12 +139,12 @@ describe('FocusScope', () => {
     beforeEach(() => {
       rendered = render(
         <div>
-          <FocusScope asChild loop trapped>
+          <FocusScope.Root asChild loop trapped>
             <form>
               <TestField label={INNER_NAME_INPUT_LABEL} />
               <button onBlur={handleLastFocusableElementBlur}>{INNER_SUBMIT_LABEL}</button>
             </form>
-          </FocusScope>
+          </FocusScope.Root>
         </div>,
       );
       tabbableFirst = rendered.getByLabelText(INNER_NAME_INPUT_LABEL) as HTMLInputElement;
@@ -163,9 +163,9 @@ describe('FocusScope', () => {
   describe('ref stability', () => {
     it('keeps a stable composed ref (no infinite render loop)', () => {
       assertStableComposedRef((ref) => (
-        <FocusScope asChild ref={ref}>
+        <FocusScope.Root asChild ref={ref}>
           <button type="button">Click me</button>
-        </FocusScope>
+        </FocusScope.Root>
       ));
     });
   });
@@ -178,14 +178,14 @@ describe('FocusScope', () => {
     beforeEach(() => {
       rendered = render(
         <div>
-          <FocusScope asChild loop trapped>
+          <FocusScope.Root asChild loop trapped>
             <form>
               <TestField label={INNER_NAME_INPUT_LABEL} />
               <TestField label="hidden-display" style={{ display: 'none' }} />
               <TestField label="hidden-visibility" style={{ visibility: 'hidden' }} />
               <button>{INNER_SUBMIT_LABEL}</button>
             </form>
-          </FocusScope>
+          </FocusScope.Root>
         </div>,
       );
       visibleFirst = rendered.getByLabelText(INNER_NAME_INPUT_LABEL) as HTMLInputElement;
@@ -214,3 +214,96 @@ function TestField({ label, ...props }: { label: string } & React.ComponentProps
     </label>
   );
 }
+
+describe('FocusScope.Root', () => {
+  afterEach(cleanup);
+
+  it('spreads props it does not consume onto the element it renders', () => {
+    const ref = React.createRef<HTMLDivElement>();
+    const onClick = vi.fn();
+
+    render(
+      <FocusScope.Root
+        ref={ref}
+        data-testid="scope"
+        className="custom-class"
+        style={{ outlineColor: 'rgb(1, 2, 3)' }}
+        onClick={onClick}
+      >
+        Scope
+      </FocusScope.Root>,
+    );
+
+    const scope = screen.getByTestId('scope');
+    expect(scope.tagName).toBe('DIV');
+    expect(scope).toHaveClass('custom-class');
+    expect(scope.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(scope);
+
+    fireEvent.click(scope);
+    expect(onClick).toHaveBeenCalled();
+  });
+
+  it('forwards props to the child element when `asChild` is set', () => {
+    const ref = React.createRef<HTMLDivElement>();
+    const onClick = vi.fn();
+
+    render(
+      <FocusScope.Root
+        asChild
+        ref={ref}
+        data-testid="scope"
+        className="custom-class"
+        style={{ outlineColor: 'rgb(1, 2, 3)' }}
+        onClick={onClick}
+      >
+        <article>Scope</article>
+      </FocusScope.Root>,
+    );
+
+    const scope = screen.getByTestId('scope');
+    expect(scope.tagName).toBe('ARTICLE');
+    // The scope's own `tabIndex` has to land on the slotted element too, since it is what makes the
+    // container focusable when it holds no tabbable candidates.
+    expect(scope).toHaveAttribute('tabindex', '-1');
+    expect(scope).toHaveClass('custom-class');
+    expect(scope.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(scope);
+
+    fireEvent.click(scope);
+    expect(onClick).toHaveBeenCalled();
+  });
+
+  // A trapped scope adds focus listeners and a mutation observer around the same element, so it is
+  // worth checking that the props still reach it.
+  it('forwards props to the child element when `asChild` is set on a trapped, looping scope', () => {
+    const ref = React.createRef<HTMLDivElement>();
+    const onClick = vi.fn();
+
+    render(
+      <FocusScope.Root
+        trapped
+        loop
+        asChild
+        ref={ref}
+        data-testid="scope"
+        className="custom-class"
+        style={{ outlineColor: 'rgb(1, 2, 3)' }}
+        onClick={onClick}
+      >
+        <article>
+          <button type="button">Inside</button>
+        </article>
+      </FocusScope.Root>,
+    );
+
+    const scope = screen.getByTestId('scope');
+    expect(scope.tagName).toBe('ARTICLE');
+    expect(scope).toHaveClass('custom-class');
+    expect(scope.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(scope);
+
+    fireEvent.click(scope);
+    expect(onClick).toHaveBeenCalled();
+  });
+});
