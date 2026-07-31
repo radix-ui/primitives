@@ -1,8 +1,9 @@
+import * as React from 'react';
 import { axe } from 'vitest-axe';
 import type { RenderResult } from '@testing-library/react';
-import { act, cleanup, render, screen } from '@testing-library/react';
+import { act, cleanup, render, screen, fireEvent } from '@testing-library/react';
 import * as OneTimePasswordField from './one-time-password-field';
-import { afterEach, describe, it, beforeEach, expect } from 'vitest';
+import { afterEach, describe, it, beforeEach, expect, vi } from 'vitest';
 import { userEvent, type UserEvent } from '@testing-library/user-event';
 
 describe('given a default OneTimePasswordField', () => {
@@ -116,3 +117,161 @@ describe('given a default OneTimePasswordField', () => {
 function getInputValues(inputs: HTMLInputElement[]) {
   return inputs.map((input) => input.value).join(',');
 }
+
+describe('OneTimePasswordField.Root', () => {
+  afterEach(cleanup);
+
+  it('spreads props it does not consume onto the element it renders', () => {
+    const ref = React.createRef<HTMLDivElement>();
+    const onClick = vi.fn();
+
+    render(
+      <OneTimePasswordField.Root
+        ref={ref}
+        data-testid="root"
+        className="custom-class"
+        style={{ outlineColor: 'rgb(1, 2, 3)' }}
+        onClick={onClick}
+      >
+        <OneTimePasswordField.Input />
+      </OneTimePasswordField.Root>,
+    );
+
+    const root = screen.getByTestId('root');
+    expect(root.tagName).toBe('DIV');
+    expect(root).toHaveClass('custom-class');
+    expect(root.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(root);
+
+    fireEvent.click(root);
+    expect(onClick).toHaveBeenCalled();
+  });
+
+  it('forwards props to the child element when `asChild` is set', () => {
+    const ref = React.createRef<HTMLDivElement>();
+    const onClick = vi.fn();
+
+    render(
+      <OneTimePasswordField.Root
+        asChild
+        ref={ref}
+        data-testid="root"
+        className="custom-class"
+        style={{ outlineColor: 'rgb(1, 2, 3)' }}
+        onClick={onClick}
+      >
+        <article>
+          <OneTimePasswordField.Input />
+        </article>
+      </OneTimePasswordField.Root>,
+    );
+
+    const root = screen.getByTestId('root');
+    expect(root.tagName).toBe('ARTICLE');
+    // The root's own `role` has to land on the slotted element too.
+    expect(root).toHaveAttribute('role', 'group');
+    expect(root).toHaveClass('custom-class');
+    expect(root.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(root);
+
+    fireEvent.click(root);
+    expect(onClick).toHaveBeenCalled();
+  });
+});
+
+describe('OneTimePasswordField.Input', () => {
+  afterEach(cleanup);
+
+  it('spreads props it does not consume onto the element it renders', () => {
+    const ref = React.createRef<HTMLInputElement>();
+    const onClick = vi.fn();
+
+    render(
+      <OneTimePasswordField.Root defaultValue="1">
+        <OneTimePasswordField.Input
+          ref={ref}
+          data-testid="input"
+          className="custom-class"
+          style={{ outlineColor: 'rgb(1, 2, 3)' }}
+          onClick={onClick}
+        />
+      </OneTimePasswordField.Root>,
+    );
+
+    const input = screen.getByTestId('input');
+    expect(input.tagName).toBe('INPUT');
+    expect(input).toHaveClass('custom-class');
+    expect(input.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(input);
+
+    fireEvent.click(input);
+    expect(onClick).toHaveBeenCalled();
+  });
+
+  // The part renders an `input`, so the slotted element is an `input` with no
+  // children.
+  it('forwards props to the child element when `asChild` is set', () => {
+    const ref = React.createRef<HTMLInputElement>();
+    const onClick = vi.fn();
+
+    render(
+      <OneTimePasswordField.Root defaultValue="1">
+        <OneTimePasswordField.Input
+          asChild
+          ref={ref}
+          data-testid="input"
+          className="custom-class"
+          style={{ outlineColor: 'rgb(1, 2, 3)' }}
+          onClick={onClick}
+        >
+          <input />
+        </OneTimePasswordField.Input>
+      </OneTimePasswordField.Root>,
+    );
+
+    const input = screen.getByTestId('input');
+    expect(input.tagName).toBe('INPUT');
+    // The attributes the part sets itself have to reach the slotted element, including the ones the
+    // roving focus group and the collection contribute.
+    expect(input).toHaveAttribute('data-radix-otp-input');
+    expect(input).toHaveAttribute('data-radix-index', '0');
+    expect(input).toHaveClass('custom-class');
+    expect(input.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(input);
+
+    fireEvent.click(input);
+    expect(onClick).toHaveBeenCalled();
+  });
+});
+
+// `HiddenInput` renders a plain `input`, not a `Primitive`, so it has no
+// `asChild` prop and there is no slotted variant to test. It is also always
+// `type="hidden"`, which a real browser never dispatches a click to, so the
+// click assertion is left out rather than faked.
+describe('OneTimePasswordField.HiddenInput', () => {
+  afterEach(cleanup);
+
+  it('spreads props it does not consume onto the element it renders', () => {
+    const ref = React.createRef<HTMLInputElement>();
+
+    render(
+      <OneTimePasswordField.Root defaultValue="1" name="code">
+        <OneTimePasswordField.Input />
+        <OneTimePasswordField.HiddenInput
+          ref={ref}
+          data-testid="hidden-input"
+          className="custom-class"
+          style={{ outlineColor: 'rgb(1, 2, 3)' }}
+        />
+      </OneTimePasswordField.Root>,
+    );
+
+    const hiddenInput = screen.getByTestId('hidden-input');
+    expect(hiddenInput.tagName).toBe('INPUT');
+    expect(hiddenInput).toHaveAttribute('type', 'hidden');
+    expect(hiddenInput).toHaveAttribute('name', 'code');
+    expect(hiddenInput).toHaveClass('custom-class');
+    expect(hiddenInput.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(hiddenInput);
+  });
+});
