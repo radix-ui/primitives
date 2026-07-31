@@ -575,3 +575,255 @@ function LegacyCheckbox(props: React.ComponentProps<typeof Checkbox.Root>) {
     </div>
   );
 }
+
+describe('Checkbox.Root', () => {
+  afterEach(cleanup);
+
+  it('spreads props it does not consume onto the element it renders', () => {
+    const ref = React.createRef<HTMLButtonElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Checkbox.Root
+        defaultChecked
+        ref={ref}
+        data-testid="root"
+        className="custom-class"
+        style={{ outlineColor: 'rgb(1, 2, 3)' }}
+        onClick={onClick}
+      >
+        <Checkbox.Indicator />
+      </Checkbox.Root>,
+    );
+
+    const root = screen.getByTestId('root');
+    expect(root).toHaveClass('custom-class');
+    expect(root.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(root);
+
+    fireEvent.click(root);
+    expect(onClick).toHaveBeenCalled();
+  });
+
+  it('forwards props to the child element when `asChild` is set', () => {
+    const ref = React.createRef<HTMLButtonElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Checkbox.Root
+        defaultChecked
+        asChild
+        ref={ref}
+        data-testid="root"
+        className="custom-class"
+        style={{ outlineColor: 'rgb(1, 2, 3)' }}
+        onClick={onClick}
+      >
+        <button type="button">
+          <Checkbox.Indicator />
+        </button>
+      </Checkbox.Root>,
+    );
+
+    const root = screen.getByTestId('root');
+    expect(root.tagName).toBe('BUTTON');
+    expect(root).toHaveAttribute('role', 'checkbox');
+    expect(root).toHaveAttribute('data-state', 'checked');
+    expect(root).toHaveClass('custom-class');
+    expect(root.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(root);
+
+    fireEvent.click(root);
+    expect(onClick).toHaveBeenCalled();
+  });
+});
+
+describe('Checkbox.unstable_Trigger', () => {
+  afterEach(cleanup);
+
+  it('spreads props it does not consume onto the element it renders', () => {
+    const ref = React.createRef<HTMLButtonElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Checkbox.unstable_Provider defaultChecked>
+        <Checkbox.unstable_Trigger
+          ref={ref}
+          data-testid="trigger"
+          className="custom-class"
+          style={{ outlineColor: 'rgb(1, 2, 3)' }}
+          onClick={onClick}
+        >
+          <Checkbox.Indicator />
+        </Checkbox.unstable_Trigger>
+      </Checkbox.unstable_Provider>,
+    );
+
+    const trigger = screen.getByTestId('trigger');
+    expect(trigger).toHaveClass('custom-class');
+    expect(trigger.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(trigger);
+
+    fireEvent.click(trigger);
+    expect(onClick).toHaveBeenCalled();
+  });
+
+  it('forwards props to the child element when `asChild` is set', () => {
+    const ref = React.createRef<HTMLButtonElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Checkbox.unstable_Provider defaultChecked>
+        <Checkbox.unstable_Trigger
+          asChild
+          ref={ref}
+          data-testid="trigger"
+          className="custom-class"
+          style={{ outlineColor: 'rgb(1, 2, 3)' }}
+          onClick={onClick}
+        >
+          <button type="button">
+            <Checkbox.Indicator />
+          </button>
+        </Checkbox.unstable_Trigger>
+      </Checkbox.unstable_Provider>,
+    );
+
+    const trigger = screen.getByTestId('trigger');
+    expect(trigger.tagName).toBe('BUTTON');
+    expect(trigger).toHaveAttribute('role', 'checkbox');
+    expect(trigger).toHaveAttribute('aria-checked', 'true');
+    expect(trigger).toHaveClass('custom-class');
+    expect(trigger.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(trigger);
+
+    fireEvent.click(trigger);
+    expect(onClick).toHaveBeenCalled();
+  });
+});
+
+describe('Checkbox.Indicator', () => {
+  afterEach(cleanup);
+
+  it('spreads props it does not consume onto the element it renders', () => {
+    const ref = React.createRef<HTMLSpanElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Checkbox.Root defaultChecked>
+        <Checkbox.Indicator
+          ref={ref}
+          data-testid="indicator"
+          className="custom-class"
+          style={{ outlineColor: 'rgb(1, 2, 3)' }}
+          onClick={onClick}
+        />
+      </Checkbox.Root>,
+    );
+
+    const indicator = screen.getByTestId('indicator');
+    expect(indicator).toHaveClass('custom-class');
+    // The indicator sets `pointerEvents` itself, so this also proves `style` is
+    // merged, not replaced.
+    expect(indicator.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(indicator.style.pointerEvents).toBe('none');
+    expect(ref.current).toBe(indicator);
+
+    fireEvent.click(indicator);
+    expect(onClick).toHaveBeenCalled();
+  });
+
+  it('forwards props to the child element when `asChild` is set', () => {
+    const ref = React.createRef<HTMLSpanElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Checkbox.Root defaultChecked>
+        <Checkbox.Indicator
+          asChild
+          ref={ref}
+          data-testid="indicator"
+          className="custom-class"
+          style={{ outlineColor: 'rgb(1, 2, 3)' }}
+          onClick={onClick}
+        >
+          <article />
+        </Checkbox.Indicator>
+      </Checkbox.Root>,
+    );
+
+    const indicator = screen.getByTestId('indicator');
+    expect(indicator.tagName).toBe('ARTICLE');
+    expect(indicator).toHaveAttribute('data-state', 'checked');
+    expect(indicator).toHaveClass('custom-class');
+    expect(indicator.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(indicator);
+
+    fireEvent.click(indicator);
+    expect(onClick).toHaveBeenCalled();
+  });
+});
+
+describe('Checkbox.unstable_BubbleInput', () => {
+  afterEach(cleanup);
+
+  it('spreads props it does not consume onto the element it renders', () => {
+    const ref = React.createRef<HTMLInputElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Checkbox.unstable_Provider defaultChecked>
+        <Checkbox.unstable_BubbleInput
+          ref={ref}
+          data-testid="bubble-input"
+          className="custom-class"
+          style={{ outlineColor: 'rgb(1, 2, 3)' }}
+          onClick={onClick}
+        />
+      </Checkbox.unstable_Provider>,
+    );
+
+    const input = screen.getByTestId('bubble-input');
+    expect(input).toHaveClass('custom-class');
+    expect(input.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(input);
+
+    // The input is visually hidden, so a real user never clicks it. The part
+    // composes `onClick` to swallow the synthetic clicks it dispatches at
+    // forms, and that composition is exactly where a consumer's handler could
+    // get dropped.
+    fireEvent.click(input);
+    expect(onClick).toHaveBeenCalled();
+  });
+
+  it('forwards props to the child element when `asChild` is set', () => {
+    const ref = React.createRef<HTMLInputElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Checkbox.unstable_Provider defaultChecked>
+        <Checkbox.unstable_BubbleInput
+          asChild
+          ref={ref}
+          data-testid="bubble-input"
+          className="custom-class"
+          style={{ outlineColor: 'rgb(1, 2, 3)' }}
+          onClick={onClick}
+        >
+          <input />
+        </Checkbox.unstable_BubbleInput>
+      </Checkbox.unstable_Provider>,
+    );
+
+    const input = screen.getByTestId('bubble-input');
+    expect(input.tagName).toBe('INPUT');
+    expect(input).toHaveAttribute('type', 'checkbox');
+    expect(input).toHaveAttribute('aria-hidden', 'true');
+    expect(input).toHaveClass('custom-class');
+    expect(input.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(input);
+
+    fireEvent.click(input);
+    expect(onClick).toHaveBeenCalled();
+  });
+});
