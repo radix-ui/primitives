@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as Switch from './switch';
+import * as Switch from '.';
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, it, expect, vi } from 'vitest';
 
@@ -205,5 +205,255 @@ describe('given a Switch with a clickable ancestor inside a form', () => {
     expect(onParentClick).not.toHaveBeenCalled();
     // the form should still be notified of the change
     expect(onFormChange).toHaveBeenCalledWith(true);
+  });
+});
+
+describe('Switch.Root', () => {
+  afterEach(cleanup);
+
+  it('spreads props it does not consume onto the element it renders', () => {
+    const ref = React.createRef<HTMLButtonElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Switch.Root
+        defaultChecked
+        ref={ref}
+        data-testid="root"
+        className="custom-class"
+        style={{ outlineColor: 'rgb(1, 2, 3)' }}
+        onClick={onClick}
+      >
+        <Switch.Thumb />
+      </Switch.Root>,
+    );
+
+    const root = screen.getByTestId('root');
+    expect(root).toHaveClass('custom-class');
+    expect(root.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(root);
+
+    // Composed with the switch's own click handler rather than replaced by it.
+    fireEvent.click(root);
+    expect(onClick).toHaveBeenCalled();
+  });
+
+  it('forwards props to the child element when `asChild` is set', () => {
+    const ref = React.createRef<HTMLButtonElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Switch.Root
+        defaultChecked
+        asChild
+        ref={ref}
+        data-testid="root"
+        className="custom-class"
+        style={{ outlineColor: 'rgb(1, 2, 3)' }}
+        onClick={onClick}
+      >
+        <button type="button">
+          <Switch.Thumb />
+        </button>
+      </Switch.Root>,
+    );
+
+    const root = screen.getByTestId('root');
+    expect(root.tagName).toBe('BUTTON');
+    expect(root).toHaveAttribute('role', 'switch');
+    expect(root).toHaveAttribute('data-state', 'checked');
+    expect(root).toHaveClass('custom-class');
+    expect(root.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(root);
+
+    fireEvent.click(root);
+    expect(onClick).toHaveBeenCalled();
+  });
+});
+
+describe('Switch.unstable_Trigger', () => {
+  afterEach(cleanup);
+
+  it('spreads props it does not consume onto the element it renders', () => {
+    const ref = React.createRef<HTMLButtonElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Switch.unstable_Provider defaultChecked>
+        <Switch.unstable_Trigger
+          ref={ref}
+          data-testid="trigger"
+          className="custom-class"
+          style={{ outlineColor: 'rgb(1, 2, 3)' }}
+          onClick={onClick}
+        >
+          <Switch.Thumb />
+        </Switch.unstable_Trigger>
+      </Switch.unstable_Provider>,
+    );
+
+    const trigger = screen.getByTestId('trigger');
+    expect(trigger).toHaveClass('custom-class');
+    expect(trigger.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(trigger);
+
+    fireEvent.click(trigger);
+    expect(onClick).toHaveBeenCalled();
+  });
+
+  it('forwards props to the child element when `asChild` is set', () => {
+    const ref = React.createRef<HTMLButtonElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Switch.unstable_Provider defaultChecked>
+        <Switch.unstable_Trigger
+          asChild
+          ref={ref}
+          data-testid="trigger"
+          className="custom-class"
+          style={{ outlineColor: 'rgb(1, 2, 3)' }}
+          onClick={onClick}
+        >
+          <button type="button">
+            <Switch.Thumb />
+          </button>
+        </Switch.unstable_Trigger>
+      </Switch.unstable_Provider>,
+    );
+
+    const trigger = screen.getByTestId('trigger');
+    expect(trigger.tagName).toBe('BUTTON');
+    expect(trigger).toHaveAttribute('role', 'switch');
+    expect(trigger).toHaveAttribute('aria-checked', 'true');
+    expect(trigger).toHaveClass('custom-class');
+    expect(trigger.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(trigger);
+
+    fireEvent.click(trigger);
+    expect(onClick).toHaveBeenCalled();
+  });
+});
+
+describe('Switch.Thumb', () => {
+  afterEach(cleanup);
+
+  it('spreads props it does not consume onto the element it renders', () => {
+    const ref = React.createRef<HTMLSpanElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Switch.Root defaultChecked>
+        <Switch.Thumb
+          ref={ref}
+          data-testid="thumb"
+          className="custom-class"
+          style={{ outlineColor: 'rgb(1, 2, 3)' }}
+          onClick={onClick}
+        />
+      </Switch.Root>,
+    );
+
+    const thumb = screen.getByTestId('thumb');
+    expect(thumb).toHaveClass('custom-class');
+    expect(thumb.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(thumb);
+
+    fireEvent.click(thumb);
+    expect(onClick).toHaveBeenCalled();
+  });
+
+  it('forwards props to the child element when `asChild` is set', () => {
+    const ref = React.createRef<HTMLSpanElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Switch.Root defaultChecked>
+        <Switch.Thumb
+          asChild
+          ref={ref}
+          data-testid="thumb"
+          className="custom-class"
+          style={{ outlineColor: 'rgb(1, 2, 3)' }}
+          onClick={onClick}
+        >
+          <article />
+        </Switch.Thumb>
+      </Switch.Root>,
+    );
+
+    const thumb = screen.getByTestId('thumb');
+    expect(thumb.tagName).toBe('ARTICLE');
+    expect(thumb).toHaveAttribute('data-state', 'checked');
+    expect(thumb).toHaveClass('custom-class');
+    expect(thumb.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(thumb);
+
+    fireEvent.click(thumb);
+    expect(onClick).toHaveBeenCalled();
+  });
+});
+
+describe('Switch.unstable_BubbleInput', () => {
+  afterEach(cleanup);
+
+  it('spreads props it does not consume onto the element it renders', () => {
+    const ref = React.createRef<HTMLInputElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Switch.unstable_Provider defaultChecked>
+        <Switch.unstable_BubbleInput
+          ref={ref}
+          data-testid="bubble-input"
+          className="custom-class"
+          style={{ outlineColor: 'rgb(1, 2, 3)' }}
+          onClick={onClick}
+        />
+      </Switch.unstable_Provider>,
+    );
+
+    const input = screen.getByTestId('bubble-input');
+    expect(input).toHaveClass('custom-class');
+    expect(input.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(input);
+
+    // The input is visually hidden, so a real user never clicks it. The part
+    // composes `onClick` to swallow the synthetic clicks it dispatches at
+    // forms, and that composition is exactly where a consumer's handler could
+    // get dropped.
+    fireEvent.click(input);
+    expect(onClick).toHaveBeenCalled();
+  });
+
+  it('forwards props to the child element when `asChild` is set', () => {
+    const ref = React.createRef<HTMLInputElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Switch.unstable_Provider defaultChecked>
+        <Switch.unstable_BubbleInput
+          asChild
+          ref={ref}
+          data-testid="bubble-input"
+          className="custom-class"
+          style={{ outlineColor: 'rgb(1, 2, 3)' }}
+          onClick={onClick}
+        >
+          <input />
+        </Switch.unstable_BubbleInput>
+      </Switch.unstable_Provider>,
+    );
+
+    const input = screen.getByTestId('bubble-input');
+    expect(input.tagName).toBe('INPUT');
+    expect(input).toHaveAttribute('type', 'checkbox');
+    expect(input).toHaveAttribute('aria-hidden', 'true');
+    expect(input).toHaveClass('custom-class');
+    expect(input.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(input);
+
+    fireEvent.click(input);
+    expect(onClick).toHaveBeenCalled();
   });
 });
