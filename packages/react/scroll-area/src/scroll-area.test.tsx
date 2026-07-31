@@ -386,6 +386,36 @@ describe('ScrollArea.Viewport', () => {
     expect(onClick).toHaveBeenCalled();
   });
 
+  // Regression for the Slottable fallback when `asChild` can't redirect onto a
+  // single element child. This avoids a breaking change for users who are
+  // misusing the asChild API. We should expect this test to fail when we remove
+  // the fallback branch ahead of the next major release.
+  it('falls back to the content wrapper when `asChild` children are not a single element', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const condition = false;
+
+    expect(() => {
+      render(
+        <ScrollArea.Root type="always">
+          <ScrollArea.Viewport asChild data-testid="viewport" className="custom-class">
+            {condition && <article />}
+          </ScrollArea.Viewport>
+        </ScrollArea.Root>,
+      );
+    }).not.toThrow();
+
+    // Props land on the implicit content wrapper rather than throwing because
+    // there is no element for Slot to target
+    const viewport = screen.getByTestId('viewport');
+    expect(viewport).toHaveClass('custom-class');
+    expect(viewport).toHaveStyle({ display: 'table', minWidth: '100%' });
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringContaining('`asChild` expects a single React element child'),
+    );
+
+    warn.mockRestore();
+  });
+
   it('renders an implicit content element around its children by default', () => {
     render(
       <ScrollArea.Root type="always">

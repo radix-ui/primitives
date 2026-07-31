@@ -9,6 +9,7 @@ import { useDirection } from '@radix-ui/react-direction';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { clamp } from '@radix-ui/number';
 import { composeEventHandlers } from '@radix-ui/primitive';
+import { IS_DEVELOPMENT } from '@radix-ui/primitive/is-development';
 import { useStateMachine } from './use-state-machine';
 
 import type { Scope } from '@radix-ui/react-context';
@@ -156,8 +157,12 @@ type ScrollAreaViewportElement = React.ComponentRef<typeof Primitive.div>;
 interface ScrollAreaViewportProps extends PrimitiveDivProps {
   nonce?: string;
   /**
-   * @deprecated Implicit rendering of the content element will be removed in
-   * the next major release.
+   * Disables implicit rendering of an additional wrapper element that measures
+   * the content size. When `true`, a child `<ScrollArea.Content>` must be
+   * rendered as a direct child of the viewport.
+   *
+   * Implicit rendering of the content element will be removed in the next major
+   * release.
    */
   disableImplicitContentElement?: boolean;
 }
@@ -173,6 +178,27 @@ const ScrollAreaViewport = /* @__PURE__ */ React.forwardRef<
     const context = useScrollAreaContext(VIEWPORT_NAME, __scopeScrollArea);
     const ref = React.useRef<ScrollAreaViewportElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, ref, context.onViewportChange);
+
+    // `Slot` can only redirect props onto a single element, so `asChild` can
+    // only reach the consumer's element when `children` is one.
+    const canSlotOntoChildren = React.isValidElement(children);
+
+    // oxlint-disable react-hooks/rules-of-hooks
+    if (IS_DEVELOPMENT) {
+      const hasWarnedRef = React.useRef(false);
+      const shouldWarn =
+        props.asChild === true && !disableImplicitContentElement && !canSlotOntoChildren;
+      React.useEffect(() => {
+        if (shouldWarn && !hasWarnedRef.current) {
+          hasWarnedRef.current = true;
+          console.warn(
+            `${VIEWPORT_NAME}: \`asChild\` expects a single React element child, so its props have been applied to the implicitly rendered content element instead. Wrap the children in a single element, or opt into \`disableImplicitContentElement\` and render a \`ScrollArea.Content\` inside the viewport.`,
+          );
+        }
+      }, [shouldWarn]);
+    }
+    // oxlint-enable react-hooks/rules-of-hooks
+
     return (
       <>
         <ScrollAreaViewportStyle nonce={nonce} />
@@ -206,7 +232,7 @@ const ScrollAreaViewport = /* @__PURE__ */ React.forwardRef<
            */}
           {disableImplicitContentElement ? (
             children
-          ) : (
+          ) : canSlotOntoChildren ? (
             <Slottable child={children}>
               {(slottable) => (
                 <ScrollAreaContent
@@ -216,6 +242,19 @@ const ScrollAreaViewport = /* @__PURE__ */ React.forwardRef<
                   {slottable}
                 </ScrollAreaContent>
               )}
+            </Slottable>
+          ) : (
+            // When `children` isn't a single element there is nothing for
+            // `Slot` to redirect onto, so target the wrapper. This mirrors the
+            // old [incorrect] behavior, but it's better than throwing on a
+            // patch update.
+            <Slottable>
+              <ScrollAreaContent
+                // @ts-expect-error
+                __scopeScrollArea={__scopeScrollArea}
+              >
+                {children}
+              </ScrollAreaContent>
             </Slottable>
           )}
         </Primitive.div>
