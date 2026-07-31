@@ -3,7 +3,7 @@ import { axe } from 'vitest-axe';
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import * as ContextMenu from './context-menu';
 import type { MockInstance } from 'vitest';
-import { afterEach, beforeEach, describe, it, expect, vi } from 'vitest';
+import { afterEach, beforeEach, describe, it, expect, vi, beforeAll, afterAll } from 'vitest';
 
 const TRIGGER_TEXT = 'Right click here';
 const ITEM_TEXT = 'Item';
@@ -21,9 +21,9 @@ function ContextMenuTest(props: React.ComponentProps<typeof ContextMenu.Root>) {
   );
 }
 
-afterEach(cleanup);
-
 describe('rendering and opening', () => {
+  afterEach(cleanup);
+
   it('keeps the content closed by default', () => {
     render(<ContextMenuTest />);
     expect(screen.getByText(TRIGGER_TEXT)).toHaveAttribute('data-state', 'closed');
@@ -77,6 +77,8 @@ describe('rendering and opening', () => {
 });
 
 describe('disabled trigger', () => {
+  afterEach(cleanup);
+
   it('does not open the menu on right click', () => {
     render(
       <ContextMenu.Root>
@@ -97,6 +99,8 @@ describe('disabled trigger', () => {
 });
 
 describe('items', () => {
+  afterEach(cleanup);
+
   it('calls `onSelect` and closes the menu when an item is selected', async () => {
     const onSelect = vi.fn();
     render(
@@ -170,6 +174,8 @@ describe('items', () => {
 });
 
 describe('groups and labels', () => {
+  afterEach(cleanup);
+
   it('renders grouped items with a label', async () => {
     render(
       <ContextMenu.Root>
@@ -197,6 +203,8 @@ describe('groups and labels', () => {
 });
 
 describe('checkbox items', () => {
+  afterEach(cleanup);
+
   it('toggles a checkbox item and reflects the checked state', async () => {
     function CheckboxTest() {
       const [checked, setChecked] = React.useState(false);
@@ -245,6 +253,8 @@ describe('checkbox items', () => {
 });
 
 describe('radio items', () => {
+  afterEach(cleanup);
+
   it('selects a radio item and calls `onValueChange`', async () => {
     const onValueChange = vi.fn();
     function RadioTest() {
@@ -288,6 +298,8 @@ describe('radio items', () => {
 });
 
 describe('submenus', () => {
+  afterEach(cleanup);
+
   it('opens a submenu via keyboard', async () => {
     render(
       <ContextMenu.Root>
@@ -377,9 +389,7 @@ describe('submenus', () => {
 });
 
 describe('modality', () => {
-  afterEach(() => {
-    document.body.style.pointerEvents = '';
-  });
+  afterEach(cleanupModal);
 
   it('disables pointer events on the body while a modal menu is open', async () => {
     render(<ContextMenuTest />);
@@ -516,3 +526,996 @@ describe('controlled `open` state', () => {
     });
   });
 });
+
+describe('prop spreading', () => {
+  // `ContextMenu` has no `defaultOpen`, so the controlled `open` prop is the
+  // only way to render the content declaratively. It warns because the trigger
+  // has not been right-clicked, which leaves the menu's position indeterminate.
+  // This is irrelevant for testing.
+  let consoleWarnMock: MockInstance;
+
+  beforeAll(() => {
+    consoleWarnMock = vi.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  afterAll(() => {
+    consoleWarnMock.mockRestore();
+  });
+
+  afterEach(cleanupModal);
+
+  describe('ContextMenu.Trigger', () => {
+    it('spreads props it does not consume onto the element it renders', () => {
+      const ref = React.createRef<HTMLSpanElement>();
+      const onClick = vi.fn();
+
+      render(
+        <ContextMenu.Root>
+          <ContextMenu.Trigger
+            ref={ref}
+            data-testid="trigger"
+            className="custom-class"
+            style={{ outlineColor: 'rgb(1, 2, 3)' }}
+            onClick={onClick}
+          >
+            Right click here
+          </ContextMenu.Trigger>
+        </ContextMenu.Root>,
+      );
+
+      const trigger = screen.getByTestId('trigger');
+      expect(trigger).toHaveClass('custom-class');
+      expect(trigger.style.outlineColor).toBe('rgb(1, 2, 3)');
+      expect(ref.current).toBe(trigger);
+
+      fireEvent.click(trigger);
+      expect(onClick).toHaveBeenCalled();
+    });
+
+    it('forwards props to the child element when `asChild` is set', () => {
+      const ref = React.createRef<HTMLSpanElement>();
+      const onClick = vi.fn();
+
+      render(
+        <ContextMenu.Root>
+          <ContextMenu.Trigger
+            asChild
+            ref={ref}
+            data-testid="trigger"
+            className="custom-class"
+            style={{ outlineColor: 'rgb(1, 2, 3)' }}
+            onClick={onClick}
+          >
+            <article>Right click here</article>
+          </ContextMenu.Trigger>
+        </ContextMenu.Root>,
+      );
+
+      const trigger = screen.getByTestId('trigger');
+      expect(trigger.tagName).toBe('ARTICLE');
+      expect(trigger).toHaveAttribute('data-state', 'closed');
+      expect(trigger).toHaveClass('custom-class');
+      // The trigger sets `WebkitTouchCallout` itself, so this also shows the two are merged.
+      expect(trigger.style.outlineColor).toBe('rgb(1, 2, 3)');
+      expect(ref.current).toBe(trigger);
+
+      fireEvent.click(trigger);
+      expect(onClick).toHaveBeenCalled();
+    });
+  });
+
+  describe('ContextMenu.Content', () => {
+    it('spreads props it does not consume onto the element it renders', () => {
+      const ref = React.createRef<HTMLDivElement>();
+      const onClick = vi.fn();
+
+      render(
+        <ContextMenu.Root open>
+          <ContextMenu.Trigger>Right click here</ContextMenu.Trigger>
+          <ContextMenu.Portal>
+            <ContextMenu.Content
+              ref={ref}
+              data-testid="content"
+              className="custom-class"
+              style={{ outlineColor: 'rgb(1, 2, 3)' }}
+              onClick={onClick}
+            >
+              <ContextMenu.Item>Item</ContextMenu.Item>
+            </ContextMenu.Content>
+          </ContextMenu.Portal>
+        </ContextMenu.Root>,
+      );
+
+      const content = screen.getByTestId('content');
+      expect(content).toHaveClass('custom-class');
+      expect(content.style.outlineColor).toBe('rgb(1, 2, 3)');
+      expect(ref.current).toBe(content);
+
+      fireEvent.click(content);
+      expect(onClick).toHaveBeenCalled();
+    });
+
+    it('forwards props to the child element when `asChild` is set', () => {
+      const ref = React.createRef<HTMLDivElement>();
+      const onClick = vi.fn();
+
+      render(
+        <ContextMenu.Root open>
+          <ContextMenu.Trigger>Right click here</ContextMenu.Trigger>
+          <ContextMenu.Portal>
+            <ContextMenu.Content
+              asChild
+              ref={ref}
+              data-testid="content"
+              className="custom-class"
+              style={{ outlineColor: 'rgb(1, 2, 3)' }}
+              onClick={onClick}
+            >
+              <article>
+                <ContextMenu.Item>Item</ContextMenu.Item>
+              </article>
+            </ContextMenu.Content>
+          </ContextMenu.Portal>
+        </ContextMenu.Root>,
+      );
+
+      const content = screen.getByTestId('content');
+      expect(content.tagName).toBe('ARTICLE');
+      expect(content).toHaveAttribute('role', 'menu');
+      expect(content).toHaveAttribute('data-state', 'open');
+      expect(content).toHaveClass('custom-class');
+      expect(content.style.outlineColor).toBe('rgb(1, 2, 3)');
+      expect(ref.current).toBe(content);
+
+      fireEvent.click(content);
+      expect(onClick).toHaveBeenCalled();
+    });
+
+    it('forwards props to the child element when `asChild` is set on a non-modal menu', () => {
+      const ref = React.createRef<HTMLDivElement>();
+      const onClick = vi.fn();
+
+      render(
+        <ContextMenu.Root open modal={false}>
+          <ContextMenu.Trigger>Right click here</ContextMenu.Trigger>
+          <ContextMenu.Portal>
+            <ContextMenu.Content
+              asChild
+              ref={ref}
+              data-testid="content"
+              className="custom-class"
+              style={{ outlineColor: 'rgb(1, 2, 3)' }}
+              onClick={onClick}
+            >
+              <article>
+                <ContextMenu.Item>Item</ContextMenu.Item>
+              </article>
+            </ContextMenu.Content>
+          </ContextMenu.Portal>
+        </ContextMenu.Root>,
+      );
+
+      const content = screen.getByTestId('content');
+      expect(content.tagName).toBe('ARTICLE');
+      expect(content).toHaveAttribute('role', 'menu');
+      expect(content).toHaveAttribute('data-state', 'open');
+      expect(content).toHaveClass('custom-class');
+      expect(content.style.outlineColor).toBe('rgb(1, 2, 3)');
+      expect(ref.current).toBe(content);
+
+      fireEvent.click(content);
+      expect(onClick).toHaveBeenCalled();
+    });
+  });
+
+  describe('ContextMenu.Group', () => {
+    it('spreads props it does not consume onto the element it renders', () => {
+      const ref = React.createRef<HTMLDivElement>();
+      const onClick = vi.fn();
+
+      render(
+        <ContextMenu.Root open>
+          <ContextMenu.Trigger>Right click here</ContextMenu.Trigger>
+          <ContextMenu.Portal>
+            <ContextMenu.Content>
+              <ContextMenu.Group
+                ref={ref}
+                data-testid="group"
+                className="custom-class"
+                style={{ outlineColor: 'rgb(1, 2, 3)' }}
+                onClick={onClick}
+              >
+                <ContextMenu.Item>Item</ContextMenu.Item>
+              </ContextMenu.Group>
+            </ContextMenu.Content>
+          </ContextMenu.Portal>
+        </ContextMenu.Root>,
+      );
+
+      const group = screen.getByTestId('group');
+      expect(group).toHaveClass('custom-class');
+      expect(group.style.outlineColor).toBe('rgb(1, 2, 3)');
+      expect(ref.current).toBe(group);
+
+      fireEvent.click(group);
+      expect(onClick).toHaveBeenCalled();
+    });
+
+    it('forwards props to the child element when `asChild` is set', () => {
+      const ref = React.createRef<HTMLDivElement>();
+      const onClick = vi.fn();
+
+      render(
+        <ContextMenu.Root open>
+          <ContextMenu.Trigger>Right click here</ContextMenu.Trigger>
+          <ContextMenu.Portal>
+            <ContextMenu.Content>
+              <ContextMenu.Group
+                asChild
+                ref={ref}
+                data-testid="group"
+                className="custom-class"
+                style={{ outlineColor: 'rgb(1, 2, 3)' }}
+                onClick={onClick}
+              >
+                <article>
+                  <ContextMenu.Item>Item</ContextMenu.Item>
+                </article>
+              </ContextMenu.Group>
+            </ContextMenu.Content>
+          </ContextMenu.Portal>
+        </ContextMenu.Root>,
+      );
+
+      const group = screen.getByTestId('group');
+      expect(group.tagName).toBe('ARTICLE');
+      expect(group).toHaveAttribute('role', 'group');
+      expect(group).toHaveClass('custom-class');
+      expect(group.style.outlineColor).toBe('rgb(1, 2, 3)');
+      expect(ref.current).toBe(group);
+
+      fireEvent.click(group);
+      expect(onClick).toHaveBeenCalled();
+    });
+  });
+
+  describe('ContextMenu.Label', () => {
+    it('spreads props it does not consume onto the element it renders', () => {
+      const ref = React.createRef<HTMLDivElement>();
+      const onClick = vi.fn();
+
+      render(
+        <ContextMenu.Root open>
+          <ContextMenu.Trigger>Right click here</ContextMenu.Trigger>
+          <ContextMenu.Portal>
+            <ContextMenu.Content>
+              <ContextMenu.Label
+                ref={ref}
+                data-testid="label"
+                className="custom-class"
+                style={{ outlineColor: 'rgb(1, 2, 3)' }}
+                onClick={onClick}
+              >
+                Label
+              </ContextMenu.Label>
+            </ContextMenu.Content>
+          </ContextMenu.Portal>
+        </ContextMenu.Root>,
+      );
+
+      const label = screen.getByTestId('label');
+      expect(label).toHaveClass('custom-class');
+      expect(label.style.outlineColor).toBe('rgb(1, 2, 3)');
+      expect(ref.current).toBe(label);
+
+      fireEvent.click(label);
+      expect(onClick).toHaveBeenCalled();
+    });
+
+    it('forwards props to the child element when `asChild` is set', () => {
+      const ref = React.createRef<HTMLDivElement>();
+      const onClick = vi.fn();
+
+      render(
+        <ContextMenu.Root open>
+          <ContextMenu.Trigger>Right click here</ContextMenu.Trigger>
+          <ContextMenu.Portal>
+            <ContextMenu.Content>
+              <ContextMenu.Label
+                asChild
+                ref={ref}
+                data-testid="label"
+                className="custom-class"
+                style={{ outlineColor: 'rgb(1, 2, 3)' }}
+                onClick={onClick}
+              >
+                <article>Label</article>
+              </ContextMenu.Label>
+            </ContextMenu.Content>
+          </ContextMenu.Portal>
+        </ContextMenu.Root>,
+      );
+
+      const label = screen.getByTestId('label');
+      expect(label.tagName).toBe('ARTICLE');
+      expect(label).toHaveClass('custom-class');
+      expect(label.style.outlineColor).toBe('rgb(1, 2, 3)');
+      expect(ref.current).toBe(label);
+
+      fireEvent.click(label);
+      expect(onClick).toHaveBeenCalled();
+    });
+  });
+
+  describe('ContextMenu.Item', () => {
+    it('spreads props it does not consume onto the element it renders', () => {
+      const ref = React.createRef<HTMLDivElement>();
+      const onClick = vi.fn();
+
+      render(
+        <ContextMenu.Root open>
+          <ContextMenu.Trigger>Right click here</ContextMenu.Trigger>
+          <ContextMenu.Portal>
+            <ContextMenu.Content>
+              <ContextMenu.Item
+                ref={ref}
+                data-testid="item"
+                className="custom-class"
+                style={{ outlineColor: 'rgb(1, 2, 3)' }}
+                onClick={onClick}
+              >
+                Item
+              </ContextMenu.Item>
+            </ContextMenu.Content>
+          </ContextMenu.Portal>
+        </ContextMenu.Root>,
+      );
+
+      const item = screen.getByTestId('item');
+      expect(item).toHaveClass('custom-class');
+      expect(item.style.outlineColor).toBe('rgb(1, 2, 3)');
+      expect(ref.current).toBe(item);
+
+      // Composed with the item's own handler rather than replaced
+      fireEvent.click(item);
+      expect(onClick).toHaveBeenCalled();
+    });
+
+    it('forwards props to the child element when `asChild` is set', () => {
+      const ref = React.createRef<HTMLDivElement>();
+      const onClick = vi.fn();
+
+      render(
+        <ContextMenu.Root open>
+          <ContextMenu.Trigger>Right click here</ContextMenu.Trigger>
+          <ContextMenu.Portal>
+            <ContextMenu.Content>
+              <ContextMenu.Item
+                asChild
+                ref={ref}
+                data-testid="item"
+                className="custom-class"
+                style={{ outlineColor: 'rgb(1, 2, 3)' }}
+                onClick={onClick}
+              >
+                <article>Item</article>
+              </ContextMenu.Item>
+            </ContextMenu.Content>
+          </ContextMenu.Portal>
+        </ContextMenu.Root>,
+      );
+
+      const item = screen.getByTestId('item');
+      expect(item.tagName).toBe('ARTICLE');
+      expect(item).toHaveAttribute('role', 'menuitem');
+      expect(item).toHaveClass('custom-class');
+      expect(item.style.outlineColor).toBe('rgb(1, 2, 3)');
+      expect(ref.current).toBe(item);
+
+      fireEvent.click(item);
+      expect(onClick).toHaveBeenCalled();
+    });
+  });
+
+  describe('ContextMenu.CheckboxItem', () => {
+    it('spreads props it does not consume onto the element it renders', () => {
+      const ref = React.createRef<HTMLDivElement>();
+      const onClick = vi.fn();
+
+      render(
+        <ContextMenu.Root open>
+          <ContextMenu.Trigger>Right click here</ContextMenu.Trigger>
+          <ContextMenu.Portal>
+            <ContextMenu.Content>
+              <ContextMenu.CheckboxItem
+                checked
+                ref={ref}
+                data-testid="checkbox-item"
+                className="custom-class"
+                style={{ outlineColor: 'rgb(1, 2, 3)' }}
+                onClick={onClick}
+              >
+                Checkbox item
+              </ContextMenu.CheckboxItem>
+            </ContextMenu.Content>
+          </ContextMenu.Portal>
+        </ContextMenu.Root>,
+      );
+
+      const checkboxItem = screen.getByTestId('checkbox-item');
+      expect(checkboxItem).toHaveClass('custom-class');
+      expect(checkboxItem.style.outlineColor).toBe('rgb(1, 2, 3)');
+      expect(ref.current).toBe(checkboxItem);
+
+      fireEvent.click(checkboxItem);
+      expect(onClick).toHaveBeenCalled();
+    });
+
+    it('forwards props to the child element when `asChild` is set', () => {
+      const ref = React.createRef<HTMLDivElement>();
+      const onClick = vi.fn();
+
+      render(
+        <ContextMenu.Root open>
+          <ContextMenu.Trigger>Right click here</ContextMenu.Trigger>
+          <ContextMenu.Portal>
+            <ContextMenu.Content>
+              <ContextMenu.CheckboxItem
+                checked
+                asChild
+                ref={ref}
+                data-testid="checkbox-item"
+                className="custom-class"
+                style={{ outlineColor: 'rgb(1, 2, 3)' }}
+                onClick={onClick}
+              >
+                <article>Checkbox item</article>
+              </ContextMenu.CheckboxItem>
+            </ContextMenu.Content>
+          </ContextMenu.Portal>
+        </ContextMenu.Root>,
+      );
+
+      const checkboxItem = screen.getByTestId('checkbox-item');
+      expect(checkboxItem.tagName).toBe('ARTICLE');
+      expect(checkboxItem).toHaveAttribute('role', 'menuitemcheckbox');
+      expect(checkboxItem).toHaveAttribute('aria-checked', 'true');
+      expect(checkboxItem).toHaveAttribute('data-state', 'checked');
+      expect(checkboxItem).toHaveClass('custom-class');
+      expect(checkboxItem.style.outlineColor).toBe('rgb(1, 2, 3)');
+      expect(ref.current).toBe(checkboxItem);
+
+      fireEvent.click(checkboxItem);
+      expect(onClick).toHaveBeenCalled();
+    });
+  });
+
+  describe('ContextMenu.RadioGroup', () => {
+    it('spreads props it does not consume onto the element it renders', () => {
+      const ref = React.createRef<HTMLDivElement>();
+      const onClick = vi.fn();
+
+      render(
+        <ContextMenu.Root open>
+          <ContextMenu.Trigger>Right click here</ContextMenu.Trigger>
+          <ContextMenu.Portal>
+            <ContextMenu.Content>
+              <ContextMenu.RadioGroup
+                value="one"
+                ref={ref}
+                data-testid="radio-group"
+                className="custom-class"
+                style={{ outlineColor: 'rgb(1, 2, 3)' }}
+                onClick={onClick}
+              >
+                <ContextMenu.RadioItem value="one">Radio item</ContextMenu.RadioItem>
+              </ContextMenu.RadioGroup>
+            </ContextMenu.Content>
+          </ContextMenu.Portal>
+        </ContextMenu.Root>,
+      );
+
+      const radioGroup = screen.getByTestId('radio-group');
+      expect(radioGroup).toHaveClass('custom-class');
+      expect(radioGroup.style.outlineColor).toBe('rgb(1, 2, 3)');
+      expect(ref.current).toBe(radioGroup);
+
+      fireEvent.click(radioGroup);
+      expect(onClick).toHaveBeenCalled();
+    });
+
+    it('forwards props to the child element when `asChild` is set', () => {
+      const ref = React.createRef<HTMLDivElement>();
+      const onClick = vi.fn();
+
+      render(
+        <ContextMenu.Root open>
+          <ContextMenu.Trigger>Right click here</ContextMenu.Trigger>
+          <ContextMenu.Portal>
+            <ContextMenu.Content>
+              <ContextMenu.RadioGroup
+                value="one"
+                asChild
+                ref={ref}
+                data-testid="radio-group"
+                className="custom-class"
+                style={{ outlineColor: 'rgb(1, 2, 3)' }}
+                onClick={onClick}
+              >
+                <article>
+                  <ContextMenu.RadioItem value="one">Radio item</ContextMenu.RadioItem>
+                </article>
+              </ContextMenu.RadioGroup>
+            </ContextMenu.Content>
+          </ContextMenu.Portal>
+        </ContextMenu.Root>,
+      );
+
+      const radioGroup = screen.getByTestId('radio-group');
+      expect(radioGroup.tagName).toBe('ARTICLE');
+      expect(radioGroup).toHaveAttribute('role', 'group');
+      expect(radioGroup).toHaveClass('custom-class');
+      expect(radioGroup.style.outlineColor).toBe('rgb(1, 2, 3)');
+      expect(ref.current).toBe(radioGroup);
+
+      fireEvent.click(radioGroup);
+      expect(onClick).toHaveBeenCalled();
+    });
+  });
+
+  describe('ContextMenu.RadioItem', () => {
+    it('spreads props it does not consume onto the element it renders', () => {
+      const ref = React.createRef<HTMLDivElement>();
+      const onClick = vi.fn();
+
+      render(
+        <ContextMenu.Root open>
+          <ContextMenu.Trigger>Right click here</ContextMenu.Trigger>
+          <ContextMenu.Portal>
+            <ContextMenu.Content>
+              <ContextMenu.RadioGroup value="one">
+                <ContextMenu.RadioItem
+                  value="one"
+                  ref={ref}
+                  data-testid="radio-item"
+                  className="custom-class"
+                  style={{ outlineColor: 'rgb(1, 2, 3)' }}
+                  onClick={onClick}
+                >
+                  Radio item
+                </ContextMenu.RadioItem>
+              </ContextMenu.RadioGroup>
+            </ContextMenu.Content>
+          </ContextMenu.Portal>
+        </ContextMenu.Root>,
+      );
+
+      const radioItem = screen.getByTestId('radio-item');
+      expect(radioItem).toHaveClass('custom-class');
+      expect(radioItem.style.outlineColor).toBe('rgb(1, 2, 3)');
+      expect(ref.current).toBe(radioItem);
+
+      fireEvent.click(radioItem);
+      expect(onClick).toHaveBeenCalled();
+    });
+
+    it('forwards props to the child element when `asChild` is set', () => {
+      const ref = React.createRef<HTMLDivElement>();
+      const onClick = vi.fn();
+
+      render(
+        <ContextMenu.Root open>
+          <ContextMenu.Trigger>Right click here</ContextMenu.Trigger>
+          <ContextMenu.Portal>
+            <ContextMenu.Content>
+              <ContextMenu.RadioGroup value="one">
+                <ContextMenu.RadioItem
+                  value="one"
+                  asChild
+                  ref={ref}
+                  data-testid="radio-item"
+                  className="custom-class"
+                  style={{ outlineColor: 'rgb(1, 2, 3)' }}
+                  onClick={onClick}
+                >
+                  <article>Radio item</article>
+                </ContextMenu.RadioItem>
+              </ContextMenu.RadioGroup>
+            </ContextMenu.Content>
+          </ContextMenu.Portal>
+        </ContextMenu.Root>,
+      );
+
+      const radioItem = screen.getByTestId('radio-item');
+      expect(radioItem.tagName).toBe('ARTICLE');
+      expect(radioItem).toHaveAttribute('role', 'menuitemradio');
+      expect(radioItem).toHaveAttribute('aria-checked', 'true');
+      expect(radioItem).toHaveClass('custom-class');
+      expect(radioItem.style.outlineColor).toBe('rgb(1, 2, 3)');
+      expect(ref.current).toBe(radioItem);
+
+      fireEvent.click(radioItem);
+      expect(onClick).toHaveBeenCalled();
+    });
+  });
+
+  describe('ContextMenu.ItemIndicator', () => {
+    it('spreads props it does not consume onto the element it renders', () => {
+      const ref = React.createRef<HTMLSpanElement>();
+      const onClick = vi.fn();
+
+      render(
+        <ContextMenu.Root open>
+          <ContextMenu.Trigger>Right click here</ContextMenu.Trigger>
+          <ContextMenu.Portal>
+            <ContextMenu.Content>
+              <ContextMenu.CheckboxItem checked>
+                <ContextMenu.ItemIndicator
+                  ref={ref}
+                  data-testid="item-indicator"
+                  className="custom-class"
+                  style={{ outlineColor: 'rgb(1, 2, 3)' }}
+                  onClick={onClick}
+                >
+                  Indicator
+                </ContextMenu.ItemIndicator>
+                Checkbox item
+              </ContextMenu.CheckboxItem>
+            </ContextMenu.Content>
+          </ContextMenu.Portal>
+        </ContextMenu.Root>,
+      );
+
+      const itemIndicator = screen.getByTestId('item-indicator');
+      expect(itemIndicator).toHaveClass('custom-class');
+      expect(itemIndicator.style.outlineColor).toBe('rgb(1, 2, 3)');
+      expect(ref.current).toBe(itemIndicator);
+
+      fireEvent.click(itemIndicator);
+      expect(onClick).toHaveBeenCalled();
+    });
+
+    it('forwards props to the child element when `asChild` is set', () => {
+      const ref = React.createRef<HTMLSpanElement>();
+      const onClick = vi.fn();
+
+      render(
+        <ContextMenu.Root open>
+          <ContextMenu.Trigger>Right click here</ContextMenu.Trigger>
+          <ContextMenu.Portal>
+            <ContextMenu.Content>
+              <ContextMenu.CheckboxItem checked>
+                <ContextMenu.ItemIndicator
+                  asChild
+                  ref={ref}
+                  data-testid="item-indicator"
+                  className="custom-class"
+                  style={{ outlineColor: 'rgb(1, 2, 3)' }}
+                  onClick={onClick}
+                >
+                  <article>Indicator</article>
+                </ContextMenu.ItemIndicator>
+                Checkbox item
+              </ContextMenu.CheckboxItem>
+            </ContextMenu.Content>
+          </ContextMenu.Portal>
+        </ContextMenu.Root>,
+      );
+
+      const itemIndicator = screen.getByTestId('item-indicator');
+      expect(itemIndicator.tagName).toBe('ARTICLE');
+      expect(itemIndicator).toHaveAttribute('data-state', 'checked');
+      expect(itemIndicator).toHaveClass('custom-class');
+      expect(itemIndicator.style.outlineColor).toBe('rgb(1, 2, 3)');
+      expect(ref.current).toBe(itemIndicator);
+
+      fireEvent.click(itemIndicator);
+      expect(onClick).toHaveBeenCalled();
+    });
+  });
+
+  describe('ContextMenu.Separator', () => {
+    it('spreads props it does not consume onto the element it renders', () => {
+      const ref = React.createRef<HTMLDivElement>();
+      const onClick = vi.fn();
+
+      render(
+        <ContextMenu.Root open>
+          <ContextMenu.Trigger>Right click here</ContextMenu.Trigger>
+          <ContextMenu.Portal>
+            <ContextMenu.Content>
+              <ContextMenu.Separator
+                ref={ref}
+                data-testid="separator"
+                className="custom-class"
+                style={{ outlineColor: 'rgb(1, 2, 3)' }}
+                onClick={onClick}
+              />
+            </ContextMenu.Content>
+          </ContextMenu.Portal>
+        </ContextMenu.Root>,
+      );
+
+      const separator = screen.getByTestId('separator');
+      expect(separator).toHaveClass('custom-class');
+      expect(separator.style.outlineColor).toBe('rgb(1, 2, 3)');
+      expect(ref.current).toBe(separator);
+
+      fireEvent.click(separator);
+      expect(onClick).toHaveBeenCalled();
+    });
+
+    it('forwards props to the child element when `asChild` is set', () => {
+      const ref = React.createRef<HTMLDivElement>();
+      const onClick = vi.fn();
+
+      render(
+        <ContextMenu.Root open>
+          <ContextMenu.Trigger>Right click here</ContextMenu.Trigger>
+          <ContextMenu.Portal>
+            <ContextMenu.Content>
+              <ContextMenu.Separator
+                asChild
+                ref={ref}
+                data-testid="separator"
+                className="custom-class"
+                style={{ outlineColor: 'rgb(1, 2, 3)' }}
+                onClick={onClick}
+              >
+                <article />
+              </ContextMenu.Separator>
+            </ContextMenu.Content>
+          </ContextMenu.Portal>
+        </ContextMenu.Root>,
+      );
+
+      const separator = screen.getByTestId('separator');
+      expect(separator.tagName).toBe('ARTICLE');
+      expect(separator).toHaveAttribute('role', 'separator');
+      expect(separator).toHaveAttribute('aria-orientation', 'horizontal');
+      expect(separator).toHaveClass('custom-class');
+      expect(separator.style.outlineColor).toBe('rgb(1, 2, 3)');
+      expect(ref.current).toBe(separator);
+
+      fireEvent.click(separator);
+      expect(onClick).toHaveBeenCalled();
+    });
+  });
+
+  describe('ContextMenu.Arrow', () => {
+    it('spreads props it does not consume onto the element it renders', () => {
+      const ref = React.createRef<SVGSVGElement>();
+      const onClick = vi.fn();
+
+      render(
+        <ContextMenu.Root open>
+          <ContextMenu.Trigger>Right click here</ContextMenu.Trigger>
+          <ContextMenu.Portal>
+            <ContextMenu.Content>
+              <ContextMenu.Item>Item</ContextMenu.Item>
+              <ContextMenu.Arrow
+                ref={ref}
+                data-testid="arrow"
+                className="custom-class"
+                style={{ outlineColor: 'rgb(1, 2, 3)' }}
+                onClick={onClick}
+              />
+            </ContextMenu.Content>
+          </ContextMenu.Portal>
+        </ContextMenu.Root>,
+      );
+
+      const arrow = screen.getByTestId('arrow');
+      expect(arrow).toHaveClass('custom-class');
+      expect(arrow.style.outlineColor).toBe('rgb(1, 2, 3)');
+      expect(ref.current).toBe(arrow);
+
+      fireEvent.click(arrow);
+      expect(onClick).toHaveBeenCalled();
+    });
+
+    it('forwards props to the child element when `asChild` is set', () => {
+      const ref = React.createRef<SVGSVGElement>();
+      const onClick = vi.fn();
+
+      render(
+        <ContextMenu.Root open>
+          <ContextMenu.Trigger>Right click here</ContextMenu.Trigger>
+          <ContextMenu.Portal>
+            <ContextMenu.Content>
+              <ContextMenu.Item>Item</ContextMenu.Item>
+              <ContextMenu.Arrow
+                asChild
+                ref={ref}
+                data-testid="arrow"
+                className="custom-class"
+                style={{ outlineColor: 'rgb(1, 2, 3)' }}
+                onClick={onClick}
+              >
+                <svg />
+              </ContextMenu.Arrow>
+            </ContextMenu.Content>
+          </ContextMenu.Portal>
+        </ContextMenu.Root>,
+      );
+
+      const arrow = screen.getByTestId('arrow');
+      // SVG elements report their tag name in lower case.
+      expect(arrow.tagName).toBe('svg');
+      expect(arrow).toHaveAttribute('viewBox', '0 0 30 10');
+      expect(arrow).toHaveClass('custom-class');
+      expect(arrow.style.outlineColor).toBe('rgb(1, 2, 3)');
+      expect(ref.current).toBe(arrow);
+
+      fireEvent.click(arrow);
+      expect(onClick).toHaveBeenCalled();
+    });
+  });
+
+  describe('ContextMenu.SubTrigger', () => {
+    it('spreads props it does not consume onto the element it renders', () => {
+      const ref = React.createRef<HTMLDivElement>();
+      const onClick = vi.fn();
+
+      render(
+        <ContextMenu.Root open>
+          <ContextMenu.Trigger>Right click here</ContextMenu.Trigger>
+          <ContextMenu.Portal>
+            <ContextMenu.Content>
+              <ContextMenu.Sub>
+                <ContextMenu.SubTrigger
+                  ref={ref}
+                  data-testid="sub-trigger"
+                  className="custom-class"
+                  style={{ outlineColor: 'rgb(1, 2, 3)' }}
+                  onClick={onClick}
+                >
+                  Sub trigger
+                </ContextMenu.SubTrigger>
+              </ContextMenu.Sub>
+            </ContextMenu.Content>
+          </ContextMenu.Portal>
+        </ContextMenu.Root>,
+      );
+
+      const subTrigger = screen.getByTestId('sub-trigger');
+      expect(subTrigger).toHaveClass('custom-class');
+      expect(subTrigger.style.outlineColor).toBe('rgb(1, 2, 3)');
+      expect(ref.current).toBe(subTrigger);
+
+      fireEvent.click(subTrigger);
+      expect(onClick).toHaveBeenCalled();
+    });
+
+    it('forwards props to the child element when `asChild` is set', () => {
+      const ref = React.createRef<HTMLDivElement>();
+      const onClick = vi.fn();
+
+      render(
+        <ContextMenu.Root open>
+          <ContextMenu.Trigger>Right click here</ContextMenu.Trigger>
+          <ContextMenu.Portal>
+            <ContextMenu.Content>
+              <ContextMenu.Sub>
+                <ContextMenu.SubTrigger
+                  asChild
+                  ref={ref}
+                  data-testid="sub-trigger"
+                  className="custom-class"
+                  style={{ outlineColor: 'rgb(1, 2, 3)' }}
+                  onClick={onClick}
+                >
+                  <article>Sub trigger</article>
+                </ContextMenu.SubTrigger>
+              </ContextMenu.Sub>
+            </ContextMenu.Content>
+          </ContextMenu.Portal>
+        </ContextMenu.Root>,
+      );
+
+      const subTrigger = screen.getByTestId('sub-trigger');
+      expect(subTrigger.tagName).toBe('ARTICLE');
+      expect(subTrigger).toHaveAttribute('role', 'menuitem');
+      expect(subTrigger).toHaveAttribute('aria-haspopup', 'menu');
+      expect(subTrigger).toHaveClass('custom-class');
+      expect(subTrigger.style.outlineColor).toBe('rgb(1, 2, 3)');
+      expect(ref.current).toBe(subTrigger);
+
+      fireEvent.click(subTrigger);
+      expect(onClick).toHaveBeenCalled();
+    });
+  });
+
+  describe('ContextMenu.SubContent', () => {
+    // A submenu closes itself as soon as the parent content takes focus on
+    // mount, and the portal's `Presence` gates on the submenu's open state.
+    // `forceMount` on the portal is what keeps the sub content rendered so we
+    // can test it.
+    const FORCE_MOUNT_PORTAL = true;
+
+    it('spreads props it does not consume onto the element it renders', () => {
+      const ref = React.createRef<HTMLDivElement>();
+      const onClick = vi.fn();
+
+      render(
+        <ContextMenu.Root open>
+          <ContextMenu.Trigger>Right click here</ContextMenu.Trigger>
+          <ContextMenu.Portal>
+            <ContextMenu.Content>
+              <ContextMenu.Sub>
+                <ContextMenu.SubTrigger>Sub trigger</ContextMenu.SubTrigger>
+                <ContextMenu.Portal forceMount={FORCE_MOUNT_PORTAL}>
+                  <ContextMenu.SubContent
+                    ref={ref}
+                    data-testid="sub-content"
+                    className="custom-class"
+                    style={{ outlineColor: 'rgb(1, 2, 3)' }}
+                    onClick={onClick}
+                  >
+                    <ContextMenu.Item>Sub item</ContextMenu.Item>
+                  </ContextMenu.SubContent>
+                </ContextMenu.Portal>
+              </ContextMenu.Sub>
+            </ContextMenu.Content>
+          </ContextMenu.Portal>
+        </ContextMenu.Root>,
+      );
+
+      const subContent = screen.getByTestId('sub-content');
+      expect(subContent).toHaveClass('custom-class');
+      expect(subContent.style.outlineColor).toBe('rgb(1, 2, 3)');
+      expect(ref.current).toBe(subContent);
+
+      fireEvent.click(subContent);
+      expect(onClick).toHaveBeenCalled();
+    });
+
+    it('forwards props to the child element when `asChild` is set', () => {
+      const ref = React.createRef<HTMLDivElement>();
+      const onClick = vi.fn();
+
+      render(
+        <ContextMenu.Root open>
+          <ContextMenu.Trigger>Right click here</ContextMenu.Trigger>
+          <ContextMenu.Portal>
+            <ContextMenu.Content>
+              <ContextMenu.Sub>
+                <ContextMenu.SubTrigger>Sub trigger</ContextMenu.SubTrigger>
+                <ContextMenu.Portal forceMount={FORCE_MOUNT_PORTAL}>
+                  <ContextMenu.SubContent
+                    asChild
+                    ref={ref}
+                    data-testid="sub-content"
+                    className="custom-class"
+                    style={{ outlineColor: 'rgb(1, 2, 3)' }}
+                    onClick={onClick}
+                  >
+                    <article>
+                      <ContextMenu.Item>Sub item</ContextMenu.Item>
+                    </article>
+                  </ContextMenu.SubContent>
+                </ContextMenu.Portal>
+              </ContextMenu.Sub>
+            </ContextMenu.Content>
+          </ContextMenu.Portal>
+        </ContextMenu.Root>,
+      );
+
+      const subContent = screen.getByTestId('sub-content');
+      expect(subContent.tagName).toBe('ARTICLE');
+      expect(subContent).toHaveAttribute('role', 'menu');
+      expect(subContent).toHaveClass('custom-class');
+      expect(subContent.style.outlineColor).toBe('rgb(1, 2, 3)');
+      expect(ref.current).toBe(subContent);
+
+      fireEvent.click(subContent);
+      expect(onClick).toHaveBeenCalled();
+    });
+  });
+});
+
+function cleanupModal() {
+  cleanup();
+  // Modal menus set this on the `body` and only restore it on close.
+  document.body.style.pointerEvents = '';
+}
