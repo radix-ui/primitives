@@ -233,7 +233,7 @@ describe('ToggleGroup.Item', () => {
     expect(item.style.outlineColor).toBe('rgb(1, 2, 3)');
     expect(ref.current).toBe(item);
 
-    // Composed with the item's own click handler rather than replaced by it.
+    // Composed with the item's own handler rather than replaced
     fireEvent.click(item);
     expect(onClick).toHaveBeenCalled();
   });

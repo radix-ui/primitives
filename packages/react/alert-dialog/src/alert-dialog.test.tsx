@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { axe } from 'vitest-axe';
 import type { RenderResult } from '@testing-library/react';
-import { cleanup as tlCleanup, render, fireEvent, screen } from '@testing-library/react';
+import { cleanup, render, fireEvent, screen } from '@testing-library/react';
 import * as AlertDialog from './alert-dialog';
 import { afterEach, describe, it, beforeEach, expect, vi } from 'vitest';
 
@@ -62,7 +62,7 @@ describe('given a default AlertDialog', () => {
 });
 
 describe('AlertDialog.Trigger', () => {
-  afterEach(cleanup);
+  afterEach(cleanupModal);
 
   it('spreads props it does not consume onto the element it renders', () => {
     const ref = React.createRef<HTMLButtonElement>();
@@ -125,7 +125,7 @@ describe('AlertDialog.Trigger', () => {
 });
 
 describe('AlertDialog.Overlay', () => {
-  afterEach(cleanup);
+  afterEach(cleanupModal);
 
   it('spreads props it does not consume onto the element it renders', () => {
     const ref = React.createRef<HTMLDivElement>();
@@ -188,7 +188,7 @@ describe('AlertDialog.Overlay', () => {
 });
 
 describe('AlertDialog.Content', () => {
-  afterEach(cleanup);
+  afterEach(cleanupModal);
 
   it('spreads props it does not consume onto the element it renders', () => {
     const ref = React.createRef<HTMLDivElement>();
@@ -257,7 +257,7 @@ describe('AlertDialog.Content', () => {
 });
 
 describe('AlertDialog.Title', () => {
-  afterEach(cleanup);
+  afterEach(cleanupModal);
 
   it('spreads props it does not consume onto the element it renders', () => {
     const ref = React.createRef<HTMLHeadingElement>();
@@ -325,7 +325,7 @@ describe('AlertDialog.Title', () => {
 });
 
 describe('AlertDialog.Description', () => {
-  afterEach(cleanup);
+  afterEach(cleanupModal);
 
   it('spreads props it does not consume onto the element it renders', () => {
     const ref = React.createRef<HTMLParagraphElement>();
@@ -395,7 +395,7 @@ describe('AlertDialog.Description', () => {
 });
 
 describe('AlertDialog.Action', () => {
-  afterEach(cleanup);
+  afterEach(cleanupModal);
 
   it('spreads props it does not consume onto the element it renders', () => {
     const ref = React.createRef<HTMLButtonElement>();
@@ -466,7 +466,7 @@ describe('AlertDialog.Action', () => {
 });
 
 describe('AlertDialog.Cancel', () => {
-  afterEach(cleanup);
+  afterEach(cleanupModal);
 
   it('spreads props it does not consume onto the element it renders', () => {
     const ref = React.createRef<HTMLButtonElement>();
@@ -536,9 +536,8 @@ describe('AlertDialog.Cancel', () => {
   });
 });
 
-function cleanup() {
-  tlCleanup();
-  // An alert dialog is always modal, and modal layers set this on the `body`
-  // and only restore it on close.
+function cleanupModal() {
+  cleanup();
+  // Modal menus set this on the `body` and only restore it on close.
   document.body.style.pointerEvents = '';
 }
