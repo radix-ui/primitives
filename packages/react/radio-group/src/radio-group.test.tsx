@@ -2,7 +2,7 @@ import * as React from 'react';
 import { axe } from 'vitest-axe';
 import type { RenderResult } from '@testing-library/react';
 import { cleanup, render, fireEvent, screen, act } from '@testing-library/react';
-import * as RadioGroup from '.';
+import * as RadioGroup from './radio-group';
 import { afterEach, describe, it, beforeEach, vi, expect } from 'vitest';
 
 const RADIO_ROLE = 'radio';
@@ -39,12 +39,12 @@ function ComposableRadioGroup(props: React.ComponentProps<typeof RadioGroup.Root
   return (
     <RadioGroup.Root aria-label="pets" {...props}>
       {VALUES.map((value) => (
-        <RadioGroup.unstable_ItemProvider key={value} value={value}>
-          <RadioGroup.unstable_ItemTrigger aria-label={LABELS[value]}>
+        <RadioGroup.ItemProvider key={value} value={value}>
+          <RadioGroup.ItemTrigger aria-label={LABELS[value]}>
             <RadioGroup.Indicator data-testid={`${INDICATOR_TEST_ID}-${value}`} />
-          </RadioGroup.unstable_ItemTrigger>
-          <RadioGroup.unstable_ItemBubbleInput />
-        </RadioGroup.unstable_ItemProvider>
+          </RadioGroup.ItemTrigger>
+          <RadioGroup.ItemBubbleInput />
+        </RadioGroup.ItemProvider>
       ))}
     </RadioGroup.Root>
   );
@@ -631,15 +631,15 @@ describe('Composable RadioGroup', () => {
         <form onChange={(event) => onChange((event.target as unknown as HTMLInputElement).value)}>
           <RadioGroup.Root aria-label="pets" name="pet">
             {VALUES.map((value) => (
-              <RadioGroup.unstable_ItemProvider key={value} value={value}>
-                <RadioGroup.unstable_ItemTrigger
+              <RadioGroup.ItemProvider key={value} value={value}>
+                <RadioGroup.ItemTrigger
                   aria-label={LABELS[value]}
                   onClick={(event) => event.stopPropagation()}
                 >
                   <RadioGroup.Indicator />
-                </RadioGroup.unstable_ItemTrigger>
-                <RadioGroup.unstable_ItemBubbleInput />
-              </RadioGroup.unstable_ItemProvider>
+                </RadioGroup.ItemTrigger>
+                <RadioGroup.ItemBubbleInput />
+              </RadioGroup.ItemProvider>
             ))}
           </RadioGroup.Root>
         </form>,
@@ -652,5 +652,332 @@ describe('Composable RadioGroup', () => {
       // but the change does not reach the form
       expect(onChange).not.toHaveBeenCalled();
     });
+  });
+});
+
+describe('RadioGroup.Root', () => {
+  afterEach(cleanup);
+
+  it('spreads props it does not consume onto the element it renders', () => {
+    const ref = React.createRef<HTMLDivElement>();
+    const onClick = vi.fn();
+
+    render(
+      <RadioGroup.Root
+        defaultValue="one"
+        ref={ref}
+        data-testid="root"
+        className="custom-class"
+        style={{ outlineColor: 'rgb(1, 2, 3)' }}
+        onClick={onClick}
+      >
+        <RadioGroup.Item value="one" />
+      </RadioGroup.Root>,
+    );
+
+    const root = screen.getByTestId('root');
+    expect(root).toHaveClass('custom-class');
+    expect(root.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(root);
+
+    fireEvent.click(root);
+    expect(onClick).toHaveBeenCalled();
+  });
+
+  it('forwards props to the child element when `asChild` is set', () => {
+    const ref = React.createRef<HTMLDivElement>();
+    const onClick = vi.fn();
+
+    render(
+      <RadioGroup.Root
+        defaultValue="one"
+        asChild
+        ref={ref}
+        data-testid="root"
+        className="custom-class"
+        style={{ outlineColor: 'rgb(1, 2, 3)' }}
+        onClick={onClick}
+      >
+        <article>
+          <RadioGroup.Item value="one" />
+        </article>
+      </RadioGroup.Root>,
+    );
+
+    const root = screen.getByTestId('root');
+    expect(root.tagName).toBe('ARTICLE');
+    expect(root).toHaveAttribute('role', 'radiogroup');
+    expect(root).toHaveClass('custom-class');
+    expect(root.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(root);
+
+    fireEvent.click(root);
+    expect(onClick).toHaveBeenCalled();
+  });
+});
+
+describe('RadioGroup.Item', () => {
+  afterEach(cleanup);
+
+  it('spreads props it does not consume onto the element it renders', () => {
+    const ref = React.createRef<HTMLButtonElement>();
+    const onClick = vi.fn();
+
+    render(
+      <RadioGroup.Root defaultValue="one">
+        <RadioGroup.Item
+          value="one"
+          ref={ref}
+          data-testid="item"
+          className="custom-class"
+          style={{ outlineColor: 'rgb(1, 2, 3)' }}
+          onClick={onClick}
+        >
+          <RadioGroup.Indicator />
+        </RadioGroup.Item>
+      </RadioGroup.Root>,
+    );
+
+    const item = screen.getByTestId('item');
+    expect(item).toHaveClass('custom-class');
+    expect(item.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(item);
+
+    fireEvent.click(item);
+    expect(onClick).toHaveBeenCalled();
+  });
+
+  it('forwards props to the child element when `asChild` is set', () => {
+    const ref = React.createRef<HTMLButtonElement>();
+    const onClick = vi.fn();
+
+    render(
+      <RadioGroup.Root defaultValue="one">
+        <RadioGroup.Item
+          value="one"
+          asChild
+          ref={ref}
+          data-testid="item"
+          className="custom-class"
+          style={{ outlineColor: 'rgb(1, 2, 3)' }}
+          onClick={onClick}
+        >
+          <button type="button">
+            <RadioGroup.Indicator />
+          </button>
+        </RadioGroup.Item>
+      </RadioGroup.Root>,
+    );
+
+    const item = screen.getByTestId('item');
+    expect(item.tagName).toBe('BUTTON');
+    expect(item).toHaveAttribute('role', 'radio');
+    expect(item).toHaveAttribute('aria-checked', 'true');
+    expect(item).toHaveAttribute('data-state', 'checked');
+    expect(item).toHaveClass('custom-class');
+    expect(item.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(item);
+
+    fireEvent.click(item);
+    expect(onClick).toHaveBeenCalled();
+  });
+});
+
+describe('RadioGroup.ItemTrigger', () => {
+  afterEach(cleanup);
+
+  it('spreads props it does not consume onto the element it renders', () => {
+    const ref = React.createRef<HTMLButtonElement>();
+    const onClick = vi.fn();
+
+    render(
+      <RadioGroup.Root defaultValue="one">
+        <RadioGroup.ItemProvider value="one">
+          <RadioGroup.ItemTrigger
+            ref={ref}
+            data-testid="item-trigger"
+            className="custom-class"
+            style={{ outlineColor: 'rgb(1, 2, 3)' }}
+            onClick={onClick}
+          >
+            <RadioGroup.Indicator />
+          </RadioGroup.ItemTrigger>
+        </RadioGroup.ItemProvider>
+      </RadioGroup.Root>,
+    );
+
+    const trigger = screen.getByTestId('item-trigger');
+    expect(trigger).toHaveClass('custom-class');
+    expect(trigger.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(trigger);
+
+    fireEvent.click(trigger);
+    expect(onClick).toHaveBeenCalled();
+  });
+
+  it('forwards props to the child element when `asChild` is set', () => {
+    const ref = React.createRef<HTMLButtonElement>();
+    const onClick = vi.fn();
+
+    render(
+      <RadioGroup.Root defaultValue="one">
+        <RadioGroup.ItemProvider value="one">
+          <RadioGroup.ItemTrigger
+            asChild
+            ref={ref}
+            data-testid="item-trigger"
+            className="custom-class"
+            style={{ outlineColor: 'rgb(1, 2, 3)' }}
+            onClick={onClick}
+          >
+            <button type="button">
+              <RadioGroup.Indicator />
+            </button>
+          </RadioGroup.ItemTrigger>
+        </RadioGroup.ItemProvider>
+      </RadioGroup.Root>,
+    );
+
+    const trigger = screen.getByTestId('item-trigger');
+    expect(trigger.tagName).toBe('BUTTON');
+    expect(trigger).toHaveAttribute('role', 'radio');
+    expect(trigger).toHaveAttribute('data-state', 'checked');
+    expect(trigger).toHaveClass('custom-class');
+    expect(trigger.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(trigger);
+
+    fireEvent.click(trigger);
+    expect(onClick).toHaveBeenCalled();
+  });
+});
+
+describe('RadioGroup.Indicator', () => {
+  afterEach(cleanup);
+
+  it('spreads props it does not consume onto the element it renders', () => {
+    const ref = React.createRef<HTMLSpanElement>();
+    const onClick = vi.fn();
+
+    render(
+      <RadioGroup.Root defaultValue="one">
+        <RadioGroup.Item value="one">
+          <RadioGroup.Indicator
+            ref={ref}
+            data-testid="indicator"
+            className="custom-class"
+            style={{ outlineColor: 'rgb(1, 2, 3)' }}
+            onClick={onClick}
+          />
+        </RadioGroup.Item>
+      </RadioGroup.Root>,
+    );
+
+    const indicator = screen.getByTestId('indicator');
+    expect(indicator).toHaveClass('custom-class');
+    expect(indicator.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(indicator);
+
+    fireEvent.click(indicator);
+    expect(onClick).toHaveBeenCalled();
+  });
+
+  it('forwards props to the child element when `asChild` is set', () => {
+    const ref = React.createRef<HTMLSpanElement>();
+    const onClick = vi.fn();
+
+    render(
+      <RadioGroup.Root defaultValue="one">
+        <RadioGroup.Item value="one">
+          <RadioGroup.Indicator
+            asChild
+            ref={ref}
+            data-testid="indicator"
+            className="custom-class"
+            style={{ outlineColor: 'rgb(1, 2, 3)' }}
+            onClick={onClick}
+          >
+            <article />
+          </RadioGroup.Indicator>
+        </RadioGroup.Item>
+      </RadioGroup.Root>,
+    );
+
+    const indicator = screen.getByTestId('indicator');
+    expect(indicator.tagName).toBe('ARTICLE');
+    expect(indicator).toHaveAttribute('data-state', 'checked');
+    expect(indicator).toHaveClass('custom-class');
+    expect(indicator.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(indicator);
+
+    fireEvent.click(indicator);
+    expect(onClick).toHaveBeenCalled();
+  });
+});
+
+describe('RadioGroup.ItemBubbleInput', () => {
+  afterEach(cleanup);
+
+  it('spreads props it does not consume onto the element it renders', () => {
+    const ref = React.createRef<HTMLInputElement>();
+    const onClick = vi.fn();
+
+    render(
+      <RadioGroup.Root defaultValue="one">
+        <RadioGroup.ItemProvider value="one">
+          <RadioGroup.ItemBubbleInput
+            ref={ref}
+            data-testid="bubble-input"
+            className="custom-class"
+            style={{ outlineColor: 'rgb(1, 2, 3)' }}
+            onClick={onClick}
+          />
+        </RadioGroup.ItemProvider>
+      </RadioGroup.Root>,
+    );
+
+    const input = screen.getByTestId('bubble-input');
+    expect(input).toHaveClass('custom-class');
+    expect(input.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(input);
+
+    // The input is visually hidden, so a real user never clicks it. The part
+    // composes `onClick` to swallow the synthetic clicks it dispatches at
+    // forms, and that composition is exactly where a consumer's handler could
+    // get dropped.
+    fireEvent.click(input);
+    expect(onClick).toHaveBeenCalled();
+  });
+
+  it('forwards props to the child element when `asChild` is set', () => {
+    const ref = React.createRef<HTMLInputElement>();
+    const onClick = vi.fn();
+
+    render(
+      <RadioGroup.Root defaultValue="one">
+        <RadioGroup.ItemProvider value="one">
+          <RadioGroup.ItemBubbleInput
+            asChild
+            ref={ref}
+            data-testid="bubble-input"
+            className="custom-class"
+            style={{ outlineColor: 'rgb(1, 2, 3)' }}
+            onClick={onClick}
+          >
+            <input />
+          </RadioGroup.ItemBubbleInput>
+        </RadioGroup.ItemProvider>
+      </RadioGroup.Root>,
+    );
+
+    const input = screen.getByTestId('bubble-input');
+    expect(input.tagName).toBe('INPUT');
+    expect(input).toHaveAttribute('type', 'radio');
+    expect(input).toHaveAttribute('aria-hidden', 'true');
+    expect(input).toHaveClass('custom-class');
+    expect(input.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(input);
+
+    fireEvent.click(input);
+    expect(onClick).toHaveBeenCalled();
   });
 });
