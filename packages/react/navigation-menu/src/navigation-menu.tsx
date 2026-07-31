@@ -7,6 +7,7 @@ import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { useDirection } from '@radix-ui/react-direction';
 import { Presence } from '@radix-ui/react-presence';
+import { createSlottable } from '@radix-ui/react-slot';
 import { useId } from '@radix-ui/react-id';
 import { createCollection } from '@radix-ui/react-collection';
 import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
@@ -1077,6 +1078,7 @@ const NavigationMenuContentImpl = /* @__PURE__ */ React.forwardRef<
  * -----------------------------------------------------------------------------------------------*/
 
 const VIEWPORT_NAME = 'NavigationMenuViewport';
+const Slottable = createSlottable(VIEWPORT_NAME);
 
 type NavigationMenuViewportElement = NavigationMenuViewportImplElement;
 interface NavigationMenuViewportProps extends Omit<
@@ -1160,19 +1162,33 @@ const NavigationMenuViewportImpl = /* @__PURE__ */ React.forwardRef<
       onPointerEnter={composeEventHandlers(props.onPointerEnter, context.onContentEnter)}
       onPointerLeave={composeEventHandlers(props.onPointerLeave, whenMouse(context.onContentLeave))}
     >
-      {Array.from(viewportContentContext.items).map(([value, { ref, forceMount, ...props }]) => {
-        const isActive = activeContentValue === value;
-        return (
-          <Presence key={value} present={forceMount || isActive}>
-            <NavigationMenuViewportItem
-              {...props}
-              contentRef={ref}
-              isActive={isActive}
-              onActiveContentChange={setContent}
-            />
-          </Presence>
-        );
-      })}
+      {/*
+       * Nested `Slottable` keeps the proxied content inside the slotted element
+       * when `asChild` is set. Without it, `Slot` would target that content and
+       * drop every prop on the consumer's element.
+       */}
+      <Slottable child={children}>
+        {(slottable) => (
+          <>
+            {slottable}
+            {Array.from(viewportContentContext.items).map(
+              ([value, { ref, forceMount, ...props }]) => {
+                const isActive = activeContentValue === value;
+                return (
+                  <Presence key={value} present={forceMount || isActive}>
+                    <NavigationMenuViewportItem
+                      {...props}
+                      contentRef={ref}
+                      isActive={isActive}
+                      onActiveContentChange={setContent}
+                    />
+                  </Presence>
+                );
+              },
+            )}
+          </>
+        )}
+      </Slottable>
     </Primitive.div>
   );
 });
