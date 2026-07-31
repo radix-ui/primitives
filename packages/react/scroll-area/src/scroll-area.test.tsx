@@ -11,7 +11,9 @@ describe('ScrollArea ref stability', () => {
   it('keeps a stable composed ref on the root', () => {
     assertStableComposedRef((ref) => (
       <ScrollArea.Root ref={ref}>
-        <ScrollArea.Viewport>content</ScrollArea.Viewport>
+        <ScrollArea.Viewport disableImplicitContentElement>
+          <ScrollArea.Content>content</ScrollArea.Content>
+        </ScrollArea.Viewport>
       </ScrollArea.Root>
     ));
   });
@@ -19,7 +21,9 @@ describe('ScrollArea ref stability', () => {
   it('keeps a stable composed ref on the scrollbar', () => {
     assertStableComposedRef((ref) => (
       <ScrollArea.Root type="always">
-        <ScrollArea.Viewport>content</ScrollArea.Viewport>
+        <ScrollArea.Viewport disableImplicitContentElement>
+          <ScrollArea.Content>content</ScrollArea.Content>
+        </ScrollArea.Viewport>
         <ScrollArea.Scrollbar orientation="vertical" ref={ref}>
           <ScrollArea.Thumb />
         </ScrollArea.Scrollbar>
@@ -57,7 +61,9 @@ describe('ScrollArea.Root', () => {
         style={{ outlineColor: 'rgb(1, 2, 3)' }}
         onClick={onClick}
       >
-        <ScrollArea.Viewport>Content</ScrollArea.Viewport>
+        <ScrollArea.Viewport disableImplicitContentElement>
+          <ScrollArea.Content>Content</ScrollArea.Content>
+        </ScrollArea.Viewport>
       </ScrollArea.Root>,
     );
 
@@ -85,7 +91,9 @@ describe('ScrollArea.Root', () => {
         onClick={onClick}
       >
         <article>
-          <ScrollArea.Viewport>Content</ScrollArea.Viewport>
+          <ScrollArea.Viewport disableImplicitContentElement>
+            <ScrollArea.Content>Content</ScrollArea.Content>
+          </ScrollArea.Viewport>
         </article>
       </ScrollArea.Root>,
     );
@@ -111,7 +119,9 @@ describe('ScrollArea.Scrollbar', () => {
 
     render(
       <ScrollArea.Root type="always">
-        <ScrollArea.Viewport>Content</ScrollArea.Viewport>
+        <ScrollArea.Viewport disableImplicitContentElement>
+          <ScrollArea.Content>Content</ScrollArea.Content>
+        </ScrollArea.Viewport>
         <ScrollArea.Scrollbar
           orientation="vertical"
           ref={ref}
@@ -138,7 +148,9 @@ describe('ScrollArea.Scrollbar', () => {
 
     render(
       <ScrollArea.Root type="always">
-        <ScrollArea.Viewport>Content</ScrollArea.Viewport>
+        <ScrollArea.Viewport disableImplicitContentElement>
+          <ScrollArea.Content>Content</ScrollArea.Content>
+        </ScrollArea.Viewport>
         <ScrollArea.Scrollbar
           orientation="vertical"
           asChild
@@ -175,7 +187,9 @@ describe('ScrollArea.Thumb', () => {
 
     render(
       <ScrollArea.Root type="always">
-        <ScrollArea.Viewport>Content</ScrollArea.Viewport>
+        <ScrollArea.Viewport disableImplicitContentElement>
+          <ScrollArea.Content>Content</ScrollArea.Content>
+        </ScrollArea.Viewport>
         <ScrollArea.Scrollbar orientation="vertical">
           <ScrollArea.Thumb
             // `forceMount` because the thumb otherwise waits for a measured overflow
@@ -205,7 +219,9 @@ describe('ScrollArea.Thumb', () => {
 
     render(
       <ScrollArea.Root type="always">
-        <ScrollArea.Viewport>Content</ScrollArea.Viewport>
+        <ScrollArea.Viewport disableImplicitContentElement>
+          <ScrollArea.Content>Content</ScrollArea.Content>
+        </ScrollArea.Viewport>
         <ScrollArea.Scrollbar orientation="vertical">
           <ScrollArea.Thumb
             forceMount
@@ -243,7 +259,9 @@ describe('ScrollArea.Corner', () => {
 
     render(
       <ScrollArea.Root type="always">
-        <ScrollArea.Viewport>Content</ScrollArea.Viewport>
+        <ScrollArea.Viewport disableImplicitContentElement>
+          <ScrollArea.Content>Content</ScrollArea.Content>
+        </ScrollArea.Viewport>
         <ScrollArea.Scrollbar orientation="horizontal" />
         <ScrollArea.Scrollbar orientation="vertical" />
         <ScrollArea.Corner
@@ -272,7 +290,9 @@ describe('ScrollArea.Corner', () => {
 
     render(
       <ScrollArea.Root type="always">
-        <ScrollArea.Viewport>Content</ScrollArea.Viewport>
+        <ScrollArea.Viewport disableImplicitContentElement>
+          <ScrollArea.Content>Content</ScrollArea.Content>
+        </ScrollArea.Viewport>
         <ScrollArea.Scrollbar orientation="horizontal" />
         <ScrollArea.Scrollbar orientation="vertical" />
         <ScrollArea.Corner
@@ -332,6 +352,200 @@ describe('ScrollArea.Viewport', () => {
     expect(onClick).toHaveBeenCalled();
   });
 
-  // TODO: Fix this
-  it.todo('forwards props to the child element when `asChild` is set');
+  it('forwards props to the child element when `asChild` is set', () => {
+    const ref = React.createRef<HTMLDivElement>();
+    const onClick = vi.fn();
+
+    render(
+      <ScrollArea.Root type="always">
+        <ScrollArea.Viewport
+          asChild
+          ref={ref}
+          data-testid="viewport"
+          className="custom-class"
+          style={{ outlineColor: 'rgb(1, 2, 3)' }}
+          onClick={onClick}
+        >
+          <article>Content</article>
+        </ScrollArea.Viewport>
+      </ScrollArea.Root>,
+    );
+
+    const viewport = screen.getByTestId('viewport');
+    expect(viewport.tagName).toBe('ARTICLE');
+    expect(viewport).toHaveAttribute('data-radix-scroll-area-viewport', '');
+    expect(viewport.style.overflowX).toBe('hidden');
+    expect(viewport.style.overflowY).toBe('hidden');
+    expect(viewport).toHaveClass('custom-class');
+    expect(viewport.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(viewport);
+    expect(viewport.firstElementChild).toHaveStyle({ display: 'table', minWidth: '100%' });
+    expect(viewport).toHaveTextContent('Content');
+
+    fireEvent.click(viewport);
+    expect(onClick).toHaveBeenCalled();
+  });
+
+  // Regression for the Slottable fallback when `asChild` can't redirect onto a
+  // single element child. This avoids a breaking change for users who are
+  // misusing the asChild API. We should expect this test to fail when we remove
+  // the fallback branch ahead of the next major release.
+  it('falls back to the content wrapper when `asChild` children are not a single element', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const condition = false;
+
+    expect(() => {
+      render(
+        <ScrollArea.Root type="always">
+          <ScrollArea.Viewport asChild data-testid="viewport" className="custom-class">
+            {condition && <article />}
+          </ScrollArea.Viewport>
+        </ScrollArea.Root>,
+      );
+    }).not.toThrow();
+
+    // Props land on the implicit content wrapper rather than throwing because
+    // there is no element for Slot to target
+    const viewport = screen.getByTestId('viewport');
+    expect(viewport).toHaveClass('custom-class');
+    expect(viewport).toHaveStyle({ display: 'table', minWidth: '100%' });
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringContaining('`asChild` expects a single React element child'),
+    );
+
+    warn.mockRestore();
+  });
+
+  it('renders an implicit content element around its children by default', () => {
+    render(
+      <ScrollArea.Root type="always">
+        <ScrollArea.Viewport data-testid="viewport">Content</ScrollArea.Viewport>
+      </ScrollArea.Root>,
+    );
+
+    const viewport = screen.getByTestId('viewport');
+    const content = viewport.firstElementChild;
+    expect(content).toBeInstanceOf(HTMLDivElement);
+    expect(content).toHaveStyle({ display: 'table', minWidth: '100%' });
+    expect(content).toHaveTextContent('Content');
+  });
+
+  it('skips the implicit content element when `disableImplicitContentElement` is set', () => {
+    render(
+      <ScrollArea.Root type="always">
+        <ScrollArea.Viewport disableImplicitContentElement data-testid="viewport">
+          <span data-testid="child">Content</span>
+        </ScrollArea.Viewport>
+      </ScrollArea.Root>,
+    );
+
+    const viewport = screen.getByTestId('viewport');
+    const child = screen.getByTestId('child');
+    expect(viewport.firstElementChild).toBe(child);
+    expect(child).not.toHaveStyle({ display: 'table' });
+  });
+
+  it('forwards props to the child when `asChild` is set with `disableImplicitContentElement`', () => {
+    const ref = React.createRef<HTMLDivElement>();
+    const onClick = vi.fn();
+
+    render(
+      <ScrollArea.Root type="always">
+        <ScrollArea.Viewport
+          asChild
+          disableImplicitContentElement
+          ref={ref}
+          data-testid="viewport"
+          className="custom-class"
+          style={{ outlineColor: 'rgb(1, 2, 3)' }}
+          onClick={onClick}
+        >
+          <article>
+            <ScrollArea.Content>Content</ScrollArea.Content>
+          </article>
+        </ScrollArea.Viewport>
+      </ScrollArea.Root>,
+    );
+
+    const viewport = screen.getByTestId('viewport');
+    expect(viewport.tagName).toBe('ARTICLE');
+    expect(viewport).toHaveAttribute('data-radix-scroll-area-viewport', '');
+    expect(viewport.style.overflowX).toBe('hidden');
+    expect(viewport.style.overflowY).toBe('hidden');
+    expect(viewport).toHaveClass('custom-class');
+    expect(viewport.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(viewport);
+    expect(viewport.firstElementChild).toHaveStyle({ display: 'table', minWidth: '100%' });
+    expect(viewport).toHaveTextContent('Content');
+
+    fireEvent.click(viewport);
+    expect(onClick).toHaveBeenCalled();
+  });
+});
+
+describe('ScrollArea.Content', () => {
+  afterEach(cleanup);
+
+  it('spreads props it does not consume onto the element it renders', () => {
+    const ref = React.createRef<HTMLDivElement>();
+    const onClick = vi.fn();
+
+    render(
+      <ScrollArea.Root type="always">
+        <ScrollArea.Viewport disableImplicitContentElement>
+          <ScrollArea.Content
+            ref={ref}
+            data-testid="content"
+            className="custom-class"
+            style={{ outlineColor: 'rgb(1, 2, 3)' }}
+            onClick={onClick}
+          >
+            Content
+          </ScrollArea.Content>
+        </ScrollArea.Viewport>
+      </ScrollArea.Root>,
+    );
+
+    const content = screen.getByTestId('content');
+    expect(content).toHaveStyle({ display: 'table', minWidth: '100%' });
+    expect(content).toHaveClass('custom-class');
+    expect(content.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(content);
+
+    fireEvent.click(content);
+    expect(onClick).toHaveBeenCalled();
+  });
+
+  it('forwards props to the child element when `asChild` is set', () => {
+    const ref = React.createRef<HTMLDivElement>();
+    const onClick = vi.fn();
+
+    render(
+      <ScrollArea.Root type="always">
+        <ScrollArea.Viewport disableImplicitContentElement>
+          <ScrollArea.Content
+            asChild
+            ref={ref}
+            data-testid="content"
+            className="custom-class"
+            style={{ outlineColor: 'rgb(1, 2, 3)' }}
+            onClick={onClick}
+          >
+            <article>Content</article>
+          </ScrollArea.Content>
+        </ScrollArea.Viewport>
+      </ScrollArea.Root>,
+    );
+
+    const content = screen.getByTestId('content');
+    expect(content.tagName).toBe('ARTICLE');
+    expect(content).toHaveStyle({ display: 'table', minWidth: '100%' });
+    expect(content).toHaveClass('custom-class');
+    expect(content.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(content);
+    expect(content).toHaveTextContent('Content');
+
+    fireEvent.click(content);
+    expect(onClick).toHaveBeenCalled();
+  });
 });

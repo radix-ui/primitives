@@ -2054,6 +2054,9 @@ importers:
       '@radix-ui/react-primitive':
         specifier: workspace:*
         version: link:../primitive
+      '@radix-ui/react-slot':
+        specifier: workspace:*
+        version: link:../slot
       '@radix-ui/react-use-callback-ref':
         specifier: workspace:*
         version: link:../use-callback-ref
