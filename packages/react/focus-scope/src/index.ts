@@ -7,4 +7,8 @@ export {
   //
   Root,
 } from './focus-scope';
-export type { FocusScopeProps, FocusScopeBranchRegistry } from './focus-scope';
+export type {
+  FocusScopeProps,
+  FocusScopeBranchProviderProps,
+  FocusScopeBranchRegistry,
+} from './focus-scope';
