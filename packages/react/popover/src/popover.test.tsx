@@ -117,10 +117,7 @@ describe('Title and Description', () => {
 });
 
 describe('given a Popover with `asChild` on the Content', () => {
-  afterEach(() => {
-    cleanup();
-    document.body.style.pointerEvents = '';
-  });
+  afterEach(cleanupModal);
 
   // Regression test for https://github.com/radix-ui/primitives/issues/4077
   it.each([{ modal: true }, { modal: false }])(
@@ -152,3 +149,558 @@ describe('given a Popover with `asChild` on the Content', () => {
     },
   );
 });
+
+describe('Popover.Anchor', () => {
+  afterEach(cleanupModal);
+
+  it('spreads props it does not consume onto the element it renders', () => {
+    const ref = React.createRef<HTMLDivElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Popover.Root>
+        <Popover.Anchor
+          ref={ref}
+          data-testid="anchor"
+          className="custom-class"
+          style={{ outlineColor: 'rgb(1, 2, 3)' }}
+          onClick={onClick}
+        />
+      </Popover.Root>,
+    );
+
+    const anchor = screen.getByTestId('anchor');
+    expect(anchor).toHaveClass('custom-class');
+    expect(anchor.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(anchor);
+
+    fireEvent.click(anchor);
+    expect(onClick).toHaveBeenCalled();
+  });
+
+  it('forwards props to the child element when `asChild` is set', () => {
+    const ref = React.createRef<HTMLDivElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Popover.Root>
+        <Popover.Anchor
+          asChild
+          ref={ref}
+          data-testid="anchor"
+          className="custom-class"
+          style={{ outlineColor: 'rgb(1, 2, 3)' }}
+          onClick={onClick}
+        >
+          <article />
+        </Popover.Anchor>
+      </Popover.Root>,
+    );
+
+    const anchor = screen.getByTestId('anchor');
+    expect(anchor.tagName).toBe('ARTICLE');
+    expect(anchor).toHaveClass('custom-class');
+    expect(anchor.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(anchor);
+
+    fireEvent.click(anchor);
+    expect(onClick).toHaveBeenCalled();
+  });
+});
+
+describe('Popover.Trigger', () => {
+  afterEach(cleanupModal);
+
+  it('spreads props it does not consume onto the element it renders', () => {
+    const ref = React.createRef<HTMLButtonElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Popover.Root>
+        <Popover.Trigger
+          ref={ref}
+          data-testid="trigger"
+          className="custom-class"
+          style={{ outlineColor: 'rgb(1, 2, 3)' }}
+          onClick={onClick}
+        >
+          Open
+        </Popover.Trigger>
+      </Popover.Root>,
+    );
+
+    const trigger = screen.getByTestId('trigger');
+    expect(trigger).toHaveClass('custom-class');
+    expect(trigger.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(trigger);
+
+    // Composed with the trigger's own click handler rather than replaced by it.
+    fireEvent.click(trigger);
+    expect(onClick).toHaveBeenCalled();
+  });
+
+  // With no custom anchor the trigger is also wrapped in a slotted `Popper.Anchor`, so the props
+  // have to survive two nested `Slot`s.
+  it('forwards props to the child element when `asChild` is set', () => {
+    const ref = React.createRef<HTMLButtonElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Popover.Root>
+        <Popover.Trigger
+          asChild
+          ref={ref}
+          data-testid="trigger"
+          className="custom-class"
+          style={{ outlineColor: 'rgb(1, 2, 3)' }}
+          onClick={onClick}
+        >
+          <button type="button">Open</button>
+        </Popover.Trigger>
+      </Popover.Root>,
+    );
+
+    const trigger = screen.getByTestId('trigger');
+    expect(trigger.tagName).toBe('BUTTON');
+    expect(trigger).toHaveAttribute('aria-haspopup', 'dialog');
+    expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    expect(trigger).toHaveAttribute('data-state', 'closed');
+    expect(trigger).toHaveClass('custom-class');
+    expect(trigger.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(trigger);
+
+    fireEvent.click(trigger);
+    expect(onClick).toHaveBeenCalled();
+  });
+});
+
+describe('Popover.Content', () => {
+  afterEach(cleanupModal);
+
+  it('spreads props it does not consume onto the element it renders', () => {
+    const ref = React.createRef<HTMLDivElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Popover.Root defaultOpen>
+        <Popover.Trigger>Open</Popover.Trigger>
+        <Popover.Portal>
+          <Popover.Content
+            ref={ref}
+            data-testid="content"
+            className="custom-class"
+            style={{ outlineColor: 'rgb(1, 2, 3)' }}
+            onClick={onClick}
+          >
+            <Popover.Title>Title</Popover.Title>
+          </Popover.Content>
+        </Popover.Portal>
+      </Popover.Root>,
+    );
+
+    const content = screen.getByTestId('content');
+    expect(content).toHaveClass('custom-class');
+    expect(content.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(content);
+
+    fireEvent.click(content);
+    expect(onClick).toHaveBeenCalled();
+  });
+
+  it('forwards props to the child element when `asChild` is set', () => {
+    const ref = React.createRef<HTMLDivElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Popover.Root defaultOpen>
+        <Popover.Trigger>Open</Popover.Trigger>
+        <Popover.Portal>
+          <Popover.Content
+            asChild
+            ref={ref}
+            data-testid="content"
+            className="custom-class"
+            style={{ outlineColor: 'rgb(1, 2, 3)' }}
+            onClick={onClick}
+          >
+            <article>
+              <Popover.Title>Title</Popover.Title>
+            </article>
+          </Popover.Content>
+        </Popover.Portal>
+      </Popover.Root>,
+    );
+
+    const content = screen.getByTestId('content');
+    expect(content.tagName).toBe('ARTICLE');
+    expect(content).toHaveAttribute('role', 'dialog');
+    expect(content).toHaveAttribute('data-state', 'open');
+    expect(content).toHaveAttribute('aria-labelledby', screen.getByText('Title').id);
+    expect(content).toHaveClass('custom-class');
+    expect(content.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(content);
+
+    fireEvent.click(content);
+    expect(onClick).toHaveBeenCalled();
+  });
+
+  it('spreads props it does not consume onto the element it renders on a modal popover', () => {
+    const ref = React.createRef<HTMLDivElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Popover.Root defaultOpen modal>
+        <Popover.Trigger>Open</Popover.Trigger>
+        <Popover.Portal>
+          <Popover.Content
+            ref={ref}
+            data-testid="content"
+            className="custom-class"
+            style={{ outlineColor: 'rgb(1, 2, 3)' }}
+            onClick={onClick}
+          >
+            <Popover.Title>Title</Popover.Title>
+          </Popover.Content>
+        </Popover.Portal>
+      </Popover.Root>,
+    );
+
+    const content = screen.getByTestId('content');
+    expect(content).toHaveClass('custom-class');
+    expect(content.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(content);
+
+    fireEvent.click(content);
+    expect(onClick).toHaveBeenCalled();
+  });
+
+  it('forwards props to the child element when `asChild` is set on a modal popover', () => {
+    const ref = React.createRef<HTMLDivElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Popover.Root defaultOpen modal>
+        <Popover.Trigger>Open</Popover.Trigger>
+        <Popover.Portal>
+          <Popover.Content
+            asChild
+            ref={ref}
+            data-testid="content"
+            className="custom-class"
+            style={{ outlineColor: 'rgb(1, 2, 3)' }}
+            onClick={onClick}
+          >
+            <article>
+              <Popover.Title>Title</Popover.Title>
+            </article>
+          </Popover.Content>
+        </Popover.Portal>
+      </Popover.Root>,
+    );
+
+    const content = screen.getByTestId('content');
+    expect(content.tagName).toBe('ARTICLE');
+    expect(content).toHaveAttribute('role', 'dialog');
+    expect(content).toHaveAttribute('data-state', 'open');
+    expect(content).toHaveAttribute('aria-labelledby', screen.getByText('Title').id);
+    expect(content).toHaveClass('custom-class');
+    expect(content.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(content);
+
+    fireEvent.click(content);
+    expect(onClick).toHaveBeenCalled();
+  });
+});
+
+describe('Popover.Title', () => {
+  afterEach(cleanupModal);
+
+  it('spreads props it does not consume onto the element it renders', () => {
+    const ref = React.createRef<HTMLHeadingElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Popover.Root defaultOpen>
+        <Popover.Trigger>Open</Popover.Trigger>
+        <Popover.Portal>
+          <Popover.Content>
+            <Popover.Title
+              ref={ref}
+              data-testid="title"
+              className="custom-class"
+              style={{ outlineColor: 'rgb(1, 2, 3)' }}
+              onClick={onClick}
+            >
+              Title
+            </Popover.Title>
+          </Popover.Content>
+        </Popover.Portal>
+      </Popover.Root>,
+    );
+
+    const title = screen.getByTestId('title');
+    expect(title).toHaveClass('custom-class');
+    expect(title.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(title);
+
+    fireEvent.click(title);
+    expect(onClick).toHaveBeenCalled();
+  });
+
+  it('forwards props to the child element when `asChild` is set', () => {
+    const ref = React.createRef<HTMLHeadingElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Popover.Root defaultOpen>
+        <Popover.Trigger>Open</Popover.Trigger>
+        <Popover.Portal>
+          <Popover.Content>
+            <Popover.Title
+              asChild
+              ref={ref}
+              data-testid="title"
+              className="custom-class"
+              style={{ outlineColor: 'rgb(1, 2, 3)' }}
+              onClick={onClick}
+            >
+              <article>Title</article>
+            </Popover.Title>
+          </Popover.Content>
+        </Popover.Portal>
+      </Popover.Root>,
+    );
+
+    const title = screen.getByTestId('title');
+    expect(title.tagName).toBe('ARTICLE');
+    expect(title).toHaveClass('custom-class');
+    expect(title.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(title);
+
+    fireEvent.click(title);
+    expect(onClick).toHaveBeenCalled();
+  });
+});
+
+describe('Popover.Description', () => {
+  afterEach(cleanupModal);
+
+  it('spreads props it does not consume onto the element it renders', () => {
+    const ref = React.createRef<HTMLParagraphElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Popover.Root defaultOpen>
+        <Popover.Trigger>Open</Popover.Trigger>
+        <Popover.Portal>
+          <Popover.Content>
+            <Popover.Title>Title</Popover.Title>
+            <Popover.Description
+              ref={ref}
+              data-testid="description"
+              className="custom-class"
+              style={{ outlineColor: 'rgb(1, 2, 3)' }}
+              onClick={onClick}
+            >
+              Description
+            </Popover.Description>
+          </Popover.Content>
+        </Popover.Portal>
+      </Popover.Root>,
+    );
+
+    const description = screen.getByTestId('description');
+    expect(description).toHaveClass('custom-class');
+    expect(description.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(description);
+
+    fireEvent.click(description);
+    expect(onClick).toHaveBeenCalled();
+  });
+
+  it('forwards props to the child element when `asChild` is set', () => {
+    const ref = React.createRef<HTMLParagraphElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Popover.Root defaultOpen>
+        <Popover.Trigger>Open</Popover.Trigger>
+        <Popover.Portal>
+          <Popover.Content>
+            <Popover.Title>Title</Popover.Title>
+            <Popover.Description
+              asChild
+              ref={ref}
+              data-testid="description"
+              className="custom-class"
+              style={{ outlineColor: 'rgb(1, 2, 3)' }}
+              onClick={onClick}
+            >
+              <article>Description</article>
+            </Popover.Description>
+          </Popover.Content>
+        </Popover.Portal>
+      </Popover.Root>,
+    );
+
+    const description = screen.getByTestId('description');
+    expect(description.tagName).toBe('ARTICLE');
+    expect(description).toHaveClass('custom-class');
+    expect(description.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(description);
+
+    fireEvent.click(description);
+    expect(onClick).toHaveBeenCalled();
+  });
+});
+
+describe('Popover.Close', () => {
+  afterEach(cleanupModal);
+
+  it('spreads props it does not consume onto the element it renders', () => {
+    const ref = React.createRef<HTMLButtonElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Popover.Root defaultOpen>
+        <Popover.Trigger>Open</Popover.Trigger>
+        <Popover.Portal>
+          <Popover.Content>
+            <Popover.Title>Title</Popover.Title>
+            <Popover.Close
+              ref={ref}
+              data-testid="close"
+              className="custom-class"
+              style={{ outlineColor: 'rgb(1, 2, 3)' }}
+              onClick={onClick}
+            >
+              Close
+            </Popover.Close>
+          </Popover.Content>
+        </Popover.Portal>
+      </Popover.Root>,
+    );
+
+    const close = screen.getByTestId('close');
+    expect(close).toHaveClass('custom-class');
+    expect(close.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(close);
+
+    // Composed with the close behaviour rather than replaced by it.
+    fireEvent.click(close);
+    expect(onClick).toHaveBeenCalled();
+  });
+
+  it('forwards props to the child element when `asChild` is set', () => {
+    const ref = React.createRef<HTMLButtonElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Popover.Root defaultOpen>
+        <Popover.Trigger>Open</Popover.Trigger>
+        <Popover.Portal>
+          <Popover.Content>
+            <Popover.Title>Title</Popover.Title>
+            <Popover.Close
+              asChild
+              ref={ref}
+              data-testid="close"
+              className="custom-class"
+              style={{ outlineColor: 'rgb(1, 2, 3)' }}
+              onClick={onClick}
+            >
+              <button type="button">Close</button>
+            </Popover.Close>
+          </Popover.Content>
+        </Popover.Portal>
+      </Popover.Root>,
+    );
+
+    const close = screen.getByTestId('close');
+    expect(close.tagName).toBe('BUTTON');
+    expect(close).toHaveClass('custom-class');
+    expect(close.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(close);
+
+    fireEvent.click(close);
+    expect(onClick).toHaveBeenCalled();
+  });
+});
+
+describe('Popover.Arrow', () => {
+  afterEach(cleanupModal);
+
+  it('spreads props it does not consume onto the element it renders', () => {
+    const ref = React.createRef<SVGSVGElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Popover.Root defaultOpen>
+        <Popover.Trigger>Open</Popover.Trigger>
+        <Popover.Portal>
+          <Popover.Content>
+            <Popover.Title>Title</Popover.Title>
+            <Popover.Arrow
+              ref={ref}
+              data-testid="arrow"
+              className="custom-class"
+              style={{ outlineColor: 'rgb(1, 2, 3)' }}
+              onClick={onClick}
+            />
+          </Popover.Content>
+        </Popover.Portal>
+      </Popover.Root>,
+    );
+
+    const arrow = screen.getByTestId('arrow');
+    expect(arrow).toHaveClass('custom-class');
+    expect(arrow.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(arrow);
+
+    fireEvent.click(arrow);
+    expect(onClick).toHaveBeenCalled();
+  });
+
+  it('forwards props to the child element when `asChild` is set', () => {
+    const ref = React.createRef<SVGSVGElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Popover.Root defaultOpen>
+        <Popover.Trigger>Open</Popover.Trigger>
+        <Popover.Portal>
+          <Popover.Content>
+            <Popover.Title>Title</Popover.Title>
+            <Popover.Arrow
+              asChild
+              ref={ref}
+              data-testid="arrow"
+              className="custom-class"
+              style={{ outlineColor: 'rgb(1, 2, 3)' }}
+              onClick={onClick}
+            >
+              <svg />
+            </Popover.Arrow>
+          </Popover.Content>
+        </Popover.Portal>
+      </Popover.Root>,
+    );
+
+    const arrow = screen.getByTestId('arrow');
+    // SVG elements report their tag name in lower case.
+    expect(arrow.tagName).toBe('svg');
+    expect(arrow).toHaveAttribute('viewBox', '0 0 30 10');
+    expect(arrow).toHaveClass('custom-class');
+    expect(arrow.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(arrow);
+
+    fireEvent.click(arrow);
+    expect(onClick).toHaveBeenCalled();
+  });
+});
+
+function cleanupModal() {
+  cleanup();
+  // A modal popover sets this on the `body` and only restores it on close.
+  document.body.style.pointerEvents = '';
+}
