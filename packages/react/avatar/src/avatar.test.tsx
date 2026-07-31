@@ -1,6 +1,6 @@
 import { axe } from 'vitest-axe';
 import type { RenderResult } from '@testing-library/react';
-import { cleanup, render, waitFor } from '@testing-library/react';
+import { cleanup, render, waitFor, fireEvent, screen } from '@testing-library/react';
 import * as Avatar from './avatar';
 import * as React from 'react';
 import { renderToString } from 'react-dom/server';
@@ -439,3 +439,201 @@ class MockImage extends EventTarget {
     }, DELAY);
   }
 }
+
+describe('Avatar.Root', () => {
+  afterEach(cleanup);
+
+  it('spreads props it does not consume onto the element it renders', () => {
+    const ref = React.createRef<HTMLSpanElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Avatar.Root
+        ref={ref}
+        data-testid="root"
+        className="custom-class"
+        style={{ outlineColor: 'rgb(1, 2, 3)' }}
+        onClick={onClick}
+      >
+        <Avatar.Fallback>AB</Avatar.Fallback>
+      </Avatar.Root>,
+    );
+
+    const root = screen.getByTestId('root');
+    expect(root).toHaveClass('custom-class');
+    expect(root.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(root);
+
+    fireEvent.click(root);
+    expect(onClick).toHaveBeenCalled();
+  });
+
+  it('forwards props to the child element when `asChild` is set', () => {
+    const ref = React.createRef<HTMLSpanElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Avatar.Root
+        asChild
+        ref={ref}
+        data-testid="root"
+        className="custom-class"
+        style={{ outlineColor: 'rgb(1, 2, 3)' }}
+        onClick={onClick}
+      >
+        <article>
+          <Avatar.Fallback>AB</Avatar.Fallback>
+        </article>
+      </Avatar.Root>,
+    );
+
+    const root = screen.getByTestId('root');
+    expect(root.tagName).toBe('ARTICLE');
+    expect(root).toHaveClass('custom-class');
+    expect(root.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(root);
+
+    expect(screen.getByText('AB')).toBeInTheDocument();
+
+    fireEvent.click(root);
+    expect(onClick).toHaveBeenCalled();
+  });
+});
+
+describe('Avatar.Image', () => {
+  afterEach(cleanup);
+
+  // jsdom never loads images, so Avatar.Image would stay unmounted without a stand-in.
+  class CachedImage extends EventTarget {
+    src = '';
+    crossOrigin: string | null = null;
+    referrerPolicy = '';
+    complete = true;
+    naturalWidth = 300;
+  }
+  const originalImage = window.Image;
+  beforeAll(() => {
+    (window.Image as any) = CachedImage;
+  });
+  afterAll(() => {
+    window.Image = originalImage;
+  });
+
+  it('spreads props it does not consume onto the element it renders', () => {
+    const ref = React.createRef<HTMLImageElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Avatar.Root>
+        <Avatar.Image
+          src="/avatar.png"
+          alt="Avatar"
+          ref={ref}
+          data-testid="image"
+          className="custom-class"
+          style={{ outlineColor: 'rgb(1, 2, 3)' }}
+          onClick={onClick}
+        />
+      </Avatar.Root>,
+    );
+
+    const image = screen.getByTestId('image');
+    expect(image).toHaveClass('custom-class');
+    expect(image.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(image);
+
+    fireEvent.click(image);
+    expect(onClick).toHaveBeenCalled();
+  });
+
+  it('forwards props to the child element when `asChild` is set', () => {
+    const ref = React.createRef<HTMLImageElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Avatar.Root>
+        <Avatar.Image
+          src="/avatar.png"
+          asChild
+          ref={ref}
+          data-testid="image"
+          className="custom-class"
+          style={{ outlineColor: 'rgb(1, 2, 3)' }}
+          onClick={onClick}
+        >
+          <img alt="Avatar" />
+        </Avatar.Image>
+      </Avatar.Root>,
+    );
+
+    const image = screen.getByTestId('image');
+    expect(image.tagName).toBe('IMG');
+    expect(image).toHaveAttribute('src', '/avatar.png');
+    expect(image).toHaveClass('custom-class');
+    expect(image.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(image);
+
+    fireEvent.click(image);
+    expect(onClick).toHaveBeenCalled();
+  });
+});
+
+describe('Avatar.Fallback', () => {
+  afterEach(cleanup);
+
+  it('spreads props it does not consume onto the element it renders', () => {
+    const ref = React.createRef<HTMLSpanElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Avatar.Root>
+        <Avatar.Fallback
+          ref={ref}
+          data-testid="fallback"
+          className="custom-class"
+          style={{ outlineColor: 'rgb(1, 2, 3)' }}
+          onClick={onClick}
+        >
+          AB
+        </Avatar.Fallback>
+      </Avatar.Root>,
+    );
+
+    const fallback = screen.getByTestId('fallback');
+    expect(fallback).toHaveClass('custom-class');
+    expect(fallback.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(fallback);
+
+    fireEvent.click(fallback);
+    expect(onClick).toHaveBeenCalled();
+  });
+
+  it('forwards props to the child element when `asChild` is set', () => {
+    const ref = React.createRef<HTMLSpanElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Avatar.Root>
+        <Avatar.Fallback
+          asChild
+          ref={ref}
+          data-testid="fallback"
+          className="custom-class"
+          style={{ outlineColor: 'rgb(1, 2, 3)' }}
+          onClick={onClick}
+        >
+          <article>AB</article>
+        </Avatar.Fallback>
+      </Avatar.Root>,
+    );
+
+    const fallback = screen.getByTestId('fallback');
+    expect(fallback.tagName).toBe('ARTICLE');
+    expect(fallback).toHaveClass('custom-class');
+    expect(fallback.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(fallback);
+
+    fireEvent.click(fallback);
+    expect(onClick).toHaveBeenCalled();
+  });
+});
