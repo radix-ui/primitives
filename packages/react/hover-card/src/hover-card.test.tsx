@@ -109,3 +109,203 @@ describe('HoverCard', () => {
     }
   });
 });
+
+describe('HoverCard.Trigger', () => {
+  afterEach(cleanup);
+
+  it('spreads props it does not consume onto the element it renders', () => {
+    const ref = React.createRef<HTMLAnchorElement>();
+    const onClick = vi.fn();
+
+    render(
+      <HoverCard.Root>
+        <HoverCard.Trigger
+          ref={ref}
+          data-testid="trigger"
+          className="custom-class"
+          style={{ outlineColor: 'rgb(1, 2, 3)' }}
+          onClick={onClick}
+        >
+          Trigger
+        </HoverCard.Trigger>
+      </HoverCard.Root>,
+    );
+
+    const trigger = screen.getByTestId('trigger');
+    expect(trigger).toHaveClass('custom-class');
+    expect(trigger.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(trigger);
+
+    fireEvent.click(trigger);
+    expect(onClick).toHaveBeenCalled();
+  });
+
+  it('forwards props to the child element when `asChild` is set', () => {
+    const ref = React.createRef<HTMLAnchorElement>();
+    const onClick = vi.fn();
+
+    render(
+      <HoverCard.Root>
+        <HoverCard.Trigger
+          asChild
+          ref={ref}
+          data-testid="trigger"
+          className="custom-class"
+          style={{ outlineColor: 'rgb(1, 2, 3)' }}
+          onClick={onClick}
+        >
+          <article>Trigger</article>
+        </HoverCard.Trigger>
+      </HoverCard.Root>,
+    );
+
+    const trigger = screen.getByTestId('trigger');
+    expect(trigger.tagName).toBe('ARTICLE');
+    expect(trigger).toHaveAttribute('data-state', 'closed');
+    expect(trigger).toHaveClass('custom-class');
+    expect(trigger.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(trigger);
+
+    fireEvent.click(trigger);
+    expect(onClick).toHaveBeenCalled();
+  });
+});
+
+describe('HoverCard.Content', () => {
+  afterEach(cleanup);
+
+  it('spreads props it does not consume onto the element it renders', () => {
+    const ref = React.createRef<HTMLDivElement>();
+    const onClick = vi.fn();
+
+    render(
+      <HoverCard.Root open>
+        <HoverCard.Trigger>Trigger</HoverCard.Trigger>
+        <HoverCard.Portal>
+          <HoverCard.Content
+            ref={ref}
+            data-testid="content"
+            className="custom-class"
+            style={{ outlineColor: 'rgb(1, 2, 3)' }}
+            onClick={onClick}
+          >
+            Content
+          </HoverCard.Content>
+        </HoverCard.Portal>
+      </HoverCard.Root>,
+    );
+
+    const content = screen.getByTestId('content');
+    expect(content).toHaveClass('custom-class');
+    expect(content.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(content);
+
+    fireEvent.click(content);
+    expect(onClick).toHaveBeenCalled();
+  });
+
+  it('forwards props to the child element when `asChild` is set', () => {
+    const ref = React.createRef<HTMLDivElement>();
+    const onClick = vi.fn();
+
+    render(
+      <HoverCard.Root open>
+        <HoverCard.Trigger>Trigger</HoverCard.Trigger>
+        <HoverCard.Portal>
+          <HoverCard.Content
+            asChild
+            ref={ref}
+            data-testid="content"
+            className="custom-class"
+            style={{ outlineColor: 'rgb(1, 2, 3)' }}
+            onClick={onClick}
+          >
+            <article>Content</article>
+          </HoverCard.Content>
+        </HoverCard.Portal>
+      </HoverCard.Root>,
+    );
+
+    const content = screen.getByTestId('content');
+    expect(content.tagName).toBe('ARTICLE');
+    expect(content).toHaveAttribute('data-state', 'open');
+    expect(content).toHaveAttribute('data-side', 'bottom');
+    expect(content).toHaveClass('custom-class');
+    expect(content.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(content);
+
+    fireEvent.click(content);
+    expect(onClick).toHaveBeenCalled();
+  });
+});
+
+describe('HoverCard.Arrow', () => {
+  afterEach(cleanup);
+
+  it('spreads props it does not consume onto the element it renders', () => {
+    const ref = React.createRef<SVGSVGElement>();
+    const onClick = vi.fn();
+
+    render(
+      <HoverCard.Root open>
+        <HoverCard.Trigger>Trigger</HoverCard.Trigger>
+        <HoverCard.Portal>
+          <HoverCard.Content>
+            Content
+            <HoverCard.Arrow
+              ref={ref}
+              data-testid="arrow"
+              className="custom-class"
+              style={{ outlineColor: 'rgb(1, 2, 3)' }}
+              onClick={onClick}
+            />
+          </HoverCard.Content>
+        </HoverCard.Portal>
+      </HoverCard.Root>,
+    );
+
+    const arrow = screen.getByTestId('arrow');
+    expect(arrow).toHaveClass('custom-class');
+    expect(arrow.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(arrow);
+
+    fireEvent.click(arrow);
+    expect(onClick).toHaveBeenCalled();
+  });
+
+  it('forwards props to the child element when `asChild` is set', () => {
+    const ref = React.createRef<SVGSVGElement>();
+    const onClick = vi.fn();
+
+    render(
+      <HoverCard.Root open>
+        <HoverCard.Trigger>Trigger</HoverCard.Trigger>
+        <HoverCard.Portal>
+          <HoverCard.Content>
+            Content
+            <HoverCard.Arrow
+              asChild
+              ref={ref}
+              data-testid="arrow"
+              className="custom-class"
+              style={{ outlineColor: 'rgb(1, 2, 3)' }}
+              onClick={onClick}
+            >
+              <svg />
+            </HoverCard.Arrow>
+          </HoverCard.Content>
+        </HoverCard.Portal>
+      </HoverCard.Root>,
+    );
+
+    const arrow = screen.getByTestId('arrow');
+    expect(arrow.tagName).toBe('svg');
+    expect(arrow).toHaveAttribute('viewBox', '0 0 30 10');
+    expect(arrow).toHaveClass('custom-class');
+    expect(arrow.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(arrow);
+
+    fireEvent.click(arrow);
+    expect(onClick).toHaveBeenCalled();
+  });
+});
