@@ -521,3 +521,156 @@ describe('DismissableLayer', () => {
     expect(onDismiss).not.toHaveBeenCalled();
   });
 });
+
+describe('DismissableLayer.Root', () => {
+  afterEach(cleanupLayer);
+
+  it('spreads props it does not consume onto the element it renders', () => {
+    const ref = React.createRef<HTMLDivElement>();
+    const onClick = vi.fn();
+
+    render(
+      <DismissableLayer.Root
+        ref={ref}
+        data-testid="layer"
+        className="custom-class"
+        style={{ outlineColor: 'rgb(1, 2, 3)' }}
+        onClick={onClick}
+      >
+        Layer
+      </DismissableLayer.Root>,
+    );
+
+    const layer = screen.getByTestId('layer');
+    expect(layer.tagName).toBe('DIV');
+    expect(layer).toHaveClass('custom-class');
+    expect(layer.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(layer);
+
+    fireEvent.click(layer);
+    expect(onClick).toHaveBeenCalled();
+  });
+
+  it('forwards props to the child element when `asChild` is set', () => {
+    const ref = React.createRef<HTMLDivElement>();
+    const onClick = vi.fn();
+
+    render(
+      <DismissableLayer.Root
+        asChild
+        ref={ref}
+        data-testid="layer"
+        className="custom-class"
+        style={{ outlineColor: 'rgb(1, 2, 3)' }}
+        onClick={onClick}
+      >
+        <article>Layer</article>
+      </DismissableLayer.Root>,
+    );
+
+    const layer = screen.getByTestId('layer');
+    expect(layer.tagName).toBe('ARTICLE');
+    expect(layer).toHaveClass('custom-class');
+    expect(layer.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(layer);
+
+    fireEvent.click(layer);
+    expect(onClick).toHaveBeenCalled();
+  });
+
+  // With outside pointer events disabled the layer sets `pointerEvents` itself, which is the case
+  // where a naive `style` assignment would drop the consumer's `style`.
+  it('merges its own `pointerEvents` into the consumer’s `style`', () => {
+    const ref = React.createRef<HTMLDivElement>();
+    const onClick = vi.fn();
+
+    render(
+      <DismissableLayer.Root
+        disableOutsidePointerEvents
+        ref={ref}
+        data-testid="layer"
+        className="custom-class"
+        style={{ outlineColor: 'rgb(1, 2, 3)' }}
+        onClick={onClick}
+      >
+        Layer
+      </DismissableLayer.Root>,
+    );
+
+    const layer = screen.getByTestId('layer');
+    expect(layer.style.pointerEvents).toBe('auto');
+    expect(layer).toHaveClass('custom-class');
+    expect(layer.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(layer);
+
+    fireEvent.click(layer);
+    expect(onClick).toHaveBeenCalled();
+  });
+});
+
+describe('DismissableLayer.Branch', () => {
+  afterEach(cleanupLayer);
+
+  it('spreads props it does not consume onto the element it renders', () => {
+    const ref = React.createRef<HTMLDivElement>();
+    const onClick = vi.fn();
+
+    render(
+      <DismissableLayer.Root>
+        <DismissableLayer.Branch
+          ref={ref}
+          data-testid="branch"
+          className="custom-class"
+          style={{ outlineColor: 'rgb(1, 2, 3)' }}
+          onClick={onClick}
+        >
+          Branch
+        </DismissableLayer.Branch>
+      </DismissableLayer.Root>,
+    );
+
+    const branch = screen.getByTestId('branch');
+    expect(branch.tagName).toBe('DIV');
+    expect(branch).toHaveClass('custom-class');
+    expect(branch.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(branch);
+
+    fireEvent.click(branch);
+    expect(onClick).toHaveBeenCalled();
+  });
+
+  it('forwards props to the child element when `asChild` is set', () => {
+    const ref = React.createRef<HTMLDivElement>();
+    const onClick = vi.fn();
+
+    render(
+      <DismissableLayer.Root>
+        <DismissableLayer.Branch
+          asChild
+          ref={ref}
+          data-testid="branch"
+          className="custom-class"
+          style={{ outlineColor: 'rgb(1, 2, 3)' }}
+          onClick={onClick}
+        >
+          <article>Branch</article>
+        </DismissableLayer.Branch>
+      </DismissableLayer.Root>,
+    );
+
+    const branch = screen.getByTestId('branch');
+    expect(branch.tagName).toBe('ARTICLE');
+    expect(branch).toHaveClass('custom-class');
+    expect(branch.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(branch);
+
+    fireEvent.click(branch);
+    expect(onClick).toHaveBeenCalled();
+  });
+});
+
+function cleanupLayer() {
+  cleanup();
+  // A layer that disables outside pointer events sets this on the `body`.
+  document.body.style.pointerEvents = '';
+}
