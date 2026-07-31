@@ -1,0 +1,67 @@
+.App {
+  font-family: sans-serif;
+  text-align: center;
+  width: 1024px;
+  height: 1024px;
+  overflow: scroll;
+  -webkit-overflow-scrolling: touch;
+}
+
+.SubOuter {
+  width: 400px;
+  height: 400px;
+  overflow: auto;
+}
+
+.SubParent {
+  width: 600px;
+  height: 600px;
+}
+
+.Sub {
+  width: 300px;
+  height: 300px;
+  border: 1px solid #000;
+  overflow: auto;
+}
+
+.Container {
+  background-color: #e8eaf6;
+  width: 600px;
+  height: 200px;
+  /*overflow: scroll;*/
+  -webkit-overflow-scrolling: touch;
+}
+
+.ContainerH .FlexContainer {
+  list-style: none;
+  padding: 0;
+  margin: 12px;
+  display: flex;
+  /*flex-direction: column;*/
+}
+
+.ContainerV {
+  width: 100%;
+}
+
+.ContainerV .FlexContainer {
+  list-style: none;
+  padding: 0;
+  margin: 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+.ContainerV .FlexContainer .FlexItem {
+  background-color: #c5cae9;
+  width: 150px;
+  height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.Container .FlexContainer .FlexItem:not(:last-of-type) {
+  margin-right: 12px;
+}
