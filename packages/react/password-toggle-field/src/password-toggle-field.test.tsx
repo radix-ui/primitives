@@ -1,8 +1,9 @@
+import * as React from 'react';
 import { axe } from 'vitest-axe';
 import type { RenderResult } from '@testing-library/react';
-import { act, cleanup, render, screen } from '@testing-library/react';
+import { act, cleanup, render, screen, fireEvent } from '@testing-library/react';
 import * as PasswordToggleField from './password-toggle-field';
-import { afterEach, describe, it, beforeEach, expect } from 'vitest';
+import { afterEach, describe, it, beforeEach, expect, vi } from 'vitest';
 import { userEvent, type UserEvent } from '@testing-library/user-event';
 
 describe('given a default PasswordToggleField', () => {
@@ -217,3 +218,171 @@ function EyeOpenIcon(props: React.SVGProps<SVGSVGElement>) {
     </svg>
   );
 }
+
+describe('PasswordToggleField.Input', () => {
+  afterEach(cleanup);
+
+  it('spreads props it does not consume onto the element it renders', () => {
+    const ref = React.createRef<HTMLInputElement>();
+    const onClick = vi.fn();
+
+    render(
+      <PasswordToggleField.Root>
+        <PasswordToggleField.Input
+          ref={ref}
+          data-testid="input"
+          className="custom-class"
+          style={{ outlineColor: 'rgb(1, 2, 3)' }}
+          onClick={onClick}
+        />
+      </PasswordToggleField.Root>,
+    );
+
+    const input = screen.getByTestId('input');
+    expect(input.tagName).toBe('INPUT');
+    expect(input).toHaveClass('custom-class');
+    expect(input.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(input);
+
+    fireEvent.click(input);
+    expect(onClick).toHaveBeenCalled();
+  });
+
+  it('forwards props to the child element when `asChild` is set', () => {
+    const ref = React.createRef<HTMLInputElement>();
+    const onClick = vi.fn();
+
+    render(
+      <PasswordToggleField.Root>
+        <PasswordToggleField.Input
+          asChild
+          ref={ref}
+          data-testid="input"
+          className="custom-class"
+          style={{ outlineColor: 'rgb(1, 2, 3)' }}
+          onClick={onClick}
+        >
+          <input />
+        </PasswordToggleField.Input>
+      </PasswordToggleField.Root>,
+    );
+
+    const input = screen.getByTestId('input');
+    expect(input.tagName).toBe('INPUT');
+
+    expect(input).toHaveAttribute('type', 'password');
+    expect(input).toHaveAttribute('autocomplete', 'current-password');
+    expect(input).toHaveClass('custom-class');
+    expect(input.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(input);
+
+    fireEvent.click(input);
+    expect(onClick).toHaveBeenCalled();
+  });
+});
+
+describe('PasswordToggleField.Toggle', () => {
+  afterEach(cleanup);
+
+  it('spreads props it does not consume onto the element it renders', () => {
+    const ref = React.createRef<HTMLButtonElement>();
+    const onClick = vi.fn();
+
+    render(
+      <PasswordToggleField.Root>
+        <PasswordToggleField.Input />
+        <PasswordToggleField.Toggle
+          ref={ref}
+          data-testid="toggle"
+          className="custom-class"
+          style={{ outlineColor: 'rgb(1, 2, 3)' }}
+          onClick={onClick}
+        >
+          Show
+        </PasswordToggleField.Toggle>
+      </PasswordToggleField.Root>,
+    );
+
+    const toggle = screen.getByTestId('toggle');
+    expect(toggle.tagName).toBe('BUTTON');
+    expect(toggle).toHaveClass('custom-class');
+    expect(toggle.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(toggle);
+
+    // Called alongside the toggle's own click handler, which flips the visibility.
+    fireEvent.click(toggle);
+    expect(onClick).toHaveBeenCalled();
+  });
+
+  it('forwards props to the child element when `asChild` is set', () => {
+    const ref = React.createRef<HTMLButtonElement>();
+    const onClick = vi.fn();
+
+    render(
+      <PasswordToggleField.Root>
+        <PasswordToggleField.Input />
+        <PasswordToggleField.Toggle
+          asChild
+          ref={ref}
+          data-testid="toggle"
+          className="custom-class"
+          style={{ outlineColor: 'rgb(1, 2, 3)' }}
+          onClick={onClick}
+        >
+          <button>Show</button>
+        </PasswordToggleField.Toggle>
+      </PasswordToggleField.Root>,
+    );
+
+    const toggle = screen.getByTestId('toggle');
+    expect(toggle.tagName).toBe('BUTTON');
+
+    expect(toggle).toHaveAttribute('type', 'button');
+    expect(toggle).toHaveClass('custom-class');
+    expect(toggle.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(toggle);
+
+    fireEvent.click(toggle);
+    expect(onClick).toHaveBeenCalled();
+  });
+});
+
+describe('PasswordToggleField.Icon', () => {
+  afterEach(cleanup);
+
+  it('spreads props it does not consume onto the element it renders', () => {
+    const ref = React.createRef<SVGSVGElement>();
+    const onClick = vi.fn();
+
+    render(
+      <PasswordToggleField.Root>
+        <PasswordToggleField.Input />
+        <PasswordToggleField.Toggle>
+          <PasswordToggleField.Icon
+            visible={<svg data-icon="visible" />}
+            hidden={<svg data-icon="hidden" />}
+            ref={ref}
+            data-testid="icon"
+            className="custom-class"
+            style={{ outlineColor: 'rgb(1, 2, 3)' }}
+            onClick={onClick}
+          />
+        </PasswordToggleField.Toggle>
+      </PasswordToggleField.Root>,
+    );
+
+    const icon = screen.getByTestId('icon');
+    // SVG elements keep their lowercase tag name.
+    expect(icon.tagName).toBe('svg');
+    // The password starts hidden, so the `hidden` icon is the one that renders,
+    // and the part's own `aria-hidden` has to land on it.
+    expect(icon).toHaveAttribute('data-icon', 'hidden');
+    expect(icon).toHaveAttribute('aria-hidden', 'true');
+    expect(icon).toHaveClass('custom-class');
+    expect(icon.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(icon);
+
+    fireEvent.click(icon);
+    expect(onClick).toHaveBeenCalled();
+  });
+});
