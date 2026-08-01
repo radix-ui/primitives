@@ -193,6 +193,100 @@ export const WithinForm = () => {
   );
 };
 
+export const WithinFormReset = () => {
+  const [controlled, setControlled] = React.useState<boolean | 'indeterminate'>(true);
+  const [externalControlled, setExternalControlled] = React.useState<boolean | 'indeterminate'>(
+    true,
+  );
+
+  return (
+    <>
+      <form onSubmit={(event) => event.preventDefault()}>
+        <p>
+          Check/uncheck the boxes, then press <strong>Reset</strong>. Each checkbox returns to its
+          initial value (the uncontrolled checkbox via its <code>defaultChecked</code>, the
+          controlled checkbox via its initial <code>checked</code> state).
+        </p>
+
+        <fieldset>
+          <legend>Uncontrolled (defaultChecked)</legend>
+          <label>
+            <Checkbox.Root className={styles.root} name="uncontrolled" defaultChecked>
+              <Checkbox.Indicator className={styles.indicator} />
+            </Checkbox.Root>{' '}
+            with label
+          </label>
+        </fieldset>
+
+        <br />
+
+        <fieldset>
+          <legend>Controlled checked: {String(controlled)}</legend>
+          <label>
+            <Checkbox.Root
+              className={styles.root}
+              name="controlled"
+              checked={controlled}
+              onCheckedChange={setControlled}
+            >
+              <Checkbox.Indicator className={styles.indicator} />
+            </Checkbox.Root>{' '}
+            with label
+          </label>
+        </fieldset>
+
+        <br />
+
+        <button type="reset">Reset</button>
+      </form>
+
+      <hr />
+
+      <p>
+        These checkboxes are associated with the form below via the <code>form</code> prop even
+        though they're rendered outside of it.
+      </p>
+
+      <form id="checkbox-reset-form" onSubmit={(event) => event.preventDefault()}>
+        <button type="reset">Reset external form</button>
+      </form>
+
+      <fieldset>
+        <legend>Uncontrolled (defaultChecked), external form</legend>
+        <label>
+          <Checkbox.Root
+            className={styles.root}
+            name="externalUncontrolled"
+            form="checkbox-reset-form"
+            defaultChecked
+          >
+            <Checkbox.Indicator className={styles.indicator} />
+          </Checkbox.Root>{' '}
+          with label
+        </label>
+      </fieldset>
+
+      <br />
+
+      <fieldset>
+        <legend>Controlled checked: {String(externalControlled)}, external form</legend>
+        <label>
+          <Checkbox.Root
+            className={styles.root}
+            name="externalControlled"
+            form="checkbox-reset-form"
+            checked={externalControlled}
+            onCheckedChange={setExternalControlled}
+          >
+            <Checkbox.Indicator className={styles.indicator} />
+          </Checkbox.Root>{' '}
+          with label
+        </label>
+      </fieldset>
+    </>
+  );
+};
+
 export const LegacyStyled = () => (
   <>
     <p>This checkbox is nested inside a label. The state is uncontrolled.</p>
