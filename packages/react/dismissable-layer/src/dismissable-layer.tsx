@@ -195,7 +195,7 @@ const DismissableLayer = /* @__PURE__ */ React.forwardRef<
         if (disableOutsidePointerEvents) {
           context.layersWithOutsidePointerEventsDisabled.delete(node);
           if (context.layersWithOutsidePointerEventsDisabled.size === 0) {
-            ownerDocument.body.style.pointerEvents = originalBodyPointerEvents;
+            ownerDocument.body.style.pointerEvents = originalBodyPointerEvents ?? "";
           }
         }
       };
