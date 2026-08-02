@@ -599,6 +599,7 @@ type SelectContentContextValue = {
   position?: SelectContentProps['position'];
   isPositioned?: boolean;
   searchRef?: React.RefObject<string>;
+  activeItemIdRef?: React.RefObject<string | undefined>;
 };
 
 const [SelectContentProvider, useSelectContentContext] =
@@ -672,6 +673,7 @@ const SelectContentImpl = /* @__PURE__ */ React.forwardRef<
     );
     const getItems = useCollection(__scopeSelect);
     const [isPositioned, setIsPositioned] = React.useState(false);
+    const activeItemIdRef = React.useRef<string | undefined>(undefined);
     const firstValidItemFoundRef = React.useRef(false);
 
     // aria-hide everything except the content (better supported equivalent to setting aria-modal)
@@ -839,6 +841,7 @@ const SelectContentImpl = /* @__PURE__ */ React.forwardRef<
         position={position}
         isPositioned={isPositioned}
         searchRef={searchRef}
+        activeItemIdRef={activeItemIdRef}
       >
         <RemoveScroll as={Slot} allowPinchZoom>
           <FocusScope
@@ -868,6 +871,7 @@ const SelectContentImpl = /* @__PURE__ */ React.forwardRef<
               <SelectPosition
                 role="listbox"
                 id={context.contentId}
+                aria-activedescendant={activeItemIdRef.current}
                 data-state={context.open ? 'open' : 'closed'}
                 dir={context.dir}
                 onContextMenu={(event) => event.preventDefault()}
@@ -1367,7 +1371,20 @@ const SelectItem = /* @__PURE__ */ React.forwardRef<SelectItemElement, SelectIte
     );
     const composedRefs = useComposedRefs(forwardedRef, handleItemRefCallback);
     const textId = useId();
+    const itemId = useId();
     const pointerTypeRef = React.useRef<React.PointerEvent['pointerType']>('touch');
+
+    // Update activeItemIdRef when this item receives or loses focus
+    const handleFocus = React.useCallback(() => {
+      setIsFocused(true);
+      if (contentContext.activeItemIdRef) {
+        contentContext.activeItemIdRef.current = itemId;
+      }
+    }, [itemId, contentContext.activeItemIdRef]);
+
+    const handleBlur = React.useCallback(() => {
+      setIsFocused(false);
+    }, []);
 
     const handleSelect = () => {
       context.onValueChange(value);
@@ -1393,18 +1410,18 @@ const SelectItem = /* @__PURE__ */ React.forwardRef<SelectItemElement, SelectIte
         >
           <Primitive.div
             role="option"
+            id={itemId}
             aria-labelledby={textId}
             data-highlighted={isFocused ? '' : undefined}
-            // `isFocused` caveat fixes stuttering in VoiceOver
-            aria-selected={isSelected && isFocused}
+            aria-selected={isSelected}
             data-state={isSelected ? 'checked' : 'unchecked'}
             aria-disabled={disabled || undefined}
             data-disabled={disabled ? '' : undefined}
             tabIndex={disabled ? undefined : -1}
             {...itemProps}
             ref={composedRefs}
-            onFocus={composeEventHandlers(itemProps.onFocus, () => setIsFocused(true))}
-            onBlur={composeEventHandlers(itemProps.onBlur, () => setIsFocused(false))}
+            onFocus={composeEventHandlers(itemProps.onFocus, handleFocus)}
+            onBlur={composeEventHandlers(itemProps.onBlur, handleBlur)}
             onClick={composeEventHandlers(itemProps.onClick, () => {
               if (disabled) {
                 return;
