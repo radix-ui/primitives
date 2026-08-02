@@ -150,6 +150,7 @@ const Slider = /* @__PURE__ */ React.forwardRef<SliderElement, SliderProps>(
       },
     });
     const valuesBeforeSlideStartRef = React.useRef(values);
+    const committedValuesRef = React.useRef(values);
 
     const initialValuesRef = React.useRef(values);
     React.useEffect(() => {
@@ -163,6 +164,24 @@ const Slider = /* @__PURE__ */ React.forwardRef<SliderElement, SliderProps>(
       }
     }, [control, form, setValues]);
 
+    // Commit value on blur when changed via keyboard
+    React.useEffect(() => {
+      const node = control;
+      if (!node || disabled) return;
+
+      const handleBlurEvent = () => {
+        const hasChanged = String(values) !== String(committedValuesRef.current);
+        if (hasChanged) {
+          committedValuesRef.current = values;
+          onValueCommit(values);
+        }
+      };
+
+      // Use capture phase to catch blur events from thumbs inside the slider
+      node.addEventListener('focusout', handleBlurEvent, true);
+      return () => node.removeEventListener('focusout', handleBlurEvent, true);
+    }, [control, disabled, values, onValueCommit]);
+
     function handleSlideStart(value: number) {
       const closestIndex = getClosestValueIndex(values, value);
       updateValues(value, closestIndex);
@@ -174,7 +193,10 @@ const Slider = /* @__PURE__ */ React.forwardRef<SliderElement, SliderProps>(
 
     function handleSlideEnd() {
       const hasChanged = String(values) !== String(valuesBeforeSlideStartRef.current);
-      if (hasChanged) onValueCommit(values);
+      if (hasChanged) {
+        committedValuesRef.current = values;
+        onValueCommit(values);
+      }
     }
 
     function updateValues(value: number, atIndex: number, { commit } = { commit: false }) {
@@ -204,7 +226,10 @@ const Slider = /* @__PURE__ */ React.forwardRef<SliderElement, SliderProps>(
             ? atIndex
             : nextValues.indexOf(constrainedValue);
           const hasChanged = String(nextValues) !== String(prevValues);
-          if (hasChanged && commit) onValueCommit(nextValues);
+          if (hasChanged && commit) {
+            committedValuesRef.current = nextValues;
+            onValueCommit(nextValues);
+          }
           return hasChanged ? nextValues : prevValues;
         } else {
           return prevValues;
