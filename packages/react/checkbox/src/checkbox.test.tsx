@@ -239,6 +239,37 @@ describe('Checkbox', () => {
     });
   });
 
+  describe('given an uncontrolled Checkbox in a form', () => {
+    afterEach(cleanup);
+
+    // regression test for https://github.com/radix-ui/primitives/issues/4087
+    it('should restore the visual state to the latest `defaultChecked` prop when the form is reset', () => {
+      function App({ defaultChecked }: { defaultChecked: boolean }) {
+        return (
+          <form>
+            <Checkbox.Root defaultChecked={defaultChecked} aria-label="basic checkbox">
+              <Checkbox.Indicator data-testid={INDICATOR_TEST_ID} />
+            </Checkbox.Root>
+          </form>
+        );
+      }
+
+      const { rerender } = render(<App defaultChecked={false} />);
+      const checkbox = screen.getByRole(CHECKBOX_ROLE);
+      const form = checkbox.closest('form')!;
+
+      act(() => fireEvent.click(checkbox));
+      expect(screen.getByTestId(INDICATOR_TEST_ID)).toBeVisible();
+
+      // simulate a server action (e.g. `useActionState`) re-rendering with a new
+      // `defaultChecked` and then resetting the form
+      act(() => rerender(<App defaultChecked />));
+      act(() => fireEvent.reset(form));
+
+      expect(screen.getByTestId(INDICATOR_TEST_ID)).toBeVisible();
+    });
+  });
+
   describe('given a controlled Checkbox in form with bubble input', () => {
     const onChange = vi.fn();
 

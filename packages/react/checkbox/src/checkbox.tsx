@@ -156,18 +156,18 @@ const CheckboxTrigger = /* @__PURE__ */ React.forwardRef<HTMLButtonElement, Chec
       onUserInteraction,
       isFormControl,
       bubbleInput,
+      defaultChecked,
     } = useCheckboxContext(TRIGGER_NAME, __scopeCheckbox);
     const composedRefs = useComposedRefs(forwardedRef, setControl);
 
-    const initialCheckedStateRef = React.useRef(checked);
     React.useEffect(() => {
       const form = control?.form;
       if (form) {
-        const reset = () => setChecked(initialCheckedStateRef.current);
+        const reset = () => setChecked(defaultChecked ?? false);
         form.addEventListener('reset', reset);
         return () => form.removeEventListener('reset', reset);
       }
-    }, [control, setChecked]);
+    }, [control, setChecked, defaultChecked]);
 
     return (
       <Primitive.button
