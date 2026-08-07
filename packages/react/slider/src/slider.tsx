@@ -494,6 +494,7 @@ const SliderImpl = /* @__PURE__ */ React.forwardRef<SliderImplElement, SliderImp
       ...sliderProps
     } = props;
     const context = useSliderContext(SLIDER_NAME, __scopeSlider);
+    const isDragging = React.useRef(false);
 
     return (
       <Primitive.span
@@ -517,6 +518,7 @@ const SliderImpl = /* @__PURE__ */ React.forwardRef<SliderImplElement, SliderImp
         onPointerDown={composeEventHandlers(props.onPointerDown, (event) => {
           const target = event.target as HTMLElement;
           target.setPointerCapture(event.pointerId);
+          isDragging.current = true;
           // Prevent browser focus behaviour because we focus a thumb manually when values change.
           event.preventDefault();
           // Touch devices have a delay before focusing so won't focus if touch immediately moves
@@ -537,7 +539,14 @@ const SliderImpl = /* @__PURE__ */ React.forwardRef<SliderImplElement, SliderImp
           if (target.hasPointerCapture(event.pointerId)) {
             target.releasePointerCapture(event.pointerId);
             onSlideEnd(event);
+            isDragging.current = false;
           }
+        })}
+        onLostPointerCapture={composeEventHandlers(props.onLostPointerCapture, (event) => {
+          if (isDragging.current) {
+            onSlideEnd(event);
+          }
+          isDragging.current = false;
         })}
       />
     );
