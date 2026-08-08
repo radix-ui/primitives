@@ -1163,32 +1163,24 @@ const NavigationMenuViewportImpl = /* @__PURE__ */ React.forwardRef<
       onPointerLeave={composeEventHandlers(props.onPointerLeave, whenMouse(context.onContentLeave))}
     >
       {/*
-       * Nested `Slottable` keeps the proxied content inside the slotted element
-       * when `asChild` is set. Without it, `Slot` would target that content and
-       * drop every prop on the consumer's element.
+       * `Slottable` keeps the proxied content inside the slotted element when
+       * `asChild` is set. Without it, `Slot` would target that content and drop
+       * every prop on the consumer's element.
        */}
-      <Slottable child={children}>
-        {(slottable) => (
-          <>
-            {slottable}
-            {Array.from(viewportContentContext.items).map(
-              ([value, { ref, forceMount, ...props }]) => {
-                const isActive = activeContentValue === value;
-                return (
-                  <Presence key={value} present={forceMount || isActive}>
-                    <NavigationMenuViewportItem
-                      {...props}
-                      contentRef={ref}
-                      isActive={isActive}
-                      onActiveContentChange={setContent}
-                    />
-                  </Presence>
-                );
-              },
-            )}
-          </>
-        )}
-      </Slottable>
+      <Slottable>{children}</Slottable>
+      {Array.from(viewportContentContext.items).map(([value, { ref, forceMount, ...props }]) => {
+        const isActive = activeContentValue === value;
+        return (
+          <Presence key={value} present={forceMount || isActive}>
+            <NavigationMenuViewportItem
+              {...props}
+              contentRef={ref}
+              isActive={isActive}
+              onActiveContentChange={setContent}
+            />
+          </Presence>
+        );
+      })}
     </Primitive.div>
   );
 });
