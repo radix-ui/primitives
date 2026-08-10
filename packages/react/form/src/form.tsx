@@ -8,7 +8,7 @@ import { Primitive } from '@radix-ui/react-primitive';
 
 import type { Scope } from '@radix-ui/react-context';
 
-type ScopedProps<P> = P & { __scopeForm?: Scope };
+type ScopedProps<P> = P & { __scopeForm?: Scope | undefined };
 const [createFormContext, createFormScope] = createContextScope('Form');
 
 /* -------------------------------------------------------------------------------------------------
@@ -50,7 +50,7 @@ const [AriaDescriptionProvider, useAriaDescriptionContext] =
 type FormElement = React.ComponentRef<typeof Primitive.form>;
 type PrimitiveFormProps = React.ComponentPropsWithoutRef<typeof Primitive.form>;
 interface FormProps extends PrimitiveFormProps {
-  onClearServerErrors?(): void;
+  onClearServerErrors?: (() => void) | undefined;
 }
 
 const Form = /* @__PURE__ */ React.forwardRef<FormElement, FormProps>(
@@ -203,7 +203,7 @@ type FormFieldElement = React.ComponentRef<typeof Primitive.div>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface FormFieldProps extends PrimitiveDivProps {
   name: string;
-  serverInvalid?: boolean;
+  serverInvalid?: boolean | undefined;
 }
 
 const FormField = /* @__PURE__ */ React.forwardRef<FormFieldElement, FormFieldProps>(
@@ -235,7 +235,7 @@ const LABEL_NAME = 'FormLabel';
 type FormLabelElement = React.ComponentRef<typeof LabelPrimitive>;
 type LabelProps = React.ComponentPropsWithoutRef<typeof LabelPrimitive>;
 interface FormLabelProps extends LabelProps {
-  name?: string;
+  name?: string | undefined;
 }
 
 const FormLabel = /* @__PURE__ */ React.forwardRef<FormLabelElement, FormLabelProps>(
@@ -490,9 +490,9 @@ const MESSAGE_NAME = 'FormMessage';
 
 type FormMessageElement = FormMessageImplElement;
 interface FormMessageProps extends Omit<FormMessageImplProps, 'name'> {
-  match?: ValidityMatcher | CustomMatcher;
-  forceMatch?: boolean;
-  name?: string;
+  match?: ValidityMatcher | CustomMatcher | undefined;
+  forceMatch?: boolean | undefined;
+  name?: string | undefined;
 }
 
 const FormMessage = /* @__PURE__ */ React.forwardRef<FormMessageElement, FormMessageProps>(
@@ -523,7 +523,7 @@ const FormMessage = /* @__PURE__ */ React.forwardRef<FormMessageElement, FormMes
 type FormBuiltInMessageElement = FormMessageImplElement;
 interface FormBuiltInMessageProps extends FormMessageImplProps {
   match: ValidityMatcher;
-  forceMatch?: boolean;
+  forceMatch?: boolean | undefined;
   name: string;
 }
 
@@ -553,7 +553,7 @@ const FormBuiltInMessage = /* @__PURE__ */ React.forwardRef<
 type FormCustomMessageElement = React.ComponentRef<typeof FormMessageImpl>;
 interface FormCustomMessageProps extends React.ComponentPropsWithoutRef<typeof FormMessageImpl> {
   match: CustomMatcher;
-  forceMatch?: boolean;
+  forceMatch?: boolean | undefined;
   name: string;
 }
 
@@ -630,7 +630,7 @@ const VALIDITY_STATE_NAME = 'FormValidityState';
 
 interface FormValidityStateProps {
   children(validity: ValidityState | undefined): React.ReactNode;
-  name?: string;
+  name?: string | undefined;
 }
 
 const FormValidityState = (props: ScopedProps<FormValidityStateProps>) => {

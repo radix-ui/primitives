@@ -12,7 +12,7 @@ interface CollectionProps extends SlotProps {
 }
 
 interface BaseItemData {
-  id?: string;
+  id?: string | undefined;
 }
 
 type ItemDataWithElement<
@@ -64,9 +64,9 @@ type ItemMap<ItemElement extends HTMLElement, ItemData extends BaseItemData> = O
   ];
 
   const CollectionProvider: React.FC<{
-    children?: React.ReactNode;
+    children?: React.ReactNode | undefined;
     scope: any;
-    state?: CollectionState;
+    state?: CollectionState | undefined;
   }> = ({ state, ...props }) => {
     return state ? (
       <CollectionProviderImpl {...props} state={state} />
@@ -77,7 +77,7 @@ type ItemMap<ItemElement extends HTMLElement, ItemData extends BaseItemData> = O
   CollectionProvider.displayName = PROVIDER_NAME;
 
   const CollectionInit: React.FC<{
-    children?: React.ReactNode;
+    children?: React.ReactNode | undefined;
     scope: any;
   }> = (props) => {
     const state = useInitCollection();
@@ -86,7 +86,7 @@ type ItemMap<ItemElement extends HTMLElement, ItemData extends BaseItemData> = O
   CollectionInit.displayName = PROVIDER_NAME + 'Init';
 
   const CollectionProviderImpl: React.FC<{
-    children?: React.ReactNode;
+    children?: React.ReactNode | undefined;
     scope: any;
     state: CollectionState;
   }> = (props) => {

@@ -16,7 +16,7 @@ import * as VisuallyHiddenPrimitive from '@radix-ui/react-visually-hidden';
 
 import type { Scope } from '@radix-ui/react-context';
 
-type ScopedProps<P = {}> = P & { __scopeTooltip?: Scope };
+type ScopedProps<P = {}> = P & { __scopeTooltip?: Scope | undefined };
 const [createTooltipContext, createTooltipScope] = createContextScope('Tooltip', [
   createPopperScope,
 ]);
@@ -49,17 +49,17 @@ interface TooltipProviderProps {
    * The duration from when the pointer enters the trigger until the tooltip gets opened.
    * @defaultValue 700
    */
-  delayDuration?: number;
+  delayDuration?: number | undefined;
   /**
    * How much time a user has to enter another trigger without incurring a delay again.
    * @defaultValue 300
    */
-  skipDelayDuration?: number;
+  skipDelayDuration?: number | undefined;
   /**
    * When `true`, trying to hover the content will result in the tooltip closing as the pointer leaves the trigger.
    * @defaultValue false
    */
-  disableHoverableContent?: boolean;
+  disableHoverableContent?: boolean | undefined;
 }
 
 const TooltipProvider: React.FC<TooltipProviderProps> = (
@@ -134,21 +134,21 @@ const [TooltipContextProvider, useTooltipContext] =
   createTooltipContext<TooltipContextValue>(TOOLTIP_NAME);
 
 interface TooltipProps {
-  children?: React.ReactNode;
-  open?: boolean;
-  defaultOpen?: boolean;
-  onOpenChange?: (open: boolean) => void;
+  children?: React.ReactNode | undefined;
+  open?: boolean | undefined;
+  defaultOpen?: boolean | undefined;
+  onOpenChange?: ((open: boolean) => void) | undefined;
   /**
    * The duration from when the pointer enters the trigger until the tooltip gets opened. This will
    * override the prop with the same name passed to Provider.
    * @defaultValue 700
    */
-  delayDuration?: number;
+  delayDuration?: number | undefined;
   /**
    * When `true`, trying to hover the content will result in the tooltip closing as the pointer leaves the trigger.
    * @defaultValue false
    */
-  disableHoverableContent?: boolean;
+  disableHoverableContent?: boolean | undefined;
 }
 
 const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
@@ -335,23 +335,23 @@ const TooltipTrigger = /* @__PURE__ */ React.forwardRef<TooltipTriggerElement, T
 
 const PORTAL_NAME = 'TooltipPortal';
 
-type PortalContextValue = { forceMount?: true };
+type PortalContextValue = { forceMount?: true | undefined };
 const [PortalProvider, usePortalContext] = createTooltipContext<PortalContextValue>(PORTAL_NAME, {
   forceMount: undefined,
 });
 
 type PortalProps = React.ComponentPropsWithoutRef<typeof PortalPrimitive>;
 interface TooltipPortalProps {
-  children?: React.ReactNode;
+  children?: React.ReactNode | undefined;
   /**
    * Specify a container element to portal the content into.
    */
-  container?: PortalProps['container'];
+  container?: PortalProps['container'] | undefined;
   /**
    * Used to force mounting when more control is needed. Useful when
    * controlling animation with React animation libraries.
    */
-  forceMount?: true;
+  forceMount?: true | undefined;
 }
 
 const TooltipPortal: React.FC<TooltipPortalProps> = (props: ScopedProps<TooltipPortalProps>) => {
@@ -380,7 +380,7 @@ interface TooltipContentProps extends TooltipContentImplProps {
    * Used to force mounting when more control is needed. Useful when
    * controlling animation with React animation libraries.
    */
-  forceMount?: true;
+  forceMount?: true | undefined;
 }
 
 const TooltipContent = /* @__PURE__ */ React.forwardRef<TooltipContentElement, TooltipContentProps>(
@@ -489,18 +489,18 @@ interface TooltipContentImplProps extends Omit<PopperContentProps, 'onPlaced'> {
   /**
    * A more descriptive label for accessibility purpose
    */
-  'aria-label'?: string;
+  'aria-label'?: string | undefined;
 
   /**
    * Event handler called when the escape key is down.
    * Can be prevented.
    */
-  onEscapeKeyDown?: DismissableLayerProps['onEscapeKeyDown'];
+  onEscapeKeyDown?: DismissableLayerProps['onEscapeKeyDown'] | undefined;
   /**
    * Event handler called when the a `pointerdown` event happens outside of the `Tooltip`.
    * Can be prevented.
    */
-  onPointerDownOutside?: DismissableLayerProps['onPointerDownOutside'];
+  onPointerDownOutside?: DismissableLayerProps['onPointerDownOutside'] | undefined;
 }
 
 const Slottable = createSlottable('TooltipContent');

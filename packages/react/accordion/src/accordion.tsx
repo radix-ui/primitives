@@ -41,7 +41,7 @@ const ACCORDION_KEYS = ['Home', 'End', 'ArrowDown', 'ArrowUp', 'ArrowLeft', 'Arr
 const [Collection, useCollection, createCollectionScope] =
   createCollection<AccordionTriggerElement>(ACCORDION_NAME);
 
-type ScopedProps<P> = P & { __scopeAccordion?: Scope };
+type ScopedProps<P> = P & { __scopeAccordion?: Scope | undefined };
 const [createAccordionContext, createAccordionScope] = createContextScope(ACCORDION_NAME, [
   createCollectionScope,
   createCollapsibleScope,
@@ -101,21 +101,21 @@ interface AccordionImplSingleProps extends AccordionImplProps {
   /**
    * The controlled stateful value of the accordion item whose content is expanded.
    */
-  value?: string;
+  value?: string | undefined;
   /**
    * The value of the item whose content is expanded when the accordion is initially rendered. Use
    * `defaultValue` if you do not need to control the state of an accordion.
    */
-  defaultValue?: string;
+  defaultValue?: string | undefined;
   /**
    * The callback that fires when the state of the accordion changes.
    */
-  onValueChange?(value: string): void;
+  onValueChange?: ((value: string) => void) | undefined;
   /**
    * Whether an accordion item can be collapsed after it has been opened.
    * @default false
    */
-  collapsible?: boolean;
+  collapsible?: boolean | undefined;
 }
 
 const AccordionImplSingle = /* @__PURE__ */ React.forwardRef<
@@ -161,16 +161,16 @@ interface AccordionImplMultipleProps extends AccordionImplProps {
   /**
    * The controlled stateful value of the accordion items whose contents are expanded.
    */
-  value?: string[];
+  value?: string[] | undefined;
   /**
    * The value of the items whose contents are expanded when the accordion is initially rendered. Use
    * `defaultValue` if you do not need to control the state of an accordion.
    */
-  defaultValue?: string[];
+  defaultValue?: string[] | undefined;
   /**
    * The callback that fires when the state of the accordion changes.
    */
-  onValueChange?(value: string[]): void;
+  onValueChange?: ((value: string[]) => void) | undefined;
 }
 
 const AccordionImplMultiple = /* @__PURE__ */ React.forwardRef<
@@ -219,7 +219,7 @@ const AccordionImplMultiple = /* @__PURE__ */ React.forwardRef<
 /* -----------------------------------------------------------------------------------------------*/
 
 type AccordionImplContextValue = {
-  disabled?: boolean;
+  disabled?: boolean | undefined;
   direction: AccordionImplProps['dir'];
   orientation: AccordionImplProps['orientation'];
 };
@@ -235,16 +235,16 @@ interface AccordionImplProps extends PrimitiveDivProps {
    *
    * @defaultValue false
    */
-  disabled?: boolean;
+  disabled?: boolean | undefined;
   /**
    * The layout in which the Accordion operates.
    * @default vertical
    */
-  orientation?: Orientation;
+  orientation?: Orientation | undefined;
   /**
    * The language read direction.
    */
-  dir?: Direction;
+  dir?: Direction | undefined;
 }
 
 const AccordionImpl = /* @__PURE__ */ React.forwardRef<AccordionImplElement, AccordionImplProps>(
@@ -359,7 +359,11 @@ const AccordionImpl = /* @__PURE__ */ React.forwardRef<AccordionImplElement, Acc
 
 const ITEM_NAME = 'AccordionItem';
 
-type AccordionItemContextValue = { open?: boolean; disabled?: boolean; triggerId: string };
+type AccordionItemContextValue = {
+  open?: boolean | undefined;
+  disabled?: boolean | undefined;
+  triggerId: string;
+};
 const [AccordionItemProvider, useAccordionItemContext] =
   createAccordionContext<AccordionItemContextValue>(ITEM_NAME);
 
@@ -374,7 +378,7 @@ interface AccordionItemProps extends Omit<
    *
    * @defaultValue false
    */
-  disabled?: boolean;
+  disabled?: boolean | undefined;
   /**
    * A string value for the accordion item. All items within an accordion should use a unique value.
    */

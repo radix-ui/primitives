@@ -14,7 +14,7 @@ const DirectionContext = React.createContext<Direction | undefined>(undefined);
  * -----------------------------------------------------------------------------------------------*/
 
 interface DirectionProviderProps {
-  children?: React.ReactNode;
+  children?: React.ReactNode | undefined;
   dir: Direction;
 }
 const DirectionProvider: React.FC<DirectionProviderProps> = (props) => {

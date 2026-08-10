@@ -339,9 +339,9 @@ const Button = ({
   iconRight,
   ...props
 }: React.ComponentProps<'button'> & {
-  asChild?: boolean;
-  iconLeft?: React.ReactNode;
-  iconRight?: React.ReactNode;
+  asChild?: boolean | undefined;
+  iconLeft?: React.ReactNode | undefined;
+  iconRight?: React.ReactNode | undefined;
 }) => {
   const Comp = asChild ? Slot.Root : 'button';
   return (
@@ -384,7 +384,7 @@ const MockTag = ({
   onDelete,
   ...props
 }: React.ComponentProps<'div'> & {
-  onDelete?: () => void;
+  onDelete?: (() => void) | undefined;
 }) => {
   return (
     <div {...props}>

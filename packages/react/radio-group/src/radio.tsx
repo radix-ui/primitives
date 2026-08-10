@@ -10,7 +10,7 @@ import type { Scope } from '@radix-ui/react-context';
 
 const RADIO_NAME = 'Radio';
 
-type ScopedProps<P> = P & { __scopeRadio?: Scope };
+type ScopedProps<P> = P & { __scopeRadio?: Scope | undefined };
 const [createRadioContext, createRadioScope] = createContextScope(RADIO_NAME);
 
 type RadioContextValue = {
@@ -38,14 +38,14 @@ const [RadioProviderImpl, useRadioContext] = createRadioContext<RadioContextValu
  * -----------------------------------------------------------------------------------------------*/
 
 interface RadioProviderProps {
-  checked?: boolean;
-  required?: boolean;
-  disabled?: boolean;
-  name?: string;
-  form?: string;
-  value?: string | number | readonly string[];
-  onCheck?(): void;
-  children?: React.ReactNode;
+  checked?: boolean | undefined;
+  required?: boolean | undefined;
+  disabled?: boolean | undefined;
+  name?: string | undefined;
+  form?: string | undefined;
+  value?: string | number | readonly string[] | undefined;
+  onCheck?: (() => void) | undefined;
+  children?: React.ReactNode | undefined;
 }
 
 function RadioProvider(props: ScopedProps<RadioProviderProps>) {
@@ -118,7 +118,7 @@ interface RadioTriggerProps extends Omit<
   React.ComponentPropsWithoutRef<typeof Primitive.button>,
   keyof RadioProviderProps
 > {
-  children?: React.ReactNode;
+  children?: React.ReactNode | undefined;
 }
 
 const RadioTrigger = /* @__PURE__ */ React.forwardRef<HTMLButtonElement, RadioTriggerProps>(
@@ -181,9 +181,9 @@ const RadioTrigger = /* @__PURE__ */ React.forwardRef<HTMLButtonElement, RadioTr
 type RadioElement = React.ComponentRef<typeof Primitive.button>;
 type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
 interface RadioProps extends Omit<PrimitiveButtonProps, 'checked'> {
-  checked?: boolean;
-  required?: boolean;
-  onCheck?(): void;
+  checked?: boolean | undefined;
+  required?: boolean | undefined;
+  onCheck?: (() => void) | undefined;
 }
 
 const Radio = /* @__PURE__ */ React.forwardRef<RadioElement, RadioProps>(
@@ -237,7 +237,7 @@ export interface RadioIndicatorProps extends PrimitiveSpanProps {
    * Used to force mounting when more control is needed. Useful when
    * controlling animation with React animation libraries.
    */
-  forceMount?: true;
+  forceMount?: true | undefined;
 }
 
 const RadioIndicator = /* @__PURE__ */ React.forwardRef<RadioIndicatorElement, RadioIndicatorProps>(

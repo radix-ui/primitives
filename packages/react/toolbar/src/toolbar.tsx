@@ -17,7 +17,7 @@ import type { Scope } from '@radix-ui/react-context';
 
 const TOOLBAR_NAME = 'Toolbar';
 
-type ScopedProps<P> = P & { __scopeToolbar?: Scope };
+type ScopedProps<P> = P & { __scopeToolbar?: Scope | undefined };
 const [createToolbarContext, createToolbarScope] = createContextScope(TOOLBAR_NAME, [
   createRovingFocusGroupScope,
   createToggleGroupScope,
@@ -36,9 +36,9 @@ const [ToolbarProvider, useToolbarContext] =
 type ToolbarElement = React.ComponentRef<typeof Primitive.div>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface ToolbarProps extends PrimitiveDivProps {
-  orientation?: RovingFocusGroupProps['orientation'];
-  loop?: RovingFocusGroupProps['loop'];
-  dir?: RovingFocusGroupProps['dir'];
+  orientation?: RovingFocusGroupProps['orientation'] | undefined;
+  loop?: RovingFocusGroupProps['loop'] | undefined;
+  dir?: RovingFocusGroupProps['dir'] | undefined;
 }
 
 const Toolbar = /* @__PURE__ */ React.forwardRef<ToolbarElement, ToolbarProps>(

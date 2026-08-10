@@ -149,12 +149,12 @@ export const EdgeCases = () => {
 };
 
 const ButtonGroupContext = React.createContext<{
-  value?: string;
+  value?: string | undefined;
   setValue: React.Dispatch<React.SetStateAction<string | undefined>>;
 }>({} as any);
 
 type ButtonGroupProps = Omit<React.ComponentPropsWithRef<'div'>, 'defaultValue'> &
-  RovingFocusGroupProps & { defaultValue?: string };
+  RovingFocusGroupProps & { defaultValue?: string | undefined };
 
 const ButtonGroup = ({ defaultValue, ...props }: ButtonGroupProps) => {
   const [value, setValue] = React.useState(defaultValue);
@@ -173,7 +173,9 @@ const ButtonGroup = ({ defaultValue, ...props }: ButtonGroupProps) => {
   );
 };
 
-type ButtonProps = Omit<React.ComponentPropsWithRef<'button'>, 'value'> & { value?: string };
+type ButtonProps = Omit<React.ComponentPropsWithRef<'button'>, 'value'> & {
+  value?: string | undefined;
+};
 
 const Button = (props: ButtonProps) => {
   const { value: contextValue, setValue } = React.useContext(ButtonGroupContext);

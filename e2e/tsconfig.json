@@ -1,13 +1,15 @@
 {
+  // Relative path, not `@repo/typescript-config/base.json`: `e2e` is not a
+  // pnpm workspace (see `pnpm-workspace.yaml`), so it has no `node_modules`
+  // link to resolve the package specifier through.
+  "extends": "../internal/typescript-config/base.json",
   "compilerOptions": {
-    "target": "ES2022",
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "types": ["node"],
-    "strict": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
+    "declaration": false,
+    "declarationMap": false,
     "noEmit": true
   },
   "include": ["**/*.ts"]

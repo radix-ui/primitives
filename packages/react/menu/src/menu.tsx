@@ -59,7 +59,7 @@ const [Collection, useCollection, createCollectionScope] = createCollection<
   ItemData
 >(MENU_NAME);
 
-type ScopedProps<P> = P & { __scopeMenu?: Scope };
+type ScopedProps<P> = P & { __scopeMenu?: Scope | undefined };
 const [createMenuContext, createMenuScope] = createContextScope(MENU_NAME, [
   createCollectionScope,
   createPopperScope,
@@ -87,11 +87,11 @@ type MenuRootContextValue = {
 const [MenuRootProvider, useMenuRootContext] = createMenuContext<MenuRootContextValue>(MENU_NAME);
 
 interface MenuProps {
-  children?: React.ReactNode;
-  open?: boolean;
-  onOpenChange?(open: boolean): void;
-  dir?: Direction;
-  modal?: boolean;
+  children?: React.ReactNode | undefined;
+  open?: boolean | undefined;
+  onOpenChange?: ((open: boolean) => void) | undefined;
+  dir?: Direction | undefined;
+  modal?: boolean | undefined;
 }
 
 const Menu: React.FC<MenuProps> = (props: ScopedProps<MenuProps>) => {
@@ -177,23 +177,23 @@ const MenuAnchor = /* @__PURE__ */ React.forwardRef<MenuAnchorElement, MenuAncho
 
 const PORTAL_NAME = 'MenuPortal';
 
-type PortalContextValue = { forceMount?: true };
+type PortalContextValue = { forceMount?: true | undefined };
 const [PortalProvider, usePortalContext] = createMenuContext<PortalContextValue>(PORTAL_NAME, {
   forceMount: undefined,
 });
 
 type PortalProps = React.ComponentPropsWithoutRef<typeof PortalPrimitive>;
 interface MenuPortalProps {
-  children?: React.ReactNode;
+  children?: React.ReactNode | undefined;
   /**
    * Specify a container element to portal the content into.
    */
-  container?: PortalProps['container'];
+  container?: PortalProps['container'] | undefined;
   /**
    * Used to force mounting when more control is needed. Useful when
    * controlling animation with React animation libraries.
    */
-  forceMount?: true;
+  forceMount?: true | undefined;
 }
 
 const MenuPortal: React.FC<MenuPortalProps> = (props: ScopedProps<MenuPortalProps>) => {
@@ -238,7 +238,7 @@ interface MenuContentProps extends MenuRootContentTypeProps {
    * Used to force mounting when more control is needed. Useful when
    * controlling animation with React animation libraries.
    */
-  forceMount?: true;
+  forceMount?: true | undefined;
 }
 
 const MenuContent = /* @__PURE__ */ React.forwardRef<MenuContentElement, MenuContentProps>(
@@ -337,21 +337,21 @@ type DismissableLayerProps = React.ComponentPropsWithoutRef<typeof DismissableLa
 type RovingFocusGroupProps = React.ComponentPropsWithoutRef<typeof RovingFocusGroup.Root>;
 type PopperContentProps = React.ComponentPropsWithoutRef<typeof PopperPrimitive.Content>;
 type MenuContentImplPrivateProps = {
-  onOpenAutoFocus?: FocusScopeProps['onMountAutoFocus'];
-  onDismiss?: DismissableLayerProps['onDismiss'];
-  disableOutsidePointerEvents?: DismissableLayerProps['disableOutsidePointerEvents'];
+  onOpenAutoFocus?: FocusScopeProps['onMountAutoFocus'] | undefined;
+  onDismiss?: DismissableLayerProps['onDismiss'] | undefined;
+  disableOutsidePointerEvents?: DismissableLayerProps['disableOutsidePointerEvents'] | undefined;
 
   /**
    * Whether scrolling outside the `MenuContent` should be prevented
    * (default: `false`)
    */
-  disableOutsideScroll?: boolean;
+  disableOutsideScroll?: boolean | undefined;
 
   /**
    * Whether focus should be trapped within the `MenuContent`
    * (default: false)
    */
-  trapFocus?: FocusScopeProps['trapped'];
+  trapFocus?: FocusScopeProps['trapped'] | undefined;
 };
 interface MenuContentImplProps
   extends MenuContentImplPrivateProps, Omit<PopperContentProps, 'dir' | 'onPlaced'> {
@@ -359,19 +359,19 @@ interface MenuContentImplProps
    * Event handler called when auto-focusing on close.
    * Can be prevented.
    */
-  onCloseAutoFocus?: FocusScopeProps['onUnmountAutoFocus'];
+  onCloseAutoFocus?: FocusScopeProps['onUnmountAutoFocus'] | undefined;
 
   /**
    * Whether keyboard navigation should loop around
    * @defaultValue false
    */
-  loop?: RovingFocusGroupProps['loop'];
+  loop?: RovingFocusGroupProps['loop'] | undefined;
 
-  onEntryFocus?: RovingFocusGroupProps['onEntryFocus'];
-  onEscapeKeyDown?: DismissableLayerProps['onEscapeKeyDown'];
-  onPointerDownOutside?: DismissableLayerProps['onPointerDownOutside'];
-  onFocusOutside?: DismissableLayerProps['onFocusOutside'];
-  onInteractOutside?: DismissableLayerProps['onInteractOutside'];
+  onEntryFocus?: RovingFocusGroupProps['onEntryFocus'] | undefined;
+  onEscapeKeyDown?: DismissableLayerProps['onEscapeKeyDown'] | undefined;
+  onPointerDownOutside?: DismissableLayerProps['onPointerDownOutside'] | undefined;
+  onFocusOutside?: DismissableLayerProps['onFocusOutside'] | undefined;
+  onInteractOutside?: DismissableLayerProps['onInteractOutside'] | undefined;
 }
 
 const Slot = createSlot('MenuContent.ScrollLock');
@@ -653,7 +653,7 @@ const ITEM_SELECT = 'menu.itemSelect';
 
 type MenuItemElement = MenuItemImplElement;
 interface MenuItemProps extends Omit<MenuItemImplProps, 'onSelect'> {
-  onSelect?: (event: Event) => void;
+  onSelect?: ((event: Event) => void) | undefined;
 }
 
 const MenuItem = /* @__PURE__ */ React.forwardRef<MenuItemElement, MenuItemProps>(
@@ -732,8 +732,8 @@ const MenuItem = /* @__PURE__ */ React.forwardRef<MenuItemElement, MenuItemProps
 
 type MenuItemImplElement = React.ComponentRef<typeof Primitive.div>;
 interface MenuItemImplProps extends PrimitiveDivProps {
-  disabled?: boolean;
-  textValue?: string;
+  disabled?: boolean | undefined;
+  textValue?: string | undefined;
 }
 
 const MenuItemImpl = /* @__PURE__ */ React.forwardRef<MenuItemImplElement, MenuItemImplProps>(
@@ -815,9 +815,9 @@ type MenuCheckboxItemElement = MenuItemElement;
 type CheckedState = boolean | 'indeterminate';
 
 interface MenuCheckboxItemProps extends MenuItemProps {
-  checked?: CheckedState;
+  checked?: CheckedState | undefined;
   // `onCheckedChange` can never be called with `"indeterminate"` from the inside
-  onCheckedChange?: (checked: boolean) => void;
+  onCheckedChange?: ((checked: boolean) => void) | undefined;
 }
 
 const MenuCheckboxItem = /* @__PURE__ */ React.forwardRef<
@@ -859,8 +859,8 @@ const [RadioGroupProvider, useRadioGroupContext] = createMenuContext<MenuRadioGr
 
 type MenuRadioGroupElement = React.ComponentRef<typeof MenuGroup>;
 interface MenuRadioGroupProps extends MenuGroupProps {
-  value?: string;
-  onValueChange?: (value: string) => void;
+  value?: string | undefined;
+  onValueChange?: ((value: string) => void) | undefined;
 }
 
 const MenuRadioGroup = /* @__PURE__ */ React.forwardRef<MenuRadioGroupElement, MenuRadioGroupProps>(
@@ -930,7 +930,7 @@ interface MenuItemIndicatorProps extends PrimitiveSpanProps {
    * Used to force mounting when more control is needed. Useful when
    * controlling animation with React animation libraries.
    */
-  forceMount?: true;
+  forceMount?: true | undefined;
 }
 
 const MenuItemIndicator = /* @__PURE__ */ React.forwardRef<
@@ -1012,9 +1012,9 @@ type MenuSubContextValue = {
 const [MenuSubProvider, useMenuSubContext] = createMenuContext<MenuSubContextValue>(SUB_NAME);
 
 interface MenuSubProps {
-  children?: React.ReactNode;
-  open?: boolean;
-  onOpenChange?(open: boolean): void;
+  children?: React.ReactNode | undefined;
+  open?: boolean | undefined;
+  onOpenChange?: ((open: boolean) => void) | undefined;
 }
 
 const MenuSub: React.FC<MenuSubProps> = (props: ScopedProps<MenuSubProps>) => {
@@ -1214,13 +1214,13 @@ interface MenuSubContentProps extends Omit<
    * Used to force mounting when more control is needed. Useful when
    * controlling animation with React animation libraries.
    */
-  forceMount?: true;
+  forceMount?: true | undefined;
 
   /**
    * Controls the direction the subcontent appears from its anchor menu item
    * Default: start
    */
-  align?: AlignSubContent;
+  align?: AlignSubContent | undefined;
 }
 
 const MenuSubContent = /* @__PURE__ */ React.forwardRef<MenuSubContentElement, MenuSubContentProps>(

@@ -50,14 +50,14 @@ const [Collection, useCollection, createCollectionScope] = createCollection<
 const [FocusGroupCollection, useFocusGroupCollection, createFocusGroupCollectionScope] =
   createCollection<FocusGroupItemElement, {}>(NAVIGATION_MENU_NAME);
 
-type ScopedProps<P> = P & { __scopeNavigationMenu?: Scope };
+type ScopedProps<P> = P & { __scopeNavigationMenu?: Scope | undefined };
 const [createNavigationMenuContext, createNavigationMenuScope] = createContextScope(
   NAVIGATION_MENU_NAME,
   [createCollectionScope, createFocusGroupCollectionScope],
 );
 
 type ContentData = {
-  ref?: React.Ref<ViewportContentMounterElement>;
+  ref?: React.Ref<ViewportContentMounterElement> | undefined;
 } & ViewportContentMounterProps;
 
 interface NavigationMenuContextValue {
@@ -96,25 +96,25 @@ interface NavigationMenuProps
   extends
     Omit<NavigationMenuProviderProps, keyof NavigationMenuProviderPrivateProps>,
     PrimitiveNavProps {
-  value?: string;
-  defaultValue?: string;
-  onValueChange?: (value: string) => void;
-  dir?: Direction;
-  orientation?: Orientation;
+  value?: string | undefined;
+  defaultValue?: string | undefined;
+  onValueChange?: ((value: string) => void) | undefined;
+  dir?: Direction | undefined;
+  orientation?: Orientation | undefined;
   /**
    * The duration from when the pointer enters the trigger until the tooltip
    * gets opened. When `activationMode` is `manual`, this prop is ignored.
    *
    * @default 200
    */
-  delayDuration?: number;
+  delayDuration?: number | undefined;
   /**
    * How much time a user has to enter another trigger without incurring a delay
    * again. When `activationMode` is `manual`, this prop is ignored.
    *
    * @default 300
    */
-  skipDelayDuration?: number;
+  skipDelayDuration?: number | undefined;
   /**
    * Whether an item is activated automatically or manually.
    * - `"automatic"`: hovering or focusing a trigger opens its item, and moving
@@ -123,7 +123,7 @@ interface NavigationMenuProps
    *
    * @default "automatic"
    */
-  activationMode?: ActivationMode;
+  activationMode?: ActivationMode | undefined;
 }
 
 const NavigationMenu = /* @__PURE__ */ React.forwardRef<NavigationMenuElement, NavigationMenuProps>(
@@ -272,10 +272,10 @@ interface NavigationMenuSubProps
   extends
     Omit<NavigationMenuProviderProps, keyof NavigationMenuProviderPrivateProps>,
     PrimitiveDivProps {
-  value?: string;
-  defaultValue?: string;
-  onValueChange?: (value: string) => void;
-  orientation?: Orientation;
+  value?: string | undefined;
+  defaultValue?: string | undefined;
+  onValueChange?: ((value: string) => void) | undefined;
+  orientation?: Orientation | undefined;
   /**
    * Whether an item is activated automatically or manually.
    * - `"automatic"`: hovering or focusing a trigger opens its item, and moving
@@ -287,13 +287,13 @@ interface NavigationMenuSubProps
    * component. If no value is provided to the parent, the default value is
    * `"automatic"`.
    */
-  activationMode?: ActivationMode;
+  activationMode?: ActivationMode | undefined;
   /**
    * When true, clicking a sub-menu item's trigger once it's active will not deactivate it.
    *
    * @default true
    */
-  disableToggle?: boolean;
+  disableToggle?: boolean | undefined;
 }
 
 const NavigationMenuSub = /* @__PURE__ */ React.forwardRef<
@@ -358,9 +358,9 @@ interface NavigationMenuProviderPrivateProps {
   rootNavigationMenu: NavigationMenuElement | null;
   value: string;
   onTriggerEnter(itemValue: string): void;
-  onTriggerLeave?(): void;
-  onContentEnter?(): void;
-  onContentLeave?(): void;
+  onTriggerLeave?: (() => void) | undefined;
+  onContentEnter?: (() => void) | undefined;
+  onContentLeave?: (() => void) | undefined;
   onItemSelect(itemValue: string): void;
   onItemDismiss(): void;
 }
@@ -493,7 +493,7 @@ const [NavigationMenuItemContextProvider, useNavigationMenuItemContext] =
 type NavigationMenuItemElement = React.ComponentRef<typeof Primitive.li>;
 type PrimitiveListItemProps = React.ComponentPropsWithoutRef<typeof Primitive.li>;
 interface NavigationMenuItemProps extends PrimitiveListItemProps {
-  value?: string;
+  value?: string | undefined;
 }
 
 const NavigationMenuItem = /* @__PURE__ */ React.forwardRef<
@@ -665,8 +665,8 @@ const LINK_SELECT = 'navigationMenu.linkSelect';
 type NavigationMenuLinkElement = React.ComponentRef<typeof Primitive.a>;
 type PrimitiveLinkProps = React.ComponentPropsWithoutRef<typeof Primitive.a>;
 interface NavigationMenuLinkProps extends Omit<PrimitiveLinkProps, 'onSelect'> {
-  active?: boolean;
-  onSelect?: (event: Event) => void;
+  active?: boolean | undefined;
+  onSelect?: ((event: Event) => void) | undefined;
 }
 
 const NavigationMenuLink = /* @__PURE__ */ React.forwardRef<
@@ -723,7 +723,7 @@ interface NavigationMenuIndicatorProps extends NavigationMenuIndicatorImplProps 
    * Used to force mounting when more control is needed. Useful when
    * controlling animation with React animation libraries.
    */
-  forceMount?: true;
+  forceMount?: true | undefined;
 }
 
 const NavigationMenuIndicator = /* @__PURE__ */ React.forwardRef<
@@ -829,7 +829,7 @@ interface NavigationMenuContentProps extends Omit<
    * Used to force mounting when more control is needed. Useful when
    * controlling animation with React animation libraries.
    */
-  forceMount?: true;
+  forceMount?: true | undefined;
 }
 
 const NavigationMenuContent = /* @__PURE__ */ React.forwardRef<
@@ -883,7 +883,7 @@ interface ViewportContentMounterProps extends NavigationMenuContentImplProps {
    * Used to force mounting when more control is needed. Useful when
    * controlling animation with React animation libraries.
    */
-  forceMount?: true;
+  forceMount?: true | undefined;
 }
 
 const ViewportContentMounter = /* @__PURE__ */ React.forwardRef<
@@ -1087,7 +1087,7 @@ interface NavigationMenuViewportProps extends Omit<
    * Used to force mounting when more control is needed. Useful when
    * controlling animation with React animation libraries.
    */
-  forceMount?: true;
+  forceMount?: true | undefined;
 }
 
 const NavigationMenuViewport = /* @__PURE__ */ React.forwardRef<
@@ -1180,7 +1180,7 @@ const NavigationMenuViewportImpl = /* @__PURE__ */ React.forwardRef<
 /* -----------------------------------------------------------------------------------------------*/
 
 interface NavigationMenuViewportItemProps extends NavigationMenuContentImplProps {
-  contentRef?: React.Ref<ViewportContentMounterElement>;
+  contentRef?: React.Ref<ViewportContentMounterElement> | undefined;
   isActive: boolean;
   onActiveContentChange: (node: NavigationMenuContentElement | null) => void;
 }

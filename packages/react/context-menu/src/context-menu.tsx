@@ -23,7 +23,7 @@ type Point = { x: number; y: number };
 
 const CONTEXT_MENU_NAME = 'ContextMenu';
 
-type ScopedProps<P> = P & { __scopeContextMenu?: Scope };
+type ScopedProps<P> = P & { __scopeContextMenu?: Scope | undefined };
 const [createContextMenuContext, createContextMenuScope] = createContextScope(CONTEXT_MENU_NAME, [
   createMenuScope,
 ]);
@@ -40,11 +40,11 @@ const [ContextMenuProvider, useContextMenuContext] =
   createContextMenuContext<ContextMenuContextValue>(CONTEXT_MENU_NAME);
 
 interface ContextMenuProps {
-  children?: React.ReactNode;
-  open?: boolean;
-  onOpenChange?(open: boolean): void;
-  dir?: Direction;
-  modal?: boolean;
+  children?: React.ReactNode | undefined;
+  open?: boolean | undefined;
+  onOpenChange?: ((open: boolean) => void) | undefined;
+  dir?: Direction | undefined;
+  modal?: boolean | undefined;
 }
 
 const ContextMenu: React.FC<ContextMenuProps> = (props: ScopedProps<ContextMenuProps>) => {
@@ -106,7 +106,7 @@ const TRIGGER_NAME = 'ContextMenuTrigger';
 type ContextMenuTriggerElement = React.ComponentRef<typeof Primitive.span>;
 type PrimitiveSpanProps = React.ComponentPropsWithoutRef<typeof Primitive.span>;
 interface ContextMenuTriggerProps extends PrimitiveSpanProps {
-  disabled?: boolean;
+  disabled?: boolean | undefined;
 }
 
 const ContextMenuTrigger = /* @__PURE__ */ React.forwardRef<
@@ -455,10 +455,10 @@ const ContextMenuArrow = /* @__PURE__ */ React.forwardRef<
 const SUB_NAME = 'ContextMenuSub';
 
 interface ContextMenuSubProps {
-  children?: React.ReactNode;
-  open?: boolean;
-  defaultOpen?: boolean;
-  onOpenChange?(open: boolean): void;
+  children?: React.ReactNode | undefined;
+  open?: boolean | undefined;
+  defaultOpen?: boolean | undefined;
+  onOpenChange?: ((open: boolean) => void) | undefined;
 }
 
 const ContextMenuSub: React.FC<ContextMenuSubProps> = (props: ScopedProps<ContextMenuSubProps>) => {

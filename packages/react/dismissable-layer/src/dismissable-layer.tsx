@@ -34,38 +34,38 @@ interface DismissableLayerProps extends PrimitiveDivProps {
    * the `DismissableLayer`. Users will need to click twice on outside elements to
    * interact with them: once to close the `DismissableLayer`, and again to trigger the element.
    */
-  disableOutsidePointerEvents?: boolean;
+  disableOutsidePointerEvents?: boolean | undefined;
   /**
    * When `true`, a `'pointerdown'` event outside of the layered element will
    * wait for the interaction's click event before dispatching, allowing
    * third-party code to stop propagation of later events and cancel dismissal.
    */
-  deferPointerDownOutside?: boolean;
+  deferPointerDownOutside?: boolean | undefined;
   /**
    * Event handler called when the escape key is down.
    * Can be prevented.
    */
-  onEscapeKeyDown?: (event: KeyboardEvent) => void;
+  onEscapeKeyDown?: ((event: KeyboardEvent) => void) | undefined;
   /**
    * Event handler called when the a `pointerdown` event happens outside of the `DismissableLayer`.
    * Can be prevented.
    */
-  onPointerDownOutside?: (event: PointerDownOutsideEvent) => void;
+  onPointerDownOutside?: ((event: PointerDownOutsideEvent) => void) | undefined;
   /**
    * Event handler called when the focus moves outside of the `DismissableLayer`.
    * Can be prevented.
    */
-  onFocusOutside?: (event: FocusOutsideEvent) => void;
+  onFocusOutside?: ((event: FocusOutsideEvent) => void) | undefined;
   /**
    * Event handler called when an interaction happens outside the `DismissableLayer`.
    * Specifically, when a `pointerdown` event happens outside or focus moves outside of it.
    * Can be prevented.
    */
-  onInteractOutside?: (event: PointerDownOutsideEvent | FocusOutsideEvent) => void;
+  onInteractOutside?: ((event: PointerDownOutsideEvent | FocusOutsideEvent) => void) | undefined;
   /**
    * Handler called when the `DismissableLayer` should be dismissed
    */
-  onDismiss?: () => void;
+  onDismiss?: (() => void) | undefined;
 }
 
 const DismissableLayer = /* @__PURE__ */ React.forwardRef<
@@ -312,7 +312,7 @@ function usePointerDownOutside(
     deferPointerDownOutside: boolean;
     isDeferredPointerDownOutsideRef: React.RefObject<boolean>;
     dismissableSurfaces: Set<DismissableLayerBranchElement>;
-    shouldHandlePointerDownOutside?: (target: EventTarget | null) => boolean;
+    shouldHandlePointerDownOutside?: ((target: EventTarget | null) => boolean) | undefined;
   },
 ) {
   const {

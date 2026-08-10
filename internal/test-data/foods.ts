@@ -1,6 +1,6 @@
 export const foodGroups: Array<{
-  label?: string;
-  foods: Array<{ value: string; label: string; disabled?: boolean }>;
+  label?: string | undefined;
+  foods: Array<{ value: string; label: string; disabled?: boolean | undefined }>;
 }> = [
   {
     label: 'Fruits',

@@ -1334,7 +1334,9 @@ export const ChromaticNoDefaultValue = () => (
 ChromaticNoDefaultValue.parameters = { chromatic: { disable: false } };
 
 export const Cypress = () => {
-  const [data, setData] = React.useState<{ size?: string; model?: string }>({});
+  const [data, setData] = React.useState<{ size?: string | undefined; model?: string | undefined }>(
+    {},
+  );
   const [model, setModel] = React.useState<string | undefined>('');
   const [openColor, setOpenColor] = React.useState(false);
   const [color, setColor] = React.useState<string | undefined>('green');
@@ -1581,8 +1583,8 @@ export const CypressShadowDom = () => {
 type PaddedElement = 'content' | 'viewport';
 
 interface ChromaticSelectProps extends React.ComponentProps<typeof Select.Trigger> {
-  count?: number;
-  paddedElement?: PaddedElement;
+  count?: number | undefined;
+  paddedElement?: PaddedElement | undefined;
   selected: number;
 }
 

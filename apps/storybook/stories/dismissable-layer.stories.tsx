@@ -477,9 +477,9 @@ export const PopoverNested = () => (
  * -----------------------------------------------------------------------------------------------*/
 
 type DummyDialogProps = {
-  children?: React.ReactNode;
-  openLabel?: string;
-  closeLabel?: string;
+  children?: React.ReactNode | undefined;
+  openLabel?: string | undefined;
+  closeLabel?: string | undefined;
 };
 
 function DummyDialog({ children, openLabel = 'Open', closeLabel = 'Close' }: DummyDialogProps) {
@@ -548,11 +548,11 @@ function DummyDialog({ children, openLabel = 'Open', closeLabel = 'Close' }: Dum
 }
 
 type DummyPopoverOwnProps = {
-  children?: React.ReactNode;
-  openLabel?: string;
-  closeLabel?: string;
-  color?: string;
-  preventScroll?: boolean;
+  children?: React.ReactNode | undefined;
+  openLabel?: string | undefined;
+  closeLabel?: string | undefined;
+  color?: string | undefined;
+  preventScroll?: boolean | undefined;
 };
 type DummyPopoverProps = DummyPopoverOwnProps &
   Omit<FocusScopeProps, 'children'> &

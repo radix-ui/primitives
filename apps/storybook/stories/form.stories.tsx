@@ -6,9 +6,10 @@ export default { title: 'Components/Form' };
 
 export const Basic = () => {
   const [loading, setLoading] = React.useState(false);
-  const [serverErrors, setServerErrors] = React.useState<{ email?: boolean; password?: boolean }>(
-    {},
-  );
+  const [serverErrors, setServerErrors] = React.useState<{
+    email?: boolean | undefined;
+    password?: boolean | undefined;
+  }>({});
 
   return (
     <>
@@ -78,9 +79,9 @@ export const Cypress = () => {
   const [data, setData] = React.useState({});
   const [simulateServerErrors, setSimulateServerErrors] = React.useState(false);
   const [serverErrors, setServerErrors] = React.useState<{
-    email?: boolean;
-    pin?: boolean;
-    global?: boolean;
+    email?: boolean | undefined;
+    pin?: boolean | undefined;
+    global?: boolean | undefined;
   }>({});
 
   return (

@@ -7,7 +7,7 @@ const { SIDE_OPTIONS, ALIGN_OPTIONS } = Popper;
 
 export default { title: 'Components/HoverCard' };
 
-const contentClass = ({ animated }: { animated?: boolean }) =>
+const contentClass = ({ animated }: { animated?: boolean | undefined }) =>
   [
     styles.content, ///
     animated && styles.animatedContent,

@@ -13,6 +13,6 @@
   },
   "scripts": {
     "lint": "oxlint --max-warnings 0 .",
-    "check-types": "tsc --noEmit"
+    "typecheck": "tsc --noEmit"
   }
 }

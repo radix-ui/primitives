@@ -13,7 +13,7 @@ import type { Scope } from '@radix-ui/react-context';
 
 const AVATAR_NAME = 'Avatar';
 
-type ScopedProps<P> = P & { __scopeAvatar?: Scope };
+type ScopedProps<P> = P & { __scopeAvatar?: Scope | undefined };
 const [createAvatarContext, createAvatarScope] = createContextScope(AVATAR_NAME);
 
 const ImageLoadingStatus = {
@@ -75,7 +75,7 @@ const IMAGE_NAME = 'AvatarImage';
 type AvatarImageElement = React.ComponentRef<typeof Primitive.img>;
 type PrimitiveImageProps = React.ComponentPropsWithoutRef<typeof Primitive.img>;
 interface AvatarImageProps extends PrimitiveImageProps {
-  onLoadingStatusChange?: (status: ImageLoadingStatus) => void;
+  onLoadingStatusChange?: ((status: ImageLoadingStatus) => void) | undefined;
 }
 
 const AvatarImage = /* @__PURE__ */ React.forwardRef<AvatarImageElement, AvatarImageProps>(
@@ -119,7 +119,7 @@ const FALLBACK_NAME = 'AvatarFallback';
 
 type AvatarFallbackElement = React.ComponentRef<typeof Primitive.span>;
 interface AvatarFallbackProps extends PrimitiveSpanProps {
-  delayMs?: number;
+  delayMs?: number | undefined;
 }
 
 const AvatarFallback = /* @__PURE__ */ React.forwardRef<AvatarFallbackElement, AvatarFallbackProps>(

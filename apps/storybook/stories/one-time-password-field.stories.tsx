@@ -248,9 +248,9 @@ function Dialog({
   open,
   onOpenChange,
 }: {
-  title?: string;
+  title?: string | undefined;
   content: string;
-  trigger?: React.ReactNode;
+  trigger?: React.ReactNode | undefined;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {

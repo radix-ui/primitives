@@ -8,7 +8,7 @@ import { Primitive } from '@radix-ui/react-primitive';
 type AspectRatioElement = React.ComponentRef<typeof Primitive.div>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface AspectRatioProps extends PrimitiveDivProps {
-  ratio?: number;
+  ratio?: number | undefined;
 }
 
 const AspectRatio = /* @__PURE__ */ React.forwardRef<AspectRatioElement, AspectRatioProps>(

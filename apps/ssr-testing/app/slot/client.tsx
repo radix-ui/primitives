@@ -5,7 +5,7 @@ import { Slot } from 'radix-ui';
 
 export const Link = React.forwardRef<
   React.ComponentRef<'a'>,
-  React.ComponentProps<'a'> & { asChild?: boolean }
+  React.ComponentProps<'a'> & { asChild?: boolean | undefined }
 >(({ asChild = false, ...props }, forwardedRef) => {
   const Comp = asChild ? Slot.Root : 'a';
   return <Comp {...props} ref={forwardedRef} />;
@@ -13,7 +13,7 @@ export const Link = React.forwardRef<
 
 export const LinkSlottable = React.forwardRef<
   React.ComponentRef<'a'>,
-  React.ComponentProps<'a'> & { asChild?: boolean }
+  React.ComponentProps<'a'> & { asChild?: boolean | undefined }
 >(({ asChild = false, ...props }, forwardedRef) => {
   const Comp = asChild ? Slot.Root : 'a';
   return (
@@ -38,7 +38,7 @@ export const LinkButton = React.forwardRef<
 
 export const Button = React.forwardRef<
   React.ComponentRef<'button'>,
-  React.ComponentProps<'button'> & { asChild?: boolean }
+  React.ComponentProps<'button'> & { asChild?: boolean | undefined }
 >(({ asChild = false, ...props }, forwardedRef) => {
   const Comp = asChild ? Slot.Root : 'button';
   return <Comp {...props} ref={forwardedRef} style={{ display: 'flex', gap: '3rem' }} />;
@@ -46,7 +46,7 @@ export const Button = React.forwardRef<
 
 export const ButtonSlottable = React.forwardRef<
   React.ComponentRef<'button'>,
-  React.ComponentProps<'button'> & { asChild?: boolean }
+  React.ComponentProps<'button'> & { asChild?: boolean | undefined }
 >(({ children, asChild = false, ...props }, forwardedRef) => {
   const Comp = asChild ? Slot.Root : 'button';
   return (

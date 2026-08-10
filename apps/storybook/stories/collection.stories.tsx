@@ -143,7 +143,7 @@ const List: React.FC<{ children: React.ReactNode }> = (props) => {
 
 type ItemProps = React.ComponentPropsWithRef<'li'> & {
   children: React.ReactNode;
-  disabled?: boolean;
+  disabled?: boolean | undefined;
 };
 
 function Item({ disabled = false, ...props }: ItemProps) {
@@ -158,7 +158,7 @@ function Item({ disabled = false, ...props }: ItemProps) {
 const MemoItem = React.memo(Item);
 const MemoItems = React.memo(WrappedItems);
 
-function LogItems({ name = 'items' }: { name?: string }) {
+function LogItems({ name = 'items' }: { name?: string | undefined }) {
   const getItems = useCollection(undefined);
   React.useEffect(() => console.log(name, getItems()));
   return null;

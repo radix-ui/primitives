@@ -54,7 +54,7 @@ const [Collection, useCollection, createCollectionScope] = createCollection<
   ItemData
 >(SELECT_NAME);
 
-type ScopedProps<P> = P & { __scopeSelect?: Scope };
+type ScopedProps<P> = P & { __scopeSelect?: Scope | undefined };
 const [createSelectContext, createSelectScope] = createContextScope(SELECT_NAME, [
   createCollectionScope,
   createPopperScope,
@@ -72,14 +72,14 @@ type SelectContextValue = {
   value: string | undefined;
   onValueChange(value: string): void;
   open: boolean;
-  required?: boolean;
+  required?: boolean | undefined;
   onOpenChange(open: boolean): void;
   dir: SelectProps['dir'];
   triggerPointerDownPosRef: React.MutableRefObject<{ x: number; y: number } | null>;
-  disabled?: boolean;
-  name?: string;
-  autoComplete?: string;
-  form?: string;
+  disabled?: boolean | undefined;
+  name?: string | undefined;
+  autoComplete?: string | undefined;
+  form?: string | undefined;
   nativeOptions: Set<NativeOption>;
   nativeSelectKey: string;
   isFormControl: boolean;
@@ -98,23 +98,25 @@ const [SelectNativeOptionsProvider, useSelectNativeOptionsContext] =
 
 interface ControlledClearableSelectProps {
   value: string | undefined;
-  defaultValue?: never;
+  defaultValue?: undefined;
   onValueChange: (value: string | undefined) => void;
 }
 
 interface ControlledUnclearableSelectProps {
   value: string;
-  defaultValue?: never;
+  defaultValue?: undefined;
   onValueChange: (value: string) => void;
 }
 
 interface UncontrolledSelectProps {
-  value?: never;
-  defaultValue?: string;
-  onValueChange?: {
-    (value: string): void;
-    (value: string | undefined): void;
-  };
+  value?: undefined;
+  defaultValue?: string | undefined;
+  onValueChange?:
+    | {
+        (value: string): void;
+        (value: string | undefined): void;
+      }
+    | undefined;
 }
 
 type SelectControlProps =
@@ -123,16 +125,16 @@ type SelectControlProps =
   | UncontrolledSelectProps;
 
 export interface SelectSharedProps {
-  children?: React.ReactNode;
-  open?: boolean;
-  defaultOpen?: boolean;
-  onOpenChange?(open: boolean): void;
-  dir?: Direction;
-  name?: string;
-  autoComplete?: string;
-  disabled?: boolean;
-  required?: boolean;
-  form?: string;
+  children?: React.ReactNode | undefined;
+  open?: boolean | undefined;
+  defaultOpen?: boolean | undefined;
+  onOpenChange?: ((open: boolean) => void) | undefined;
+  dir?: Direction | undefined;
+  name?: string | undefined;
+  autoComplete?: string | undefined;
+  disabled?: boolean | undefined;
+  required?: boolean | undefined;
+  form?: string | undefined;
 }
 
 // TODO: Should improve typing somewhat, but this would be a breaking change.
@@ -141,9 +143,9 @@ export interface SelectSharedProps {
 type _FutureSelectProps = SelectSharedProps & SelectControlProps;
 
 type SelectProps = SelectSharedProps & {
-  value?: string;
-  defaultValue?: string;
-  onValueChange?(value: string): void;
+  value?: string | undefined;
+  defaultValue?: string | undefined;
+  onValueChange?: ((value: string) => void) | undefined;
 };
 
 /* -------------------------------------------------------------------------------------------------
@@ -151,9 +153,9 @@ type SelectProps = SelectSharedProps & {
  * -----------------------------------------------------------------------------------------------*/
 
 interface SelectProviderProps extends SelectSharedProps {
-  value?: string;
-  defaultValue?: string;
-  onValueChange?(value: string): void;
+  value?: string | undefined;
+  defaultValue?: string | undefined;
+  onValueChange?: ((value: string) => void) | undefined;
 }
 
 function SelectProvider(props: ScopedProps<SelectProviderProps>) {
@@ -417,7 +419,7 @@ const VALUE_NAME = 'SelectValue';
 type SelectValueElement = React.ComponentRef<typeof Primitive.span>;
 type PrimitiveSpanProps = React.ComponentPropsWithoutRef<typeof Primitive.span>;
 interface SelectValueProps extends Omit<PrimitiveSpanProps, 'placeholder'> {
-  placeholder?: React.ReactNode;
+  placeholder?: React.ReactNode | undefined;
 }
 
 const SelectValue = /* @__PURE__ */ React.forwardRef<SelectValueElement, SelectValueProps>(
@@ -476,23 +478,23 @@ const SelectIcon = /* @__PURE__ */ React.forwardRef<SelectIconElement, SelectIco
 
 const PORTAL_NAME = 'SelectPortal';
 
-type PortalContextValue = { forceMount?: true };
+type PortalContextValue = { forceMount?: true | undefined };
 const [PortalProvider, usePortalContext] = createSelectContext<PortalContextValue>(PORTAL_NAME, {
   forceMount: undefined,
 });
 
 type PortalProps = React.ComponentPropsWithoutRef<typeof PortalPrimitive>;
 interface SelectPortalProps {
-  children?: React.ReactNode;
+  children?: React.ReactNode | undefined;
   /**
    * Specify a container element to portal the content into.
    */
-  container?: PortalProps['container'];
+  container?: PortalProps['container'] | undefined;
   /**
    * Used to force mounting when more control is needed. Useful when controlling
    * animation with React animation libraries.
    */
-  forceMount?: true;
+  forceMount?: true | undefined;
 }
 
 const SelectPortal: React.FC<SelectPortalProps> = (props: ScopedProps<SelectPortalProps>) => {
@@ -516,7 +518,7 @@ interface SelectContentProps extends SelectContentImplProps {
    * Used to force mounting when more control is needed. Useful when
    * controlling animation with React animation libraries.
    */
-  forceMount?: true;
+  forceMount?: true | undefined;
 }
 
 const SelectContent = /* @__PURE__ */ React.forwardRef<SelectContentElement, SelectContentProps>(
@@ -556,7 +558,7 @@ const SelectContent = /* @__PURE__ */ React.forwardRef<SelectContentElement, Sel
 
 type SelectContentFragmentElement = React.ComponentRef<typeof Primitive.div>;
 interface SelectContentFragmentProps extends SelectContentImplProps {
-  fragment?: DocumentFragment;
+  fragment?: DocumentFragment | undefined;
 }
 
 const SelectContentFragment = /* @__PURE__ */ React.forwardRef<
@@ -583,22 +585,22 @@ const SelectContentFragment = /* @__PURE__ */ React.forwardRef<
 const CONTENT_MARGIN = 10;
 
 type SelectContentContextValue = {
-  content?: SelectContentElement | null;
-  viewport?: SelectViewportElement | null;
-  onViewportChange?: (node: SelectViewportElement | null) => void;
-  itemRefCallback?: (node: SelectItemElement | null, value: string, disabled: boolean) => void;
-  selectedItem?: SelectItemElement | null;
-  onItemLeave?: () => void;
-  itemTextRefCallback?: (
-    node: SelectItemTextElement | null,
-    value: string,
-    disabled: boolean,
-  ) => void;
-  focusSelectedItem?: () => void;
-  selectedItemText?: SelectItemTextElement | null;
-  position?: SelectContentProps['position'];
-  isPositioned?: boolean;
-  searchRef?: React.RefObject<string>;
+  content?: SelectContentElement | null | undefined;
+  viewport?: SelectViewportElement | null | undefined;
+  onViewportChange?: ((node: SelectViewportElement | null) => void) | undefined;
+  itemRefCallback?:
+    | ((node: SelectItemElement | null, value: string, disabled: boolean) => void)
+    | undefined;
+  selectedItem?: SelectItemElement | null | undefined;
+  onItemLeave?: (() => void) | undefined;
+  itemTextRefCallback?:
+    | ((node: SelectItemTextElement | null, value: string, disabled: boolean) => void)
+    | undefined;
+  focusSelectedItem?: (() => void) | undefined;
+  selectedItemText?: SelectItemTextElement | null | undefined;
+  position?: SelectContentProps['position'] | undefined;
+  isPositioned?: boolean | undefined;
+  searchRef?: React.RefObject<string> | undefined;
 };
 
 const [SelectContentProvider, useSelectContentContext] =
@@ -608,7 +610,7 @@ type SelectContentImplElement = SelectPopperPositionElement | SelectItemAlignedP
 type DismissableLayerProps = React.ComponentPropsWithoutRef<typeof DismissableLayer>;
 type FocusScopeProps = React.ComponentPropsWithoutRef<typeof FocusScope>;
 
-type SelectPopperPrivateProps = { onPlaced?: PopperContentProps['onPlaced'] };
+type SelectPopperPrivateProps = { onPlaced?: PopperContentProps['onPlaced'] | undefined };
 
 interface SelectContentImplProps
   extends
@@ -618,19 +620,19 @@ interface SelectContentImplProps
    * Event handler called when auto-focusing on close.
    * Can be prevented.
    */
-  onCloseAutoFocus?: FocusScopeProps['onUnmountAutoFocus'];
+  onCloseAutoFocus?: FocusScopeProps['onUnmountAutoFocus'] | undefined;
   /**
    * Event handler called when the escape key is down.
    * Can be prevented.
    */
-  onEscapeKeyDown?: DismissableLayerProps['onEscapeKeyDown'];
+  onEscapeKeyDown?: DismissableLayerProps['onEscapeKeyDown'] | undefined;
   /**
    * Event handler called when the a `pointerdown` event happens outside of the `DismissableLayer`.
    * Can be prevented.
    */
-  onPointerDownOutside?: DismissableLayerProps['onPointerDownOutside'];
+  onPointerDownOutside?: DismissableLayerProps['onPointerDownOutside'] | undefined;
 
-  position?: Position;
+  position?: Position | undefined;
 }
 
 const Slot = createSlot('SelectContent.RemoveScroll');
@@ -1196,9 +1198,9 @@ const SelectPopperPosition = /* @__PURE__ */ React.forwardRef<
  * -----------------------------------------------------------------------------------------------*/
 
 type SelectViewportContextValue = {
-  contentWrapper?: HTMLDivElement | null;
-  shouldExpandOnScrollRef?: React.RefObject<boolean>;
-  onScrollButtonChange?: (node: SelectScrollButtonImplElement | null) => void;
+  contentWrapper?: HTMLDivElement | null | undefined;
+  shouldExpandOnScrollRef?: React.RefObject<boolean> | undefined;
+  onScrollButtonChange?: ((node: SelectScrollButtonImplElement | null) => void) | undefined;
 };
 
 const [SelectViewportProvider, useSelectViewportContext] =
@@ -1209,7 +1211,7 @@ const VIEWPORT_NAME = 'SelectViewport';
 type SelectViewportElement = React.ComponentRef<typeof Primitive.div>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface SelectViewportProps extends PrimitiveDivProps {
-  nonce?: string;
+  nonce?: string | undefined;
 }
 
 const SelectViewport = /* @__PURE__ */ React.forwardRef<SelectViewportElement, SelectViewportProps>(
@@ -1344,8 +1346,8 @@ const [SelectItemContextProvider, useSelectItemContext] =
 type SelectItemElement = React.ComponentRef<typeof Primitive.div>;
 interface SelectItemProps extends PrimitiveDivProps {
   value: string;
-  disabled?: boolean;
-  textValue?: string;
+  disabled?: boolean | undefined;
+  textValue?: string | undefined;
 }
 
 const SelectItem = /* @__PURE__ */ React.forwardRef<SelectItemElement, SelectItemProps>(

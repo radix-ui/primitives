@@ -9,7 +9,7 @@ interface AssertStableComposedRefOptions {
    * The render count at which we consider the component to be stuck in a render
    * loop. Defaults to {@link DEFAULT_MAX_RENDERS}.
    */
-  maxRenders?: number;
+  maxRenders?: number | undefined;
 }
 
 /**

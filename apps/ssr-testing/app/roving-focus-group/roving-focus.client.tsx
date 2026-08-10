@@ -32,12 +32,12 @@ export function RovingFocusToggle() {
 }
 
 const ButtonGroupContext = React.createContext<{
-  value?: string;
+  value?: string | undefined;
   setValue: React.Dispatch<React.SetStateAction<string | undefined>>;
 }>({} as any);
 
 type ButtonGroupProps = Omit<React.ComponentPropsWithRef<'div'>, 'defaultValue'> &
-  RovingFocus.RovingFocusGroupProps & { defaultValue?: string };
+  RovingFocus.RovingFocusGroupProps & { defaultValue?: string | undefined };
 
 export function ButtonGroup({ defaultValue, ...props }: ButtonGroupProps) {
   const [value, setValue] = React.useState(defaultValue);
@@ -58,7 +58,9 @@ export function ButtonGroup({ defaultValue, ...props }: ButtonGroupProps) {
   );
 }
 
-type ButtonProps = Omit<React.ComponentPropsWithRef<'button'>, 'value'> & { value?: string };
+type ButtonProps = Omit<React.ComponentPropsWithRef<'button'>, 'value'> & {
+  value?: string | undefined;
+};
 
 export function Button(props: ButtonProps) {
   const { value: contextValue, setValue } = React.use(ButtonGroupContext);

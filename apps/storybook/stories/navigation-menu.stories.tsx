@@ -186,9 +186,9 @@ export const Viewport = () => {
 };
 
 type SubmenusStory = StoryObj<{
-  activationMode?: NavigationMenu.NavigationMenuProps['activationMode'];
-  submenuActivationMode?: NavigationMenu.NavigationMenuSubProps['activationMode'];
-  submenuDisableToggle?: boolean;
+  activationMode?: NavigationMenu.NavigationMenuProps['activationMode'] | undefined;
+  submenuActivationMode?: NavigationMenu.NavigationMenuSubProps['activationMode'] | undefined;
+  submenuDisableToggle?: boolean | undefined;
 }>;
 
 export const Submenus = {
@@ -512,10 +512,10 @@ const DurationNavigation = (props: React.ComponentProps<typeof NavigationMenu.Ro
   );
 };
 
-const TriggerWithIndicator: React.FC<{ children?: React.ReactNode; disabled?: boolean }> = ({
-  children,
-  disabled,
-}) => {
+const TriggerWithIndicator: React.FC<{
+  children?: React.ReactNode | undefined;
+  disabled?: boolean | undefined;
+}> = ({ children, disabled }) => {
   return (
     <NavigationMenu.Trigger className={styles.trigger} disabled={disabled}>
       {children}
@@ -535,7 +535,7 @@ const CaretDownIcon = () => (
   </svg>
 );
 
-const LinkGroup: React.FC<{ items: string[]; bordered?: boolean }> = ({
+const LinkGroup: React.FC<{ items: string[]; bordered?: boolean | undefined }> = ({
   items,
   bordered = true,
 }) => {

@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 type ExternalOverlayTriggerProps = {
-  children?: React.ReactNode;
+  children?: React.ReactNode | undefined;
 };
 
 function ExternalOverlayTrigger({ children = 'Trigger overlay' }: ExternalOverlayTriggerProps) {

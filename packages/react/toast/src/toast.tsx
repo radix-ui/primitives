@@ -49,44 +49,44 @@ type ToastProviderContextValue = {
   onToastAdd(): void;
   onToastRemove(): void;
   isClosePausedRef: React.MutableRefObject<boolean>;
-  announcerContainer?: Element | DocumentFragment;
+  announcerContainer?: Element | DocumentFragment | undefined;
 };
 
-type ScopedProps<P> = P & { __scopeToast?: Scope };
+type ScopedProps<P> = P & { __scopeToast?: Scope | undefined };
 const [createToastContext, createToastScope] = createContextScope('Toast', [createCollectionScope]);
 const [ToastProviderProvider, useToastProviderContext] =
   createToastContext<ToastProviderContextValue>(PROVIDER_NAME);
 
 interface ToastProviderProps {
-  children?: React.ReactNode;
+  children?: React.ReactNode | undefined;
   /**
    * An author-localized label for each toast. Used to help screen reader users
    * associate the interruption with a toast.
    * @defaultValue 'Notification'
    */
-  label?: string;
+  label?: string | undefined;
   /**
    * Time in milliseconds that each toast should remain visible for.
    * @defaultValue 5000
    */
-  duration?: number;
+  duration?: number | undefined;
   /**
    * Direction of pointer swipe that should close the toast.
    * @defaultValue 'right'
    */
-  swipeDirection?: SwipeDirection;
+  swipeDirection?: SwipeDirection | undefined;
   /**
    * Distance in pixels that the swipe must pass before a close is triggered.
    * @defaultValue 50
    */
-  swipeThreshold?: number;
+  swipeThreshold?: number | undefined;
   /**
    * An optional container where the toast announcements should be appended.
    * This is useful when working with focus traps or modal dialogs that make
    * other elements inert.
    * @defaultValue document.body
    */
-  announcerContainer?: Element | DocumentFragment;
+  announcerContainer?: Element | DocumentFragment | undefined;
 }
 
 const ToastProvider: React.FC<ToastProviderProps> = (props: ScopedProps<ToastProviderProps>) => {
@@ -147,13 +147,13 @@ interface ToastViewportProps extends PrimitiveOrderedListProps {
    * The keys to use as the keyboard shortcut that will move focus to the toast viewport.
    * @defaultValue ['F8']
    */
-  hotkey?: string[];
+  hotkey?: string[] | undefined;
   /**
    * An author-localized label for the toast viewport to provide context for screen reader users
    * when navigating page landmarks. The available `{hotkey}` placeholder will be replaced for you.
    * @defaultValue 'Notifications ({hotkey})'
    */
-  label?: string;
+  label?: string | undefined;
 }
 
 const ToastViewport = /* @__PURE__ */ React.forwardRef<ToastViewportElement, ToastViewportProps>(
@@ -388,14 +388,14 @@ const TOAST_SWIPE_END = 'toast.swipeEnd';
 
 type ToastElement = ToastImplElement;
 interface ToastProps extends Omit<ToastImplProps, keyof ToastImplPrivateProps> {
-  open?: boolean;
-  defaultOpen?: boolean;
-  onOpenChange?(open: boolean): void;
+  open?: boolean | undefined;
+  defaultOpen?: boolean | undefined;
+  onOpenChange?: ((open: boolean) => void) | undefined;
   /**
    * Used to force mounting when more control is needed. Useful when
    * controlling animation with React animation libraries.
    */
-  forceMount?: true;
+  forceMount?: true | undefined;
 }
 
 const Toast = /* @__PURE__ */ React.forwardRef<ToastElement, ToastProps>(
@@ -464,19 +464,19 @@ type DismissableLayerProps = React.ComponentPropsWithoutRef<typeof DismissableLa
 type ToastImplPrivateProps = { open: boolean; onClose(): void };
 type PrimitiveListItemProps = React.ComponentPropsWithoutRef<typeof Primitive.li>;
 interface ToastImplProps extends ToastImplPrivateProps, PrimitiveListItemProps {
-  type?: ToastType;
+  type?: ToastType | undefined;
   /**
    * Time in milliseconds that toast should remain visible for. Overrides value
    * given to `ToastProvider`.
    */
-  duration?: number;
-  onEscapeKeyDown?: DismissableLayerProps['onEscapeKeyDown'];
-  onPause?(): void;
-  onResume?(): void;
-  onSwipeStart?(event: SwipeEvent): void;
-  onSwipeMove?(event: SwipeEvent): void;
-  onSwipeCancel?(event: SwipeEvent): void;
-  onSwipeEnd?(event: SwipeEvent): void;
+  duration?: number | undefined;
+  onEscapeKeyDown?: DismissableLayerProps['onEscapeKeyDown'] | undefined;
+  onPause?: (() => void) | undefined;
+  onResume?: (() => void) | undefined;
+  onSwipeStart?: ((event: SwipeEvent) => void) | undefined;
+  onSwipeMove?: ((event: SwipeEvent) => void) | undefined;
+  onSwipeCancel?: ((event: SwipeEvent) => void) | undefined;
+  onSwipeEnd?: ((event: SwipeEvent) => void) | undefined;
 }
 
 const ToastImpl = /* @__PURE__ */ React.forwardRef<ToastImplElement, ToastImplProps>(
@@ -844,7 +844,7 @@ const ToastClose = /* @__PURE__ */ React.forwardRef<ToastCloseElement, ToastClos
 
 type ToastAnnounceExcludeElement = React.ComponentRef<typeof Primitive.div>;
 interface ToastAnnounceExcludeProps extends PrimitiveDivProps {
-  altText?: string;
+  altText?: string | undefined;
 }
 
 const ToastAnnounceExclude = /* @__PURE__ */ React.forwardRef<

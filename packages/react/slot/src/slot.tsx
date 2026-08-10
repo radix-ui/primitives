@@ -3,7 +3,7 @@ import { useComposedRefs } from '@radix-ui/react-compose-refs';
 
 declare module 'react' {
   interface ReactElement {
-    $$typeof?: symbol | string;
+    $$typeof?: symbol | string | undefined;
   }
 }
 
@@ -14,7 +14,7 @@ declare module 'react' {
 export type Usable<T> = PromiseLike<T> | React.Context<T>;
 
 type SlotProps<Elem extends Element = HTMLElement, Props = React.HTMLAttributes<Elem>> = Props & {
-  children?: React.ReactNode;
+  children?: React.ReactNode | undefined;
 };
 
 /* @__NO_SIDE_EFFECTS__ */ export function createSlot<
