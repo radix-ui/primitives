@@ -2243,9 +2243,6 @@ importers:
       '@radix-ui/react-use-layout-effect':
         specifier: workspace:*
         version: link:../use-layout-effect
-      '@radix-ui/react-use-previous':
-        specifier: workspace:*
-        version: link:../use-previous
       '@radix-ui/react-use-size':
         specifier: workspace:*
         version: link:../use-size

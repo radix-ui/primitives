@@ -5,7 +5,6 @@ import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { useDirection } from '@radix-ui/react-direction';
-import { usePrevious } from '@radix-ui/react-use-previous';
 import { useSize } from '@radix-ui/react-use-size';
 import { Primitive } from '@radix-ui/react-primitive';
 import { createCollection } from '@radix-ui/react-collection';
@@ -75,6 +74,7 @@ type SliderContextValue = {
   thumbs: Set<SliderThumbElement>;
   orientation: SliderProps['orientation'];
   form: string | undefined;
+  userInteractionCount: number;
 };
 
 const [SliderProvider, useSliderContext] = createSliderContext<SliderContextValue>(SLIDER_NAME);
@@ -131,6 +131,17 @@ const Slider = /* @__PURE__ */ React.forwardRef<SliderElement, SliderProps>(
     const thumbRefs = React.useRef<SliderContextValue['thumbs']>(new Set());
     const valueIndexToChangeRef = React.useRef<number>(0);
     const isKeyboardInteractionRef = React.useRef(false);
+
+    // Incremented on every user interaction that updates a thumb (drag or
+    // keyboard). The bubble input compares this against the value it last
+    // handled to tell whether a value change was driven by the user vs. a
+    // controlled/programmatic update. Using a counter guarantees the marker is
+    // updated in the same commit as the resulting render, so it can never go
+    // stale and leak into a later programmatic update.
+    const [userInteractionCount, onUserInteraction] = React.useReducer(
+      (count: number): number => count + 1,
+      0,
+    );
     const isHorizontal = orientation === Orientation.Horizontal;
     const SliderOrientation = isHorizontal ? SliderHorizontal : SliderVertical;
     const [control, setControl] = React.useState<SliderElement | null>(null);
@@ -178,6 +189,7 @@ const Slider = /* @__PURE__ */ React.forwardRef<SliderElement, SliderProps>(
     }
 
     function updateValues(value: number, atIndex: number, { commit } = { commit: false }) {
+      onUserInteraction();
       const decimalCount = getDecimalCount(step);
       const snapToStep = roundValue(Math.round((value - min) / step) * step + min, decimalCount);
       const nextValue = clamp(snapToStep, [min, max]);
@@ -224,6 +236,7 @@ const Slider = /* @__PURE__ */ React.forwardRef<SliderElement, SliderProps>(
         values={values}
         orientation={orientation}
         form={form}
+        userInteractionCount={userInteractionCount}
       >
         <Collection.Provider scope={props.__scopeSlider}>
           <Collection.Slot scope={props.__scopeSlider}>
@@ -813,13 +826,28 @@ const SliderBubbleInput = /* @__PURE__ */ React.forwardRef<
 >(
   // blank line to reduce diff noise
   function SliderBubbleInput(
-    { __scopeSlider, ...props }: ScopedProps<SliderBubbleInputProps>,
+    { __scopeSlider, onInput, ...props }: ScopedProps<SliderBubbleInputProps>,
     forwardedRef,
   ) {
     const { value, name, form } = useSliderThumbContext(BUBBLE_INPUT_NAME, __scopeSlider);
+    const { userInteractionCount } = useSliderContext(BUBBLE_INPUT_NAME, __scopeSlider);
     const ref = React.useRef<SliderBubbleInputElement>(null);
     const composedRefs = useComposedRefs(ref, forwardedRef);
-    const prevValue = usePrevious(value);
+
+    // When the value change is not driven by a user interaction (e.g. a
+    // controlled `value` update), the `input` event we dispatch to notify forms
+    // must not reach ancestor `onInput` handlers. We can't simply make it
+    // non-bubbling because React derives the `change` event forms rely on from a
+    // bubbling native `input` event. Instead we stop propagation of the
+    // synthetic input, which still lets the `change` event reach the form.
+    const shouldStopPropagationRef = React.useRef(false);
+    // The value we last synced to the input, and the interaction counter we last
+    // accounted for. Comparing against these lets us detect a genuine value
+    // change and whether it followed a user interaction, even on renders where
+    // the counter changed without the value (e.g. a drag that didn't cross a
+    // step boundary).
+    const prevValueRef = React.useRef(value);
+    const prevUserInteractionCountRef = React.useRef(userInteractionCount);
 
     // Bubble value change to parents (e.g form change event)
     React.useEffect(() => {
@@ -829,12 +857,20 @@ const SliderBubbleInput = /* @__PURE__ */ React.forwardRef<
       const inputProto = window.HTMLInputElement.prototype;
       const descriptor = Object.getOwnPropertyDescriptor(inputProto, 'value') as PropertyDescriptor;
       const setValue = descriptor.set;
-      if (prevValue !== value && setValue) {
+
+      const isUserInteraction = userInteractionCount !== prevUserInteractionCountRef.current;
+      prevUserInteractionCountRef.current = userInteractionCount;
+      const valueChanged = prevValueRef.current !== value;
+      prevValueRef.current = value;
+
+      if (valueChanged && setValue) {
+        shouldStopPropagationRef.current = !isUserInteraction;
         const event = new Event('input', { bubbles: true });
         setValue.call(input, value);
         input.dispatchEvent(event);
+        shouldStopPropagationRef.current = false;
       }
-    }, [prevValue, value]);
+    }, [value, userInteractionCount]);
 
     /**
      * We purposefully do not use `type="hidden"` here otherwise forms that
@@ -853,6 +889,14 @@ const SliderBubbleInput = /* @__PURE__ */ React.forwardRef<
         {...props}
         ref={composedRefs}
         defaultValue={value}
+        onInput={composeEventHandlers(onInput, (event) => {
+          // Prevent the synthetic `input` dispatched on controlled/programmatic
+          // updates from reaching ancestor `onInput` handlers, while still
+          // allowing the resulting `change` event to reach the form.
+          if (shouldStopPropagationRef.current) {
+            event.stopPropagation();
+          }
+        })}
       />
     );
   },

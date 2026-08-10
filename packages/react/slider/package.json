@@ -44,7 +44,6 @@
     "@radix-ui/react-primitive": "workspace:*",
     "@radix-ui/react-use-controllable-state": "workspace:*",
     "@radix-ui/react-use-layout-effect": "workspace:*",
-    "@radix-ui/react-use-previous": "workspace:*",
     "@radix-ui/react-use-size": "workspace:*"
   },
   "devDependencies": {

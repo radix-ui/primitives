@@ -798,4 +798,63 @@ describe('Slider.BubbleInput', () => {
     fireEvent.click(input);
     expect(onClick).toHaveBeenCalled();
   });
+
+  // Same class of bug as #4028 (fixed for Checkbox/Switch/RadioGroup), here for Slider.
+  it('does not bubble a programmatic value change to ancestor input listeners (#4096)', () => {
+    const ancestorInput = vi.fn();
+    const formChange = vi.fn();
+
+    function App({ value }: { value: number[] }) {
+      return (
+        <form onChange={formChange}>
+          <div onInput={ancestorInput}>
+            <Slider.Root value={value} onValueChange={() => {}} name="volume">
+              <Slider.Track>
+                <Slider.Range />
+              </Slider.Track>
+              <Slider.Thumb />
+            </Slider.Root>
+          </div>
+        </form>
+      );
+    }
+
+    const { rerender } = render(<App value={[50]} />);
+    ancestorInput.mockClear();
+    formChange.mockClear();
+
+    // Programmatic value change (not a user drag).
+    rerender(<App value={[0]} />);
+
+    // The synthetic input must reach the form (so FormData/onChange stay correct)
+    // but must not reach the arbitrary ancestor `onInput` listener.
+    expect(ancestorInput).not.toHaveBeenCalled();
+    expect(formChange).toHaveBeenCalled();
+  });
+
+  it('bubbles a user-driven value change to ancestor input listeners', async () => {
+    const user = userEvent.setup();
+    const ancestorInput = vi.fn();
+
+    render(
+      <form>
+        <div onInput={ancestorInput}>
+          <Slider.Root defaultValue={[50]} name="volume">
+            <Slider.Track>
+              <Slider.Range />
+            </Slider.Track>
+            <Slider.Thumb />
+          </Slider.Root>
+        </div>
+      </form>,
+    );
+
+    screen.getByRole('slider').focus();
+    ancestorInput.mockClear();
+
+    // A real keyboard interaction with the thumb should still notify ancestors.
+    await user.keyboard('{ArrowRight}');
+
+    expect(ancestorInput).toHaveBeenCalled();
+  });
 });
