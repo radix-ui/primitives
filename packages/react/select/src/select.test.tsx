@@ -1602,6 +1602,98 @@ describe('Select.ItemText', () => {
   it.todo("applies the consumer's `className` and `style`");
 });
 
+/* -----------------------------------------------------------------------------------------------*/
+
+// Same class of bug as #3265, fixed for Checkbox/Switch/RadioGroup in #4028 and
+// for Slider in #4100, but never ported to Select. Select's hidden bubble input
+// still dispatched a bubbling `change` event on programmatic `value` updates.
+describe('given a Select with a change-handling ancestor inside a form', () => {
+  afterEach(cleanupModal);
+
+  it('does not bubble a programmatic value change to ancestor `onChange` listeners (#4102)', () => {
+    const onFormChange = vi.fn();
+    const onAncestorChange = vi.fn();
+
+    function ControlledSelect({ value }: { value: string }) {
+      return (
+        <form onChange={onFormChange}>
+          <div onChange={onAncestorChange}>
+            <Select.Root value={value} onValueChange={() => {}}>
+              <Select.Trigger aria-label="Choice">
+                <Select.Value placeholder={PLACEHOLDER_TEXT} />
+              </Select.Trigger>
+              <Select.Portal>
+                <Select.Content position="popper">
+                  <Select.Viewport>
+                    <Select.Item value="apple">
+                      <Select.ItemText>Apple</Select.ItemText>
+                    </Select.Item>
+                    <Select.Item value="banana">
+                      <Select.ItemText>Banana</Select.ItemText>
+                    </Select.Item>
+                  </Select.Viewport>
+                </Select.Content>
+              </Select.Portal>
+            </Select.Root>
+          </div>
+        </form>
+      );
+    }
+
+    const { rerender } = render(<ControlledSelect value="apple" />);
+    onFormChange.mockClear();
+    onAncestorChange.mockClear();
+
+    // Programmatic value change (not a user selection).
+    rerender(<ControlledSelect value="banana" />);
+
+    // The synthetic `change` must not reach arbitrary ancestor `onChange`
+    // handlers (nor the wrapping form) when the value was updated programmatically.
+    expect(onAncestorChange).not.toHaveBeenCalled();
+    expect(onFormChange).not.toHaveBeenCalled();
+  });
+
+  it('bubbles a user-driven value change to ancestor `onChange` listeners', () => {
+    const onFormChange = vi.fn();
+    const onAncestorChange = vi.fn();
+
+    render(
+      <form onChange={onFormChange}>
+        <div onChange={onAncestorChange}>
+          <Select.Root defaultOpen defaultValue="apple">
+            <Select.Trigger aria-label="Choice">
+              <Select.Value placeholder={PLACEHOLDER_TEXT} />
+            </Select.Trigger>
+            <Select.Portal>
+              <Select.Content position="popper">
+                <Select.Viewport>
+                  <Select.Item value="apple">
+                    <Select.ItemText>Apple</Select.ItemText>
+                  </Select.Item>
+                  <Select.Item value="banana">
+                    <Select.ItemText>Banana</Select.ItemText>
+                  </Select.Item>
+                </Select.Viewport>
+              </Select.Content>
+            </Select.Portal>
+          </Select.Root>
+        </div>
+      </form>,
+    );
+
+    onFormChange.mockClear();
+    onAncestorChange.mockClear();
+
+    // A real user selection should still notify ancestor `onChange` handlers.
+    fireEvent.click(
+      within(screen.getByRole('listbox')).getByRole('option', { name: 'Banana' }),
+    );
+
+    expect(onAncestorChange).toHaveBeenCalled();
+    expect(onFormChange).toHaveBeenCalled();
+  });
+});
+
 function cleanupModal() {
   cleanup();
   // Open content is a modal layer, which sets this on the `body` and only

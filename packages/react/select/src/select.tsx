@@ -19,7 +19,6 @@ import { createSlot } from '@radix-ui/react-slot';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
-import { usePrevious } from '@radix-ui/react-use-previous';
 import { VISUALLY_HIDDEN_STYLES } from '@radix-ui/react-visually-hidden';
 import { hideOthers } from 'aria-hidden';
 import { RemoveScroll } from 'react-remove-scroll';
@@ -71,6 +70,8 @@ type SelectContextValue = {
   contentId: string;
   value: string | undefined;
   onValueChange(value: string): void;
+  userInteractionCount: number;
+  onUserInteraction(): void;
   open: boolean;
   required?: boolean;
   onOpenChange(open: boolean): void;
@@ -192,6 +193,17 @@ function SelectProvider(props: ScopedProps<SelectProviderProps>) {
     onChange: onValueChange as any,
     caller: SELECT_NAME,
   });
+
+  // Incremented on every user interaction that changes the selected value
+  // (selecting an item, or a typeahead selection). The bubble input compares
+  // this against the counter it last handled to tell whether a value change was
+  // driven by the user vs. a controlled/programmatic update. Using a counter
+  // guarantees the marker is updated in the same commit as the resulting render,
+  // so it can never go stale and leak into a later programmatic update.
+  const [userInteractionCount, onUserInteraction] = React.useReducer(
+    (count: number): number => count + 1,
+    0,
+  );
   const triggerPointerDownPosRef = React.useRef<{ x: number; y: number } | null>(null);
 
   const initialValueRef = React.useRef(value);
@@ -241,6 +253,8 @@ function SelectProvider(props: ScopedProps<SelectProviderProps>) {
     contentId,
     value,
     onValueChange: setValue,
+    userInteractionCount,
+    onUserInteraction,
     open,
     onOpenChange: setOpen,
     dir: direction,
@@ -324,6 +338,7 @@ const SelectTrigger = /* @__PURE__ */ React.forwardRef<SelectTriggerElement, Sel
       const currentItem = enabledItems.find((item) => item.value === context.value);
       const nextItem = findNextItem(enabledItems, search, currentItem);
       if (nextItem !== undefined) {
+        context.onUserInteraction();
         context.onValueChange(nextItem.value);
       }
     });
@@ -1370,6 +1385,7 @@ const SelectItem = /* @__PURE__ */ React.forwardRef<SelectItemElement, SelectIte
     const pointerTypeRef = React.useRef<React.PointerEvent['pointerType']>('touch');
 
     const handleSelect = () => {
+      context.onUserInteraction();
       context.onValueChange(value);
       context.onOpenChange(false);
     };
@@ -1770,12 +1786,36 @@ const SelectBubbleInput = /* @__PURE__ */ React.forwardRef<
     forwardedRef,
   ) {
     const context = useSelectContext(BUBBLE_INPUT_NAME, __scopeSelect);
-    const { value, onValueChange, required, disabled, name, autoComplete, form } = context;
+    const {
+      value,
+      onValueChange,
+      required,
+      disabled,
+      name,
+      autoComplete,
+      form,
+      userInteractionCount,
+    } = context;
     const { nativeOptions, nativeSelectKey } = context;
     const ref = React.useRef<SelectBubbleInputElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, ref);
     const selectValue = value ?? '';
-    const prevValue = usePrevious(selectValue);
+
+    // When the value change is not driven by a user interaction (e.g. a
+    // controlled `value` update), the `change` event we dispatch to notify forms
+    // must not reach ancestor `onChange` handlers. We keep the event bubbling
+    // (React processes events via delegation at the root) but stop its
+    // propagation in the composed `onChange` handler, so the native select's
+    // value still stays in sync for form submission without leaking to
+    // arbitrary ancestor `onChange` listeners.
+    const shouldStopPropagationRef = React.useRef(false);
+    // The value we last synced to the native select, and the interaction counter
+    // we last accounted for. Comparing against these lets us detect a genuine
+    // value change and whether it followed a user interaction, even on renders
+    // where the counter changed without the value (e.g. selecting an already
+    // selected item).
+    const prevValueRef = React.useRef(selectValue);
+    const prevUserInteractionCountRef = React.useRef(userInteractionCount);
 
     // A consumer may render a `Select.Item` with an empty value to act as a
     // "clear" option. In that case it already provides a native `<option>` with
@@ -1796,21 +1836,31 @@ const SelectBubbleInput = /* @__PURE__ */ React.forwardRef<
         'value',
       ) as PropertyDescriptor;
       const setValue = descriptor.set;
-      if (prevValue !== selectValue && setValue) {
+
+      const isUserInteraction = userInteractionCount !== prevUserInteractionCountRef.current;
+      prevUserInteractionCountRef.current = userInteractionCount;
+      const valueChanged = prevValueRef.current !== selectValue;
+      prevValueRef.current = selectValue;
+
+      if (valueChanged && setValue) {
+        shouldStopPropagationRef.current = !isUserInteraction;
         const event = new Event('change', { bubbles: true });
         setValue.call(select, selectValue);
         select.dispatchEvent(event);
+        shouldStopPropagationRef.current = false;
       }
-    }, [prevValue, selectValue]);
+    }, [selectValue, userInteractionCount]);
 
     /**
      * We purposefully use a `select` here to support form autofill as much as
      * possible.
      *
      * We purposefully do not add the `value` attribute here to allow the value
-     * to be set programmatically and bubble to any parent form `onChange`
-     * event. Adding the `value` will cause React to consider the programmatic
-     * dispatch a duplicate and it will get swallowed.
+     * to be set programmatically and dispatch a `change` event that keeps any
+     * parent form's `onChange` in sync for user-driven selections (programmatic
+     * updates only sync the native select's value; their event is stopped at the
+     * input). Adding the `value` attribute would cause React to consider the
+     * programmatic dispatch a duplicate and it would get swallowed.
      *
      * We use visually hidden styles rather than `display: "none"` because
      * Safari autofill won't work otherwise.
@@ -1831,7 +1881,17 @@ const SelectBubbleInput = /* @__PURE__ */ React.forwardRef<
         autoComplete={autoComplete}
         disabled={disabled}
         form={form}
-        onChange={(event) => onValueChange(event.target.value)}
+        onChange={composeEventHandlers(
+          (event) => onValueChange(event.target.value),
+          (event) => {
+            // Prevent the synthetic `change` dispatched on controlled/programmatic
+            // updates from reaching ancestor `onChange` handlers, while still
+            // keeping the native select's value in sync for form submission.
+            if (shouldStopPropagationRef.current) {
+              event.stopPropagation();
+            }
+          },
+        )}
         {...props}
         style={{ ...VISUALLY_HIDDEN_STYLES, ...props.style }}
         ref={composedRefs}
