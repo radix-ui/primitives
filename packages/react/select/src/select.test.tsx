@@ -1602,6 +1602,97 @@ describe('Select.ItemText', () => {
   it.todo("applies the consumer's `className` and `style`");
 });
 
+describe('bubble input change event', () => {
+  afterEach(() => {
+    cleanup();
+    document.body.style.pointerEvents = '';
+  });
+
+  it('should not bubble a change event to ancestor form on programmatic value update', () => {
+    const formOnChange = vi.fn();
+
+    function ControlledSelect() {
+      const [value, setValue] = React.useState('apple');
+      return (
+        <form onChange={formOnChange}>
+          <Select.Root value={value} onValueChange={setValue}>
+            <Select.Trigger aria-label="Choice">
+              <Select.Value placeholder="Pick one" />
+            </Select.Trigger>
+            <Select.Portal>
+              <Select.Content position="popper">
+                <Select.Viewport>
+                  <Select.Item value="apple">
+                    <Select.ItemText>Apple</Select.ItemText>
+                  </Select.Item>
+                  <Select.Item value="banana">
+                    <Select.ItemText>Banana</Select.ItemText>
+                  </Select.Item>
+                </Select.Viewport>
+              </Select.Content>
+            </Select.Portal>
+          </Select.Root>
+          <button
+            type="button"
+            data-testid="programmatic-setter"
+            onClick={() => setValue('banana')}
+          >
+            set programmatically
+          </button>
+        </form>
+      );
+    }
+
+    render(<ControlledSelect />);
+
+    // Programmatic update should not bubble a change event
+    fireEvent.click(screen.getByTestId('programmatic-setter'));
+    expect(formOnChange).not.toHaveBeenCalled();
+  });
+
+  it('should bubble a change event to ancestor form on user interaction', async () => {
+    const formOnChange = vi.fn();
+
+    render(
+      <form onChange={formOnChange}>
+        <Select.Root>
+          <Select.Trigger aria-label="Choice">
+            <Select.Value placeholder="Pick one" />
+          </Select.Trigger>
+          <Select.Portal>
+            <Select.Content position="popper">
+              <Select.Viewport>
+                <Select.Item value="apple">
+                  <Select.ItemText>Apple</Select.ItemText>
+                </Select.Item>
+                <Select.Item value="banana">
+                  <Select.ItemText>Banana</Select.ItemText>
+                </Select.Item>
+              </Select.Viewport>
+            </Select.Content>
+          </Select.Portal>
+        </Select.Root>
+      </form>,
+    );
+
+    // Open the Select
+    const trigger = screen.getByRole('combobox');
+    await act(async () => {
+      fireEvent.click(trigger);
+    });
+
+    // Wait for the dropdown to open and select an item
+    const listbox = await screen.findByRole('listbox', { hidden: true });
+    const banana = within(listbox).getByRole('option', { name: 'Banana' });
+    await act(async () => {
+      fireEvent.click(banana);
+    });
+
+    // User interaction should bubble a change event
+    expect(formOnChange).toHaveBeenCalled();
+  });
+});
+
 function cleanupModal() {
   cleanup();
   // Open content is a modal layer, which sets this on the `body` and only

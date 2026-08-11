@@ -19,7 +19,6 @@ import { createSlot } from '@radix-ui/react-slot';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
-import { usePrevious } from '@radix-ui/react-use-previous';
 import { VISUALLY_HIDDEN_STYLES } from '@radix-ui/react-visually-hidden';
 import { hideOthers } from 'aria-hidden';
 import { RemoveScroll } from 'react-remove-scroll';
@@ -83,6 +82,9 @@ type SelectContextValue = {
   nativeOptions: Set<NativeOption>;
   nativeSelectKey: string;
   isFormControl: boolean;
+  hasConsumerStoppedPropagationRef: React.RefObject<boolean>;
+  userInteractionCount: number;
+  onUserInteraction: () => void;
 };
 
 const [SelectProviderImpl, useSelectContext] = createSelectContext<SelectContextValue>(SELECT_NAME);
@@ -193,6 +195,18 @@ function SelectProvider(props: ScopedProps<SelectProviderProps>) {
     caller: SELECT_NAME,
   });
   const triggerPointerDownPosRef = React.useRef<{ x: number; y: number } | null>(null);
+  const hasConsumerStoppedPropagationRef = React.useRef(false);
+
+  // Incremented on every user interaction that changes the value. The bubble
+  // input compares this against the count it last handled to tell whether a
+  // `value` change was driven by the user (vs. a controlled/programmatic
+  // update). Using a counter guarantees the marker is updated in the same
+  // commit as the resulting render, so it can never go stale and leak into a
+  // later programmatic update.
+  const [userInteractionCount, onUserInteraction] = React.useReducer(
+    (count: number): number => count + 1,
+    0,
+  );
 
   const initialValueRef = React.useRef(value);
   React.useEffect(() => {
@@ -252,6 +266,9 @@ function SelectProvider(props: ScopedProps<SelectProviderProps>) {
     nativeOptions: nativeOptionsSet,
     nativeSelectKey,
     isFormControl,
+    hasConsumerStoppedPropagationRef,
+    userInteractionCount,
+    onUserInteraction,
   };
 
   return (
@@ -324,6 +341,7 @@ const SelectTrigger = /* @__PURE__ */ React.forwardRef<SelectTriggerElement, Sel
       const currentItem = enabledItems.find((item) => item.value === context.value);
       const nextItem = findNextItem(enabledItems, search, currentItem);
       if (nextItem !== undefined) {
+        context.onUserInteraction();
         context.onValueChange(nextItem.value);
       }
     });
@@ -1370,6 +1388,7 @@ const SelectItem = /* @__PURE__ */ React.forwardRef<SelectItemElement, SelectIte
     const pointerTypeRef = React.useRef<React.PointerEvent['pointerType']>('touch');
 
     const handleSelect = () => {
+      context.onUserInteraction();
       context.onValueChange(value);
       context.onOpenChange(false);
     };
@@ -1770,12 +1789,27 @@ const SelectBubbleInput = /* @__PURE__ */ React.forwardRef<
     forwardedRef,
   ) {
     const context = useSelectContext(BUBBLE_INPUT_NAME, __scopeSelect);
-    const { value, onValueChange, required, disabled, name, autoComplete, form } = context;
+    const {
+      value,
+      onValueChange,
+      required,
+      disabled,
+      name,
+      autoComplete,
+      form,
+      hasConsumerStoppedPropagationRef,
+      userInteractionCount,
+    } = context;
     const { nativeOptions, nativeSelectKey } = context;
     const ref = React.useRef<SelectBubbleInputElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, ref);
     const selectValue = value ?? '';
-    const prevValue = usePrevious(selectValue);
+    // The `value` we last synced to the input, and the interaction counter we
+    // last accounted for. Comparing against these lets us detect a genuine
+    // `value` change and whether it followed a user interaction, even on
+    // renders caused by re-opens that don't change `value`.
+    const prevValueRef = React.useRef(selectValue);
+    const prevUserInteractionCountRef = React.useRef(userInteractionCount);
 
     // A consumer may render a `Select.Item` with an empty value to act as a
     // "clear" option. In that case it already provides a native `<option>` with
@@ -1796,12 +1830,24 @@ const SelectBubbleInput = /* @__PURE__ */ React.forwardRef<
         'value',
       ) as PropertyDescriptor;
       const setValue = descriptor.set;
-      if (prevValue !== selectValue && setValue) {
-        const event = new Event('change', { bubbles: true });
+
+      const isUserInteraction = userInteractionCount !== prevUserInteractionCountRef.current;
+      prevUserInteractionCountRef.current = userInteractionCount;
+      const valueChanged = prevValueRef.current !== selectValue;
+      prevValueRef.current = selectValue;
+
+      // Only bubble the change event when the value change was driven by a user
+      // interaction. A controlled/programmatic update to `<Select value>` must
+      // not be observable by ancestor `onChange` handlers as if the user had
+      // interacted. When the change did come from the user, respect whether the
+      // consumer stopped propagation.
+      const bubbles = !(isUserInteraction && hasConsumerStoppedPropagationRef.current);
+      if (valueChanged && setValue) {
+        const event = new Event('change', { bubbles });
         setValue.call(select, selectValue);
         select.dispatchEvent(event);
       }
-    }, [prevValue, selectValue]);
+    }, [selectValue, userInteractionCount, hasConsumerStoppedPropagationRef]);
 
     /**
      * We purposefully use a `select` here to support form autofill as much as
