@@ -329,8 +329,17 @@ const RovingFocusGroupItem = /* @__PURE__ */ React.forwardRef<
               /**
                * Imperative focus during keydown is risky so we prevent React's batching updates
                * to avoid potential bugs. See: https://github.com/facebook/react/issues/20332
+               *
+               * We use `queueMicrotask` rather than `setTimeout` so the focus move happens in a
+               * microtask (before the next macrotask). Consumers such as `RadioGroup` rely on a
+               * document-level `keydown`/`keyup` listener pair to detect arrow-key navigation and
+               * "check" the newly focused item. With `setTimeout`, the paired `keyup` (a macrotask)
+               * fires before the deferred `focusFirst` runs, so the arrow-key flag is already cleared
+               * by the time the moved item's `onFocus` handler checks it — focus moves but the
+               * selection is never committed. Firing in a microtask guarantees the focus (and its
+               * `onFocus`) lands before `keyup`, keeping the flag intact.
                */
-              setTimeout(() => focusFirst(candidateNodes));
+              queueMicrotask(() => focusFirst(candidateNodes));
             }
           })}
         >
