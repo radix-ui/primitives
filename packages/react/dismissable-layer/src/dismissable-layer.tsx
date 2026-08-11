@@ -98,7 +98,15 @@ const DismissableLayer = /* @__PURE__ */ React.forwardRef<
         ? layers.indexOf(highestLayerWithOutsidePointerEventsDisabled)
         : -1;
     const index = node ? layers.indexOf(node) : -1;
-    const isBodyPointerEventsDisabled = context.layersWithOutsidePointerEventsDisabled.size > 0;
+    // Include this layer's own `disableOutsidePointerEvents` so the layer
+    // renders its `pointer-events: auto` override in the same commit that
+    // disables the body's pointer-events (which happens in an effect, one
+    // render later). Without this, a frame can paint where the `body` is
+    // `none` but the layer has no override yet and inherits `none`, making it
+    // briefly unclickable on the first frame it appears in production builds.
+    // See: https://github.com/radix-ui/primitives/issues/4093
+    const isBodyPointerEventsDisabled =
+      context.layersWithOutsidePointerEventsDisabled.size > 0 || disableOutsidePointerEvents;
     const isPointerEventsEnabled = index >= highestLayerWithOutsidePointerEventsDisabledIndex;
     const isDeferredPointerDownOutsideRef = React.useRef(false);
 
