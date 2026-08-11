@@ -386,6 +386,37 @@ describe('submenus', () => {
     fireEvent.keyDown(subTrigger, { key: 'ArrowRight' });
     expect(screen.queryByText('Github')).not.toBeInTheDocument();
   });
+
+  it('fires `onClick` when clicking an item inside a nested submenu', async () => {
+    const onClick = vi.fn();
+    render(
+      <ContextMenu.Root>
+        <ContextMenu.Trigger>{TRIGGER_TEXT}</ContextMenu.Trigger>
+        <ContextMenu.Portal>
+          <ContextMenu.Content>
+            <ContextMenu.Sub>
+              <ContextMenu.SubTrigger>Bookmarks</ContextMenu.SubTrigger>
+              <ContextMenu.Portal>
+                <ContextMenu.SubContent>
+                  <ContextMenu.Item onClick={onClick}>Inbox</ContextMenu.Item>
+                </ContextMenu.SubContent>
+              </ContextMenu.Portal>
+            </ContextMenu.Sub>
+          </ContextMenu.Content>
+        </ContextMenu.Portal>
+      </ContextMenu.Root>,
+    );
+
+    fireEvent.contextMenu(screen.getByText(TRIGGER_TEXT));
+    const subTrigger = await screen.findByText('Bookmarks');
+
+    fireEvent.keyDown(subTrigger, { key: 'ArrowRight' });
+    const subItem = await screen.findByText('Inbox');
+    await waitFor(() => expect(subItem).toBeVisible());
+
+    fireEvent.click(subItem);
+    expect(onClick).toHaveBeenCalledTimes(1);
+  });
 });
 
 describe('modality', () => {

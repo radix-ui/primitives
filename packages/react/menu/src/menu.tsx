@@ -1256,8 +1256,15 @@ const MenuSubContent = /* @__PURE__ */ React.forwardRef<MenuSubContentElement, M
               onCloseAutoFocus={(event) => event.preventDefault()}
               onFocusOutside={composeEventHandlers(props.onFocusOutside, (event) => {
                 // We prevent closing when the trigger is focused to avoid triggering a re-open animation
-                // on pointer interaction.
-                if (event.target !== subContext.trigger) context.onOpenChange(false);
+                // on pointer interaction. We also prevent closing when focus moves to an item inside
+                // this submenu's own content (e.g. a normal click on a MenuItem), since the item's
+                // click handler would otherwise never fire.
+                if (
+                  event.target !== subContext.trigger &&
+                  !ref.current?.contains(event.target as Node)
+                ) {
+                  context.onOpenChange(false);
+                }
               })}
               onEscapeKeyDown={composeEventHandlers(props.onEscapeKeyDown, (event) => {
                 rootContext.onClose();
