@@ -1602,6 +1602,124 @@ describe('Select.ItemText', () => {
   it.todo("applies the consumer's `className` and `style`");
 });
 
+describe('Select.Item aria-posinset/aria-setsize', () => {
+  afterEach(cleanupModal);
+
+  it('declares each ungrouped option position within the full list', () => {
+    render(
+      <Select.Root defaultOpen>
+        <Select.Trigger>
+          <Select.Value placeholder="Pick one" />
+        </Select.Trigger>
+        <Select.Portal>
+          <Select.Content>
+            <Select.Viewport>
+              <Select.Item value="apple">
+                <Select.ItemText>Apple</Select.ItemText>
+              </Select.Item>
+              <Select.Item value="banana">
+                <Select.ItemText>Banana</Select.ItemText>
+              </Select.Item>
+              <Select.Item value="cherry">
+                <Select.ItemText>Cherry</Select.ItemText>
+              </Select.Item>
+              <Select.Item value="date">
+                <Select.ItemText>Date</Select.ItemText>
+              </Select.Item>
+              <Select.Item value="elderberry">
+                <Select.ItemText>Elderberry</Select.ItemText>
+              </Select.Item>
+            </Select.Viewport>
+          </Select.Content>
+        </Select.Portal>
+      </Select.Root>,
+    );
+
+    const listbox = screen.getByRole('listbox');
+    const apple = within(listbox).getByRole('option', { name: 'Apple' });
+    const banana = within(listbox).getByRole('option', { name: 'Banana' });
+    const elderberry = within(listbox).getByRole('option', { name: 'Elderberry' });
+
+    expect(apple).toHaveAttribute('aria-posinset', '1');
+    expect(apple).toHaveAttribute('aria-setsize', '5');
+    expect(banana).toHaveAttribute('aria-posinset', '2');
+    expect(banana).toHaveAttribute('aria-setsize', '5');
+    expect(elderberry).toHaveAttribute('aria-posinset', '5');
+    expect(elderberry).toHaveAttribute('aria-setsize', '5');
+  });
+
+  it('counts position within each group, not across the whole list', () => {
+    render(
+      <Select.Root defaultOpen>
+        <Select.Trigger>
+          <Select.Value placeholder="Pick one" />
+        </Select.Trigger>
+        <Select.Portal>
+          <Select.Content>
+            <Select.Viewport>
+              <Select.Group>
+                <Select.Label>Fruits</Select.Label>
+                <Select.Item value="apple">
+                  <Select.ItemText>Apple</Select.ItemText>
+                </Select.Item>
+                <Select.Item value="banana">
+                  <Select.ItemText>Banana</Select.ItemText>
+                </Select.Item>
+              </Select.Group>
+              <Select.Group>
+                <Select.Label>Vegetables</Select.Label>
+                <Select.Item value="carrot">
+                  <Select.ItemText>Carrot</Select.ItemText>
+                </Select.Item>
+              </Select.Group>
+            </Select.Viewport>
+          </Select.Content>
+        </Select.Portal>
+      </Select.Root>,
+    );
+
+    const listbox = screen.getByRole('listbox');
+    const banana = within(listbox).getByRole('option', { name: 'Banana' });
+    const carrot = within(listbox).getByRole('option', { name: 'Carrot' });
+
+    // Second item of the first group: position within that group.
+    expect(banana).toHaveAttribute('aria-posinset', '2');
+    expect(banana).toHaveAttribute('aria-setsize', '2');
+    // Only item of the second group: restarts the count.
+    expect(carrot).toHaveAttribute('aria-posinset', '1');
+    expect(carrot).toHaveAttribute('aria-setsize', '1');
+  });
+
+  it('leaves the attributes unset until the option is mounted', () => {
+    render(
+      <Select.Root>
+        <Select.Trigger>
+          <Select.Value placeholder="Pick one" />
+        </Select.Trigger>
+        <Select.Portal>
+          <Select.Content>
+            <Select.Viewport>
+              <Select.Item value="apple">
+                <Select.ItemText>Apple</Select.ItemText>
+              </Select.Item>
+            </Select.Viewport>
+          </Select.Content>
+        </Select.Portal>
+      </Select.Root>,
+    );
+
+    // Content is not rendered until the Select opens, so no listbox exists yet.
+    expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+
+    // Open it, then the option declares its position.
+    fireEvent.click(screen.getByRole('combobox'));
+    const listbox = screen.getByRole('listbox');
+    const apple = within(listbox).getByRole('option', { name: 'Apple' });
+    expect(apple).toHaveAttribute('aria-posinset', '1');
+    expect(apple).toHaveAttribute('aria-setsize', '1');
+  });
+});
+
 function cleanupModal() {
   cleanup();
   // Open content is a modal layer, which sets this on the `body` and only

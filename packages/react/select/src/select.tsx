@@ -1365,7 +1365,42 @@ const SelectItem = /* @__PURE__ */ React.forwardRef<SelectItemElement, SelectIte
     const handleItemRefCallback = useCallbackRef((node: SelectItemElement | null) =>
       contentContext.itemRefCallback?.(node, value, disabled),
     );
-    const composedRefs = useComposedRefs(forwardedRef, handleItemRefCallback);
+
+    // VoiceOver + Chrome fails to derive "position of total" (e.g. "Banana, 2
+    // of 5") from a scrollable listbox with real focus on each option: it
+    // announces an incorrect count based on the options currently visible in
+    // the viewport, or omits the count entirely when no value is preselected.
+    // Other combos (Safari+VoiceOver, NVDA+Chrome) happen to work, but the
+    // announced position is only reliable when the option declares it
+    // explicitly. We compute aria-posinset/aria-setsize from the DOM: each
+    // option counts itself within its own list container - the enclosing
+    // [role="group"] when the item sits in a Select.Group, otherwise the
+    // [role="listbox"] - so the totals stay correct for grouped selects too.
+    const [ariaPosinset, setAriaPosinset] = React.useState<number | undefined>(undefined);
+    const [ariaSetsize, setAriaSetsize] = React.useState<number | undefined>(undefined);
+    const itemRef = React.useRef<SelectItemElement | null>(null);
+    const composedRefs = useComposedRefs(forwardedRef, handleItemRefCallback, itemRef);
+
+    React.useLayoutEffect(() => {
+      const option = itemRef.current;
+      if (!option) return;
+      // The list container is the option's immediate parent: the [role="group"]
+      // when the item sits in a Select.Group, otherwise the viewport inside the
+      // [role="listbox"]. Counting direct option children of that container
+      // yields the position within the correct list (grouped selects count
+      // per-group, ungrouped selects count all options).
+      const list = option.parentElement;
+      if (!list) return;
+      const options = Array.from(list.querySelectorAll(':scope > [role="option"]'));
+      const index = options.indexOf(option);
+      if (index === -1) return;
+      setAriaPosinset(index + 1);
+      setAriaSetsize(options.length);
+      // The select content mounts all its options in the same commit, so the
+      // DOM-derived positions are stable for the lifetime of the opened list;
+      // an empty dependency list (compute once on mount) is intentional.
+      // oxlint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
     const textId = useId();
     const pointerTypeRef = React.useRef<React.PointerEvent['pointerType']>('touch');
 
@@ -1394,6 +1429,8 @@ const SelectItem = /* @__PURE__ */ React.forwardRef<SelectItemElement, SelectIte
           <Primitive.div
             role="option"
             aria-labelledby={textId}
+            aria-posinset={ariaPosinset}
+            aria-setsize={ariaSetsize}
             data-highlighted={isFocused ? '' : undefined}
             // `isFocused` caveat fixes stuttering in VoiceOver
             aria-selected={isSelected && isFocused}
