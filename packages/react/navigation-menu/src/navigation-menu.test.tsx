@@ -21,6 +21,36 @@ const NavigationMenuTest = (props: React.ComponentProps<typeof NavigationMenu.Ro
   </NavigationMenu.Root>
 );
 
+const useNavigationMenuScope = NavigationMenu.createNavigationMenuScope();
+
+const ScopedNavigationMenuTest = () => {
+  const scope = useNavigationMenuScope(undefined);
+
+  return (
+    <NavigationMenu.Root {...scope} defaultValue="one">
+      <NavigationMenu.List {...scope}>
+        <NavigationMenu.Item {...scope} value="one">
+          <NavigationMenu.Trigger {...scope}>{TRIGGER_TEXT}</NavigationMenu.Trigger>
+          <NavigationMenu.Content {...scope}>
+            <NavigationMenu.Link {...scope} href="#">
+              {CONTENT_TEXT}
+            </NavigationMenu.Link>
+          </NavigationMenu.Content>
+        </NavigationMenu.Item>
+      </NavigationMenu.List>
+    </NavigationMenu.Root>
+  );
+};
+
+describe('scoped NavigationMenu', () => {
+  afterEach(cleanup);
+
+  it('forwards scope to internal focus groups', () => {
+    render(<ScopedNavigationMenuTest />);
+    expect(screen.getByText(CONTENT_TEXT)).toBeInTheDocument();
+  });
+});
+
 describe('aria-controls', () => {
   afterEach(cleanup);
 

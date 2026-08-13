@@ -452,6 +452,7 @@ const NavigationMenuList = /* @__PURE__ */ React.forwardRef<
   function NavigationMenuList(props: ScopedProps<NavigationMenuListProps>, forwardedRef) {
     const { __scopeNavigationMenu, ...listProps } = props;
     const context = useNavigationMenuContext(LIST_NAME, __scopeNavigationMenu);
+    const focusGroupProps = { __scopeNavigationMenu };
 
     const list = (
       <Primitive.ul data-orientation={context.orientation} {...listProps} ref={forwardedRef} />
@@ -460,7 +461,13 @@ const NavigationMenuList = /* @__PURE__ */ React.forwardRef<
     return (
       <Primitive.div style={{ position: 'relative' }} ref={context.onIndicatorTrackChange}>
         <Collection.Slot scope={__scopeNavigationMenu}>
-          {context.isRootMenu ? <FocusGroup asChild>{list}</FocusGroup> : list}
+          {context.isRootMenu ? (
+            <FocusGroup asChild {...focusGroupProps}>
+              {list}
+            </FocusGroup>
+          ) : (
+            list
+          )}
         </Collection.Slot>
       </Primitive.div>
     );
@@ -564,6 +571,7 @@ const NavigationMenuTrigger = /* @__PURE__ */ React.forwardRef<
   const { __scopeNavigationMenu, disabled, ...triggerProps } = props;
   const context = useNavigationMenuContext(TRIGGER_NAME, props.__scopeNavigationMenu);
   const itemContext = useNavigationMenuItemContext(TRIGGER_NAME, props.__scopeNavigationMenu);
+  const focusGroupItemProps = { __scopeNavigationMenu };
   const ref = React.useRef<NavigationMenuTriggerElement>(null);
   const composedRefs = useComposedRefs(ref, itemContext.triggerRef, forwardedRef);
   const triggerId = makeTriggerId(context.baseId, itemContext.value);
@@ -575,7 +583,7 @@ const NavigationMenuTrigger = /* @__PURE__ */ React.forwardRef<
   return (
     <>
       <Collection.ItemSlot scope={__scopeNavigationMenu} value={itemContext.value}>
-        <FocusGroupItem asChild>
+        <FocusGroupItem asChild {...focusGroupItemProps}>
           <Primitive.button
             id={triggerId}
             disabled={disabled}
@@ -676,9 +684,10 @@ const NavigationMenuLink = /* @__PURE__ */ React.forwardRef<
   // blank line to reduce diff noise
   function NavigationMenuLink(props: ScopedProps<NavigationMenuLinkProps>, forwardedRef) {
     const { __scopeNavigationMenu, active, onSelect, ...linkProps } = props;
+    const focusGroupItemProps = { __scopeNavigationMenu };
 
     return (
-      <FocusGroupItem asChild>
+      <FocusGroupItem asChild {...focusGroupItemProps}>
         <Primitive.a
           data-active={active ? '' : undefined}
           aria-current={active ? 'page' : undefined}
@@ -947,6 +956,7 @@ const NavigationMenuContentImpl = /* @__PURE__ */ React.forwardRef<
     ...contentProps
   } = props;
   const context = useNavigationMenuContext(CONTENT_NAME, __scopeNavigationMenu);
+  const focusGroupProps = { __scopeNavigationMenu };
   const ref = React.useRef<NavigationMenuContentImplElement>(null);
   const composedRefs = useComposedRefs(ref, forwardedRef);
   const triggerId = makeTriggerId(context.baseId, value);
@@ -1002,7 +1012,7 @@ const NavigationMenuContentImpl = /* @__PURE__ */ React.forwardRef<
   }, [context.previousValue, context.value, context.dir, getItems, value]);
 
   return (
-    <FocusGroup asChild>
+    <FocusGroup asChild {...focusGroupProps}>
       <DismissableLayer
         id={contentId}
         aria-labelledby={triggerId}
