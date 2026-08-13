@@ -1365,9 +1365,36 @@ const SelectItem = /* @__PURE__ */ React.forwardRef<SelectItemElement, SelectIte
     const handleItemRefCallback = useCallbackRef((node: SelectItemElement | null) =>
       contentContext.itemRefCallback?.(node, value, disabled),
     );
-    const composedRefs = useComposedRefs(forwardedRef, handleItemRefCallback);
+    const itemRef = React.useRef<SelectItemElement | null>(null);
+    const composedRefs = useComposedRefs(forwardedRef, handleItemRefCallback, itemRef);
     const textId = useId();
     const pointerTypeRef = React.useRef<React.PointerEvent['pointerType']>('touch');
+
+    // Set aria-posinset/aria-setsize synchronously on the DOM node (no React
+    // state round-trip) so that screen readers see the attributes on the very
+    // first read of an option — including the first focused option when no
+    // value is preselected, which VoiceOver + Chrome otherwise announces
+    // before a state-driven re-render would have applied the attributes.
+    // The list container is the option's immediate parent: the [role="group"]
+    // when the item sits in a Select.Group, otherwise the viewport inside the
+    // [role="listbox"]. Counting direct option children of that container
+    // yields the position within the correct list (grouped selects count
+    // per-group, ungrouped selects count all options).
+    React.useLayoutEffect(() => {
+      const option = itemRef.current;
+      if (!option) return;
+      const list = option.parentElement;
+      if (!list) return;
+      const options = Array.from(list.querySelectorAll(':scope > [role="option"]'));
+      const index = options.indexOf(option);
+      if (index === -1) return;
+      option.setAttribute('aria-posinset', String(index + 1));
+      option.setAttribute('aria-setsize', String(options.length));
+      // The select content mounts all its options in the same commit, so the
+      // DOM-derived positions are stable for the lifetime of the opened list;
+      // an empty dependency list (compute once on mount) is intentional.
+      // oxlint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const handleSelect = () => {
       context.onValueChange(value);
