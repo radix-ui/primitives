@@ -80,6 +80,14 @@ const [MenuProvider, useMenuContext] = createMenuContext<MenuContextValue>(MENU_
 type MenuRootContextValue = {
   onClose(): void;
   isUsingKeyboardRef: React.RefObject<boolean>;
+  /**
+   * Set while a menu content is focusing itself on mount. Submenus use this to
+   * distinguish mount auto-focus from user-driven focus changes so that
+   * `defaultOpen` submenus aren't dismissed via `onFocusOutside` when the
+   * parent content receives its initial focus.
+   * See: https://github.com/radix-ui/primitives/issues/2551
+   */
+  isMountAutoFocusingRef: React.RefObject<boolean>;
   dir: Direction;
   modal: boolean;
 };
@@ -99,6 +107,7 @@ const Menu: React.FC<MenuProps> = (props: ScopedProps<MenuProps>) => {
   const popperScope = usePopperScope(__scopeMenu);
   const [content, setContent] = React.useState<MenuContentElement | null>(null);
   const isUsingKeyboardRef = React.useRef(false);
+  const isMountAutoFocusingRef = React.useRef(false);
   const handleOpenChange = useCallbackRef(onOpenChange);
   const direction = useDirection(dir);
 
@@ -145,6 +154,7 @@ const Menu: React.FC<MenuProps> = (props: ScopedProps<MenuProps>) => {
           scope={__scopeMenu}
           onClose={React.useCallback(() => handleOpenChange(false), [handleOpenChange])}
           isUsingKeyboardRef={isUsingKeyboardRef}
+          isMountAutoFocusingRef={isMountAutoFocusingRef}
           dir={direction}
           modal={modal}
         >
@@ -521,7 +531,9 @@ const MenuContentImpl = /* @__PURE__ */ React.forwardRef<
                 // when opening, explicitly focus the content area only and leave
                 // `onEntryFocus` in  control of focusing first item
                 event.preventDefault();
+                rootContext.isMountAutoFocusingRef.current = true;
                 contentRef.current?.focus({ preventScroll: true });
+                rootContext.isMountAutoFocusingRef.current = false;
               })}
               onUnmountAutoFocus={onCloseAutoFocus}
             >
@@ -1248,7 +1260,11 @@ const MenuSubContent = /* @__PURE__ */ React.forwardRef<MenuSubContentElement, M
               trapFocus={false}
               onOpenAutoFocus={(event) => {
                 // when opening a submenu, focus content for keyboard users only
-                if (rootContext.isUsingKeyboardRef.current) ref.current?.focus();
+                if (rootContext.isUsingKeyboardRef.current) {
+                  rootContext.isMountAutoFocusingRef.current = true;
+                  ref.current?.focus();
+                  rootContext.isMountAutoFocusingRef.current = false;
+                }
                 event.preventDefault();
               }}
               // The menu might close because of focusing another menu item in the parent menu. We
@@ -1256,8 +1272,14 @@ const MenuSubContent = /* @__PURE__ */ React.forwardRef<MenuSubContentElement, M
               onCloseAutoFocus={(event) => event.preventDefault()}
               onFocusOutside={composeEventHandlers(props.onFocusOutside, (event) => {
                 // We prevent closing when the trigger is focused to avoid triggering a re-open animation
-                // on pointer interaction.
-                if (event.target !== subContext.trigger) context.onOpenChange(false);
+                // on pointer interaction. We also ignore focus changes while a menu content is
+                // auto-focusing itself on mount so `defaultOpen` submenus remain open.
+                if (
+                  event.target !== subContext.trigger &&
+                  !rootContext.isMountAutoFocusingRef.current
+                ) {
+                  context.onOpenChange(false);
+                }
               })}
               onEscapeKeyDown={composeEventHandlers(props.onEscapeKeyDown, (event) => {
                 rootContext.onClose();
