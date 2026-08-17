@@ -226,10 +226,7 @@ const CONTENT_NAME = 'ContextMenuContent';
 
 type ContextMenuContentElement = React.ComponentRef<typeof MenuPrimitive.Content>;
 type MenuContentProps = React.ComponentPropsWithoutRef<typeof MenuPrimitive.Content>;
-interface ContextMenuContentProps extends Omit<
-  MenuContentProps,
-  'onEntryFocus' | 'side' | 'sideOffset' | 'align'
-> {}
+interface ContextMenuContentProps extends Omit<MenuContentProps, 'onEntryFocus'> {}
 
 const ContextMenuContent = /* @__PURE__ */ React.forwardRef<
   ContextMenuContentElement,
@@ -245,11 +242,11 @@ const ContextMenuContent = /* @__PURE__ */ React.forwardRef<
     return (
       <MenuPrimitive.Content
         {...menuScope}
-        {...contentProps}
-        ref={forwardedRef}
         side="right"
         sideOffset={2}
         align="start"
+        {...contentProps}
+        ref={forwardedRef}
         onCloseAutoFocus={(event) => {
           props.onCloseAutoFocus?.(event);
 
