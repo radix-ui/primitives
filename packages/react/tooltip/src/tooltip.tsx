@@ -3,6 +3,7 @@ import { composeEventHandlers } from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
 import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
+import { useFocusScopeBranch } from '@radix-ui/react-focus-scope';
 import { useId } from '@radix-ui/react-id';
 import * as PopperPrimitive from '@radix-ui/react-popper';
 import { createPopperScope } from '@radix-ui/react-popper';
@@ -524,6 +525,15 @@ const TooltipContentImpl = /* @__PURE__ */ React.forwardRef<
     const popperScope = usePopperScope(__scopeTooltip);
     const { onClose } = context;
 
+    // When this `Tooltip` is nested inside a modal layer (eg. a `Dialog`) but
+    // portalled outside of it, register its content with the ancestor layer so
+    // focus isn't reclaimed by the Dialog's FocusScope when tabbing away from
+    // focusable content inside the tooltip. No-ops when there is no ancestor
+    // layer. See: https://github.com/radix-ui/primitives/issues/3185
+    const [contentNode, setContentNode] = React.useState<TooltipContentImplElement | null>(null);
+    const composedRefs = useComposedRefs(forwardedRef, setContentNode);
+    useFocusScopeBranch(contentNode);
+
     // Close this tooltip if another one opens
     React.useEffect(() => {
       document.addEventListener(TOOLTIP_OPEN, onClose);
@@ -571,7 +581,7 @@ const TooltipContentImpl = /* @__PURE__ */ React.forwardRef<
           id={ariaLabel ? undefined : context.contentId}
           {...popperScope}
           {...contentProps}
-          ref={forwardedRef}
+          ref={composedRefs}
           style={{
             ...contentProps.style,
             // re-namespace exposed content custom properties
