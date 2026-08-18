@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { axe } from 'vitest-axe';
 import type { RenderResult } from '@testing-library/react';
-import { cleanup, render, fireEvent, screen } from '@testing-library/react';
+import { act, cleanup, render, fireEvent, screen } from '@testing-library/react';
 import * as ToggleGroup from './toggle-group';
 import type { Mock } from 'vitest';
 import { afterEach, describe, it, beforeEach, vi, expect } from 'vitest';
@@ -269,5 +269,92 @@ describe('ToggleGroup.Item', () => {
 
     fireEvent.click(item);
     expect(onClick).toHaveBeenCalled();
+  });
+});
+
+describe('keyboard interaction for the radio roles', () => {
+  afterEach(cleanup);
+
+  it('checks the item the arrow key moves to when `type="single"`', async () => {
+    const handleValueChange = vi.fn();
+    render(
+      <ToggleGroup.Root type="single" defaultValue="One" onValueChange={handleValueChange}>
+        <ToggleGroup.Item value="One">One</ToggleGroup.Item>
+        <ToggleGroup.Item value="Two">Two</ToggleGroup.Item>
+      </ToggleGroup.Root>,
+    );
+
+    const one = screen.getByText('One');
+    const two = screen.getByText('Two');
+
+    await act(async () => one.focus());
+    // `RovingFocusGroup` moves focus to the next item on arrow keys; once an
+    // item is focused during arrow navigation it should also become checked.
+    await act(async () => {
+      fireEvent.keyDown(one, { key: 'ArrowRight' });
+      two.focus();
+    });
+
+    expect(handleValueChange).toHaveBeenCalledWith('Two');
+    expect(two).toHaveAttribute('aria-checked', 'true');
+    expect(one).toHaveAttribute('aria-checked', 'false');
+  });
+
+  it('leaves the value alone when focus arrives without an arrow key', async () => {
+    const handleValueChange = vi.fn();
+    render(
+      <ToggleGroup.Root type="single" defaultValue="One" onValueChange={handleValueChange}>
+        <ToggleGroup.Item value="One">One</ToggleGroup.Item>
+        <ToggleGroup.Item value="Two">Two</ToggleGroup.Item>
+      </ToggleGroup.Root>,
+    );
+
+    await act(async () => screen.getByText('Two').focus());
+
+    expect(handleValueChange).not.toHaveBeenCalled();
+    expect(screen.getByText('One')).toHaveAttribute('aria-checked', 'true');
+  });
+
+  it('keeps the item checked when the arrow key lands back on it', async () => {
+    const handleValueChange = vi.fn();
+    render(
+      <ToggleGroup.Root type="single" defaultValue="One" onValueChange={handleValueChange}>
+        <ToggleGroup.Item value="One">One</ToggleGroup.Item>
+      </ToggleGroup.Root>,
+    );
+
+    const one = screen.getByText('One');
+
+    await act(async () => one.focus());
+    await act(async () => {
+      fireEvent.keyDown(one, { key: 'ArrowRight' });
+      one.focus();
+    });
+
+    // `Toggle` would turn it back off, which a radio group never does.
+    expect(one).toHaveAttribute('aria-checked', 'true');
+    expect(handleValueChange).not.toHaveBeenCalled();
+  });
+
+  it('does not check on arrow keys when `type="multiple"`', async () => {
+    const handleValueChange = vi.fn();
+    render(
+      <ToggleGroup.Root type="multiple" defaultValue={['One']} onValueChange={handleValueChange}>
+        <ToggleGroup.Item value="One">One</ToggleGroup.Item>
+        <ToggleGroup.Item value="Two">Two</ToggleGroup.Item>
+      </ToggleGroup.Root>,
+    );
+
+    const one = screen.getByText('One');
+    const two = screen.getByText('Two');
+
+    await act(async () => one.focus());
+    await act(async () => {
+      fireEvent.keyDown(one, { key: 'ArrowRight' });
+      two.focus();
+    });
+
+    expect(handleValueChange).not.toHaveBeenCalled();
+    expect(two).toHaveAttribute('aria-pressed', 'false');
   });
 });
