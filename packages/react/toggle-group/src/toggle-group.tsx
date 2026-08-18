@@ -294,12 +294,8 @@ const ToggleGroupItem = /* @__PURE__ */ React.forwardRef<
           {...commonProps}
           ref={forwardedRef}
           onFocus={composeEventHandlers(props.onFocus, () => {
-            /**
-             * `type="single"` renders radio roles, and the WAI-ARIA radio
-             * pattern checks the item the arrow keys move to. `RovingFocusGroup`
-             * only moves focus, so click to select. We skip an item that is
-             * already pressed, because `Toggle` would turn it back off.
-             */
+            // `RovingFocusGroup` only moves focus, so check the item here.
+            // Skip one that is already pressed: `Toggle` would turn it off.
             if (isSingle && isArrowKeyPressedRef.current && !pressed) {
               ref.current?.click();
             }
