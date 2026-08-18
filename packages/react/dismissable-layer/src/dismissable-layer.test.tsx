@@ -102,6 +102,27 @@ describe('DismissableLayer', () => {
     expect(onDismiss).not.toHaveBeenCalled();
   });
 
+  it('dismisses on a single pointer down outside after inside content stopped propagation', async () => {
+    const onDismiss = vi.fn();
+
+    render(
+      <>
+        <DismissableLayer.Root onDismiss={onDismiss}>
+          <button type="button" onPointerDown={(event) => event.stopPropagation()}>
+            stopper
+          </button>
+        </DismissableLayer.Root>
+        <button type="button">outside</button>
+      </>
+    );
+    await waitForDocumentPointerDownListener();
+
+    fireEvent.pointerDown(screen.getByText('stopper'));
+    fireEvent.pointerDown(screen.getByText('outside'));
+
+    expect(onDismiss).toHaveBeenCalledTimes(1);
+  });
+
   it('does not dismiss when pointer down outside is prevented', async () => {
     const onDismiss = vi.fn();
 
