@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, cleanup, fireEvent, screen } from '@testing-library/react';
+import { hideOthers } from 'aria-hidden';
 import * as Toast from './toast';
 import { describe, it, afterEach, beforeEach, vi, expect, type Mock } from 'vitest';
 import { assertStableComposedRef } from '@repo/test-utils/ref-stability';
@@ -567,5 +568,50 @@ describe('Toast.Close', () => {
 
     fireEvent.click(close);
     expect(onClick).toHaveBeenCalled();
+  });
+});
+
+// Regression test for https://github.com/radix-ui/primitives/issues/4115
+describe('aria-hidden containers', () => {
+  afterEach(cleanup);
+
+  function isInsideAriaHiddenSubtree(element: Element) {
+    let node: Element | null = element;
+    while (node) {
+      const ariaHidden = node.getAttribute('aria-hidden');
+      if (ariaHidden !== null && ariaHidden !== 'false') {
+        return true;
+      }
+      node = node.parentElement;
+    }
+    return false;
+  }
+
+  it('keeps the viewport out of the aria-hidden subtree of a modal layer', () => {
+    render(
+      <>
+        <div data-testid="modal-content">Modal content</div>
+        <Toast.Provider>
+          <Toast.Root open duration={Infinity}>
+            <Toast.Title>Title</Toast.Title>
+            <Toast.Action altText="Undo the action">Undo</Toast.Action>
+          </Toast.Root>
+          <Toast.Viewport />
+        </Toast.Provider>
+      </>,
+    );
+
+    // `Dialog`, `Popover`, `Select` and `Menu` all aria-hide everything outside their content
+    // through `hideOthers`, which is the modal behaviour a toast has to survive.
+    const undo = screen.getByText('Undo');
+    expect(isInsideAriaHiddenSubtree(undo)).toBe(false);
+
+    const restoreAriaHidden = hideOthers(screen.getByTestId('modal-content'));
+
+    // The toast stays pointer-interactive while the modal layer is open, so it has to stay
+    // perceivable to assistive technology too.
+    expect(isInsideAriaHiddenSubtree(undo)).toBe(false);
+
+    restoreAriaHidden();
   });
 });
