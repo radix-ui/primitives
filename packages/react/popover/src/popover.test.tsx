@@ -1,6 +1,7 @@
 import * as React from 'react';
+import userEvent from '@testing-library/user-event';
 import type { RenderResult } from '@testing-library/react';
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, it, expect, vi } from 'vitest';
 import * as Popover from './popover';
 
@@ -276,6 +277,25 @@ describe('Popover.Trigger', () => {
 
 describe('Popover.Content', () => {
   afterEach(cleanupModal);
+
+  it('allows focus to leave a non-modal popover', async () => {
+    render(
+      <div>
+        <Popover.Root defaultOpen>
+          <Popover.Trigger>Open</Popover.Trigger>
+          <Popover.Content>
+            <button>Inside</button>
+          </Popover.Content>
+        </Popover.Root>
+        <button>After</button>
+      </div>,
+    );
+
+    screen.getByRole('button', { name: 'Inside' }).focus();
+    await userEvent.tab();
+
+    await waitFor(() => expect(screen.getByRole('button', { name: 'After' })).toHaveFocus());
+  });
 
   it('spreads props it does not consume onto the element it renders', () => {
     const ref = React.createRef<HTMLDivElement>();

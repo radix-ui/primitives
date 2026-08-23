@@ -472,7 +472,7 @@ const PopoverContentImpl = /* @__PURE__ */ React.forwardRef<
       <FocusScopeBranchProvider registry={branchRegistry}>
         <FocusScope
           asChild
-          loop
+          loop={trapFocus}
           trapped={trapFocus}
           branches={branchNodes}
           onMountAutoFocus={onOpenAutoFocus}
