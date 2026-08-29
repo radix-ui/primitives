@@ -1114,14 +1114,20 @@ function isScrollingWithinScrollbarBounds(scrollPos: number, maxScrollPos: numbe
 const addUnlinkedScrollListener = (node: HTMLElement, handler = () => {}) => {
   let prevPosition = { left: node.scrollLeft, top: node.scrollTop };
   let rAF = 0;
-  (function loop() {
+  // Declared and called separately rather than as an IIFE. When this package is
+  // built with esbuild's `keepNames`, an IIFE is emitted as a `/* @__PURE__ */`
+  // annotated call, and because its return value is unused a minifier is free to
+  // drop it. That removes the loop that drives the thumb, so the scrollbar
+  // renders but never tracks the scroll position in a minified build.
+  function loop() {
     const position = { left: node.scrollLeft, top: node.scrollTop };
     const isHorizontalScroll = prevPosition.left !== position.left;
     const isVerticalScroll = prevPosition.top !== position.top;
     if (isHorizontalScroll || isVerticalScroll) handler();
     prevPosition = position;
     rAF = window.requestAnimationFrame(loop);
-  })();
+  }
+  loop();
   return () => window.cancelAnimationFrame(rAF);
 };
 
