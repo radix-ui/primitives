@@ -2,6 +2,7 @@ import * as React from 'react';
 import { NavigationMenu, Direction } from 'radix-ui';
 import styles from './navigation-menu.stories.module.css';
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import { ExternalOverlayTrigger } from './external-overlay';
 
 export default {
   title: 'Components/NavigationMenu',
@@ -53,6 +54,26 @@ export const Basic = () => {
           </NavigationMenu.Item>
         </NavigationMenu.List>
       </NavigationMenu.Root>
+    </StoryFrame>
+  );
+};
+
+export const WithExtensionOverlay = () => {
+  const [value, setValue] = React.useState('products');
+  return (
+    <StoryFrame>
+      <NavigationMenu.Root value={value} onValueChange={setValue}>
+        <NavigationMenu.List className={styles.mainList}>
+          <NavigationMenu.Item value="products" className={styles.expandableItem}>
+            <TriggerWithIndicator>Products</TriggerWithIndicator>
+            <NavigationMenu.Content className={styles.basicContent}>
+              <ExternalOverlayTrigger />
+              <LinkGroup bordered={false} items={['Fusce pellentesque']} />
+            </NavigationMenu.Content>
+          </NavigationMenu.Item>
+        </NavigationMenu.List>
+      </NavigationMenu.Root>
+      <div data-testid="navigation-menu-state">{value ? 'open' : 'closed'}</div>
     </StoryFrame>
   );
 };

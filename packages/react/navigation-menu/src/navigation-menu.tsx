@@ -1011,6 +1011,7 @@ const NavigationMenuContentImpl = /* @__PURE__ */ React.forwardRef<
         {...contentProps}
         ref={composedRefs}
         disableOutsidePointerEvents={false}
+        deferPointerDownOutside
         onDismiss={() => {
           const rootContentDismissEvent = new Event(ROOT_CONTENT_DISMISS, {
             bubbles: true,
