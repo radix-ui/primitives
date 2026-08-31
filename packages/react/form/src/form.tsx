@@ -210,8 +210,8 @@ const FormField = /* @__PURE__ */ React.forwardRef<FormFieldElement, FormFieldPr
   function FormField(props: ScopedProps<FormFieldProps>, forwardedRef) {
     const { __scopeForm, name, serverInvalid = false, ...fieldProps } = props;
     const validationContext = useValidationContext(FIELD_NAME, __scopeForm);
-    const validity = validationContext.getFieldValidity(name);
     const id = useId();
+    const validity = validationContext.getFieldValidity(id);
 
     return (
       <FormFieldProvider scope={__scopeForm} id={id} name={name} serverInvalid={serverInvalid}>
@@ -257,7 +257,8 @@ const FormLabel = /* @__PURE__ */ React.forwardRef<FormLabelElement, FormLabelPr
       );
     }
 
-    const validity = validationContext.getFieldValidity(name);
+    const validationKey = fieldContext?.name === name ? fieldContext.id : name;
+    const validity = validationContext.getFieldValidity(validationKey);
     const serverInvalid = fieldContext?.serverInvalid ?? false;
 
     return (
@@ -312,10 +313,21 @@ const FormControl = /* @__PURE__ */ React.forwardRef<FormControlElement, FormCon
       );
     }
 
-    const customMatcherEntries = validationContext.getFieldCustomMatcherEntries(name);
-
-    const { onFieldValidityChange, onFieldCustomErrorsChange, onFieldValiditionClear } =
-      validationContext;
+    const validationKey = fieldContext?.name === name ? fieldContext.id : name;
+    const validationKeys = React.useMemo(
+      () => (validationKey === name ? [name] : [validationKey, name]),
+      [name, validationKey],
+    );
+    const {
+      getFieldCustomMatcherEntries,
+      onFieldValidityChange,
+      onFieldCustomErrorsChange,
+      onFieldValiditionClear,
+    } = validationContext;
+    const customMatcherEntries = React.useMemo(
+      () => validationKeys.flatMap((key) => getFieldCustomMatcherEntries(key)),
+      [getFieldCustomMatcherEntries, validationKeys],
+    );
     const updateControlValidity = React.useCallback(
       async (control: FormControlElement) => {
         //------------------------------------------------------------------------------------------
@@ -323,7 +335,7 @@ const FormControl = /* @__PURE__ */ React.forwardRef<FormControlElement, FormCon
 
         if (hasBuiltInError(control.validity)) {
           const controlValidity = validityStateToObject(control.validity);
-          onFieldValidityChange(name, controlValidity);
+          validationKeys.forEach((key) => onFieldValidityChange(key, controlValidity));
           return;
         }
 
@@ -357,8 +369,10 @@ const FormControl = /* @__PURE__ */ React.forwardRef<FormControlElement, FormCon
         const hasCustomError = hasSyncCustomErrors;
         control.setCustomValidity(hasCustomError ? DEFAULT_INVALID_MESSAGE : '');
         const controlValidity = validityStateToObject(control.validity);
-        onFieldValidityChange(name, controlValidity);
-        onFieldCustomErrorsChange(name, syncCustomErrorsById);
+        validationKeys.forEach((key) => {
+          onFieldValidityChange(key, controlValidity);
+          onFieldCustomErrorsChange(key, syncCustomErrorsById);
+        });
 
         //------------------------------------------------------------------------------------------
         // 5. run async custom matchers and update control validity / internal validity + errors
@@ -373,11 +387,13 @@ const FormControl = /* @__PURE__ */ React.forwardRef<FormControlElement, FormCon
           const hasCustomError = hasAsyncCustomErrors;
           control.setCustomValidity(hasCustomError ? DEFAULT_INVALID_MESSAGE : '');
           const controlValidity = validityStateToObject(control.validity);
-          onFieldValidityChange(name, controlValidity);
-          onFieldCustomErrorsChange(name, asyncCustomErrorsById);
+          validationKeys.forEach((key) => {
+            onFieldValidityChange(key, controlValidity);
+            onFieldCustomErrorsChange(key, asyncCustomErrorsById);
+          });
         }
       },
-      [customMatcherEntries, name, onFieldCustomErrorsChange, onFieldValidityChange],
+      [customMatcherEntries, onFieldCustomErrorsChange, onFieldValidityChange, validationKeys],
     );
 
     React.useEffect(() => {
@@ -395,9 +411,9 @@ const FormControl = /* @__PURE__ */ React.forwardRef<FormControlElement, FormCon
       const control = ref.current;
       if (control) {
         control.setCustomValidity('');
-        onFieldValiditionClear(name);
+        validationKeys.forEach((key) => onFieldValiditionClear(key));
       }
-    }, [name, onFieldValiditionClear]);
+    }, [onFieldValiditionClear, validationKeys]);
 
     // reset validity and errors when the form is reset
     React.useEffect(() => {
@@ -424,7 +440,7 @@ const FormControl = /* @__PURE__ */ React.forwardRef<FormControlElement, FormCon
       }
     }, [serverInvalid]);
 
-    const validity = validationContext.getFieldValidity(name);
+    const validity = validationContext.getFieldValidity(validationKey);
 
     return (
       <Primitive.input
@@ -433,7 +449,7 @@ const FormControl = /* @__PURE__ */ React.forwardRef<FormControlElement, FormCon
         aria-invalid={serverInvalid || undefined}
         aria-describedby={concatAriaDescribedby(
           ariaDescribedby,
-          ariaDescriptionContext.getFieldDescription(name),
+          ...validationKeys.map((key) => ariaDescriptionContext.getFieldDescription(key)),
         )}
         // disable default browser behaviour of showing built-in error message on hover
         title=""
@@ -505,17 +521,32 @@ const FormMessage = /* @__PURE__ */ React.forwardRef<FormMessageElement, FormMes
         `\`${MESSAGE_NAME}\` must be used within \`${FIELD_NAME}\` or specify the \`name\` prop`,
       );
     }
+    const validationKey = fieldContext?.name === name ? fieldContext.id : name;
 
     if (match === undefined) {
       return (
-        <FormMessageImpl {...messageProps} ref={forwardedRef} name={name}>
+        <FormMessageImpl {...messageProps} ref={forwardedRef} name={validationKey}>
           {props.children || DEFAULT_INVALID_MESSAGE}
         </FormMessageImpl>
       );
     } else if (typeof match === 'function') {
-      return <FormCustomMessage match={match} {...messageProps} ref={forwardedRef} name={name} />;
+      return (
+        <FormCustomMessage
+          match={match}
+          {...messageProps}
+          ref={forwardedRef}
+          name={validationKey}
+        />
+      );
     } else {
-      return <FormBuiltInMessage match={match} {...messageProps} ref={forwardedRef} name={name} />;
+      return (
+        <FormBuiltInMessage
+          match={match}
+          {...messageProps}
+          ref={forwardedRef}
+          name={validationKey}
+        />
+      );
     }
   },
 );
@@ -643,7 +674,8 @@ const FormValidityState = (props: ScopedProps<FormValidityStateProps>) => {
       `\`${VALIDITY_STATE_NAME}\` must be used within \`${FIELD_NAME}\` or specify the \`name\` prop`,
     );
   }
-  const validity = validationContext.getFieldValidity(name);
+  const validationKey = fieldContext?.name === name ? fieldContext.id : name;
+  const validity = validationContext.getFieldValidity(validationKey);
   return <>{children(validity)}</>;
 };
 
