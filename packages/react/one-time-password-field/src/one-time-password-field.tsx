@@ -383,7 +383,7 @@ const OneTimePasswordField = /* @__PURE__ */ React.forwardRef<
           case 'PASTE': {
             const { value: pastedValue } = action;
             const sanitizedValue = sanitizeValue(pastedValue);
-            if (!sanitizedValue) {
+            if (sanitizedValue.length === 0) {
               return;
             }
 

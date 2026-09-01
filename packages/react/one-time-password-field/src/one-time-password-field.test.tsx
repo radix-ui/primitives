@@ -112,6 +112,23 @@ describe('given a default OneTimePasswordField', () => {
     await act(async () => await user.paste('123456789'));
     expect(getInputValues(inputs)).toBe('1,2,3,4,5,6');
   });
+
+  it('should leave existing value untouched when a paste sanitizes to nothing', async () => {
+    const inputs = screen.getAllByRole<HTMLInputElement>('textbox', {
+      hidden: false,
+    });
+    const firstInput = inputs[0]!;
+    await user.click(firstInput);
+    await user.keyboard('123');
+    expect(getInputValues(inputs)).toBe('1,2,3,,,');
+
+    await user.click(firstInput);
+    // default `validationType` is numeric, so a purely alphabetic paste
+    // sanitizes down to an empty value and should be a no-op
+    await act(async () => await user.paste('abcdef'));
+    expect(getInputValues(inputs)).toBe('1,2,3,,,');
+    expect(document.activeElement).toBe(firstInput);
+  });
 });
 
 function getInputValues(inputs: HTMLInputElement[]) {
