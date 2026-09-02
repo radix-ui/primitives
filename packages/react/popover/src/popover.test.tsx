@@ -150,6 +150,36 @@ describe('given a Popover with `asChild` on the Content', () => {
   );
 });
 
+describe('Popover mount and composition (React 19 compatibility)', () => {
+  afterEach(cleanupModal);
+
+  // Regression test for https://github.com/radix-ui/primitives/issues/4124
+  it.each([{ modal: true }, { modal: false }])(
+    'mounts PopoverContent without slotting errors on trigger click (modal: $modal)',
+    ({ modal }) => {
+      render(
+        <Popover.Root modal={modal}>
+          <Popover.Trigger asChild>
+            <button type="button">Open popover</button>
+          </Popover.Trigger>
+          <Popover.Portal>
+            <Popover.Content>
+              <div data-testid="popover-inner">Hello</div>
+            </Popover.Content>
+          </Popover.Portal>
+        </Popover.Root>,
+      );
+
+      const trigger = screen.getByRole('button', { name: /open popover/i });
+      expect(() => fireEvent.click(trigger)).not.toThrow();
+
+      const inner = screen.getByTestId('popover-inner');
+      expect(inner).toBeInTheDocument();
+      expect(inner).toHaveTextContent('Hello');
+    },
+  );
+});
+
 describe('Popover.Anchor', () => {
   afterEach(cleanupModal);
 

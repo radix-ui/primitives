@@ -50,16 +50,13 @@ type SlotProps<Elem extends Element = HTMLElement, Props = React.HTMLAttributes<
 
     if (slottableElement) {
       slottableElement = React.cloneElement(slottableElement, undefined, newChildren);
-    } else if (
-      // A `Slottable` was found but it didn't resolve to a single element (e.g.
-      // it wrapped multiple elements, text, or a render-prop `child` that
-      // wasn't an element). Don't fall back to treating the `Slottable` wrapper
-      // itself as the slot target — throw a descriptive error below instead.
-      !hasSlottable &&
-      React.Children.count(children) === 1 &&
-      React.isValidElement(children)
-    ) {
-      slottableElement = children;
+    } else if (!hasSlottable) {
+      const candidates = React.Children.toArray(children).filter(
+        (child) => child !== null && child !== undefined && typeof child !== 'boolean'
+      );
+      if (candidates.length === 1 && React.isValidElement(candidates[0])) {
+        slottableElement = candidates[0];
+      }
     }
 
     const slottableElementRef = slottableElement ? getElementRef(slottableElement) : undefined;

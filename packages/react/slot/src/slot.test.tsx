@@ -361,6 +361,34 @@ describe('Slot prop and ref merging (single element child)', () => {
   });
 });
 
+describe('Slot with single-child arrays and conditional siblings (React 19 compatibility)', () => {
+  afterEach(cleanup);
+
+  it('slots properly when child is wrapped in a single-element array', () => {
+    const element = [<button key="single" type="button" className="child">array child</button>];
+    render(<Slot.Root className="slot">{element}</Slot.Root>);
+
+    const button = screen.getByRole('button');
+    expect(button.getAttribute('class')).toBe('slot child');
+    expect(button).toHaveTextContent('array child');
+  });
+
+  it('slots properly when single element has falsy boolean or null siblings', () => {
+    const showExtra = false;
+    render(
+      <Slot.Root className="slot">
+        {showExtra && <span>extra</span>}
+        <button type="button" className="child">valid child</button>
+        {null}
+      </Slot.Root>,
+    );
+
+    const button = screen.getByRole('button');
+    expect(button.getAttribute('class')).toBe('slot child');
+    expect(button).toHaveTextContent('valid child');
+  });
+});
+
 describe('Slot with non-mergeable children', () => {
   // Errors thrown during render are also logged by React; silence them to keep
   // test output clean.
