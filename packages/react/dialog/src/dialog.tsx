@@ -229,26 +229,33 @@ const DialogOverlayImpl = /* @__PURE__ */ React.forwardRef<
     const composedRefs = useComposedRefs(forwardedRef, registerDismissableSurface);
 
     return (
-      // Make sure `Content` is scrollable even when it doesn't live inside
-      // `RemoveScroll` (eg. when `Overlay` and `Content` are siblings). Nested
-      // layers are registered as branches and added as shards so they remain
-      // scrollable too. See https://github.com/radix-ui/primitives/issues/3423
-      <RemoveScroll
-        as={Slot}
-        allowPinchZoom
-        shards={React.useMemo(
-          () => [context.contentRef, ...context.branchNodes.map((node) => ({ current: node }))],
-          [context.contentRef, context.branchNodes],
-        )}
-      >
-        <Primitive.div
-          data-state={getState(context.open)}
-          {...overlayProps}
-          ref={composedRefs}
-          // We re-enable pointer-events prevented by `Dialog.Content` to allow scrolling the overlay.
-          style={{ pointerEvents: 'auto', ...overlayProps.style }}
-        />
-      </RemoveScroll>
+      <>
+        {/* `react-remove-scroll` sets `overscroll-behavior: contain` on the body, which
+            also blocks the browser's trackpad swipe-to-navigate gesture. Restore just the
+            horizontal axis so back/forward swipe keeps working while vertical scroll
+            chaining is still prevented. See https://github.com/radix-ui/primitives/issues/3752 */}
+        <style>{`body[data-scroll-locked][data-scroll-locked] { overscroll-behavior-x: auto !important; }`}</style>
+        {/* Make sure `Content` is scrollable even when it doesn't live inside
+        `RemoveScroll` (eg. when `Overlay` and `Content` are siblings). Nested
+        layers are registered as branches and added as shards so they remain
+        scrollable too. See https://github.com/radix-ui/primitives/issues/3423 */}
+        <RemoveScroll
+          as={Slot}
+          allowPinchZoom
+          shards={React.useMemo(
+            () => [context.contentRef, ...context.branchNodes.map((node) => ({ current: node }))],
+            [context.contentRef, context.branchNodes],
+          )}
+        >
+          <Primitive.div
+            data-state={getState(context.open)}
+            {...overlayProps}
+            ref={composedRefs}
+            // We re-enable pointer-events prevented by `Dialog.Content` to allow scrolling the overlay.
+            style={{ pointerEvents: 'auto', ...overlayProps.style }}
+          />
+        </RemoveScroll>
+      </>
     );
   },
 );
