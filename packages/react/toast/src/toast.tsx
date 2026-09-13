@@ -579,6 +579,36 @@ const ToastImpl = /* @__PURE__ */ React.forwardRef<ToastImplElement, ToastImplPr
       return node ? getAnnounceTextContent(node) : null;
     }, [node]);
 
+    const handleSwipeCancel = (
+      event: React.PointerEvent<ToastImplElement>,
+      delta: { x: number; y: number } | null,
+    ) => {
+      if (!delta) {
+        return;
+      }
+      const eventDetail = { originalEvent: event, delta };
+      handleAndDispatchCustomEvent(TOAST_SWIPE_CANCEL, onSwipeCancel, eventDetail, {
+        discrete: true,
+      });
+    };
+
+    const handleSwipeEnd = (
+      event: React.PointerEvent<ToastImplElement>,
+      delta: { x: number; y: number } | null,
+    ) => {
+      if (!delta) {
+        return;
+      }
+      const eventDetail = { originalEvent: event, delta };
+      if (isDeltaInDirection(delta, context.swipeDirection, context.swipeThreshold)) {
+        handleAndDispatchCustomEvent(TOAST_SWIPE_END, onSwipeEnd, eventDetail, {
+          discrete: true,
+        });
+      } else {
+        handleSwipeCancel(event, delta);
+      }
+    };
+
     if (!context.viewport) return null;
 
     return (
@@ -665,38 +695,38 @@ const ToastImpl = /* @__PURE__ */ React.forwardRef<ToastImplElement, ToastImplPr
                   })}
                   onPointerUp={composeEventHandlers(props.onPointerUp, (event) => {
                     const delta = swipeDeltaRef.current;
+                    swipeDeltaRef.current = null;
+                    pointerStartRef.current = null;
                     const target = event.target as HTMLElement;
                     if (target.hasPointerCapture(event.pointerId)) {
                       target.releasePointerCapture(event.pointerId);
                     }
-                    swipeDeltaRef.current = null;
-                    pointerStartRef.current = null;
                     if (delta) {
-                      const toast = event.currentTarget;
-                      const eventDetail = { originalEvent: event, delta };
-                      if (
-                        isDeltaInDirection(delta, context.swipeDirection, context.swipeThreshold)
-                      ) {
-                        handleAndDispatchCustomEvent(TOAST_SWIPE_END, onSwipeEnd, eventDetail, {
-                          discrete: true,
-                        });
-                      } else {
-                        handleAndDispatchCustomEvent(
-                          TOAST_SWIPE_CANCEL,
-                          onSwipeCancel,
-                          eventDetail,
-                          {
-                            discrete: true,
-                          },
-                        );
-                      }
+                      handleSwipeEnd(event, delta);
                       // Prevent click event from triggering on items within the toast when
                       // pointer up is part of a swipe gesture
-                      toast.addEventListener('click', (event) => event.preventDefault(), {
-                        once: true,
-                      });
+                      event.currentTarget.addEventListener(
+                        'click',
+                        (event) => event.preventDefault(),
+                        { once: true },
+                      );
                     }
                   })}
+                  onPointerCancel={composeEventHandlers(props.onPointerCancel, (event) => {
+                    const delta = swipeDeltaRef.current;
+                    swipeDeltaRef.current = null;
+                    pointerStartRef.current = null;
+                    handleSwipeCancel(event, delta);
+                  })}
+                  onLostPointerCapture={composeEventHandlers(
+                    props.onLostPointerCapture,
+                    (event) => {
+                      const delta = swipeDeltaRef.current;
+                      swipeDeltaRef.current = null;
+                      pointerStartRef.current = null;
+                      handleSwipeEnd(event, delta);
+                    },
+                  )}
                 />
               </DismissableLayer.Root>
             </Collection.ItemSlot>,
