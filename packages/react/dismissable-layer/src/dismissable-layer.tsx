@@ -158,6 +158,17 @@ const DismissableLayer = /* @__PURE__ */ React.forwardRef<
         return;
       }
 
+      // Re-read the layer set at event time rather than trusting the value
+      // captured during render. A layer registers itself in an effect, so
+      // between that registration and the layers below it re-rendering with
+      // their new index, they still see themselves as the highest layer and
+      // would dismiss alongside it.
+      // See: https://github.com/radix-ui/primitives/issues/4143
+      const currentLayers = Array.from(context.layers);
+      if (node && currentLayers[currentLayers.length - 1] !== node) {
+        return;
+      }
+
       onEscapeKeyDown?.(event);
       if (!event.defaultPrevented && onDismiss) {
         event.preventDefault();

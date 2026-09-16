@@ -520,6 +520,72 @@ describe('DismissableLayer', () => {
 
     expect(onDismiss).not.toHaveBeenCalled();
   });
+
+  // Regression test for https://github.com/radix-ui/primitives/issues/4143
+  it('does not dismiss the layer underneath when escape fires during registration', () => {
+    const onDismissBottom = vi.fn();
+    const onDismissTop = vi.fn();
+
+    function Test() {
+      const [showTop, setShowTop] = React.useState(false);
+      return (
+        <DismissableLayer.Root onDismiss={onDismissBottom}>
+          <button type="button" onClick={() => setShowTop(true)}>
+            open top
+          </button>
+          {showTop ? (
+            <DismissableLayer.Root onDismiss={onDismissTop}>
+              <button type="button">inside top</button>
+            </DismissableLayer.Root>
+          ) : null}
+        </DismissableLayer.Root>
+      );
+    }
+
+    render(<Test />);
+
+    // `dismissableLayer.update` is dispatched synchronously as the new layer
+    // adds itself to the layer set, before the layers below it have re-rendered
+    // with their updated index. An escape in that window must not reach them.
+    document.addEventListener(
+      'dismissableLayer.update',
+      () => fireEvent.keyDown(document, { key: 'Escape' }),
+      { once: true },
+    );
+
+    fireEvent.click(screen.getByText('open top'));
+
+    expect(onDismissBottom).not.toHaveBeenCalled();
+  });
+
+  it('dismisses only the top layer when layers are stacked', () => {
+    const onDismissBottom = vi.fn();
+    const onDismissTop = vi.fn();
+
+    function Test() {
+      const [showTop, setShowTop] = React.useState(false);
+      return (
+        <DismissableLayer.Root onDismiss={onDismissBottom}>
+          <button type="button" onClick={() => setShowTop(true)}>
+            open top
+          </button>
+          {showTop ? (
+            <DismissableLayer.Root onDismiss={onDismissTop}>
+              <button type="button">inside top</button>
+            </DismissableLayer.Root>
+          ) : null}
+        </DismissableLayer.Root>
+      );
+    }
+
+    render(<Test />);
+
+    fireEvent.click(screen.getByText('open top'));
+    fireEvent.keyDown(document, { key: 'Escape' });
+
+    expect(onDismissTop).toHaveBeenCalledTimes(1);
+    expect(onDismissBottom).not.toHaveBeenCalled();
+  });
 });
 
 describe('DismissableLayer.Root', () => {
