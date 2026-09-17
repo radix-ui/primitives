@@ -183,15 +183,23 @@ const FocusScope = /* @__PURE__ */ React.forwardRef<FocusScopeElement, FocusScop
         return () => {
           container.removeEventListener(AUTOFOCUS_ON_MOUNT, onMountAutoFocus);
 
+          // The unmount work below runs in a timer, so it can fire after the realm the container
+          // belongs to has been torn down (e.g. a test runner swapping jsdom globals back to Node's
+          // once a test file finishes). Capture everything realm-dependent now, while the globals
+          // still match the container's document, and don't touch `document` / `CustomEvent` from
+          // inside the timer. See: https://github.com/radix-ui/primitives/issues/4148
+          const ownerDocument = container.ownerDocument;
+          const UnmountEvent = CustomEvent;
+
           // We hit a react bug (fixed in v17) with focusing in unmount.
           // We need to delay the focus a little to get around it for now.
           // See: https://github.com/facebook/react/issues/17894
           setTimeout(() => {
-            const unmountEvent = new CustomEvent(AUTOFOCUS_ON_UNMOUNT, EVENT_OPTIONS);
+            const unmountEvent = new UnmountEvent(AUTOFOCUS_ON_UNMOUNT, EVENT_OPTIONS);
             container.addEventListener(AUTOFOCUS_ON_UNMOUNT, onUnmountAutoFocus);
             container.dispatchEvent(unmountEvent);
             if (!unmountEvent.defaultPrevented) {
-              focus(previouslyFocusedElement ?? document.body, { select: true });
+              focus(previouslyFocusedElement ?? ownerDocument.body, { select: true });
             }
             // we need to remove the listener after we `dispatchEvent`
             container.removeEventListener(AUTOFOCUS_ON_UNMOUNT, onUnmountAutoFocus);
@@ -397,13 +405,19 @@ function isHidden(node: HTMLElement, { upTo }: { upTo?: HTMLElement }) {
 }
 
 function isSelectableInput(element: any): element is FocusableTarget & { select: () => void } {
-  return element instanceof HTMLInputElement && 'select' in element;
+  // We compare the tag name rather than checking `instanceof HTMLInputElement` so this works for
+  // elements from another realm (iframes) and keeps working from the unmount timer after a test
+  // environment has torn down its DOM globals.
+  return element?.tagName === 'INPUT' && typeof element.select === 'function';
 }
 
 function focus(element?: FocusableTarget | null, { select = false } = {}) {
   // only focus if that element is focusable
   if (element && element.focus) {
-    const previouslyFocusedElement = document.activeElement;
+    // Prefer the element's own document over the global one: they can differ for elements in
+    // another realm, and the global may no longer exist when this runs from the unmount timer.
+    const ownerDocument = (element as Partial<HTMLElement>).ownerDocument ?? document;
+    const previouslyFocusedElement = ownerDocument.activeElement;
     // NOTE: we prevent scrolling on focus, to minimize jarring transitions for users
     element.focus({ preventScroll: true });
     // only select if its not the same element, it supports selection and we need to select

@@ -170,6 +170,71 @@ describe('FocusScope', () => {
     });
   });
 
+  // Regression test for https://github.com/radix-ui/primitives/issues/4148
+  describe('unmount timer', () => {
+    afterEach(() => {
+      vi.unstubAllGlobals();
+      vi.useRealTimers();
+    });
+
+    it('does not read realm globals after the environment has been torn down', () => {
+      vi.useFakeTimers();
+      const onUnmountAutoFocus = vi.fn();
+      const rendered = render(
+        <FocusScope.Root trapped onUnmountAutoFocus={onUnmountAutoFocus}>
+          <TestField label={INNER_NAME_INPUT_LABEL} />
+        </FocusScope.Root>,
+      );
+      const body = document.body;
+
+      rendered.unmount();
+
+      // Simulate a test runner restoring Node's globals once the test file has finished (vitest +
+      // jsdom): the container's document still exists, but the globals no longer belong to it.
+      // Node's `CustomEvent` isn't a jsdom `Event`, so dispatching one would throw.
+      class NodeCustomEvent {
+        constructor(public type: string) {}
+      }
+      vi.stubGlobal('CustomEvent', NodeCustomEvent);
+      vi.stubGlobal('HTMLInputElement', undefined);
+      vi.stubGlobal('document', undefined);
+
+      expect(() => vi.runAllTimers()).not.toThrow();
+      expect(onUnmountAutoFocus).toHaveBeenCalledTimes(1);
+      expect(body.ownerDocument.activeElement).toBe(body);
+    });
+
+    it('still restores focus and honours `preventDefault` after unmount', () => {
+      vi.useFakeTimers();
+      const outer = document.createElement('input');
+      document.body.appendChild(outer);
+      outer.focus();
+
+      const rendered = render(
+        <FocusScope.Root trapped>
+          <TestField label={INNER_NAME_INPUT_LABEL} />
+        </FocusScope.Root>,
+      );
+      expect(rendered.getByLabelText(INNER_NAME_INPUT_LABEL)).toHaveFocus();
+      rendered.unmount();
+      vi.runAllTimers();
+      expect(outer).toHaveFocus();
+
+      const prevented = render(
+        <FocusScope.Root trapped onUnmountAutoFocus={(event) => event.preventDefault()}>
+          <TestField label={INNER_EMAIL_INPUT_LABEL} />
+        </FocusScope.Root>,
+      );
+      const inner = prevented.getByLabelText(INNER_EMAIL_INPUT_LABEL);
+      expect(inner).toHaveFocus();
+      prevented.unmount();
+      vi.runAllTimers();
+      expect(outer).not.toHaveFocus();
+
+      outer.remove();
+    });
+  });
+
   describe('given a FocusScope with hidden elements', () => {
     let rendered: RenderResult;
     let visibleFirst: HTMLInputElement;
