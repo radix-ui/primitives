@@ -282,7 +282,7 @@ const PopoverContentModal = /* @__PURE__ */ React.forwardRef<
     // aria-hide everything except the content (better supported equivalent to setting aria-modal)
     React.useEffect(() => {
       const content = contentRef.current;
-      if (content) return hideOthers(content);
+      if (content) return hideOthersAcrossShadowRoots(content);
     }, []);
 
     return (
@@ -624,6 +624,27 @@ function concatAriaDescribedby(...values: unknown[]): string | undefined {
   }
 
   return ids.size > 0 ? Array.from(ids).join(' ') : undefined;
+}
+
+/**
+ * `hideOthers` doesn't cross shadow boundaries. When the element is rendered in
+ * a shadow root, we hide its siblings in that shadow root and then repeat from
+ * the shadow host, until we reach the document.
+ * See: https://github.com/radix-ui/primitives/issues/1772
+ */
+function hideOthersAcrossShadowRoots(element: Element): () => void {
+  const root = element.getRootNode();
+  if (!(root instanceof ShadowRoot)) {
+    return hideOthers(element);
+  }
+  // `hideOthers` types its parent as `HTMLElement`, but it only uses `contains`,
+  // `children` and `querySelectorAll`, which `ShadowRoot` also implements
+  const undoInShadowRoot = hideOthers(element, root as unknown as HTMLElement);
+  const undoOutsideShadowRoot = hideOthersAcrossShadowRoots(root.host);
+  return () => {
+    undoInShadowRoot();
+    undoOutsideShadowRoot();
+  };
 }
 
 export {
