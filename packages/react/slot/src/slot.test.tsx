@@ -282,6 +282,117 @@ describe('given a Slot with React lazy components', () => {
   });
 });
 
+describe('given a Slot with React Flight lazy references', () => {
+  afterEach(cleanup);
+
+  // Replica of how React Flight creates lazy references (`createLazyChunkWrapper`
+  // + `readChunk`): `_payload` is a thenable chunk carrying a `status`, and `_init`
+  // returns the value when fulfilled or throws the chunk to suspend when pending.
+  // `React.use(payload)` unwraps exactly one level, so a reference whose resolved
+  // value is itself a reference only unwraps to the inner reference.
+  const REACT_LAZY_TYPE = Symbol.for('react.lazy');
+  function createFlightLazy<T>(resolve: () => Promise<T> | T) {
+    let state: 'pending' | 'fulfilled' | 'rejected' = 'pending';
+    let value: T;
+    let reason: unknown;
+    const promise = Promise.resolve()
+      .then(resolve)
+      .then(
+        (v) => {
+          state = 'fulfilled';
+          value = v;
+        },
+        (e) => {
+          state = 'rejected';
+          reason = e;
+        },
+      );
+    const chunk = {
+      get status() {
+        return state;
+      },
+      get value() {
+        return value;
+      },
+      get reason() {
+        return reason;
+      },
+      then: promise.then.bind(promise),
+      catch: promise.catch.bind(promise),
+      finally: promise.finally.bind(promise),
+    };
+    return {
+      $$typeof: REACT_LAZY_TYPE,
+      _payload: chunk,
+      _init: (c: typeof chunk) => {
+        if (c.status === 'fulfilled') return c.value;
+        if (c.status === 'rejected') throw c.reason;
+        throw c;
+      },
+    } as unknown as React.ReactNode;
+  }
+
+  it('should unwrap a lazy reference that resolves to an element', async () => {
+    const lazyLink = createFlightLazy(() => <a href="/single">single link</a>);
+
+    await act(async () => {
+      render(
+        <React.Suspense fallback={<div>loading</div>}>
+          <Slot.Root className="slot">{lazyLink}</Slot.Root>
+        </React.Suspense>,
+      );
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+
+    const link = screen.getByRole('link');
+    expect(link.getAttribute('href')).toBe('/single');
+    expect(link.getAttribute('class')).toBe('slot');
+    expect(link.textContent).toBe('single link');
+  });
+
+  it('should unwrap a lazy reference that resolves to another lazy reference', async () => {
+    // A Server Component's child can cross the Flight boundary as a reference to
+    // a chunk that resolves to a reference to another chunk, e.g. when the
+    // resolved element's own subtree still has unresolved dependencies.
+    const innerLazy = createFlightLazy(() => <a href="/inner">inner link</a>);
+    const outerLazy = createFlightLazy(() => Promise.resolve(innerLazy));
+
+    await act(async () => {
+      render(
+        <React.Suspense fallback={<div>loading</div>}>
+          <Slot.Root className="slot">{outerLazy}</Slot.Root>
+        </React.Suspense>,
+      );
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+
+    const link = screen.getByRole('link');
+    expect(link.getAttribute('href')).toBe('/inner');
+    expect(link.getAttribute('class')).toBe('slot');
+    expect(link.textContent).toBe('inner link');
+  });
+
+  it('should unwrap a nested lazy reference reached through Slottable', async () => {
+    const innerLazy = createFlightLazy(() => <a href="/inner">inner link</a>);
+    const outerLazy = createFlightLazy(() => Promise.resolve(innerLazy));
+
+    await act(async () => {
+      render(
+        <React.Suspense fallback={<div>loading</div>}>
+          <Slot.Root className="slot">
+            <Slot.Slottable child={outerLazy}>{(slottable) => slottable}</Slot.Slottable>
+          </Slot.Root>
+        </React.Suspense>,
+      );
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+
+    const link = screen.getByRole('link');
+    expect(link.getAttribute('href')).toBe('/inner');
+    expect(link.getAttribute('class')).toBe('slot');
+  });
+});
+
 /* -------------------------------------------------------------------------------------------------
  * Backwards compatibility & edge cases
  *
