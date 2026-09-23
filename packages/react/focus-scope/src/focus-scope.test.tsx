@@ -55,6 +55,39 @@ describe('FocusScope', () => {
       await userEvent.tab();
       await waitFor(() => expect(tabbableFirst).toHaveFocus());
     });
+
+    it('should wrap focus on a plain shift+tab keydown from the first element in scope', () => {
+      tabbableFirst.focus();
+      const notCancelled = fireEvent.keyDown(tabbableFirst, {
+        key: 'Tab',
+        shiftKey: true,
+        keyCode: 9,
+      });
+      expect(notCancelled).toBe(false);
+      expect(tabbableLast).toHaveFocus();
+    });
+
+    it('should leave a tab that belongs to an IME composition to the input method', () => {
+      tabbableFirst.focus();
+      const notCancelled = fireEvent.keyDown(tabbableFirst, {
+        key: 'Tab',
+        shiftKey: true,
+        isComposing: true,
+      });
+      expect(notCancelled).toBe(true);
+      expect(tabbableFirst).toHaveFocus();
+    });
+
+    it('should leave a tab the IME processed (keyCode 229) to the input method', () => {
+      tabbableFirst.focus();
+      const notCancelled = fireEvent.keyDown(tabbableFirst, {
+        key: 'Tab',
+        shiftKey: true,
+        keyCode: 229,
+      });
+      expect(notCancelled).toBe(true);
+      expect(tabbableFirst).toHaveFocus();
+    });
   });
 
   describe('given a FocusScope where the first focusable has a negative tabindex', () => {

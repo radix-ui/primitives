@@ -208,6 +208,12 @@ const FocusScope = /* @__PURE__ */ React.forwardRef<FocusScopeElement, FocusScop
         if (!loop && !trapped) return;
         if (focusScope.paused) return;
 
+        // A Tab pressed while an IME composition is open can belong to the input method (some
+        // use it to pick a suggestion), so it must not move focus and end the composition.
+        if (event.nativeEvent.isComposing || event.keyCode === 229) {
+          return;
+        }
+
         const isTabKey = event.key === 'Tab' && !event.altKey && !event.ctrlKey && !event.metaKey;
         const focusedElement = document.activeElement as HTMLElement | null;
 
