@@ -6,6 +6,7 @@ import { Primitive } from '@radix-ui/react-primitive';
 import * as RovingFocusGroup from '@radix-ui/react-roving-focus';
 import { createRovingFocusGroupScope } from '@radix-ui/react-roving-focus';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
+import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { useDirection } from '@radix-ui/react-direction';
 import {
   type Radio,
@@ -20,6 +21,9 @@ import {
 import type { Scope } from '@radix-ui/react-context';
 
 const ARROW_KEYS = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
+
+const useInsertionEffect: typeof useLayoutEffect =
+  (React as any)[' useInsertionEffect '.trim().toString()] || useLayoutEffect;
 
 /* -------------------------------------------------------------------------------------------------
  * RadioGroup
@@ -40,6 +44,8 @@ type RadioGroupContextValue = {
   required: boolean;
   disabled: boolean;
   value: string | null;
+  defaultValue: string | null;
+  isControlled: boolean;
   onValueChange(value: string): void;
 };
 
@@ -80,6 +86,7 @@ const RadioGroup = /* @__PURE__ */ React.forwardRef<RadioGroupElement, RadioGrou
     } = props;
     const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeRadioGroup);
     const direction = useDirection(dir);
+    const isControlled = valueProp !== undefined;
     const [value, setValue] = useControllableState({
       prop: valueProp,
       defaultProp: defaultValue ?? null,
@@ -90,12 +97,16 @@ const RadioGroup = /* @__PURE__ */ React.forwardRef<RadioGroupElement, RadioGrou
     const composedRefs = useComposedRefs(forwardedRef, setControl);
 
     const initialValueRef = React.useRef(value);
+    const resetValueRef = React.useRef(value);
+    useInsertionEffect(() => {
+      resetValueRef.current = isControlled ? initialValueRef.current : (defaultValue ?? null);
+    });
     React.useEffect(() => {
       const associatedForm = form
         ? control?.ownerDocument.getElementById(form)
         : control?.closest('form');
       if (associatedForm instanceof HTMLFormElement) {
-        const reset = () => setValue(initialValueRef.current);
+        const reset = () => setValue(resetValueRef.current);
         associatedForm.addEventListener('reset', reset);
         return () => associatedForm.removeEventListener('reset', reset);
       }
@@ -109,6 +120,8 @@ const RadioGroup = /* @__PURE__ */ React.forwardRef<RadioGroupElement, RadioGrou
         required={required}
         disabled={disabled}
         value={value}
+        defaultValue={defaultValue ?? null}
+        isControlled={isControlled}
         onValueChange={setValue}
       >
         <RovingFocusGroup.Root
@@ -162,6 +175,7 @@ function RadioGroupItemProvider(props: ScopedProps<RadioGroupItemProviderProps>)
     <RadioProvider
       {...radioScope}
       checked={context.value === value}
+      defaultChecked={context.isControlled ? undefined : context.defaultValue === value}
       disabled={isDisabled}
       required={context.required}
       name={context.name}

@@ -483,6 +483,122 @@ describe('RadioGroup', () => {
         act(() => fireEvent.click(screen.getByText('Reset')));
         radios.forEach((radio) => expect(radio).toHaveAttribute('aria-checked', 'false'));
       });
+
+      it('should keep the current selection when `defaultValue` changes and restore the latest `defaultValue` on reset', () => {
+        const { container, rerender } = render(
+          <form>
+            <ClassicRadioGroup name="pet" defaultValue="1" />
+            <button type="reset">Reset</button>
+          </form>,
+        );
+        const form = container.querySelector('form')!;
+
+        const radios = screen.getAllByRole(RADIO_ROLE);
+        act(() => fireEvent.click(radios[1]!));
+
+        rerender(
+          <form>
+            <ClassicRadioGroup name="pet" defaultValue="3" />
+            <button type="reset">Reset</button>
+          </form>,
+        );
+        expect(radios[1]).toHaveAttribute('aria-checked', 'true');
+        expect(radios[2]).toHaveAttribute('aria-checked', 'false');
+        expect(new FormData(form).get('pet')).toBe('2');
+
+        act(() => fireEvent.click(screen.getByText('Reset')));
+        expect(radios[0]).toHaveAttribute('aria-checked', 'false');
+        expect(radios[1]).toHaveAttribute('aria-checked', 'false');
+        expect(radios[2]).toHaveAttribute('aria-checked', 'true');
+        expect(new FormData(form).get('pet')).toBe('3');
+      });
+
+      it('should keep the hidden input in sync when reset to a `defaultValue` that is already selected', () => {
+        const { container, rerender } = render(
+          <form>
+            <ClassicRadioGroup name="pet" defaultValue="1" />
+            <button type="reset">Reset</button>
+          </form>,
+        );
+        const form = container.querySelector('form')!;
+
+        const radios = screen.getAllByRole(RADIO_ROLE);
+        act(() => fireEvent.click(radios[1]!));
+
+        rerender(
+          <form>
+            <ClassicRadioGroup name="pet" defaultValue="2" />
+            <button type="reset">Reset</button>
+          </form>,
+        );
+
+        act(() => fireEvent.click(screen.getByText('Reset')));
+        expect(radios[0]).toHaveAttribute('aria-checked', 'false');
+        expect(radios[1]).toHaveAttribute('aria-checked', 'true');
+        expect(new FormData(form).get('pet')).toBe('2');
+      });
+
+      it('should restore a `defaultValue` that changed without user interaction', () => {
+        const { container, rerender } = render(
+          <form>
+            <ClassicRadioGroup name="pet" defaultValue="1" />
+            <button type="reset">Reset</button>
+          </form>,
+        );
+        const form = container.querySelector('form')!;
+
+        rerender(
+          <form>
+            <ClassicRadioGroup name="pet" defaultValue="2" />
+            <button type="reset">Reset</button>
+          </form>,
+        );
+        const radios = screen.getAllByRole(RADIO_ROLE);
+        expect(radios[0]).toHaveAttribute('aria-checked', 'true');
+        expect(new FormData(form).get('pet')).toBe('1');
+
+        act(() => fireEvent.click(screen.getByText('Reset')));
+        expect(radios[0]).toHaveAttribute('aria-checked', 'false');
+        expect(radios[1]).toHaveAttribute('aria-checked', 'true');
+        expect(new FormData(form).get('pet')).toBe('2');
+      });
+
+      it('should keep the submitted value when a form action resets the form', async () => {
+        const submittedValues: Array<FormDataEntryValue | null> = [];
+
+        function FormWithAction() {
+          const [savedValue, formAction] = React.useActionState(
+            async (_previousValue: string, formData: FormData) => {
+              submittedValues.push(formData.get('pet'));
+              return String(formData.get('pet'));
+            },
+            '1',
+          );
+          return (
+            <form action={formAction}>
+              <ClassicRadioGroup name="pet" defaultValue={savedValue} />
+              <button type="submit">Save</button>
+            </form>
+          );
+        }
+
+        const { container } = render(<FormWithAction />);
+        const form = container.querySelector('form')!;
+
+        const radios = screen.getAllByRole(RADIO_ROLE);
+        act(() => fireEvent.click(radios[1]!));
+
+        await act(async () => fireEvent.click(screen.getByText('Save')));
+        expect(submittedValues).toEqual(['2']);
+        expect(radios[0]).toHaveAttribute('aria-checked', 'false');
+        expect(radios[1]).toHaveAttribute('aria-checked', 'true');
+        expect(new FormData(form).get('pet')).toBe('2');
+
+        await act(async () => fireEvent.click(screen.getByText('Save')));
+        expect(submittedValues).toEqual(['2', '2']);
+        expect(radios[1]).toHaveAttribute('aria-checked', 'true');
+        expect(new FormData(form).get('pet')).toBe('2');
+      });
     });
 
     describe('controlled', () => {

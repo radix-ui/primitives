@@ -1757,6 +1757,9 @@ importers:
       '@radix-ui/react-use-controllable-state':
         specifier: workspace:*
         version: link:../use-controllable-state
+      '@radix-ui/react-use-layout-effect':
+        specifier: workspace:*
+        version: link:../use-layout-effect
       '@radix-ui/react-use-size':
         specifier: workspace:*
         version: link:../use-size

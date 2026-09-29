@@ -15,6 +15,7 @@ const [createRadioContext, createRadioScope] = createContextScope(RADIO_NAME);
 
 type RadioContextValue = {
   checked: boolean;
+  defaultChecked: boolean | undefined;
   disabled: boolean | undefined;
   required: boolean | undefined;
   name: string | undefined;
@@ -39,6 +40,7 @@ const [RadioProviderImpl, useRadioContext] = createRadioContext<RadioContextValu
 
 interface RadioProviderProps {
   checked?: boolean;
+  defaultChecked?: boolean;
   required?: boolean;
   disabled?: boolean;
   name?: string;
@@ -52,6 +54,7 @@ function RadioProvider(props: ScopedProps<RadioProviderProps>) {
   const {
     __scopeRadio,
     checked = false,
+    defaultChecked,
     children,
     disabled,
     form,
@@ -85,6 +88,7 @@ function RadioProvider(props: ScopedProps<RadioProviderProps>) {
 
   const context: RadioContextValue = {
     checked,
+    defaultChecked,
     disabled,
     required,
     name,
@@ -274,6 +278,7 @@ const RadioBubbleInput = /* @__PURE__ */ React.forwardRef<HTMLInputElement, Radi
     const {
       control,
       checked,
+      defaultChecked,
       required,
       disabled,
       name,
@@ -334,7 +339,7 @@ const RadioBubbleInput = /* @__PURE__ */ React.forwardRef<HTMLInputElement, Radi
       <Primitive.input
         type="radio"
         aria-hidden
-        defaultChecked={defaultCheckedRef.current}
+        defaultChecked={defaultChecked ?? defaultCheckedRef.current}
         required={required}
         disabled={disabled}
         name={name}
