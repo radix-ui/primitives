@@ -7,7 +7,7 @@ import { Primitive, type PrimitivePropsWithRef } from '@radix-ui/react-primitive
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { useId } from '@radix-ui/react-id';
 import { useIsHydrated } from '@radix-ui/react-use-is-hydrated';
-import { useEffectEvent } from '@radix-ui/react-use-effect-event';
+import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import type { Scope } from '@radix-ui/react-context';
 import { createContextScope } from '@radix-ui/react-context';
 
@@ -178,7 +178,7 @@ const PasswordToggleFieldInput = /* @__PURE__ */ React.forwardRef<
     //
     // See "Keeping things secure":
     //   https://technology.blog.gov.uk/2021/04/19/simple-things-are-complicated-making-a-show-password-option/)
-    const _setVisible = useEffectEvent(setVisible);
+    const _setVisible = useCallbackRef(setVisible);
     React.useEffect(() => {
       const inputElement = inputRef.current;
       const form = inputElement?.form;
@@ -208,7 +208,7 @@ const PasswordToggleFieldInput = /* @__PURE__ */ React.forwardRef<
       return () => {
         controller.abort();
       };
-    }, [inputRef]);
+    }, [inputRef, _setVisible]);
 
     return (
       <Primitive.input

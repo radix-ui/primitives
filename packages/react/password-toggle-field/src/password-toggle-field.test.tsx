@@ -181,6 +181,68 @@ describe('given a PasswordToggleField in a form', () => {
   });
 });
 
+describe('given a controlled PasswordToggleField in a form', () => {
+  let user: UserEvent;
+  const onVisibilityChange = vi.fn();
+
+  function ControlledPasswordToggleField() {
+    const [visible, setVisible] = React.useState(false);
+    return (
+      <form onSubmit={(e) => e.preventDefault()}>
+        <label htmlFor="password">Password</label>
+        <PasswordToggleField.Root
+          visible={visible}
+          onVisibilityChange={(nextVisible) => {
+            onVisibilityChange(nextVisible);
+            setVisible(nextVisible);
+          }}
+        >
+          <PasswordToggleField.Input id="password" />
+          <PasswordToggleField.Toggle>
+            <PasswordToggleField.Slot visible="Hide" hidden="Show" />
+          </PasswordToggleField.Toggle>
+        </PasswordToggleField.Root>
+        <button>Submit</button>
+        <button type="reset">Reset</button>
+      </form>
+    );
+  }
+
+  afterEach(cleanup);
+
+  beforeEach(() => {
+    onVisibilityChange.mockReset();
+    user = userEvent.setup();
+    render(<ControlledPasswordToggleField />);
+  });
+
+  it('should reset visibility to hidden after submission', async () => {
+    const toggle = screen.getByRole('button', { name: 'Show' });
+    const input = screen.getByLabelText<HTMLInputElement>('Password');
+    await act(() => user.click(toggle));
+    expect(onVisibilityChange).toHaveBeenLastCalledWith(true);
+    expect(input.type).toBe('text');
+
+    await act(() => user.click(screen.getByText('Submit')));
+    expect(onVisibilityChange).toHaveBeenLastCalledWith(false);
+    expect(toggle.textContent).toBe('Show');
+    expect(input.type).toBe('password');
+  });
+
+  it('should reset visibility to hidden when the form is reset', async () => {
+    const toggle = screen.getByRole('button', { name: 'Show' });
+    const input = screen.getByLabelText<HTMLInputElement>('Password');
+    await act(() => user.click(toggle));
+    expect(onVisibilityChange).toHaveBeenLastCalledWith(true);
+    expect(input.type).toBe('text');
+
+    await act(() => user.click(screen.getByText('Reset')));
+    expect(onVisibilityChange).toHaveBeenLastCalledWith(false);
+    expect(toggle.textContent).toBe('Show');
+    expect(input.type).toBe('password');
+  });
+});
+
 function EyeClosedIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
