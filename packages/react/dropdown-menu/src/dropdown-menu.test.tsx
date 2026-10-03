@@ -1196,6 +1196,51 @@ describe('DropdownMenu.SubContent', () => {
     fireEvent.click(subContent);
     expect(onClick).toHaveBeenCalled();
   });
+
+  it('keeps the sub content open while moving toward it when the sub trigger prevents pointer moves', async () => {
+    render(
+      <DropdownMenu.Root defaultOpen>
+        <DropdownMenu.Trigger>{TRIGGER_TEXT}</DropdownMenu.Trigger>
+        <DropdownMenu.Portal>
+          <DropdownMenu.Content>
+            <DropdownMenu.Sub>
+              <DropdownMenu.SubTrigger onPointerMove={(event) => event.preventDefault()}>
+                {SUB_TRIGGER_TEXT}
+              </DropdownMenu.SubTrigger>
+              <DropdownMenu.Portal>
+                <DropdownMenu.SubContent>
+                  <DropdownMenu.Item>{SUB_ITEM_TEXT}</DropdownMenu.Item>
+                </DropdownMenu.SubContent>
+              </DropdownMenu.Portal>
+            </DropdownMenu.Sub>
+            <DropdownMenu.Item>{ITEM_TEXT}</DropdownMenu.Item>
+          </DropdownMenu.Content>
+        </DropdownMenu.Portal>
+      </DropdownMenu.Root>,
+    );
+    const subTrigger = screen.getByText(SUB_TRIGGER_TEXT);
+    const item = screen.getByText(ITEM_TEXT);
+
+    // Leave the last tracked pointer direction pointing left.
+    fireEvent.pointerMove(item, { pointerType: 'mouse', clientX: 300, clientY: 40 });
+    fireEvent.pointerMove(item, { pointerType: 'mouse', clientX: 100, clientY: 40 });
+
+    fireEvent.click(subTrigger);
+    const subContent = (await screen.findByText(SUB_ITEM_TEXT)).closest<HTMLElement>(
+      '[role="menu"]',
+    );
+    if (!subContent) {
+      throw new Error('Expected the sub content.');
+    }
+    vi.spyOn(subContent, 'getBoundingClientRect').mockReturnValue(new DOMRect(200, 0, 200, 300));
+
+    fireEvent.pointerMove(subTrigger, { pointerType: 'mouse', clientX: 120, clientY: 10 });
+    fireEvent.pointerMove(subTrigger, { pointerType: 'mouse', clientX: 150, clientY: 10 });
+    fireEvent.pointerLeave(subTrigger, { pointerType: 'mouse', clientX: 160, clientY: 10 });
+    fireEvent.pointerMove(item, { pointerType: 'mouse', clientX: 170, clientY: 10 });
+
+    expect(subTrigger).toHaveAttribute('aria-expanded', 'true');
+  });
 });
 
 function cleanupModal() {

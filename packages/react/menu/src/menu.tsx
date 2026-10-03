@@ -603,6 +603,9 @@ const MenuContentImpl = /* @__PURE__ */ React.forwardRef<
                           lastPointerXRef.current = event.clientX;
                         }
                       }),
+                      // Pointer direction feeds the submenu grace area, so keep tracking it even
+                      // when an item prevents its own pointer move handling.
+                      { checkForDefaultPrevented: false },
                     )}
                   />
                 </RovingFocusGroup.Root>
