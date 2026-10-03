@@ -1196,6 +1196,49 @@ describe('DropdownMenu.SubContent', () => {
     fireEvent.click(subContent);
     expect(onClick).toHaveBeenCalled();
   });
+
+  it('lets `onOpenAutoFocus` move focus into the sub content when it opens', async () => {
+    const SubContentWithInput = () => {
+      const inputRef = React.useRef<HTMLInputElement>(null);
+      return (
+        <DropdownMenu.Root defaultOpen>
+          <DropdownMenu.Trigger>{TRIGGER_TEXT}</DropdownMenu.Trigger>
+          <DropdownMenu.Portal>
+            <DropdownMenu.Content>
+              <DropdownMenu.Sub>
+                <DropdownMenu.SubTrigger>{SUB_TRIGGER_TEXT}</DropdownMenu.SubTrigger>
+                <DropdownMenu.Portal>
+                  <DropdownMenu.SubContent
+                    onOpenAutoFocus={(event) => {
+                      event.preventDefault();
+                      inputRef.current?.focus();
+                    }}
+                  >
+                    <input ref={inputRef} aria-label="Search" />
+                    <DropdownMenu.Item>{SUB_ITEM_TEXT}</DropdownMenu.Item>
+                  </DropdownMenu.SubContent>
+                </DropdownMenu.Portal>
+              </DropdownMenu.Sub>
+            </DropdownMenu.Content>
+          </DropdownMenu.Portal>
+        </DropdownMenu.Root>
+      );
+    };
+
+    render(<SubContentWithInput />);
+    fireEvent.click(screen.getByText(SUB_TRIGGER_TEXT));
+
+    await waitFor(() => expect(screen.getByLabelText('Search')).toHaveFocus());
+  });
+
+  it('keeps focus on the sub trigger when a pointer opens the sub content', async () => {
+    render(<DropdownMenuWithSubTest defaultOpen />);
+    const subTrigger = screen.getByText(SUB_TRIGGER_TEXT);
+    fireEvent.click(subTrigger);
+
+    await screen.findByText(SUB_ITEM_TEXT);
+    expect(subTrigger).toHaveFocus();
+  });
 });
 
 function cleanupModal() {

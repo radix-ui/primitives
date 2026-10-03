@@ -1217,6 +1217,12 @@ interface MenuSubContentProps extends Omit<
   forceMount?: true;
 
   /**
+   * Event handler called when auto-focusing on open.
+   * Can be prevented.
+   */
+  onOpenAutoFocus?: FocusScopeProps['onMountAutoFocus'];
+
+  /**
    * Controls the direction the subcontent appears from its anchor menu item
    * Default: start
    */
@@ -1246,11 +1252,11 @@ const MenuSubContent = /* @__PURE__ */ React.forwardRef<MenuSubContentElement, M
               disableOutsidePointerEvents={false}
               disableOutsideScroll={false}
               trapFocus={false}
-              onOpenAutoFocus={(event) => {
+              onOpenAutoFocus={composeEventHandlers(props.onOpenAutoFocus, (event) => {
                 // when opening a submenu, focus content for keyboard users only
                 if (rootContext.isUsingKeyboardRef.current) ref.current?.focus();
                 event.preventDefault();
-              }}
+              })}
               // The menu might close because of focusing another menu item in the parent menu. We
               // don't want it to refocus the trigger in that case so we handle trigger focus ourselves.
               onCloseAutoFocus={(event) => event.preventDefault()}
