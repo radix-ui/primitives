@@ -2,8 +2,6 @@
 
 ## 0.2.16
 
-- Refactored const assignment to export alias.
-- Internal refactoring; noop
 - Updated dependencies: `@radix-ui/react-primitive@2.1.11`
 
 ## 0.2.15

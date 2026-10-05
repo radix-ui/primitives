@@ -2,7 +2,7 @@
 
 ## 1.1.11
 
-- Refactored const assignment to export alias.
+- Internal refactoring only; no behavioral or API changes.
 
 ## 1.1.10
 

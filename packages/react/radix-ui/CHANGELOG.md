@@ -2,49 +2,65 @@
 
 ## 1.7.0
 
-### Added a `disableToggle` prop to `NavigationMenu.Sub`.
+### Dialog
 
-- `true`: Clicking the trigger of an already-open submenu item keeps it open. This is the default and matches existing behavior.
-- `false`: Clicking the trigger of a submenu item toggles it open or closed.
+- Fixed nested, portalled layers being unusable inside a modal layer. A non-modal popover rendered inside a modal Dialog previously broke some user interactions because the modal layer's trapped `FocusScope` reclaimed focus, and its `RemoveScroll` only allowed scrolling within the modal content.
 
-### Added an `activationMode` prop to `NavigationMenu.Root` and `NavigationMenu.Sub`.
+### Navigation Menu
 
-- `"automatic"`: Hovering or focusing a trigger opens its item, and moving away from the trigger closes it after a short delay. This is the default and matches existing behavior.
-- `"manual"`: Pointer entry and focus never open an item; the item is opened by clicking its trigger.
+- Added a `disableToggle` prop to `NavigationMenu.Sub`.
+  - `true`: Clicking the trigger of an already-open submenu item keeps it open. This is the default and matches existing behavior.
+  - `false`: Clicking the trigger of a submenu item toggles it open or closed.
+- Added an `activationMode` prop to `NavigationMenu.Root` and `NavigationMenu.Sub`.
+  - `"automatic"`: Hovering or focusing a trigger opens its item, and moving away from the trigger closes it after a short delay. This is the default and matches existing behavior.
+  - `"manual"`: Pointer entry and focus never open an item. The item opens when its trigger is clicked.
+  - When `activationMode` is omitted on `NavigationMenu.Sub`, it inherits the value from the parent `NavigationMenu.Root`, so setting `"manual"` on the root also applies to submenus unless a submenu opts back in to `"automatic"`.
+- Fixed a bug where a submenu's `defaultValue` was reset when an external element was focused before the menu opened.
+- Fixed a bug where `NavigationMenu.Viewport` discarded its children and rendered the active content in their place. The active content is now rendered inside the consumer's element alongside any children it already had.
 
-When `activationMode` is omitted on `NavigationMenu.Sub`, it inherits the value from the parent `NavigationMenu.Root`, so setting `"manual"` on the root also applies to submenus unless a submenu opts back in to `"automatic"`.
+### Popover
 
-### Added a `ScrollArea.Content` part so consumers can own the wrapper element implicitly rendered by `ScrollArea.Viewport`. This must be used with the viewport's `disableImplicitContentElement` prop.
+- Added `Popover.Title` and `Popover.Description` parts that provide accessible names and descriptions for popover content.
 
-```tsx
-<ScrollArea.Root>
-  <ScrollArea.Viewport disableImplicitContentElement>
-    <ScrollArea.Content>{children}</ScrollArea.Content>
-  </ScrollArea.Viewport>
-  <ScrollArea.Scrollbar>
-    <ScrollArea.Thumb />
-  </ScrollArea.Scrollbar>
-</ScrollArea.Root>
-```
+### Scroll Area
 
-In the next major release, the content element will no longer be implicitly rendered by the viewport. We recommend migrating to this API today for a smooth upgrade path.
+- Added a `ScrollArea.Content` part so consumers can own the wrapper element implicitly rendered by `ScrollArea.Viewport`. Pass `disableImplicitContentElement` to the viewport and render `ScrollArea.Content` as its child.
+
+  ```tsx
+  <ScrollArea.Root>
+    <ScrollArea.Viewport disableImplicitContentElement>
+      <ScrollArea.Content>{children}</ScrollArea.Content>
+    </ScrollArea.Viewport>
+    <ScrollArea.Scrollbar>
+      <ScrollArea.Thumb />
+    </ScrollArea.Scrollbar>
+  </ScrollArea.Root>
+  ```
+
+  In the next major release, the viewport will no longer render this element implicitly. We recommend migrating to this API now for a smoother upgrade.
+
+- Fixed a bug where `asChild` on `ScrollArea.Viewport` merged props onto the implicit content element instead of the consumer's element.
+
+### Select
+
+- Fixed a bug where internal event handlers were still called on disabled `Select.Item` elements. Consumer-provided event handlers still run, but Radix's own selection logic no longer fires for disabled items.
+
+### Slider
+
+- Added a `preserveThumbOrder` prop to `Slider` that prevents thumbs from crossing over one another. When enabled, each thumb is constrained to the values of its neighbors instead of swapping positions when dragged past them.
+
+### Tabs
+
+- Fixed a bug where a focused element inside `Tabs.Content` did not fire a blur event before the tab switched. `Tabs.Trigger` now moves focus before the tab's state change.
+
+### Toast
+
+- Fixed a bug where a paused `Toast` would not auto-close after its `duration` changed while the timer was paused.
 
 ### Other updates
 
-- Added `Popover.Title` and `Popover.Description` parts that provide accessible names and descriptions for popover content.
-- Added a `preserveThumbOrder` prop to `Slider` that prevents thumbs from crossing over one another. When enabled, each thumb is constrained to the values of its neighbors instead of swapping positions when dragged past them.
-- Added support for multiple `aria-describedby` attributes.
-- Fixed `asChild` being applied to the wrong element on `ScrollArea.Viewport`.
-- Fixed a bug where a submenu's `defaultValue` was reset when external element was focused before menu is opened.
-- Fixed a bug where internal event handlers were still being called on a disabled `Select.Item` elements. Consumer-provided event handlers still run, but Radix's own selection logic no longer fires for disabled items.
-- Fixed nested, portalled layers being unusable inside a modal layer. A non-modal popover rendered inside a modal Dialog previously broke some user interactions because the modal layer's trapped `FocusScope` reclaimed focus, and its `RemoveScroll` only allowed scrolling within the modal content.
+- Added support for multiple `aria-describedby` attributes, so ids from a component and its child are merged, normalized, and deduplicated instead of one replacing the other.
 - Fixed compatibility issues with React Server Components.
-- Fixed a bug where a paused `Toast` would not auto-close after its `duration` changed while the timer was paused.
-- Refactored const assignment to export alias.
-- Fixed a bug where a focused element inside `Tabs.Content` were not firing blur events before switching tabs. `Tabs.Trigger` now moves focus before the tab's state change.
-- Internal refactoring; noop
-- Fixed a bug on `NavigationMenu.Viewport` where the viewport discarded its children and rendered the active content in their place. The active content is now rendered inside the consumer's element alongside any children it already had.
-- Updated dependencies: `@radix-ui/react-scroll-area@1.3.0`, `@radix-ui/react-use-size@1.1.5`, `@radix-ui/react-navigation-menu@1.3.0`, `@radix-ui/react-select@2.3.8`, `@radix-ui/react-focus-scope@1.2.0`, `@radix-ui/react-dialog@1.2.0`, `@radix-ui/react-popover@1.2.0`, `@radix-ui/react-menu@2.1.25`, `@radix-ui/react-hover-card@1.1.24`, `@radix-ui/react-slot@1.4.0`, `@radix-ui/react-toast@1.2.24`, `@radix-ui/react-dismissable-layer@1.1.20`, `@radix-ui/react-accessible-icon@1.1.16`, `@radix-ui/react-visually-hidden@1.2.12`, `@radix-ui/react-dropdown-menu@2.1.25`, `@radix-ui/react-alert-dialog@1.1.24`, `@radix-ui/react-aspect-ratio@1.1.16`, `@radix-ui/react-context-menu@2.3.8`, `@radix-ui/react-roving-focus@1.1.20`, `@radix-ui/react-collapsible@1.1.21`, `@radix-ui/react-accordion@1.2.21`, `@radix-ui/react-direction@1.1.5`, `@radix-ui/react-primitive@2.1.11`, `@radix-ui/react-separator@1.1.16`, `@radix-ui/react-presence@1.1.11`, `@radix-ui/react-progress@1.1.17`, `@radix-ui/react-menubar@1.1.25`, `@radix-ui/react-toolbar@1.1.20`, `@radix-ui/react-popper@1.3.8`, `@radix-ui/react-portal@1.1.18`, `@radix-ui/react-toggle@1.1.19`, `@radix-ui/react-arrow@1.1.16`, `@radix-ui/react-label@2.1.16`, `@radix-ui/react-tabs@1.1.22`, `@radix-ui/react-slider@1.5.0`, `@radix-ui/react-tooltip@1.3.0`, `@radix-ui/react-form@0.2.0`, `@radix-ui/react-one-time-password-field@0.1.17`, `@radix-ui/react-password-toggle-field@0.1.12`, `@radix-ui/react-toggle-group@1.1.20`, `@radix-ui/react-avatar@1.2.7`, `@radix-ui/react-checkbox@1.3.12`, `@radix-ui/react-radio-group@1.4.8`, `@radix-ui/react-switch@1.3.8`, `@radix-ui/react-collection@1.1.16`
 
 ## 1.6.6, 1.6.7
 
@@ -111,7 +127,7 @@ In the next major release, the content element will no longer be implicitly rend
 ## 1.6.0
 
 ```tsx
-const Slot = createSlot<HTMLButtonElement, MyCustomButtonProps>("Slot");
+const Slot = createSlot<HTMLButtonElement, MyCustomButtonProps>('Slot');
 ```
 
 ### Avatar
@@ -202,12 +218,12 @@ const Slot = createSlot<HTMLButtonElement, MyCustomButtonProps>("Slot");
 - Added unstable `RadioGroupItemProvider`, `RadioGroupItemTrigger` and `RadioGroupItemBubbleInput` parts. These expose the previously internal composition of a radio item that included a visually hidden `input` so consumers can directly access and recompose them. The `RadioGroupItem` component continues to render them by default.
 
   ```tsx
-  import { RadioGroup } from "radix-ui";
+  import { RadioGroup } from 'radix-ui';
 
   function ExampleRadioGroup() {
     return (
       <RadioGroup.Root>
-        {["one", "two", "three"].map((value) => (
+        {['one', 'two', 'three'].map((value) => (
           <RadioGroup.unstable_ItemProvider key={value} value={value}>
             <RadioGroup.unstable_ItemTrigger>
               <RadioGroup.Indicator />
@@ -226,7 +242,7 @@ const Slot = createSlot<HTMLButtonElement, MyCustomButtonProps>("Slot");
 - Added unstable `Provider` and `BubbleInput` parts to Select. These expose the previously internal composition that included a visually hidden `select` so consumers can directly access and recompose them. `Select` continues to render them by default.
 
   ```tsx
-  import { Select } from "radix-ui";
+  import { Select } from 'radix-ui';
 
   function ExampleSelect() {
     return (
@@ -250,7 +266,7 @@ const Slot = createSlot<HTMLButtonElement, MyCustomButtonProps>("Slot");
 - Added unstable `ThumbProvider`, `ThumbTrigger`, and `BubbleInput` parts to Slider. `SliderThumb` was previously a single component that implicitly rendered a hidden native input for form submission. It is now composed from these new parts, which are exposed so consumers can decouple the visually hidden input from the thumb. `SliderThumb` continues to render them by default.
 
   ```tsx
-  import { Slider } from "radix-ui";
+  import { Slider } from 'radix-ui';
 
   function ExampleSlider() {
     return (
@@ -289,7 +305,7 @@ const Slot = createSlot<HTMLButtonElement, MyCustomButtonProps>("Slot");
 - Added unstable `Provider`, `Trigger` and `BubbleInput` parts to Switch. These expose the previously internal composition that included a visually hidden `input` so consumers can directly access and recompose them. The `Switch` component continues to render them by default.
 
   ```tsx
-  import { Switch } from "radix-ui";
+  import { Switch } from 'radix-ui';
 
   function ExampleSwitch() {
     return (
@@ -371,17 +387,14 @@ This new primitive provides components for rendering a password input alongside 
 This API is currently unstable, and we hope you'll help us test it out! Import the primitive using the `unstable_` prefix.
 
 ```tsx
-import { unstable_PasswordToggleField as PasswordToggleField } from "radix-ui";
+import { unstable_PasswordToggleField as PasswordToggleField } from 'radix-ui';
 
 function FieldWithIconToggle() {
   return (
     <PasswordToggleField.Root>
       <PasswordToggleField.Input />
       <PasswordToggleField.Toggle>
-        <PasswordToggleField.Icon
-          visible={<EyeOpenIcon />}
-          hidden={<EyeClosedIcon />}
-        />
+        <PasswordToggleField.Icon visible={<EyeOpenIcon />} hidden={<EyeClosedIcon />} />
       </PasswordToggleField.Toggle>
     </PasswordToggleField.Root>
   );
@@ -392,10 +405,7 @@ function FieldWithTextToggle() {
     <PasswordToggleField.Root>
       <PasswordToggleField.Input />
       <PasswordToggleField.Toggle>
-        <PasswordToggleField.Slot
-          visible="Hide password"
-          hidden="Show password"
-        />
+        <PasswordToggleField.Slot visible="Hide password" hidden="Show password" />
       </PasswordToggleField.Toggle>
     </PasswordToggleField.Root>
   );
@@ -440,7 +450,7 @@ This new primitive is designed to implement the common design pattern for one-ti
 This API is currently unstable, and we hope you'll help us test it out! Import the primitive using the `unstable_` prefix.
 
 ```tsx
-import { unstable_OneTimePasswordField as OneTimePasswordField } from "radix-ui";
+import { unstable_OneTimePasswordField as OneTimePasswordField } from 'radix-ui';
 
 export function Verify() {
   return (

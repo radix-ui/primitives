@@ -2,7 +2,6 @@
 
 ## 1.1.20
 
-- Refactored const assignment to export alias.
 - Updated dependencies: `@radix-ui/react-roving-focus@1.1.20`, `@radix-ui/react-direction@1.1.5`, `@radix-ui/react-primitive@2.1.11`, `@radix-ui/react-separator@1.1.16`, `@radix-ui/react-toggle-group@1.1.20`
 
 ## 1.1.19

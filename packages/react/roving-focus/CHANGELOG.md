@@ -2,8 +2,6 @@
 
 ## 1.1.20
 
-- Refactored const assignment to export alias.
-- Internal refactoring; noop
 - Updated dependencies: `@radix-ui/react-direction@1.1.5`, `@radix-ui/react-primitive@2.1.11`, `@radix-ui/react-collection@1.1.16`
 
 ## 1.1.19

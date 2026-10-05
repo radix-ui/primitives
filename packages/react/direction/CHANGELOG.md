@@ -2,8 +2,7 @@
 
 ## 1.1.5
 
-- Refactored const assignment to export alias.
-- Internal refactoring; noop
+- Internal refactoring only; no behavioral or API changes.
 
 ## 1.1.4
 

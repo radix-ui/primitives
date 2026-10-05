@@ -2,8 +2,6 @@
 
 ## 1.3.8
 
-- Refactored const assignment to export alias.
-- Internal refactoring; noop
 - Updated dependencies: `@radix-ui/react-use-size@1.1.5`, `@radix-ui/react-primitive@2.1.11`, `@radix-ui/react-arrow@1.1.16`
 
 ## 1.3.7

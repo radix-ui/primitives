@@ -3,7 +3,6 @@
 ## 1.5.0
 
 - Added a `preserveThumbOrder` prop to `Slider` that prevents thumbs from crossing over one another. When enabled, each thumb is constrained to the values of its neighbors instead of swapping positions when dragged past them.
-- Internal refactoring; noop
 - Updated dependencies: `@radix-ui/react-use-size@1.1.5`, `@radix-ui/react-direction@1.1.5`, `@radix-ui/react-primitive@2.1.11`, `@radix-ui/react-collection@1.1.16`
 
 ## 1.4.7

@@ -2,7 +2,6 @@
 
 ## 1.1.16
 
-- Refactored const assignment to export alias.
 - Updated dependencies: `@radix-ui/react-visually-hidden@1.2.12`
 
 ## 1.1.15

@@ -2,8 +2,6 @@
 
 ## 2.3.8
 
-- Refactored const assignment to export alias.
-- Internal refactoring; noop
 - Updated dependencies: `@radix-ui/react-menu@2.1.25`, `@radix-ui/react-primitive@2.1.11`
 
 ## 2.3.7

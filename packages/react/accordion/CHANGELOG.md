@@ -2,8 +2,6 @@
 
 ## 1.2.21
 
-- Refactored const assignment to export alias.
-- Internal refactoring; noop
 - Updated dependencies: `@radix-ui/react-collapsible@1.1.21`, `@radix-ui/react-direction@1.1.5`, `@radix-ui/react-primitive@2.1.11`, `@radix-ui/react-collection@1.1.16`
 
 ## 1.2.20

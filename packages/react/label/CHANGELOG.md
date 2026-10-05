@@ -2,7 +2,6 @@
 
 ## 2.1.16
 
-- Refactored const assignment to export alias.
 - Updated dependencies: `@radix-ui/react-primitive@2.1.11`
 
 ## 2.1.15

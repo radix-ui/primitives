@@ -4,7 +4,6 @@
 
 - Fixed nested, portalled layers being unusable inside a modal layer. A non-modal popover rendered inside a modal Dialog previously broke some user interactions because the modal layer's trapped `FocusScope` reclaimed focus, and its `RemoveScroll` only allowed scrolling within the modal content.
 - Added `FocusScopeBranchProviderProps` export
-- Refactored const assignment to export alias.
 - Updated dependencies: `@radix-ui/react-primitive@2.1.11`
 
 ## 1.1.16

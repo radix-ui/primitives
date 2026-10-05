@@ -2,7 +2,6 @@
 
 ## 1.1.20
 
-- Refactored const assignment to export alias.
 - Updated dependencies: `@radix-ui/react-primitive@2.1.11`
 
 ## 1.1.19
