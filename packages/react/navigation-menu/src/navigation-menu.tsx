@@ -1163,9 +1163,10 @@ const NavigationMenuViewportImpl = /* @__PURE__ */ React.forwardRef<
       onPointerLeave={composeEventHandlers(props.onPointerLeave, whenMouse(context.onContentLeave))}
     >
       {/*
-       * `Slottable` keeps the proxied content inside the slotted element when
-       * `asChild` is set. Without it, `Slot` would target that content and drop
-       * every prop on the consumer's element.
+       * `Slottable` marks the consumer element as the `asChild` slot target.
+       * Without it, `Slot` sees multiple children (consumer element + proxied
+       * content) and throws. Consumer children render before proxied content,
+       * matching the non-`asChild` order.
        */}
       <Slottable>{children}</Slottable>
       {Array.from(viewportContentContext.items).map(([value, { ref, forceMount, ...props }]) => {
