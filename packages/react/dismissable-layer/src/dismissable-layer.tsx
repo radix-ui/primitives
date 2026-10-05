@@ -227,11 +227,12 @@ const DismissableLayer = /* @__PURE__ */ React.forwardRef<
         {...layerProps}
         ref={composedRefs}
         style={{
-          pointerEvents: isBodyPointerEventsDisabled
-            ? isPointerEventsEnabled
-              ? 'auto'
-              : 'none'
-            : undefined,
+          pointerEvents:
+            disableOutsidePointerEvents || isBodyPointerEventsDisabled
+              ? isPointerEventsEnabled
+                ? 'auto'
+                : 'none'
+              : undefined,
           ...props.style,
         }}
         onFocusCapture={composeEventHandlers(props.onFocusCapture, focusOutside.onFocusCapture)}
