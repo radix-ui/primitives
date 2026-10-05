@@ -41,25 +41,16 @@
 
 - Fixed a bug where `asChild` on `ScrollArea.Viewport` merged props onto the implicit content element instead of the consumer's element.
 
-### Select
-
-- Fixed a bug where internal event handlers were still called on disabled `Select.Item` elements. Consumer-provided event handlers still run, but Radix's own selection logic no longer fires for disabled items.
-
 ### Slider
 
 - Added a `preserveThumbOrder` prop to `Slider` that prevents thumbs from crossing over one another. When enabled, each thumb is constrained to the values of its neighbors instead of swapping positions when dragged past them.
 
-### Tabs
-
-- Fixed a bug where a focused element inside `Tabs.Content` did not fire a blur event before the tab switched. `Tabs.Trigger` now moves focus before the tab's state change.
-
-### Toast
-
-- Fixed a bug where a paused `Toast` would not auto-close after its `duration` changed while the timer was paused.
-
 ### Other updates
 
-- Added support for multiple `aria-describedby` attributes, so ids from a component and its child are merged, normalized, and deduplicated instead of one replacing the other.
+- Added support for multiple `aria-describedby` attributes, so id strings from a component and its child are merged, normalized, and deduplicated instead of one replacing the other.
+- Fixed a bug where internal event handlers were still called on disabled `Select.Item` elements.
+- Fixed a bug where a paused `Toast` would not auto-close after its `duration` changed while the timer was paused.
+- Fixed a bug where a focused element inside `Tabs.Content` did not fire a blur event before the tab switched. `Tabs.Trigger` now moves focus before the tab's state change.
 - Fixed compatibility issues with React Server Components.
 
 ## 1.6.6, 1.6.7
