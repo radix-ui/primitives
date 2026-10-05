@@ -1,5 +1,10 @@
 # @radix-ui/react-menu
 
+## 2.1.25
+
+- Fixed nested, portalled layers being unusable inside a modal layer. A non-modal popover rendered inside a modal Dialog previously broke some user interactions because the modal layer's trapped `FocusScope` reclaimed focus, and its `RemoveScroll` only allowed scrolling within the modal content.
+- Updated dependencies: `@radix-ui/react-focus-scope@1.2.0`, `@radix-ui/react-slot@1.4.0`, `@radix-ui/react-dismissable-layer@1.1.20`, `@radix-ui/react-roving-focus@1.1.20`, `@radix-ui/react-direction@1.1.5`, `@radix-ui/react-primitive@2.1.11`, `@radix-ui/react-presence@1.1.11`, `@radix-ui/react-popper@1.3.8`, `@radix-ui/react-portal@1.1.18`, `@radix-ui/react-collection@1.1.16`
+
 ## 2.1.24
 
 - Reverted breaking changes that caused compatibility issues with React Server Components.

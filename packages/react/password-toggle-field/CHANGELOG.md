@@ -1,5 +1,9 @@
 # @radix-ui/react-password-toggle-field
 
+## 0.1.12
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.11`
+
 ## 0.1.11
 
 - Reverted breaking changes that caused compatibility issues with React Server Components.
