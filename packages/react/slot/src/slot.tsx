@@ -27,9 +27,7 @@ type SlotProps<Elem extends Element = HTMLElement, Props = React.HTMLAttributes<
     let hasSlottable = false;
     const newChildren: React.ReactNode[] = [];
 
-    if (isLazyComponent(children) && typeof use === 'function') {
-      children = use(children._payload);
-    }
+    children = useUnwrappedLazy(children);
 
     React.Children.forEach(children, (maybeSlottable) => {
       if (isSlottable(maybeSlottable)) {
@@ -37,7 +35,10 @@ type SlotProps<Elem extends Element = HTMLElement, Props = React.HTMLAttributes<
         const slottable = maybeSlottable;
         let child = 'child' in slottable.props ? slottable.props.child : slottable.props.children;
 
-        if (isLazyComponent(child) && typeof use === 'function') {
+        // Unwrap to completion — a reference can resolve to another reference
+        // (see `useUnwrappedLazy`). Inlined rather than delegated because this
+        // callback is neither a component nor a hook, which rules-of-hooks rejects.
+        while (isLazyComponent(child) && typeof use === 'function') {
           child = use(child._payload);
         }
 
@@ -127,7 +128,6 @@ const Slottable = createSlottable('Slottable');
 
 const getSlottableElementFromSlottable = (slottable: SlottableElement, child: React.ReactNode) => {
   if ('child' in slottable.props) {
-    const child = slottable.props.child;
     if (!React.isValidElement<React.PropsWithChildren>(child)) return null;
     return React.cloneElement(child, undefined, slottable.props.children(child.props.children));
   }
@@ -240,6 +240,20 @@ function isLazyComponent(element: React.ReactNode): element is LazyReactElement 
 
 function isPromiseLike(value: unknown): value is PromiseLike<unknown> {
   return typeof value === 'object' && value !== null && 'then' in value;
+}
+
+/**
+ * Unwraps React lazy references until a real element is reached. A reference can
+ * resolve to another reference — e.g. a Flight chunk whose resolved element still
+ * has unresolved dependencies — so unwrapping a single level is not enough.
+ * Unlike other hooks, `use` may be called in a loop: it is not order-dependent.
+ */
+function useUnwrappedLazy(value: React.ReactNode): React.ReactNode {
+  let unwrapped = value;
+  while (isLazyComponent(unwrapped) && typeof use === 'function') {
+    unwrapped = use(unwrapped._payload);
+  }
+  return unwrapped;
 }
 
 // TODO: Move to primitive once that package exposed individual sub-modules
