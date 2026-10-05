@@ -454,11 +454,12 @@ const MenuContentImpl = /* @__PURE__ */ React.forwardRef<
       const newItem = items.find((item) => item.textValue === nextMatch)?.ref.current;
 
       // Reset `searchRef` 1 second after it was last updated
-      (function updateSearch(value: string) {
+      function updateSearch(value: string) {
         searchRef.current = value;
         window.clearTimeout(timerRef.current);
         if (value !== '') timerRef.current = window.setTimeout(() => updateSearch(''), 1000);
-      })(search);
+      }
+      updateSearch(search);
 
       if (newItem) {
         /**

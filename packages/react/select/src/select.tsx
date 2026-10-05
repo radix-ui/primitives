@@ -1864,12 +1864,13 @@ function useTypeaheadSearch(onSearchChange: (search: string) => void) {
       const search = searchRef.current + key;
       handleSearchChange(search);
 
-      (function updateSearch(value: string) {
+      function updateSearch(value: string) {
         searchRef.current = value;
         window.clearTimeout(timerRef.current);
         // Reset `searchRef` 1 second after it was last updated
         if (value !== '') timerRef.current = window.setTimeout(() => updateSearch(''), 1000);
-      })(search);
+      }
+      updateSearch(search);
     },
     [handleSearchChange],
   );
