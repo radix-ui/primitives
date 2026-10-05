@@ -1,5 +1,9 @@
 # @radix-ui/react-portal
 
+## 1.1.18
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.11`
+
 ## 1.1.17
 
 - Reverted breaking changes that caused compatibility issues with React Server Components.

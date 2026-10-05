@@ -1,5 +1,9 @@
 # @radix-ui/react-alert-dialog
 
+## 1.1.24
+
+- Updated dependencies: `@radix-ui/react-dialog@1.2.0`, `@radix-ui/react-primitive@2.1.11`
+
 ## 1.1.23
 
 - Reverted breaking changes that caused compatibility issues with React Server Components.

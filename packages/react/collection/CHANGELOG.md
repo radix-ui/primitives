@@ -1,5 +1,9 @@
 # @radix-ui/react-collection
 
+## 1.1.16
+
+- Updated dependencies: `@radix-ui/react-slot@1.4.0`, `@radix-ui/react-primitive@2.1.11`
+
 ## 1.1.15
 
 - Reverted breaking changes that caused compatibility issues with React Server Components.

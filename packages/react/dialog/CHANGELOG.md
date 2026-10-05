@@ -1,5 +1,11 @@
 # @radix-ui/react-dialog
 
+## 1.2.0
+
+- Added support for multiple `aria-describedby` attributes.
+- Fixed nested, portalled layers being unusable inside a modal layer. A non-modal popover rendered inside a modal Dialog previously broke some user interactions because the modal layer's trapped `FocusScope` reclaimed focus, and its `RemoveScroll` only allowed scrolling within the modal content.
+- Updated dependencies: `@radix-ui/react-focus-scope@1.2.0`, `@radix-ui/react-slot@1.4.0`, `@radix-ui/react-dismissable-layer@1.1.20`, `@radix-ui/react-primitive@2.1.11`, `@radix-ui/react-presence@1.1.11`, `@radix-ui/react-portal@1.1.18`
+
 ## 1.1.23
 
 - Reverted breaking changes that caused compatibility issues with React Server Components.

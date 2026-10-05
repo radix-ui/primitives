@@ -1,5 +1,9 @@
 # @radix-ui/react-one-time-password-field
 
+## 0.1.17
+
+- Updated dependencies: `@radix-ui/react-roving-focus@1.1.20`, `@radix-ui/react-direction@1.1.5`, `@radix-ui/react-primitive@2.1.11`, `@radix-ui/react-collection@1.1.16`
+
 ## 0.1.16
 
 - Reverted breaking changes that caused compatibility issues with React Server Components.

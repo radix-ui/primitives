@@ -1,5 +1,11 @@
 # @radix-ui/react-focus-scope
 
+## 1.2.0
+
+- Fixed nested, portalled layers being unusable inside a modal layer. A non-modal popover rendered inside a modal Dialog previously broke some user interactions because the modal layer's trapped `FocusScope` reclaimed focus, and its `RemoveScroll` only allowed scrolling within the modal content.
+- Added `FocusScopeBranchProviderProps` export
+- Updated dependencies: `@radix-ui/react-primitive@2.1.11`
+
 ## 1.1.16
 
 - Reverted breaking changes that caused compatibility issues with React Server Components.

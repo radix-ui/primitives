@@ -1,5 +1,9 @@
 # @radix-ui/react-popper
 
+## 1.3.8
+
+- Updated dependencies: `@radix-ui/react-use-size@1.1.5`, `@radix-ui/react-primitive@2.1.11`, `@radix-ui/react-arrow@1.1.16`
+
 ## 1.3.7
 
 - Reverted breaking changes that caused compatibility issues with React Server Components.

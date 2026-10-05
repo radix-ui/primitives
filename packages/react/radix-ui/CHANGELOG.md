@@ -1,5 +1,58 @@
 # radix-ui
 
+## 1.7.0
+
+### Dialog
+
+- Fixed nested, portalled layers being unusable inside a modal layer. A non-modal popover rendered inside a modal Dialog previously broke some user interactions because the modal layer's trapped `FocusScope` reclaimed focus, and its `RemoveScroll` only allowed scrolling within the modal content.
+
+### Navigation Menu
+
+- Added a `disableToggle` prop to `NavigationMenu.Sub`.
+  - `true`: Clicking the trigger of an already-open submenu item keeps it open. This is the default and matches existing behavior.
+  - `false`: Clicking the trigger of a submenu item toggles it open or closed.
+- Added an `activationMode` prop to `NavigationMenu.Root` and `NavigationMenu.Sub`.
+  - `"automatic"`: Hovering or focusing a trigger opens its item, and moving away from the trigger closes it after a short delay. This is the default and matches existing behavior.
+  - `"manual"`: Pointer entry and focus never open an item. The item opens when its trigger is clicked.
+  - When `activationMode` is omitted on `NavigationMenu.Sub`, it inherits the value from the parent `NavigationMenu.Root`, so setting `"manual"` on the root also applies to submenus unless a submenu opts back in to `"automatic"`.
+- Fixed a bug where a submenu's `defaultValue` was reset when an external element was focused before the menu opened.
+- Fixed a bug where `NavigationMenu.Viewport` discarded its children and rendered the active content in their place. The active content is now rendered inside the consumer's element alongside any children it already had.
+
+### Popover
+
+- Added `Popover.Title` and `Popover.Description` parts that provide accessible names and descriptions for popover content.
+
+### Scroll Area
+
+- Added a `ScrollArea.Content` part so consumers can own the wrapper element implicitly rendered by `ScrollArea.Viewport`. Pass `disableImplicitContentElement` to the viewport and render `ScrollArea.Content` as its child.
+
+  ```tsx
+  <ScrollArea.Root>
+    <ScrollArea.Viewport disableImplicitContentElement>
+      <ScrollArea.Content>{children}</ScrollArea.Content>
+    </ScrollArea.Viewport>
+    <ScrollArea.Scrollbar>
+      <ScrollArea.Thumb />
+    </ScrollArea.Scrollbar>
+  </ScrollArea.Root>
+  ```
+
+  In the next major release, the viewport will no longer render this element implicitly. We recommend migrating to this API now for a smoother upgrade.
+
+- Fixed a bug where `asChild` on `ScrollArea.Viewport` merged props onto the implicit content element instead of the consumer's element.
+
+### Slider
+
+- Added a `preserveThumbOrder` prop to `Slider` that prevents thumbs from crossing over one another. When enabled, each thumb is constrained to the values of its neighbors instead of swapping positions when dragged past them.
+
+### Other updates
+
+- Added support for multiple `aria-describedby` attributes, so id strings from a component and its child are merged, normalized, and deduplicated instead of one replacing the other.
+- Fixed a bug where internal event handlers were still called on disabled `Select.Item` elements.
+- Fixed a bug where a paused `Toast` would not auto-close after its `duration` changed while the timer was paused.
+- Fixed a bug where a focused element inside `Tabs.Content` did not fire a blur event before the tab switched. `Tabs.Trigger` now moves focus before the tab's state change.
+- Fixed compatibility issues with React Server Components.
+
 ## 1.6.6, 1.6.7
 
 - Reverted breaking changes that caused compatibility issues with React Server Components.

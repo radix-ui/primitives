@@ -1,5 +1,9 @@
 # @radix-ui/react-dropdown-menu
 
+## 2.1.25
+
+- Updated dependencies: `@radix-ui/react-menu@2.1.25`, `@radix-ui/react-primitive@2.1.11`
+
 ## 2.1.24
 
 - Reverted breaking changes that caused compatibility issues with React Server Components.

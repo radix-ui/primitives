@@ -1,5 +1,9 @@
 # @radix-ui/react-checkbox
 
+## 1.3.12
+
+- Updated dependencies: `@radix-ui/react-use-size@1.1.5`, `@radix-ui/react-primitive@2.1.11`, `@radix-ui/react-presence@1.1.11`
+
 ## 1.3.11
 
 - Reverted breaking changes that caused compatibility issues with React Server Components.

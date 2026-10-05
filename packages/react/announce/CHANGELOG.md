@@ -1,5 +1,9 @@
 # @radix-ui/react-announce
 
+## 0.2.16
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.11`
+
 ## 0.2.15
 
 - Reverted breaking changes that caused compatibility issues with React Server Components.
