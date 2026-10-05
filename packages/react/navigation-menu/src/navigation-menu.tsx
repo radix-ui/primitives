@@ -7,6 +7,7 @@ import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { useDirection } from '@radix-ui/react-direction';
 import { Presence } from '@radix-ui/react-presence';
+import { createSlottable } from '@radix-ui/react-slot';
 import { useId } from '@radix-ui/react-id';
 import { createCollection } from '@radix-ui/react-collection';
 import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
@@ -1077,6 +1078,7 @@ const NavigationMenuContentImpl = /* @__PURE__ */ React.forwardRef<
  * -----------------------------------------------------------------------------------------------*/
 
 const VIEWPORT_NAME = 'NavigationMenuViewport';
+const Slottable = createSlottable(VIEWPORT_NAME);
 
 type NavigationMenuViewportElement = NavigationMenuViewportImplElement;
 interface NavigationMenuViewportProps extends Omit<
@@ -1160,6 +1162,13 @@ const NavigationMenuViewportImpl = /* @__PURE__ */ React.forwardRef<
       onPointerEnter={composeEventHandlers(props.onPointerEnter, context.onContentEnter)}
       onPointerLeave={composeEventHandlers(props.onPointerLeave, whenMouse(context.onContentLeave))}
     >
+      {/*
+       * `Slottable` marks the consumer element as the `asChild` slot target.
+       * Without it, `Slot` sees multiple children (consumer element + proxied
+       * content) and throws. Consumer children render before proxied content,
+       * matching the non-`asChild` order.
+       */}
+      <Slottable>{children}</Slottable>
       {Array.from(viewportContentContext.items).map(([value, { ref, forceMount, ...props }]) => {
         const isActive = activeContentValue === value;
         return (
