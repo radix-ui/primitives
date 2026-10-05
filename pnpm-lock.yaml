@@ -2602,6 +2602,9 @@ importers:
       '@radix-ui/react-dismissable-layer':
         specifier: workspace:*
         version: link:../dismissable-layer
+      '@radix-ui/react-focus-scope':
+        specifier: workspace:*
+        version: link:../focus-scope
       '@radix-ui/react-id':
         specifier: workspace:*
         version: link:../id
