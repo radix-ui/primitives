@@ -1,5 +1,12 @@
 # @radix-ui/react-toast
 
+## 1.2.24
+
+- Fixed a bug where a paused `Toast` would not auto-close after its `duration` changed while the timer was paused.
+- Refactored const assignment to export alias.
+- Internal refactoring; noop
+- Updated dependencies: `@radix-ui/react-dismissable-layer@1.1.20`, `@radix-ui/react-visually-hidden@1.2.12`, `@radix-ui/react-primitive@2.1.11`, `@radix-ui/react-presence@1.1.11`, `@radix-ui/react-portal@1.1.18`, `@radix-ui/react-collection@1.1.16`
+
 ## 1.2.23
 
 - Reverted breaking changes that caused compatibility issues with React Server Components.

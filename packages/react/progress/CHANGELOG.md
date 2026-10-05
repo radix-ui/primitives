@@ -1,5 +1,10 @@
 # @radix-ui/react-progress
 
+## 1.1.17
+
+- Refactored const assignment to export alias.
+- Updated dependencies: `@radix-ui/react-primitive@2.1.11`
+
 ## 1.1.16
 
 - Reverted breaking changes that caused compatibility issues with React Server Components.

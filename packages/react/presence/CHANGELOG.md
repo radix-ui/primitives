@@ -1,5 +1,9 @@
 # @radix-ui/react-presence
 
+## 1.1.11
+
+- Refactored const assignment to export alias.
+
 ## 1.1.10
 
 - Reverted breaking changes that caused compatibility issues with React Server Components.

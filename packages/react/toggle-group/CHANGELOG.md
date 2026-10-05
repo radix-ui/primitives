@@ -1,5 +1,10 @@
 # @radix-ui/react-toggle-group
 
+## 1.1.20
+
+- Internal refactoring; noop
+- Updated dependencies: `@radix-ui/react-roving-focus@1.1.20`, `@radix-ui/react-direction@1.1.5`, `@radix-ui/react-primitive@2.1.11`, `@radix-ui/react-toggle@1.1.19`
+
 ## 1.1.19
 
 - Reverted breaking changes that caused compatibility issues with React Server Components.

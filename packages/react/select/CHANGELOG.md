@@ -1,5 +1,11 @@
 # @radix-ui/react-select
 
+## 2.3.8
+
+- Fixed a bug where internal event handlers were still being called on a disabled `Select.Item` elements. Consumer-provided event handlers still run, but Radix's own selection logic no longer fires for disabled items.
+- Internal refactoring; noop
+- Updated dependencies: `@radix-ui/react-focus-scope@1.2.0`, `@radix-ui/react-slot@1.4.0`, `@radix-ui/react-dismissable-layer@1.1.20`, `@radix-ui/react-visually-hidden@1.2.12`, `@radix-ui/react-direction@1.1.5`, `@radix-ui/react-primitive@2.1.11`, `@radix-ui/react-presence@1.1.11`, `@radix-ui/react-popper@1.3.8`, `@radix-ui/react-portal@1.1.18`, `@radix-ui/react-collection@1.1.16`
+
 ## 2.3.7
 
 - Reverted breaking changes that caused compatibility issues with React Server Components.

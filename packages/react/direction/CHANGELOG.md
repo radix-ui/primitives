@@ -1,5 +1,10 @@
 # @radix-ui/react-direction
 
+## 1.1.5
+
+- Refactored const assignment to export alias.
+- Internal refactoring; noop
+
 ## 1.1.4
 
 - Reverted breaking changes that caused compatibility issues with React Server Components.

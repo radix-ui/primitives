@@ -1,5 +1,27 @@
 # @radix-ui/react-navigation-menu
 
+## 1.3.0
+
+### Added a `disableToggle` prop to `NavigationMenu.Sub`.
+
+- `true`: Clicking the trigger of an already-open submenu item keeps it open. This is the default and matches existing behavior.
+- `false`: Clicking the trigger of a submenu item toggles it open or closed.
+
+### Added an `activationMode` prop to `NavigationMenu.Root` and `NavigationMenu.Sub`.
+
+- `"automatic"`: Hovering or focusing a trigger opens its item, and moving away from the trigger closes it after a short delay. This is the default and matches existing behavior.
+- `"manual"`: Pointer entry and focus never open an item; the item is opened by clicking its trigger.
+
+When `activationMode` is omitted on `NavigationMenu.Sub`, it inherits the value from the parent `NavigationMenu.Root`, so setting `"manual"` on the root also applies to submenus unless a submenu opts back in to `"automatic"`.
+
+### Other updates
+
+- Fixed a bug where a submenu's `defaultValue` was reset when external element was focused before menu is opened.
+- Refactored const assignment to export alias.
+- Internal refactoring; noop
+- Fixed a bug on `NavigationMenu.Viewport` where the viewport discarded its children and rendered the active content in their place. The active content is now rendered inside the consumer's element alongside any children it already had.
+- Updated dependencies: `@radix-ui/react-slot@1.4.0`, `@radix-ui/react-dismissable-layer@1.1.20`, `@radix-ui/react-visually-hidden@1.2.12`, `@radix-ui/react-direction@1.1.5`, `@radix-ui/react-primitive@2.1.11`, `@radix-ui/react-presence@1.1.11`, `@radix-ui/react-collection@1.1.16`
+
 ## 1.2.22
 
 - Reverted breaking changes that caused compatibility issues with React Server Components.

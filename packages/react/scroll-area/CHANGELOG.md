@@ -1,5 +1,29 @@
 # @radix-ui/react-scroll-area
 
+## 1.3.0
+
+### Added a `ScrollArea.Content` part so consumers can own the wrapper element implicitly rendered by `ScrollArea.Viewport`. This must be used with the viewport's `disableImplicitContentElement` prop.
+
+```tsx
+<ScrollArea.Root>
+  <ScrollArea.Viewport disableImplicitContentElement>
+    <ScrollArea.Content>{children}</ScrollArea.Content>
+  </ScrollArea.Viewport>
+  <ScrollArea.Scrollbar>
+    <ScrollArea.Thumb />
+  </ScrollArea.Scrollbar>
+</ScrollArea.Root>
+```
+
+In the next major release, the content element will no longer be implicitly rendered by the viewport. We recommend migrating to this API today for a smooth upgrade path.
+
+### Other updates
+
+- Fixed `asChild` being applied to the wrong element on `ScrollArea.Viewport`.
+- Refactored const assignment to export alias.
+- Internal refactoring; noop
+- Updated dependencies: `@radix-ui/react-slot@1.4.0`, `@radix-ui/react-direction@1.1.5`, `@radix-ui/react-primitive@2.1.11`, `@radix-ui/react-presence@1.1.11`
+
 ## 1.2.18
 
 - Reverted breaking changes that caused compatibility issues with React Server Components.

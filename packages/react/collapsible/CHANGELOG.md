@@ -1,5 +1,10 @@
 # @radix-ui/react-collapsible
 
+## 1.1.21
+
+- Refactored const assignment to export alias.
+- Updated dependencies: `@radix-ui/react-primitive@2.1.11`, `@radix-ui/react-presence@1.1.11`
+
 ## 1.1.20
 
 - Reverted breaking changes that caused compatibility issues with React Server Components.

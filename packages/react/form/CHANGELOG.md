@@ -1,5 +1,10 @@
 # @radix-ui/react-form
 
+## 0.2.0
+
+- Added support for multiple `aria-describedby` attributes.
+- Updated dependencies: `@radix-ui/react-primitive@2.1.11`, `@radix-ui/react-label@2.1.16`
+
 ## 0.1.16
 
 - Reverted breaking changes that caused compatibility issues with React Server Components.

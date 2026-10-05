@@ -1,5 +1,10 @@
 # @radix-ui/react-avatar
 
+## 1.2.7
+
+- Internal refactoring; noop
+- Updated dependencies: `@radix-ui/react-primitive@2.1.11`
+
 ## 1.2.6
 
 - Reverted breaking changes that caused compatibility issues with React Server Components.

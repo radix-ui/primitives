@@ -1,5 +1,10 @@
 # @radix-ui/react-tooltip
 
+## 1.3.0
+
+- Added support for multiple `aria-describedby` attributes.
+- Updated dependencies: `@radix-ui/react-slot@1.4.0`, `@radix-ui/react-dismissable-layer@1.1.20`, `@radix-ui/react-visually-hidden@1.2.12`, `@radix-ui/react-primitive@2.1.11`, `@radix-ui/react-presence@1.1.11`, `@radix-ui/react-popper@1.3.8`, `@radix-ui/react-portal@1.1.18`
+
 ## 1.2.16
 
 - Reverted breaking changes that caused compatibility issues with React Server Components.

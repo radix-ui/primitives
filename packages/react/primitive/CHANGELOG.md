@@ -1,5 +1,10 @@
 # @radix-ui/react-primitive
 
+## 2.1.11
+
+- Refactored const assignment to export alias.
+- Updated dependencies: `@radix-ui/react-slot@1.4.0`
+
 ## 2.1.10
 
 - Reverted breaking changes that caused compatibility issues with React Server Components.

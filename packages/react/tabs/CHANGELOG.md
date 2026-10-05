@@ -1,5 +1,12 @@
 # @radix-ui/react-tabs
 
+## 1.1.22
+
+- Refactored const assignment to export alias.
+- Fixed a bug where a focused element inside `Tabs.Content` were not firing blur events before switching tabs. `Tabs.Trigger` now moves focus before the tab's state change.
+- Internal refactoring; noop
+- Updated dependencies: `@radix-ui/react-roving-focus@1.1.20`, `@radix-ui/react-direction@1.1.5`, `@radix-ui/react-primitive@2.1.11`, `@radix-ui/react-presence@1.1.11`
+
 ## 1.1.21
 
 - Reverted breaking changes that caused compatibility issues with React Server Components.
