@@ -31,7 +31,7 @@ import type { Scope } from '@radix-ui/react-context';
 
 const POPOVER_NAME = 'Popover';
 
-type ScopedProps<P> = P & { __scopePopover?: Scope };
+type ScopedProps<P> = P & { __scopePopover?: Scope | undefined };
 const [createPopoverContext, createPopoverScope] = createContextScope(POPOVER_NAME, [
   createPopperScope,
 ]);
@@ -59,11 +59,11 @@ const [PopoverProvider, usePopoverContext] =
   createPopoverContext<PopoverContextValue>(POPOVER_NAME);
 
 interface PopoverProps {
-  children?: React.ReactNode;
-  open?: boolean;
-  defaultOpen?: boolean;
-  onOpenChange?: (open: boolean) => void;
-  modal?: boolean;
+  children?: React.ReactNode | undefined;
+  open?: boolean | undefined;
+  defaultOpen?: boolean | undefined;
+  onOpenChange?: ((open: boolean) => void) | undefined;
+  modal?: boolean | undefined;
 }
 
 const Popover: React.FC<PopoverProps> = (props: ScopedProps<PopoverProps>) => {
@@ -185,23 +185,23 @@ const PopoverTrigger = /* @__PURE__ */ React.forwardRef<PopoverTriggerElement, P
 
 const PORTAL_NAME = 'PopoverPortal';
 
-type PortalContextValue = { forceMount?: true };
+type PortalContextValue = { forceMount?: true | undefined };
 const [PortalProvider, usePortalContext] = createPopoverContext<PortalContextValue>(PORTAL_NAME, {
   forceMount: undefined,
 });
 
 type PortalProps = React.ComponentPropsWithoutRef<typeof PortalPrimitive>;
 interface PopoverPortalProps {
-  children?: React.ReactNode;
+  children?: React.ReactNode | undefined;
   /**
    * Specify a container element to portal the content into.
    */
-  container?: PortalProps['container'];
+  container?: PortalProps['container'] | undefined;
   /**
    * Used to force mounting when more control is needed. Useful when
    * controlling animation with React animation libraries.
    */
-  forceMount?: true;
+  forceMount?: true | undefined;
 }
 
 const PopoverPortal: React.FC<PopoverPortalProps> = (props: ScopedProps<PopoverPortalProps>) => {
@@ -229,7 +229,7 @@ interface PopoverContentProps extends PopoverContentTypeProps {
    * Used to force mounting when more control is needed. Useful when
    * controlling animation with React animation libraries.
    */
-  forceMount?: true;
+  forceMount?: true | undefined;
 }
 
 const PopoverContent = /* @__PURE__ */ React.forwardRef<
@@ -401,19 +401,19 @@ interface PopoverContentImplProps
    * Whether focus should be trapped within the `Popover`
    * (default: false)
    */
-  trapFocus?: FocusScopeProps['trapped'];
+  trapFocus?: FocusScopeProps['trapped'] | undefined;
 
   /**
    * Event handler called when auto-focusing on open.
    * Can be prevented.
    */
-  onOpenAutoFocus?: FocusScopeProps['onMountAutoFocus'];
+  onOpenAutoFocus?: FocusScopeProps['onMountAutoFocus'] | undefined;
 
   /**
    * Event handler called when auto-focusing on close.
    * Can be prevented.
    */
-  onCloseAutoFocus?: FocusScopeProps['onUnmountAutoFocus'];
+  onCloseAutoFocus?: FocusScopeProps['onUnmountAutoFocus'] | undefined;
 
   /**
    * Branch nodes registered by nested, portalled layers. Passed to the trapped
@@ -421,14 +421,14 @@ interface PopoverContentImplProps
    * variant.
    * @internal
    */
-  branchNodes?: HTMLElement[];
+  branchNodes?: HTMLElement[] | undefined;
 
   /**
    * Registry that nested, portalled layers use to register themselves as branches of this modal
    * `Popover`. Only provided by the modal variant.
    * @internal
    */
-  branchRegistry?: FocusScopeBranchRegistry;
+  branchRegistry?: FocusScopeBranchRegistry | undefined;
 }
 
 const PopoverContentImpl = /* @__PURE__ */ React.forwardRef<

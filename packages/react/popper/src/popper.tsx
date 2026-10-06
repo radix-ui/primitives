@@ -47,7 +47,7 @@ type UpdatePositionStrategy = (typeof UpdatePositionStrategy)[keyof typeof Updat
 
 const POPPER_NAME = 'Popper';
 
-type ScopedProps<P> = P & { __scopePopper?: Scope };
+type ScopedProps<P> = P & { __scopePopper?: Scope | undefined };
 const [createPopperContext, createPopperScope] = createContextScope(POPPER_NAME);
 
 type PopperContextValue = {
@@ -59,7 +59,7 @@ type PopperContextValue = {
 const [PopperProvider, usePopperContext] = createPopperContext<PopperContextValue>(POPPER_NAME);
 
 interface PopperProps {
-  children?: React.ReactNode;
+  children?: React.ReactNode | undefined;
 }
 const Popper: React.FC<PopperProps> = (props: ScopedProps<PopperProps>) => {
   const { __scopePopper, children } = props;
@@ -87,7 +87,7 @@ const ANCHOR_NAME = 'PopperAnchor';
 type PopperAnchorElement = React.ComponentRef<typeof Primitive.div>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface PopperAnchorProps extends PrimitiveDivProps {
-  virtualRef?: React.RefObject<Measurable | null>;
+  virtualRef?: React.RefObject<Measurable | null> | undefined;
 }
 
 const PopperAnchor = /* @__PURE__ */ React.forwardRef<PopperAnchorElement, PopperAnchorProps>(
@@ -153,8 +153,8 @@ type PopperContentContextValue = {
   placedSide: Side;
   placedAlign: Align;
   onArrowChange(arrow: HTMLSpanElement | null): void;
-  arrowX?: number;
-  arrowY?: number;
+  arrowX?: number | undefined;
+  arrowY?: number | undefined;
   shouldHideArrow: boolean;
 };
 
@@ -165,18 +165,18 @@ type Boundary = Element | null;
 
 type PopperContentElement = React.ComponentRef<typeof Primitive.div>;
 interface PopperContentProps extends PrimitiveDivProps {
-  side?: Side;
-  sideOffset?: number;
-  align?: Align;
-  alignOffset?: number;
-  arrowPadding?: number;
-  avoidCollisions?: boolean;
-  collisionBoundary?: Boundary | Boundary[];
-  collisionPadding?: number | Partial<Record<Side, number>>;
-  sticky?: Sticky;
-  hideWhenDetached?: boolean;
-  updatePositionStrategy?: UpdatePositionStrategy;
-  onPlaced?: () => void;
+  side?: Side | undefined;
+  sideOffset?: number | undefined;
+  align?: Align | undefined;
+  alignOffset?: number | undefined;
+  arrowPadding?: number | undefined;
+  avoidCollisions?: boolean | undefined;
+  collisionBoundary?: Boundary | Boundary[] | undefined;
+  collisionPadding?: number | Partial<Record<Side, number>> | undefined;
+  sticky?: Sticky | undefined;
+  hideWhenDetached?: boolean | undefined;
+  updatePositionStrategy?: UpdatePositionStrategy | undefined;
+  onPlaced?: (() => void) | undefined;
 }
 
 const PopperContent = /* @__PURE__ */ React.forwardRef<PopperContentElement, PopperContentProps>(
@@ -244,7 +244,9 @@ const PopperContent = /* @__PURE__ */ React.forwardRef<PopperContentElement, Pop
           shift({
             mainAxis: true,
             crossAxis: false,
-            limiter: sticky === Sticky.Partial ? limitShift() : undefined,
+            // Spread rather than passing `limiter: undefined`, which
+            // `exactOptionalPropertyTypes` rejects for Floating UI's optional option.
+            ...(sticky === Sticky.Partial ? { limiter: limitShift() } : {}),
             ...detectOverflowOptions,
           }),
         avoidCollisions && flip({ ...detectOverflowOptions }),
@@ -262,18 +264,24 @@ const PopperContent = /* @__PURE__ */ React.forwardRef<PopperContentElement, Pop
         arrow && floatingUIarrow({ element: arrow, padding: arrowPadding }),
         transformOrigin({ arrowWidth, arrowHeight }),
         hideWhenDetached &&
-          hide({
-            strategy: 'referenceHidden',
-            ...detectOverflowOptions,
-            // `hide` detects whether the anchor (reference) is clipped, so when
-            // no explicit `collisionBoundary` is set we fall back to Floating
-            // UI's default clipping ancestors (e.g. a scrollable menu). This
-            // lets an occluded submenu hide once its anchor scrolls out of view
-            // (#3237). The collision/size middlewares deliberately keep the
-            // viewport-based default to avoid clamping content rendered inside
-            // transformed or overflow-clipping portal containers.
-            boundary: hasExplicitBoundaries ? detectOverflowOptions.boundary : undefined,
-          }),
+          // `hide` detects whether the anchor (reference) is clipped, so when
+          // no explicit `collisionBoundary` is set we omit `boundary` entirely
+          // and fall back to Floating UI's default clipping ancestors (e.g. a
+          // scrollable menu). This lets an occluded submenu hide once its anchor
+          // scrolls out of view (#3237). The collision/size middlewares
+          // deliberately keep the viewport-based default to avoid clamping
+          // content rendered inside transformed or overflow-clipping portal
+          // containers. The key is omitted rather than set to `undefined`
+          // because `exactOptionalPropertyTypes` rejects the explicit value.
+          hide(
+            hasExplicitBoundaries
+              ? { strategy: 'referenceHidden', ...detectOverflowOptions }
+              : {
+                  strategy: 'referenceHidden',
+                  padding: detectOverflowOptions.padding,
+                  altBoundary: detectOverflowOptions.altBoundary,
+                },
+          ),
       ],
     });
 

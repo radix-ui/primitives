@@ -15,7 +15,7 @@ const Presence: React.FC<PresenceProps> = (props) => {
     typeof children === 'function'
       ? children({ present: presence.isPresent })
       : React.Children.only(children)
-  ) as React.ReactElement<{ ref?: React.Ref<HTMLElement> }>;
+  ) as React.ReactElement<{ ref?: React.Ref<HTMLElement> | undefined }>;
 
   const ref = useStableComposedRefs(presence.ref, getElementRef(child));
   const forceMount = typeof children === 'function';
@@ -253,7 +253,7 @@ function getAnimationName(styles: CSSStyleDeclaration | null) {
 // https://github.com/facebook/react/pull/28348
 //
 // Access the ref using the method that doesn't yield a warning.
-function getElementRef(element: React.ReactElement<{ ref?: React.Ref<unknown> }>) {
+function getElementRef(element: React.ReactElement<{ ref?: React.Ref<unknown> | undefined }>) {
   // React <=18 in DEV
   let getter = Object.getOwnPropertyDescriptor(element.props, 'ref')?.get;
   let mayWarn = getter && 'isReactWarning' in getter && getter.isReactWarning;

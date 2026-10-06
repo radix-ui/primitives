@@ -108,14 +108,14 @@ interface OneTimePasswordFieldOwnProps {
    * @defaultValue `"one-time-code"`
    * @see https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/autocomplete
    */
-  autoComplete?: AutoComplete;
+  autoComplete?: AutoComplete | undefined;
   /**
    * Whether or not the first fillable input should be focused on page-load.
    *
    * @defaultValue `false`
    * @see https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Global_attributes/autofocus
    */
-  autoFocus?: boolean;
+  autoFocus?: boolean | undefined;
   /**
    * Whether or not the component should attempt to automatically submit when
    * all fields are filled. If the field is associated with an HTML `form`
@@ -123,21 +123,21 @@ interface OneTimePasswordFieldOwnProps {
    *
    * @defaultValue `false`
    */
-  autoSubmit?: boolean;
+  autoSubmit?: boolean | undefined;
   /**
    * The initial value of the uncontrolled field.
    */
-  defaultValue?: string;
+  defaultValue?: string | undefined;
   /**
    * Indicates the horizontal directionality of the parent element's text.
    *
    * @see https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Global_attributes/dir
    */
-  dir?: RovingFocusGroupProps['dir'];
+  dir?: RovingFocusGroupProps['dir'] | undefined;
   /**
    * Whether or not the the field's input elements are disabled.
    */
-  disabled?: boolean;
+  disabled?: boolean | undefined;
   /**
    * A string specifying the `form` element with which the input is associated.
    * This string's value, if present, must match the id of a `form` element in
@@ -158,18 +158,18 @@ interface OneTimePasswordFieldOwnProps {
    * before attempting to submit the associated form. It will be called whether
    * or not a form is located, or if submission is not allowed.
    */
-  onAutoSubmit?: (value: string) => void;
+  onAutoSubmit?: ((value: string) => void) | undefined;
   /**
    * A callback fired when the field's value changes. When the component is
    * controlled, this should update the state passed to the `value` prop.
    */
-  onValueChange?: (value: string) => void;
+  onValueChange?: ((value: string) => void) | undefined;
   /**
    * Indicates the vertical directionality of the input elements.
    *
    * @defaultValue `"horizontal"`
    */
-  orientation?: RovingFocusGroupProps['orientation'];
+  orientation?: RovingFocusGroupProps['orientation'] | undefined;
   /**
    * Defines the text displayed in a form control when the control has no value.
    *
@@ -181,31 +181,31 @@ interface OneTimePasswordFieldOwnProps {
    *
    * @see https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/readonly
    */
-  readOnly?: boolean;
+  readOnly?: boolean | undefined;
   /**
    * Function for custom sanitization when `validationType` is set to `"none"`.
    * This function will be called before updating values in response to user
    * interactions.
    */
-  sanitizeValue?: (value: string) => string;
+  sanitizeValue?: ((value: string) => string) | undefined;
   /**
    * The input type of the field's input elements. Can be `"password"` or `"text"`.
    */
-  type?: InputType;
+  type?: InputType | undefined;
   /**
    * Specifies the type of input validation to be used. Can be `"alpha"`,
    * `"numeric"`, `"alphanumeric"` or `"none"`.
    *
    * @defaultValue `"numeric"`
    */
-  validationType?: InputValidationType;
+  validationType?: InputValidationType | undefined;
   /**
    * The controlled value of the field.
    */
-  value?: string;
+  value?: string | undefined;
 }
 
-type ScopedProps<P> = P & { __scopeOneTimePasswordField?: Scope };
+type ScopedProps<P> = P & { __scopeOneTimePasswordField?: Scope | undefined };
 
 interface OneTimePasswordFieldProps
   extends
@@ -583,13 +583,13 @@ interface OneTimePasswordFieldInputProps extends Omit<
   /**
    * Callback fired when the user input fails native HTML input validation.
    */
-  onInvalidChange?: (character: string) => void;
+  onInvalidChange?: ((character: string) => void) | undefined;
   /**
    * User-provided index to determine the order of the inputs. This is useful if
    * you need certain index-based attributes to be set on the initial render,
    * often to prevent flickering after hydration.
    */
-  index?: number;
+  index?: number | undefined;
 }
 
 const OneTimePasswordFieldInput = /* @__PURE__ */ React.forwardRef<

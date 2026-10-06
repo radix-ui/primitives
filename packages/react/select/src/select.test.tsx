@@ -147,7 +147,7 @@ describe('disabled item', () => {
   afterEach(cleanup);
 
   const SelectWithDisabledItem = (
-    props: React.ComponentProps<typeof Select.Root> & { onItemClick?: () => void },
+    props: React.ComponentProps<typeof Select.Root> & { onItemClick?: (() => void) | undefined },
   ) => {
     const { onItemClick, ...rootProps } = props;
     return (
@@ -429,7 +429,10 @@ describe('given a Select in a form that is reset', () => {
  * always reports as zero. We fake the metrics then re-notify the `scroll`
  * listener the buttons install once the content has been placed.
  */
-function fakeViewportScroll(metrics: { scrollTop?: number; scrollHeight?: number }) {
+function fakeViewportScroll(metrics: {
+  scrollTop?: number | undefined;
+  scrollHeight?: number | undefined;
+}) {
   const viewport = document.querySelector('[data-radix-select-viewport]');
   if (!viewport) {
     console.warn('Expected a `Select.Viewport` to be rendered.');

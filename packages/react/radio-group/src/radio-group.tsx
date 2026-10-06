@@ -26,7 +26,7 @@ const ARROW_KEYS = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
  * -----------------------------------------------------------------------------------------------*/
 const RADIO_GROUP_NAME = 'RadioGroup';
 
-type ScopedProps<P> = P & { __scopeRadioGroup?: Scope };
+type ScopedProps<P> = P & { __scopeRadioGroup?: Scope | undefined };
 const [createRadioGroupContext, createRadioGroupScope] = createContextScope(RADIO_GROUP_NAME, [
   createRovingFocusGroupScope,
   createRadioScope,
@@ -35,8 +35,8 @@ const useRovingFocusGroupScope = createRovingFocusGroupScope();
 const useRadioScope = createRadioScope();
 
 type RadioGroupContextValue = {
-  name?: string;
-  form?: string;
+  name?: string | undefined;
+  form?: string | undefined;
   required: boolean;
   disabled: boolean;
   value: string | null;
@@ -50,16 +50,16 @@ type RadioGroupElement = React.ComponentRef<typeof Primitive.div>;
 type RovingFocusGroupProps = React.ComponentPropsWithoutRef<typeof RovingFocusGroup.Root>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface RadioGroupProps extends PrimitiveDivProps {
-  name?: RadioGroupContextValue['name'];
-  form?: React.ComponentPropsWithoutRef<typeof Radio>['form'];
-  required?: React.ComponentPropsWithoutRef<typeof Radio>['required'];
-  disabled?: React.ComponentPropsWithoutRef<typeof Radio>['disabled'];
-  dir?: RovingFocusGroupProps['dir'];
-  orientation?: RovingFocusGroupProps['orientation'];
-  loop?: RovingFocusGroupProps['loop'];
-  defaultValue?: string;
-  value?: string | null;
-  onValueChange?: RadioGroupContextValue['onValueChange'];
+  name?: RadioGroupContextValue['name'] | undefined;
+  form?: React.ComponentPropsWithoutRef<typeof Radio>['form'] | undefined;
+  required?: React.ComponentPropsWithoutRef<typeof Radio>['required'] | undefined;
+  disabled?: React.ComponentPropsWithoutRef<typeof Radio>['disabled'] | undefined;
+  dir?: RovingFocusGroupProps['dir'] | undefined;
+  orientation?: RovingFocusGroupProps['orientation'] | undefined;
+  loop?: RovingFocusGroupProps['loop'] | undefined;
+  defaultValue?: string | undefined;
+  value?: string | null | undefined;
+  onValueChange?: RadioGroupContextValue['onValueChange'] | undefined;
 }
 
 const RadioGroup = /* @__PURE__ */ React.forwardRef<RadioGroupElement, RadioGroupProps>(
@@ -141,8 +141,8 @@ const ITEM_TRIGGER_NAME = 'RadioGroupItemTrigger';
 
 interface RadioGroupItemProviderProps {
   value: string;
-  disabled?: boolean;
-  children?: React.ReactNode;
+  disabled?: boolean | undefined;
+  children?: React.ReactNode | undefined;
 }
 
 function RadioGroupItemProvider(props: ScopedProps<RadioGroupItemProviderProps>) {

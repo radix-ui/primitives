@@ -10,7 +10,7 @@ import type { Scope } from '@radix-ui/react-context';
 
 const SWITCH_NAME = 'Switch';
 
-type ScopedProps<P> = P & { __scopeSwitch?: Scope };
+type ScopedProps<P> = P & { __scopeSwitch?: Scope | undefined };
 const [createSwitchContext, createSwitchScope] = createContextScope(SWITCH_NAME);
 
 type SwitchContextValue = {
@@ -39,15 +39,15 @@ const [SwitchProviderImpl, useSwitchContext] = createSwitchContext<SwitchContext
  * -----------------------------------------------------------------------------------------------*/
 
 interface SwitchProviderProps {
-  checked?: boolean;
-  defaultChecked?: boolean;
-  required?: boolean;
-  onCheckedChange?(checked: boolean): void;
-  name?: string;
-  form?: string;
-  disabled?: boolean;
-  value?: string | number | readonly string[];
-  children?: React.ReactNode;
+  checked?: boolean | undefined;
+  defaultChecked?: boolean | undefined;
+  required?: boolean | undefined;
+  onCheckedChange?: ((checked: boolean) => void) | undefined;
+  name?: string | undefined;
+  form?: string | undefined;
+  disabled?: boolean | undefined;
+  value?: string | number | readonly string[] | undefined;
+  children?: React.ReactNode | undefined;
 }
 
 function SwitchProvider(props: ScopedProps<SwitchProviderProps>) {
@@ -128,7 +128,7 @@ interface SwitchTriggerProps extends Omit<
   React.ComponentPropsWithoutRef<typeof Primitive.button>,
   keyof SwitchProviderProps
 > {
-  children?: React.ReactNode;
+  children?: React.ReactNode | undefined;
 }
 
 const SwitchTrigger = /* @__PURE__ */ React.forwardRef<HTMLButtonElement, SwitchTriggerProps>(
@@ -199,10 +199,10 @@ const SwitchTrigger = /* @__PURE__ */ React.forwardRef<HTMLButtonElement, Switch
 type SwitchElement = React.ComponentRef<typeof Primitive.button>;
 type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
 interface SwitchProps extends Omit<PrimitiveButtonProps, 'checked' | 'defaultChecked'> {
-  checked?: boolean;
-  defaultChecked?: boolean;
-  required?: boolean;
-  onCheckedChange?(checked: boolean): void;
+  checked?: boolean | undefined;
+  defaultChecked?: boolean | undefined;
+  required?: boolean | undefined;
+  onCheckedChange?: ((checked: boolean) => void) | undefined;
 }
 
 const Switch = /* @__PURE__ */ React.forwardRef<SwitchElement, SwitchProps>(

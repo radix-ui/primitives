@@ -21,14 +21,14 @@ interface FocusScopeProps extends PrimitiveDivProps {
    * and shift+tab from first item will focus last tababble.
    * @defaultValue false
    */
-  loop?: boolean;
+  loop?: boolean | undefined;
 
   /**
    * When `true`, focus cannot escape the focus scope via keyboard,
    * pointer, or a programmatic focus.
    * @defaultValue false
    */
-  trapped?: boolean;
+  trapped?: boolean | undefined;
 
   /**
    * A list of nodes that should be treated as part of the focus scope even
@@ -38,19 +38,19 @@ interface FocusScopeProps extends PrimitiveDivProps {
    *
    * See: https://github.com/radix-ui/primitives/issues/3423
    */
-  branches?: HTMLElement[];
+  branches?: HTMLElement[] | undefined;
 
   /**
    * Event handler called when auto-focusing on mount.
    * Can be prevented.
    */
-  onMountAutoFocus?: (event: Event) => void;
+  onMountAutoFocus?: ((event: Event) => void) | undefined;
 
   /**
    * Event handler called when auto-focusing on unmount.
    * Can be prevented.
    */
-  onUnmountAutoFocus?: (event: Event) => void;
+  onUnmountAutoFocus?: ((event: Event) => void) | undefined;
 }
 
 const FocusScope = /* @__PURE__ */ React.forwardRef<FocusScopeElement, FocusScopeProps>(
@@ -269,7 +269,7 @@ interface FocusScopeBranchProviderProps {
    * is the case for layers that don't trap focus or lock scroll, which have nothing to host.
    */
   registry: FocusScopeBranchRegistry | null | undefined;
-  children?: React.ReactNode;
+  children?: React.ReactNode | undefined;
 }
 
 function FocusScopeBranchProvider({ registry, children }: FocusScopeBranchProviderProps) {
@@ -385,7 +385,7 @@ function findVisible(elements: HTMLElement[], container: HTMLElement) {
   }
 }
 
-function isHidden(node: HTMLElement, { upTo }: { upTo?: HTMLElement }) {
+function isHidden(node: HTMLElement, { upTo }: { upTo?: HTMLElement | undefined }) {
   if (getComputedStyle(node).visibility === 'hidden') return true;
   while (node) {
     // we stop at `upTo` (excluding it)

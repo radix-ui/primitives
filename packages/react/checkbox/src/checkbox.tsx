@@ -11,7 +11,7 @@ import type { Scope } from '@radix-ui/react-context';
 
 const CHECKBOX_NAME = 'Checkbox';
 
-type ScopedProps<P> = P & { __scopeCheckbox?: Scope };
+type ScopedProps<P> = P & { __scopeCheckbox?: Scope | undefined };
 const [createCheckboxContext, createCheckboxScope] = createContextScope(CHECKBOX_NAME);
 
 type CheckedState = boolean | 'indeterminate';
@@ -43,15 +43,15 @@ const [CheckboxProviderImpl, useCheckboxContext] =
  * -----------------------------------------------------------------------------------------------*/
 
 interface CheckboxProviderProps<State extends CheckedState = CheckedState> {
-  checked?: State | boolean;
-  defaultChecked?: State | boolean;
-  required?: boolean;
-  onCheckedChange?(checked: State | boolean): void;
-  name?: string;
-  form?: string;
-  disabled?: boolean;
-  value?: string | number | readonly string[];
-  children?: React.ReactNode;
+  checked?: State | boolean | undefined;
+  defaultChecked?: State | boolean | undefined;
+  required?: boolean | undefined;
+  onCheckedChange?: ((checked: State | boolean) => void) | undefined;
+  name?: string | undefined;
+  form?: string | undefined;
+  disabled?: boolean | undefined;
+  value?: string | number | readonly string[] | undefined;
+  children?: React.ReactNode | undefined;
 }
 
 function CheckboxProvider<State extends CheckedState = CheckedState>(
@@ -136,7 +136,7 @@ interface CheckboxTriggerProps extends Omit<
   React.ComponentPropsWithoutRef<typeof Primitive.button>,
   keyof CheckboxProviderProps
 > {
-  children?: React.ReactNode;
+  children?: React.ReactNode | undefined;
 }
 
 const CheckboxTrigger = /* @__PURE__ */ React.forwardRef<HTMLButtonElement, CheckboxTriggerProps>(
@@ -210,10 +210,10 @@ const CheckboxTrigger = /* @__PURE__ */ React.forwardRef<HTMLButtonElement, Chec
 type CheckboxElement = React.ComponentRef<typeof Primitive.button>;
 type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
 interface CheckboxProps extends Omit<PrimitiveButtonProps, 'checked' | 'defaultChecked'> {
-  checked?: CheckedState;
-  defaultChecked?: CheckedState;
-  required?: boolean;
-  onCheckedChange?(checked: CheckedState): void;
+  checked?: CheckedState | undefined;
+  defaultChecked?: CheckedState | undefined;
+  required?: boolean | undefined;
+  onCheckedChange?: ((checked: CheckedState) => void) | undefined;
 }
 
 const Checkbox = /* @__PURE__ */ React.forwardRef<CheckboxElement, CheckboxProps>(
@@ -278,7 +278,7 @@ interface CheckboxIndicatorProps extends PrimitiveSpanProps {
    * Used to force mounting when more control is needed. Useful when
    * controlling animation with React animation libraries.
    */
-  forceMount?: true;
+  forceMount?: true | undefined;
 }
 
 const CheckboxIndicator = /* @__PURE__ */ React.forwardRef<

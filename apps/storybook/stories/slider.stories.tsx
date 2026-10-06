@@ -538,7 +538,7 @@ export const InScrollableContext = () => {
         className={styles.root}
         style={{ width: '100vw' }}
         value={[value]}
-        onValueChange={([newValue]: [number]) => setValue(newValue)}
+        onValueChange={([newValue]) => setValue(newValue!)}
       >
         <Slider.Track className={styles.track}>
           <Slider.Range className={styles.range} />

@@ -672,9 +672,9 @@ const Trigger = ({ as: Comp = 'button', ...props }: TriggerProps) => <Comp {...p
 const Button = React.forwardRef<
   React.ComponentRef<'button'>,
   React.ComponentProps<'button'> & {
-    asChild?: boolean;
-    iconLeft?: React.ReactNode;
-    iconRight?: React.ReactNode;
+    asChild?: boolean | undefined;
+    iconLeft?: React.ReactNode | undefined;
+    iconRight?: React.ReactNode | undefined;
   }
 >(({ children, asChild = false, iconLeft, iconRight, ...props }, forwardedRef) => {
   const Comp = asChild ? Slot.Root : 'button';
@@ -690,9 +690,9 @@ const Button = React.forwardRef<
 const ButtonNested = React.forwardRef<
   React.ComponentRef<'button'>,
   React.ComponentProps<'button'> & {
-    asChild?: boolean;
-    iconLeft?: React.ReactNode;
-    iconRight?: React.ReactNode;
+    asChild?: boolean | undefined;
+    iconLeft?: React.ReactNode | undefined;
+    iconRight?: React.ReactNode | undefined;
   }
 >(({ children, asChild = false, iconLeft, iconRight, ...props }, forwardedRef) => {
   const Comp = asChild ? Slot.Root : 'button';
@@ -708,7 +708,7 @@ const ButtonNested = React.forwardRef<
 const Input = React.forwardRef<
   React.ComponentRef<'input'>,
   React.ComponentProps<'input'> & {
-    asChild?: boolean;
+    asChild?: boolean | undefined;
   }
 >(({ asChild, children, ...props }, forwardedRef) => {
   const Comp = asChild ? Slot.Root : 'input';

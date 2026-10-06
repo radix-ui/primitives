@@ -51,7 +51,7 @@ type Sizes = {
 
 const SCROLL_AREA_NAME = 'ScrollArea';
 
-type ScopedProps<P> = P & { __scopeScrollArea?: Scope };
+type ScopedProps<P> = P & { __scopeScrollArea?: Scope | undefined };
 const [createScrollAreaContext, createScrollAreaScope] = createContextScope(SCROLL_AREA_NAME);
 
 type ScrollAreaContextValue = {
@@ -81,9 +81,9 @@ const [ScrollAreaProvider, useScrollAreaContext] =
 type ScrollAreaElement = React.ComponentRef<typeof Primitive.div>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface ScrollAreaProps extends PrimitiveDivProps {
-  type?: ScrollAreaContextValue['type'];
-  dir?: ScrollAreaContextValue['dir'];
-  scrollHideDelay?: number;
+  type?: ScrollAreaContextValue['type'] | undefined;
+  dir?: ScrollAreaContextValue['dir'] | undefined;
+  scrollHideDelay?: number | undefined;
 }
 
 const ScrollArea = /* @__PURE__ */ React.forwardRef<ScrollAreaElement, ScrollAreaProps>(
@@ -155,7 +155,7 @@ const Slottable = createSlottable(VIEWPORT_NAME);
 
 type ScrollAreaViewportElement = React.ComponentRef<typeof Primitive.div>;
 interface ScrollAreaViewportProps extends PrimitiveDivProps {
-  nonce?: string;
+  nonce?: string | undefined;
   /**
    * Disables implicit rendering of an additional wrapper element that measures
    * the content size. When `true`, a child `<ScrollArea.Content>` must be
@@ -164,7 +164,7 @@ interface ScrollAreaViewportProps extends PrimitiveDivProps {
    * Implicit rendering of the content element will be removed in the next major
    * release.
    */
-  disableImplicitContentElement?: boolean;
+  disableImplicitContentElement?: boolean | undefined;
 }
 
 const ScrollAreaViewport = /* @__PURE__ */ React.forwardRef<
@@ -264,7 +264,7 @@ const ScrollAreaViewport = /* @__PURE__ */ React.forwardRef<
 );
 
 const ScrollAreaViewportStyle = /* @__PURE__ */ React.memo(
-  function ScrollAreaViewportStyle({ nonce }: { nonce?: string }) {
+  function ScrollAreaViewportStyle({ nonce }: { nonce?: string | undefined }) {
     return (
       <style
         // Hide scrollbars cross-browser and enable momentum scroll for touch devices
@@ -319,7 +319,7 @@ const SCROLLBAR_NAME = 'ScrollAreaScrollbar';
 
 type ScrollAreaScrollbarElement = ScrollAreaScrollbarVisibleElement;
 interface ScrollAreaScrollbarProps extends ScrollAreaScrollbarVisibleProps {
-  forceMount?: true;
+  forceMount?: true | undefined;
 }
 
 const ScrollAreaScrollbar = /* @__PURE__ */ React.forwardRef<
@@ -356,7 +356,7 @@ const ScrollAreaScrollbar = /* @__PURE__ */ React.forwardRef<
 
 type ScrollAreaScrollbarHoverElement = ScrollAreaScrollbarAutoElement;
 interface ScrollAreaScrollbarHoverProps extends ScrollAreaScrollbarAutoProps {
-  forceMount?: true;
+  forceMount?: true | undefined;
 }
 
 const ScrollAreaScrollbarHover = /* @__PURE__ */ React.forwardRef<
@@ -404,7 +404,7 @@ const ScrollAreaScrollbarHover = /* @__PURE__ */ React.forwardRef<
 
 type ScrollAreaScrollbarScrollElement = ScrollAreaScrollbarVisibleElement;
 interface ScrollAreaScrollbarScrollProps extends ScrollAreaScrollbarVisibleProps {
-  forceMount?: true;
+  forceMount?: true | undefined;
 }
 
 const ScrollAreaScrollbarScroll = /* @__PURE__ */ React.forwardRef<
@@ -479,7 +479,7 @@ const ScrollAreaScrollbarScroll = /* @__PURE__ */ React.forwardRef<
 
 type ScrollAreaScrollbarAutoElement = ScrollAreaScrollbarVisibleElement;
 interface ScrollAreaScrollbarAutoProps extends ScrollAreaScrollbarVisibleProps {
-  forceMount?: true;
+  forceMount?: true | undefined;
 }
 
 const ScrollAreaScrollbarAuto = /* @__PURE__ */ React.forwardRef<
@@ -519,7 +519,7 @@ interface ScrollAreaScrollbarVisibleProps extends Omit<
   ScrollAreaScrollbarAxisProps,
   keyof ScrollAreaScrollbarAxisPrivateProps
 > {
-  orientation?: Orientation;
+  orientation?: Orientation | undefined;
 }
 
 const ScrollAreaScrollbarVisible = /* @__PURE__ */ React.forwardRef<
@@ -881,7 +881,7 @@ interface ScrollAreaThumbProps extends ScrollAreaThumbImplProps {
    * Used to force mounting when more control is needed. Useful when
    * controlling animation with React animation libraries.
    */
-  forceMount?: true;
+  forceMount?: true | undefined;
 }
 
 const ScrollAreaThumb = /* @__PURE__ */ React.forwardRef<

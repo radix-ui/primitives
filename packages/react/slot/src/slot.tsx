@@ -3,7 +3,7 @@ import { useComposedRefs } from '@radix-ui/react-compose-refs';
 
 declare module 'react' {
   interface ReactElement {
-    $$typeof?: symbol | string;
+    $$typeof?: symbol | string | undefined;
   }
 }
 
@@ -14,7 +14,7 @@ declare module 'react' {
 export type Usable<T> = PromiseLike<T> | React.Context<T>;
 
 type SlotProps<Elem extends Element = HTMLElement, Props = React.HTMLAttributes<Elem>> = Props & {
-  children?: React.ReactNode;
+  children?: React.ReactNode | undefined;
 };
 
 /* @__NO_SIDE_EFFECTS__ */ export function createSlot<
@@ -198,11 +198,11 @@ function getElementRef(element: React.ReactElement) {
   getter = Object.getOwnPropertyDescriptor(element, 'ref')?.get;
   mayWarn = getter && 'isReactWarning' in getter && getter.isReactWarning;
   if (mayWarn) {
-    return (element.props as { ref?: React.Ref<unknown> }).ref;
+    return (element.props as { ref?: React.Ref<unknown> | undefined }).ref;
   }
 
   // Not DEV
-  return (element.props as { ref?: React.Ref<unknown> }).ref || (element as any).ref;
+  return (element.props as { ref?: React.Ref<unknown> | undefined }).ref || (element as any).ref;
 }
 
 /* ---------------------------------------------------------------------------------------------- */
