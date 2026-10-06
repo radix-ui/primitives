@@ -182,12 +182,6 @@ const FocusScope = /* @__PURE__ */ React.forwardRef<FocusScopeElement, FocusScop
 
         return () => {
           container.removeEventListener(AUTOFOCUS_ON_MOUNT, onMountAutoFocus);
-
-          // The unmount work below runs in a timer, so it can fire after the realm the container
-          // belongs to has been torn down (e.g. a test runner swapping jsdom globals back to Node's
-          // once a test file finishes). Capture everything realm-dependent now, while the globals
-          // still match the container's document, and don't touch `document` / `CustomEvent` from
-          // inside the timer. See: https://github.com/radix-ui/primitives/issues/4148
           const ownerDocument = container.ownerDocument;
           const UnmountEvent = CustomEvent;
 
@@ -352,17 +346,25 @@ function getTabbableEdges(container: HTMLElement) {
  */
 function getTabbableCandidates(container: HTMLElement) {
   const nodes: HTMLElement[] = [];
+  const document = container.ownerDocument;
   const walker = document.createTreeWalker(container, NodeFilter.SHOW_ELEMENT, {
-    acceptNode: (node: any) => {
-      const isHiddenInput = node.tagName === 'INPUT' && node.type === 'hidden';
-      if (node.disabled || node.hidden || isHiddenInput) return NodeFilter.FILTER_SKIP;
+    acceptNode: (node: Element) => {
+      const isHiddenInput =
+        node.tagName === 'INPUT' && (node as HTMLInputElement).type === 'hidden';
+      if ((node as HTMLInputElement).disabled || (node as HTMLElement).hidden || isHiddenInput) {
+        return NodeFilter.FILTER_SKIP;
+      }
       // `.tabIndex` is not the same as the `tabindex` attribute. It works on the
       // runtime's understanding of tabbability, so this automatically accounts
       // for any kind of element that could be tabbed to.
-      return node.tabIndex >= 0 ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP;
+      return (node as HTMLElement).tabIndex >= 0
+        ? NodeFilter.FILTER_ACCEPT
+        : NodeFilter.FILTER_SKIP;
     },
   });
-  while (walker.nextNode()) nodes.push(walker.currentNode as HTMLElement);
+  while (walker.nextNode()) {
+    nodes.push(walker.currentNode as HTMLElement);
+  }
   // we do not take into account the order of nodes with positive `tabIndex` as it
   // hinders accessibility to have tab order different from visual order.
   return nodes;
@@ -404,11 +406,11 @@ function isHidden(node: HTMLElement, { upTo }: { upTo?: HTMLElement | undefined 
   return false;
 }
 
-function isSelectableInput(element: any): element is FocusableTarget & { select: () => void } {
-  // We compare the tag name rather than checking `instanceof HTMLInputElement` so this works for
-  // elements from another realm (iframes) and keeps working from the unmount timer after a test
-  // environment has torn down its DOM globals.
-  return element?.tagName === 'INPUT' && typeof element.select === 'function';
+function isSelectableInput(element: FocusableTarget): element is HTMLInputElement {
+  return (
+    (element as HTMLElement).tagName === 'INPUT' &&
+    typeof (element as HTMLInputElement).select === 'function'
+  );
 }
 
 function focus(element?: FocusableTarget | null, { select = false } = {}) {
