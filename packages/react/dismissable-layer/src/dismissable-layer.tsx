@@ -158,6 +158,13 @@ const DismissableLayer = /* @__PURE__ */ React.forwardRef<
         return;
       }
 
+      // A new layer may register before this layer re-renders and removes its listener.
+      const currentLayers = Array.from(context.layers);
+      const isCurrentHighestLayer = node === currentLayers[currentLayers.length - 1];
+      if (!isCurrentHighestLayer) {
+        return;
+      }
+
       onEscapeKeyDown?.(event);
       if (!event.defaultPrevented && onDismiss) {
         event.preventDefault();

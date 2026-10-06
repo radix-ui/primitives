@@ -459,6 +459,46 @@ describe('DismissableLayer', () => {
     expect(onParentDismiss).not.toHaveBeenCalled();
   });
 
+  // Regression test for https://github.com/radix-ui/primitives/issues/4143
+  it('does not dismiss a parent when escape is pressed while a child layer registers', () => {
+    const onParentDismiss = vi.fn();
+
+    function Test() {
+      const [showChild, setShowChild] = React.useState(false);
+      return (
+        <>
+          <DismissableLayer.Root onDismiss={onParentDismiss}>
+            <button type="button" onClick={() => setShowChild(true)}>
+              open child
+            </button>
+          </DismissableLayer.Root>
+          {showChild && (
+            <DismissableLayer.Root>
+              <button type="button">child</button>
+            </DismissableLayer.Root>
+          )}
+        </>
+      );
+    }
+
+    render(<Test />);
+
+    const dispatchEscape = vi.fn(() => {
+      document.dispatchEvent(
+        new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }),
+      );
+    });
+    document.addEventListener('dismissableLayer.update', dispatchEscape, { once: true });
+    try {
+      fireEvent.click(screen.getByText('open child'));
+    } finally {
+      document.removeEventListener('dismissableLayer.update', dispatchEscape);
+    }
+
+    expect(dispatchEscape).toHaveBeenCalledTimes(1);
+    expect(onParentDismiss).not.toHaveBeenCalled();
+  });
+
   // Regression test for https://github.com/radix-ui/primitives/issues/3963
   it('keeps a stable composed ref (no infinite render loop)', () => {
     assertStableComposedRef((ref) => (
