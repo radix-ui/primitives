@@ -30,7 +30,7 @@ const NODES = [
 
 type Primitives = { [E in (typeof NODES)[number]]: PrimitiveForwardRefComponent<E> };
 type PrimitivePropsWithRef<E extends React.ElementType> = React.ComponentPropsWithRef<E> & {
-  asChild?: boolean;
+  asChild?: boolean | undefined;
 };
 
 interface PrimitiveForwardRefComponent<

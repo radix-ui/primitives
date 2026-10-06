@@ -13,7 +13,7 @@ import type { Scope } from '@radix-ui/react-context';
 
 const ROOT_NAME = 'AlertDialog';
 
-type ScopedProps<P> = P & { __scopeAlertDialog?: Scope };
+type ScopedProps<P> = P & { __scopeAlertDialog?: Scope | undefined };
 const [createAlertDialogContext, createAlertDialogScope] = createContextScope(ROOT_NAME, [
   createDialogScope,
 ]);

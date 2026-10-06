@@ -28,7 +28,7 @@ const [Collection, useCollection, createCollectionScope] = createCollection<
   ItemData
 >(GROUP_NAME);
 
-type ScopedProps<P> = P & { __scopeRovingFocusGroup?: Scope };
+type ScopedProps<P> = P & { __scopeRovingFocusGroup?: Scope | undefined };
 const [createRovingFocusGroupContext, createRovingFocusGroupScope] = createContextScope(
   GROUP_NAME,
   [createCollectionScope],
@@ -52,16 +52,16 @@ interface RovingFocusGroupOptions {
    * The orientation of the group.
    * Mainly so arrow navigation is done accordingly (left & right vs. up & down)
    */
-  orientation?: Orientation;
+  orientation?: Orientation | undefined;
   /**
    * The direction of navigation between items.
    */
-  dir?: Direction;
+  dir?: Direction | undefined;
   /**
    * Whether keyboard navigation should loop around
    * @defaultValue false
    */
-  loop?: boolean;
+  loop?: boolean | undefined;
 }
 
 type RovingContextValue = RovingFocusGroupOptions & {
@@ -100,11 +100,11 @@ type RovingFocusGroupImplElement = React.ComponentRef<typeof Primitive.div>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface RovingFocusGroupImplProps
   extends Omit<PrimitiveDivProps, 'dir'>, RovingFocusGroupOptions {
-  currentTabStopId?: string | null;
-  defaultCurrentTabStopId?: string;
-  onCurrentTabStopIdChange?: (tabStopId: string | null) => void;
-  onEntryFocus?: (event: Event) => void;
-  preventScrollOnEntryFocus?: boolean;
+  currentTabStopId?: string | null | undefined;
+  defaultCurrentTabStopId?: string | undefined;
+  onCurrentTabStopIdChange?: ((tabStopId: string | null) => void) | undefined;
+  onEntryFocus?: ((event: Event) => void) | undefined;
+  preventScrollOnEntryFocus?: boolean | undefined;
 }
 
 const RovingFocusGroupImpl = /* @__PURE__ */ React.forwardRef<
@@ -216,12 +216,13 @@ const ITEM_NAME = 'RovingFocusGroupItem';
 type RovingFocusItemElement = React.ComponentRef<typeof Primitive.span>;
 type PrimitiveSpanProps = React.ComponentPropsWithoutRef<typeof Primitive.span>;
 interface RovingFocusItemProps extends Omit<PrimitiveSpanProps, 'children'> {
-  tabStopId?: string;
-  focusable?: boolean;
-  active?: boolean;
+  tabStopId?: string | undefined;
+  focusable?: boolean | undefined;
+  active?: boolean | undefined;
   children?:
     | React.ReactNode
-    | ((props: { hasTabStop: boolean; isCurrentTabStop: boolean }) => React.ReactNode);
+    | ((props: { hasTabStop: boolean; isCurrentTabStop: boolean }) => React.ReactNode)
+    | undefined;
 }
 
 const RovingFocusGroupItem = /* @__PURE__ */ React.forwardRef<

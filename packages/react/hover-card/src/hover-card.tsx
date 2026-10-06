@@ -21,7 +21,7 @@ let originalBodyUserSelect: string;
 
 const HOVERCARD_NAME = 'HoverCard';
 
-type ScopedProps<P> = P & { __scopeHoverCard?: Scope };
+type ScopedProps<P> = P & { __scopeHoverCard?: Scope | undefined };
 const [createHoverCardContext, createHoverCardScope] = createContextScope(HOVERCARD_NAME, [
   createPopperScope,
 ]);
@@ -41,12 +41,12 @@ const [HoverCardProvider, useHoverCardContext] =
   createHoverCardContext<HoverCardContextValue>(HOVERCARD_NAME);
 
 interface HoverCardProps {
-  children?: React.ReactNode;
-  open?: boolean;
-  defaultOpen?: boolean;
-  onOpenChange?: (open: boolean) => void;
-  openDelay?: number;
-  closeDelay?: number;
+  children?: React.ReactNode | undefined;
+  open?: boolean | undefined;
+  defaultOpen?: boolean | undefined;
+  onOpenChange?: ((open: boolean) => void) | undefined;
+  openDelay?: number | undefined;
+  closeDelay?: number | undefined;
 }
 
 const HoverCard: React.FC<HoverCardProps> = (props: ScopedProps<HoverCardProps>) => {
@@ -153,23 +153,23 @@ const HoverCardTrigger = /* @__PURE__ */ React.forwardRef<
 
 const PORTAL_NAME = 'HoverCardPortal';
 
-type PortalContextValue = { forceMount?: true };
+type PortalContextValue = { forceMount?: true | undefined };
 const [PortalProvider, usePortalContext] = createHoverCardContext<PortalContextValue>(PORTAL_NAME, {
   forceMount: undefined,
 });
 
 type PortalProps = React.ComponentPropsWithoutRef<typeof PortalPrimitive>;
 interface HoverCardPortalProps {
-  children?: React.ReactNode;
+  children?: React.ReactNode | undefined;
   /**
    * Specify a container element to portal the content into.
    */
-  container?: PortalProps['container'];
+  container?: PortalProps['container'] | undefined;
   /**
    * Used to force mounting when more control is needed. Useful when
    * controlling animation with React animation libraries.
    */
-  forceMount?: true;
+  forceMount?: true | undefined;
 }
 
 const HoverCardPortal: React.FC<HoverCardPortalProps> = (
@@ -200,7 +200,7 @@ interface HoverCardContentProps extends HoverCardContentImplProps {
    * Used to force mounting when more control is needed. Useful when
    * controlling animation with React animation libraries.
    */
-  forceMount?: true;
+  forceMount?: true | undefined;
 }
 
 const HoverCardContent = /* @__PURE__ */ React.forwardRef<
@@ -236,23 +236,23 @@ interface HoverCardContentImplProps extends Omit<PopperContentProps, 'onPlaced'>
    * Event handler called when the escape key is down.
    * Can be prevented.
    */
-  onEscapeKeyDown?: DismissableLayerProps['onEscapeKeyDown'];
+  onEscapeKeyDown?: DismissableLayerProps['onEscapeKeyDown'] | undefined;
   /**
    * Event handler called when the a `pointerdown` event happens outside of the `HoverCard`.
    * Can be prevented.
    */
-  onPointerDownOutside?: DismissableLayerProps['onPointerDownOutside'];
+  onPointerDownOutside?: DismissableLayerProps['onPointerDownOutside'] | undefined;
   /**
    * Event handler called when the focus moves outside of the `HoverCard`.
    * Can be prevented.
    */
-  onFocusOutside?: DismissableLayerProps['onFocusOutside'];
+  onFocusOutside?: DismissableLayerProps['onFocusOutside'] | undefined;
   /**
    * Event handler called when an interaction happens outside the `HoverCard`.
    * Specifically, when a `pointerdown` event happens outside or focus moves outside of it.
    * Can be prevented.
    */
-  onInteractOutside?: DismissableLayerProps['onInteractOutside'];
+  onInteractOutside?: DismissableLayerProps['onInteractOutside'] | undefined;
 }
 
 const HoverCardContentImpl = /* @__PURE__ */ React.forwardRef<

@@ -47,7 +47,7 @@ declare global {
      * @see
      * https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus#focusvisible
      */
-    focusVisible?: boolean;
+    focusVisible?: boolean | undefined;
   }
 }
 
@@ -60,7 +60,7 @@ const SLIDER_NAME = 'Slider';
 const [Collection, useCollection, createCollectionScope] =
   createCollection<SliderThumbElement>(SLIDER_NAME);
 
-type ScopedProps<P> = P & { __scopeSlider?: Scope };
+type ScopedProps<P> = P & { __scopeSlider?: Scope | undefined };
 const [createSliderContext, createSliderScope] = createContextScope(SLIDER_NAME, [
   createCollectionScope,
 ]);
@@ -84,14 +84,14 @@ interface SliderProps extends Omit<
   SliderHorizontalProps | SliderVerticalProps,
   keyof SliderOrientationPrivateProps | 'defaultValue'
 > {
-  name?: string;
-  disabled?: boolean;
-  orientation?: Orientation;
-  dir?: Direction;
-  min?: number;
-  max?: number;
-  step?: number;
-  minStepsBetweenThumbs?: number;
+  name?: string | undefined;
+  disabled?: boolean | undefined;
+  orientation?: Orientation | undefined;
+  dir?: Direction | undefined;
+  min?: number | undefined;
+  max?: number | undefined;
+  step?: number | undefined;
+  minStepsBetweenThumbs?: number | undefined;
   /**
    * When `true`, thumbs keep their relative order and won't cross over one
    * another while dragging. Each thumb is constrained to the values of its
@@ -99,13 +99,13 @@ interface SliderProps extends Omit<
    *
    * @defaultValue false
    */
-  preserveThumbOrder?: boolean;
-  value?: number[];
-  defaultValue?: number[];
-  onValueChange?(value: number[]): void;
-  onValueCommit?(value: number[]): void;
-  inverted?: boolean;
-  form?: string;
+  preserveThumbOrder?: boolean | undefined;
+  value?: number[] | undefined;
+  defaultValue?: number[] | undefined;
+  onValueChange?: ((value: number[]) => void) | undefined;
+  onValueCommit?: ((value: number[]) => void) | undefined;
+  inverted?: boolean | undefined;
+  form?: string | undefined;
 }
 
 const Slider = /* @__PURE__ */ React.forwardRef<SliderElement, SliderProps>(
@@ -303,9 +303,9 @@ type SliderOrientationPrivateProps = {
   min: number;
   max: number;
   inverted: boolean;
-  onSlideStart?(value: number): void;
-  onSlideMove?(value: number): void;
-  onSlideEnd?(): void;
+  onSlideStart?: ((value: number) => void) | undefined;
+  onSlideMove?: ((value: number) => void) | undefined;
+  onSlideEnd?: (() => void) | undefined;
   onHomeKeyDown(event: React.KeyboardEvent): void;
   onEndKeyDown(event: React.KeyboardEvent): void;
   onStepKeyDown(step: { event: React.KeyboardEvent; direction: number }): void;
@@ -315,7 +315,7 @@ interface SliderOrientationProps
 
 type SliderHorizontalElement = SliderImplElement;
 interface SliderHorizontalProps extends SliderOrientationProps {
-  dir?: Direction;
+  dir?: Direction | undefined;
 }
 
 const SliderHorizontal = /* @__PURE__ */ React.forwardRef<
@@ -636,8 +636,8 @@ const [SliderThumbContextProvider, useSliderThumbContext] =
 const THUMB_PROVIDER_NAME = 'SliderThumbProvider';
 
 interface SliderThumbProviderProps {
-  name?: string;
-  children?: React.ReactNode;
+  name?: string | undefined;
+  children?: React.ReactNode | undefined;
 }
 
 function SliderThumbProvider(props: ScopedProps<SliderThumbProviderProps>) {
@@ -764,7 +764,7 @@ const SliderThumbTrigger = /* @__PURE__ */ React.forwardRef<
 
 type SliderThumbElement = SliderThumbTriggerElement;
 interface SliderThumbProps extends SliderThumbTriggerProps {
-  name?: string;
+  name?: string | undefined;
 }
 
 const SliderThumb = /* @__PURE__ */ React.forwardRef<SliderThumbElement, SliderThumbProps>(

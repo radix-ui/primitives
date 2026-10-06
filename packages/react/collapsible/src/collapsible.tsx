@@ -16,12 +16,12 @@ import type { Scope } from '@radix-ui/react-context';
 
 const COLLAPSIBLE_NAME = 'Collapsible';
 
-type ScopedProps<P> = P & { __scopeCollapsible?: Scope };
+type ScopedProps<P> = P & { __scopeCollapsible?: Scope | undefined };
 const [createCollapsibleContext, createCollapsibleScope] = createContextScope(COLLAPSIBLE_NAME);
 
 type CollapsibleContextValue = {
   contentId: string;
-  disabled?: boolean;
+  disabled?: boolean | undefined;
   open: boolean;
   onOpenToggle(): void;
 };
@@ -32,10 +32,10 @@ const [CollapsibleProvider, useCollapsibleContext] =
 type CollapsibleElement = React.ComponentRef<typeof Primitive.div>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface CollapsibleProps extends PrimitiveDivProps {
-  defaultOpen?: boolean;
-  open?: boolean;
-  disabled?: boolean;
-  onOpenChange?(open: boolean): void;
+  defaultOpen?: boolean | undefined;
+  open?: boolean | undefined;
+  disabled?: boolean | undefined;
+  onOpenChange?: ((open: boolean) => void) | undefined;
 }
 
 const Collapsible = /* @__PURE__ */ React.forwardRef<CollapsibleElement, CollapsibleProps>(
@@ -121,7 +121,7 @@ interface CollapsibleContentProps extends Omit<CollapsibleContentImplProps, 'pre
    * Used to force mounting when more control is needed. Useful when
    * controlling animation with React animation libraries.
    */
-  forceMount?: true;
+  forceMount?: true | undefined;
 }
 
 const CollapsibleContent = /* @__PURE__ */ React.forwardRef<

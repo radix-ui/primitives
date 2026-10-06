@@ -11,7 +11,7 @@ import type { Scope } from '@radix-ui/react-context';
 const PROGRESS_NAME = 'Progress';
 const DEFAULT_MAX = 100;
 
-type ScopedProps<P> = P & { __scopeProgress?: Scope };
+type ScopedProps<P> = P & { __scopeProgress?: Scope | undefined };
 const [createProgressContext, createProgressScope] = createContextScope(PROGRESS_NAME);
 
 type ProgressState = 'indeterminate' | 'complete' | 'loading';
@@ -23,8 +23,8 @@ type ProgressElement = React.ComponentRef<typeof Primitive.div>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface ProgressProps extends PrimitiveDivProps {
   value?: number | null | undefined;
-  max?: number;
-  getValueLabel?(value: number, max: number): string;
+  max?: number | undefined;
+  getValueLabel?: ((value: number, max: number) => string) | undefined;
 }
 
 const Progress = /* @__PURE__ */ React.forwardRef<ProgressElement, ProgressProps>(

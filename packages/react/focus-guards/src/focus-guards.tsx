@@ -11,7 +11,7 @@ let count = 0;
 let guards: { start: HTMLSpanElement; end: HTMLSpanElement } | null = null;
 
 interface FocusGuardsProps {
-  children?: React.ReactNode;
+  children?: React.ReactNode | undefined;
 }
 
 function FocusGuards(props: FocusGuardsProps) {
