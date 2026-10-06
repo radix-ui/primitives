@@ -158,6 +158,15 @@ const DismissableLayer = /* @__PURE__ */ React.forwardRef<
         return;
       }
 
+      // An Escape pressed while an IME composition is open cancels the composition or the
+      // conversion, so it belongs to the input method, not to the layer. On macOS it arrives
+      // with the real key: Chromium sends `key: "Escape"` with `isComposing: true` and
+      // `keyCode: 229`, and Safari sends it after `compositionend` with `isComposing: false`
+      // and `keyCode: 229`, so the key alone does not tell them apart.
+      if (event.isComposing || event.keyCode === 229) {
+        return;
+      }
+
       onEscapeKeyDown?.(event);
       if (!event.defaultPrevented && onDismiss) {
         event.preventDefault();
