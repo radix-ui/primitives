@@ -2,6 +2,7 @@ import * as React from 'react';
 import { axe } from 'vitest-axe';
 import type { RenderResult } from '@testing-library/react';
 import { cleanup, render, fireEvent, screen, act } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import * as RadioGroup from './radio-group';
 import { afterEach, describe, it, beforeEach, vi, expect } from 'vitest';
 
@@ -307,6 +308,39 @@ describe('RadioGroup', () => {
       await act(async () => radios[0]!.focus());
       await act(async () => fireEvent.keyDown(radios[0]!, { key: 'Enter' }));
       expect(onKeyDown).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('when the document regains focus after the group background was clicked', () => {
+    it('should keep focus on the group instead of moving it to the checked item', async () => {
+      const user = userEvent.setup();
+      render(<ClassicRadioGroup defaultValue="2" />);
+      const group = screen.getByRole('radiogroup');
+
+      await user.click(group);
+      fireEvent.blur(group);
+      fireEvent.focus(group);
+
+      expect(group).toHaveFocus();
+    });
+
+    it('should focus the checked item when tabbing into the group afterwards', async () => {
+      const user = userEvent.setup();
+      render(
+        <>
+          <input aria-label="before" />
+          <ClassicRadioGroup defaultValue="2" />
+        </>,
+      );
+      const group = screen.getByRole('radiogroup');
+
+      await user.click(group);
+      fireEvent.blur(group);
+      fireEvent.focus(group);
+      act(() => screen.getByLabelText('before').focus());
+      await user.tab();
+
+      expect(screen.getByRole(RADIO_ROLE, { name: LABELS['2'] })).toHaveFocus();
     });
   });
 
