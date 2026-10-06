@@ -1602,6 +1602,155 @@ describe('Select.ItemText', () => {
   it.todo("applies the consumer's `className` and `style`");
 });
 
+// Regression tests for https://github.com/radix-ui/primitives/issues/4102
+describe('bubble input change events', () => {
+  afterEach(cleanupModal);
+
+  it('does not bubble a programmatic value change to ancestor `onChange` listeners', async () => {
+    const onFormChange = vi.fn();
+    const onAncestorChange = vi.fn();
+
+    function ControlledSelect() {
+      const [value, setValue] = React.useState('apple');
+      return (
+        <form onChange={onFormChange}>
+          <div onChange={onAncestorChange}>
+            <SelectTest name="fruit" value={value} onValueChange={setValue} />
+          </div>
+          <button type="button" onClick={() => setValue('banana')}>
+            Set programmatically
+          </button>
+        </form>
+      );
+    }
+
+    const { container } = render(<ControlledSelect />);
+    await waitFor(() => {
+      expect(container.querySelector('select')).toHaveValue('apple');
+    });
+    onFormChange.mockClear();
+    onAncestorChange.mockClear();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Set programmatically' }));
+
+    expect(onFormChange).not.toHaveBeenCalled();
+    expect(onAncestorChange).not.toHaveBeenCalled();
+    await waitFor(() => {
+      expect(container.querySelector('select')).toHaveValue('banana');
+    });
+    expect(new FormData(container.querySelector('form')!).get('fruit')).toBe('banana');
+  });
+
+  it('bubbles a user-driven value change to ancestor `onChange` listeners', async () => {
+    const onFormChange = vi.fn();
+    const onAncestorChange = vi.fn();
+
+    const { container } = render(
+      <form onChange={onFormChange}>
+        <div onChange={onAncestorChange}>
+          <SelectTest name="fruit" defaultValue="apple" defaultOpen />
+        </div>
+      </form>,
+    );
+
+    const listbox = await screen.findByRole('listbox', { hidden: true });
+    onFormChange.mockClear();
+    onAncestorChange.mockClear();
+
+    fireEvent.click(within(listbox).getByRole('option', { name: 'Banana' }));
+
+    expect(onAncestorChange).toHaveBeenCalled();
+    expect(onFormChange).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(container.querySelector('select')).toHaveValue('banana');
+    });
+  });
+
+  it('bubbles a typeahead value change to the parent form', async () => {
+    const onFormChange = vi.fn();
+
+    render(
+      <form onChange={onFormChange}>
+        <SelectTest name="fruit" defaultValue="apple" />
+      </form>,
+    );
+
+    const trigger = screen.getByRole('combobox');
+    await waitFor(() => {
+      expect(document.querySelector('select')).toHaveValue('apple');
+    });
+    onFormChange.mockClear();
+
+    fireEvent.keyDown(trigger, { key: 'b' });
+
+    expect(trigger).toHaveTextContent('Banana');
+    expect(onFormChange).toHaveBeenCalled();
+  });
+
+  it('does not bubble a user-driven value change when the consumer stopped propagation', async () => {
+    const onFormChange = vi.fn();
+
+    render(
+      <form onChange={onFormChange}>
+        <Select.Root defaultValue="apple" defaultOpen>
+          <Select.Trigger aria-label="Choice">
+            <Select.Value placeholder={PLACEHOLDER_TEXT} />
+          </Select.Trigger>
+          <Select.Portal>
+            <Select.Content position="popper">
+              <Select.Viewport>
+                <Select.Item value="apple">
+                  <Select.ItemText>Apple</Select.ItemText>
+                </Select.Item>
+                <Select.Item
+                  value="banana"
+                  onClick={(event) => event.stopPropagation()}
+                  onPointerUp={(event) => event.stopPropagation()}
+                >
+                  <Select.ItemText>Banana</Select.ItemText>
+                </Select.Item>
+              </Select.Viewport>
+            </Select.Content>
+          </Select.Portal>
+        </Select.Root>
+      </form>,
+    );
+
+    const listbox = await screen.findByRole('listbox', { hidden: true });
+    onFormChange.mockClear();
+
+    fireEvent.click(within(listbox).getByRole('option', { name: 'Banana' }));
+
+    expect(screen.getByRole('combobox', { name: 'Choice' })).toHaveTextContent('Banana');
+    expect(onFormChange).not.toHaveBeenCalled();
+  });
+
+  it('does not bubble a programmatic update after a selection that did not change the value', async () => {
+    const onFormChange = vi.fn();
+
+    function LockedSelect({ value }: { value: string }) {
+      return (
+        <form onChange={onFormChange}>
+          <SelectTest name="fruit" value={value} onValueChange={() => {}} defaultOpen />
+        </form>
+      );
+    }
+
+    const { rerender } = render(<LockedSelect value="apple" />);
+    const listbox = await screen.findByRole('listbox', { hidden: true });
+    fireEvent.click(within(listbox).getByRole('option', { name: 'Banana' }));
+    expect(screen.getByRole('combobox', { name: 'Choice' })).toHaveTextContent('Apple');
+    onFormChange.mockClear();
+
+    rerender(<LockedSelect value="banana" />);
+
+    expect(onFormChange).not.toHaveBeenCalled();
+    await waitFor(() => {
+      expect(document.querySelector('select')).toHaveValue('banana');
+    });
+  });
+});
+
 function cleanupModal() {
   cleanup();
   // Open content is a modal layer, which sets this on the `body` and only

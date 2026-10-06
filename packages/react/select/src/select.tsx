@@ -19,7 +19,6 @@ import { createSlot } from '@radix-ui/react-slot';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
-import { usePrevious } from '@radix-ui/react-use-previous';
 import { VISUALLY_HIDDEN_STYLES } from '@radix-ui/react-visually-hidden';
 import { hideOthers } from 'aria-hidden';
 import { RemoveScroll } from 'react-remove-scroll';
@@ -71,6 +70,9 @@ type SelectContextValue = {
   contentId: string;
   value: string | undefined;
   onValueChange(value: string): void;
+  hasConsumerStoppedPropagationRef: React.RefObject<boolean>;
+  userInteractionCount: number;
+  onUserInteraction(): void;
   open: boolean;
   required?: boolean;
   onOpenChange(open: boolean): void;
@@ -193,6 +195,19 @@ function SelectProvider(props: ScopedProps<SelectProviderProps>) {
     caller: SELECT_NAME,
   });
   const triggerPointerDownPosRef = React.useRef<{ x: number; y: number } | null>(null);
+  const hasConsumerStoppedPropagationRef = React.useRef(false);
+
+  // Incremented on every user interaction that selects a value. The bubble
+  // input compares this against the count it last handled to tell whether or
+  // not a value change was driven by the user. Using a counter guarantees the
+  // marker is updated in the same commit as the resulting render, so it can
+  // never go stale and leak into a later programmatic update.
+  //
+  // See https://github.com/radix-ui/primitives/issues/4102
+  const [userInteractionCount, onUserInteraction] = React.useReducer(
+    (count: number): number => count + 1,
+    0,
+  );
 
   const initialValueRef = React.useRef(value);
   React.useEffect(() => {
@@ -241,6 +256,9 @@ function SelectProvider(props: ScopedProps<SelectProviderProps>) {
     contentId,
     value,
     onValueChange: setValue,
+    hasConsumerStoppedPropagationRef,
+    userInteractionCount,
+    onUserInteraction,
     open,
     onOpenChange: setOpen,
     dir: direction,
@@ -324,6 +342,7 @@ const SelectTrigger = /* @__PURE__ */ React.forwardRef<SelectTriggerElement, Sel
       const currentItem = enabledItems.find((item) => item.value === context.value);
       const nextItem = findNextItem(enabledItems, search, currentItem);
       if (nextItem !== undefined) {
+        context.onUserInteraction();
         context.onValueChange(nextItem.value);
       }
     });
@@ -395,7 +414,10 @@ const SelectTrigger = /* @__PURE__ */ React.forwardRef<SelectTriggerElement, Sel
           onKeyDown={composeEventHandlers(triggerProps.onKeyDown, (event) => {
             const isTypingAhead = searchRef.current !== '';
             const isModifierKey = event.ctrlKey || event.altKey || event.metaKey;
-            if (!isModifierKey && event.key.length === 1) handleTypeaheadSearch(event.key);
+            if (!isModifierKey && event.key.length === 1) {
+              context.hasConsumerStoppedPropagationRef.current = event.isPropagationStopped();
+              handleTypeaheadSearch(event.key);
+            }
             if (isTypingAhead && event.key === ' ') return;
             if (OPEN_KEYS.includes(event.key)) {
               handleOpen();
@@ -1369,10 +1391,12 @@ const SelectItem = /* @__PURE__ */ React.forwardRef<SelectItemElement, SelectIte
     const textId = useId();
     const pointerTypeRef = React.useRef<React.PointerEvent['pointerType']>('touch');
 
-    const handleSelect = () => {
+    function handleSelect(event: { isPropagationStopped(): boolean }) {
+      context.hasConsumerStoppedPropagationRef.current = event.isPropagationStopped();
+      context.onUserInteraction();
       context.onValueChange(value);
       context.onOpenChange(false);
-    };
+    }
 
     return (
       <SelectItemContextProvider
@@ -1405,17 +1429,17 @@ const SelectItem = /* @__PURE__ */ React.forwardRef<SelectItemElement, SelectIte
             ref={composedRefs}
             onFocus={composeEventHandlers(itemProps.onFocus, () => setIsFocused(true))}
             onBlur={composeEventHandlers(itemProps.onBlur, () => setIsFocused(false))}
-            onClick={composeEventHandlers(itemProps.onClick, () => {
+            onClick={composeEventHandlers(itemProps.onClick, (event) => {
               if (disabled) {
                 return;
               }
 
               // Open on click when using a touch or pen device
               if (pointerTypeRef.current !== 'mouse') {
-                handleSelect();
+                handleSelect(event);
               }
             })}
-            onPointerUp={composeEventHandlers(itemProps.onPointerUp, () => {
+            onPointerUp={composeEventHandlers(itemProps.onPointerUp, (event) => {
               if (disabled) {
                 return;
               }
@@ -1423,7 +1447,7 @@ const SelectItem = /* @__PURE__ */ React.forwardRef<SelectItemElement, SelectIte
               // Using a mouse you should be able to do pointer down, move through
               // the list, and release the pointer over the item to select it.
               if (pointerTypeRef.current === 'mouse') {
-                handleSelect();
+                handleSelect(event);
               }
             })}
             onPointerDown={composeEventHandlers(itemProps.onPointerDown, (event) => {
@@ -1461,7 +1485,7 @@ const SelectItem = /* @__PURE__ */ React.forwardRef<SelectItemElement, SelectIte
               }
 
               if (SELECTION_KEYS.includes(event.key)) {
-                handleSelect();
+                handleSelect(event);
               }
               // prevent page scroll if using the space key to select an item
               if (event.key === ' ') {
@@ -1770,12 +1794,23 @@ const SelectBubbleInput = /* @__PURE__ */ React.forwardRef<
     forwardedRef,
   ) {
     const context = useSelectContext(BUBBLE_INPUT_NAME, __scopeSelect);
-    const { value, onValueChange, required, disabled, name, autoComplete, form } = context;
+    const {
+      value,
+      onValueChange,
+      required,
+      disabled,
+      name,
+      autoComplete,
+      form,
+      hasConsumerStoppedPropagationRef,
+      userInteractionCount,
+    } = context;
     const { nativeOptions, nativeSelectKey } = context;
     const ref = React.useRef<SelectBubbleInputElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, ref);
     const selectValue = value ?? '';
-    const prevValue = usePrevious(selectValue);
+    const prevValueRef = React.useRef(selectValue);
+    const prevUserInteractionCountRef = React.useRef(userInteractionCount);
 
     // A consumer may render a `Select.Item` with an empty value to act as a
     // "clear" option. In that case it already provides a native `<option>` with
@@ -1796,21 +1831,32 @@ const SelectBubbleInput = /* @__PURE__ */ React.forwardRef<
         'value',
       ) as PropertyDescriptor;
       const setValue = descriptor.set;
-      if (prevValue !== selectValue && setValue) {
-        const event = new Event('change', { bubbles: true });
+
+      const isUserInteraction = userInteractionCount !== prevUserInteractionCountRef.current;
+      prevUserInteractionCountRef.current = userInteractionCount;
+      const valueChanged = prevValueRef.current !== selectValue;
+      prevValueRef.current = selectValue;
+
+      // Select dispatches `change` directly. A programmatic update must still
+      // sync the native select so form submission sees the value, but the event
+      // must not bubble to ancestor `onChange` handlers. User-driven selections
+      // bubble unless the consumer already stopped propagation.
+      const bubbles = isUserInteraction && !hasConsumerStoppedPropagationRef.current;
+      if (valueChanged && setValue) {
+        const event = new Event('change', { bubbles });
         setValue.call(select, selectValue);
         select.dispatchEvent(event);
       }
-    }, [prevValue, selectValue]);
+    }, [hasConsumerStoppedPropagationRef, selectValue, userInteractionCount]);
 
     /**
      * We purposefully use a `select` here to support form autofill as much as
      * possible.
      *
      * We purposefully do not add the `value` attribute here to allow the value
-     * to be set programmatically and bubble to any parent form `onChange`
-     * event. Adding the `value` will cause React to consider the programmatic
-     * dispatch a duplicate and it will get swallowed.
+     * to be set programmatically and bubble a `change` event for user-driven
+     * selections. Adding the `value` will cause React to consider the
+     * programmatic dispatch a duplicate and it will get swallowed.
      *
      * We use visually hidden styles rather than `display: "none"` because
      * Safari autofill won't work otherwise.
