@@ -606,6 +606,34 @@ describe('DismissableLayer.Root', () => {
     fireEvent.click(layer);
     expect(onClick).toHaveBeenCalled();
   });
+
+  // Regression test for https://github.com/radix-ui/primitives/issues/4093
+  it('renders pointer-events auto override before the body is disabled', () => {
+    let bodyPointerEvents = '';
+    let layerPointerEvents = '';
+    const handleUpdate = () => {
+      bodyPointerEvents = document.body.style.pointerEvents;
+      layerPointerEvents = screen.getByTestId('layer').style.pointerEvents;
+    };
+    document.addEventListener('dismissableLayer.update', handleUpdate);
+
+    render(
+      <DismissableLayer.Root disableOutsidePointerEvents data-testid="layer">
+        <button type="button">inside</button>
+      </DismissableLayer.Root>,
+    );
+
+    document.removeEventListener('dismissableLayer.update', handleUpdate);
+
+    // The effect that disables outside pointer events and the render that
+    // applies the layer's own `pointer-events: auto` override must land
+    // together. Otherwise a frame can paint where the `body` is `none` but the
+    // layer has no override yet and inherits `none`, making it unclickable on
+    // the first frame it appears. `pointer-events` is inherited, so a `body`
+    // with `none` silently disables the content until the override lands.
+    expect(bodyPointerEvents).toBe('none');
+    expect(layerPointerEvents).toBe('auto');
+  });
 });
 
 describe('DismissableLayer.Branch', () => {
