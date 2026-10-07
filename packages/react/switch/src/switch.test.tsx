@@ -457,3 +457,28 @@ describe('Switch.unstable_BubbleInput', () => {
     expect(onClick).toHaveBeenCalled();
   });
 });
+
+// regression test for https://github.com/radix-ui/primitives/issues/3216
+describe('Switch bubble input direction', () => {
+  afterEach(cleanup);
+
+  function renderInForm(dir: 'ltr' | 'rtl') {
+    render(
+      <form dir={dir}>
+        <Switch.unstable_Provider>
+          <Switch.unstable_Trigger aria-label="basic switch" />
+          <Switch.unstable_BubbleInput data-testid="bubble-input" />
+        </Switch.unstable_Provider>
+      </form>,
+    );
+    return screen.getByTestId('bubble-input');
+  }
+
+  it('should pull the input back over the control with a negative offset in LTR', () => {
+    expect(renderInForm('ltr').style.transform).toBe('translateX(-100%)');
+  });
+
+  it('should flip the offset in RTL so the input does not overflow the page', () => {
+    expect(renderInForm('rtl').style.transform).toBe('translateX(100%)');
+  });
+});

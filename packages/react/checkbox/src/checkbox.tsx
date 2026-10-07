@@ -340,6 +340,9 @@ const CheckboxBubbleInput = /* @__PURE__ */ React.forwardRef<
 
     const composedRefs = useComposedRefs(forwardedRef, setBubbleInput);
     const controlSize = useSize(control);
+    // The bubble input follows the control in the DOM, so which side of it we sit on depends on the
+    // inline direction in effect at the control.
+    const isRtl = !!control && getComputedStyle(control).direction === 'rtl';
     // When the checked change is not driven by a user interaction (e.g. a
     // controlled `checked` update), the `click` event we dispatch to notify
     // forms must not reach ancestor `onClick` handlers. We can't simply make it
@@ -414,8 +417,9 @@ const CheckboxBubbleInput = /* @__PURE__ */ React.forwardRef<
           margin: 0,
           // We transform because the input is absolutely positioned but we have
           // rendered it **after** the button. This pulls it back to sit on top
-          // of the button.
-          transform: 'translateX(-100%)',
+          // of the button. In RTL the input sits to the left of the button, so
+          // the offset has to flip or it ends up off-screen and causes overflow.
+          transform: isRtl ? 'translateX(100%)' : 'translateX(-100%)',
         }}
       />
     );

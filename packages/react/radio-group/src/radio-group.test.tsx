@@ -981,3 +981,25 @@ describe('RadioGroup.ItemBubbleInput', () => {
     expect(onClick).toHaveBeenCalled();
   });
 });
+
+// regression test for https://github.com/radix-ui/primitives/issues/3216
+describe('RadioGroup bubble input direction', () => {
+  afterEach(cleanup);
+
+  function renderInForm(dir: 'ltr' | 'rtl') {
+    const { container } = render(
+      <form>
+        <ClassicRadioGroup name="pet" dir={dir} />
+      </form>,
+    );
+    return container.querySelector<HTMLInputElement>('input[type="radio"][aria-hidden="true"]')!;
+  }
+
+  it('should pull the input back over the control with a negative offset in LTR', () => {
+    expect(renderInForm('ltr').style.transform).toBe('translateX(-100%)');
+  });
+
+  it('should flip the offset in RTL so the input does not overflow the page', () => {
+    expect(renderInForm('rtl').style.transform).toBe('translateX(100%)');
+  });
+});
