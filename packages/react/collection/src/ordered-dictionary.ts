@@ -13,64 +13,43 @@ export class OrderedDict<K, V> extends Map<K, V> {
   }
 
   set(key: K, value: V) {
-    if (__instanciated.get(this)) {
-      if (this.has(key)) {
-        this.#keys[this.#keys.indexOf(key)] = key;
-      } else {
-        this.#keys.push(key);
-      }
+    if (__instanciated.get(this) && !this.has(key)) {
+      this.#keys.push(key);
     }
     super.set(key, value);
     return this;
   }
 
+  /**
+   * Sets a key-value pair so that it ends up at the given index.
+   * - Existing keys are moved
+   * - Negative indices count from the end of the resulting dictionary, so
+   *   inserting at -1 makes the item the last one, -2 the second to last, etc.
+   * - Out-of-range indices are clamped
+   */
   insert(index: number, key: K, value: V) {
     const has = this.has(key);
-    const length = this.#keys.length;
+    const finalSize = has ? this.size : this.size + 1;
     const relativeIndex = toSafeInteger(index);
-    let actualIndex = relativeIndex >= 0 ? relativeIndex : length + relativeIndex;
-    const safeIndex = actualIndex < 0 || actualIndex >= length ? -1 : actualIndex;
+    const targetIndex =
+      relativeIndex >= 0
+        ? Math.min(relativeIndex, finalSize - 1)
+        : Math.max(finalSize + relativeIndex, 0);
 
-    if (safeIndex === this.size || (has && safeIndex === this.size - 1) || safeIndex === -1) {
+    if (has ? this.#keys.indexOf(key) === targetIndex : targetIndex === this.size) {
       this.set(key, value);
       return this;
     }
 
-    const size = this.size + (has ? 0 : 1);
-
-    // If you insert at, say, -2, without this bit you'd replace the
-    // second-to-last item and push the rest up one, which means the new item is
-    // 3rd to last. This isn't very intuitive; inserting at -2 is more like
-    // saying "make this item the second to last".
-    if (relativeIndex < 0) {
-      actualIndex++;
-    }
-
-    const keys = [...this.#keys];
-    let nextValue: V | undefined;
-    let shouldSkip = false;
-    for (let i = actualIndex; i < size; i++) {
-      if (actualIndex === i) {
-        let nextKey = keys[i]!;
-        if (keys[i] === key) {
-          nextKey = keys[i + 1]!;
-        }
-        if (has) {
-          // delete first to ensure that the item is moved to the end
-          this.delete(key);
-        }
-        nextValue = this.get(nextKey);
-        this.set(key, value);
-      } else {
-        if (!shouldSkip && keys[i - 1] === key) {
-          shouldSkip = true;
-        }
-        const currentKey = keys[shouldSkip ? i : i - 1]!;
-        const currentValue = nextValue!;
-        nextValue = this.get(currentKey);
-        this.delete(currentKey);
-        this.set(currentKey, currentValue);
-      }
+    const keys = this.#keys.filter((existingKey) => existingKey !== key);
+    keys.splice(targetIndex, 0, key);
+    const entries = keys.map((entryKey): [K, V] => [
+      entryKey,
+      entryKey === key ? value : this.get(entryKey)!,
+    ]);
+    this.clear();
+    for (const [entryKey, entryValue] of entries) {
+      this.set(entryKey, entryValue);
     }
     return this;
   }
@@ -97,7 +76,9 @@ export class OrderedDict<K, V> extends Map<K, V> {
     if (index === -1) {
       return this;
     }
-    return this.insert(index, newKey, value);
+    const currentIndex = this.#keys.indexOf(newKey);
+    const targetIndex = currentIndex !== -1 && currentIndex < index ? index - 1 : index;
+    return this.insert(targetIndex, newKey, value);
   }
 
   after(key: K) {
@@ -117,7 +98,9 @@ export class OrderedDict<K, V> extends Map<K, V> {
     if (index === -1) {
       return this;
     }
-    return this.insert(index + 1, newKey, value);
+    const currentIndex = this.#keys.indexOf(newKey);
+    const targetIndex = currentIndex !== -1 && currentIndex <= index ? index : index + 1;
+    return this.insert(targetIndex, newKey, value);
   }
 
   first() {
@@ -298,10 +281,14 @@ export class OrderedDict<K, V> extends Map<K, V> {
     ]
   ) {
     const [callbackfn, initialValue] = args;
+    const hasInitialValue = args.length > 1;
+    if (!hasInitialValue && this.size === 0) {
+      throw new TypeError('Reduce of empty OrderedDict with no initial value');
+    }
     let index = 0;
-    let accumulator = initialValue ?? this.at(0)!;
+    let accumulator = initialValue as U;
     for (const entry of this) {
-      if (index === 0 && args.length === 1) {
+      if (index === 0 && !hasInitialValue) {
         accumulator = entry as any;
       } else {
         accumulator = Reflect.apply(callbackfn, this, [accumulator, entry, index, this]);
@@ -330,8 +317,8 @@ export class OrderedDict<K, V> extends Map<K, V> {
   ): [K, V];
   reduceRight<U>(
     callbackfn: (
-      previousValue: [K, V],
-      currentValue: U,
+      previousValue: U,
+      currentEntry: [K, V],
       currentIndex: number,
       dictionary: OrderedDict<K, V>,
     ) => U,
@@ -350,10 +337,14 @@ export class OrderedDict<K, V> extends Map<K, V> {
     ]
   ) {
     const [callbackfn, initialValue] = args;
-    let accumulator = initialValue ?? this.at(-1)!;
+    const hasInitialValue = args.length > 1;
+    if (!hasInitialValue && this.size === 0) {
+      throw new TypeError('Reduce of empty OrderedDict with no initial value');
+    }
+    let accumulator = initialValue as U;
     for (let index = this.size - 1; index >= 0; index--) {
-      const entry = this.at(index)!;
-      if (index === this.size - 1 && args.length === 1) {
+      const entry = this.entryAt(index)!;
+      if (index === this.size - 1 && !hasInitialValue) {
         accumulator = entry as any;
       } else {
         accumulator = Reflect.apply(callbackfn, this, [accumulator, entry, index, this]);
@@ -388,24 +379,8 @@ export class OrderedDict<K, V> extends Map<K, V> {
 
   slice(start?: number, end?: number) {
     const result = new OrderedDict<K, V>();
-    let stop = this.size - 1;
-
-    if (start === undefined) {
-      return result;
-    }
-
-    if (start < 0) {
-      start = start + this.size;
-    }
-
-    if (end !== undefined && end > 0) {
-      stop = end - 1;
-    }
-
-    for (let index = start; index <= stop; index++) {
-      const key = this.keyAt(index)!;
-      const element = this.get(key)!;
-      result.set(key, element);
+    for (const key of this.#keys.slice(start, end)) {
+      result.set(key, this.get(key)!);
     }
     return result;
   }
