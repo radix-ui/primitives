@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import * as React from 'react';
 import { hydrateRoot } from 'react-dom/client';
 import { renderToPipeableStream } from 'react-dom/server';
 import { PassThrough } from 'node:stream';
@@ -583,9 +583,9 @@ describe('hydration alongside a pending Suspense boundary', () => {
     return (
       <div id="root">
         <Toast.Provider>
-          <Suspense fallback={<span id="fallback">loading</span>}>
+          <React.Suspense fallback={<span id="fallback">loading</span>}>
             <Deferred />
-          </Suspense>
+          </React.Suspense>
           <Toast.Root open duration={Infinity}>
             <Toast.Title>Hydrated toast</Toast.Title>
           </Toast.Root>
