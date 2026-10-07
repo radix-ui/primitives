@@ -300,6 +300,13 @@ const ToastViewport = /* @__PURE__ */ React.forwardRef<ToastViewportElement, Toa
         ref={wrapperRef}
         role="region"
         aria-label={label.replace('{hotkey}', hotkeyLabel)}
+        // Toasts render outside any modal layer but stay interactive while one is open, so the
+        // viewport must not end up inside that layer's `aria-hidden` subtree. `aria-hidden`'s
+        // `hideOthers` never hides live region containers, so marking the viewport as one keeps
+        // the whole toast subtree perceivable. `off` is the default politeness, so this does not
+        // change how the viewport itself is announced.
+        // See: https://github.com/radix-ui/primitives/issues/4115
+        aria-live="off"
         // Ensure virtual cursor from landmarks menus triggers focus/blur for pause/resume
         tabIndex={-1}
         // incase list has size when empty (e.g. padding), we remove pointer events so
