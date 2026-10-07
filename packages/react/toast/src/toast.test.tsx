@@ -1,4 +1,7 @@
-import React from 'react';
+import * as React from 'react';
+import { hydrateRoot } from 'react-dom/client';
+import { renderToPipeableStream } from 'react-dom/server';
+import { PassThrough } from 'node:stream';
 import { render, cleanup, fireEvent, screen } from '@testing-library/react';
 import * as Toast from './toast';
 import { describe, it, afterEach, beforeEach, vi, expect, type Mock } from 'vitest';
@@ -567,5 +570,106 @@ describe('Toast.Close', () => {
 
     fireEvent.click(close);
     expect(onClick).toHaveBeenCalled();
+  });
+});
+
+// Regression test for https://github.com/radix-ui/primitives/issues/3301
+describe('hydration alongside a pending Suspense boundary', () => {
+  function createSuspendedTree() {
+    function Deferred(): React.ReactElement {
+      throw new Promise(() => {});
+    }
+
+    return (
+      <div id="root">
+        <Toast.Provider>
+          <React.Suspense fallback={<span id="fallback">loading</span>}>
+            <Deferred />
+          </React.Suspense>
+          <Toast.Root open duration={Infinity}>
+            <Toast.Title>Hydrated toast</Toast.Title>
+          </Toast.Root>
+          <Toast.Viewport />
+        </Toast.Provider>
+      </div>
+    );
+  }
+
+  function renderShell(element: React.ReactElement) {
+    return new Promise<string>((resolve, reject) => {
+      let html = '';
+      let settled = false;
+      const pass = new PassThrough();
+      const finish = (value: string) => {
+        if (settled) return;
+        settled = true;
+        resolve(value);
+      };
+      pass.on('data', (chunk) => {
+        html += chunk.toString();
+        if (html.includes('<!--/$-->')) {
+          finish(html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/g, ''));
+        }
+      });
+      const { pipe, abort } = renderToPipeableStream(element, {
+        onShellReady() {
+          pipe(pass);
+        },
+        onShellError: reject,
+        onError() {},
+      });
+      setTimeout(() => {
+        abort();
+        finish(html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/g, ''));
+      }, 500);
+    });
+  }
+
+  afterEach(() => {
+    cleanup();
+    document.body.innerHTML = '';
+  });
+
+  it('keeps the suspended sibling hydrated when the viewport mounts', async () => {
+    const ui = createSuspendedTree();
+    const html = await renderShell(ui);
+    const container = document.createElement('div');
+    document.body.appendChild(container);
+    container.innerHTML = html;
+
+    const errors: string[] = [];
+    const originalConsoleError = console.error;
+    console.error = (...args: unknown[]) => {
+      errors.push(args.map((arg) => (arg instanceof Error ? arg.message : String(arg))).join(' '));
+    };
+    const readyState = Object.getOwnPropertyDescriptor(Document.prototype, 'readyState');
+    Object.defineProperty(document, 'readyState', {
+      configurable: true,
+      get: () => 'loading',
+    });
+
+    let root: ReturnType<typeof hydrateRoot> | undefined;
+    try {
+      root = hydrateRoot(container, ui, {
+        onRecoverableError(error) {
+          errors.push(error instanceof Error ? error.message : String(error));
+        },
+      });
+
+      await new Promise((resolve) => setTimeout(resolve, 50));
+
+      const hydrationError = errors.find((message) =>
+        message.includes('received an update before it finished hydrating'),
+      );
+      expect(hydrationError).toBeUndefined();
+      expect(container.querySelector('#fallback')).not.toBeNull();
+      expect(container.textContent).toContain('Hydrated toast');
+    } finally {
+      console.error = originalConsoleError;
+      if (readyState) {
+        Object.defineProperty(document, 'readyState', readyState);
+      }
+      root?.unmount();
+    }
   });
 });
