@@ -131,6 +131,85 @@ export const Promise = () => {
   );
 };
 
+export const DurationChangeAfterPause = () => {
+  const [phase, setPhase] = React.useState<'idle' | 'loading' | 'done'>('idle');
+  const [open, setOpen] = React.useState(false);
+  const [paused, setPaused] = React.useState(false);
+
+  const handleStart = () => {
+    setPhase('loading');
+    setOpen(true);
+    setPaused(false);
+    // Simulate async work completing after 3 seconds
+    window.setTimeout(() => setPhase('done'), 3000);
+  };
+
+  // Duration: Infinity while loading, 2000ms once done
+  const duration = phase === 'loading' ? Infinity : 2000;
+
+  return (
+    <Toast.Provider>
+      <div style={{ padding: 20 }}>
+        <p style={{ marginBottom: 12 }}>
+          Steps to reproduce the bug:
+          <br />1. Click "Start" to open the toast (duration = Infinity)
+          <br />2. Hover over the toast to pause the timer
+          <br />3. Move the mouse away to resume
+          <br />4. Wait 3 seconds, toast transitions to "Done!" (duration = 2000ms)
+          <br />5. Hover and un-hover again — toast should auto-close in ~2s
+          <br />   BUG: it never closes because the ref still holds Infinity
+        </p>
+        <button onClick={handleStart} disabled={phase !== 'idle'}>
+          Start
+        </button>
+      </div>
+
+      <Toast.Root
+        className={styles.root}
+        open={open}
+        onOpenChange={(o) => { setOpen(o); if (!o) { setPhase('idle'); setPaused(false); } }}
+        duration={duration}
+        onPause={() => setPaused(true)}
+        onResume={() => setPaused(false)}
+      >
+        <div className={styles.header}>
+          <Toast.Title className={styles.title}>
+            {phase === 'loading' ? 'Loading…' : 'Done! Will close in 2s'}
+          </Toast.Title>
+          {paused && (
+            <span style={{ marginLeft: 'auto', fontSize: 10, color: '#ffcc00', fontWeight: 'bold', letterSpacing: 1 }}>
+              ⏸ PAUSED
+            </span>
+          )}
+        </div>
+        <Toast.Description className={styles.description}>
+          {phase === 'loading'
+            ? 'Waiting for async work…'
+            : paused
+            ? 'Hovering — timer paused'
+            : 'Move mouse away to resume countdown'}
+        </Toast.Description>
+        {phase === 'done' && (
+          <div className={styles.progressBar}>
+            <div
+              key="done"
+              className={styles.progressBarInner}
+              style={{
+                animationDuration: `${duration - 100}ms`,
+                animationFillMode: 'forwards',
+                animationPlayState: paused ? 'paused' : 'running',
+                backgroundColor: paused ? 'orange' : undefined,
+              }}
+            />
+          </div>
+        )}
+      </Toast.Root>
+
+      <Toast.Viewport className={styles.viewport} />
+    </Toast.Provider>
+  );
+};
+
 export const KeyChange = () => {
   const [toastOneCount, setToastOneCount] = React.useState(0);
   const [toastTwoCount, setToastTwoCount] = React.useState(0);
