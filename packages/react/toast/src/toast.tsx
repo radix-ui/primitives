@@ -15,6 +15,9 @@ import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 
 import type { Scope } from '@radix-ui/react-context';
 
+const startTransition: ((scope: React.TransitionFunction) => void) | undefined =
+  (React as any)[' startTransition '.trim().toString()] || (() => undefined);
+
 /* -------------------------------------------------------------------------------------------------
  * ToastProvider
  * -----------------------------------------------------------------------------------------------*/
@@ -89,6 +92,23 @@ interface ToastProviderProps {
   announcerContainer?: Element | DocumentFragment | undefined;
 }
 
+/**
+ * Context updates from the toast provider reach every still-dehydrated Suspense
+ * boundary underneath it. React 18 cannot see inside those boundaries, so it
+ * treats the update as a reason to client-render them — even when the suspended
+ * tree never reads toast context. Publishing viewport and toast-count changes as
+ * transitions lets hydration finish first.
+ *
+ * @see https://github.com/radix-ui/primitives/issues/3301
+ */
+function scheduleUpdate(update: () => void) {
+  if (typeof startTransition === 'function') {
+    startTransition(update);
+  } else {
+    update();
+  }
+}
+
 const ToastProvider: React.FC<ToastProviderProps> = (props: ScopedProps<ToastProviderProps>) => {
   const {
     __scopeToast,
@@ -102,6 +122,15 @@ const ToastProvider: React.FC<ToastProviderProps> = (props: ScopedProps<ToastPro
   const [viewport, setViewport] = React.useState<ToastViewportElement | null>(null);
   const [toastCount, setToastCount] = React.useState(0);
   const isClosePausedRef = React.useRef(false);
+  const onViewportChange = React.useCallback((node: ToastViewportElement | null) => {
+    scheduleUpdate(() => setViewport(node));
+  }, []);
+  const onToastAdd = React.useCallback(() => {
+    scheduleUpdate(() => setToastCount((prevCount) => prevCount + 1));
+  }, []);
+  const onToastRemove = React.useCallback(() => {
+    scheduleUpdate(() => setToastCount((prevCount) => prevCount - 1));
+  }, []);
 
   if (!label.trim()) {
     console.error(
@@ -119,9 +148,9 @@ const ToastProvider: React.FC<ToastProviderProps> = (props: ScopedProps<ToastPro
         swipeThreshold={swipeThreshold}
         toastCount={toastCount}
         viewport={viewport}
-        onViewportChange={setViewport}
-        onToastAdd={React.useCallback(() => setToastCount((prevCount) => prevCount + 1), [])}
-        onToastRemove={React.useCallback(() => setToastCount((prevCount) => prevCount - 1), [])}
+        onViewportChange={onViewportChange}
+        onToastAdd={onToastAdd}
+        onToastRemove={onToastRemove}
         isClosePausedRef={isClosePausedRef}
         announcerContainer={announcerContainer}
       >
