@@ -369,6 +369,34 @@ describe('createCollection', () => {
       expect(maps.at(-1)).toBe(mapBeforeRerender);
     });
 
+    it('keeps the same map when the parent rerenders with memoized item data', () => {
+      const [MemoizedCollection, { useCollection: useMemoizedCollection }] = createCollection<
+        HTMLElement,
+        { onSelect: () => void; meta: { group: string } }
+      >('Memoized');
+      const maps: unknown[] = [];
+      function MemoizedSpy() {
+        maps.push(useMemoizedCollection(undefined));
+        return null;
+      }
+      function List({ count }: { count: number }) {
+        const onSelect = React.useCallback(() => {}, []);
+        const meta = React.useMemo(() => ({ group: 'a' }), []);
+        return (
+          <MemoizedCollection.Provider scope={undefined}>
+            <MemoizedCollection.ItemSlot scope={undefined} onSelect={onSelect} meta={meta}>
+              <div data-count={count} />
+            </MemoizedCollection.ItemSlot>
+            <MemoizedSpy />
+          </MemoizedCollection.Provider>
+        );
+      }
+      const { rerender } = render(<List count={1} />);
+      const mapBeforeRerender = maps.at(-1);
+      rerender(<List count={2} />);
+      expect(maps.at(-1)).toBe(mapBeforeRerender);
+    });
+
     it('replaces the map with a new instance when items change', () => {
       const maps: ItemMap[] = [];
       function List({ items }: { items: string[] }) {

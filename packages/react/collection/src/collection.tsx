@@ -32,6 +32,16 @@ type CollectionItemMap<ItemElement extends HTMLElement, ItemData> = ItemMap<
   ItemDataWithElement<ItemData & BaseItemData, ItemElement>
 >;
 
+/**
+ * Creates a collection that tracks its items in document order and exposes them
+ * during render via `useCollection`.
+ *
+ * Item data passed to `ItemSlot` (every prop other than `scope` and `children`)
+ * must be referentially stable across renders. It is compared shallowly, and any
+ * change re-registers the item and replaces the item map. Memoize objects,
+ * arrays and callbacks with `useMemo` / `useCallback`, or define them outside of
+ * render.
+ */
 /* @__NO_SIDE_EFFECTS__ */ function createCollection<
   ItemElement extends HTMLElement,
   ItemData extends {} = {},
@@ -170,6 +180,11 @@ type CollectionItemMap<ItemElement extends HTMLElement, ItemData> = ItemMap<
   };
 
   const CollectionItemSlotImpl = createSlot(ITEM_SLOT_NAME);
+  /**
+   * Registers its child element as a collection item. Every prop other than
+   * `scope` and `children` is item data and must be referentially stable across
+   * renders (see `createCollection`).
+   */
   const CollectionItemSlot = React.forwardRef<ItemElement, CollectionItemSlotProps>(
     (props, forwardedRef) => {
       const { scope, children, ...itemData } = props;
