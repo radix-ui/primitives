@@ -463,9 +463,7 @@ describe('createCollection', () => {
       expect(labelsOf(latestMap)).toEqual(['c', 'a', 'b']);
     });
 
-    // TODO: Fix. The add updater calls `map.set` on the previous state before
-    // copying it.
-    it.fails('does not modify the previous map when an item is added', () => {
+    it('does not modify the previous map when an item is added', () => {
       const maps: ItemMap[] = [];
       function List({ items }: { items: string[] }) {
         return (
@@ -486,9 +484,7 @@ describe('createCollection', () => {
       expect(labelsOf(mapBeforeAdd)).toEqual(['a', 'b']);
     });
 
-    // TODO: Fix. The cleanup updater calls `map.delete` on the previous state
-    // before copying it.
-    it.fails('does not modify the previous map when an item is removed', () => {
+    it('does not modify the previous map when an item is removed', () => {
       const maps: ItemMap[] = [];
       function List({ items }: { items: string[] }) {
         return (

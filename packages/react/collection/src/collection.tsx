@@ -205,8 +205,9 @@ type CollectionItemMap<ItemElement extends HTMLElement, ItemData> = ItemMap<
           }
 
           if (!map.has(element)) {
-            map.set(element, { ...(itemData as unknown as AllItemData), element });
-            return map.toSorted(sortByDocumentPosition);
+            const next = new OrderedDict(map);
+            next.set(element, { ...(itemData as unknown as AllItemData), element });
+            return next.sort(sortByDocumentPosition);
           }
 
           return map
@@ -219,8 +220,9 @@ type CollectionItemMap<ItemElement extends HTMLElement, ItemData> = ItemMap<
             if (!element || !map.has(element)) {
               return map;
             }
-            map.delete(element);
-            return new OrderedDict(map);
+            const next = new OrderedDict(map);
+            next.delete(element);
+            return next;
           });
         };
       }, [element, memoizedItemData, setItemMap]);
