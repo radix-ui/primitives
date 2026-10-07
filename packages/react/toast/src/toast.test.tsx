@@ -166,6 +166,137 @@ describe('timer cleanup', () => {
 describe('Toast.Root', () => {
   afterEach(cleanup);
 
+  it.each([
+    { expectedEvent: 'cancel', swipeDistance: 25 },
+    { expectedEvent: 'end', swipeDistance: 75 },
+  ] as const)(
+    'ends an active swipe with $expectedEvent when pointer capture is lost',
+    ({ expectedEvent, swipeDistance }) => {
+      const onSwipeStart = vi.fn();
+      const onSwipeCancel = vi.fn();
+      const onSwipeEnd = vi.fn();
+
+      render(
+        <Toast.Provider swipeThreshold={50}>
+          <Toast.Root
+            open
+            duration={Infinity}
+            data-testid="toast"
+            onSwipeStart={onSwipeStart}
+            onSwipeCancel={onSwipeCancel}
+            onSwipeEnd={onSwipeEnd}
+          >
+            <Toast.Title>Title</Toast.Title>
+          </Toast.Root>
+          <Toast.Viewport />
+        </Toast.Provider>,
+      );
+
+      const toast = screen.getByTestId('toast');
+      toast.setPointerCapture = vi.fn();
+
+      fireEvent.pointerDown(toast, { button: 0, clientX: 0, clientY: 0, pointerId: 1 });
+      fireEvent.pointerMove(toast, {
+        clientX: swipeDistance,
+        clientY: 0,
+        pointerId: 1,
+        pointerType: 'mouse',
+      });
+      fireEvent.lostPointerCapture(toast, { pointerId: 1 });
+
+      expect(onSwipeStart).toHaveBeenCalledOnce();
+      expect(onSwipeCancel).toHaveBeenCalledTimes(expectedEvent === 'cancel' ? 1 : 0);
+      expect(onSwipeEnd).toHaveBeenCalledTimes(expectedEvent === 'end' ? 1 : 0);
+      const endEvent = (expectedEvent === 'end' ? onSwipeEnd : onSwipeCancel).mock.calls[0]?.[0];
+      expect(endEvent).toMatchObject({ detail: { delta: { x: swipeDistance, y: 0 } } });
+      expect(toast).toHaveAttribute('data-swipe', expectedEvent);
+    },
+  );
+
+  it('finishes a swipe only once when releasing pointer capture', () => {
+    const onSwipeCancel = vi.fn();
+    const onSwipeEnd = vi.fn();
+
+    render(
+      <Toast.Provider swipeThreshold={50}>
+        <Toast.Root
+          open
+          duration={Infinity}
+          data-testid="toast"
+          onSwipeCancel={onSwipeCancel}
+          onSwipeEnd={onSwipeEnd}
+        >
+          <Toast.Title>Title</Toast.Title>
+        </Toast.Root>
+        <Toast.Viewport />
+      </Toast.Provider>,
+    );
+
+    const toast = screen.getByTestId('toast');
+    toast.setPointerCapture = vi.fn();
+    toast.hasPointerCapture = vi.fn(() => true);
+    toast.releasePointerCapture = vi.fn((pointerId: number) => {
+      fireEvent.lostPointerCapture(toast, { pointerId });
+    });
+    const onClick = vi.fn();
+    toast.addEventListener('click', onClick);
+
+    fireEvent.pointerDown(toast, { button: 0, clientX: 0, clientY: 0, pointerId: 1 });
+    fireEvent.pointerMove(toast, {
+      clientX: 75,
+      clientY: 0,
+      pointerId: 1,
+      pointerType: 'mouse',
+    });
+    fireEvent.pointerUp(toast, { pointerId: 1, pointerType: 'mouse' });
+    fireEvent.click(toast);
+
+    expect(toast.releasePointerCapture).toHaveBeenCalledWith(1);
+    expect(onSwipeEnd).toHaveBeenCalledOnce();
+    expect(onSwipeCancel).not.toHaveBeenCalled();
+    expect(onClick.mock.calls[0]?.[0]).toMatchObject({ defaultPrevented: true });
+  });
+
+  it('cancels an active swipe when the pointer is canceled', () => {
+    const onSwipeCancel = vi.fn();
+    const onSwipeEnd = vi.fn();
+
+    render(
+      <Toast.Provider swipeThreshold={50}>
+        <Toast.Root
+          open
+          duration={Infinity}
+          data-testid="toast"
+          onSwipeCancel={onSwipeCancel}
+          onSwipeEnd={onSwipeEnd}
+        >
+          <Toast.Title>Title</Toast.Title>
+        </Toast.Root>
+        <Toast.Viewport />
+      </Toast.Provider>,
+    );
+
+    const toast = screen.getByTestId('toast');
+    toast.setPointerCapture = vi.fn();
+
+    fireEvent.pointerDown(toast, { button: 0, clientX: 0, clientY: 0, pointerId: 1 });
+    fireEvent.pointerMove(toast, {
+      clientX: 75,
+      clientY: 0,
+      pointerId: 1,
+      pointerType: 'touch',
+    });
+    fireEvent.pointerCancel(toast, { pointerId: 1, pointerType: 'touch' });
+    fireEvent.lostPointerCapture(toast, { pointerId: 1, pointerType: 'touch' });
+
+    expect(onSwipeCancel).toHaveBeenCalledOnce();
+    expect(onSwipeCancel.mock.calls[0]?.[0]).toMatchObject({
+      detail: { delta: { x: 75, y: 0 } },
+    });
+    expect(onSwipeEnd).not.toHaveBeenCalled();
+    expect(toast).toHaveAttribute('data-swipe', 'cancel');
+  });
+
   it('spreads props it does not consume onto the element it renders', () => {
     const ref = React.createRef<HTMLLIElement>();
     const onClick = vi.fn();
