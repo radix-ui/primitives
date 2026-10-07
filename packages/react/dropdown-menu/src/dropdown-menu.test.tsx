@@ -1,7 +1,7 @@
 import * as React from 'react';
 import ReactDOM from 'react-dom';
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { afterEach, describe, it, expect, vi } from 'vitest';
+import { afterEach, beforeEach, describe, it, expect, vi } from 'vitest';
 import { assertStableComposedRef } from '@repo/test-utils/ref-stability';
 import * as DropdownMenu from './dropdown-menu';
 
@@ -130,6 +130,95 @@ describe('keys from focusable descendants', () => {
     item.focus();
     fireEvent.keyDown(item, { key: 'Enter' });
     await waitFor(() => expect(onSelect).toHaveBeenCalledTimes(1));
+  });
+});
+
+describe('given a modal DropdownMenu', () => {
+  afterEach(cleanupModal);
+
+  it('should aria-hide everything except the content while open', async () => {
+    const outside = document.createElement('button');
+    document.body.append(outside);
+
+    const { rerender } = render(<DropdownMenuTest open />);
+
+    const content = await waitFor(() => screen.getByRole('menu'));
+    expect(isAriaHiddenInComposedTree(content)).toBe(false);
+    expect(outside).toHaveAttribute('aria-hidden', 'true');
+
+    rerender(<DropdownMenuTest open={false} />);
+
+    expect(outside).not.toHaveAttribute('aria-hidden');
+    outside.remove();
+  });
+});
+
+// Regression test for https://github.com/radix-ui/primitives/issues/1772
+describe('given a modal DropdownMenu portalled into nested shadow roots', () => {
+  let outside: HTMLElement;
+  let outerHost: HTMLElement;
+  let outerSibling: HTMLElement;
+  let innerSibling: HTMLElement;
+  let container: HTMLElement;
+
+  beforeEach(() => {
+    outside = document.createElement('button');
+    outerHost = document.createElement('div');
+    document.body.append(outside, outerHost);
+
+    const outerShadowRoot = outerHost.attachShadow({ mode: 'open' });
+    outerSibling = document.createElement('button');
+    const innerHost = document.createElement('div');
+    outerShadowRoot.append(outerSibling, innerHost);
+
+    const innerShadowRoot = innerHost.attachShadow({ mode: 'open' });
+    innerSibling = document.createElement('button');
+    container = document.createElement('div');
+    innerShadowRoot.append(innerSibling, container);
+  });
+
+  afterEach(() => {
+    cleanupModal();
+    outside.remove();
+    outerHost.remove();
+  });
+
+  it('should aria-hide everything except the content while open', async () => {
+    const { rerender } = render(
+      <DropdownMenu.Root open>
+        <DropdownMenu.Trigger>{TRIGGER_TEXT}</DropdownMenu.Trigger>
+        <DropdownMenu.Portal container={container}>
+          <DropdownMenu.Content>
+            <DropdownMenu.Item>{ITEM_TEXT}</DropdownMenu.Item>
+          </DropdownMenu.Content>
+        </DropdownMenu.Portal>
+      </DropdownMenu.Root>,
+    );
+
+    const content = await waitFor(() => {
+      const menu = container.querySelector('[role="menu"]');
+      expect(menu).toBeInstanceOf(HTMLElement);
+      return menu!;
+    });
+    expect(isAriaHiddenInComposedTree(content)).toBe(false);
+    expect(outside).toHaveAttribute('aria-hidden', 'true');
+    expect(outerSibling).toHaveAttribute('aria-hidden', 'true');
+    expect(innerSibling).toHaveAttribute('aria-hidden', 'true');
+
+    rerender(
+      <DropdownMenu.Root open={false}>
+        <DropdownMenu.Trigger>{TRIGGER_TEXT}</DropdownMenu.Trigger>
+        <DropdownMenu.Portal container={container}>
+          <DropdownMenu.Content>
+            <DropdownMenu.Item>{ITEM_TEXT}</DropdownMenu.Item>
+          </DropdownMenu.Content>
+        </DropdownMenu.Portal>
+      </DropdownMenu.Root>,
+    );
+
+    expect(outside).not.toHaveAttribute('aria-hidden');
+    expect(outerSibling).not.toHaveAttribute('aria-hidden');
+    expect(innerSibling).not.toHaveAttribute('aria-hidden');
   });
 });
 
@@ -1202,4 +1291,17 @@ function cleanupModal() {
   cleanup();
   // Modal menus set this on the `body` and only restore it on close.
   document.body.style.pointerEvents = '';
+}
+
+// `aria-hidden` on a shadow host also hides its shadow tree, so we need to
+// cross shadow boundaries when looking for a hidden ancestor.
+function isAriaHiddenInComposedTree(node: Node) {
+  let current: Node | null = node;
+  while (current) {
+    if (current instanceof Element && current.getAttribute('aria-hidden') === 'true') {
+      return true;
+    }
+    current = current instanceof ShadowRoot ? current.host : current.parentNode;
+  }
+  return false;
 }

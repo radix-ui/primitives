@@ -246,6 +246,87 @@ describe('given a modal Dialog', () => {
     const zoomWheelPrevented = !fireEvent.wheel(content, { ctrlKey: true, deltaY: 10 });
     expect(zoomWheelPrevented).toBe(false);
   });
+
+  it('should aria-hide everything except the content while open', () => {
+    const outside = document.createElement('button');
+    document.body.append(outside);
+
+    const { rerender } = render(<DialogTest open />);
+
+    expect(isAriaHiddenInComposedTree(screen.getByRole('dialog'))).toBe(false);
+    expect(outside).toHaveAttribute('aria-hidden', 'true');
+
+    rerender(<DialogTest open={false} />);
+
+    expect(outside).not.toHaveAttribute('aria-hidden');
+    outside.remove();
+  });
+});
+
+// Regression test for https://github.com/radix-ui/primitives/issues/1772
+describe('given a modal Dialog portalled into nested shadow roots', () => {
+  let outside: HTMLElement;
+  let outerHost: HTMLElement;
+  let outerSibling: HTMLElement;
+  let innerSibling: HTMLElement;
+  let container: HTMLElement;
+
+  beforeEach(() => {
+    outside = document.createElement('button');
+    outerHost = document.createElement('div');
+    document.body.append(outside, outerHost);
+
+    const outerShadowRoot = outerHost.attachShadow({ mode: 'open' });
+    outerSibling = document.createElement('button');
+    const innerHost = document.createElement('div');
+    outerShadowRoot.append(outerSibling, innerHost);
+
+    const innerShadowRoot = innerHost.attachShadow({ mode: 'open' });
+    innerSibling = document.createElement('button');
+    container = document.createElement('div');
+    innerShadowRoot.append(innerSibling, container);
+  });
+
+  afterEach(() => {
+    cleanupModal();
+    outside.remove();
+    outerHost.remove();
+  });
+
+  it('should aria-hide everything except the content while open', () => {
+    const { rerender } = render(
+      <Dialog.Root open>
+        <Dialog.Portal container={container}>
+          <Dialog.Content>
+            <Dialog.Title>{TITLE_TEXT}</Dialog.Title>
+            <Dialog.Description>Description</Dialog.Description>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>,
+    );
+
+    const content = container.querySelector('[role="dialog"]')!;
+    expect(content).toBeInstanceOf(HTMLElement);
+    expect(isAriaHiddenInComposedTree(content)).toBe(false);
+    expect(outside).toHaveAttribute('aria-hidden', 'true');
+    expect(outerSibling).toHaveAttribute('aria-hidden', 'true');
+    expect(innerSibling).toHaveAttribute('aria-hidden', 'true');
+
+    rerender(
+      <Dialog.Root open={false}>
+        <Dialog.Portal container={container}>
+          <Dialog.Content>
+            <Dialog.Title>{TITLE_TEXT}</Dialog.Title>
+            <Dialog.Description>Description</Dialog.Description>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>,
+    );
+
+    expect(outside).not.toHaveAttribute('aria-hidden');
+    expect(outerSibling).not.toHaveAttribute('aria-hidden');
+    expect(innerSibling).not.toHaveAttribute('aria-hidden');
+  });
 });
 
 describe('given a Dialog with `asChild` on the Content', () => {
@@ -897,4 +978,17 @@ function cleanupModal() {
   cleanup();
   // Modal dialogs set this on the `body` and only restore it on close.
   document.body.style.pointerEvents = '';
+}
+
+// `aria-hidden` on a shadow host also hides its shadow tree, so we need to
+// cross shadow boundaries when looking for a hidden ancestor.
+function isAriaHiddenInComposedTree(node: Node) {
+  let current: Node | null = node;
+  while (current) {
+    if (current instanceof Element && current.getAttribute('aria-hidden') === 'true') {
+      return true;
+    }
+    current = current instanceof ShadowRoot ? current.host : current.parentNode;
+  }
+  return false;
 }

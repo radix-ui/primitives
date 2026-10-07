@@ -1,7 +1,7 @@
 import * as React from 'react';
 import type { RenderResult } from '@testing-library/react';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
-import { afterEach, describe, it, expect, vi } from 'vitest';
+import { afterEach, beforeEach, describe, it, expect, vi } from 'vitest';
 import * as Popover from './popover';
 
 const TRIGGER_TEXT = 'Open';
@@ -113,6 +113,87 @@ describe('Title and Description', () => {
     const content = openContent(rendered);
     expect(content).toHaveAttribute('aria-labelledby', rendered.getByText(TITLE_TEXT).id);
     expect(content).toHaveAttribute('aria-describedby', rendered.getByText(DESCRIPTION_TEXT).id);
+  });
+});
+
+describe('given a modal Popover', () => {
+  afterEach(cleanupModal);
+
+  it('should aria-hide everything except the content while open', () => {
+    const outside = document.createElement('button');
+    document.body.append(outside);
+
+    const { rerender } = render(<PopoverTest open modal />);
+
+    expect(isAriaHiddenInComposedTree(screen.getByRole('dialog'))).toBe(false);
+    expect(outside).toHaveAttribute('aria-hidden', 'true');
+
+    rerender(<PopoverTest open={false} modal />);
+
+    expect(outside).not.toHaveAttribute('aria-hidden');
+    outside.remove();
+  });
+});
+
+// Regression test for https://github.com/radix-ui/primitives/issues/1772
+describe('given a modal Popover portalled into nested shadow roots', () => {
+  let outside: HTMLElement;
+  let outerHost: HTMLElement;
+  let outerSibling: HTMLElement;
+  let innerSibling: HTMLElement;
+  let container: HTMLElement;
+
+  beforeEach(() => {
+    outside = document.createElement('button');
+    outerHost = document.createElement('div');
+    document.body.append(outside, outerHost);
+
+    const outerShadowRoot = outerHost.attachShadow({ mode: 'open' });
+    outerSibling = document.createElement('button');
+    const innerHost = document.createElement('div');
+    outerShadowRoot.append(outerSibling, innerHost);
+
+    const innerShadowRoot = innerHost.attachShadow({ mode: 'open' });
+    innerSibling = document.createElement('button');
+    container = document.createElement('div');
+    innerShadowRoot.append(innerSibling, container);
+  });
+
+  afterEach(() => {
+    cleanupModal();
+    outside.remove();
+    outerHost.remove();
+  });
+
+  it('should aria-hide everything except the content while open', () => {
+    const { rerender } = render(
+      <Popover.Root open modal>
+        <Popover.Trigger>{TRIGGER_TEXT}</Popover.Trigger>
+        <Popover.Portal container={container}>
+          <Popover.Content>{CONTENT_TEXT}</Popover.Content>
+        </Popover.Portal>
+      </Popover.Root>,
+    );
+
+    const content = container.querySelector('[role="dialog"]')!;
+    expect(content).toBeInstanceOf(HTMLElement);
+    expect(isAriaHiddenInComposedTree(content)).toBe(false);
+    expect(outside).toHaveAttribute('aria-hidden', 'true');
+    expect(outerSibling).toHaveAttribute('aria-hidden', 'true');
+    expect(innerSibling).toHaveAttribute('aria-hidden', 'true');
+
+    rerender(
+      <Popover.Root open={false} modal>
+        <Popover.Trigger>{TRIGGER_TEXT}</Popover.Trigger>
+        <Popover.Portal container={container}>
+          <Popover.Content>{CONTENT_TEXT}</Popover.Content>
+        </Popover.Portal>
+      </Popover.Root>,
+    );
+
+    expect(outside).not.toHaveAttribute('aria-hidden');
+    expect(outerSibling).not.toHaveAttribute('aria-hidden');
+    expect(innerSibling).not.toHaveAttribute('aria-hidden');
   });
 });
 
@@ -703,4 +784,17 @@ function cleanupModal() {
   cleanup();
   // A modal popover sets this on the `body` and only restores it on close.
   document.body.style.pointerEvents = '';
+}
+
+// `aria-hidden` on a shadow host also hides its shadow tree, so we need to
+// cross shadow boundaries when looking for a hidden ancestor.
+function isAriaHiddenInComposedTree(node: Node) {
+  let current: Node | null = node;
+  while (current) {
+    if (current instanceof Element && current.getAttribute('aria-hidden') === 'true') {
+      return true;
+    }
+    current = current instanceof ShadowRoot ? current.host : current.parentNode;
+  }
+  return false;
 }
