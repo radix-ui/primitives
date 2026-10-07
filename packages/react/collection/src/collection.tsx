@@ -27,6 +27,11 @@ type ItemMap<ItemElement extends HTMLElement, ItemData extends BaseItemData> = O
   ItemDataWithElement<ItemData, ItemElement>
 >;
 
+type CollectionItemMap<ItemElement extends HTMLElement, ItemData> = ItemMap<
+  ItemElement,
+  ItemDataWithElement<ItemData & BaseItemData, ItemElement>
+>;
+
 /* @__NO_SIDE_EFFECTS__ */ function createCollection<
   ItemElement extends HTMLElement,
   ItemData extends {} = {},
@@ -261,7 +266,7 @@ type ItemMap<ItemElement extends HTMLElement, ItemData extends BaseItemData> = O
 }
 
 export { createCollection };
-export type { CollectionProps };
+export type { CollectionProps, CollectionItemMap };
 
 function shallowEqual(a: any, b: any) {
   if (a === b) return true;
