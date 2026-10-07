@@ -432,9 +432,7 @@ describe('createCollection', () => {
       expect([...latestMap!.keys()].every((element) => element.isConnected)).toBe(true);
     });
 
-    // TODO: Fix. The map is only sorted when an item mounts, so keyed reorders
-    // that move DOM nodes without remounting leave the map in the old order.
-    it.fails('reorders items when React moves them in the DOM', async () => {
+    it('reorders items when React moves them in the DOM', async () => {
       let latestMap: ItemMap | undefined;
       function List({ items }: { items: string[] }) {
         return (
@@ -461,6 +459,61 @@ describe('createCollection', () => {
         'b',
       ]);
       expect(labelsOf(latestMap)).toEqual(['c', 'a', 'b']);
+    });
+
+    it('reorders nested items when their wrappers move in the DOM', async () => {
+      let latestMap: ItemMap | undefined;
+      function List({ items }: { items: string[] }) {
+        return (
+          <Collection.Provider scope={undefined}>
+            <Collection.Slot scope={undefined}>
+              <div>
+                {items.map((item) => (
+                  <section key={item}>
+                    <Collection.ItemSlot scope={undefined} label={item}>
+                      <div />
+                    </Collection.ItemSlot>
+                  </section>
+                ))}
+              </div>
+            </Collection.Slot>
+            <CollectionSpy onRender={(map) => (latestMap = map)} />
+          </Collection.Provider>
+        );
+      }
+      const { rerender } = render(<List items={['a', 'b', 'c']} />);
+      rerender(<List items={['b', 'c', 'a']} />);
+      await act(async () => {});
+      expect(labelsOf(latestMap)).toEqual(['b', 'c', 'a']);
+    });
+
+    it('keeps the same map when the DOM changes without reordering items', async () => {
+      const maps: ItemMap[] = [];
+      function List({ showExtra }: { showExtra: boolean }) {
+        return (
+          <Collection.Provider scope={undefined}>
+            <Collection.Slot scope={undefined}>
+              <ul>
+                <Collection.ItemSlot scope={undefined} label="a">
+                  <li>a</li>
+                </Collection.ItemSlot>
+                {showExtra ? <li>not an item</li> : null}
+                <Collection.ItemSlot scope={undefined} label="b">
+                  <li>b</li>
+                </Collection.ItemSlot>
+              </ul>
+            </Collection.Slot>
+            <CollectionSpy onRender={(map) => maps.push(map)} />
+          </Collection.Provider>
+        );
+      }
+      const { rerender } = render(<List showExtra={false} />);
+      await act(async () => {});
+      const mapBeforeChange = maps.at(-1);
+      rerender(<List showExtra />);
+      await act(async () => {});
+      expect(maps.at(-1)).toBe(mapBeforeChange);
+      expect(labelsOf(maps.at(-1))).toEqual(['a', 'b']);
     });
 
     it('does not modify the previous map when an item is added', () => {

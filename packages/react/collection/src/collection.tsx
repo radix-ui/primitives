@@ -107,23 +107,12 @@ type CollectionItemMap<ItemElement extends HTMLElement, ItemData> = ItemMap<
       if (!collectionElement) return;
 
       const observer = getChildListObserver(() => {
-        // setItemMap((map) => {
-        //   const copy = new OrderedDict(map).toSorted(([, a], [, b]) =>
-        //     !a.element || !b.element ? 0 : isElementPreceding(a.element, b.element) ? -1 : 1
-        //   );
-        //   // check if the order has changed
-        //   let index = -1;
-        //   for (const entry of copy) {
-        //     index++;
-        //     const key = map.keyAt(index)!;
-        //     const [copyKey] = entry;
-        //     if (key !== copyKey) {
-        //       // order has changed!
-        //       return copy;
-        //     }
-        //   }
-        //   return map;
-        // });
+        setItemMap((map) => {
+          const sorted = map.toSorted(sortByDocumentPosition);
+          const orderChanged = sorted.some(([key], index) => map.keyAt(index) !== key);
+
+          return orderChanged ? sorted : map;
+        });
       });
       observer.observe(collectionElement, {
         childList: true,
@@ -132,7 +121,7 @@ type CollectionItemMap<ItemElement extends HTMLElement, ItemData> = ItemMap<
       return () => {
         observer.disconnect();
       };
-    }, [collectionElement]);
+    }, [collectionElement, setItemMap]);
 
     return (
       <CollectionContextProvider
