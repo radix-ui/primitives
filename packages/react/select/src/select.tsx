@@ -785,8 +785,6 @@ const SelectContentImpl = /* @__PURE__ */ React.forwardRef<
 
     const itemRefCallback = React.useCallback(
       (node: SelectItemElement | null, value: string, disabled: boolean) => {
-        if (!node) return;
-
         const isFirstItem = !firstItemFoundRef.current;
         if (isFirstItem) firstItemFoundRef.current = true;
 

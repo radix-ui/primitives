@@ -147,7 +147,7 @@ describe('clearing an optional value (#2706)', () => {
 describe('given all select items are disabled', () => {
   afterEach(cleanup);
 
-  it('should still render visible content when opened', async () => {
+  it('positions content relative to the trigger', async () => {
     render(
       <Select.Root defaultOpen>
         <Select.Trigger aria-label="Choice">
