@@ -385,7 +385,6 @@ export class OrderedDict<K, V> extends Map<K, V> {
       throw new TypeError(`OrderedDict.toSorted requires a compare function`);
     }
     const entries = [...this.entries()].sort(compareFn);
-    [].toSorted();
     return new OrderedDict(entries);
   }
 
