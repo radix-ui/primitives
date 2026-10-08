@@ -353,7 +353,37 @@ export class OrderedDict<K, V> extends Map<K, V> {
     return accumulator;
   }
 
-  toSorted(compareFn?: (a: [K, V], b: [K, V]) => number): OrderedDict<K, V> {
+  /**
+   * Sorts the dictionary in place. This method mutates the dictionary and
+   * returns a reference to the same object
+   *
+   * @param compareFn Function used to determine the order of the elements. It
+   * is expected to return a negative value if the first argument is less than
+   * the second argument, zero if they're equal, and a positive value otherwise.
+   */
+  sort(compareFn: (a: [K, V], b: [K, V]) => number): OrderedDict<K, V> {
+    if (typeof compareFn !== 'function') {
+      throw new TypeError(`OrderedDict.sort requires a compare function`);
+    }
+    const entries = [...this.entries()].sort(compareFn);
+    this.clear();
+    for (const [key, value] of entries) {
+      this.set(key, value);
+    }
+    return this;
+  }
+
+  /**
+   * Returns a copy of the dictionary with its elements sorted.
+   *
+   * @param compareFn Function used to determine the order of the elements. It
+   * is expected to return a negative value if the first argument is less than
+   * the second argument, zero if they're equal, and a positive value otherwise.
+   */
+  toSorted(compareFn: (a: [K, V], b: [K, V]) => number): OrderedDict<K, V> {
+    if (typeof compareFn !== 'function') {
+      throw new TypeError(`OrderedDict.toSorted requires a compare function`);
+    }
     const entries = [...this.entries()].sort(compareFn);
     return new OrderedDict(entries);
   }

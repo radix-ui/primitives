@@ -163,3 +163,70 @@ function LogItems({ name = 'items' }: { name?: string }) {
   React.useEffect(() => console.log(name, getItems()));
   return null;
 }
+
+const [TransitionCollection, { useCollection: useTransitionCollection }] =
+  CollectionPrimitive.unstable_createCollection<HTMLLIElement, { label: string }>('TransitionList');
+
+const INITIAL_FRUITS = ['Apple', 'Banana', 'Cherry'];
+
+export const ViewTransitionReorder = () => {
+  const [fruits, setFruits] = React.useState(INITIAL_FRUITS);
+  return (
+    <>
+      <button
+        onClick={() => {
+          React.startTransition(() => {
+            setFruits((current) => current.toReversed());
+          });
+        }}
+      >
+        Reverse
+      </button>
+      <button
+        onClick={() => {
+          React.startTransition(() => {
+            setFruits((current) => current.slice(1));
+          });
+        }}
+        style={{ marginLeft: 10 }}
+      >
+        Remove first
+      </button>
+      <button
+        onClick={() => {
+          React.startTransition(() => {
+            setFruits(INITIAL_FRUITS);
+          });
+        }}
+        style={{ marginLeft: 10 }}
+      >
+        Reset
+      </button>
+
+      <TransitionCollection.Provider scope={undefined}>
+        <TransitionCollection.Slot scope={undefined}>
+          <ul style={{ width: 200 }}>
+            {fruits.map((fruit) => (
+              <React.ViewTransition key={fruit}>
+                <TransitionItem label={fruit} />
+              </React.ViewTransition>
+            ))}
+          </ul>
+        </TransitionCollection.Slot>
+      </TransitionCollection.Provider>
+    </>
+  );
+};
+
+function TransitionItem({ label }: { label: string }) {
+  const collection = useTransitionCollection(undefined);
+  const [element, setElement] = React.useState<HTMLLIElement | null>(null);
+  const position = element ? collection.indexOf(element) + 1 : 0;
+  return (
+    <TransitionCollection.ItemSlot scope={undefined} label={label}>
+      <li ref={setElement} data-fruit={label}>
+        {label} <span data-position="">{`${position} of ${collection.size}`}</span>
+      </li>
+    </TransitionCollection.ItemSlot>
+  );
+}

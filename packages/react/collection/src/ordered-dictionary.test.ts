@@ -1307,6 +1307,115 @@ describe('OrderedDict', () => {
     });
   });
 
+  describe('sort', () => {
+    it('sorts the dictionary in place', () => {
+      const dict = new OrderedDict([
+        ['b', 2],
+        ['c', 3],
+        ['a', 1],
+      ]);
+      dict.sort(([, a], [, b]) => a - b);
+      expectEntries(dict, [
+        ['a', 1],
+        ['b', 2],
+        ['c', 3],
+      ]);
+    });
+
+    it('returns the same instance', () => {
+      const dict = new OrderedDict([
+        ['b', 2],
+        ['a', 1],
+      ]);
+      const result = dict.sort(([, a], [, b]) => a - b);
+      expect(result).toBe(dict);
+    });
+
+    it('sorts by key when using a key comparator', () => {
+      const dict = new OrderedDict([
+        ['c', 1],
+        ['a', 2],
+        ['b', 3],
+      ]);
+      dict.sort(([a], [b]) => a.localeCompare(b));
+      expectEntries(dict, [
+        ['a', 2],
+        ['b', 3],
+        ['c', 1],
+      ]);
+    });
+
+    it('throws without a compare function and leaves the dictionary unchanged', () => {
+      const dict = new OrderedDict([
+        ['b', 2],
+        ['a', 1],
+      ]);
+      // @ts-expect-error compareFn is required
+      expect(() => dict.sort()).toThrow(
+        new TypeError('OrderedDict.sort requires a compare function'),
+      );
+      // @ts-expect-error compareFn must be a function
+      expect(() => dict.sort(null)).toThrow(TypeError);
+      expectEntries(dict, [
+        ['b', 2],
+        ['a', 1],
+      ]);
+    });
+
+    it('keeps the existing order of entries that compare as equal', () => {
+      const dict = new OrderedDict([
+        ['d', 2],
+        ['a', 1],
+        ['c', 2],
+        ['b', 1],
+      ]);
+      dict.sort(([, a], [, b]) => a - b);
+      expectEntries(dict, [
+        ['a', 1],
+        ['b', 1],
+        ['d', 2],
+        ['c', 2],
+      ]);
+    });
+
+    it('leaves an empty dictionary empty', () => {
+      const dict = new OrderedDict<string, number>();
+      dict.sort(([, a], [, b]) => a - b);
+      expectEntries(dict, []);
+    });
+
+    it('leaves the dictionary unchanged when the comparator throws', () => {
+      const dict = new OrderedDict([
+        ['b', 2],
+        ['a', 1],
+      ]);
+      expect(() =>
+        dict.sort(() => {
+          throw new Error('comparator failed');
+        }),
+      ).toThrow('comparator failed');
+      expectEntries(dict, [
+        ['b', 2],
+        ['a', 1],
+      ]);
+    });
+
+    it('appends keys added after sorting', () => {
+      const dict = new OrderedDict([
+        ['b', 2],
+        ['a', 1],
+      ]);
+      dict.sort(([, a], [, b]) => a - b);
+      dict.set('z', 0);
+      dict.set('a', 10);
+      expectEntries(dict, [
+        ['a', 10],
+        ['b', 2],
+        ['z', 0],
+      ]);
+    });
+  });
+
   describe('toSorted', () => {
     it('returns a sorted copy without modifying the original', () => {
       const dict = new OrderedDict([
@@ -1325,6 +1434,16 @@ describe('OrderedDict', () => {
         ['c', 3],
         ['a', 1],
       ]);
+    });
+
+    it('throws without a compare function', () => {
+      const dict = new OrderedDict([['a', 1]]);
+      // @ts-expect-error compareFn is required
+      expect(() => dict.toSorted()).toThrow(
+        new TypeError('OrderedDict.toSorted requires a compare function'),
+      );
+      // @ts-expect-error compareFn must be a function
+      expect(() => dict.toSorted(null)).toThrow(TypeError);
     });
   });
 

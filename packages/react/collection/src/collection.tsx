@@ -27,6 +27,21 @@ type ItemMap<ItemElement extends HTMLElement, ItemData extends BaseItemData> = O
   ItemDataWithElement<ItemData, ItemElement>
 >;
 
+type CollectionItemMap<ItemElement extends HTMLElement, ItemData> = ItemMap<
+  ItemElement,
+  ItemDataWithElement<ItemData & BaseItemData, ItemElement>
+>;
+
+/**
+ * Creates a collection that tracks its items in document order and exposes them
+ * during render via `useCollection`.
+ *
+ * Item data passed to `ItemSlot` (every prop other than `scope` and `children`)
+ * must be referentially stable across renders. It is compared shallowly, and any
+ * change re-registers the item and replaces the item map. Memoize objects,
+ * arrays and callbacks with `useMemo` / `useCallback`, or define them outside of
+ * render.
+ */
 /* @__NO_SIDE_EFFECTS__ */ function createCollection<
   ItemElement extends HTMLElement,
   ItemData extends {} = {},
@@ -102,23 +117,12 @@ type ItemMap<ItemElement extends HTMLElement, ItemData extends BaseItemData> = O
       if (!collectionElement) return;
 
       const observer = getChildListObserver(() => {
-        // setItemMap((map) => {
-        //   const copy = new OrderedDict(map).toSorted(([, a], [, b]) =>
-        //     !a.element || !b.element ? 0 : isElementPreceding(a.element, b.element) ? -1 : 1
-        //   );
-        //   // check if the order has changed
-        //   let index = -1;
-        //   for (const entry of copy) {
-        //     index++;
-        //     const key = map.keyAt(index)!;
-        //     const [copyKey] = entry;
-        //     if (key !== copyKey) {
-        //       // order has changed!
-        //       return copy;
-        //     }
-        //   }
-        //   return map;
-        // });
+        setItemMap((map) => {
+          const sorted = map.toSorted(sortByDocumentPosition);
+          const orderChanged = sorted.some(([key], index) => map.keyAt(index) !== key);
+
+          return orderChanged ? sorted : map;
+        });
       });
       observer.observe(collectionElement, {
         childList: true,
@@ -127,7 +131,7 @@ type ItemMap<ItemElement extends HTMLElement, ItemData extends BaseItemData> = O
       return () => {
         observer.disconnect();
       };
-    }, [collectionElement]);
+    }, [collectionElement, setItemMap]);
 
     return (
       <CollectionContextProvider
@@ -176,6 +180,11 @@ type ItemMap<ItemElement extends HTMLElement, ItemData extends BaseItemData> = O
   };
 
   const CollectionItemSlotImpl = createSlot(ITEM_SLOT_NAME);
+  /**
+   * Registers its child element as a collection item. Every prop other than
+   * `scope` and `children` is item data and must be referentially stable across
+   * renders (see `createCollection`).
+   */
   const CollectionItemSlot = React.forwardRef<ItemElement, CollectionItemSlotProps>(
     (props, forwardedRef) => {
       const { scope, children, ...itemData } = props;
@@ -200,8 +209,9 @@ type ItemMap<ItemElement extends HTMLElement, ItemData extends BaseItemData> = O
           }
 
           if (!map.has(element)) {
-            map.set(element, { ...(itemData as unknown as AllItemData), element });
-            return map.toSorted(sortByDocumentPosition);
+            const next = new OrderedDict(map);
+            next.set(element, { ...(itemData as unknown as AllItemData), element });
+            return next.sort(sortByDocumentPosition);
           }
 
           return map
@@ -214,8 +224,9 @@ type ItemMap<ItemElement extends HTMLElement, ItemData extends BaseItemData> = O
             if (!element || !map.has(element)) {
               return map;
             }
-            map.delete(element);
-            return new OrderedDict(map);
+            const next = new OrderedDict(map);
+            next.delete(element);
+            return next;
           });
         };
       }, [element, memoizedItemData, setItemMap]);
@@ -261,7 +272,7 @@ type ItemMap<ItemElement extends HTMLElement, ItemData extends BaseItemData> = O
 }
 
 export { createCollection };
-export type { CollectionProps };
+export type { CollectionProps, CollectionItemMap };
 
 function shallowEqual(a: any, b: any) {
   if (a === b) return true;
