@@ -842,6 +842,7 @@ const NavigationMenuContent = /* @__PURE__ */ React.forwardRef<
   const itemContext = useNavigationMenuItemContext(CONTENT_NAME, props.__scopeNavigationMenu);
   const composedRefs = useComposedRefs(itemContext.contentRef, forwardedRef);
   const open = itemContext.value === context.value;
+  const openState = getOpenState(open);
 
   const commonProps = {
     value: itemContext.value,
@@ -856,7 +857,7 @@ const NavigationMenuContent = /* @__PURE__ */ React.forwardRef<
   return !context.viewport ? (
     <Presence present={forceMount || open}>
       <NavigationMenuContentImpl
-        data-state={getOpenState(open)}
+        data-state={openState}
         {...commonProps}
         ref={composedRefs}
         onPointerEnter={composeEventHandlers(props.onPointerEnter, context.onContentEnter)}
@@ -872,7 +873,7 @@ const NavigationMenuContent = /* @__PURE__ */ React.forwardRef<
       />
     </Presence>
   ) : (
-    <ViewportContentMounter forceMount={forceMount} {...commonProps} ref={composedRefs} />
+    <ViewportContentMounter data-state={openState} forceMount={forceMount} {...commonProps} ref={composedRefs} />
   );
 });
 
