@@ -280,9 +280,14 @@ const PopoverContentModal = /* @__PURE__ */ React.forwardRef<
     const { nodes: branchNodes, registry: branchRegistry } = useFocusScopeBranchRegistry();
 
     // aria-hide everything except the content (better supported equivalent to setting aria-modal)
+    // Also exclude focus guards so they remain accessible to screen readers despite being
+    // siblings of the portal — otherwise tabindex="0" + aria-hidden="true" violates WCAG 2.1.1.
     React.useEffect(() => {
       const content = contentRef.current;
-      if (content) return hideOthers(content);
+      if (content) {
+        const focusGuards = Array.from(document.querySelectorAll('[data-radix-focus-guard]'));
+        return hideOthers([content, ...focusGuards]);
+      }
     }, []);
 
     return (
