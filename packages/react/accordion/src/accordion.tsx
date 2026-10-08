@@ -38,7 +38,7 @@ type Direction = (typeof Direction)[keyof typeof Direction];
 const ACCORDION_NAME = 'Accordion';
 const ACCORDION_KEYS = ['Home', 'End', 'ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight'];
 
-const [Collection, { useCollection, createCollectionScope }] =
+const [Collection, { useGetCollection, createCollectionScope }] =
   createCollection<AccordionTriggerElement>(ACCORDION_NAME);
 
 type ScopedProps<P> = P & { __scopeAccordion?: Scope | undefined };
@@ -258,7 +258,7 @@ const AccordionImpl = /* @__PURE__ */ React.forwardRef<AccordionImplElement, Acc
     } = props;
     const accordionRef = React.useRef<AccordionImplElement>(null);
     const composedRefs = useComposedRefs(accordionRef, forwardedRef);
-    const collection = useCollection(__scopeAccordion);
+    const getCollection = useGetCollection(__scopeAccordion);
     const direction = useDirection(dir);
     const isDirectionLTR = direction === Direction.LTR;
 
@@ -266,6 +266,7 @@ const AccordionImpl = /* @__PURE__ */ React.forwardRef<AccordionImplElement, Acc
       if (!ACCORDION_KEYS.includes(event.key)) {
         return;
       }
+      const collection = getCollection();
       const target = event.target as HTMLElement;
       const triggerCollection = collection.filter(([, item]) => !item.element.disabled);
       const triggerIndex = triggerCollection.findIndex(([, item]) => item.element === target);
