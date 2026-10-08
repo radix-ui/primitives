@@ -34,6 +34,9 @@
     "typecheck": "tsc --noEmit",
     "build": "radix-build"
   },
+  "dependencies": {
+    "@radix-ui/react-use-layout-effect": "workspace:*"
+  },
   "devDependencies": {
     "@repo/builder": "workspace:*",
     "@repo/typescript-config": "workspace:*",
