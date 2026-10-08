@@ -1,12 +1,13 @@
 import { expect, test, type Page } from '@playwright/test';
 import { visitStoryById } from './helpers';
 
-type ViewTransitionRecord = { snapshot: string[] | null };
+type ViewTransitionRecord = { firstAnimationFrame: string[] | null };
 
 /**
  * Wraps `document.startViewTransition` so each transition records the item
- * text at the moment the browser captures the "after" snapshot, which happens
- * once the update callback settles.
+ * text in the first frame after the animation starts. The browser renders the
+ * live DOM as the "new" view while the animation runs, so this is what users
+ * see for nearly the whole transition.
  */
 async function recordViewTransitions(page: Page) {
   await page.addInitScript(() => {
@@ -17,21 +18,31 @@ async function recordViewTransitions(page: Page) {
       return;
     }
     document.startViewTransition = ((options: any) => {
-      const update = typeof options === 'function' ? options : options?.update;
-      const record: ViewTransitionRecord = { snapshot: null };
+      const record: ViewTransitionRecord = { firstAnimationFrame: null };
       records.push(record);
-      const recordingUpdate = async () => {
-        await update?.();
-        record.snapshot = Array.from(
-          document.querySelectorAll('[data-fruit]'),
-          (item) => item.textContent ?? '',
-        );
-      };
-      return startViewTransition(
-        typeof options === 'function' ? recordingUpdate : { ...options, update: recordingUpdate },
+      const transition = startViewTransition(options);
+      transition.ready.then(
+        () => {
+          requestAnimationFrame(() => {
+            record.firstAnimationFrame = Array.from(
+              document.querySelectorAll('[data-fruit]'),
+              (item) => item.textContent ?? '',
+            );
+          });
+        },
+        () => {},
       );
+      return transition;
     }) as typeof document.startViewTransition;
   });
+}
+
+async function getFirstAnimationFrame(page: Page) {
+  await expect
+    .poll(async () => (await getViewTransitionRecords(page))[0]?.firstAnimationFrame ?? null)
+    .not.toBeNull();
+  const [record] = await getViewTransitionRecords(page);
+  return record?.firstAnimationFrame;
 }
 
 function getViewTransitionRecords(page: Page) {
@@ -54,9 +65,15 @@ test.describe('Collection', () => {
       ]);
     });
 
-    test('should animate a reorder and settle on up-to-date positions', async ({ page }) => {
+    test('should show up-to-date positions from the first frame of a reorder animation', async ({
+      page,
+    }) => {
       await page.getByRole('button', { name: 'Reverse' }).click();
-      await expect.poll(async () => (await getViewTransitionRecords(page)).length).toBe(1);
+      expect(await getFirstAnimationFrame(page)).toEqual([
+        'Cherry 1 of 3',
+        'Banana 2 of 3',
+        'Apple 3 of 3',
+      ]);
       await expect(page.locator('[data-fruit]')).toHaveText([
         'Cherry 1 of 3',
         'Banana 2 of 3',
@@ -64,28 +81,12 @@ test.describe('Collection', () => {
       ]);
     });
 
-    test('should animate a removal and settle on up-to-date positions', async ({ page }) => {
+    test('should show up-to-date positions from the first frame of a removal animation', async ({
+      page,
+    }) => {
       await page.getByRole('button', { name: 'Remove first' }).click();
-      await expect.poll(async () => (await getViewTransitionRecords(page)).length).toBe(1);
+      expect(await getFirstAnimationFrame(page)).toEqual(['Banana 1 of 2', 'Cherry 2 of 2']);
       await expect(page.locator('[data-fruit]')).toHaveText(['Banana 1 of 2', 'Cherry 2 of 2']);
     });
-
-    // Known limitation: items register and re-sort in effects and a
-    // MutationObserver, which update the collection in a commit after the
-    // animated one. UI derived from the collection is stale in the view
-    // transition's "after" snapshot and only updates once the animation runs.
-    test.fail(
-      'should include up-to-date positions in the view transition snapshot',
-      async ({ page }) => {
-        await page.getByRole('button', { name: 'Reverse' }).click();
-        await expect
-          .poll(async () => (await getViewTransitionRecords(page))[0]?.snapshot ?? null, {
-            timeout: 5_000,
-          })
-          .not.toBeNull();
-        const [record] = await getViewTransitionRecords(page);
-        expect(record?.snapshot).toEqual(['Cherry 1 of 3', 'Banana 2 of 3', 'Apple 3 of 3']);
-      },
-    );
   });
 });
