@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { renderToString } from 'react-dom/server';
 import { act, cleanup, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { type CollectionItemMap, createCollection } from './collection';
@@ -141,6 +142,20 @@ describe('createCollection', () => {
       expect(map.indexOf(screen.getByTestId('b'))).toBe(1);
       expect(map.from(screen.getByTestId('b'), 1)?.label).toBe('c');
       expect(map.from(screen.getByTestId('b'), -1)?.label).toBe('a');
+    });
+
+    it('returns an empty map during server rendering', () => {
+      let latestMap: ItemMap | undefined;
+      const html = renderToString(
+        <Collection.Provider scope={undefined}>
+          <Collection.ItemSlot scope={undefined} label="a">
+            <div data-testid="a" />
+          </Collection.ItemSlot>
+          <CollectionSpy onRender={(map) => (latestMap = map)} />
+        </Collection.Provider>,
+      );
+      expect(html).toContain('data-radix-collection-item');
+      expect(latestMap?.size).toBe(0);
     });
   });
 
@@ -584,6 +599,141 @@ describe('createCollection', () => {
       rerender(<List items={['a', 'b']} />);
       expect(labelsOf(maps.at(-1))).toEqual(['a', 'b']);
       expect(labelsOf(mapBeforeRemove)).toEqual(['a', 'b', 'c']);
+    });
+  });
+
+  describe('React features', () => {
+    it('registers items inside a Suspense boundary once it resolves', async () => {
+      let resolve!: () => void;
+      const promise = new Promise<void>((resolvePromise) => {
+        resolve = resolvePromise;
+      });
+      function Deferred({ children }: { children: React.ReactNode }) {
+        React.use(promise);
+        return children;
+      }
+      let latestMap: ItemMap | undefined;
+      await act(async () => {
+        render(
+          <Collection.Provider scope={undefined}>
+            <Collection.ItemSlot scope={undefined} label="a">
+              <div />
+            </Collection.ItemSlot>
+            <React.Suspense fallback={<span>loading</span>}>
+              <Deferred>
+                <Collection.ItemSlot scope={undefined} label="b">
+                  <div />
+                </Collection.ItemSlot>
+              </Deferred>
+            </React.Suspense>
+            <Collection.ItemSlot scope={undefined} label="c">
+              <div />
+            </Collection.ItemSlot>
+            <CollectionSpy onRender={(map) => (latestMap = map)} />
+          </Collection.Provider>,
+        );
+      });
+      expect(screen.getByText('loading')).toBeInTheDocument();
+      expect(labelsOf(latestMap)).toEqual(['a', 'c']);
+
+      await act(async () => {
+        resolve();
+        await promise;
+      });
+      expect(screen.queryByText('loading')).not.toBeInTheDocument();
+      expect(labelsOf(latestMap)).toEqual(['a', 'b', 'c']);
+    });
+
+    it('removes items while inside a hidden Activity and restores them when visible', () => {
+      let latestMap: ItemMap | undefined;
+      function List({ mode }: { mode: 'visible' | 'hidden' }) {
+        return (
+          <Collection.Provider scope={undefined}>
+            <Collection.ItemSlot scope={undefined} label="a">
+              <div />
+            </Collection.ItemSlot>
+            <React.Activity mode={mode}>
+              <Collection.ItemSlot scope={undefined} label="b">
+                <div />
+              </Collection.ItemSlot>
+            </React.Activity>
+            <Collection.ItemSlot scope={undefined} label="c">
+              <div />
+            </Collection.ItemSlot>
+            <CollectionSpy onRender={(map) => (latestMap = map)} />
+          </Collection.Provider>
+        );
+      }
+      const { rerender } = render(<List mode="visible" />);
+      expect(labelsOf(latestMap)).toEqual(['a', 'b', 'c']);
+
+      rerender(<List mode="hidden" />);
+      expect(labelsOf(latestMap)).toEqual(['a', 'c']);
+
+      rerender(<List mode="visible" />);
+      expect(labelsOf(latestMap)).toEqual(['a', 'b', 'c']);
+    });
+
+    it('registers items inside an initially hidden Activity once it becomes visible', () => {
+      let latestMap: ItemMap | undefined;
+      function List({ mode }: { mode: 'visible' | 'hidden' }) {
+        return (
+          <Collection.Provider scope={undefined}>
+            <Collection.ItemSlot scope={undefined} label="a">
+              <div />
+            </Collection.ItemSlot>
+            <React.Activity mode={mode}>
+              <Collection.ItemSlot scope={undefined} label="b">
+                <div />
+              </Collection.ItemSlot>
+            </React.Activity>
+            <Collection.ItemSlot scope={undefined} label="c">
+              <div />
+            </Collection.ItemSlot>
+            <CollectionSpy onRender={(map) => (latestMap = map)} />
+          </Collection.Provider>
+        );
+      }
+      const { rerender } = render(<List mode="hidden" />);
+      expect(labelsOf(latestMap)).toEqual(['a', 'c']);
+
+      rerender(<List mode="visible" />);
+      expect(labelsOf(latestMap)).toEqual(['a', 'b', 'c']);
+    });
+
+    it('reorders items when the reorder happens in a transition', async () => {
+      let setItems!: (items: string[]) => void;
+      let latestMap: ItemMap | undefined;
+      function List() {
+        const [items, setItemsState] = React.useState(['a', 'b', 'c']);
+        setItems = setItemsState;
+        return (
+          <Collection.Provider scope={undefined}>
+            <Collection.Slot scope={undefined}>
+              <ul>
+                {items.map((item) => (
+                  <Collection.ItemSlot key={item} scope={undefined} label={item}>
+                    <li>{item}</li>
+                  </Collection.ItemSlot>
+                ))}
+              </ul>
+            </Collection.Slot>
+            <CollectionSpy onRender={(map) => (latestMap = map)} />
+          </Collection.Provider>
+        );
+      }
+      render(<List />);
+      await act(async () => {
+        React.startTransition(() => {
+          setItems(['c', 'b', 'a']);
+        });
+      });
+      expect(screen.getAllByRole('listitem').map((item) => item.textContent)).toEqual([
+        'c',
+        'b',
+        'a',
+      ]);
+      expect(labelsOf(latestMap)).toEqual(['c', 'b', 'a']);
     });
   });
 });
