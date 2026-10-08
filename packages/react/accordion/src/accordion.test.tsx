@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { axe } from 'vitest-axe';
-import { cleanup, render, fireEvent, screen } from '@testing-library/react';
+import { act, cleanup, render, fireEvent, screen } from '@testing-library/react';
 import type { RenderResult } from '@testing-library/react';
 import * as Accordion from './accordion';
 import type { Mock } from 'vitest';
@@ -951,5 +951,363 @@ describe('Accordion.Content', () => {
 
     fireEvent.click(content);
     expect(onClick).toHaveBeenCalled();
+  });
+});
+
+describe('given an Accordion whose items change', () => {
+  afterEach(cleanup);
+
+  it('should navigate to an item mounted between existing items', () => {
+    function List({ items }: { items: string[] }) {
+      return (
+        <Accordion.Root type="single">
+          {items.map((item) => (
+            <Accordion.Item key={item} value={item}>
+              <Accordion.Header>
+                <Accordion.Trigger>Trigger {item}</Accordion.Trigger>
+              </Accordion.Header>
+            </Accordion.Item>
+          ))}
+        </Accordion.Root>
+      );
+    }
+    const { rerender } = render(<List items={['One', 'Three']} />);
+    rerender(<List items={['One', 'Two', 'Three']} />);
+
+    screen.getByText('Trigger One').focus();
+    fireEvent.keyDown(document.activeElement!, { key: 'ArrowDown' });
+    expect(screen.getByText('Trigger Two')).toHaveFocus();
+    fireEvent.keyDown(document.activeElement!, { key: 'ArrowDown' });
+    expect(screen.getByText('Trigger Three')).toHaveFocus();
+  });
+
+  it('should skip an item after it unmounts', () => {
+    function List({ items }: { items: string[] }) {
+      return (
+        <Accordion.Root type="single">
+          {items.map((item) => (
+            <Accordion.Item key={item} value={item}>
+              <Accordion.Header>
+                <Accordion.Trigger>Trigger {item}</Accordion.Trigger>
+              </Accordion.Header>
+            </Accordion.Item>
+          ))}
+        </Accordion.Root>
+      );
+    }
+    const { rerender } = render(<List items={['One', 'Two', 'Three']} />);
+    rerender(<List items={['One', 'Three']} />);
+
+    screen.getByText('Trigger One').focus();
+    fireEvent.keyDown(document.activeElement!, { key: 'ArrowDown' });
+    expect(screen.getByText('Trigger Three')).toHaveFocus();
+    fireEvent.keyDown(document.activeElement!, { key: 'ArrowDown' });
+    expect(screen.getByText('Trigger One')).toHaveFocus();
+  });
+
+  it('should follow the new order when keyed items are reordered', async () => {
+    function List({ items }: { items: string[] }) {
+      return (
+        <Accordion.Root type="single">
+          {items.map((item) => (
+            <Accordion.Item key={item} value={item}>
+              <Accordion.Header>
+                <Accordion.Trigger>Trigger {item}</Accordion.Trigger>
+              </Accordion.Header>
+            </Accordion.Item>
+          ))}
+        </Accordion.Root>
+      );
+    }
+    const { rerender } = render(<List items={['One', 'Two', 'Three']} />);
+    rerender(<List items={['Three', 'One', 'Two']} />);
+    await act(async () => {});
+
+    screen.getByText('Trigger Three').focus();
+    fireEvent.keyDown(document.activeElement!, { key: 'ArrowDown' });
+    expect(screen.getByText('Trigger One')).toHaveFocus();
+    fireEvent.keyDown(document.activeElement!, { key: 'ArrowDown' });
+    expect(screen.getByText('Trigger Two')).toHaveFocus();
+    fireEvent.keyDown(document.activeElement!, { key: 'Home' });
+    expect(screen.getByText('Trigger Three')).toHaveFocus();
+    fireEvent.keyDown(document.activeElement!, { key: 'End' });
+    expect(screen.getByText('Trigger Two')).toHaveFocus();
+  });
+
+  it('should follow the new order when items are reordered in a transition', async () => {
+    let setItems!: (items: string[]) => void;
+    function List() {
+      const [items, setItemsState] = React.useState(['One', 'Two', 'Three']);
+      setItems = setItemsState;
+      return (
+        <Accordion.Root type="single">
+          {items.map((item) => (
+            <Accordion.Item key={item} value={item}>
+              <Accordion.Header>
+                <Accordion.Trigger>Trigger {item}</Accordion.Trigger>
+              </Accordion.Header>
+            </Accordion.Item>
+          ))}
+        </Accordion.Root>
+      );
+    }
+    render(<List />);
+    await act(async () => {
+      React.startTransition(() => {
+        setItems(['Three', 'Two', 'One']);
+      });
+    });
+
+    screen.getByText('Trigger Three').focus();
+    fireEvent.keyDown(document.activeElement!, { key: 'ArrowDown' });
+    expect(screen.getByText('Trigger Two')).toHaveFocus();
+    fireEvent.keyDown(document.activeElement!, { key: 'ArrowDown' });
+    expect(screen.getByText('Trigger One')).toHaveFocus();
+    fireEvent.keyDown(document.activeElement!, { key: 'Home' });
+    expect(screen.getByText('Trigger Three')).toHaveFocus();
+  });
+
+  it('should follow the new order when the wrappers around items are reordered', async () => {
+    function List({ items }: { items: string[] }) {
+      return (
+        <Accordion.Root type="single">
+          {items.map((item) => (
+            <section key={item}>
+              <Accordion.Item value={item}>
+                <Accordion.Header>
+                  <Accordion.Trigger>Trigger {item}</Accordion.Trigger>
+                </Accordion.Header>
+              </Accordion.Item>
+            </section>
+          ))}
+        </Accordion.Root>
+      );
+    }
+    const { rerender } = render(<List items={['One', 'Two', 'Three']} />);
+    rerender(<List items={['Two', 'One', 'Three']} />);
+    await act(async () => {});
+
+    screen.getByText('Trigger Two').focus();
+    fireEvent.keyDown(document.activeElement!, { key: 'ArrowDown' });
+    expect(screen.getByText('Trigger One')).toHaveFocus();
+    fireEvent.keyDown(document.activeElement!, { key: 'ArrowDown' });
+    expect(screen.getByText('Trigger Three')).toHaveFocus();
+    fireEvent.keyDown(document.activeElement!, { key: 'Home' });
+    expect(screen.getByText('Trigger Two')).toHaveFocus();
+    fireEvent.keyDown(document.activeElement!, { key: 'End' });
+    expect(screen.getByText('Trigger Three')).toHaveFocus();
+  });
+
+  it('should navigate to an item inside a Suspense boundary once it resolves', async () => {
+    let resolve!: () => void;
+    const promise = new Promise<void>((resolvePromise) => {
+      resolve = resolvePromise;
+    });
+    function Deferred({ children }: { children: React.ReactNode }) {
+      React.use(promise);
+      return children;
+    }
+    await act(async () => {
+      render(
+        <Accordion.Root type="single">
+          <Accordion.Item value="One">
+            <Accordion.Header>
+              <Accordion.Trigger>Trigger One</Accordion.Trigger>
+            </Accordion.Header>
+          </Accordion.Item>
+          <React.Suspense fallback={<span>loading</span>}>
+            <Deferred>
+              <Accordion.Item value="Two">
+                <Accordion.Header>
+                  <Accordion.Trigger>Trigger Two</Accordion.Trigger>
+                </Accordion.Header>
+              </Accordion.Item>
+            </Deferred>
+          </React.Suspense>
+          <Accordion.Item value="Three">
+            <Accordion.Header>
+              <Accordion.Trigger>Trigger Three</Accordion.Trigger>
+            </Accordion.Header>
+          </Accordion.Item>
+        </Accordion.Root>,
+      );
+    });
+
+    screen.getByText('Trigger One').focus();
+    fireEvent.keyDown(document.activeElement!, { key: 'ArrowDown' });
+    expect(screen.getByText('Trigger Three')).toHaveFocus();
+
+    await act(async () => {
+      resolve();
+      await promise;
+    });
+
+    screen.getByText('Trigger One').focus();
+    fireEvent.keyDown(document.activeElement!, { key: 'ArrowDown' });
+    expect(screen.getByText('Trigger Two')).toHaveFocus();
+    fireEvent.keyDown(document.activeElement!, { key: 'ArrowDown' });
+    expect(screen.getByText('Trigger Three')).toHaveFocus();
+  });
+
+  it('should skip items inside a hidden Activity and restore them when visible', () => {
+    function List({ mode }: { mode: 'visible' | 'hidden' }) {
+      return (
+        <Accordion.Root type="single">
+          <Accordion.Item value="One">
+            <Accordion.Header>
+              <Accordion.Trigger>Trigger One</Accordion.Trigger>
+            </Accordion.Header>
+          </Accordion.Item>
+          <React.Activity mode={mode}>
+            <Accordion.Item value="Two">
+              <Accordion.Header>
+                <Accordion.Trigger>Trigger Two</Accordion.Trigger>
+              </Accordion.Header>
+            </Accordion.Item>
+          </React.Activity>
+          <Accordion.Item value="Three">
+            <Accordion.Header>
+              <Accordion.Trigger>Trigger Three</Accordion.Trigger>
+            </Accordion.Header>
+          </Accordion.Item>
+        </Accordion.Root>
+      );
+    }
+    const { rerender } = render(<List mode="visible" />);
+    rerender(<List mode="hidden" />);
+
+    screen.getByText('Trigger One').focus();
+    fireEvent.keyDown(document.activeElement!, { key: 'ArrowDown' });
+    expect(screen.getByText('Trigger Three')).toHaveFocus();
+
+    rerender(<List mode="visible" />);
+
+    screen.getByText('Trigger One').focus();
+    fireEvent.keyDown(document.activeElement!, { key: 'ArrowDown' });
+    expect(screen.getByText('Trigger Two')).toHaveFocus();
+  });
+
+  it('should navigate to items inside an initially hidden Activity once visible', () => {
+    function List({ mode }: { mode: 'visible' | 'hidden' }) {
+      return (
+        <Accordion.Root type="single">
+          <Accordion.Item value="One">
+            <Accordion.Header>
+              <Accordion.Trigger>Trigger One</Accordion.Trigger>
+            </Accordion.Header>
+          </Accordion.Item>
+          <React.Activity mode={mode}>
+            <Accordion.Item value="Two">
+              <Accordion.Header>
+                <Accordion.Trigger>Trigger Two</Accordion.Trigger>
+              </Accordion.Header>
+            </Accordion.Item>
+          </React.Activity>
+          <Accordion.Item value="Three">
+            <Accordion.Header>
+              <Accordion.Trigger>Trigger Three</Accordion.Trigger>
+            </Accordion.Header>
+          </Accordion.Item>
+        </Accordion.Root>
+      );
+    }
+    const { rerender } = render(<List mode="hidden" />);
+
+    screen.getByText('Trigger One').focus();
+    fireEvent.keyDown(document.activeElement!, { key: 'ArrowDown' });
+    expect(screen.getByText('Trigger Three')).toHaveFocus();
+
+    rerender(<List mode="visible" />);
+
+    screen.getByText('Trigger One').focus();
+    fireEvent.keyDown(document.activeElement!, { key: 'ArrowDown' });
+    expect(screen.getByText('Trigger Two')).toHaveFocus();
+  });
+
+  it('should not register duplicate items in strict mode', () => {
+    render(
+      <React.StrictMode>
+        <Accordion.Root type="single">
+          {ITEMS.map((item) => (
+            <Accordion.Item key={item} value={item}>
+              <Accordion.Header>
+                <Accordion.Trigger>Trigger {item}</Accordion.Trigger>
+              </Accordion.Header>
+            </Accordion.Item>
+          ))}
+        </Accordion.Root>
+      </React.StrictMode>,
+    );
+
+    screen.getByText('Trigger One').focus();
+    fireEvent.keyDown(document.activeElement!, { key: 'ArrowDown' });
+    expect(screen.getByText('Trigger Two')).toHaveFocus();
+    fireEvent.keyDown(document.activeElement!, { key: 'ArrowDown' });
+    expect(screen.getByText('Trigger Three')).toHaveFocus();
+    fireEvent.keyDown(document.activeElement!, { key: 'ArrowDown' });
+    expect(screen.getByText('Trigger One')).toHaveFocus();
+  });
+
+  it('should skip an item after it becomes disabled', () => {
+    function List({ disabledItem }: { disabledItem?: string }) {
+      return (
+        <Accordion.Root type="single">
+          {ITEMS.map((item) => (
+            <Accordion.Item key={item} value={item} disabled={item === disabledItem}>
+              <Accordion.Header>
+                <Accordion.Trigger>Trigger {item}</Accordion.Trigger>
+              </Accordion.Header>
+            </Accordion.Item>
+          ))}
+        </Accordion.Root>
+      );
+    }
+    const { rerender } = render(<List />);
+    rerender(<List disabledItem="Two" />);
+
+    screen.getByText('Trigger One').focus();
+    fireEvent.keyDown(document.activeElement!, { key: 'ArrowDown' });
+    expect(screen.getByText('Trigger Three')).toHaveFocus();
+  });
+
+  it('should keep navigation within a nested Accordion separate from its parent', () => {
+    render(
+      <Accordion.Root type="single" defaultValue="One">
+        <Accordion.Item value="One">
+          <Accordion.Header>
+            <Accordion.Trigger>Trigger One</Accordion.Trigger>
+          </Accordion.Header>
+          <Accordion.Content>
+            <Accordion.Root type="single">
+              <Accordion.Item value="Inner One">
+                <Accordion.Header>
+                  <Accordion.Trigger>Trigger Inner One</Accordion.Trigger>
+                </Accordion.Header>
+              </Accordion.Item>
+              <Accordion.Item value="Inner Two">
+                <Accordion.Header>
+                  <Accordion.Trigger>Trigger Inner Two</Accordion.Trigger>
+                </Accordion.Header>
+              </Accordion.Item>
+            </Accordion.Root>
+          </Accordion.Content>
+        </Accordion.Item>
+        <Accordion.Item value="Two">
+          <Accordion.Header>
+            <Accordion.Trigger>Trigger Two</Accordion.Trigger>
+          </Accordion.Header>
+        </Accordion.Item>
+      </Accordion.Root>,
+    );
+
+    screen.getByText('Trigger One').focus();
+    fireEvent.keyDown(document.activeElement!, { key: 'ArrowDown' });
+    expect(screen.getByText('Trigger Two')).toHaveFocus();
+
+    screen.getByText('Trigger Inner One').focus();
+    fireEvent.keyDown(document.activeElement!, { key: 'ArrowDown' });
+    expect(screen.getByText('Trigger Inner Two')).toHaveFocus();
+    fireEvent.keyDown(document.activeElement!, { key: 'ArrowDown' });
+    expect(screen.getByText('Trigger Inner One')).toHaveFocus();
   });
 });
