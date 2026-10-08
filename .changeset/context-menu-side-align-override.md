@@ -1,5 +1,6 @@
 ---
 "@radix-ui/react-context-menu": patch
+"radix-ui": patch
 ---
 
-Allow `side`, `sideOffset`, and `align` props to be overridden on `ContextMenuContent`.
+Allow `side`, `sideOffset`, and `align` props to be overridden on `ContextMenu.Content`.
