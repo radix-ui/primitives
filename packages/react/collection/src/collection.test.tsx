@@ -735,5 +735,102 @@ describe('createCollection', () => {
       ]);
       expect(labelsOf(latestMap)).toEqual(['c', 'b', 'a']);
     });
+
+    // jsdom does not implement `document.startViewTransition`, so React commits
+    // these updates without animating. These tests cover compatibility with
+    // `ViewTransition` boundaries, not the animation itself. When jsdom
+    // eventually implements `document.startViewTransition`, we should re-visit.
+    it.todo('registers items wrapped in ViewTransition in document order', () => {
+      let latestMap: ItemMap | undefined;
+      render(
+        <Collection.Provider scope={undefined}>
+          <React.ViewTransition>
+            <Collection.ItemSlot scope={undefined} label="a">
+              <div />
+            </Collection.ItemSlot>
+          </React.ViewTransition>
+          <Collection.ItemSlot scope={undefined} label="b">
+            <div />
+          </Collection.ItemSlot>
+          <React.ViewTransition>
+            <Collection.ItemSlot scope={undefined} label="c">
+              <div />
+            </Collection.ItemSlot>
+          </React.ViewTransition>
+          <CollectionSpy onRender={(map) => (latestMap = map)} />
+        </Collection.Provider>,
+      );
+      expect(labelsOf(latestMap)).toEqual(['a', 'b', 'c']);
+    });
+
+    it.todo('reorders items wrapped in ViewTransition when reordered in a transition', async () => {
+      let setItems!: (items: string[]) => void;
+      let latestMap: ItemMap | undefined;
+      function List() {
+        const [items, setItemsState] = React.useState(['a', 'b', 'c']);
+        setItems = setItemsState;
+        return (
+          <Collection.Provider scope={undefined}>
+            <Collection.Slot scope={undefined}>
+              <ul>
+                {items.map((item) => (
+                  <React.ViewTransition key={item}>
+                    <Collection.ItemSlot scope={undefined} label={item}>
+                      <li>{item}</li>
+                    </Collection.ItemSlot>
+                  </React.ViewTransition>
+                ))}
+              </ul>
+            </Collection.Slot>
+            <CollectionSpy onRender={(map) => (latestMap = map)} />
+          </Collection.Provider>
+        );
+      }
+      render(<List />);
+      await act(async () => {
+        React.startTransition(() => {
+          setItems(['c', 'b', 'a']);
+        });
+      });
+      expect(screen.getAllByRole('listitem').map((item) => item.textContent)).toEqual([
+        'c',
+        'b',
+        'a',
+      ]);
+      expect(labelsOf(latestMap)).toEqual(['c', 'b', 'a']);
+    });
+
+    it.todo('removes items wrapped in ViewTransition when removed in a transition', async () => {
+      let setItems!: (items: string[]) => void;
+      let latestMap: ItemMap | undefined;
+      function List() {
+        const [items, setItemsState] = React.useState(['a', 'b', 'c']);
+        setItems = setItemsState;
+        return (
+          <Collection.Provider scope={undefined}>
+            <Collection.Slot scope={undefined}>
+              <ul>
+                {items.map((item) => (
+                  <React.ViewTransition key={item}>
+                    <Collection.ItemSlot scope={undefined} label={item}>
+                      <li>{item}</li>
+                    </Collection.ItemSlot>
+                  </React.ViewTransition>
+                ))}
+              </ul>
+            </Collection.Slot>
+            <CollectionSpy onRender={(map) => (latestMap = map)} />
+          </Collection.Provider>
+        );
+      }
+      render(<List />);
+      await act(async () => {
+        React.startTransition(() => {
+          setItems(['a', 'c']);
+        });
+      });
+      expect(screen.getAllByRole('listitem').map((item) => item.textContent)).toEqual(['a', 'c']);
+      expect(labelsOf(latestMap)).toEqual(['a', 'c']);
+    });
   });
 });
