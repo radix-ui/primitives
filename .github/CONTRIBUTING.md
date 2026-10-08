@@ -68,7 +68,7 @@ git pull upstream main
 node -v
 ```
 
-1. Install dependencies with [pnpm](https://pnpm.io):
+5. Install dependencies with [pnpm](https://pnpm.io):
 
 ```sh
 pnpm install
