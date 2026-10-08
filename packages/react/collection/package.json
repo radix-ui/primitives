@@ -38,7 +38,8 @@
     "@radix-ui/react-compose-refs": "workspace:*",
     "@radix-ui/react-context": "workspace:*",
     "@radix-ui/react-primitive": "workspace:*",
-    "@radix-ui/react-slot": "workspace:*"
+    "@radix-ui/react-slot": "workspace:*",
+    "@radix-ui/react-use-callback-ref": "workspace:*"
   },
   "devDependencies": {
     "@repo/builder": "workspace:*",
