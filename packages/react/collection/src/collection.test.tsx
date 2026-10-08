@@ -1,23 +1,24 @@
 import * as React from 'react';
 import { renderToString } from 'react-dom/server';
-import { act, cleanup, render, screen } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
-import { type CollectionItemMap, createCollection } from './collection';
+import { type CollectionDict, createCollection } from './collection';
 
 type ItemData = { label: string };
 
-const [Collection, { useCollection, useInitCollection }] = createCollection<HTMLElement, ItemData>(
-  'Test',
-);
+const [TestCollection, { useCollection, useGetCollection, useInitCollection }] = createCollection<
+  HTMLElement,
+  ItemData
+>('Test');
 
-type ItemMap = CollectionItemMap<HTMLElement, ItemData>;
+type TestCollectionDict = CollectionDict<HTMLElement, ItemData>;
 
-function CollectionSpy({ onRender }: { onRender: (map: ItemMap) => void }) {
+function CollectionSpy({ onRender }: { onRender: (map: TestCollectionDict) => void }) {
   onRender(useCollection(undefined));
   return null;
 }
 
-function labelsOf(map: ItemMap | undefined) {
+function labelsOf(map: TestCollectionDict | undefined) {
   return map ? [...map.values()].map((item) => item.label) : [];
 }
 
@@ -26,58 +27,58 @@ describe('createCollection', () => {
 
   describe('Provider', () => {
     it('creates its own item map when no state is passed', () => {
-      let latestMap: ItemMap | undefined;
+      let latestMap: TestCollectionDict | undefined;
       render(
-        <Collection.Provider scope={undefined}>
-          <Collection.ItemSlot scope={undefined} label="a">
+        <TestCollection.Provider scope={undefined}>
+          <TestCollection.ItemSlot scope={undefined} label="a">
             <div />
-          </Collection.ItemSlot>
+          </TestCollection.ItemSlot>
           <CollectionSpy onRender={(map) => (latestMap = map)} />
-        </Collection.Provider>,
+        </TestCollection.Provider>,
       );
       expect(labelsOf(latestMap)).toEqual(['a']);
     });
 
     it('uses the state passed from useInitCollection', () => {
-      let ownerMap: ItemMap | undefined;
+      let ownerMap: TestCollectionDict | undefined;
       function Owner({ children }: { children: React.ReactNode }) {
         const state = useInitCollection();
         ownerMap = state[0];
         return (
-          <Collection.Provider scope={undefined} state={state}>
+          <TestCollection.Provider scope={undefined} state={state}>
             {children}
-          </Collection.Provider>
+          </TestCollection.Provider>
         );
       }
       render(
         <Owner>
-          <Collection.ItemSlot scope={undefined} label="a">
+          <TestCollection.ItemSlot scope={undefined} label="a">
             <div />
-          </Collection.ItemSlot>
-          <Collection.ItemSlot scope={undefined} label="b">
+          </TestCollection.ItemSlot>
+          <TestCollection.ItemSlot scope={undefined} label="b">
             <div />
-          </Collection.ItemSlot>
+          </TestCollection.ItemSlot>
         </Owner>,
       );
       expect(labelsOf(ownerMap)).toEqual(['a', 'b']);
     });
 
     it('keeps items of nested providers separate', () => {
-      let outerMap: ItemMap | undefined;
-      let innerMap: ItemMap | undefined;
+      let outerMap: TestCollectionDict | undefined;
+      let innerMap: TestCollectionDict | undefined;
       render(
-        <Collection.Provider scope={undefined}>
-          <Collection.ItemSlot scope={undefined} label="outer">
+        <TestCollection.Provider scope={undefined}>
+          <TestCollection.ItemSlot scope={undefined} label="outer">
             <div />
-          </Collection.ItemSlot>
+          </TestCollection.ItemSlot>
           <CollectionSpy onRender={(map) => (outerMap = map)} />
-          <Collection.Provider scope={undefined}>
-            <Collection.ItemSlot scope={undefined} label="inner">
+          <TestCollection.Provider scope={undefined}>
+            <TestCollection.ItemSlot scope={undefined} label="inner">
               <div />
-            </Collection.ItemSlot>
+            </TestCollection.ItemSlot>
             <CollectionSpy onRender={(map) => (innerMap = map)} />
-          </Collection.Provider>
-        </Collection.Provider>,
+          </TestCollection.Provider>
+        </TestCollection.Provider>,
       );
       expect(labelsOf(outerMap)).toEqual(['outer']);
       expect(labelsOf(innerMap)).toEqual(['inner']);
@@ -88,25 +89,25 @@ describe('createCollection', () => {
         HTMLElement,
         { label: string }
       >('Other');
-      let otherMap: ItemMap | undefined;
+      let otherMap: TestCollectionDict | undefined;
       function OtherSpy() {
         otherMap = useOtherCollection(undefined);
         return null;
       }
-      let testMap: ItemMap | undefined;
+      let testMap: TestCollectionDict | undefined;
       render(
-        <Collection.Provider scope={undefined}>
+        <TestCollection.Provider scope={undefined}>
           <OtherCollection.Provider scope={undefined}>
-            <Collection.ItemSlot scope={undefined} label="test">
+            <TestCollection.ItemSlot scope={undefined} label="test">
               <div />
-            </Collection.ItemSlot>
+            </TestCollection.ItemSlot>
             <OtherCollection.ItemSlot scope={undefined} label="other">
               <div />
             </OtherCollection.ItemSlot>
             <CollectionSpy onRender={(map) => (testMap = map)} />
             <OtherSpy />
           </OtherCollection.Provider>
-        </Collection.Provider>,
+        </TestCollection.Provider>,
       );
       expect(labelsOf(testMap)).toEqual(['test']);
       expect(labelsOf(otherMap)).toEqual(['other']);
@@ -114,27 +115,27 @@ describe('createCollection', () => {
   });
 
   describe('useCollection', () => {
-    it('returns an empty map outside of a provider', () => {
-      let latestMap: ItemMap | undefined;
-      render(<CollectionSpy onRender={(map) => (latestMap = map)} />);
-      expect(latestMap!.size).toBe(0);
+    it('throws outside of a provider', () => {
+      expect(() => render(<CollectionSpy onRender={() => {}} />)).toThrow(
+        /`TestCollectionConsumer` must be used within `TestCollectionProvider`/,
+      );
     });
 
     it('supports index-based lookups on the returned map', () => {
-      let latestMap: ItemMap | undefined;
+      let latestMap: TestCollectionDict | undefined;
       render(
-        <Collection.Provider scope={undefined}>
-          <Collection.ItemSlot scope={undefined} label="a">
+        <TestCollection.Provider scope={undefined}>
+          <TestCollection.ItemSlot scope={undefined} label="a">
             <div data-testid="a" />
-          </Collection.ItemSlot>
-          <Collection.ItemSlot scope={undefined} label="b">
+          </TestCollection.ItemSlot>
+          <TestCollection.ItemSlot scope={undefined} label="b">
             <div data-testid="b" />
-          </Collection.ItemSlot>
-          <Collection.ItemSlot scope={undefined} label="c">
+          </TestCollection.ItemSlot>
+          <TestCollection.ItemSlot scope={undefined} label="c">
             <div data-testid="c" />
-          </Collection.ItemSlot>
+          </TestCollection.ItemSlot>
           <CollectionSpy onRender={(map) => (latestMap = map)} />
-        </Collection.Provider>,
+        </TestCollection.Provider>,
       );
       const map = latestMap!;
       expect(map.at(0)?.label).toBe('a');
@@ -145,28 +146,211 @@ describe('createCollection', () => {
     });
 
     it('returns an empty map during server rendering', () => {
-      let latestMap: ItemMap | undefined;
+      let latestMap: TestCollectionDict | undefined;
       const html = renderToString(
-        <Collection.Provider scope={undefined}>
-          <Collection.ItemSlot scope={undefined} label="a">
+        <TestCollection.Provider scope={undefined}>
+          <TestCollection.ItemSlot scope={undefined} label="a">
             <div data-testid="a" />
-          </Collection.ItemSlot>
+          </TestCollection.ItemSlot>
           <CollectionSpy onRender={(map) => (latestMap = map)} />
-        </Collection.Provider>,
+        </TestCollection.Provider>,
       );
       expect(html).toContain('data-radix-collection-item');
       expect(latestMap?.size).toBe(0);
     });
   });
 
+  describe('useGetCollection', () => {
+    it('throws outside of a provider', () => {
+      function GetterSpy() {
+        useGetCollection(undefined);
+        return null;
+      }
+      expect(() => render(<GetterSpy />)).toThrow(
+        /`TestCollectionConsumer` must be used within `TestCollectionProvider`/,
+      );
+    });
+
+    it('returns the current items when called from an event handler', () => {
+      let labelsOnClick: string[] = [];
+      function LabelsButton() {
+        const getCollection = useGetCollection(undefined);
+        return <button onClick={() => (labelsOnClick = labelsOf(getCollection()))}>read</button>;
+      }
+      function List({ items }: { items: string[] }) {
+        return (
+          <TestCollection.Provider scope={undefined}>
+            {items.map((label) => (
+              <TestCollection.ItemSlot key={label} scope={undefined} label={label}>
+                <div />
+              </TestCollection.ItemSlot>
+            ))}
+            <LabelsButton />
+          </TestCollection.Provider>
+        );
+      }
+      const { rerender } = render(<List items={['a', 'b']} />);
+      fireEvent.click(screen.getByRole('button'));
+      expect(labelsOnClick).toEqual(['a', 'b']);
+
+      rerender(<List items={['a', 'b', 'c']} />);
+      fireEvent.click(screen.getByRole('button'));
+      expect(labelsOnClick).toEqual(['a', 'b', 'c']);
+
+      rerender(<List items={['c']} />);
+      fireEvent.click(screen.getByRole('button'));
+      expect(labelsOnClick).toEqual(['c']);
+    });
+
+    it('returns items in document order after they are reordered', async () => {
+      let labelsOnClick: string[] = [];
+      function LabelsButton() {
+        const getCollection = useGetCollection(undefined);
+        return <button onClick={() => (labelsOnClick = labelsOf(getCollection()))}>read</button>;
+      }
+      function List({ items }: { items: string[] }) {
+        return (
+          <TestCollection.Provider scope={undefined}>
+            <TestCollection.Slot scope={undefined}>
+              <div>
+                {items.map((label) => (
+                  <TestCollection.ItemSlot key={label} scope={undefined} label={label}>
+                    <div />
+                  </TestCollection.ItemSlot>
+                ))}
+              </div>
+            </TestCollection.Slot>
+            <LabelsButton />
+          </TestCollection.Provider>
+        );
+      }
+      const { rerender } = render(<List items={['a', 'b', 'c']} />);
+      await act(async () => {
+        rerender(<List items={['c', 'a', 'b']} />);
+      });
+      fireEvent.click(screen.getByRole('button'));
+      expect(labelsOnClick).toEqual(['c', 'a', 'b']);
+    });
+
+    it('returns the same function when items change', () => {
+      const getters: Array<() => TestCollectionDict> = [];
+      function GetterSpy() {
+        getters.push(useGetCollection(undefined));
+        return null;
+      }
+      function List({ items }: { items: string[] }) {
+        return (
+          <TestCollection.Provider scope={undefined}>
+            {items.map((label) => (
+              <TestCollection.ItemSlot key={label} scope={undefined} label={label}>
+                <div />
+              </TestCollection.ItemSlot>
+            ))}
+            <GetterSpy />
+          </TestCollection.Provider>
+        );
+      }
+      const { rerender } = render(<List items={['a']} />);
+      rerender(<List items={['a', 'b']} />);
+      rerender(<List items={['b']} />);
+      expect(getters.length).toBeGreaterThan(1);
+      expect(new Set(getters).size).toBe(1);
+    });
+
+    it('does not re-render its consumer when items change', () => {
+      let renderCount = 0;
+      const MemoizedGetterSpy = React.memo(function MemoizedGetterSpy() {
+        useGetCollection(undefined);
+        renderCount++;
+        return null;
+      });
+      function List({ items }: { items: string[] }) {
+        return (
+          <TestCollection.Provider scope={undefined}>
+            {items.map((label) => (
+              <TestCollection.ItemSlot key={label} scope={undefined} label={label}>
+                <div />
+              </TestCollection.ItemSlot>
+            ))}
+            <MemoizedGetterSpy />
+          </TestCollection.Provider>
+        );
+      }
+      const { rerender } = render(<List items={['a']} />);
+      expect(renderCount).toBe(1);
+
+      rerender(<List items={['a', 'b', 'c']} />);
+      rerender(<List items={['c']} />);
+      expect(renderCount).toBe(1);
+    });
+
+    it('re-renders a useCollection consumer when items change, unlike useGetCollection', () => {
+      let collectionRenderCount = 0;
+      let getterRenderCount = 0;
+      const MemoizedCollectionSpy = React.memo(function MemoizedCollectionSpy() {
+        useCollection(undefined);
+        collectionRenderCount++;
+        return null;
+      });
+      const MemoizedGetterSpy = React.memo(function MemoizedGetterSpy() {
+        useGetCollection(undefined);
+        getterRenderCount++;
+        return null;
+      });
+      function List({ items }: { items: string[] }) {
+        return (
+          <TestCollection.Provider scope={undefined}>
+            {items.map((label) => (
+              <TestCollection.ItemSlot key={label} scope={undefined} label={label}>
+                <div />
+              </TestCollection.ItemSlot>
+            ))}
+            <MemoizedCollectionSpy />
+            <MemoizedGetterSpy />
+          </TestCollection.Provider>
+        );
+      }
+      const { rerender } = render(<List items={['a']} />);
+      const collectionRenderCountAfterMount = collectionRenderCount;
+      const getterRenderCountAfterMount = getterRenderCount;
+
+      rerender(<List items={['a', 'b']} />);
+      expect(collectionRenderCount).toBeGreaterThan(collectionRenderCountAfterMount);
+      expect(getterRenderCount).toBe(getterRenderCountAfterMount);
+    });
+
+    it('reads from the nearest provider', () => {
+      let labelsOnClick: string[] = [];
+      function LabelsButton() {
+        const getCollection = useGetCollection(undefined);
+        return <button onClick={() => (labelsOnClick = labelsOf(getCollection()))}>read</button>;
+      }
+      render(
+        <TestCollection.Provider scope={undefined}>
+          <TestCollection.ItemSlot scope={undefined} label="outer">
+            <div />
+          </TestCollection.ItemSlot>
+          <TestCollection.Provider scope={undefined}>
+            <TestCollection.ItemSlot scope={undefined} label="inner">
+              <div />
+            </TestCollection.ItemSlot>
+            <LabelsButton />
+          </TestCollection.Provider>
+        </TestCollection.Provider>,
+      );
+      fireEvent.click(screen.getByRole('button'));
+      expect(labelsOnClick).toEqual(['inner']);
+    });
+  });
+
   describe('Slot', () => {
     it('renders its child without a wrapper element', () => {
       const { container } = render(
-        <Collection.Provider scope={undefined}>
-          <Collection.Slot scope={undefined}>
+        <TestCollection.Provider scope={undefined}>
+          <TestCollection.Slot scope={undefined}>
             <ul data-testid="list" />
-          </Collection.Slot>
-        </Collection.Provider>,
+          </TestCollection.Slot>
+        </TestCollection.Provider>,
       );
       expect(container.firstElementChild).toBe(screen.getByTestId('list'));
     });
@@ -174,24 +358,34 @@ describe('createCollection', () => {
     it('forwards its ref to the child element', () => {
       const ref = React.createRef<HTMLElement>();
       render(
-        <Collection.Provider scope={undefined}>
-          <Collection.Slot scope={undefined} ref={ref}>
+        <TestCollection.Provider scope={undefined}>
+          <TestCollection.Slot scope={undefined} ref={ref}>
             <ul data-testid="list" />
-          </Collection.Slot>
-        </Collection.Provider>,
+          </TestCollection.Slot>
+        </TestCollection.Provider>,
       );
       expect(ref.current).toBe(screen.getByTestId('list'));
     });
   });
 
   describe('ItemSlot', () => {
+    it('throws outside of a provider', () => {
+      expect(() =>
+        render(
+          <TestCollection.ItemSlot scope={undefined} label="a">
+            <div />
+          </TestCollection.ItemSlot>,
+        ),
+      ).toThrow(/`TestCollectionItemSlot` must be used within `TestCollectionProvider`/);
+    });
+
     it('renders its child with the collection item attribute', () => {
       render(
-        <Collection.Provider scope={undefined}>
-          <Collection.ItemSlot scope={undefined} label="a">
+        <TestCollection.Provider scope={undefined}>
+          <TestCollection.ItemSlot scope={undefined} label="a">
             <div data-testid="a" />
-          </Collection.ItemSlot>
-        </Collection.Provider>,
+          </TestCollection.ItemSlot>
+        </TestCollection.Provider>,
       );
       expect(screen.getByTestId('a')).toHaveAttribute('data-radix-collection-item', '');
     });
@@ -199,24 +393,24 @@ describe('createCollection', () => {
     it('forwards its ref to the child element', () => {
       const ref = React.createRef<HTMLElement>();
       render(
-        <Collection.Provider scope={undefined}>
-          <Collection.ItemSlot scope={undefined} label="a" ref={ref}>
+        <TestCollection.Provider scope={undefined}>
+          <TestCollection.ItemSlot scope={undefined} label="a" ref={ref}>
             <div data-testid="a" />
-          </Collection.ItemSlot>
-        </Collection.Provider>,
+          </TestCollection.ItemSlot>
+        </TestCollection.Provider>,
       );
       expect(ref.current).toBe(screen.getByTestId('a'));
     });
 
     it('registers the element as the key along with the item data', () => {
-      let latestMap: ItemMap | undefined;
+      let latestMap: TestCollectionDict | undefined;
       render(
-        <Collection.Provider scope={undefined}>
-          <Collection.ItemSlot scope={undefined} label="a" id="item-a">
+        <TestCollection.Provider scope={undefined}>
+          <TestCollection.ItemSlot scope={undefined} label="a" id="item-a">
             <div data-testid="a" />
-          </Collection.ItemSlot>
+          </TestCollection.ItemSlot>
           <CollectionSpy onRender={(map) => (latestMap = map)} />
-        </Collection.Provider>,
+        </TestCollection.Provider>,
       );
       const element = screen.getByTestId('a');
       expect([...latestMap!.keys()]).toEqual([element]);
@@ -224,67 +418,67 @@ describe('createCollection', () => {
     });
 
     it('orders items by document position', () => {
-      let latestMap: ItemMap | undefined;
+      let latestMap: TestCollectionDict | undefined;
       render(
-        <Collection.Provider scope={undefined}>
-          <Collection.ItemSlot scope={undefined} label="a">
+        <TestCollection.Provider scope={undefined}>
+          <TestCollection.ItemSlot scope={undefined} label="a">
             <div />
-          </Collection.ItemSlot>
-          <Collection.ItemSlot scope={undefined} label="b">
+          </TestCollection.ItemSlot>
+          <TestCollection.ItemSlot scope={undefined} label="b">
             <div />
-          </Collection.ItemSlot>
-          <Collection.ItemSlot scope={undefined} label="c">
+          </TestCollection.ItemSlot>
+          <TestCollection.ItemSlot scope={undefined} label="c">
             <div />
-          </Collection.ItemSlot>
+          </TestCollection.ItemSlot>
           <CollectionSpy onRender={(map) => (latestMap = map)} />
-        </Collection.Provider>,
+        </TestCollection.Provider>,
       );
       expect(labelsOf(latestMap)).toEqual(['a', 'b', 'c']);
     });
 
     it('orders items nested at different depths by document position', () => {
-      let latestMap: ItemMap | undefined;
+      let latestMap: TestCollectionDict | undefined;
       render(
-        <Collection.Provider scope={undefined}>
+        <TestCollection.Provider scope={undefined}>
           <section>
-            <Collection.ItemSlot scope={undefined} label="a">
+            <TestCollection.ItemSlot scope={undefined} label="a">
               <div />
-            </Collection.ItemSlot>
+            </TestCollection.ItemSlot>
             <div>
               <div>
-                <Collection.ItemSlot scope={undefined} label="b">
+                <TestCollection.ItemSlot scope={undefined} label="b">
                   <div />
-                </Collection.ItemSlot>
+                </TestCollection.ItemSlot>
               </div>
             </div>
           </section>
-          <Collection.ItemSlot scope={undefined} label="c">
+          <TestCollection.ItemSlot scope={undefined} label="c">
             <div />
-          </Collection.ItemSlot>
+          </TestCollection.ItemSlot>
           <CollectionSpy onRender={(map) => (latestMap = map)} />
-        </Collection.Provider>,
+        </TestCollection.Provider>,
       );
       expect(labelsOf(latestMap)).toEqual(['a', 'b', 'c']);
     });
 
     it('sorts an item mounted later into its document position', () => {
-      let latestMap: ItemMap | undefined;
+      let latestMap: TestCollectionDict | undefined;
       function List({ showMiddle }: { showMiddle: boolean }) {
         return (
-          <Collection.Provider scope={undefined}>
-            <Collection.ItemSlot scope={undefined} label="a">
+          <TestCollection.Provider scope={undefined}>
+            <TestCollection.ItemSlot scope={undefined} label="a">
               <div />
-            </Collection.ItemSlot>
+            </TestCollection.ItemSlot>
             {showMiddle ? (
-              <Collection.ItemSlot scope={undefined} label="b">
+              <TestCollection.ItemSlot scope={undefined} label="b">
                 <div />
-              </Collection.ItemSlot>
+              </TestCollection.ItemSlot>
             ) : null}
-            <Collection.ItemSlot scope={undefined} label="c">
+            <TestCollection.ItemSlot scope={undefined} label="c">
               <div />
-            </Collection.ItemSlot>
+            </TestCollection.ItemSlot>
             <CollectionSpy onRender={(map) => (latestMap = map)} />
-          </Collection.Provider>
+          </TestCollection.Provider>
         );
       }
       const { rerender } = render(<List showMiddle={false} />);
@@ -295,23 +489,23 @@ describe('createCollection', () => {
     });
 
     it('removes an item when it unmounts', () => {
-      let latestMap: ItemMap | undefined;
+      let latestMap: TestCollectionDict | undefined;
       function List({ showMiddle }: { showMiddle: boolean }) {
         return (
-          <Collection.Provider scope={undefined}>
-            <Collection.ItemSlot scope={undefined} label="a">
+          <TestCollection.Provider scope={undefined}>
+            <TestCollection.ItemSlot scope={undefined} label="a">
               <div />
-            </Collection.ItemSlot>
+            </TestCollection.ItemSlot>
             {showMiddle ? (
-              <Collection.ItemSlot scope={undefined} label="b">
+              <TestCollection.ItemSlot scope={undefined} label="b">
                 <div />
-              </Collection.ItemSlot>
+              </TestCollection.ItemSlot>
             ) : null}
-            <Collection.ItemSlot scope={undefined} label="c">
+            <TestCollection.ItemSlot scope={undefined} label="c">
               <div />
-            </Collection.ItemSlot>
+            </TestCollection.ItemSlot>
             <CollectionSpy onRender={(map) => (latestMap = map)} />
-          </Collection.Provider>
+          </TestCollection.Provider>
         );
       }
       const { rerender } = render(<List showMiddle />);
@@ -323,17 +517,17 @@ describe('createCollection', () => {
     });
 
     it('removes every item when the list unmounts', () => {
-      let latestMap: ItemMap | undefined;
+      let latestMap: TestCollectionDict | undefined;
       function List({ items }: { items: string[] }) {
         return (
-          <Collection.Provider scope={undefined}>
+          <TestCollection.Provider scope={undefined}>
             {items.map((item) => (
-              <Collection.ItemSlot key={item} scope={undefined} label={item}>
+              <TestCollection.ItemSlot key={item} scope={undefined} label={item}>
                 <div />
-              </Collection.ItemSlot>
+              </TestCollection.ItemSlot>
             ))}
             <CollectionSpy onRender={(map) => (latestMap = map)} />
-          </Collection.Provider>
+          </TestCollection.Provider>
         );
       }
       const { rerender } = render(<List items={['a', 'b', 'c']} />);
@@ -343,21 +537,21 @@ describe('createCollection', () => {
     });
 
     it('updates item data in place when props change', () => {
-      let latestMap: ItemMap | undefined;
+      let latestMap: TestCollectionDict | undefined;
       function List({ middleLabel }: { middleLabel: string }) {
         return (
-          <Collection.Provider scope={undefined}>
-            <Collection.ItemSlot scope={undefined} label="a">
+          <TestCollection.Provider scope={undefined}>
+            <TestCollection.ItemSlot scope={undefined} label="a">
               <div />
-            </Collection.ItemSlot>
-            <Collection.ItemSlot scope={undefined} label={middleLabel}>
+            </TestCollection.ItemSlot>
+            <TestCollection.ItemSlot scope={undefined} label={middleLabel}>
               <div data-testid="middle" />
-            </Collection.ItemSlot>
-            <Collection.ItemSlot scope={undefined} label="c">
+            </TestCollection.ItemSlot>
+            <TestCollection.ItemSlot scope={undefined} label="c">
               <div />
-            </Collection.ItemSlot>
+            </TestCollection.ItemSlot>
             <CollectionSpy onRender={(map) => (latestMap = map)} />
-          </Collection.Provider>
+          </TestCollection.Provider>
         );
       }
       const { rerender } = render(<List middleLabel="b" />);
@@ -367,15 +561,15 @@ describe('createCollection', () => {
     });
 
     it('keeps the same map when rerendered with equal item data', () => {
-      const maps: ItemMap[] = [];
+      const maps: TestCollectionDict[] = [];
       function List({ count }: { count: number }) {
         return (
-          <Collection.Provider scope={undefined}>
-            <Collection.ItemSlot scope={undefined} label="a">
+          <TestCollection.Provider scope={undefined}>
+            <TestCollection.ItemSlot scope={undefined} label="a">
               <div data-count={count} />
-            </Collection.ItemSlot>
+            </TestCollection.ItemSlot>
             <CollectionSpy onRender={(map) => maps.push(map)} />
-          </Collection.Provider>
+          </TestCollection.Provider>
         );
       }
       const { rerender } = render(<List count={1} />);
@@ -413,17 +607,17 @@ describe('createCollection', () => {
     });
 
     it('replaces the map with a new instance when items change', () => {
-      const maps: ItemMap[] = [];
+      const maps: TestCollectionDict[] = [];
       function List({ items }: { items: string[] }) {
         return (
-          <Collection.Provider scope={undefined}>
+          <TestCollection.Provider scope={undefined}>
             {items.map((item) => (
-              <Collection.ItemSlot key={item} scope={undefined} label={item}>
+              <TestCollection.ItemSlot key={item} scope={undefined} label={item}>
                 <div />
-              </Collection.ItemSlot>
+              </TestCollection.ItemSlot>
             ))}
             <CollectionSpy onRender={(map) => maps.push(map)} />
-          </Collection.Provider>
+          </TestCollection.Provider>
         );
       }
       const { rerender } = render(<List items={['a']} />);
@@ -437,15 +631,15 @@ describe('createCollection', () => {
     });
 
     it('replaces the entry when the child element changes', () => {
-      let latestMap: ItemMap | undefined;
+      let latestMap: TestCollectionDict | undefined;
       function List({ asSpan }: { asSpan: boolean }) {
         return (
-          <Collection.Provider scope={undefined}>
-            <Collection.ItemSlot scope={undefined} label="a">
+          <TestCollection.Provider scope={undefined}>
+            <TestCollection.ItemSlot scope={undefined} label="a">
               {asSpan ? <span data-testid="item" /> : <div data-testid="item" />}
-            </Collection.ItemSlot>
+            </TestCollection.ItemSlot>
             <CollectionSpy onRender={(map) => (latestMap = map)} />
-          </Collection.Provider>
+          </TestCollection.Provider>
         );
       }
       const { rerender } = render(<List asSpan={false} />);
@@ -457,18 +651,18 @@ describe('createCollection', () => {
     });
 
     it('does not register duplicate items in strict mode', () => {
-      let latestMap: ItemMap | undefined;
+      let latestMap: TestCollectionDict | undefined;
       render(
         <React.StrictMode>
-          <Collection.Provider scope={undefined}>
-            <Collection.ItemSlot scope={undefined} label="a">
+          <TestCollection.Provider scope={undefined}>
+            <TestCollection.ItemSlot scope={undefined} label="a">
               <div />
-            </Collection.ItemSlot>
-            <Collection.ItemSlot scope={undefined} label="b">
+            </TestCollection.ItemSlot>
+            <TestCollection.ItemSlot scope={undefined} label="b">
               <div />
-            </Collection.ItemSlot>
+            </TestCollection.ItemSlot>
             <CollectionSpy onRender={(map) => (latestMap = map)} />
-          </Collection.Provider>
+          </TestCollection.Provider>
         </React.StrictMode>,
       );
       expect(labelsOf(latestMap)).toEqual(['a', 'b']);
@@ -476,21 +670,21 @@ describe('createCollection', () => {
     });
 
     it('reorders items when React moves them in the DOM', async () => {
-      let latestMap: ItemMap | undefined;
+      let latestMap: TestCollectionDict | undefined;
       function List({ items }: { items: string[] }) {
         return (
-          <Collection.Provider scope={undefined}>
-            <Collection.Slot scope={undefined}>
+          <TestCollection.Provider scope={undefined}>
+            <TestCollection.Slot scope={undefined}>
               <ul>
                 {items.map((item) => (
-                  <Collection.ItemSlot key={item} scope={undefined} label={item}>
+                  <TestCollection.ItemSlot key={item} scope={undefined} label={item}>
                     <li>{item}</li>
-                  </Collection.ItemSlot>
+                  </TestCollection.ItemSlot>
                 ))}
               </ul>
-            </Collection.Slot>
+            </TestCollection.Slot>
             <CollectionSpy onRender={(map) => (latestMap = map)} />
-          </Collection.Provider>
+          </TestCollection.Provider>
         );
       }
       const { rerender } = render(<List items={['a', 'b', 'c']} />);
@@ -505,23 +699,23 @@ describe('createCollection', () => {
     });
 
     it('reorders nested items when their wrappers move in the DOM', async () => {
-      let latestMap: ItemMap | undefined;
+      let latestMap: TestCollectionDict | undefined;
       function List({ items }: { items: string[] }) {
         return (
-          <Collection.Provider scope={undefined}>
-            <Collection.Slot scope={undefined}>
+          <TestCollection.Provider scope={undefined}>
+            <TestCollection.Slot scope={undefined}>
               <div>
                 {items.map((item) => (
                   <section key={item}>
-                    <Collection.ItemSlot scope={undefined} label={item}>
+                    <TestCollection.ItemSlot scope={undefined} label={item}>
                       <div />
-                    </Collection.ItemSlot>
+                    </TestCollection.ItemSlot>
                   </section>
                 ))}
               </div>
-            </Collection.Slot>
+            </TestCollection.Slot>
             <CollectionSpy onRender={(map) => (latestMap = map)} />
-          </Collection.Provider>
+          </TestCollection.Provider>
         );
       }
       const { rerender } = render(<List items={['a', 'b', 'c']} />);
@@ -531,23 +725,23 @@ describe('createCollection', () => {
     });
 
     it('keeps the same map when the DOM changes without reordering items', async () => {
-      const maps: ItemMap[] = [];
+      const maps: TestCollectionDict[] = [];
       function List({ showExtra }: { showExtra: boolean }) {
         return (
-          <Collection.Provider scope={undefined}>
-            <Collection.Slot scope={undefined}>
+          <TestCollection.Provider scope={undefined}>
+            <TestCollection.Slot scope={undefined}>
               <ul>
-                <Collection.ItemSlot scope={undefined} label="a">
+                <TestCollection.ItemSlot scope={undefined} label="a">
                   <li>a</li>
-                </Collection.ItemSlot>
+                </TestCollection.ItemSlot>
                 {showExtra ? <li>not an item</li> : null}
-                <Collection.ItemSlot scope={undefined} label="b">
+                <TestCollection.ItemSlot scope={undefined} label="b">
                   <li>b</li>
-                </Collection.ItemSlot>
+                </TestCollection.ItemSlot>
               </ul>
-            </Collection.Slot>
+            </TestCollection.Slot>
             <CollectionSpy onRender={(map) => maps.push(map)} />
-          </Collection.Provider>
+          </TestCollection.Provider>
         );
       }
       const { rerender } = render(<List showExtra={false} />);
@@ -560,17 +754,17 @@ describe('createCollection', () => {
     });
 
     it('does not modify the previous map when an item is added', () => {
-      const maps: ItemMap[] = [];
+      const maps: TestCollectionDict[] = [];
       function List({ items }: { items: string[] }) {
         return (
-          <Collection.Provider scope={undefined}>
+          <TestCollection.Provider scope={undefined}>
             {items.map((item) => (
-              <Collection.ItemSlot key={item} scope={undefined} label={item}>
+              <TestCollection.ItemSlot key={item} scope={undefined} label={item}>
                 <div />
-              </Collection.ItemSlot>
+              </TestCollection.ItemSlot>
             ))}
             <CollectionSpy onRender={(map) => maps.push(map)} />
-          </Collection.Provider>
+          </TestCollection.Provider>
         );
       }
       const { rerender } = render(<List items={['a', 'b']} />);
@@ -581,17 +775,17 @@ describe('createCollection', () => {
     });
 
     it('does not modify the previous map when an item is removed', () => {
-      const maps: ItemMap[] = [];
+      const maps: TestCollectionDict[] = [];
       function List({ items }: { items: string[] }) {
         return (
-          <Collection.Provider scope={undefined}>
+          <TestCollection.Provider scope={undefined}>
             {items.map((item) => (
-              <Collection.ItemSlot key={item} scope={undefined} label={item}>
+              <TestCollection.ItemSlot key={item} scope={undefined} label={item}>
                 <div />
-              </Collection.ItemSlot>
+              </TestCollection.ItemSlot>
             ))}
             <CollectionSpy onRender={(map) => maps.push(map)} />
-          </Collection.Provider>
+          </TestCollection.Provider>
         );
       }
       const { rerender } = render(<List items={['a', 'b', 'c']} />);
@@ -612,25 +806,25 @@ describe('createCollection', () => {
         React.use(promise);
         return children;
       }
-      let latestMap: ItemMap | undefined;
+      let latestMap: TestCollectionDict | undefined;
       await act(async () => {
         render(
-          <Collection.Provider scope={undefined}>
-            <Collection.ItemSlot scope={undefined} label="a">
+          <TestCollection.Provider scope={undefined}>
+            <TestCollection.ItemSlot scope={undefined} label="a">
               <div />
-            </Collection.ItemSlot>
+            </TestCollection.ItemSlot>
             <React.Suspense fallback={<span>loading</span>}>
               <Deferred>
-                <Collection.ItemSlot scope={undefined} label="b">
+                <TestCollection.ItemSlot scope={undefined} label="b">
                   <div />
-                </Collection.ItemSlot>
+                </TestCollection.ItemSlot>
               </Deferred>
             </React.Suspense>
-            <Collection.ItemSlot scope={undefined} label="c">
+            <TestCollection.ItemSlot scope={undefined} label="c">
               <div />
-            </Collection.ItemSlot>
+            </TestCollection.ItemSlot>
             <CollectionSpy onRender={(map) => (latestMap = map)} />
-          </Collection.Provider>,
+          </TestCollection.Provider>,
         );
       });
       expect(screen.getByText('loading')).toBeInTheDocument();
@@ -645,23 +839,23 @@ describe('createCollection', () => {
     });
 
     it('removes items while inside a hidden Activity and restores them when visible', () => {
-      let latestMap: ItemMap | undefined;
+      let latestMap: TestCollectionDict | undefined;
       function List({ mode }: { mode: 'visible' | 'hidden' }) {
         return (
-          <Collection.Provider scope={undefined}>
-            <Collection.ItemSlot scope={undefined} label="a">
+          <TestCollection.Provider scope={undefined}>
+            <TestCollection.ItemSlot scope={undefined} label="a">
               <div />
-            </Collection.ItemSlot>
+            </TestCollection.ItemSlot>
             <React.Activity mode={mode}>
-              <Collection.ItemSlot scope={undefined} label="b">
+              <TestCollection.ItemSlot scope={undefined} label="b">
                 <div />
-              </Collection.ItemSlot>
+              </TestCollection.ItemSlot>
             </React.Activity>
-            <Collection.ItemSlot scope={undefined} label="c">
+            <TestCollection.ItemSlot scope={undefined} label="c">
               <div />
-            </Collection.ItemSlot>
+            </TestCollection.ItemSlot>
             <CollectionSpy onRender={(map) => (latestMap = map)} />
-          </Collection.Provider>
+          </TestCollection.Provider>
         );
       }
       const { rerender } = render(<List mode="visible" />);
@@ -675,23 +869,23 @@ describe('createCollection', () => {
     });
 
     it('registers items inside an initially hidden Activity once it becomes visible', () => {
-      let latestMap: ItemMap | undefined;
+      let latestMap: TestCollectionDict | undefined;
       function List({ mode }: { mode: 'visible' | 'hidden' }) {
         return (
-          <Collection.Provider scope={undefined}>
-            <Collection.ItemSlot scope={undefined} label="a">
+          <TestCollection.Provider scope={undefined}>
+            <TestCollection.ItemSlot scope={undefined} label="a">
               <div />
-            </Collection.ItemSlot>
+            </TestCollection.ItemSlot>
             <React.Activity mode={mode}>
-              <Collection.ItemSlot scope={undefined} label="b">
+              <TestCollection.ItemSlot scope={undefined} label="b">
                 <div />
-              </Collection.ItemSlot>
+              </TestCollection.ItemSlot>
             </React.Activity>
-            <Collection.ItemSlot scope={undefined} label="c">
+            <TestCollection.ItemSlot scope={undefined} label="c">
               <div />
-            </Collection.ItemSlot>
+            </TestCollection.ItemSlot>
             <CollectionSpy onRender={(map) => (latestMap = map)} />
-          </Collection.Provider>
+          </TestCollection.Provider>
         );
       }
       const { rerender } = render(<List mode="hidden" />);
@@ -703,23 +897,23 @@ describe('createCollection', () => {
 
     it('reorders items when the reorder happens in a transition', async () => {
       let setItems!: (items: string[]) => void;
-      let latestMap: ItemMap | undefined;
+      let latestMap: TestCollectionDict | undefined;
       function List() {
         const [items, setItemsState] = React.useState(['a', 'b', 'c']);
         setItems = setItemsState;
         return (
-          <Collection.Provider scope={undefined}>
-            <Collection.Slot scope={undefined}>
+          <TestCollection.Provider scope={undefined}>
+            <TestCollection.Slot scope={undefined}>
               <ul>
                 {items.map((item) => (
-                  <Collection.ItemSlot key={item} scope={undefined} label={item}>
+                  <TestCollection.ItemSlot key={item} scope={undefined} label={item}>
                     <li>{item}</li>
-                  </Collection.ItemSlot>
+                  </TestCollection.ItemSlot>
                 ))}
               </ul>
-            </Collection.Slot>
+            </TestCollection.Slot>
             <CollectionSpy onRender={(map) => (latestMap = map)} />
-          </Collection.Provider>
+          </TestCollection.Provider>
         );
       }
       render(<List />);
@@ -741,49 +935,49 @@ describe('createCollection', () => {
     // `ViewTransition` boundaries, not the animation itself. When jsdom
     // eventually implements `document.startViewTransition`, we should re-visit.
     it.todo('registers items wrapped in ViewTransition in document order', () => {
-      let latestMap: ItemMap | undefined;
+      let latestMap: TestCollectionDict | undefined;
       render(
-        <Collection.Provider scope={undefined}>
+        <TestCollection.Provider scope={undefined}>
           <React.ViewTransition>
-            <Collection.ItemSlot scope={undefined} label="a">
+            <TestCollection.ItemSlot scope={undefined} label="a">
               <div />
-            </Collection.ItemSlot>
+            </TestCollection.ItemSlot>
           </React.ViewTransition>
-          <Collection.ItemSlot scope={undefined} label="b">
+          <TestCollection.ItemSlot scope={undefined} label="b">
             <div />
-          </Collection.ItemSlot>
+          </TestCollection.ItemSlot>
           <React.ViewTransition>
-            <Collection.ItemSlot scope={undefined} label="c">
+            <TestCollection.ItemSlot scope={undefined} label="c">
               <div />
-            </Collection.ItemSlot>
+            </TestCollection.ItemSlot>
           </React.ViewTransition>
           <CollectionSpy onRender={(map) => (latestMap = map)} />
-        </Collection.Provider>,
+        </TestCollection.Provider>,
       );
       expect(labelsOf(latestMap)).toEqual(['a', 'b', 'c']);
     });
 
     it.todo('reorders items wrapped in ViewTransition when reordered in a transition', async () => {
       let setItems!: (items: string[]) => void;
-      let latestMap: ItemMap | undefined;
+      let latestMap: TestCollectionDict | undefined;
       function List() {
         const [items, setItemsState] = React.useState(['a', 'b', 'c']);
         setItems = setItemsState;
         return (
-          <Collection.Provider scope={undefined}>
-            <Collection.Slot scope={undefined}>
+          <TestCollection.Provider scope={undefined}>
+            <TestCollection.Slot scope={undefined}>
               <ul>
                 {items.map((item) => (
                   <React.ViewTransition key={item}>
-                    <Collection.ItemSlot scope={undefined} label={item}>
+                    <TestCollection.ItemSlot scope={undefined} label={item}>
                       <li>{item}</li>
-                    </Collection.ItemSlot>
+                    </TestCollection.ItemSlot>
                   </React.ViewTransition>
                 ))}
               </ul>
-            </Collection.Slot>
+            </TestCollection.Slot>
             <CollectionSpy onRender={(map) => (latestMap = map)} />
-          </Collection.Provider>
+          </TestCollection.Provider>
         );
       }
       render(<List />);
@@ -802,25 +996,25 @@ describe('createCollection', () => {
 
     it.todo('removes items wrapped in ViewTransition when removed in a transition', async () => {
       let setItems!: (items: string[]) => void;
-      let latestMap: ItemMap | undefined;
+      let latestMap: TestCollectionDict | undefined;
       function List() {
         const [items, setItemsState] = React.useState(['a', 'b', 'c']);
         setItems = setItemsState;
         return (
-          <Collection.Provider scope={undefined}>
-            <Collection.Slot scope={undefined}>
+          <TestCollection.Provider scope={undefined}>
+            <TestCollection.Slot scope={undefined}>
               <ul>
                 {items.map((item) => (
                   <React.ViewTransition key={item}>
-                    <Collection.ItemSlot scope={undefined} label={item}>
+                    <TestCollection.ItemSlot scope={undefined} label={item}>
                       <li>{item}</li>
-                    </Collection.ItemSlot>
+                    </TestCollection.ItemSlot>
                   </React.ViewTransition>
                 ))}
               </ul>
-            </Collection.Slot>
+            </TestCollection.Slot>
             <CollectionSpy onRender={(map) => (latestMap = map)} />
-          </Collection.Provider>
+          </TestCollection.Provider>
         );
       }
       render(<List />);

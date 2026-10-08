@@ -4,6 +4,6 @@ export type { CollectionProps } from './collection-legacy';
 
 export { createCollection as unstable_createCollection } from './collection';
 export type {
-  CollectionProps as unstable_CollectionProps,
-  CollectionItemMap as unstable_CollectionItemMap,
+  CollectionSlotProps as unstable_CollectionSlotProps,
+  CollectionDict as unstable_CollectionDict,
 } from './collection';

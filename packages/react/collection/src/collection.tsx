@@ -2,12 +2,13 @@ import * as React from 'react';
 import { createContextScope } from '@radix-ui/react-context';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createSlot, type Slot } from '@radix-ui/react-slot';
+import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import type { EntryOf } from './ordered-dictionary';
 import { OrderedDict } from './ordered-dictionary';
 
 type SlotProps = React.ComponentPropsWithoutRef<typeof Slot>;
 type CollectionElement = HTMLElement;
-interface CollectionProps extends SlotProps {
+interface CollectionSlotProps extends SlotProps {
   scope: any;
 }
 
@@ -22,12 +23,12 @@ type ItemDataWithElement<
   element: ItemElement;
 };
 
-type ItemMap<ItemElement extends HTMLElement, ItemData extends BaseItemData> = OrderedDict<
-  ItemElement,
-  ItemDataWithElement<ItemData, ItemElement>
->;
+type BaseCollectionDict<
+  ItemElement extends HTMLElement,
+  ItemData extends BaseItemData,
+> = OrderedDict<ItemElement, ItemDataWithElement<ItemData, ItemElement>>;
 
-type CollectionItemMap<ItemElement extends HTMLElement, ItemData> = ItemMap<
+type Collection<ItemElement extends HTMLElement, ItemData> = BaseCollectionDict<
   ItemElement,
   ItemDataWithElement<ItemData & BaseItemData, ItemElement>
 >;
@@ -54,28 +55,31 @@ type CollectionItemMap<ItemElement extends HTMLElement, ItemData> = ItemMap<
   const PROVIDER_NAME = name + 'CollectionProvider';
   const [createCollectionContext, createCollectionScope] = createContextScope(PROVIDER_NAME);
 
-  interface ContextValue {
-    collectionElement: CollectionElement | null;
-    collectionRef: React.Ref<CollectionElement | null>;
-    collectionRefObject: React.RefObject<CollectionElement | null>;
-    itemMap: ItemMap<ItemElement, AllItemData>;
-    setItemMap: React.Dispatch<React.SetStateAction<ItemMap<ItemElement, AllItemData>>>;
+  interface CollectionStableContextValue {
+    collectionElementRef: React.Ref<CollectionElement | null>;
+    collectionElementRefObject: React.RefObject<CollectionElement | null>;
+    setCollection: React.Dispatch<
+      React.SetStateAction<BaseCollectionDict<ItemElement, AllItemData>>
+    >;
+    getCollection: () => BaseCollectionDict<ItemElement, AllItemData>;
   }
 
-  const [CollectionContextProvider, useCollectionContext] = createCollectionContext<ContextValue>(
-    PROVIDER_NAME,
-    {
-      collectionElement: null,
-      collectionRef: { current: null },
-      collectionRefObject: { current: null },
-      itemMap: new OrderedDict(),
-      setItemMap: () => void 0,
-    },
-  );
+  interface CollectionStatefulContextValue {
+    collectionElement: CollectionElement | null;
+    collection: BaseCollectionDict<ItemElement, AllItemData>;
+  }
+
+  const [CollectionStableContextProvider, useStableCollectionContext] =
+    createCollectionContext<CollectionStableContextValue>(PROVIDER_NAME);
+  CollectionStableContextProvider.displayName = name + 'CollectionStableContextProvider';
+
+  const [CollectionStatefulContextProvider, useStatefulCollectionContext] =
+    createCollectionContext<CollectionStatefulContextValue>(PROVIDER_NAME);
+  CollectionStatefulContextProvider.displayName = name + 'CollectionStatefulContextProvider';
 
   type CollectionState = [
-    ItemMap: ItemMap<ItemElement, AllItemData>,
-    SetItemMap: React.Dispatch<React.SetStateAction<ItemMap<ItemElement, AllItemData>>>,
+    ItemMap: BaseCollectionDict<ItemElement, AllItemData>,
+    SetItemMap: React.Dispatch<React.SetStateAction<BaseCollectionDict<ItemElement, AllItemData>>>,
   ];
 
   const CollectionProvider: React.FC<{
@@ -98,7 +102,7 @@ type CollectionItemMap<ItemElement extends HTMLElement, ItemData> = ItemMap<
     const state = useInitCollection();
     return <CollectionProviderImpl {...props} state={state} />;
   };
-  CollectionInit.displayName = PROVIDER_NAME + 'Init';
+  CollectionInit.displayName = name + 'CollectionInit';
 
   const CollectionProviderImpl: React.FC<{
     children?: React.ReactNode | undefined;
@@ -111,13 +115,16 @@ type CollectionItemMap<ItemElement extends HTMLElement, ItemData> = ItemMap<
       null,
     );
     const composeRefs = useComposedRefs(ref, setCollectionElement);
-    const [itemMap, setItemMap] = state;
+    const [collection, setCollection] = state;
+    const getCollection = useCallbackRef(() => collection);
 
     React.useEffect(() => {
-      if (!collectionElement) return;
+      if (!collectionElement) {
+        return;
+      }
 
       const observer = getChildListObserver(() => {
-        setItemMap((map) => {
+        setCollection((map) => {
           const sorted = map.toSorted(sortByDocumentPosition);
           const orderChanged = sorted.some(([key], index) => map.keyAt(index) !== key);
 
@@ -131,23 +138,28 @@ type CollectionItemMap<ItemElement extends HTMLElement, ItemData> = ItemMap<
       return () => {
         observer.disconnect();
       };
-    }, [collectionElement, setItemMap]);
+    }, [collectionElement, setCollection]);
 
     return (
-      <CollectionContextProvider
+      <CollectionStableContextProvider
         scope={scope}
-        itemMap={itemMap}
-        setItemMap={setItemMap}
-        collectionRef={composeRefs}
-        collectionRefObject={ref}
-        collectionElement={collectionElement}
+        collectionElementRef={composeRefs}
+        collectionElementRefObject={ref}
+        getCollection={getCollection}
+        setCollection={setCollection}
       >
-        {children}
-      </CollectionContextProvider>
+        <CollectionStatefulContextProvider
+          scope={scope}
+          collectionElement={collectionElement}
+          collection={collection}
+        >
+          {children}
+        </CollectionStatefulContextProvider>
+      </CollectionStableContextProvider>
     );
   };
 
-  CollectionProviderImpl.displayName = PROVIDER_NAME + 'Impl';
+  CollectionProviderImpl.displayName = name + 'CollectionProviderImpl';
 
   /* -----------------------------------------------------------------------------------------------
    * CollectionSlot
@@ -156,11 +168,11 @@ type CollectionItemMap<ItemElement extends HTMLElement, ItemData> = ItemMap<
   const COLLECTION_SLOT_NAME = name + 'CollectionSlot';
 
   const CollectionSlotImpl = createSlot(COLLECTION_SLOT_NAME);
-  const CollectionSlot = React.forwardRef<CollectionElement, CollectionProps>(
+  const CollectionSlot = React.forwardRef<CollectionElement, CollectionSlotProps>(
     (props, forwardedRef) => {
       const { scope, children } = props;
-      const context = useCollectionContext(COLLECTION_SLOT_NAME, scope);
-      const composedRefs = useComposedRefs(forwardedRef, context.collectionRef);
+      const context = useStableCollectionContext(COLLECTION_SLOT_NAME, scope);
+      const composedRefs = useComposedRefs(forwardedRef, context.collectionElementRef);
       return <CollectionSlotImpl ref={composedRefs}>{children}</CollectionSlotImpl>;
     },
   );
@@ -191,9 +203,9 @@ type CollectionItemMap<ItemElement extends HTMLElement, ItemData> = ItemMap<
       const ref = React.useRef<ItemElement>(null);
       const [element, setElement] = React.useState<ItemElement | null>(null);
       const composedRefs = useComposedRefs(forwardedRef, ref, setElement);
-      const context = useCollectionContext(ITEM_SLOT_NAME, scope);
+      const context = useStableCollectionContext(ITEM_SLOT_NAME, scope);
 
-      const { setItemMap } = context;
+      const { setCollection } = context;
 
       const itemDataRef = React.useRef(itemData);
       if (!shallowEqual(itemDataRef.current, itemData)) {
@@ -203,7 +215,7 @@ type CollectionItemMap<ItemElement extends HTMLElement, ItemData> = ItemMap<
 
       React.useEffect(() => {
         const itemData = memoizedItemData;
-        setItemMap((map) => {
+        setCollection((map) => {
           if (!element) {
             return map;
           }
@@ -220,7 +232,7 @@ type CollectionItemMap<ItemElement extends HTMLElement, ItemData> = ItemMap<
         });
 
         return () => {
-          setItemMap((map) => {
+          setCollection((map) => {
             if (!element || !map.has(element)) {
               return map;
             }
@@ -229,7 +241,7 @@ type CollectionItemMap<ItemElement extends HTMLElement, ItemData> = ItemMap<
             return next;
           });
         };
-      }, [element, memoizedItemData, setItemMap]);
+      }, [element, memoizedItemData, setCollection]);
 
       return (
         <CollectionItemSlotImpl {...{ [ITEM_DATA_ATTR]: '' }} ref={composedRefs as any}>
@@ -246,7 +258,7 @@ type CollectionItemMap<ItemElement extends HTMLElement, ItemData> = ItemMap<
    * ---------------------------------------------------------------------------------------------*/
 
   function useInitCollection() {
-    return React.useState<ItemMap<ItemElement, AllItemData>>(new OrderedDict());
+    return React.useState<BaseCollectionDict<ItemElement, AllItemData>>(new OrderedDict());
   }
 
   /* -----------------------------------------------------------------------------------------------
@@ -254,14 +266,19 @@ type CollectionItemMap<ItemElement extends HTMLElement, ItemData> = ItemMap<
    * ---------------------------------------------------------------------------------------------*/
 
   function useCollection(scope: any) {
-    const { itemMap } = useCollectionContext(name + 'CollectionConsumer', scope);
+    const { collection } = useStatefulCollectionContext(name + 'CollectionConsumer', scope);
+    return collection;
+  }
 
-    return itemMap;
+  function useGetCollection(scope: any) {
+    const { getCollection } = useStableCollectionContext(name + 'CollectionConsumer', scope);
+    return getCollection;
   }
 
   const functions = {
     createCollectionScope,
     useCollection,
+    useGetCollection,
     useInitCollection,
   };
 
@@ -272,7 +289,7 @@ type CollectionItemMap<ItemElement extends HTMLElement, ItemData> = ItemMap<
 }
 
 export { createCollection };
-export type { CollectionProps, CollectionItemMap };
+export type { CollectionSlotProps, Collection as CollectionDict };
 
 function shallowEqual(a: any, b: any) {
   if (a === b) return true;
@@ -293,8 +310,8 @@ function isElementPreceding(a: Element, b: Element) {
 }
 
 function sortByDocumentPosition<E extends HTMLElement, T extends BaseItemData>(
-  a: EntryOf<ItemMap<E, T>>,
-  b: EntryOf<ItemMap<E, T>>,
+  a: EntryOf<BaseCollectionDict<E, T>>,
+  b: EntryOf<BaseCollectionDict<E, T>>,
 ) {
   return !a[1].element || !b[1].element
     ? 0
