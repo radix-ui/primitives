@@ -106,19 +106,30 @@ export const Indeterminate = () => {
 };
 
 export const WithinForm = () => {
-  const [data, setData] = React.useState({ optional: false, required: false, stopprop: false });
+  const [formData, setFormData] = React.useState<Record<string, boolean>>({});
   const [checked, setChecked] = React.useState<boolean | 'indeterminate'>('indeterminate');
+  const [fieldData, setFieldData] = React.useState<Record<string, boolean>>({
+    'required-1': true,
+  });
+
+  const setFieldChecked = (name: string, value: string, nextChecked: boolean) => {
+    if (value === '4') {
+      window.alert('4 is not supported');
+    } else {
+      setFieldData((prevData) => ({ ...prevData, [`${name}-${value}`]: nextChecked }));
+    }
+  };
 
   return (
     <form
       onSubmit={(event) => event.preventDefault()}
       onChange={(event) => {
         const input = event.target as unknown as HTMLInputElement;
-        setData((prevData) => ({ ...prevData, [input.name]: input.checked }));
+        setFormData((prevData) => ({ ...prevData, [input.name]: input.checked }));
       }}
     >
       <fieldset>
-        <legend>optional checked: {String(data.optional)}</legend>
+        <legend>optional field</legend>
         <label>
           <Checkbox.Root
             className={styles.root}
@@ -147,37 +158,59 @@ export const WithinForm = () => {
       <br />
 
       <fieldset>
-        <legend>required checked: {String(data.required)}</legend>
-        <Checkbox.unstable_Provider name="required" required>
-          <Checkbox.unstable_Trigger className={styles.root}>
-            <Checkbox.Indicator className={styles.indicator} />
-          </Checkbox.unstable_Trigger>
-          <Checkbox.unstable_BubbleInput />
-        </Checkbox.unstable_Provider>
+        <legend>required field (1 is required)</legend>
+        {['1', '2', '3', '4'].map((value) => (
+          <div key={value}>
+            <Checkbox.unstable_Provider
+              name={`required-${value}`}
+              required={value === '1'}
+              checked={fieldData[`required-${value}`] ?? false}
+              onCheckedChange={(nextChecked) =>
+                setFieldChecked('required', value, nextChecked === true)
+              }
+            >
+              <Checkbox.unstable_Trigger className={styles.root} id={`required-${value}`}>
+                <Checkbox.Indicator className={styles.indicator} />
+              </Checkbox.unstable_Trigger>
+              <Checkbox.unstable_BubbleInput />
+            </Checkbox.unstable_Provider>{' '}
+            <label htmlFor={`required-${value}`}>{value}</label>
+          </div>
+        ))}
       </fieldset>
 
-      <br />
       <br />
 
       <fieldset>
-        <legend>stop propagation checked: {String(data.stopprop)}</legend>
-        <Checkbox.unstable_Provider name="stopprop">
-          <Checkbox.unstable_Trigger
-            className={styles.root}
-            onClick={(event) => event.stopPropagation()}
-          >
-            <Checkbox.Indicator className={styles.indicator} />
-          </Checkbox.unstable_Trigger>
-          <Checkbox.unstable_BubbleInput />
-        </Checkbox.unstable_Provider>
+        <legend>With stop propagation</legend>
+        {['1', '2', '3', '4'].map((value) => (
+          <div key={value}>
+            <Checkbox.unstable_Provider
+              name={`stopprop-${value}`}
+              checked={fieldData[`stopprop-${value}`] ?? false}
+              onCheckedChange={(nextChecked) =>
+                setFieldChecked('stopprop', value, nextChecked === true)
+              }
+            >
+              <Checkbox.unstable_Trigger
+                className={styles.root}
+                onClick={(event) => event.stopPropagation()}
+                id={`stopprop-${value}`}
+              >
+                <Checkbox.Indicator className={styles.indicator} />
+              </Checkbox.unstable_Trigger>
+              <Checkbox.unstable_BubbleInput />
+            </Checkbox.unstable_Provider>{' '}
+            <label htmlFor={`stopprop-${value}`}>{value}</label>
+          </div>
+        ))}
       </fieldset>
 
       <br />
-      <br />
 
       <fieldset>
-        <legend>no bubble input checked: {String(data.stopprop)}</legend>
-        <Checkbox.unstable_Provider name="stopprop">
+        <legend>no bubble input</legend>
+        <Checkbox.unstable_Provider name="nobubble">
           <Checkbox.unstable_Trigger className={styles.root}>
             <Checkbox.Indicator className={styles.indicator} />
           </Checkbox.unstable_Trigger>
@@ -185,10 +218,37 @@ export const WithinForm = () => {
       </fieldset>
 
       <br />
+
+      <fieldset>
+        <legend>native inputs (1 is required)</legend>
+        {['1', '2', '3', '4'].map((value) => (
+          <div key={value}>
+            <input
+              type="checkbox"
+              id={`native-${value}`}
+              name={`native-${value}`}
+              required={value === '1'}
+              checked={fieldData[`native-${value}`] ?? false}
+              onChange={(event) => setFieldChecked('native', value, event.target.checked)}
+            />{' '}
+            <label htmlFor={`native-${value}`}>{value}</label>
+          </div>
+        ))}
+      </fieldset>
+
       <br />
 
       <button type="reset">Reset</button>
       <button>Submit</button>
+      <hr />
+      <div>
+        <h2>Form data:</h2>
+        <pre>{JSON.stringify(formData, null, 2)}</pre>
+      </div>
+      <div>
+        <h2>Field data:</h2>
+        <pre>{JSON.stringify({ optional: checked, ...fieldData }, null, 2)}</pre>
+      </div>
     </form>
   );
 };
