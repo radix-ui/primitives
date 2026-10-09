@@ -62,6 +62,19 @@ test.describe('DropdownMenu', () => {
           await pointerExitRightToLeft(page, 'WorkOS →');
           await expect(page.getByText('Radix', { exact: true })).toBeVisible();
         });
+
+        test('should select an item in a collision-flipped submenu after a single pointer move', async ({
+          page,
+        }) => {
+          await page.getByText('Bookmarks →', { exact: true }).click();
+          await page.getByText('WorkOS →', { exact: true }).click();
+
+          const submenu = page.getByRole('menu').filter({ hasText: 'Radix' });
+          await expect(submenu).toHaveAttribute('data-side', 'left');
+
+          await page.getByText('Radix', { exact: true }).click();
+          await expect(page.getByText('New Tab', { exact: true })).toHaveCount(0);
+        });
       });
 
       test('should close open submenu when moving pointer to any item in parent menu', async ({
