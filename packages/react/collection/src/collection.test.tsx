@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { renderToString } from 'react-dom/server';
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, expectTypeOf, it } from 'vitest';
 import { type CollectionDict, createCollection } from './collection';
 
 type ItemData = { label: string };
@@ -340,6 +340,187 @@ describe('createCollection', () => {
       );
       fireEvent.click(screen.getByRole('button'));
       expect(labelsOnClick).toEqual(['inner']);
+    });
+
+    it('includes an item mounted in the same commit when read from a layout effect', () => {
+      let labelsInLayoutEffect: string[] = [];
+      function LayoutEffectReader({ items }: { items: string[] }) {
+        const getCollection = useGetCollection(undefined);
+        React.useLayoutEffect(() => {
+          labelsInLayoutEffect = labelsOf(getCollection());
+        }, [getCollection, items]);
+        return null;
+      }
+      function List({ items }: { items: string[] }) {
+        return (
+          <TestCollection.Provider scope={undefined}>
+            {items.map((label) => (
+              <TestCollection.ItemSlot key={label} scope={undefined} label={label}>
+                <div />
+              </TestCollection.ItemSlot>
+            ))}
+            <LayoutEffectReader items={items} />
+          </TestCollection.Provider>
+        );
+      }
+      const { rerender } = render(<List items={['a', 'c']} />);
+      expect(labelsInLayoutEffect).toEqual(['a', 'c']);
+
+      rerender(<List items={['a', 'b', 'c']} />);
+      expect(labelsInLayoutEffect).toEqual(['a', 'b', 'c']);
+    });
+
+    it('excludes an item unmounted in the same commit when read from a layout effect', () => {
+      let labelsInLayoutEffect: string[] = [];
+      function LayoutEffectReader({ items }: { items: string[] }) {
+        const getCollection = useGetCollection(undefined);
+        React.useLayoutEffect(() => {
+          labelsInLayoutEffect = labelsOf(getCollection());
+        }, [getCollection, items]);
+        return null;
+      }
+      function List({ items }: { items: string[] }) {
+        return (
+          <TestCollection.Provider scope={undefined}>
+            {items.map((label) => (
+              <TestCollection.ItemSlot key={label} scope={undefined} label={label}>
+                <div />
+              </TestCollection.ItemSlot>
+            ))}
+            <LayoutEffectReader items={items} />
+          </TestCollection.Provider>
+        );
+      }
+      const { rerender } = render(<List items={['a', 'b', 'c']} />);
+      rerender(<List items={['a', 'c']} />);
+      expect(labelsInLayoutEffect).toEqual(['a', 'c']);
+    });
+
+    it('returns reordered items in document order when read from a layout effect', () => {
+      let labelsInLayoutEffect: string[] = [];
+      function LayoutEffectReader({ items }: { items: string[] }) {
+        const getCollection = useGetCollection(undefined);
+        React.useLayoutEffect(() => {
+          labelsInLayoutEffect = labelsOf(getCollection());
+        }, [getCollection, items]);
+        return null;
+      }
+      function List({ items }: { items: string[] }) {
+        return (
+          <TestCollection.Provider scope={undefined}>
+            <TestCollection.Slot scope={undefined}>
+              <div>
+                {items.map((label) => (
+                  <TestCollection.ItemSlot key={label} scope={undefined} label={label}>
+                    <div />
+                  </TestCollection.ItemSlot>
+                ))}
+              </div>
+            </TestCollection.Slot>
+            <LayoutEffectReader items={items} />
+          </TestCollection.Provider>
+        );
+      }
+      const { rerender } = render(<List items={['a', 'b', 'c']} />);
+      rerender(<List items={['c', 'a', 'b']} />);
+      expect(labelsInLayoutEffect).toEqual(['c', 'a', 'b']);
+    });
+
+    it('returns updated item data when read from a layout effect', () => {
+      let labelsInLayoutEffect: string[] = [];
+      function LayoutEffectReader({ middleLabel }: { middleLabel: string }) {
+        const getCollection = useGetCollection(undefined);
+        React.useLayoutEffect(() => {
+          labelsInLayoutEffect = labelsOf(getCollection());
+        }, [getCollection, middleLabel]);
+        return null;
+      }
+      function List({ middleLabel }: { middleLabel: string }) {
+        return (
+          <TestCollection.Provider scope={undefined}>
+            <TestCollection.ItemSlot scope={undefined} label="a">
+              <div />
+            </TestCollection.ItemSlot>
+            <TestCollection.ItemSlot scope={undefined} label={middleLabel}>
+              <div />
+            </TestCollection.ItemSlot>
+            <TestCollection.ItemSlot scope={undefined} label="c">
+              <div />
+            </TestCollection.ItemSlot>
+            <LayoutEffectReader middleLabel={middleLabel} />
+          </TestCollection.Provider>
+        );
+      }
+      const { rerender } = render(<List middleLabel="b" />);
+      rerender(<List middleLabel="updated" />);
+      expect(labelsInLayoutEffect).toEqual(['a', 'updated', 'c']);
+    });
+
+    // `ItemSlot` sets state from its ref callback, which React calls with `null`
+    // while hiding the boundary's content. That update prevents the fallback
+    // from committing, so the content is never hidden.
+    it.fails('excludes items hidden when a Suspense boundary suspends again', async () => {
+      const resolvedPromise = Object.assign(Promise.resolve(), {
+        status: 'fulfilled' as const,
+        value: undefined,
+      });
+      const pendingPromise = new Promise<void>(() => {});
+      function Deferred({
+        promise,
+        children,
+      }: {
+        promise: Promise<void>;
+        children: React.ReactNode;
+      }) {
+        React.use(promise);
+        return children;
+      }
+      let labelsOnClick: string[] = [];
+      function LabelsButton() {
+        const getCollection = useGetCollection(undefined);
+        return <button onClick={() => (labelsOnClick = labelsOf(getCollection()))}>read</button>;
+      }
+      function List({ promise }: { promise: Promise<void> }) {
+        return (
+          <TestCollection.Provider scope={undefined}>
+            <TestCollection.ItemSlot scope={undefined} label="a">
+              <div />
+            </TestCollection.ItemSlot>
+            <React.Suspense fallback={<span>loading</span>}>
+              <Deferred promise={promise}>
+                <TestCollection.ItemSlot scope={undefined} label="b">
+                  <div />
+                </TestCollection.ItemSlot>
+              </Deferred>
+            </React.Suspense>
+            <TestCollection.ItemSlot scope={undefined} label="c">
+              <div />
+            </TestCollection.ItemSlot>
+            <LabelsButton />
+          </TestCollection.Provider>
+        );
+      }
+      const { rerender } = render(<List promise={resolvedPromise} />);
+      fireEvent.click(screen.getByRole('button'));
+      expect(labelsOnClick).toEqual(['a', 'b', 'c']);
+
+      await act(async () => {
+        rerender(<List promise={pendingPromise} />);
+      });
+      expect(screen.getByText('loading')).toBeInTheDocument();
+      fireEvent.click(screen.getByRole('button'));
+      expect(labelsOnClick).toEqual(['a', 'c']);
+    });
+
+    it('does not expose methods that mutate the collection', () => {
+      expectTypeOf<TestCollectionDict>().not.toHaveProperty('set');
+      expectTypeOf<TestCollectionDict>().not.toHaveProperty('insert');
+      expectTypeOf<TestCollectionDict>().not.toHaveProperty('setBefore');
+      expectTypeOf<TestCollectionDict>().not.toHaveProperty('setAfter');
+      expectTypeOf<TestCollectionDict>().not.toHaveProperty('delete');
+      expectTypeOf<TestCollectionDict>().not.toHaveProperty('deleteAt');
+      expectTypeOf<TestCollectionDict>().not.toHaveProperty('clear');
+      expectTypeOf<TestCollectionDict>().not.toHaveProperty('sort');
     });
   });
 
