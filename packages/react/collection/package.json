@@ -39,7 +39,7 @@
     "@radix-ui/react-context": "workspace:*",
     "@radix-ui/react-primitive": "workspace:*",
     "@radix-ui/react-slot": "workspace:*",
-    "@radix-ui/react-use-callback-ref": "workspace:*"
+    "@radix-ui/react-use-layout-effect": "workspace:*"
   },
   "devDependencies": {
     "@repo/builder": "workspace:*",

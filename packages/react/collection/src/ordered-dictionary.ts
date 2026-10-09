@@ -471,3 +471,8 @@ function toSafeInteger(number: number) {
   // eslint-disable-next-line no-self-compare
   return number !== number || number === 0 ? 0 : Math.trunc(number);
 }
+
+export type ReadOnlyOrderedDict<K, V> = Omit<
+  OrderedDict<K, V>,
+  'set' | 'insert' | 'setBefore' | 'setAfter' | 'clear' | 'delete' | 'deleteAt' | 'sort'
+>;

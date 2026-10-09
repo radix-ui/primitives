@@ -2,9 +2,9 @@ import * as React from 'react';
 import { createContextScope } from '@radix-ui/react-context';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createSlot, type Slot } from '@radix-ui/react-slot';
-import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
+import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import type { EntryOf } from './ordered-dictionary';
-import { OrderedDict } from './ordered-dictionary';
+import { OrderedDict, type ReadOnlyOrderedDict } from './ordered-dictionary';
 
 type SlotProps = React.ComponentPropsWithoutRef<typeof Slot>;
 type CollectionElement = HTMLElement;
@@ -28,7 +28,7 @@ type BaseCollectionDict<
   ItemData extends BaseItemData,
 > = OrderedDict<ItemElement, ItemDataWithElement<ItemData, ItemElement>>;
 
-type Collection<ItemElement extends HTMLElement, ItemData> = BaseCollectionDict<
+type CollectionDict<ItemElement extends HTMLElement, ItemData> = ReadOnlyOrderedDict<
   ItemElement,
   ItemDataWithElement<ItemData & BaseItemData, ItemElement>
 >;
@@ -61,12 +61,13 @@ type Collection<ItemElement extends HTMLElement, ItemData> = BaseCollectionDict<
     setCollection: React.Dispatch<
       React.SetStateAction<BaseCollectionDict<ItemElement, AllItemData>>
     >;
-    getCollection: () => BaseCollectionDict<ItemElement, AllItemData>;
+    getCollection: () => CollectionDict<ItemElement, AllItemData>;
+    registryRef: React.RefObject<BaseCollectionDict<ItemElement, AllItemData>>;
   }
 
   interface CollectionStatefulContextValue {
     collectionElement: CollectionElement | null;
-    collection: BaseCollectionDict<ItemElement, AllItemData>;
+    collection: CollectionDict<ItemElement, AllItemData>;
   }
 
   const [CollectionStableContextProvider, useStableCollectionContext] =
@@ -116,7 +117,19 @@ type Collection<ItemElement extends HTMLElement, ItemData> = BaseCollectionDict<
     );
     const composeRefs = useComposedRefs(ref, setCollectionElement);
     const [collection, setCollection] = state;
-    const getCollection = useCallbackRef(() => collection);
+
+    // Written only during commit (from item ref callbacks and layout effects),
+    // so it never includes items from renders that React discards.
+    const registryRef = React.useRef<BaseCollectionDict<ItemElement, AllItemData>>(
+      new OrderedDict(),
+    );
+    const getCollection = React.useCallback(() => {
+      const registry = registryRef.current;
+      if (!isInDocumentOrder(registry)) {
+        registry.sort(sortByDocumentPosition);
+      }
+      return registry;
+    }, []);
 
     React.useEffect(() => {
       if (!collectionElement) {
@@ -147,6 +160,7 @@ type Collection<ItemElement extends HTMLElement, ItemData> = BaseCollectionDict<
         collectionElementRefObject={ref}
         getCollection={getCollection}
         setCollection={setCollection}
+        registryRef={registryRef}
       >
         <CollectionStatefulContextProvider
           scope={scope}
@@ -201,11 +215,9 @@ type Collection<ItemElement extends HTMLElement, ItemData> = BaseCollectionDict<
     (props, forwardedRef) => {
       const { scope, children, ...itemData } = props;
       const ref = React.useRef<ItemElement>(null);
-      const [element, setElement] = React.useState<ItemElement | null>(null);
-      const composedRefs = useComposedRefs(forwardedRef, ref, setElement);
       const context = useStableCollectionContext(ITEM_SLOT_NAME, scope);
 
-      const { setCollection } = context;
+      const { setCollection, registryRef } = context;
 
       const itemDataRef = React.useRef(itemData);
       if (!shallowEqual(itemDataRef.current, itemData)) {
@@ -213,35 +225,78 @@ type Collection<ItemElement extends HTMLElement, ItemData> = BaseCollectionDict<
       }
       const memoizedItemData = itemDataRef.current;
 
+      // TODO: Once React 19 is the minimum supported version, return a cleanup
+      // function that unregisters `node` instead of handling `null`, which
+      // depends on `ref.current` still holding the previous element.
+      const registerElement = React.useCallback(
+        (node: ItemElement | null) => {
+          const registry = registryRef.current;
+          if (node) {
+            registry.set(node, {
+              ...(itemDataRef.current as unknown as AllItemData),
+              element: node,
+            });
+          } else if (ref.current) {
+            registry.delete(ref.current);
+          }
+        },
+        [registryRef],
+      );
+      const composedRefs = useComposedRefs(forwardedRef, registerElement, ref);
+
+      useLayoutEffect(() => {
+        const node = ref.current;
+        const registry = registryRef.current;
+        if (node && registry.has(node)) {
+          registry.set(node, { ...(memoizedItemData as unknown as AllItemData), element: node });
+        }
+      }, [memoizedItemData, registryRef]);
+
+      const registeredRef = React.useRef<{
+        element: ItemElement;
+        itemData: typeof memoizedItemData;
+      } | null>(null);
+
       React.useEffect(() => {
-        const itemData = memoizedItemData;
+        const element = ref.current;
+        const registered = registeredRef.current;
+        if (
+          (registered?.element ?? null) === element &&
+          (!element || registered?.itemData === memoizedItemData)
+        ) {
+          return;
+        }
+
+        registeredRef.current = element ? { element, itemData: memoizedItemData } : null;
         setCollection((map) => {
-          if (!element) {
-            return map;
+          const next = new OrderedDict(map);
+          if (registered && registered.element !== element) {
+            next.delete(registered.element);
           }
-
-          if (!map.has(element)) {
-            const next = new OrderedDict(map);
-            next.set(element, { ...(itemData as unknown as AllItemData), element });
-            return next.sort(sortByDocumentPosition);
+          if (element) {
+            next.set(element, { ...(memoizedItemData as unknown as AllItemData), element });
           }
-
-          return map
-            .set(element, { ...(itemData as unknown as AllItemData), element })
-            .toSorted(sortByDocumentPosition);
+          return next.sort(sortByDocumentPosition);
         });
+      });
 
+      React.useEffect(() => {
         return () => {
+          const registered = registeredRef.current;
+          registeredRef.current = null;
+          if (!registered) {
+            return;
+          }
           setCollection((map) => {
-            if (!element || !map.has(element)) {
+            if (!map.has(registered.element)) {
               return map;
             }
             const next = new OrderedDict(map);
-            next.delete(element);
+            next.delete(registered.element);
             return next;
           });
         };
-      }, [element, memoizedItemData, setCollection]);
+      }, [setCollection]);
 
       return (
         <CollectionItemSlotImpl {...{ [ITEM_DATA_ATTR]: '' }} ref={composedRefs as any}>
@@ -289,7 +344,7 @@ type Collection<ItemElement extends HTMLElement, ItemData> = BaseCollectionDict<
 }
 
 export { createCollection };
-export type { CollectionSlotProps, Collection as CollectionDict };
+export type { CollectionSlotProps, CollectionDict };
 
 function shallowEqual(a: any, b: any) {
   if (a === b) return true;
@@ -307,6 +362,25 @@ function shallowEqual(a: any, b: any) {
 
 function isElementPreceding(a: Element, b: Element) {
   return !!(b.compareDocumentPosition(a) & Node.DOCUMENT_POSITION_PRECEDING);
+}
+
+function isInDocumentOrder<E extends HTMLElement, T extends BaseItemData>(
+  dict: BaseCollectionDict<E, T>,
+) {
+  let previous: Element | undefined;
+  for (const element of dict.keys()) {
+    if (previous) {
+      const position = previous.compareDocumentPosition(element);
+      if (
+        !(position & Node.DOCUMENT_POSITION_DISCONNECTED) &&
+        position & Node.DOCUMENT_POSITION_PRECEDING
+      ) {
+        return false;
+      }
+    }
+    previous = element;
+  }
+  return true;
 }
 
 function sortByDocumentPosition<E extends HTMLElement, T extends BaseItemData>(
