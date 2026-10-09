@@ -35,6 +35,11 @@ function ClassicRadioGroup(props: React.ComponentProps<typeof RadioGroup.Root>) 
   );
 }
 
+function describeRadio(target: EventTarget) {
+  const radio = target as HTMLInputElement;
+  return `${radio.value} ${radio.checked ? 'checked' : 'unchecked'}`;
+}
+
 function ComposableRadioGroup(props: React.ComponentProps<typeof RadioGroup.Root>) {
   return (
     <RadioGroup.Root aria-label="pets" {...props}>
@@ -394,6 +399,126 @@ describe('RadioGroup', () => {
       // subsequent programmatic value change
       act(() => rerender(<App value="2" />));
       expect(onParentClick).not.toHaveBeenCalled();
+    });
+
+    it('should trigger a clickable ancestor `onClick` for a user click that the controlled parent ignores', () => {
+      const onParentClick = vi.fn();
+      const onFormChange = vi.fn();
+      render(
+        <form onChange={(event) => onFormChange(describeRadio(event.target))}>
+          <div onClick={onParentClick}>
+            <ClassicRadioGroup name="pet" value="1" onValueChange={() => {}} />
+          </div>
+        </form>,
+      );
+
+      const radios = screen.getAllByRole(RADIO_ROLE);
+      act(() => fireEvent.click(radios[1]!));
+
+      expect(radios[1]).toHaveAttribute('aria-checked', 'false');
+      expect(onParentClick).toHaveBeenCalledTimes(1);
+      expect(onFormChange).not.toHaveBeenCalled();
+    });
+
+    it('should trigger a clickable ancestor `onClick` once and notify the form when the controlled parent applies the value after a timeout', async () => {
+      const onParentClick = vi.fn();
+      const onFormChange = vi.fn();
+      function DelayedApp() {
+        const [value, setValue] = React.useState('1');
+        return (
+          <form onChange={(event) => onFormChange(describeRadio(event.target))}>
+            <div onClick={onParentClick}>
+              <ClassicRadioGroup
+                name="pet"
+                value={value}
+                onValueChange={(nextValue) => {
+                  setTimeout(() => setValue(nextValue));
+                }}
+              />
+            </div>
+          </form>
+        );
+      }
+
+      render(<DelayedApp />);
+      const radios = screen.getAllByRole(RADIO_ROLE);
+      act(() => fireEvent.click(radios[1]!));
+      await act(() => new Promise((resolve) => setTimeout(resolve)));
+
+      expect(radios[1]).toHaveAttribute('aria-checked', 'true');
+      expect(onParentClick).toHaveBeenCalledTimes(1);
+      expect(onFormChange).toHaveBeenCalledWith('2 checked');
+    });
+
+    it('should trigger a clickable ancestor `onClick` once and notify the form when the controlled parent applies the value in a transition', async () => {
+      const onParentClick = vi.fn();
+      const onFormChange = vi.fn();
+      function TransitionApp() {
+        const [value, setValue] = React.useState('1');
+        return (
+          <form onChange={(event) => onFormChange(describeRadio(event.target))}>
+            <div onClick={onParentClick}>
+              <ClassicRadioGroup
+                name="pet"
+                value={value}
+                onValueChange={(nextValue) => {
+                  React.startTransition(() => setValue(nextValue));
+                }}
+              />
+            </div>
+          </form>
+        );
+      }
+
+      render(<TransitionApp />);
+      const radios = screen.getAllByRole(RADIO_ROLE);
+      await act(async () => fireEvent.click(radios[1]!));
+
+      expect(radios[1]).toHaveAttribute('aria-checked', 'true');
+      expect(onParentClick).toHaveBeenCalledTimes(1);
+      expect(onFormChange).toHaveBeenCalledWith('2 checked');
+    });
+
+    it('should not notify the form when propagation is stopped on the trigger and the controlled parent applies the value later', async () => {
+      const onParentClick = vi.fn();
+      const onFormChange = vi.fn();
+      function DelayedApp() {
+        const [value, setValue] = React.useState('1');
+        return (
+          <form onChange={(event) => onFormChange(describeRadio(event.target))}>
+            <div onClick={onParentClick}>
+              <RadioGroup.Root
+                aria-label="pets"
+                name="pet"
+                value={value}
+                onValueChange={(nextValue) => {
+                  setTimeout(() => setValue(nextValue));
+                }}
+              >
+                {VALUES.map((v) => (
+                  <RadioGroup.Item
+                    key={v}
+                    value={v}
+                    aria-label={LABELS[v]}
+                    onClick={(event) => event.stopPropagation()}
+                  >
+                    <RadioGroup.Indicator data-testid={`${INDICATOR_TEST_ID}-${v}`} />
+                  </RadioGroup.Item>
+                ))}
+              </RadioGroup.Root>
+            </div>
+          </form>
+        );
+      }
+
+      render(<DelayedApp />);
+      const radios = screen.getAllByRole(RADIO_ROLE);
+      act(() => fireEvent.click(radios[1]!));
+      await act(() => new Promise((resolve) => setTimeout(resolve)));
+
+      expect(radios[1]).toHaveAttribute('aria-checked', 'true');
+      expect(onParentClick).not.toHaveBeenCalled();
+      expect(onFormChange).not.toHaveBeenCalledWith('2 checked');
     });
 
     // regression test for https://github.com/radix-ui/primitives/issues/1982
