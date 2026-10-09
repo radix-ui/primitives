@@ -1787,6 +1787,148 @@ describe('bubble input change events', () => {
       expect(document.querySelector('select')).toHaveValue('banana');
     });
   });
+
+  it('bubbles a user-driven value change once when the controlled parent applies it after a timeout', async () => {
+    const onFormChange = vi.fn();
+
+    function DelayedSelect() {
+      const [value, setValue] = React.useState('apple');
+      return (
+        <form
+          onChange={(event) => onFormChange((event.target as unknown as HTMLSelectElement).value)}
+        >
+          <SelectTest
+            name="fruit"
+            value={value}
+            onValueChange={(nextValue) => {
+              setTimeout(() => setValue(nextValue));
+            }}
+            defaultOpen
+          />
+        </form>
+      );
+    }
+
+    render(<DelayedSelect />);
+    const listbox = await screen.findByRole('listbox', { hidden: true });
+    onFormChange.mockClear();
+
+    fireEvent.click(within(listbox).getByRole('option', { name: 'Banana' }));
+    await act(() => new Promise((resolve) => setTimeout(resolve)));
+
+    expect(screen.getByRole('combobox', { name: 'Choice' })).toHaveTextContent('Banana');
+    expect(onFormChange).toHaveBeenCalledTimes(1);
+    expect(onFormChange).toHaveBeenCalledWith('banana');
+    expect(new FormData(document.querySelector('form')!).get('fruit')).toBe('banana');
+  });
+
+  it('bubbles a user-driven value change once when the controlled parent applies it in a transition', async () => {
+    const onFormChange = vi.fn();
+
+    function TransitionSelect() {
+      const [value, setValue] = React.useState('apple');
+      return (
+        <form
+          onChange={(event) => onFormChange((event.target as unknown as HTMLSelectElement).value)}
+        >
+          <SelectTest
+            name="fruit"
+            value={value}
+            onValueChange={(nextValue) => {
+              React.startTransition(() => setValue(nextValue));
+            }}
+            defaultOpen
+          />
+        </form>
+      );
+    }
+
+    render(<TransitionSelect />);
+    const listbox = await screen.findByRole('listbox', { hidden: true });
+    onFormChange.mockClear();
+
+    await act(async () => {
+      fireEvent.click(within(listbox).getByRole('option', { name: 'Banana' }));
+    });
+
+    expect(screen.getByRole('combobox', { name: 'Choice' })).toHaveTextContent('Banana');
+    expect(onFormChange).toHaveBeenCalledTimes(1);
+    expect(onFormChange).toHaveBeenCalledWith('banana');
+    expect(new FormData(document.querySelector('form')!).get('fruit')).toBe('banana');
+  });
+
+  it('bubbles a user-driven value change that the controlled parent ignores, without applying it', async () => {
+    const onFormChange = vi.fn();
+    const onValueChange = vi.fn();
+
+    render(
+      <form
+        onChange={(event) => onFormChange((event.target as unknown as HTMLSelectElement).value)}
+      >
+        <SelectTest name="fruit" value="apple" onValueChange={onValueChange} defaultOpen />
+      </form>,
+    );
+    const listbox = await screen.findByRole('listbox', { hidden: true });
+    onFormChange.mockClear();
+
+    fireEvent.click(within(listbox).getByRole('option', { name: 'Banana' }));
+
+    expect(onFormChange).toHaveBeenCalledTimes(1);
+    expect(onFormChange).toHaveBeenCalledWith('banana');
+    expect(onValueChange).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole('combobox', { name: 'Choice' })).toHaveTextContent('Apple');
+    expect(new FormData(document.querySelector('form')!).get('fruit')).toBe('apple');
+  });
+
+  it('does not bubble a user-driven value change when the consumer stopped propagation and the controlled parent applies it later', async () => {
+    const onFormChange = vi.fn();
+
+    function DelayedSelect() {
+      const [value, setValue] = React.useState('apple');
+      return (
+        <form onChange={onFormChange}>
+          <Select.Root
+            name="fruit"
+            value={value}
+            onValueChange={(nextValue) => {
+              setTimeout(() => setValue(nextValue));
+            }}
+            defaultOpen
+          >
+            <Select.Trigger aria-label="Choice">
+              <Select.Value placeholder={PLACEHOLDER_TEXT} />
+            </Select.Trigger>
+            <Select.Portal>
+              <Select.Content position="popper">
+                <Select.Viewport>
+                  <Select.Item value="apple">
+                    <Select.ItemText>Apple</Select.ItemText>
+                  </Select.Item>
+                  <Select.Item
+                    value="banana"
+                    onClick={(event) => event.stopPropagation()}
+                    onPointerUp={(event) => event.stopPropagation()}
+                  >
+                    <Select.ItemText>Banana</Select.ItemText>
+                  </Select.Item>
+                </Select.Viewport>
+              </Select.Content>
+            </Select.Portal>
+          </Select.Root>
+        </form>
+      );
+    }
+
+    render(<DelayedSelect />);
+    const listbox = await screen.findByRole('listbox', { hidden: true });
+    onFormChange.mockClear();
+
+    fireEvent.click(within(listbox).getByRole('option', { name: 'Banana' }));
+    await act(() => new Promise((resolve) => setTimeout(resolve)));
+
+    expect(screen.getByRole('combobox', { name: 'Choice' })).toHaveTextContent('Banana');
+    expect(onFormChange).not.toHaveBeenCalled();
+  });
 });
 
 function cleanupModal() {

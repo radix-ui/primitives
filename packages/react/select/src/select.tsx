@@ -60,7 +60,12 @@ const [createSelectContext, createSelectScope] = createContextScope(SELECT_NAME,
 ]);
 const usePopperScope = createPopperScope();
 
-type SelectContextValue = {
+interface SelectUserSelection {
+  value: string;
+  hasConsumerStoppedPropagation: boolean;
+}
+
+interface SelectContextValue {
   trigger: SelectTriggerElement | null;
   onTriggerChange(node: SelectTriggerElement | null): void;
   valueNode: SelectValueElement | null;
@@ -71,8 +76,8 @@ type SelectContextValue = {
   value: string | undefined;
   onValueChange(value: string): void;
   hasConsumerStoppedPropagationRef: React.RefObject<boolean>;
-  userInteractionCount: number;
-  onUserInteraction(): void;
+  userSelection: SelectUserSelection | null;
+  onUserSelect(value: string): void;
   open: boolean;
   required?: boolean | undefined;
   onOpenChange(open: boolean): void;
@@ -85,7 +90,7 @@ type SelectContextValue = {
   nativeOptions: Set<NativeOption>;
   nativeSelectKey: string;
   isFormControl: boolean;
-};
+}
 
 const [SelectProviderImpl, useSelectContext] = createSelectContext<SelectContextValue>(SELECT_NAME);
 
@@ -199,17 +204,19 @@ function SelectProvider(props: ScopedProps<SelectProviderProps>) {
   const triggerPointerDownPosRef = React.useRef<{ x: number; y: number } | null>(null);
   const hasConsumerStoppedPropagationRef = React.useRef(false);
 
-  // Incremented on every user interaction that selects a value. The bubble
-  // input compares this against the count it last handled to tell whether or
-  // not a value change was driven by the user. Using a counter guarantees the
-  // marker is updated in the same commit as the resulting render, so it can
-  // never go stale and leak into a later programmatic update.
+  // The latest value selected by the user. The bubble input notifies the form
+  // of it once React has handled the selection, whether or not the value
+  // changes in the same render.
   //
   // See https://github.com/radix-ui/primitives/issues/4102
-  const [userInteractionCount, onUserInteraction] = React.useReducer(
-    (count: number): number => count + 1,
-    0,
-  );
+  const [userSelection, setUserSelection] = React.useState<SelectUserSelection | null>(null);
+  const handleUserSelect = (nextValue: string) => {
+    setUserSelection({
+      value: nextValue,
+      hasConsumerStoppedPropagation: hasConsumerStoppedPropagationRef.current,
+    });
+    setValue(nextValue);
+  };
 
   const initialValueRef = React.useRef(value);
   React.useEffect(() => {
@@ -259,8 +266,8 @@ function SelectProvider(props: ScopedProps<SelectProviderProps>) {
     value,
     onValueChange: setValue,
     hasConsumerStoppedPropagationRef,
-    userInteractionCount,
-    onUserInteraction,
+    userSelection,
+    onUserSelect: handleUserSelect,
     open,
     onOpenChange: setOpen,
     dir: direction,
@@ -344,8 +351,7 @@ const SelectTrigger = /* @__PURE__ */ React.forwardRef<SelectTriggerElement, Sel
       const currentItem = enabledItems.find((item) => item.value === context.value);
       const nextItem = findNextItem(enabledItems, search, currentItem);
       if (nextItem !== undefined) {
-        context.onUserInteraction();
-        context.onValueChange(nextItem.value);
+        context.onUserSelect(nextItem.value);
       }
     });
 
@@ -1409,8 +1415,7 @@ const SelectItem = /* @__PURE__ */ React.forwardRef<SelectItemElement, SelectIte
 
     function handleSelect(event: { isPropagationStopped(): boolean }) {
       context.hasConsumerStoppedPropagationRef.current = event.isPropagationStopped();
-      context.onUserInteraction();
-      context.onValueChange(value);
+      context.onUserSelect(value);
       context.onOpenChange(false);
     }
 
@@ -1810,23 +1815,17 @@ const SelectBubbleInput = /* @__PURE__ */ React.forwardRef<
     forwardedRef,
   ) {
     const context = useSelectContext(BUBBLE_INPUT_NAME, __scopeSelect);
-    const {
-      value,
-      onValueChange,
-      required,
-      disabled,
-      name,
-      autoComplete,
-      form,
-      hasConsumerStoppedPropagationRef,
-      userInteractionCount,
-    } = context;
+    const { value, onValueChange, required, disabled, name, autoComplete, form, userSelection } =
+      context;
     const { nativeOptions, nativeSelectKey } = context;
     const ref = React.useRef<SelectBubbleInputElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, ref);
     const selectValue = value ?? '';
     const prevValueRef = React.useRef(selectValue);
-    const prevUserInteractionCountRef = React.useRef(userInteractionCount);
+    // The user selection this input last accounted for, so each selection
+    // notifies the form once.
+    const handledUserSelectionRef = React.useRef(userSelection);
+    const isDispatchingUserSelectionRef = React.useRef(false);
 
     // A consumer may render a `Select.Item` with an empty value to act as a
     // "clear" option. In that case it already provides a native `<option>` with
@@ -1848,22 +1847,45 @@ const SelectBubbleInput = /* @__PURE__ */ React.forwardRef<
       ) as PropertyDescriptor;
       const setValue = descriptor.set;
 
-      const isUserInteraction = userInteractionCount !== prevUserInteractionCountRef.current;
-      prevUserInteractionCountRef.current = userInteractionCount;
+      const isNewUserSelection =
+        userSelection !== null && userSelection !== handledUserSelectionRef.current;
+      handledUserSelectionRef.current = userSelection;
       const valueChanged = prevValueRef.current !== selectValue;
       prevValueRef.current = selectValue;
+      const isUserInteraction = isNewUserSelection && userSelection.value === selectValue;
+
+      if (
+        isNewUserSelection &&
+        !valueChanged &&
+        !isUserInteraction &&
+        !userSelection.hasConsumerStoppedPropagation &&
+        setValue
+      ) {
+        // The user selected a value that a controlled parent hasn't applied
+        // yet. Notify the form of the selection now, since applying it later
+        // can't be told apart from a programmatic update.
+        isDispatchingUserSelectionRef.current = true;
+        try {
+          setValue.call(select, userSelection.value);
+          select.dispatchEvent(new Event('change', { bubbles: true }));
+        } finally {
+          isDispatchingUserSelectionRef.current = false;
+          setValue.call(select, selectValue);
+        }
+        return;
+      }
 
       // Select dispatches `change` directly. A programmatic update must still
       // sync the native select so form submission sees the value, but the event
       // must not bubble to ancestor `onChange` handlers. User-driven selections
       // bubble unless the consumer already stopped propagation.
-      const bubbles = isUserInteraction && !hasConsumerStoppedPropagationRef.current;
+      const bubbles = isUserInteraction && !userSelection.hasConsumerStoppedPropagation;
       if (valueChanged && setValue) {
         const event = new Event('change', { bubbles });
         setValue.call(select, selectValue);
         select.dispatchEvent(event);
       }
-    }, [hasConsumerStoppedPropagationRef, selectValue, userInteractionCount]);
+    }, [selectValue, userSelection]);
 
     /**
      * We purposefully use a `select` here to support form autofill as much as
@@ -1893,7 +1915,13 @@ const SelectBubbleInput = /* @__PURE__ */ React.forwardRef<
         autoComplete={autoComplete}
         disabled={disabled}
         form={form}
-        onChange={(event) => onValueChange(event.target.value)}
+        onChange={(event) => {
+          // A selection the controlled parent hasn't applied must not be
+          // applied again here.
+          if (!isDispatchingUserSelectionRef.current) {
+            onValueChange(event.target.value);
+          }
+        }}
         {...props}
         style={{ ...VISUALLY_HIDDEN_STYLES, ...props.style }}
         ref={composedRefs}
