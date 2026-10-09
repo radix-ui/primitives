@@ -136,6 +136,7 @@ const RovingFocusGroupImpl = /* @__PURE__ */ React.forwardRef<
   const handleEntryFocus = useCallbackRef(onEntryFocus);
   const getItems = useCollection(__scopeRovingFocusGroup);
   const isClickFocusRef = React.useRef(false);
+  const isFocusedWhileDocumentBlurredRef = React.useRef(false);
   const [focusableItemsCount, setFocusableItemsCount] = React.useState(0);
 
   React.useEffect(() => {
@@ -145,6 +146,20 @@ const RovingFocusGroupImpl = /* @__PURE__ */ React.forwardRef<
       return () => node.removeEventListener(ENTRY_FOCUS, handleEntryFocus);
     }
   }, [handleEntryFocus]);
+
+  React.useEffect(() => {
+    const node = ref.current;
+    const ownerWindow = node?.ownerDocument.defaultView;
+    if (node && ownerWindow) {
+      const handleWindowFocus = () => {
+        if (!isFocusedInRootNode(node)) {
+          isFocusedWhileDocumentBlurredRef.current = false;
+        }
+      };
+      ownerWindow.addEventListener('focus', handleWindowFocus);
+      return () => ownerWindow.removeEventListener('focus', handleWindowFocus);
+    }
+  }, []);
 
   return (
     <RovingFocusProvider
@@ -182,8 +197,15 @@ const RovingFocusGroupImpl = /* @__PURE__ */ React.forwardRef<
           // We do this because Safari doesn't focus buttons when clicked, and
           // instead, the wrapper will get focused and not through a bubbling event.
           const isKeyboardFocus = !isClickFocusRef.current;
+          const isFocusRestoration =
+            isFocusedWhileDocumentBlurredRef.current && event.relatedTarget === null;
 
-          if (event.target === event.currentTarget && isKeyboardFocus && !isTabbingBackOut) {
+          if (
+            event.target === event.currentTarget &&
+            isKeyboardFocus &&
+            !isTabbingBackOut &&
+            !isFocusRestoration
+          ) {
             const entryFocusEvent = new CustomEvent(ENTRY_FOCUS, EVENT_OPTIONS);
             event.currentTarget.dispatchEvent(entryFocusEvent);
 
@@ -200,8 +222,13 @@ const RovingFocusGroupImpl = /* @__PURE__ */ React.forwardRef<
           }
 
           isClickFocusRef.current = false;
+          isFocusedWhileDocumentBlurredRef.current = false;
         })}
-        onBlur={composeEventHandlers(props.onBlur, () => setIsTabbingBackOut(false))}
+        onBlur={composeEventHandlers(props.onBlur, (event) => {
+          isFocusedWhileDocumentBlurredRef.current =
+            event.target === event.currentTarget && isFocusedInRootNode(event.currentTarget);
+          setIsTabbingBackOut(false);
+        })}
       />
     </RovingFocusProvider>
   );
@@ -373,6 +400,11 @@ function getFocusIntent(event: React.KeyboardEvent, orientation?: Orientation, d
     return undefined;
   }
   return MAP_KEY_TO_FOCUS_INTENT[key];
+}
+
+function isFocusedInRootNode(node: HTMLElement) {
+  const rootNode = node.getRootNode();
+  return 'activeElement' in rootNode && rootNode.activeElement === node;
 }
 
 function focusFirst(candidates: HTMLElement[], preventScroll = false) {
