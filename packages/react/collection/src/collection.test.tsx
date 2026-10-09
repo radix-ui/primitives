@@ -456,10 +456,7 @@ describe('createCollection', () => {
       expect(labelsInLayoutEffect).toEqual(['a', 'updated', 'c']);
     });
 
-    // `ItemSlot` sets state from its ref callback, which React calls with `null`
-    // while hiding the boundary's content. That update prevents the fallback
-    // from committing, so the content is never hidden.
-    it.fails('excludes items hidden when a Suspense boundary suspends again', async () => {
+    it('excludes items hidden when a Suspense boundary suspends again', async () => {
       const resolvedPromise = Object.assign(Promise.resolve(), {
         status: 'fulfilled' as const,
         value: undefined,
@@ -1017,6 +1014,45 @@ describe('createCollection', () => {
       });
       expect(screen.queryByText('loading')).not.toBeInTheDocument();
       expect(labelsOf(latestMap)).toEqual(['a', 'b', 'c']);
+    });
+
+    it('lets a Suspense boundary show its fallback when it suspends again', async () => {
+      const resolvedPromise = Object.assign(Promise.resolve(), {
+        status: 'fulfilled' as const,
+        value: undefined,
+      });
+      const pendingPromise = new Promise<void>(() => {});
+      function Deferred({
+        promise,
+        children,
+      }: {
+        promise: Promise<void>;
+        children: React.ReactNode;
+      }) {
+        React.use(promise);
+        return children;
+      }
+      function List({ promise }: { promise: Promise<void> }) {
+        return (
+          <TestCollection.Provider scope={undefined}>
+            <React.Suspense fallback={<span>loading</span>}>
+              <Deferred promise={promise}>
+                <TestCollection.ItemSlot scope={undefined} label="a">
+                  <div data-testid="a" />
+                </TestCollection.ItemSlot>
+              </Deferred>
+            </React.Suspense>
+          </TestCollection.Provider>
+        );
+      }
+      const { rerender } = render(<List promise={resolvedPromise} />);
+      expect(screen.queryByText('loading')).not.toBeInTheDocument();
+
+      await act(async () => {
+        rerender(<List promise={pendingPromise} />);
+      });
+      expect(screen.getByText('loading')).toBeInTheDocument();
+      expect(screen.getByTestId('a')).not.toBeVisible();
     });
 
     it('removes items while inside a hidden Activity and restores them when visible', () => {

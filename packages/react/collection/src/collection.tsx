@@ -215,7 +215,6 @@ type CollectionDict<ItemElement extends HTMLElement, ItemData> = ReadOnlyOrdered
     (props, forwardedRef) => {
       const { scope, children, ...itemData } = props;
       const ref = React.useRef<ItemElement>(null);
-      const [element, setElement] = React.useState<ItemElement | null>(null);
       const context = useStableCollectionContext(ITEM_SLOT_NAME, scope);
 
       const { setCollection, registryRef } = context;
@@ -243,7 +242,7 @@ type CollectionDict<ItemElement extends HTMLElement, ItemData> = ReadOnlyOrdered
         },
         [registryRef],
       );
-      const composedRefs = useComposedRefs(forwardedRef, registerElement, ref, setElement);
+      const composedRefs = useComposedRefs(forwardedRef, registerElement, ref);
 
       useLayoutEffect(() => {
         const node = ref.current;
@@ -253,35 +252,51 @@ type CollectionDict<ItemElement extends HTMLElement, ItemData> = ReadOnlyOrdered
         }
       }, [memoizedItemData, registryRef]);
 
+      const registeredRef = React.useRef<{
+        element: ItemElement;
+        itemData: typeof memoizedItemData;
+      } | null>(null);
+
       React.useEffect(() => {
-        const itemData = memoizedItemData;
+        const element = ref.current;
+        const registered = registeredRef.current;
+        if (
+          (registered?.element ?? null) === element &&
+          (!element || registered?.itemData === memoizedItemData)
+        ) {
+          return;
+        }
+
+        registeredRef.current = element ? { element, itemData: memoizedItemData } : null;
         setCollection((map) => {
-          if (!element) {
-            return map;
+          const next = new OrderedDict(map);
+          if (registered && registered.element !== element) {
+            next.delete(registered.element);
           }
-
-          if (!map.has(element)) {
-            const next = new OrderedDict(map);
-            next.set(element, { ...(itemData as unknown as AllItemData), element });
-            return next.sort(sortByDocumentPosition);
+          if (element) {
+            next.set(element, { ...(memoizedItemData as unknown as AllItemData), element });
           }
-
-          return map
-            .set(element, { ...(itemData as unknown as AllItemData), element })
-            .toSorted(sortByDocumentPosition);
+          return next.sort(sortByDocumentPosition);
         });
+      });
 
+      React.useEffect(() => {
         return () => {
+          const registered = registeredRef.current;
+          registeredRef.current = null;
+          if (!registered) {
+            return;
+          }
           setCollection((map) => {
-            if (!element || !map.has(element)) {
+            if (!map.has(registered.element)) {
               return map;
             }
             const next = new OrderedDict(map);
-            next.delete(element);
+            next.delete(registered.element);
             return next;
           });
         };
-      }, [element, memoizedItemData, setCollection]);
+      }, [setCollection]);
 
       return (
         <CollectionItemSlotImpl {...{ [ITEM_DATA_ATTR]: '' }} ref={composedRefs as any}>
