@@ -206,6 +206,128 @@ describe('given a Switch with a clickable ancestor inside a form', () => {
     // the form should still be notified of the change
     expect(onFormChange).toHaveBeenCalledWith(true);
   });
+
+  it('should trigger the ancestor `onClick` for a user click that the controlled parent ignores', () => {
+    render(<App checked={false} />);
+
+    act(() => fireEvent.click(screen.getByRole(SWITCH_ROLE)));
+
+    expect(screen.getByRole(SWITCH_ROLE)).toHaveAttribute('aria-checked', 'false');
+    expect(onParentClick).toHaveBeenCalledTimes(1);
+    expect(onFormChange).not.toHaveBeenCalled();
+  });
+
+  it('should trigger the ancestor `onClick` once and notify the form when the controlled parent applies `checked` after a timeout', async () => {
+    function DelayedApp() {
+      const [checked, setChecked] = React.useState(false);
+      return (
+        <form
+          onChange={(event) => onFormChange((event.target as unknown as HTMLInputElement).checked)}
+        >
+          <div onClick={onParentClick}>
+            <Switch.Root
+              checked={checked}
+              onCheckedChange={(nextChecked) => {
+                setTimeout(() => setChecked(nextChecked));
+              }}
+            >
+              <Switch.Thumb />
+            </Switch.Root>
+          </div>
+        </form>
+      );
+    }
+
+    render(<DelayedApp />);
+    act(() => fireEvent.click(screen.getByRole(SWITCH_ROLE)));
+    await act(() => new Promise((resolve) => setTimeout(resolve)));
+
+    expect(screen.getByRole(SWITCH_ROLE)).toHaveAttribute('aria-checked', 'true');
+    expect(onParentClick).toHaveBeenCalledTimes(1);
+    expect(onFormChange).toHaveBeenCalledTimes(1);
+    expect(onFormChange).toHaveBeenCalledWith(true);
+  });
+
+  it('should trigger the ancestor `onClick` once and notify the form when the controlled parent applies `checked` in a transition', async () => {
+    function TransitionApp() {
+      const [checked, setChecked] = React.useState(false);
+      return (
+        <form
+          onChange={(event) => onFormChange((event.target as unknown as HTMLInputElement).checked)}
+        >
+          <div onClick={onParentClick}>
+            <Switch.Root
+              checked={checked}
+              onCheckedChange={(nextChecked) => {
+                React.startTransition(() => setChecked(nextChecked));
+              }}
+            >
+              <Switch.Thumb />
+            </Switch.Root>
+          </div>
+        </form>
+      );
+    }
+
+    render(<TransitionApp />);
+    await act(async () => fireEvent.click(screen.getByRole(SWITCH_ROLE)));
+
+    expect(screen.getByRole(SWITCH_ROLE)).toHaveAttribute('aria-checked', 'true');
+    expect(onParentClick).toHaveBeenCalledTimes(1);
+    expect(onFormChange).toHaveBeenCalledTimes(1);
+    expect(onFormChange).toHaveBeenCalledWith(true);
+  });
+
+  it('should not notify the form when propagation is stopped on the trigger and the controlled parent applies `checked` later', async () => {
+    function DelayedApp() {
+      const [checked, setChecked] = React.useState(false);
+      return (
+        <form
+          onChange={(event) => onFormChange((event.target as unknown as HTMLInputElement).checked)}
+        >
+          <div onClick={onParentClick}>
+            <Switch.Root
+              checked={checked}
+              onCheckedChange={(nextChecked) => {
+                setTimeout(() => setChecked(nextChecked));
+              }}
+              onClick={(event) => event.stopPropagation()}
+            >
+              <Switch.Thumb />
+            </Switch.Root>
+          </div>
+        </form>
+      );
+    }
+
+    render(<DelayedApp />);
+    act(() => fireEvent.click(screen.getByRole(SWITCH_ROLE)));
+    await act(() => new Promise((resolve) => setTimeout(resolve)));
+
+    expect(screen.getByRole(SWITCH_ROLE)).toHaveAttribute('aria-checked', 'true');
+    expect(onParentClick).not.toHaveBeenCalled();
+    expect(onFormChange).not.toHaveBeenCalled();
+  });
+
+  it('should not notify the form when propagation is stopped on the trigger', () => {
+    render(
+      <form
+        onChange={(event) => onFormChange((event.target as unknown as HTMLInputElement).checked)}
+      >
+        <div onClick={onParentClick}>
+          <Switch.Root onClick={(event) => event.stopPropagation()}>
+            <Switch.Thumb />
+          </Switch.Root>
+        </div>
+      </form>,
+    );
+
+    act(() => fireEvent.click(screen.getByRole(SWITCH_ROLE)));
+
+    expect(screen.getByRole(SWITCH_ROLE)).toHaveAttribute('aria-checked', 'true');
+    expect(onParentClick).not.toHaveBeenCalled();
+    expect(onFormChange).not.toHaveBeenCalled();
+  });
 });
 
 describe('Switch.Root', () => {

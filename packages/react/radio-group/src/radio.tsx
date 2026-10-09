@@ -13,6 +13,10 @@ const RADIO_NAME = 'Radio';
 type ScopedProps<P> = P & { __scopeRadio?: Scope | undefined };
 const [createRadioContext, createRadioScope] = createContextScope(RADIO_NAME);
 
+type RadioUserClick = {
+  hasConsumerStoppedPropagation: boolean;
+};
+
 type RadioContextValue = {
   checked: boolean;
   disabled: boolean | undefined;
@@ -22,9 +26,8 @@ type RadioContextValue = {
   value: string | number | readonly string[];
   control: HTMLButtonElement | null;
   setControl: React.Dispatch<React.SetStateAction<HTMLButtonElement | null>>;
-  hasConsumerStoppedPropagationRef: React.RefObject<boolean>;
-  userInteractionCount: number;
-  onUserInteraction: () => void;
+  userClick: RadioUserClick | null;
+  onUserClick: (userClick: RadioUserClick) => void;
   isFormControl: boolean;
   bubbleInput: HTMLInputElement | null;
   setBubbleInput: React.Dispatch<React.SetStateAction<HTMLInputElement | null>>;
@@ -65,18 +68,10 @@ function RadioProvider(props: ScopedProps<RadioProviderProps>) {
 
   const [control, setControl] = React.useState<HTMLButtonElement | null>(null);
   const [bubbleInput, setBubbleInput] = React.useState<HTMLInputElement | null>(null);
-  const hasConsumerStoppedPropagationRef = React.useRef(false);
-
-  // Incremented on every user interaction with the trigger. The bubble input
-  // compares this against the value it last handled to tell whether a `checked`
-  // change was driven by the user (vs. a controlled/programmatic update). Using
-  // a counter guarantees the marker is updated in the same commit as the
-  // resulting render, so it can never go stale and leak into a later
-  // programmatic update.
-  const [userInteractionCount, onUserInteraction] = React.useReducer(
-    (count: number): number => count + 1,
-    0,
-  );
+  // The latest user click on the trigger that checks the radio. The bubble
+  // input dispatches the click to the form once React has handled it, whether
+  // or not `checked` changes in the same render.
+  const [userClick, setUserClick] = React.useState<RadioUserClick | null>(null);
 
   const isFormControl = control
     ? !!form || !!control.closest('form')
@@ -92,9 +87,8 @@ function RadioProvider(props: ScopedProps<RadioProviderProps>) {
     value,
     control,
     setControl,
-    hasConsumerStoppedPropagationRef,
-    userInteractionCount,
-    onUserInteraction,
+    userClick,
+    onUserClick: setUserClick,
     isFormControl,
     bubbleInput,
     setBubbleInput,
@@ -132,8 +126,7 @@ const RadioTrigger = /* @__PURE__ */ React.forwardRef<HTMLButtonElement, RadioTr
       value,
       setControl,
       onCheck,
-      hasConsumerStoppedPropagationRef,
-      onUserInteraction,
+      onUserClick,
       isFormControl,
       bubbleInput,
     } = useRadioContext(TRIGGER_NAME, __scopeRadio);
@@ -151,22 +144,22 @@ const RadioTrigger = /* @__PURE__ */ React.forwardRef<HTMLButtonElement, RadioTr
         {...radioProps}
         ref={composedRefs}
         onClick={composeEventHandlers(onClick, (event) => {
+          const hasConsumerStoppedPropagation = event.isPropagationStopped();
           // radios cannot be unchecked so we only communicate a checked state.
-          // Only mark a user interaction when the click actually changes the
-          // value, otherwise re-selecting the checked radio would leave a stale
-          // interaction marker.
           if (!checked) {
-            onUserInteraction();
+            onUserClick({ hasConsumerStoppedPropagation });
             onCheck();
           }
 
           if (bubbleInput && isFormControl) {
-            hasConsumerStoppedPropagationRef.current = event.isPropagationStopped();
-            // if radio has a bubble input and is a form control, stop propagation
-            // from the button so that we only propagate one click event (from the
-            // input). We propagate changes from an input so that native form
-            // validation works and form events reflect radio updates.
-            if (!hasConsumerStoppedPropagationRef.current) event.stopPropagation();
+            // if radio has a bubble input and is a form control, stop
+            // propagation from the button so that we only propagate one click
+            // event (from the input). We propagate changes from an input so
+            // that native form validation works and form events reflect radio
+            // updates.
+            if (!hasConsumerStoppedPropagation) {
+              event.stopPropagation();
+            }
           }
         })}
       />
@@ -281,8 +274,7 @@ const RadioBubbleInput = /* @__PURE__ */ React.forwardRef<HTMLInputElement, Radi
       form,
       bubbleInput,
       setBubbleInput,
-      hasConsumerStoppedPropagationRef,
-      userInteractionCount,
+      userClick,
     } = useRadioContext(BUBBLE_INPUT_NAME, __scopeRadio);
 
     const composedRefs = useComposedRefs(forwardedRef, setBubbleInput);
@@ -294,13 +286,14 @@ const RadioBubbleInput = /* @__PURE__ */ React.forwardRef<HTMLInputElement, Radi
     // bubbling `click`. Instead we stop propagation of the synthetic click,
     // which still lets the `change` event reach the form.
     const shouldStopClickPropagationRef = React.useRef(false);
-    // The `checked` value we last synced to the input, and the interaction
-    // counter we last accounted for. Comparing against these lets us detect a
-    // genuine `checked` change and whether it followed a user interaction, even
-    // on renders caused by clicks that don't change `checked` (e.g. re-selecting
-    // a checked radio, or a controlled value that ignores the change).
     const prevCheckedRef = React.useRef(checked);
-    const prevUserInteractionCountRef = React.useRef(userInteractionCount);
+    // The user click this input last dispatched, so each click is dispatched
+    // once.
+    const handledUserClickRef = React.useRef(userClick);
+    // A dispatched user click whose check hasn't been applied yet (e.g. a
+    // controlled parent applying it later). When it is applied, it must still
+    // respect the consumer stopping the click's propagation.
+    const pendingUserClickRef = React.useRef<RadioUserClick | null>(null);
 
     // Bubble checked change to parents (e.g form change event)
     React.useEffect(() => {
@@ -313,21 +306,39 @@ const RadioBubbleInput = /* @__PURE__ */ React.forwardRef<HTMLInputElement, Radi
         'checked',
       ) as PropertyDescriptor;
       const setChecked = descriptor.set;
+      if (!setChecked) return;
 
-      const isUserInteraction = userInteractionCount !== prevUserInteractionCountRef.current;
-      prevUserInteractionCountRef.current = userInteractionCount;
       const checkedChanged = prevCheckedRef.current !== checked;
       prevCheckedRef.current = checked;
+      const isNewUserClick = userClick !== null && userClick !== handledUserClickRef.current;
+      handledUserClickRef.current = userClick;
 
-      const bubbles = !(isUserInteraction && hasConsumerStoppedPropagationRef.current);
-      if (checkedChanged && setChecked) {
-        shouldStopClickPropagationRef.current = !isUserInteraction;
-        const event = new Event('click', { bubbles });
+      if (isNewUserClick) {
+        // Dispatch the user's click even if the radio isn't checked (yet), so
+        // ancestors are notified of every click on the trigger.
+        pendingUserClickRef.current = checkedChanged ? null : userClick;
+        if (checkedChanged) {
+          setChecked.call(input, checked);
+        }
+        input.dispatchEvent(
+          new Event('click', { bubbles: !userClick.hasConsumerStoppedPropagation }),
+        );
+      } else if (checkedChanged) {
+        const pendingUserClick = pendingUserClickRef.current;
+        pendingUserClickRef.current = null;
+        const isPendingUserChange = checked && pendingUserClick !== null;
+        // The user's click already reached ancestors, and programmatic
+        // updates never do, so this click only notifies the form.
+        shouldStopClickPropagationRef.current = true;
         setChecked.call(input, checked);
-        input.dispatchEvent(event);
+        input.dispatchEvent(
+          new Event('click', {
+            bubbles: !(isPendingUserChange && pendingUserClick.hasConsumerStoppedPropagation),
+          }),
+        );
         shouldStopClickPropagationRef.current = false;
       }
-    }, [bubbleInput, checked, hasConsumerStoppedPropagationRef, userInteractionCount]);
+    }, [bubbleInput, checked, userClick]);
 
     const defaultCheckedRef = React.useRef(checked);
     return (
