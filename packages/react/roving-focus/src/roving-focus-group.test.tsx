@@ -207,5 +207,64 @@ describe('RovingFocusGroup', () => {
 
       expect(screen.getByRole('button', { name: 'One' })).toHaveFocus();
     });
+
+    it('should focus the first item when focus returns to the group after focus moved elsewhere while the document was blurred', async () => {
+      const user = userEvent.setup();
+      render(
+        <>
+          <button>Dialog</button>
+          <RovingFocusGroup.Root data-testid="group">
+            <RovingFocusGroup.Item asChild>
+              <button>One</button>
+            </RovingFocusGroup.Item>
+            <RovingFocusGroup.Item asChild>
+              <button>Two</button>
+            </RovingFocusGroup.Item>
+          </RovingFocusGroup.Root>
+        </>,
+      );
+      const group = screen.getByTestId('group');
+      const stopEvent = (event: Event) => event.stopImmediatePropagation();
+
+      await user.click(group);
+      fireEvent.blur(group);
+      window.addEventListener('focusout', stopEvent, true);
+      window.addEventListener('focusin', stopEvent, true);
+      act(() => screen.getByRole('button', { name: 'Dialog' }).focus());
+      window.removeEventListener('focusout', stopEvent, true);
+      window.removeEventListener('focusin', stopEvent, true);
+      fireEvent.focus(window);
+      fireEvent.focus(group);
+
+      expect(screen.getByRole('button', { name: 'One' })).toHaveFocus();
+    });
+
+    it('should keep focus on the group when it is rendered in a shadow root', async () => {
+      const user = userEvent.setup();
+      const host = document.createElement('div');
+      document.body.appendChild(host);
+      const shadowRoot = host.attachShadow({ mode: 'open' });
+      const container = document.createElement('div');
+      shadowRoot.appendChild(container);
+      render(
+        <RovingFocusGroup.Root data-testid="group">
+          <RovingFocusGroup.Item asChild>
+            <button>One</button>
+          </RovingFocusGroup.Item>
+          <RovingFocusGroup.Item asChild>
+            <button>Two</button>
+          </RovingFocusGroup.Item>
+        </RovingFocusGroup.Root>,
+        { container },
+      );
+      const group = shadowRoot.querySelector<HTMLElement>('[data-testid="group"]')!;
+
+      await user.click(group);
+      fireEvent.blur(group);
+      fireEvent.focus(group);
+
+      expect(shadowRoot.activeElement).toBe(group);
+      host.remove();
+    });
   });
 });

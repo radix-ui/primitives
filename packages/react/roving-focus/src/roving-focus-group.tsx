@@ -147,6 +147,20 @@ const RovingFocusGroupImpl = /* @__PURE__ */ React.forwardRef<
     }
   }, [handleEntryFocus]);
 
+  React.useEffect(() => {
+    const node = ref.current;
+    const ownerWindow = node?.ownerDocument.defaultView;
+    if (node && ownerWindow) {
+      const handleWindowFocus = () => {
+        if (!isFocusedInRootNode(node)) {
+          isFocusedWhileDocumentBlurredRef.current = false;
+        }
+      };
+      ownerWindow.addEventListener('focus', handleWindowFocus);
+      return () => ownerWindow.removeEventListener('focus', handleWindowFocus);
+    }
+  }, []);
+
   return (
     <RovingFocusProvider
       scope={__scopeRovingFocusGroup}
@@ -212,8 +226,7 @@ const RovingFocusGroupImpl = /* @__PURE__ */ React.forwardRef<
         })}
         onBlur={composeEventHandlers(props.onBlur, (event) => {
           isFocusedWhileDocumentBlurredRef.current =
-            event.target === event.currentTarget &&
-            event.currentTarget.ownerDocument.activeElement === event.currentTarget;
+            event.target === event.currentTarget && isFocusedInRootNode(event.currentTarget);
           setIsTabbingBackOut(false);
         })}
       />
@@ -386,6 +399,11 @@ function getFocusIntent(event: React.KeyboardEvent, orientation?: Orientation, d
     return undefined;
   }
   return MAP_KEY_TO_FOCUS_INTENT[key];
+}
+
+function isFocusedInRootNode(node: HTMLElement) {
+  const rootNode = node.getRootNode();
+  return 'activeElement' in rootNode && rootNode.activeElement === node;
 }
 
 function focusFirst(candidates: HTMLElement[], preventScroll = false) {
