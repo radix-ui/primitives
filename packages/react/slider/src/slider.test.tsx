@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, it, expect, vi } from 'vitest';
 import { assertStableComposedRef } from '@repo/test-utils/ref-stability';
@@ -884,6 +884,121 @@ describe('Slider.BubbleInput', () => {
 
     expect(screen.getByRole('slider')).toHaveAttribute('aria-valuenow', '51');
     expect(onAncestorInput).toHaveBeenCalledTimes(1);
+  });
+
+  it('bubbles a user-driven change to ancestor `onInput` handlers when the controlled value is applied later', async () => {
+    const user = userEvent.setup();
+    const onAncestorInput = vi.fn();
+
+    function App() {
+      const [value, setValue] = React.useState([50]);
+      return (
+        <form>
+          <div onInput={onAncestorInput}>
+            <Slider.Root
+              value={value}
+              onValueChange={(nextValue) => {
+                setTimeout(() => setValue(nextValue));
+              }}
+              name="volume"
+            >
+              <Slider.Track>
+                <Slider.Range />
+              </Slider.Track>
+              <Slider.Thumb />
+            </Slider.Root>
+          </div>
+        </form>
+      );
+    }
+
+    render(<App />);
+    screen.getByRole('slider').focus();
+    onAncestorInput.mockClear();
+
+    await user.keyboard('{ArrowRight}');
+    await act(() => new Promise((resolve) => setTimeout(resolve)));
+
+    expect(screen.getByRole('slider')).toHaveAttribute('aria-valuenow', '51');
+    expect(onAncestorInput).toHaveBeenCalledTimes(1);
+  });
+
+  it('bubbles a user-driven change to ancestor `onInput` handlers when the controlled value is applied in a transition', async () => {
+    const user = userEvent.setup();
+    const onAncestorInput = vi.fn();
+
+    function App() {
+      const [value, setValue] = React.useState([50]);
+      return (
+        <form>
+          <div onInput={onAncestorInput}>
+            <Slider.Root
+              value={value}
+              onValueChange={(nextValue) => {
+                React.startTransition(() => setValue(nextValue));
+              }}
+              name="volume"
+            >
+              <Slider.Track>
+                <Slider.Range />
+              </Slider.Track>
+              <Slider.Thumb />
+            </Slider.Root>
+          </div>
+        </form>
+      );
+    }
+
+    render(<App />);
+    screen.getByRole('slider').focus();
+    onAncestorInput.mockClear();
+
+    await user.keyboard('{ArrowRight}');
+
+    expect(screen.getByRole('slider')).toHaveAttribute('aria-valuenow', '51');
+    expect(onAncestorInput).toHaveBeenCalledTimes(1);
+  });
+
+  it('only bubbles the user-driven thumb change to ancestor `onInput` handlers in a range slider', async () => {
+    const user = userEvent.setup();
+    const onAncestorInput = vi.fn();
+
+    function App() {
+      const [value, setValue] = React.useState([20, 80]);
+      return (
+        <form>
+          <div onInput={onAncestorInput}>
+            <Slider.Root
+              value={value}
+              onValueChange={([start = 0]) => {
+                // Programmatically keep the end thumb 60 units ahead.
+                setTimeout(() => setValue([start, start + 60]));
+              }}
+              name="range"
+            >
+              <Slider.Track>
+                <Slider.Range />
+              </Slider.Track>
+              <Slider.Thumb />
+              <Slider.Thumb />
+            </Slider.Root>
+          </div>
+        </form>
+      );
+    }
+
+    render(<App />);
+    const [startThumb, endThumb] = screen.getAllByRole('slider');
+    startThumb!.focus();
+    onAncestorInput.mockClear();
+
+    await user.keyboard('{ArrowRight}');
+    await act(() => new Promise((resolve) => setTimeout(resolve)));
+
+    expect(startThumb).toHaveAttribute('aria-valuenow', '21');
+    expect(endThumb).toHaveAttribute('aria-valuenow', '81');
+    expect(onAncestorInput).toHaveBeenCalledTimes(1);
+    expect(onAncestorInput.mock.calls[0]![0].target).toHaveValue('21');
   });
 
   it('does not treat a programmatic change as user-driven after a rejected user interaction', async () => {

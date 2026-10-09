@@ -74,7 +74,7 @@ type SliderContextValue = {
   thumbs: Set<SliderThumbElement>;
   orientation: SliderProps['orientation'];
   form: string | undefined;
-  userInteractionCount: number;
+  userRequestedValues: number[] | null;
 };
 
 const [SliderProvider, useSliderContext] = createSliderContext<SliderContextValue>(SLIDER_NAME);
@@ -132,16 +132,9 @@ const Slider = /* @__PURE__ */ React.forwardRef<SliderElement, SliderProps>(
     const valueIndexToChangeRef = React.useRef<number>(0);
     const isKeyboardInteractionRef = React.useRef(false);
 
-    // Incremented on every user interaction that changes a value. The bubble
-    // input compares this against the value it last handled to tell whether a
-    // value change was driven by the user (vs. a controlled/programmatic
-    // update). Using a counter guarantees the marker is updated in the same
-    // commit as the resulting render, so it can never go stale and leak into a
-    // later programmatic update.
-    const [userInteractionCount, onUserInteraction] = React.useReducer(
-      (count: number): number => count + 1,
-      0,
-    );
+    // The values requested by the latest user interaction, used by the bubble
+    // input to tell user-driven value changes apart from programmatic ones.
+    const [userRequestedValues, setUserRequestedValues] = React.useState<number[] | null>(null);
     const isHorizontal = orientation === Orientation.Horizontal;
     const SliderOrientation = isHorizontal ? SliderHorizontal : SliderVertical;
     const [control, setControl] = React.useState<SliderElement | null>(null);
@@ -220,10 +213,11 @@ const Slider = /* @__PURE__ */ React.forwardRef<SliderElement, SliderProps>(
         };
       }
 
-      // Only count interactions that change the value so that pointer moves
+      // Only record interactions that change the value so that pointer moves
       // within a single step don't re-render the slider.
-      if (getNextValues(values)?.hasChanged) {
-        onUserInteraction();
+      const requested = getNextValues(values);
+      if (requested?.hasChanged) {
+        setUserRequestedValues(requested.nextValues);
       }
 
       setValues((prevValues = []) => {
@@ -251,7 +245,7 @@ const Slider = /* @__PURE__ */ React.forwardRef<SliderElement, SliderProps>(
         values={values}
         orientation={orientation}
         form={form}
-        userInteractionCount={userInteractionCount}
+        userRequestedValues={userRequestedValues}
       >
         <Collection.Provider scope={props.__scopeSlider}>
           <Collection.Slot scope={props.__scopeSlider}>
@@ -844,14 +838,15 @@ const SliderBubbleInput = /* @__PURE__ */ React.forwardRef<
     { __scopeSlider, onInput, ...props }: ScopedProps<SliderBubbleInputProps>,
     forwardedRef,
   ) {
-    const { value, name, form } = useSliderThumbContext(BUBBLE_INPUT_NAME, __scopeSlider);
-    const { userInteractionCount } = useSliderContext(BUBBLE_INPUT_NAME, __scopeSlider);
+    const { index, value, name, form } = useSliderThumbContext(BUBBLE_INPUT_NAME, __scopeSlider);
+    const { userRequestedValues } = useSliderContext(BUBBLE_INPUT_NAME, __scopeSlider);
     const ref = React.useRef<SliderBubbleInputElement>(null);
     const composedRefs = useComposedRefs(ref, forwardedRef);
 
     const shouldStopInputPropagationRef = React.useRef(false);
     const prevValueRef = React.useRef(value);
-    const prevUserInteractionCountRef = React.useRef(userInteractionCount);
+
+    const handledUserRequestedValuesRef = React.useRef(userRequestedValues);
 
     // Bubble value change to parents (e.g form change event)
     React.useEffect(() => {
@@ -862,19 +857,22 @@ const SliderBubbleInput = /* @__PURE__ */ React.forwardRef<
       const descriptor = Object.getOwnPropertyDescriptor(inputProto, 'value') as PropertyDescriptor;
       const setValue = descriptor.set;
 
-      const isUserInteraction = userInteractionCount !== prevUserInteractionCountRef.current;
-      prevUserInteractionCountRef.current = userInteractionCount;
       const valueChanged = prevValueRef.current !== value;
       prevValueRef.current = value;
 
       if (valueChanged && setValue) {
+        const hasUnhandledUserRequest =
+          userRequestedValues !== handledUserRequestedValuesRef.current;
+        handledUserRequestedValuesRef.current = userRequestedValues;
+        const isUserInteraction = hasUnhandledUserRequest && userRequestedValues?.[index] === value;
+
         shouldStopInputPropagationRef.current = !isUserInteraction;
         const event = new Event('input', { bubbles: true });
         setValue.call(input, value);
         input.dispatchEvent(event);
         shouldStopInputPropagationRef.current = false;
       }
-    }, [value, userInteractionCount]);
+    }, [index, value, userRequestedValues]);
 
     /**
      * We purposefully do not use `type="hidden"` here otherwise forms that
