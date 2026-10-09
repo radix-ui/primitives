@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { createContextScope } from '@radix-ui/react-context';
-import { createCollection } from '@radix-ui/react-collection';
+import { unstable_createCollection as createCollection } from '@radix-ui/react-collection';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
@@ -38,7 +38,7 @@ type Direction = (typeof Direction)[keyof typeof Direction];
 const ACCORDION_NAME = 'Accordion';
 const ACCORDION_KEYS = ['Home', 'End', 'ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight'];
 
-const [Collection, useCollection, createCollectionScope] =
+const [Collection, { useGetCollection, createCollectionScope }] =
   createCollection<AccordionTriggerElement>(ACCORDION_NAME);
 
 type ScopedProps<P> = P & { __scopeAccordion?: Scope | undefined };
@@ -258,18 +258,23 @@ const AccordionImpl = /* @__PURE__ */ React.forwardRef<AccordionImplElement, Acc
     } = props;
     const accordionRef = React.useRef<AccordionImplElement>(null);
     const composedRefs = useComposedRefs(accordionRef, forwardedRef);
-    const getItems = useCollection(__scopeAccordion);
+    const getCollection = useGetCollection(__scopeAccordion);
     const direction = useDirection(dir);
     const isDirectionLTR = direction === Direction.LTR;
 
     const handleKeyDown = composeEventHandlers(props.onKeyDown, (event) => {
-      if (!ACCORDION_KEYS.includes(event.key)) return;
+      if (!ACCORDION_KEYS.includes(event.key)) {
+        return;
+      }
+      const collection = getCollection();
       const target = event.target as HTMLElement;
-      const triggerCollection = getItems().filter((item) => !item.ref.current?.disabled);
-      const triggerIndex = triggerCollection.findIndex((item) => item.ref.current === target);
-      const triggerCount = triggerCollection.length;
+      const triggerCollection = collection.filter(([, item]) => !item.element.disabled);
+      const triggerIndex = triggerCollection.findIndex(([, item]) => item.element === target);
+      const triggerCount = triggerCollection.size;
 
-      if (triggerIndex === -1) return;
+      if (triggerIndex === -1) {
+        return;
+      }
 
       // Prevents page scroll while user is navigating
       event.preventDefault();
@@ -330,7 +335,7 @@ const AccordionImpl = /* @__PURE__ */ React.forwardRef<AccordionImplElement, Acc
       }
 
       const clampedIndex = nextIndex % triggerCount;
-      triggerCollection[clampedIndex]!.ref.current?.focus();
+      triggerCollection.at(clampedIndex)?.element.focus();
     });
 
     return (
