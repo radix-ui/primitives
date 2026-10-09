@@ -460,6 +460,38 @@ describe('Checkbox', () => {
       expect(onFormChange).toHaveBeenCalledWith(true);
     });
 
+    it('should trigger the ancestor `onClick` once and notify the form when the controlled parent applies a different `checked` state than requested', () => {
+      function CoercingApp() {
+        const [checked, setChecked] = React.useState<Checkbox.CheckedState>(true);
+        return (
+          <form
+            onChange={(event) =>
+              onFormChange((event.target as unknown as HTMLInputElement).checked)
+            }
+          >
+            <div onClick={onParentClick}>
+              <Checkbox.Root
+                checked={checked}
+                onCheckedChange={(nextChecked) =>
+                  setChecked(nextChecked === false ? 'indeterminate' : nextChecked)
+                }
+              >
+                <Checkbox.Indicator data-testid={INDICATOR_TEST_ID} />
+              </Checkbox.Root>
+            </div>
+          </form>
+        );
+      }
+
+      render(<CoercingApp />);
+      act(() => fireEvent.click(screen.getByRole(CHECKBOX_ROLE)));
+
+      expect(screen.getByRole(CHECKBOX_ROLE)).toHaveAttribute('aria-checked', 'mixed');
+      expect(onParentClick).toHaveBeenCalledTimes(1);
+      expect(onFormChange).toHaveBeenCalledTimes(1);
+      expect(onFormChange).toHaveBeenCalledWith(false);
+    });
+
     it('should not notify the form when propagation is stopped on the trigger and the controlled parent applies `checked` later', async () => {
       function DelayedApp() {
         const [checked, setChecked] = React.useState(false);

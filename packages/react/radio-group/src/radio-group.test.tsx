@@ -479,6 +479,35 @@ describe('RadioGroup', () => {
       expect(onFormChange).toHaveBeenCalledWith('2 checked');
     });
 
+    it('should trigger a clickable ancestor `onClick` once and notify the form when the controlled parent applies a different value than requested', () => {
+      const onParentClick = vi.fn();
+      const onFormChange = vi.fn();
+      function CoercingApp() {
+        const [value, setValue] = React.useState('1');
+        return (
+          <form onChange={(event) => onFormChange(describeRadio(event.target))}>
+            <div onClick={onParentClick}>
+              <ClassicRadioGroup
+                name="pet"
+                value={value}
+                onValueChange={(nextValue) => setValue(nextValue === '2' ? '3' : nextValue)}
+              />
+            </div>
+          </form>
+        );
+      }
+
+      render(<CoercingApp />);
+      const radios = screen.getAllByRole(RADIO_ROLE);
+      act(() => fireEvent.click(radios[1]!));
+
+      expect(radios[1]).toHaveAttribute('aria-checked', 'false');
+      expect(radios[2]).toHaveAttribute('aria-checked', 'true');
+      expect(onParentClick).toHaveBeenCalledTimes(1);
+      expect(onFormChange).toHaveBeenCalledWith('3 checked');
+      expect(onFormChange).not.toHaveBeenCalledWith('2 checked');
+    });
+
     it('should not notify the form when propagation is stopped on the trigger and the controlled parent applies the value later', async () => {
       const onParentClick = vi.fn();
       const onFormChange = vi.fn();
