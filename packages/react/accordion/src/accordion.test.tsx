@@ -1005,7 +1005,7 @@ describe('given an Accordion whose items change', () => {
     expect(screen.getByText('Trigger One')).toHaveFocus();
   });
 
-  it('should follow the new order when keyed items are reordered', async () => {
+  it('should follow the new order when keyed items are reordered', () => {
     function List({ items }: { items: string[] }) {
       return (
         <Accordion.Root type="single">
@@ -1021,7 +1021,6 @@ describe('given an Accordion whose items change', () => {
     }
     const { rerender } = render(<List items={['One', 'Two', 'Three']} />);
     rerender(<List items={['Three', 'One', 'Two']} />);
-    await act(async () => {});
 
     screen.getByText('Trigger Three').focus();
     fireEvent.keyDown(document.activeElement!, { key: 'ArrowDown' });
@@ -1067,7 +1066,7 @@ describe('given an Accordion whose items change', () => {
     expect(screen.getByText('Trigger Three')).toHaveFocus();
   });
 
-  it('should follow the new order when the wrappers around items are reordered', async () => {
+  it('should follow the new order when the wrappers around items are reordered', () => {
     function List({ items }: { items: string[] }) {
       return (
         <Accordion.Root type="single">
@@ -1085,7 +1084,6 @@ describe('given an Accordion whose items change', () => {
     }
     const { rerender } = render(<List items={['One', 'Two', 'Three']} />);
     rerender(<List items={['Two', 'One', 'Three']} />);
-    await act(async () => {});
 
     screen.getByText('Trigger Two').focus();
     fireEvent.keyDown(document.activeElement!, { key: 'ArrowDown' });
@@ -1145,6 +1143,63 @@ describe('given an Accordion whose items change', () => {
     screen.getByText('Trigger One').focus();
     fireEvent.keyDown(document.activeElement!, { key: 'ArrowDown' });
     expect(screen.getByText('Trigger Two')).toHaveFocus();
+    fireEvent.keyDown(document.activeElement!, { key: 'ArrowDown' });
+    expect(screen.getByText('Trigger Three')).toHaveFocus();
+  });
+
+  it('should skip an item hidden when its Suspense boundary suspends again', async () => {
+    const resolvedPromise = Object.assign(Promise.resolve(), {
+      status: 'fulfilled' as const,
+      value: undefined,
+    });
+    const pendingPromise = new Promise<void>(() => {});
+    function Deferred({
+      promise,
+      children,
+    }: {
+      promise: Promise<void>;
+      children: React.ReactNode;
+    }) {
+      React.use(promise);
+      return children;
+    }
+    function List({ promise }: { promise: Promise<void> }) {
+      return (
+        <Accordion.Root type="single">
+          <Accordion.Item value="One">
+            <Accordion.Header>
+              <Accordion.Trigger>Trigger One</Accordion.Trigger>
+            </Accordion.Header>
+          </Accordion.Item>
+          <React.Suspense fallback={<span>loading</span>}>
+            <Deferred promise={promise}>
+              <Accordion.Item value="Two">
+                <Accordion.Header>
+                  <Accordion.Trigger>Trigger Two</Accordion.Trigger>
+                </Accordion.Header>
+              </Accordion.Item>
+            </Deferred>
+          </React.Suspense>
+          <Accordion.Item value="Three">
+            <Accordion.Header>
+              <Accordion.Trigger>Trigger Three</Accordion.Trigger>
+            </Accordion.Header>
+          </Accordion.Item>
+        </Accordion.Root>
+      );
+    }
+    const { rerender } = render(<List promise={resolvedPromise} />);
+
+    screen.getByText('Trigger One').focus();
+    fireEvent.keyDown(document.activeElement!, { key: 'ArrowDown' });
+    expect(screen.getByText('Trigger Two')).toHaveFocus();
+
+    await act(async () => {
+      rerender(<List promise={pendingPromise} />);
+    });
+    expect(screen.getByText('loading')).toBeInTheDocument();
+
+    screen.getByText('Trigger One').focus();
     fireEvent.keyDown(document.activeElement!, { key: 'ArrowDown' });
     expect(screen.getByText('Trigger Three')).toHaveFocus();
   });
