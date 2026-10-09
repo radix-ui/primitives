@@ -1852,12 +1852,12 @@ const SelectBubbleInput = /* @__PURE__ */ React.forwardRef<
       handledUserSelectionRef.current = userSelection;
       const valueChanged = prevValueRef.current !== selectValue;
       prevValueRef.current = selectValue;
-      const isUserInteraction = isNewUserSelection && userSelection.value === selectValue;
+      const isUserInteraction = isNewUserSelection && valueChanged;
 
       if (
         isNewUserSelection &&
         !valueChanged &&
-        !isUserInteraction &&
+        userSelection.value !== selectValue &&
         !userSelection.hasConsumerStoppedPropagation &&
         setValue
       ) {

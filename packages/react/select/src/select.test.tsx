@@ -1857,6 +1857,56 @@ describe('bubble input change events', () => {
     expect(new FormData(document.querySelector('form')!).get('fruit')).toBe('banana');
   });
 
+  it('bubbles the value a controlled parent applies in place of the user-selected one', async () => {
+    const onFormChange = vi.fn();
+
+    function CoercingSelect() {
+      const [value, setValue] = React.useState('apple');
+      return (
+        <form
+          onChange={(event) => onFormChange((event.target as unknown as HTMLSelectElement).value)}
+        >
+          <Select.Root
+            name="fruit"
+            value={value}
+            onValueChange={(nextValue) => setValue(nextValue === 'banana' ? 'cherry' : nextValue)}
+            defaultOpen
+          >
+            <Select.Trigger aria-label="Choice">
+              <Select.Value placeholder={PLACEHOLDER_TEXT} />
+            </Select.Trigger>
+            <Select.Portal>
+              <Select.Content position="popper">
+                <Select.Viewport>
+                  <Select.Item value="apple">
+                    <Select.ItemText>Apple</Select.ItemText>
+                  </Select.Item>
+                  <Select.Item value="banana">
+                    <Select.ItemText>Banana</Select.ItemText>
+                  </Select.Item>
+                  <Select.Item value="cherry">
+                    <Select.ItemText>Cherry</Select.ItemText>
+                  </Select.Item>
+                </Select.Viewport>
+              </Select.Content>
+            </Select.Portal>
+          </Select.Root>
+        </form>
+      );
+    }
+
+    render(<CoercingSelect />);
+    const listbox = await screen.findByRole('listbox', { hidden: true });
+    onFormChange.mockClear();
+
+    fireEvent.click(within(listbox).getByRole('option', { name: 'Banana' }));
+
+    expect(screen.getByRole('combobox', { name: 'Choice' })).toHaveTextContent('Cherry');
+    expect(onFormChange).toHaveBeenCalledTimes(1);
+    expect(onFormChange).toHaveBeenCalledWith('cherry');
+    expect(new FormData(document.querySelector('form')!).get('fruit')).toBe('cherry');
+  });
+
   it('bubbles a user-driven value change that the controlled parent ignores, without applying it', async () => {
     const onFormChange = vi.fn();
     const onValueChange = vi.fn();
