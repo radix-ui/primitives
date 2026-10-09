@@ -87,6 +87,199 @@ describe('closing on window blur', () => {
   });
 });
 
+// Regression tests for https://github.com/radix-ui/primitives/issues/3124
+describe('given a mouse press on the trigger', () => {
+  afterEach(cleanupModal);
+
+  it('opens on press and closes when released outside the trigger and content', () => {
+    const onOpenChange = vi.fn();
+    render(
+      <>
+        <DropdownMenuTest onOpenChange={onOpenChange} />
+        <button type="button">outside</button>
+      </>,
+    );
+    const trigger = screen.getByText(TRIGGER_TEXT);
+
+    fireEvent.pointerDown(trigger, { button: 0, pointerId: 1, pointerType: 'mouse' });
+    expect(screen.getByRole('menu')).toBeInTheDocument();
+    expect(onOpenChange).toHaveBeenLastCalledWith(true);
+
+    // jsdom has no layout, so release at a point away from the trigger's empty box
+    fireEvent.pointerUp(screen.getByText('outside'), {
+      button: 0,
+      pointerId: 1,
+      pointerType: 'mouse',
+      clientX: 500,
+      clientY: 500,
+    });
+    expect(onOpenChange).toHaveBeenLastCalledWith(false);
+    expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+  });
+
+  it('closes a controlled menu when released outside the trigger and content', () => {
+    const ControlledDropdownMenuTest = () => {
+      const [open, setOpen] = React.useState(false);
+      return (
+        <>
+          <DropdownMenuTest open={open} onOpenChange={setOpen} />
+          <button type="button">outside</button>
+        </>
+      );
+    };
+    render(<ControlledDropdownMenuTest />);
+    const trigger = screen.getByText(TRIGGER_TEXT);
+
+    fireEvent.pointerDown(trigger, { button: 0, pointerId: 1, pointerType: 'mouse' });
+    expect(screen.getByRole('menu')).toBeInTheDocument();
+
+    fireEvent.pointerUp(screen.getByText('outside'), {
+      button: 0,
+      pointerId: 1,
+      pointerType: 'mouse',
+      clientX: 500,
+      clientY: 500,
+    });
+    expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+    expect(trigger).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  it('stays open when released over the trigger', () => {
+    render(<DropdownMenuTest />);
+    const trigger = screen.getByText(TRIGGER_TEXT);
+
+    fireEvent.pointerDown(trigger, { button: 0, pointerId: 1, pointerType: 'mouse' });
+    fireEvent.pointerUp(trigger, { button: 0, pointerId: 1, pointerType: 'mouse' });
+
+    expect(screen.getByRole('menu')).toBeInTheDocument();
+    expect(trigger).toHaveAttribute('aria-expanded', 'true');
+  });
+
+  it('stays open when released over the trigger box while pointer events are disabled', () => {
+    render(<DropdownMenuTest />);
+    const trigger = screen.getByText(TRIGGER_TEXT);
+    vi.spyOn(trigger, 'getBoundingClientRect').mockReturnValue(
+      DOMRect.fromRect({ x: 10, y: 10, width: 80, height: 30 }),
+    );
+
+    fireEvent.pointerDown(trigger, { button: 0, pointerId: 1, pointerType: 'mouse' });
+    // A modal menu sets `pointer-events: none` on the body, so the release targets the root element
+    fireEvent.pointerUp(document.documentElement, {
+      button: 0,
+      pointerId: 1,
+      pointerType: 'mouse',
+      clientX: 40,
+      clientY: 20,
+    });
+
+    expect(screen.getByRole('menu')).toBeInTheDocument();
+  });
+
+  it('stays open when released over the content', () => {
+    render(<DropdownMenuTest />);
+    const trigger = screen.getByText(TRIGGER_TEXT);
+
+    fireEvent.pointerDown(trigger, { button: 0, pointerId: 1, pointerType: 'mouse' });
+    fireEvent.pointerUp(screen.getByRole('menu'), {
+      button: 0,
+      pointerId: 1,
+      pointerType: 'mouse',
+    });
+
+    expect(screen.getByRole('menu')).toBeInTheDocument();
+  });
+
+  it('still selects an item with a press, drag and release from the trigger', () => {
+    const onSelect = vi.fn();
+    render(
+      <DropdownMenu.Root>
+        <DropdownMenu.Trigger>{TRIGGER_TEXT}</DropdownMenu.Trigger>
+        <DropdownMenu.Portal>
+          <DropdownMenu.Content>
+            <DropdownMenu.Item onSelect={onSelect}>{ITEM_TEXT}</DropdownMenu.Item>
+          </DropdownMenu.Content>
+        </DropdownMenu.Portal>
+      </DropdownMenu.Root>,
+    );
+    const trigger = screen.getByText(TRIGGER_TEXT);
+
+    fireEvent.pointerDown(trigger, { button: 0, pointerId: 1, pointerType: 'mouse' });
+    fireEvent.pointerUp(screen.getByText(ITEM_TEXT), {
+      button: 0,
+      pointerId: 1,
+      pointerType: 'mouse',
+    });
+
+    expect(onSelect).toHaveBeenCalledTimes(1);
+    expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+  });
+
+  it('stays open when the press is cancelled', () => {
+    render(
+      <>
+        <DropdownMenuTest />
+        <button type="button">outside</button>
+      </>,
+    );
+    const trigger = screen.getByText(TRIGGER_TEXT);
+    const outside = screen.getByText('outside');
+
+    fireEvent.pointerDown(trigger, { button: 0, pointerId: 1, pointerType: 'mouse' });
+    fireEvent.pointerCancel(outside, { pointerId: 1, pointerType: 'mouse' });
+    fireEvent.pointerUp(outside, {
+      button: 0,
+      pointerId: 1,
+      pointerType: 'mouse',
+      clientX: 500,
+      clientY: 500,
+    });
+
+    expect(screen.getByRole('menu')).toBeInTheDocument();
+  });
+
+  it('ignores the release of a different pointer', () => {
+    render(
+      <>
+        <DropdownMenuTest />
+        <button type="button">outside</button>
+      </>,
+    );
+    const trigger = screen.getByText(TRIGGER_TEXT);
+
+    fireEvent.pointerDown(trigger, { button: 0, pointerId: 1, pointerType: 'mouse' });
+    fireEvent.pointerUp(screen.getByText('outside'), {
+      button: 0,
+      pointerId: 2,
+      pointerType: 'mouse',
+      clientX: 500,
+      clientY: 500,
+    });
+
+    expect(screen.getByRole('menu')).toBeInTheDocument();
+  });
+
+  it('does not close a keyboard-opened menu on a pointer release outside', () => {
+    render(
+      <>
+        <DropdownMenuTest />
+        <button type="button">outside</button>
+      </>,
+    );
+    const trigger = screen.getByText(TRIGGER_TEXT);
+
+    fireEvent.keyDown(trigger, { key: 'Enter' });
+    fireEvent.pointerUp(screen.getByText('outside'), {
+      button: 0,
+      pointerId: 1,
+      pointerType: 'mouse',
+      clientX: 500,
+      clientY: 500,
+    });
+
+    expect(screen.getByRole('menu')).toBeInTheDocument();
+  });
+});
+
 // Regression tests for https://github.com/radix-ui/primitives/issues/3232
 describe('keys from focusable descendants', () => {
   afterEach(cleanup);
