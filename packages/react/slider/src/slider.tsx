@@ -5,7 +5,6 @@ import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { useDirection } from '@radix-ui/react-direction';
-import { usePrevious } from '@radix-ui/react-use-previous';
 import { useSize } from '@radix-ui/react-use-size';
 import { Primitive } from '@radix-ui/react-primitive';
 import { createCollection } from '@radix-ui/react-collection';
@@ -75,6 +74,7 @@ type SliderContextValue = {
   thumbs: Set<SliderThumbElement>;
   orientation: SliderProps['orientation'];
   form: string | undefined;
+  userInteractionCount: number;
 };
 
 const [SliderProvider, useSliderContext] = createSliderContext<SliderContextValue>(SLIDER_NAME);
@@ -131,6 +131,17 @@ const Slider = /* @__PURE__ */ React.forwardRef<SliderElement, SliderProps>(
     const thumbRefs = React.useRef<SliderContextValue['thumbs']>(new Set());
     const valueIndexToChangeRef = React.useRef<number>(0);
     const isKeyboardInteractionRef = React.useRef(false);
+
+    // Incremented on every user interaction that changes a value. The bubble
+    // input compares this against the value it last handled to tell whether a
+    // value change was driven by the user (vs. a controlled/programmatic
+    // update). Using a counter guarantees the marker is updated in the same
+    // commit as the resulting render, so it can never go stale and leak into a
+    // later programmatic update.
+    const [userInteractionCount, onUserInteraction] = React.useReducer(
+      (count: number): number => count + 1,
+      0,
+    );
     const isHorizontal = orientation === Orientation.Horizontal;
     const SliderOrientation = isHorizontal ? SliderHorizontal : SliderVertical;
     const [control, setControl] = React.useState<SliderElement | null>(null);
@@ -181,9 +192,9 @@ const Slider = /* @__PURE__ */ React.forwardRef<SliderElement, SliderProps>(
       const decimalCount = getDecimalCount(step);
       const snapToStep = roundValue(Math.round((value - min) / step) * step + min, decimalCount);
       const nextValue = clamp(snapToStep, [min, max]);
+      const minStepsDistance = minStepsBetweenThumbs * step;
 
-      setValues((prevValues = []) => {
-        const minStepsDistance = minStepsBetweenThumbs * step;
+      function getNextValues(prevValues: number[]) {
         // When thumb order is preserved, constrain the thumb to its neighbors
         // so it stops at their boundaries (respecting `minStepsBetweenThumbs`)
         // rather than crossing over and being reordered.
@@ -199,16 +210,32 @@ const Slider = /* @__PURE__ */ React.forwardRef<SliderElement, SliderProps>(
           : nextValue;
 
         const nextValues = getNextSortedValues(prevValues, constrainedValue, atIndex);
-        if (hasMinStepsBetweenValues(nextValues, minStepsDistance)) {
-          valueIndexToChangeRef.current = preserveThumbOrder
-            ? atIndex
-            : nextValues.indexOf(constrainedValue);
-          const hasChanged = String(nextValues) !== String(prevValues);
-          if (hasChanged && commit) onValueCommit(nextValues);
-          return hasChanged ? nextValues : prevValues;
-        } else {
+        if (!hasMinStepsBetweenValues(nextValues, minStepsDistance)) {
+          return null;
+        }
+        return {
+          nextValues,
+          changedIndex: preserveThumbOrder ? atIndex : nextValues.indexOf(constrainedValue),
+          hasChanged: String(nextValues) !== String(prevValues),
+        };
+      }
+
+      // Only count interactions that change the value so that pointer moves
+      // within a single step don't re-render the slider.
+      if (getNextValues(values)?.hasChanged) {
+        onUserInteraction();
+      }
+
+      setValues((prevValues = []) => {
+        const next = getNextValues(prevValues);
+        if (!next) {
           return prevValues;
         }
+        valueIndexToChangeRef.current = next.changedIndex;
+        if (next.hasChanged && commit) {
+          onValueCommit(next.nextValues);
+        }
+        return next.hasChanged ? next.nextValues : prevValues;
       });
     }
 
@@ -224,6 +251,7 @@ const Slider = /* @__PURE__ */ React.forwardRef<SliderElement, SliderProps>(
         values={values}
         orientation={orientation}
         form={form}
+        userInteractionCount={userInteractionCount}
       >
         <Collection.Provider scope={props.__scopeSlider}>
           <Collection.Slot scope={props.__scopeSlider}>
@@ -813,13 +841,17 @@ const SliderBubbleInput = /* @__PURE__ */ React.forwardRef<
 >(
   // blank line to reduce diff noise
   function SliderBubbleInput(
-    { __scopeSlider, ...props }: ScopedProps<SliderBubbleInputProps>,
+    { __scopeSlider, onInput, ...props }: ScopedProps<SliderBubbleInputProps>,
     forwardedRef,
   ) {
     const { value, name, form } = useSliderThumbContext(BUBBLE_INPUT_NAME, __scopeSlider);
+    const { userInteractionCount } = useSliderContext(BUBBLE_INPUT_NAME, __scopeSlider);
     const ref = React.useRef<SliderBubbleInputElement>(null);
     const composedRefs = useComposedRefs(ref, forwardedRef);
-    const prevValue = usePrevious(value);
+
+    const shouldStopInputPropagationRef = React.useRef(false);
+    const prevValueRef = React.useRef(value);
+    const prevUserInteractionCountRef = React.useRef(userInteractionCount);
 
     // Bubble value change to parents (e.g form change event)
     React.useEffect(() => {
@@ -829,12 +861,20 @@ const SliderBubbleInput = /* @__PURE__ */ React.forwardRef<
       const inputProto = window.HTMLInputElement.prototype;
       const descriptor = Object.getOwnPropertyDescriptor(inputProto, 'value') as PropertyDescriptor;
       const setValue = descriptor.set;
-      if (prevValue !== value && setValue) {
+
+      const isUserInteraction = userInteractionCount !== prevUserInteractionCountRef.current;
+      prevUserInteractionCountRef.current = userInteractionCount;
+      const valueChanged = prevValueRef.current !== value;
+      prevValueRef.current = value;
+
+      if (valueChanged && setValue) {
+        shouldStopInputPropagationRef.current = !isUserInteraction;
         const event = new Event('input', { bubbles: true });
         setValue.call(input, value);
         input.dispatchEvent(event);
+        shouldStopInputPropagationRef.current = false;
       }
-    }, [prevValue, value]);
+    }, [value, userInteractionCount]);
 
     /**
      * We purposefully do not use `type="hidden"` here otherwise forms that
@@ -853,6 +893,11 @@ const SliderBubbleInput = /* @__PURE__ */ React.forwardRef<
         {...props}
         ref={composedRefs}
         defaultValue={value}
+        onInput={composeEventHandlers(onInput, (event) => {
+          if (shouldStopInputPropagationRef.current) {
+            event.stopPropagation();
+          }
+        })}
       />
     );
   },
