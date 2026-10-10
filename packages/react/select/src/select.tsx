@@ -902,6 +902,7 @@ const SelectContentImpl = /* @__PURE__ */ React.forwardRef<
               // We make sure we don't trigger our `onDismiss` in such case.
               onFocusOutside={(event) => event.preventDefault()}
               onDismiss={() => context.onOpenChange(false)}
+              deferPointerDownOutside
             >
               <SelectPosition
                 role="listbox"
