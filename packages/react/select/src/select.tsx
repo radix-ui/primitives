@@ -1460,14 +1460,16 @@ const SelectItem = /* @__PURE__ */ React.forwardRef<SelectItemElement, SelectIte
                 return;
               }
 
-              // Using a mouse you should be able to do pointer down, move through
-              // the list, and release the pointer over the item to select it.
-              if (pointerTypeRef.current === 'mouse') {
-                handleSelect(event);
-              }
+              // Mouse: pointer down, move through the list, release to select.
+              // Touch and pen: pointerdown is canceled, so the click that used to
+              // select never arrives.
+              handleSelect(event);
             })}
             onPointerDown={composeEventHandlers(itemProps.onPointerDown, (event) => {
               pointerTypeRef.current = event.pointerType;
+              // Cancel the compatibility click. Inside a <label>, that click is
+              // forwarded to the trigger and reopens the menu on touch.
+              event.preventDefault();
             })}
             onPointerMove={composeEventHandlers(itemProps.onPointerMove, (event) => {
               // Remember pointer type when sliding over to this item from another one
