@@ -63,7 +63,10 @@ function ShadowButton() {
 }
 
 describe('DismissableLayer', () => {
-  afterEach(cleanup);
+  afterEach(() => {
+    cleanup();
+    vi.restoreAllMocks();
+  });
 
   it('dismisses on an outside pointer interaction', async () => {
     const onPointerDownOutside = vi.fn();
@@ -179,8 +182,57 @@ describe('DismissableLayer', () => {
     fireEvent.pointerDown(screen.getByText('outside'), { pointerType: 'touch' });
     expect(onDismiss).not.toHaveBeenCalled();
 
-    fireEvent.click(screen.getByText('outside'));
+    await act(async () => {
+      fireEvent.click(screen.getByText('outside'));
+    });
 
+    expect(onDismiss).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not flush sync when a deferred outside click is dispatched from a passive effect', async () => {
+    const onDismiss = vi.fn();
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    function DispatchClickOnMount({
+      targetRef,
+    }: {
+      targetRef: React.RefObject<HTMLButtonElement | null>;
+    }) {
+      React.useEffect(() => {
+        targetRef.current?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+      }, [targetRef]);
+
+      return null;
+    }
+
+    function Test({ dispatchClick }: { dispatchClick: boolean }) {
+      const outsideRef = React.useRef<HTMLButtonElement>(null);
+
+      return (
+        <form>
+          <DismissableLayer.Root deferPointerDownOutside onDismiss={onDismiss}>
+            <button type="button">inside</button>
+          </DismissableLayer.Root>
+          <button type="button" ref={outsideRef}>
+            outside
+          </button>
+          {dispatchClick && <DispatchClickOnMount targetRef={outsideRef} />}
+        </form>
+      );
+    }
+
+    const rendered = render(<Test dispatchClick={false} />);
+    await waitForDocumentPointerDownListener();
+
+    fireEvent.pointerDown(screen.getByText('outside'));
+
+    await act(async () => {
+      rendered.rerender(<Test dispatchClick />);
+    });
+
+    expect(consoleError).not.toHaveBeenCalledWith(
+      expect.stringContaining('flushSync was called from inside a lifecycle method'),
+    );
     expect(onDismiss).toHaveBeenCalledTimes(1);
   });
 

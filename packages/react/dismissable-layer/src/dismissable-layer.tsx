@@ -427,7 +427,11 @@ function usePointerDownOutside(
           handleAndDispatchPointerDownOutsideEvent();
         } else {
           ownerDocument.removeEventListener('click', handleClickRef.current);
-          handleClickRef.current = handleAndDispatchPointerDownOutsideEvent;
+          handleClickRef.current = () => {
+            // A click can be dispatched from a passive effect by a form control.
+            // Let React finish the commit before the discrete outside event calls flushSync.
+            queueMicrotask(handleAndDispatchPointerDownOutsideEvent);
+          };
           ownerDocument.addEventListener('click', handleClickRef.current, { once: true });
         }
       } else {
