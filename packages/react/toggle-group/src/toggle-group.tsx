@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { composeEventHandlers } from '@radix-ui/primitive';
 import { createContextScope } from '@radix-ui/react-context';
 import { Primitive } from '@radix-ui/react-primitive';
 import * as RovingFocusGroup from '@radix-ui/react-roving-focus';
@@ -14,6 +15,8 @@ import type { Scope } from '@radix-ui/react-context';
  * -----------------------------------------------------------------------------------------------*/
 
 const TOGGLE_GROUP_NAME = 'ToggleGroup';
+
+const ARROW_KEYS = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
 
 const ToggleGroupType = {
   Single: 'single',
@@ -260,6 +263,25 @@ const ToggleGroupItem = /* @__PURE__ */ React.forwardRef<
     const disabled = context.disabled || props.disabled;
     const commonProps = { ...props, pressed, disabled };
     const ref = React.useRef<HTMLDivElement>(null);
+    const isSingle = valueContext.type === ToggleGroupType.Single;
+    const isArrowKeyPressedRef = React.useRef(false);
+
+    React.useEffect(() => {
+      if (!isSingle) return;
+      const handleKeyDown = (event: KeyboardEvent) => {
+        if (ARROW_KEYS.includes(event.key)) {
+          isArrowKeyPressedRef.current = true;
+        }
+      };
+      const handleKeyUp = () => (isArrowKeyPressedRef.current = false);
+      document.addEventListener('keydown', handleKeyDown);
+      document.addEventListener('keyup', handleKeyUp);
+      return () => {
+        document.removeEventListener('keydown', handleKeyDown);
+        document.removeEventListener('keyup', handleKeyUp);
+      };
+    }, [isSingle]);
+
     return context.rovingFocus ? (
       <RovingFocusGroup.Item
         asChild
@@ -268,7 +290,17 @@ const ToggleGroupItem = /* @__PURE__ */ React.forwardRef<
         active={pressed}
         ref={ref}
       >
-        <ToggleGroupItemImpl {...commonProps} ref={forwardedRef} />
+        <ToggleGroupItemImpl
+          {...commonProps}
+          ref={forwardedRef}
+          onFocus={composeEventHandlers(props.onFocus, () => {
+            // `RovingFocusGroup` only moves focus, so check the item here.
+            // Skip one that is already pressed: `Toggle` would turn it off.
+            if (isSingle && isArrowKeyPressedRef.current && !pressed) {
+              ref.current?.click();
+            }
+          })}
+        />
       </RovingFocusGroup.Item>
     ) : (
       <ToggleGroupItemImpl {...commonProps} ref={forwardedRef} />
