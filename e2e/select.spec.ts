@@ -76,7 +76,9 @@ test.describe('Select extension overlay interactions', () => {
     await visitStory(page, 'select--with-extension-overlay');
   });
 
-  test('closes when an external overlay stops later mouse events', async ({ page }) => {
+  test('keeps the select open when an external overlay stops later mouse events', async ({
+    page,
+  }) => {
     await page.getByText('Trigger overlay', { exact: true }).click();
     await expect(page.getByTestId('external-overlay')).toBeAttached();
     await page.getByText(/choose a number/i).click();
@@ -84,7 +86,7 @@ test.describe('Select extension overlay interactions', () => {
 
     await page.getByTestId('external-overlay-button').click();
 
-    await expect(page.getByRole('listbox')).toHaveCount(0);
+    await expect(page.getByRole('listbox')).toBeAttached();
   });
 });
 

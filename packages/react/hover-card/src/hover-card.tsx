@@ -332,6 +332,7 @@ const HoverCardContentImpl = /* @__PURE__ */ React.forwardRef<
     <DismissableLayer
       asChild
       disableOutsidePointerEvents={false}
+      deferPointerDownOutside
       onInteractOutside={onInteractOutside}
       onEscapeKeyDown={onEscapeKeyDown}
       onPointerDownOutside={onPointerDownOutside}
