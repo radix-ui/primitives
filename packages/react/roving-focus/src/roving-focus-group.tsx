@@ -66,6 +66,7 @@ interface RovingFocusGroupOptions {
 
 type RovingContextValue = RovingFocusGroupOptions & {
   currentTabStopId: string | null;
+  currentTabStopIdRef: React.MutableRefObject<string | null>;
   onItemFocus(tabStopId: string): void;
   onItemShiftTab(): void;
   onFocusableItemAdd(): void;
@@ -132,6 +133,10 @@ const RovingFocusGroupImpl = /* @__PURE__ */ React.forwardRef<
     onChange: onCurrentTabStopIdChange,
     caller: GROUP_NAME,
   });
+  const currentTabStopIdRef = React.useRef(currentTabStopId);
+  useLayoutEffect(() => {
+    currentTabStopIdRef.current = currentTabStopId;
+  }, [currentTabStopId]);
   const [isTabbingBackOut, setIsTabbingBackOut] = React.useState(false);
   const handleEntryFocus = useCallbackRef(onEntryFocus);
   const getItems = useCollection(__scopeRovingFocusGroup);
@@ -153,8 +158,12 @@ const RovingFocusGroupImpl = /* @__PURE__ */ React.forwardRef<
       dir={direction}
       loop={loop}
       currentTabStopId={currentTabStopId}
+      currentTabStopIdRef={currentTabStopIdRef}
       onItemFocus={React.useCallback(
-        (tabStopId) => setCurrentTabStopId(tabStopId),
+        (tabStopId) => {
+          currentTabStopIdRef.current = tabStopId;
+          setCurrentTabStopId(tabStopId);
+        },
         [setCurrentTabStopId],
       )}
       onItemShiftTab={React.useCallback(() => setIsTabbingBackOut(true), [])}
@@ -321,11 +330,18 @@ const RovingFocusGroupItem = /* @__PURE__ */ React.forwardRef<
               if (focusIntent === 'last') candidateNodes.reverse();
               else if (focusIntent === 'prev' || focusIntent === 'next') {
                 if (focusIntent === 'prev') candidateNodes.reverse();
-                const currentIndex = candidateNodes.indexOf(event.currentTarget);
+                const currentItem = items.find(
+                  (item) => item.id === context.currentTabStopIdRef.current,
+                );
+                const currentNode = currentItem?.ref.current ?? event.currentTarget;
+                const currentIndex = candidateNodes.indexOf(currentNode);
                 candidateNodes = context.loop
                   ? wrapArray(candidateNodes, currentIndex + 1)
                   : candidateNodes.slice(currentIndex + 1);
               }
+
+              const nextItem = items.find((item) => item.ref.current === candidateNodes[0]);
+              if (nextItem) context.currentTabStopIdRef.current = nextItem.id;
 
               /**
                * Imperative focus during keydown is risky so we prevent React's batching updates
