@@ -439,6 +439,20 @@ function usePointerDownOutside(
       isPointerInsideReactTreeRef.current = false;
     };
 
+    /**
+     * `onPointerDownCapture` on the layer marks a pointer down as being inside the React tree,
+     * and `handlePointerDown` above clears that mark once the event reaches the document.
+     * Content inside the layer is free to call `stopPropagation()` though, in which case the
+     * event never reaches the document and the mark is left set, so the next pointer down
+     * outside is read as being inside and only clears the mark instead of dismissing.
+     * Clearing it here, in the capture phase, means every pointer down decides for itself
+     * whether it is inside, regardless of what the previous one did with propagation.
+     * See: https://github.com/radix-ui/primitives/issues/2782
+     */
+    const handlePointerDownCapture = () => {
+      isPointerInsideReactTreeRef.current = false;
+    };
+
     const outsideInteractionEvents = [
       'pointerup',
       'mousedown',
@@ -467,10 +481,12 @@ function usePointerDownOutside(
      * });
      */
     const timerId = window.setTimeout(() => {
+      ownerDocument.addEventListener('pointerdown', handlePointerDownCapture, true);
       ownerDocument.addEventListener('pointerdown', handlePointerDown);
     }, 0);
     return () => {
       window.clearTimeout(timerId);
+      ownerDocument.removeEventListener('pointerdown', handlePointerDownCapture, true);
       ownerDocument.removeEventListener('pointerdown', handlePointerDown);
       ownerDocument.removeEventListener('click', handleClickRef.current);
       for (const eventName of outsideInteractionEvents) {
