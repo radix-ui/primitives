@@ -4,6 +4,7 @@ import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
 import { useSize } from '@radix-ui/react-use-size';
 import { Presence } from '@radix-ui/react-presence';
+import { useDirection } from '@radix-ui/react-direction';
 import { Primitive } from '@radix-ui/react-primitive';
 
 import type { Scope } from '@radix-ui/react-context';
@@ -330,6 +331,10 @@ const RadioBubbleInput = /* @__PURE__ */ React.forwardRef<HTMLInputElement, Radi
     }, [bubbleInput, checked, hasConsumerStoppedPropagationRef, userInteractionCount]);
 
     const defaultCheckedRef = React.useRef(checked);
+    // The bubble is rendered after the control and pulled back over it.
+    // `translateX(-100%)` is physical, so in RTL that shift moves away from
+    // the control and can overflow the page.
+    const direction = useDirection();
     return (
       <Primitive.input
         type="radio"
@@ -360,8 +365,9 @@ const RadioBubbleInput = /* @__PURE__ */ React.forwardRef<HTMLInputElement, Radi
           margin: 0,
           // We transform because the input is absolutely positioned but we have
           // rendered it **after** the button. This pulls it back to sit on top
-          // of the button.
-          transform: 'translateX(-100%)',
+          // of the button. The sign follows the writing direction so the shift
+          // stays over the control in RTL.
+          transform: direction === 'rtl' ? 'translateX(100%)' : 'translateX(-100%)',
         }}
       />
     );
