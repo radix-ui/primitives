@@ -578,6 +578,29 @@ describe('Dialog.Overlay', () => {
     fireEvent.click(overlay);
     expect(onClick).toHaveBeenCalled();
   });
+
+  it('restores horizontal overscroll-behavior so trackpad swipe navigation keeps working', () => {
+    // simulates the `overscroll-behavior: contain` rule `react-remove-scroll-bar`
+    // applies to `body[data-scroll-locked]`
+    const removeScrollBarStyle = document.createElement('style');
+    removeScrollBarStyle.textContent = `body[data-scroll-locked] { overscroll-behavior: contain !important; }`;
+    document.head.appendChild(removeScrollBarStyle);
+
+    render(
+      <Dialog.Root defaultOpen>
+        <Dialog.Portal>
+          <Dialog.Overlay data-testid="overlay" />
+        </Dialog.Portal>
+      </Dialog.Root>,
+    );
+
+    document.body.setAttribute('data-scroll-locked', '1');
+    const bodyStyle = getComputedStyle(document.body);
+    expect(bodyStyle.overscrollBehaviorX).toBe('auto');
+
+    document.body.removeAttribute('data-scroll-locked');
+    removeScrollBarStyle.remove();
+  });
 });
 
 describe('Dialog.Content', () => {
