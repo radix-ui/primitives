@@ -816,6 +816,8 @@ export const RightToLeft = () => (
 
 export const WithinForm = () => {
   const [data, setData] = React.useState({});
+  const [language, setLanguage] = React.useState('fr');
+  const [country, setCountry] = React.useState('fr');
 
   function handleChange(event: React.ChangeEvent<HTMLFormElement>) {
     const formData = new FormData(event.currentTarget);
@@ -838,7 +840,18 @@ export const WithinForm = () => {
       <br />
       <Label style={{ display: 'block' }}>
         Country
-        <Select.Root name="country" autoComplete="country" defaultValue="fr">
+        <Select.Root
+          name="country"
+          autoComplete="country"
+          value={country}
+          onValueChange={(value) => {
+            if (value === 'de') {
+              window.alert('Germany is not supported');
+            } else {
+              setCountry(value);
+            }
+          }}
+        >
           <Select.Trigger className={styles.trigger}>
             <Select.Value />
             <Select.Icon />
@@ -864,15 +877,48 @@ export const WithinForm = () => {
                     <TickIcon />
                   </Select.ItemIndicator>
                 </Select.Item>
+                <Select.Item className={styles.item} value="de">
+                  <Select.ItemText>Germany</Select.ItemText>
+                  <Select.ItemIndicator className={styles.indicator}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
               </Select.Viewport>
             </Select.Content>
           </Select.Portal>
         </Select.Root>
       </Label>
+      <Label style={{ display: 'block' }}>
+        Language
+        <select
+          name="language"
+          value={language}
+          onChange={(event) => {
+            if (event.target.value === 'de') {
+              window.alert('German is not supported');
+            } else {
+              setLanguage(event.target.value);
+            }
+          }}
+          className={styles.trigger}
+        >
+          <option value="fr">French</option>
+          <option value="en">English</option>
+          <option value="es">Spanish</option>
+          <option value="de">German</option>
+        </select>
+      </Label>
       <br />
       <button type="submit">Submit</button>
       <br />
-      <pre>{JSON.stringify(data, null, 2)}</pre>
+      <div>
+        <h2>Form data:</h2>
+        <pre>{JSON.stringify(data, null, 2)}</pre>
+      </div>
+      <div>
+        Field state:
+        <pre>{JSON.stringify({ language, country }, null, 2)}</pre>
+      </div>
     </form>
   );
 };

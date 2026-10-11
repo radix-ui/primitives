@@ -314,6 +314,15 @@ export const WithinForm = () => {
       max: 70,
     },
   });
+  const [fieldData, setFieldData] = React.useState({ controlled: 50, native: 50 });
+
+  const setFieldValue = (name: keyof typeof fieldData, value: number) => {
+    // Values above 80 are rejected so the controlled value stays put.
+    if (value <= 80) {
+      setFieldData((prevData) => ({ ...prevData, [name]: value }));
+    }
+  };
+
   return (
     <form
       onSubmit={(event) => {
@@ -365,7 +374,52 @@ export const WithinForm = () => {
         </Slider.Root>
       </fieldset>
 
+      <br />
+      <br />
+
+      <fieldset>
+        <legend>Controlled value (values above 80 are rejected)</legend>
+        <Slider.Root
+          name="controlled"
+          value={[fieldData.controlled]}
+          onValueChange={([value]) => setFieldValue('controlled', value!)}
+          className={styles.root}
+        >
+          <Slider.Track className={styles.track}>
+            <Slider.Range className={styles.range} />
+          </Slider.Track>
+          <Slider.Thumb className={styles.thumb} />
+        </Slider.Root>
+      </fieldset>
+
+      <br />
+      <br />
+
+      <fieldset>
+        <legend>Native input (values above 80 are rejected)</legend>
+        <input
+          type="range"
+          name="native"
+          min={0}
+          max={100}
+          value={fieldData.native}
+          onChange={(event) => setFieldValue('native', Number(event.target.value))}
+        />
+      </fieldset>
+
+      <br />
+      <br />
+
       <button type="submit">Submit</button>
+      <hr />
+      <div>
+        <h2>Form data:</h2>
+        <pre>{JSON.stringify(data, null, 2)}</pre>
+      </div>
+      <div>
+        <h2>Field data:</h2>
+        <pre>{JSON.stringify(fieldData, null, 2)}</pre>
+      </div>
     </form>
   );
 };
