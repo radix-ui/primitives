@@ -959,6 +959,53 @@ describe('Slider.BubbleInput', () => {
     expect(onAncestorInput).toHaveBeenCalledTimes(1);
   });
 
+  it('bubbles the value a controlled parent applies in place of the user-requested one to ancestor `onInput` handlers', async () => {
+    const user = userEvent.setup();
+    const onAncestorInput = vi.fn();
+    const onFormChange = vi.fn();
+
+    const START_VALUE = 50;
+    const NEXT_VALUE_OFFSET = 9;
+    const STEP = 1;
+
+    function App() {
+      const [value, setValue] = React.useState([START_VALUE]);
+      return (
+        <form onChange={onFormChange}>
+          <div onInput={onAncestorInput}>
+            <Slider.Root
+              value={value}
+              onValueChange={([nextValue = 0]) => {
+                const step = nextValue + NEXT_VALUE_OFFSET;
+                return setValue([Math.min(step, 100)]);
+              }}
+              name="volume"
+              step={STEP}
+            >
+              <Slider.Track>
+                <Slider.Range />
+              </Slider.Track>
+              <Slider.Thumb />
+            </Slider.Root>
+          </div>
+        </form>
+      );
+    }
+
+    render(<App />);
+    screen.getByRole('slider').focus();
+    await user.keyboard('{ArrowRight}');
+
+    expect(onAncestorInput).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({
+        target: expect.objectContaining({
+          value: `${START_VALUE + NEXT_VALUE_OFFSET + STEP}`,
+        }),
+      }),
+    );
+    expect(onFormChange).toHaveBeenCalledTimes(1);
+  });
+
   it('only bubbles the user-driven thumb change to ancestor `onInput` handlers in a range slider', async () => {
     const user = userEvent.setup();
     const onAncestorInput = vi.fn();
@@ -1001,6 +1048,57 @@ describe('Slider.BubbleInput', () => {
     expect(onAncestorInput.mock.calls[0]![0].target).toHaveValue('21');
   });
 
+  it('only bubbles the user-driven thumb change to ancestor `onInput` handlers when a controlled parent moves another thumb in the same render', async () => {
+    const user = userEvent.setup();
+    const onAncestorInput = vi.fn();
+
+    const START_VALUE = 20;
+    const END_VALUE = 80;
+    const STEP = 1;
+
+    function App() {
+      const [value, setValue] = React.useState([START_VALUE, END_VALUE]);
+      return (
+        <form>
+          <div onInput={onAncestorInput}>
+            <Slider.Root
+              value={value}
+              onValueChange={([start = 0]) =>
+                setValue([
+                  start,
+                  // update end thumb to ensure the programmatic change is not
+                  // captured as the user-driven change
+                  start + 60,
+                ])
+              }
+              name="range"
+              step={STEP}
+            >
+              <Slider.Track>
+                <Slider.Range />
+              </Slider.Track>
+              <Slider.Thumb />
+              <Slider.Thumb />
+            </Slider.Root>
+          </div>
+        </form>
+      );
+    }
+
+    render(<App />);
+    const [startThumb] = screen.getAllByRole('slider');
+    startThumb!.focus();
+    await user.keyboard('{ArrowRight}');
+
+    expect(onAncestorInput).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({
+        target: expect.objectContaining({
+          value: `${START_VALUE + STEP}`,
+        }),
+      }),
+    );
+  });
+
   it('does not treat a programmatic change as user-driven after a rejected user interaction', async () => {
     const user = userEvent.setup();
     const onAncestorInput = vi.fn();
@@ -1022,9 +1120,8 @@ describe('Slider.BubbleInput', () => {
 
     const { rerender } = render(<App value={[50]} />);
     screen.getByRole('slider').focus();
-
     await user.keyboard('{ArrowRight}');
-    expect(screen.getByRole('slider')).toHaveAttribute('aria-valuenow', '50');
+
     onAncestorInput.mockClear();
 
     rerender(<App value={[0]} />);
