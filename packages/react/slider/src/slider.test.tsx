@@ -142,25 +142,13 @@ describe('Slider', () => {
       // values, so with a width of 100 over the [100, 110] range each unit of
       // value equals 10px (e.g. 107 → 70px).
       const slider = result.getByTestId('slider');
-      slider.getBoundingClientRect = () =>
-        ({
-          left: 0,
-          top: 0,
-          width: 100,
-          height: 10,
-          right: 100,
-          bottom: 10,
-          x: 0,
-          y: 0,
-          toJSON: () => {},
-        }) as DOMRect;
-
-      // jsdom implements the `PointerEvent` interface but not the pointer
-      // capture methods that the slide handlers rely on, so we stub them here.
-      // See https://github.com/jsdom/jsdom/pull/2666
-      slider.setPointerCapture = () => {};
-      slider.releasePointerCapture = () => {};
-      slider.hasPointerCapture = () => true;
+      shimBoundingClientRect(slider, {
+        width: 100,
+        height: 10,
+        right: 100,
+        bottom: 10,
+      });
+      shimPointerCapture(slider);
       return { ...result, slider };
     }
 
@@ -1099,6 +1087,66 @@ describe('Slider.BubbleInput', () => {
     );
   });
 
+  it.fails('bubbles every thumb value a user drag changes to ancestor `onInput` handlers when a controlled parent adjusts the values', () => {
+    const onAncestorInput = vi.fn();
+
+    const START_VALUE = 20;
+    const END_VALUE = 30;
+    const STEP = 1;
+
+    function App() {
+      const [value, setValue] = React.useState([START_VALUE, END_VALUE]);
+      return (
+        <form>
+          <div onInput={onAncestorInput}>
+            <Slider.Root
+              data-testid="slider"
+              value={value}
+              step={STEP}
+              onValueChange={(nextValues) => {
+                const next = nextValues.map((nextValue) => Math.min(nextValue + 1, 100));
+                return setValue(next);
+              }}
+              name="range"
+            >
+              <Slider.Track>
+                <Slider.Range />
+              </Slider.Track>
+              <Slider.Thumb />
+              <Slider.Thumb />
+            </Slider.Root>
+          </div>
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    // With a width of 100 over the [0, 100] range, each pixel equals one unit
+    // of value.
+    const slider = screen.getByTestId('slider');
+    shimBoundingClientRect(slider, {
+      width: 100,
+      height: 10,
+      right: 100,
+      bottom: 10,
+    });
+
+    shimPointerCapture(slider);
+
+    fireEvent.pointerDown(slider, { pointerId: 1, clientX: 20 });
+    onAncestorInput.mockClear();
+
+    // Dragging the start thumb past the end thumb re-sorts the values, so the
+    // drag changes both thumb values: [20, 30] -> [30, 40].
+    fireEvent.pointerMove(slider, { pointerId: 1, clientX: 40 });
+
+    const [startThumb, endThumb] = screen.getAllByRole('slider');
+    expect(startThumb).toHaveAttribute('aria-valuenow', '31');
+    expect(endThumb).toHaveAttribute('aria-valuenow', '41');
+    expect(onAncestorInput.mock.calls.map(([event]) => event.target.value)).toEqual(['31', '41']);
+  });
+
   it('does not treat a programmatic change as user-driven after a rejected user interaction', async () => {
     const user = userEvent.setup();
     const onAncestorInput = vi.fn();
@@ -1146,22 +1194,13 @@ describe('Slider.BubbleInput', () => {
     // With a width of 100 over the [0, 100] range, each pixel equals one unit
     // of value, so moves between 46px and 54px all snap to the same step (50).
     const slider = screen.getByTestId('slider');
-    slider.getBoundingClientRect = () =>
-      ({
-        left: 0,
-        top: 0,
-        width: 100,
-        height: 10,
-        right: 100,
-        bottom: 10,
-        x: 0,
-        y: 0,
-        toJSON: () => {},
-      }) as DOMRect;
-    // jsdom does not implement pointer capture methods.
-    slider.setPointerCapture = () => {};
-    slider.releasePointerCapture = () => {};
-    slider.hasPointerCapture = () => true;
+    shimBoundingClientRect(slider, {
+      width: 100,
+      height: 10,
+      right: 100,
+      bottom: 10,
+    });
+    shimPointerCapture(slider);
 
     fireEvent.pointerDown(slider, { pointerId: 1, clientX: 50 });
     onRender.mockClear();
@@ -1173,3 +1212,30 @@ describe('Slider.BubbleInput', () => {
     expect(onRender).not.toHaveBeenCalled();
   });
 });
+
+/**
+ * jsdom implements the `PointerEvent` interface but not the pointer capture
+ * methods that the slide handlers rely on, so we stub them here.
+ *
+ * See https://github.com/jsdom/jsdom/pull/2666
+ */
+function shimPointerCapture(element: HTMLElement) {
+  element.setPointerCapture = () => {};
+  element.releasePointerCapture = () => {};
+  element.hasPointerCapture = () => true;
+}
+
+function shimBoundingClientRect(element: HTMLElement, rect: Partial<DOMRect>) {
+  element.getBoundingClientRect = () => ({
+    left: 0,
+    top: 0,
+    bottom: 0,
+    right: 0,
+    width: 0,
+    height: 0,
+    x: 0,
+    y: 0,
+    ...rect,
+    toJSON: () => {},
+  });
+}
