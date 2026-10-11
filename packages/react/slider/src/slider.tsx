@@ -74,10 +74,8 @@ type SliderContextValue = {
   thumbs: Set<HTMLSpanElement>;
   orientation: SliderProps['orientation'];
   form: string | undefined;
-  userRequest: SliderUserRequest | null;
+  userRequestedValues: number[] | null;
 };
-
-type SliderUserRequest = { values: number[]; changedIndex: number };
 
 const [SliderProvider, useSliderContext] = createSliderContext<SliderContextValue>(SLIDER_NAME);
 
@@ -133,10 +131,9 @@ const Slider = /* @__PURE__ */ React.forwardRef<HTMLSpanElement, SliderProps>(
     const valueIndexToChangeRef = React.useRef<number>(0);
     const isKeyboardInteractionRef = React.useRef(false);
 
-    // The values and thumb index requested by the latest user interaction, used
-    // by the bubble input to tell user-driven value changes apart from
-    // programmatic ones.
-    const [userRequest, setUserRequest] = React.useState<SliderUserRequest | null>(null);
+    // The values requested by the latest user interaction, used by the bubble
+    // input to tell user-driven value changes apart from programmatic ones.
+    const [userRequestedValues, setUserRequestedValues] = React.useState<number[] | null>(null);
     const isHorizontal = orientation === Orientation.Horizontal;
     const SliderOrientation = isHorizontal ? SliderHorizontal : SliderVertical;
     const [control, setControl] = React.useState<HTMLSpanElement | null>(null);
@@ -219,7 +216,7 @@ const Slider = /* @__PURE__ */ React.forwardRef<HTMLSpanElement, SliderProps>(
       // within a single step don't re-render the slider.
       const requested = getNextValues(values);
       if (requested?.hasChanged) {
-        setUserRequest({ values: requested.nextValues, changedIndex: requested.changedIndex });
+        setUserRequestedValues(requested.nextValues);
       }
 
       setValues((prevValues = []) => {
@@ -247,7 +244,7 @@ const Slider = /* @__PURE__ */ React.forwardRef<HTMLSpanElement, SliderProps>(
         values={values}
         orientation={orientation}
         form={form}
-        userRequest={userRequest}
+        userRequestedValues={userRequestedValues}
       >
         <Collection.Provider scope={props.__scopeSlider}>
           <Collection.Slot scope={props.__scopeSlider}>
@@ -836,15 +833,15 @@ const SliderBubbleInput = /* @__PURE__ */ React.forwardRef<
     forwardedRef,
   ) {
     const { index, value, name, form } = useSliderThumbContext(BUBBLE_INPUT_NAME, __scopeSlider);
-    const { userRequest } = useSliderContext(BUBBLE_INPUT_NAME, __scopeSlider);
+    const { userRequestedValues } = useSliderContext(BUBBLE_INPUT_NAME, __scopeSlider);
     const ref = React.useRef<SliderBubbleInputElement>(null);
     const composedRefs = useComposedRefs(ref, forwardedRef);
 
     const shouldStopInputPropagationRef = React.useRef(false);
     const prevValueRef = React.useRef(value);
 
-    const handledUserRequestRef = React.useRef(userRequest);
-    const prevUserRequestRef = React.useRef(userRequest);
+    const handledUserRequestedValuesRef = React.useRef(userRequestedValues);
+    const prevUserRequestedValuesRef = React.useRef(userRequestedValues);
 
     // Bubble value change to parents (e.g form change event)
     React.useEffect(() => {
@@ -857,23 +854,29 @@ const SliderBubbleInput = /* @__PURE__ */ React.forwardRef<
       const descriptor = Object.getOwnPropertyDescriptor(inputProto, 'value') as PropertyDescriptor;
       const setValue = descriptor.set;
 
-      const valueChanged = prevValueRef.current !== value;
+      const prevValue = prevValueRef.current;
+      const valueChanged = prevValue !== value;
       prevValueRef.current = value;
-      const isUserRequestFromThisRender = userRequest !== prevUserRequestRef.current;
-      prevUserRequestRef.current = userRequest;
+      const isUserRequestFromThisRender =
+        userRequestedValues !== prevUserRequestedValuesRef.current;
+      prevUserRequestedValuesRef.current = userRequestedValues;
 
       if (valueChanged && setValue) {
-        const hasUnhandledUserRequest = userRequest !== handledUserRequestRef.current;
-        handledUserRequestRef.current = userRequest;
-        // The thumb the user moved is user-driven when its value changes in the
-        // same render as the request, even if the controlled parent changed
-        // it. Otherwise the value must match the request, so a parent moving
-        // other thumbs or applying the request later stays programmatic
-        // unless it applies the requested value.
+        const hasUnhandledUserRequest =
+          userRequestedValues !== handledUserRequestedValuesRef.current;
+        handledUserRequestedValuesRef.current = userRequestedValues;
+        // A thumb whose value the request changed is user-driven when its
+        // value changes in the same render as the request, even if the
+        // controlled parent changed it. A single request can change several
+        // thumbs when a drag crosses thumbs and the values are re-sorted.
+        // Otherwise the value must match the request, so a parent moving other
+        // thumbs or applying the request later stays programmatic unless it
+        // applies the requested value.
+        const requestedValue = userRequestedValues?.[index];
         const isUserInteraction =
           hasUnhandledUserRequest &&
-          ((isUserRequestFromThisRender && userRequest?.changedIndex === index) ||
-            userRequest?.values[index] === value);
+          ((isUserRequestFromThisRender && requestedValue !== prevValue) ||
+            requestedValue === value);
 
         shouldStopInputPropagationRef.current = !isUserInteraction;
         const event = new Event('input', { bubbles: true });
@@ -881,7 +884,7 @@ const SliderBubbleInput = /* @__PURE__ */ React.forwardRef<
         input.dispatchEvent(event);
         shouldStopInputPropagationRef.current = false;
       }
-    }, [index, value, userRequest]);
+    }, [index, value, userRequestedValues]);
 
     /**
      * We purposefully do not use `type="hidden"` here otherwise forms that

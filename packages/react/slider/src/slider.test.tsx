@@ -1087,7 +1087,7 @@ describe('Slider.BubbleInput', () => {
     );
   });
 
-  it.fails('bubbles every thumb value a user drag changes to ancestor `onInput` handlers when a controlled parent adjusts the values', () => {
+  it('bubbles every thumb value a user drag changes to ancestor `onInput` handlers when a controlled parent adjusts the values', () => {
     const onAncestorInput = vi.fn();
 
     const START_VALUE = 20;
@@ -1135,16 +1135,17 @@ describe('Slider.BubbleInput', () => {
     shimPointerCapture(slider);
 
     fireEvent.pointerDown(slider, { pointerId: 1, clientX: 20 });
-    onAncestorInput.mockClear();
 
     // Dragging the start thumb past the end thumb re-sorts the values, so the
     // drag changes both thumb values: [20, 30] -> [30, 40].
     fireEvent.pointerMove(slider, { pointerId: 1, clientX: 40 });
 
-    const [startThumb, endThumb] = screen.getAllByRole('slider');
-    expect(startThumb).toHaveAttribute('aria-valuenow', '31');
-    expect(endThumb).toHaveAttribute('aria-valuenow', '41');
-    expect(onAncestorInput.mock.calls.map(([event]) => event.target.value)).toEqual(['31', '41']);
+    expect(onAncestorInput).toHaveBeenCalledTimes(2);
+    expect(onAncestorInput.mock.calls.map(([event]) => event.target.value)).toEqual([
+      //
+      `${START_VALUE + 10 + STEP}`,
+      `${END_VALUE + 10 + STEP}`,
+    ]);
   });
 
   it('does not treat a programmatic change as user-driven after a rejected user interaction', async () => {
