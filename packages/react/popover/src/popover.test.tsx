@@ -40,6 +40,31 @@ describe('aria-controls', () => {
     expect(trigger).toHaveAttribute('aria-controls', content.id);
     expect(document.getElementById(content.id)).toBe(content);
   });
+
+  it('should not reference the content before it is open', () => {
+    rendered = render(<PopoverTest />);
+    const trigger = rendered.getByText(TRIGGER_TEXT);
+    expect(trigger).not.toHaveAttribute('aria-controls');
+  });
+
+  it('should reference the content when it is open', () => {
+    rendered = render(<PopoverTest />);
+    const trigger = rendered.getByText(TRIGGER_TEXT);
+
+    fireEvent.click(trigger);
+
+    const contentId = rendered.getByText(CONTENT_TEXT).id;
+    expect(trigger).toHaveAttribute('aria-controls', contentId);
+  });
+
+  it('should stop referencing the content once it closes', () => {
+    rendered = render(<PopoverTest defaultOpen />);
+    const trigger = rendered.getByText(TRIGGER_TEXT);
+
+    fireEvent.click(trigger);
+
+    expect(trigger).not.toHaveAttribute('aria-controls');
+  });
 });
 
 describe('Title and Description', () => {
