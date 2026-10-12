@@ -1,5 +1,11 @@
 # @radix-ui/react-popover
 
+## 1.3.0
+
+- Allow explicit `undefined` for all optional types for compatibility with TypeScript's `exactOptionalPropertyTypes` flag.
+- Fixed `aria-controls` being set on `Popover.Trigger` while the popover is closed.
+- Updated dependencies: `@radix-ui/primitive@1.2.0`, `@radix-ui/react-context@1.3.0`, `@radix-ui/react-dismissable-layer@1.2.0`, `@radix-ui/react-focus-guards@1.2.0`, `@radix-ui/react-focus-scope@1.3.0`, `@radix-ui/react-popper@1.4.0`, `@radix-ui/react-portal@1.2.0`, `@radix-ui/react-primitive@2.2.0`, `@radix-ui/react-slot@1.5.0`, `@radix-ui/react-use-controllable-state@1.3.0`
+
 ## 1.2.0
 
 - Added `Popover.Title` and `Popover.Description` parts that provide accessible names and descriptions for popover content.

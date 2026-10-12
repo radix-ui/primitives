@@ -1,5 +1,10 @@
 # @radix-ui/react-alert-dialog
 
+## 1.2.0
+
+- Allow explicit `undefined` for all optional types for compatibility with TypeScript's `exactOptionalPropertyTypes` flag.
+- Updated dependencies: `@radix-ui/primitive@1.2.0`, `@radix-ui/react-context@1.3.0`, `@radix-ui/react-dialog@1.3.0`, `@radix-ui/react-primitive@2.2.0`
+
 ## 1.1.24
 
 - Updated dependencies: `@radix-ui/react-dialog@1.2.0`, `@radix-ui/react-primitive@2.1.11`

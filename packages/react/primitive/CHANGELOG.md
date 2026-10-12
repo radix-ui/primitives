@@ -1,5 +1,10 @@
 # @radix-ui/react-primitive
 
+## 2.2.0
+
+- Allow explicit `undefined` for all optional types for compatibility with TypeScript's `exactOptionalPropertyTypes` flag.
+- Updated dependencies: `@radix-ui/react-slot@1.5.0`
+
 ## 2.1.11
 
 - Updated dependencies: `@radix-ui/react-slot@1.4.0`

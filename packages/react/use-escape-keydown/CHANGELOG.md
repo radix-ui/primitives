@@ -1,5 +1,9 @@
 # @radix-ui/react-use-escape-keydown
 
+## 1.1.6
+
+- Updated dependencies: `@radix-ui/react-use-callback-ref@1.1.5`
+
 ## 1.1.5
 
 - Reverted breaking changes that caused compatibility issues with React Server Components.

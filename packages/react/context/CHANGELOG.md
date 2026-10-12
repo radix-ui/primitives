@@ -1,5 +1,9 @@
 # @radix-ui/react-context
 
+## 1.3.0
+
+- Allow explicit `undefined` for all optional types for compatibility with TypeScript's `exactOptionalPropertyTypes` flag.
+
 ## 1.2.2
 
 - Reverted breaking changes that caused compatibility issues with React Server Components.
