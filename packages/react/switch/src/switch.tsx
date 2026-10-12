@@ -46,7 +46,7 @@ interface SwitchProviderProps {
   checked?: boolean | undefined;
   defaultChecked?: boolean | undefined;
   required?: boolean | undefined;
-  onCheckedChange?: ((checked: boolean) => void) | undefined;
+  onCheckedChange?: { bivarianceHack(checked: boolean): void }['bivarianceHack'] | undefined;
   name?: string | undefined;
   form?: string | undefined;
   disabled?: boolean | undefined;
@@ -197,7 +197,7 @@ interface SwitchProps extends Omit<PrimitiveButtonProps, 'checked' | 'defaultChe
   checked?: boolean | undefined;
   defaultChecked?: boolean | undefined;
   required?: boolean | undefined;
-  onCheckedChange?: ((checked: boolean) => void) | undefined;
+  onCheckedChange?: { bivarianceHack(checked: boolean): void }['bivarianceHack'] | undefined;
 }
 
 const Switch = /* @__PURE__ */ React.forwardRef<SwitchElement, SwitchProps>(

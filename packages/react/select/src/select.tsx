@@ -135,7 +135,7 @@ export interface SelectSharedProps {
   children?: React.ReactNode | undefined;
   open?: boolean | undefined;
   defaultOpen?: boolean | undefined;
-  onOpenChange?: ((open: boolean) => void) | undefined;
+  onOpenChange?: { bivarianceHack(open: boolean): void }['bivarianceHack'] | undefined;
   dir?: Direction | undefined;
   name?: string | undefined;
   autoComplete?: string | undefined;
@@ -152,7 +152,7 @@ type _FutureSelectProps = SelectSharedProps & SelectControlProps;
 type SelectProps = SelectSharedProps & {
   value?: string | undefined;
   defaultValue?: string | undefined;
-  onValueChange?: ((value: string) => void) | undefined;
+  onValueChange?: { bivarianceHack(value: string): void }['bivarianceHack'] | undefined;
 };
 
 /* -------------------------------------------------------------------------------------------------
@@ -162,7 +162,7 @@ type SelectProps = SelectSharedProps & {
 interface SelectProviderProps extends SelectSharedProps {
   value?: string | undefined;
   defaultValue?: string | undefined;
-  onValueChange?: ((value: string) => void) | undefined;
+  onValueChange?: { bivarianceHack(value: string): void }['bivarianceHack'] | undefined;
 }
 
 function SelectProvider(props: ScopedProps<SelectProviderProps>) {

@@ -110,7 +110,7 @@ interface AccordionImplSingleProps extends AccordionImplProps {
   /**
    * The callback that fires when the state of the accordion changes.
    */
-  onValueChange?: ((value: string) => void) | undefined;
+  onValueChange?: { bivarianceHack(value: string): void }['bivarianceHack'] | undefined;
   /**
    * Whether an accordion item can be collapsed after it has been opened.
    * @default false
@@ -170,7 +170,7 @@ interface AccordionImplMultipleProps extends AccordionImplProps {
   /**
    * The callback that fires when the state of the accordion changes.
    */
-  onValueChange?: ((value: string[]) => void) | undefined;
+  onValueChange?: { bivarianceHack(value: string[]): void }['bivarianceHack'] | undefined;
 }
 
 const AccordionImplMultiple = /* @__PURE__ */ React.forwardRef<

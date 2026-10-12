@@ -25,7 +25,7 @@ interface ToggleProps extends PrimitiveButtonProps {
   /**
    * The callback that fires when the state of the toggle changes.
    */
-  onPressedChange?: ((pressed: boolean) => void) | undefined;
+  onPressedChange?: { bivarianceHack(pressed: boolean): void }['bivarianceHack'] | undefined;
 }
 
 const Toggle = /* @__PURE__ */ React.forwardRef<ToggleElement, ToggleProps>(

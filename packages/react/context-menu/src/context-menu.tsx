@@ -42,7 +42,7 @@ const [ContextMenuProvider, useContextMenuContext] =
 interface ContextMenuProps {
   children?: React.ReactNode | undefined;
   open?: boolean | undefined;
-  onOpenChange?: ((open: boolean) => void) | undefined;
+  onOpenChange?: { bivarianceHack(open: boolean): void }['bivarianceHack'] | undefined;
   dir?: Direction | undefined;
   modal?: boolean | undefined;
 }
@@ -455,7 +455,7 @@ interface ContextMenuSubProps {
   children?: React.ReactNode | undefined;
   open?: boolean | undefined;
   defaultOpen?: boolean | undefined;
-  onOpenChange?: ((open: boolean) => void) | undefined;
+  onOpenChange?: { bivarianceHack(open: boolean): void }['bivarianceHack'] | undefined;
 }
 
 const ContextMenuSub: React.FC<ContextMenuSubProps> = (props: ScopedProps<ContextMenuSubProps>) => {

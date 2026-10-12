@@ -89,7 +89,7 @@ const [MenuRootProvider, useMenuRootContext] = createMenuContext<MenuRootContext
 interface MenuProps {
   children?: React.ReactNode | undefined;
   open?: boolean | undefined;
-  onOpenChange?: ((open: boolean) => void) | undefined;
+  onOpenChange?: { bivarianceHack(open: boolean): void }['bivarianceHack'] | undefined;
   dir?: Direction | undefined;
   modal?: boolean | undefined;
 }
@@ -1015,7 +1015,7 @@ const [MenuSubProvider, useMenuSubContext] = createMenuContext<MenuSubContextVal
 interface MenuSubProps {
   children?: React.ReactNode | undefined;
   open?: boolean | undefined;
-  onOpenChange?: ((open: boolean) => void) | undefined;
+  onOpenChange?: { bivarianceHack(open: boolean): void }['bivarianceHack'] | undefined;
 }
 
 const MenuSub: React.FC<MenuSubProps> = (props: ScopedProps<MenuSubProps>) => {

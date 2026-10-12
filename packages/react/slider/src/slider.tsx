@@ -101,8 +101,8 @@ interface SliderProps extends Omit<
   preserveThumbOrder?: boolean | undefined;
   value?: number[] | undefined;
   defaultValue?: number[] | undefined;
-  onValueChange?: ((value: number[]) => void) | undefined;
-  onValueCommit?: ((value: number[]) => void) | undefined;
+  onValueChange?: { bivarianceHack(value: number[]): void }['bivarianceHack'] | undefined;
+  onValueCommit?: { bivarianceHack(value: number[]): void }['bivarianceHack'] | undefined;
   inverted?: boolean | undefined;
   form?: string | undefined;
 }
@@ -324,8 +324,8 @@ type SliderOrientationPrivateProps = {
   min: number;
   max: number;
   inverted: boolean;
-  onSlideStart?: ((value: number) => void) | undefined;
-  onSlideMove?: ((value: number) => void) | undefined;
+  onSlideStart?: { bivarianceHack(value: number): void }['bivarianceHack'] | undefined;
+  onSlideMove?: { bivarianceHack(value: number): void }['bivarianceHack'] | undefined;
   onSlideEnd?: (() => void) | undefined;
   onHomeKeyDown(event: React.KeyboardEvent): void;
   onEndKeyDown(event: React.KeyboardEvent): void;

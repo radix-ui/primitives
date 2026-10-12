@@ -24,7 +24,9 @@ type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface ProgressProps extends PrimitiveDivProps {
   value?: number | null | undefined;
   max?: number | undefined;
-  getValueLabel?: ((value: number, max: number) => string) | undefined;
+  getValueLabel?:
+    | { bivarianceHack(value: number, max: number): string }['bivarianceHack']
+    | undefined;
 }
 
 const Progress = /* @__PURE__ */ React.forwardRef<ProgressElement, ProgressProps>(

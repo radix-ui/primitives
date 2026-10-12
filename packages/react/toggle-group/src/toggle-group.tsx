@@ -81,7 +81,7 @@ interface ToggleGroupImplSingleProps extends ToggleGroupImplProps {
   /**
    * The callback that fires when the value of the toggle group changes.
    */
-  onValueChange?: ((value: string) => void) | undefined;
+  onValueChange?: { bivarianceHack(value: string): void }['bivarianceHack'] | undefined;
 }
 
 const ToggleGroupImplSingle = /* @__PURE__ */ React.forwardRef<
@@ -129,7 +129,7 @@ interface ToggleGroupImplMultipleProps extends ToggleGroupImplProps {
   /**
    * The callback that fires when the state of the toggle group changes.
    */
-  onValueChange?: ((value: string[]) => void) | undefined;
+  onValueChange?: { bivarianceHack(value: string[]): void }['bivarianceHack'] | undefined;
 }
 
 const ToggleGroupImplMultiple = /* @__PURE__ */ React.forwardRef<

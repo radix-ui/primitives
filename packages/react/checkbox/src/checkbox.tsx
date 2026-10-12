@@ -50,7 +50,9 @@ interface CheckboxProviderProps<State extends CheckedState = CheckedState> {
   checked?: State | boolean | undefined;
   defaultChecked?: State | boolean | undefined;
   required?: boolean | undefined;
-  onCheckedChange?: ((checked: State | boolean) => void) | undefined;
+  onCheckedChange?:
+    | { bivarianceHack(checked: State | boolean): void }['bivarianceHack']
+    | undefined;
   name?: string | undefined;
   form?: string | undefined;
   disabled?: boolean | undefined;
@@ -210,7 +212,7 @@ interface CheckboxProps extends Omit<PrimitiveButtonProps, 'checked' | 'defaultC
   checked?: CheckedState | undefined;
   defaultChecked?: CheckedState | undefined;
   required?: boolean | undefined;
-  onCheckedChange?: ((checked: CheckedState) => void) | undefined;
+  onCheckedChange?: { bivarianceHack(checked: CheckedState): void }['bivarianceHack'] | undefined;
 }
 
 const Checkbox = /* @__PURE__ */ React.forwardRef<CheckboxElement, CheckboxProps>(

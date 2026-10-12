@@ -419,7 +419,7 @@ type ToastElement = ToastImplElement;
 interface ToastProps extends Omit<ToastImplProps, keyof ToastImplPrivateProps> {
   open?: boolean | undefined;
   defaultOpen?: boolean | undefined;
-  onOpenChange?: ((open: boolean) => void) | undefined;
+  onOpenChange?: { bivarianceHack(open: boolean): void }['bivarianceHack'] | undefined;
   /**
    * Used to force mounting when more control is needed. Useful when
    * controlling animation with React animation libraries.
@@ -502,10 +502,10 @@ interface ToastImplProps extends ToastImplPrivateProps, PrimitiveListItemProps {
   onEscapeKeyDown?: DismissableLayerProps['onEscapeKeyDown'] | undefined;
   onPause?: (() => void) | undefined;
   onResume?: (() => void) | undefined;
-  onSwipeStart?: ((event: SwipeEvent) => void) | undefined;
-  onSwipeMove?: ((event: SwipeEvent) => void) | undefined;
-  onSwipeCancel?: ((event: SwipeEvent) => void) | undefined;
-  onSwipeEnd?: ((event: SwipeEvent) => void) | undefined;
+  onSwipeStart?: { bivarianceHack(event: SwipeEvent): void }['bivarianceHack'] | undefined;
+  onSwipeMove?: { bivarianceHack(event: SwipeEvent): void }['bivarianceHack'] | undefined;
+  onSwipeCancel?: { bivarianceHack(event: SwipeEvent): void }['bivarianceHack'] | undefined;
+  onSwipeEnd?: { bivarianceHack(event: SwipeEvent): void }['bivarianceHack'] | undefined;
 }
 
 const ToastImpl = /* @__PURE__ */ React.forwardRef<ToastImplElement, ToastImplProps>(
