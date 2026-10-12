@@ -143,6 +143,63 @@ describe('clearing an optional value (#2706)', () => {
   });
 });
 
+// Regression tests for https://github.com/radix-ui/primitives/issues/4197
+describe('handlers with a narrower parameter type than the prop', () => {
+  afterEach(cleanup);
+
+  type Fruit = 'apple' | 'banana';
+
+  it('accepts an `onValueChange` handler typed with the item values on a controlled select', async () => {
+    const handleValueChange = vi.fn((value: Fruit) => value);
+
+    function ControlledSelect() {
+      const [value, setValue] = React.useState<Fruit>('apple');
+      return (
+        <SelectTest
+          value={value}
+          onValueChange={(nextValue: Fruit) => {
+            handleValueChange(nextValue);
+            setValue(nextValue);
+          }}
+          defaultOpen
+        />
+      );
+    }
+
+    render(<ControlledSelect />);
+    const bananaItem = await waitFor(() =>
+      screen.getByRole('option', { name: 'Banana', hidden: true }),
+    );
+    fireEvent.click(bananaItem);
+
+    expect(handleValueChange).toHaveBeenCalledWith('banana');
+  });
+
+  it('accepts an `onValueChange` handler typed with the item values on an uncontrolled select', async () => {
+    const handleValueChange = vi.fn((value: Fruit) => value);
+
+    render(<SelectTest defaultValue="apple" onValueChange={handleValueChange} defaultOpen />);
+    const bananaItem = await waitFor(() =>
+      screen.getByRole('option', { name: 'Banana', hidden: true }),
+    );
+    fireEvent.click(bananaItem);
+
+    expect(handleValueChange).toHaveBeenCalledWith('banana');
+  });
+
+  it('accepts an `onOpenChange` handler typed with a narrower parameter', async () => {
+    const handleOpenChange = vi.fn((open: false) => open);
+
+    render(<SelectTest onOpenChange={handleOpenChange} defaultOpen />);
+    const bananaItem = await waitFor(() =>
+      screen.getByRole('option', { name: 'Banana', hidden: true }),
+    );
+    fireEvent.click(bananaItem);
+
+    expect(handleOpenChange).toHaveBeenCalledWith(false);
+  });
+});
+
 // Regression test for https://github.com/radix-ui/primitives/issues/1663
 describe('given all select items are disabled', () => {
   afterEach(cleanup);

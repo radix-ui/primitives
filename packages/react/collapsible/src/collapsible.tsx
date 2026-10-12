@@ -35,7 +35,7 @@ interface CollapsibleProps extends PrimitiveDivProps {
   defaultOpen?: boolean | undefined;
   open?: boolean | undefined;
   disabled?: boolean | undefined;
-  onOpenChange?: ((open: boolean) => void) | undefined;
+  onOpenChange?: { bivarianceHack(open: boolean): void }['bivarianceHack'] | undefined;
 }
 
 const Collapsible = /* @__PURE__ */ React.forwardRef<CollapsibleElement, CollapsibleProps>(

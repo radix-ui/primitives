@@ -48,7 +48,7 @@ interface DropdownMenuProps {
   dir?: Direction | undefined;
   open?: boolean | undefined;
   defaultOpen?: boolean | undefined;
-  onOpenChange?: ((open: boolean) => void) | undefined;
+  onOpenChange?: { bivarianceHack(open: boolean): void }['bivarianceHack'] | undefined;
   modal?: boolean | undefined;
 }
 
@@ -398,7 +398,7 @@ interface DropdownMenuSubProps {
   children?: React.ReactNode | undefined;
   open?: boolean | undefined;
   defaultOpen?: boolean | undefined;
-  onOpenChange?: ((open: boolean) => void) | undefined;
+  onOpenChange?: { bivarianceHack(open: boolean): void }['bivarianceHack'] | undefined;
 }
 
 const DropdownMenuSub: React.FC<DropdownMenuSubProps> = (
