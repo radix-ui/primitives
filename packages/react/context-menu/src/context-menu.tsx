@@ -103,6 +103,11 @@ const ContextMenu: React.FC<ContextMenuProps> = (props: ScopedProps<ContextMenuP
 
 const TRIGGER_NAME = 'ContextMenuTrigger';
 
+// Native pointerdown events that a trigger has already armed a long press for.
+// Nested triggers all receive the same bubbling event, so only the innermost
+// one (which handles it first) may start a long press timer.
+const claimedLongPressEvents = /* @__PURE__ */ new WeakSet<Event>();
+
 type ContextMenuTriggerElement = React.ComponentRef<typeof Primitive.span>;
 type PrimitiveSpanProps = React.ComponentPropsWithoutRef<typeof Primitive.span>;
 interface ContextMenuTriggerProps extends PrimitiveSpanProps {
@@ -178,6 +183,9 @@ const ContextMenuTrigger = /* @__PURE__ */ React.forwardRef<
                     if (context.open) {
                       context.onOpenChange(false);
                     }
+                    // an inner trigger has already claimed this touch, so skip the long press
+                    if (claimedLongPressEvents.has(event.nativeEvent)) return;
+                    claimedLongPressEvents.add(event.nativeEvent);
                     longPressTimerRef.current = window.setTimeout(() => handleOpen(event), 700);
                   }),
                 )
