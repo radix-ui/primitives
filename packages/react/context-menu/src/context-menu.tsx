@@ -183,8 +183,9 @@ const ContextMenuTrigger = /* @__PURE__ */ React.forwardRef<
                     if (context.open) {
                       context.onOpenChange(false);
                     }
-                    // an inner trigger has already claimed this touch, so skip the long press
-                    if (claimedLongPressEvents.has(event.nativeEvent)) return;
+                    if (claimedLongPressEvents.has(event.nativeEvent)) {
+                      return;
+                    }
                     claimedLongPressEvents.add(event.nativeEvent);
                     longPressTimerRef.current = window.setTimeout(() => handleOpen(event), 700);
                   }),

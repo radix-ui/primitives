@@ -1565,7 +1565,21 @@ describe('touch long press with nested triggers', () => {
     expect(openMenus()).toEqual(['inner menu']);
   });
 
-  it('still opens a single menu on a touch long press', () => {
+  it('opens only the innermost menu when the platform fires contextmenu during the long press', () => {
+    render(<NestedContextMenuTest />);
+    const inner = screen.getByTestId('inner');
+    fireEvent.pointerDown(inner, { pointerType: 'touch' });
+    act(() => {
+      vi.advanceTimersByTime(520);
+    });
+    fireEvent.contextMenu(inner);
+    act(() => {
+      vi.advanceTimersByTime(300);
+    });
+    expect(openMenus()).toEqual(['inner menu']);
+  });
+
+  it('opens the menu on a touch long press', () => {
     render(<ContextMenuTest />);
     fireEvent.pointerDown(screen.getByText(TRIGGER_TEXT), { pointerType: 'touch' });
     act(() => {
