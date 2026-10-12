@@ -5,10 +5,14 @@ on:
     branches:
       - main
       - stable
+  push:
+    branches:
+      - main
+      - stable
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   build:
