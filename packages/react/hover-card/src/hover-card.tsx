@@ -44,7 +44,7 @@ interface HoverCardProps {
   children?: React.ReactNode | undefined;
   open?: boolean | undefined;
   defaultOpen?: boolean | undefined;
-  onOpenChange?: ((open: boolean) => void) | undefined;
+  onOpenChange?: { bivarianceHack(open: boolean): void }['bivarianceHack'] | undefined;
   openDelay?: number | undefined;
   closeDelay?: number | undefined;
 }

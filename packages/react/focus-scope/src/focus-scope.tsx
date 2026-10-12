@@ -44,13 +44,13 @@ interface FocusScopeProps extends PrimitiveDivProps {
    * Event handler called when auto-focusing on mount.
    * Can be prevented.
    */
-  onMountAutoFocus?: ((event: Event) => void) | undefined;
+  onMountAutoFocus?: { bivarianceHack(event: Event): void }['bivarianceHack'] | undefined;
 
   /**
    * Event handler called when auto-focusing on unmount.
    * Can be prevented.
    */
-  onUnmountAutoFocus?: ((event: Event) => void) | undefined;
+  onUnmountAutoFocus?: { bivarianceHack(event: Event): void }['bivarianceHack'] | undefined;
 }
 
 const FocusScope = /* @__PURE__ */ React.forwardRef<FocusScopeElement, FocusScopeProps>(

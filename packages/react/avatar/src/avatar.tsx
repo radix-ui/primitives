@@ -75,7 +75,9 @@ const IMAGE_NAME = 'AvatarImage';
 type AvatarImageElement = React.ComponentRef<typeof Primitive.img>;
 type PrimitiveImageProps = React.ComponentPropsWithoutRef<typeof Primitive.img>;
 interface AvatarImageProps extends PrimitiveImageProps {
-  onLoadingStatusChange?: ((status: ImageLoadingStatus) => void) | undefined;
+  onLoadingStatusChange?:
+    | { bivarianceHack(status: ImageLoadingStatus): void }['bivarianceHack']
+    | undefined;
 }
 
 const AvatarImage = /* @__PURE__ */ React.forwardRef<AvatarImageElement, AvatarImageProps>(

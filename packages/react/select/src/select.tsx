@@ -615,14 +615,20 @@ const CONTENT_MARGIN = 10;
 type SelectContentContextValue = {
   content?: SelectContentElement | null | undefined;
   viewport?: SelectViewportElement | null | undefined;
-  onViewportChange?: ((node: SelectViewportElement | null) => void) | undefined;
+  onViewportChange?:
+    | { bivarianceHack(node: SelectViewportElement | null): void }['bivarianceHack']
+    | undefined;
   itemRefCallback?:
-    | ((node: SelectItemElement | null, value: string, disabled: boolean) => void)
+    | {
+        bivarianceHack(node: SelectItemElement | null, value: string, disabled: boolean): void;
+      }['bivarianceHack']
     | undefined;
   selectedItem?: SelectItemElement | null | undefined;
   onItemLeave?: (() => void) | undefined;
   itemTextRefCallback?:
-    | ((node: SelectItemTextElement | null, value: string, disabled: boolean) => void)
+    | {
+        bivarianceHack(node: SelectItemTextElement | null, value: string, disabled: boolean): void;
+      }['bivarianceHack']
     | undefined;
   focusSelectedItem?: (() => void) | undefined;
   selectedItemText?: SelectItemTextElement | null | undefined;
@@ -1242,7 +1248,9 @@ const SelectPopperPosition = /* @__PURE__ */ React.forwardRef<
 type SelectViewportContextValue = {
   contentWrapper?: HTMLDivElement | null | undefined;
   shouldExpandOnScrollRef?: React.RefObject<boolean> | undefined;
-  onScrollButtonChange?: ((node: SelectScrollButtonImplElement | null) => void) | undefined;
+  onScrollButtonChange?:
+    | { bivarianceHack(node: SelectScrollButtonImplElement | null): void }['bivarianceHack']
+    | undefined;
 };
 
 const [SelectViewportProvider, useSelectViewportContext] =

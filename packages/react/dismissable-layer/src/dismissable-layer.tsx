@@ -45,23 +45,27 @@ interface DismissableLayerProps extends PrimitiveDivProps {
    * Event handler called when the escape key is down.
    * Can be prevented.
    */
-  onEscapeKeyDown?: ((event: KeyboardEvent) => void) | undefined;
+  onEscapeKeyDown?: { bivarianceHack(event: KeyboardEvent): void }['bivarianceHack'] | undefined;
   /**
    * Event handler called when the a `pointerdown` event happens outside of the `DismissableLayer`.
    * Can be prevented.
    */
-  onPointerDownOutside?: ((event: PointerDownOutsideEvent) => void) | undefined;
+  onPointerDownOutside?:
+    | { bivarianceHack(event: PointerDownOutsideEvent): void }['bivarianceHack']
+    | undefined;
   /**
    * Event handler called when the focus moves outside of the `DismissableLayer`.
    * Can be prevented.
    */
-  onFocusOutside?: ((event: FocusOutsideEvent) => void) | undefined;
+  onFocusOutside?: { bivarianceHack(event: FocusOutsideEvent): void }['bivarianceHack'] | undefined;
   /**
    * Event handler called when an interaction happens outside the `DismissableLayer`.
    * Specifically, when a `pointerdown` event happens outside or focus moves outside of it.
    * Can be prevented.
    */
-  onInteractOutside?: ((event: PointerDownOutsideEvent | FocusOutsideEvent) => void) | undefined;
+  onInteractOutside?:
+    | { bivarianceHack(event: PointerDownOutsideEvent | FocusOutsideEvent): void }['bivarianceHack']
+    | undefined;
   /**
    * Handler called when the `DismissableLayer` should be dismissed
    */
@@ -312,7 +316,9 @@ function usePointerDownOutside(
     deferPointerDownOutside: boolean;
     isDeferredPointerDownOutsideRef: React.RefObject<boolean>;
     dismissableSurfaces: Set<DismissableLayerBranchElement>;
-    shouldHandlePointerDownOutside?: ((target: EventTarget | null) => boolean) | undefined;
+    shouldHandlePointerDownOutside?:
+      | { bivarianceHack(target: EventTarget | null): boolean }['bivarianceHack']
+      | undefined;
   },
 ) {
   const {
