@@ -172,6 +172,46 @@ describe('pointer movement while closing', () => {
     fireEvent.pointerMove(item, { pointerType: 'mouse' });
     expect(input).toHaveFocus();
   });
+
+  const MenuWithClosingSub = ({ subOpen }: { subOpen: boolean }) => (
+    <DropdownMenu.Root open>
+      <DropdownMenu.Trigger>{TRIGGER_TEXT}</DropdownMenu.Trigger>
+      <DropdownMenu.Portal>
+        <DropdownMenu.Content>
+          <DropdownMenu.Item>{ITEM_TEXT}</DropdownMenu.Item>
+          <DropdownMenu.Sub open={subOpen}>
+            <DropdownMenu.SubTrigger>{SUB_TRIGGER_TEXT}</DropdownMenu.SubTrigger>
+            <DropdownMenu.Portal forceMount>
+              <DropdownMenu.SubContent forceMount>
+                <DropdownMenu.Item>{SUB_ITEM_TEXT}</DropdownMenu.Item>
+              </DropdownMenu.SubContent>
+            </DropdownMenu.Portal>
+          </DropdownMenu.Sub>
+        </DropdownMenu.Content>
+      </DropdownMenu.Portal>
+    </DropdownMenu.Root>
+  );
+
+  async function renderClosedSub() {
+    const { rerender } = render(<MenuWithClosingSub subOpen />);
+    const subItem = await waitFor(() => screen.getByText(SUB_ITEM_TEXT));
+    rerender(<MenuWithClosingSub subOpen={false} />);
+    const item = screen.getByText(ITEM_TEXT);
+    item.focus();
+    return { item, subItem };
+  }
+
+  it('does not take focus when the pointer leaves an item in a closed submenu', async () => {
+    const { item, subItem } = await renderClosedSub();
+    fireEvent.pointerLeave(subItem, { pointerType: 'mouse' });
+    expect(item).toHaveFocus();
+  });
+
+  it('does not focus an item the pointer moves over in a closed submenu', async () => {
+    const { item, subItem } = await renderClosedSub();
+    fireEvent.pointerMove(subItem, { pointerType: 'mouse' });
+    expect(item).toHaveFocus();
+  });
 });
 
 describe('given a DropdownMenu with `asChild` on the Content', () => {
