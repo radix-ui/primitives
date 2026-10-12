@@ -85,7 +85,7 @@ describe('useControllableState', () => {
   });
 });
 
-function ControlledComponent({ defaultChecked }: { defaultChecked?: boolean }) {
+function ControlledComponent({ defaultChecked }: { defaultChecked?: boolean | undefined }) {
   const [checked, setChecked] = React.useState(defaultChecked ?? false);
   return (
     <div>
@@ -97,11 +97,11 @@ function ControlledComponent({ defaultChecked }: { defaultChecked?: boolean }) {
   );
 }
 
-function UncontrolledComponent({ defaultChecked }: { defaultChecked?: boolean }) {
+function UncontrolledComponent({ defaultChecked }: { defaultChecked?: boolean | undefined }) {
   return <Checkbox defaultChecked={defaultChecked} />;
 }
 
-function UnstableComponent({ defaultChecked }: { defaultChecked?: boolean }) {
+function UnstableComponent({ defaultChecked }: { defaultChecked?: boolean | undefined }) {
   const [checked, setChecked] = React.useState(defaultChecked);
   return (
     <div>
@@ -114,9 +114,9 @@ function UnstableComponent({ defaultChecked }: { defaultChecked?: boolean }) {
 }
 
 function Checkbox(props: {
-  checked?: boolean;
-  defaultChecked?: boolean;
-  onChange?: (value: boolean) => void;
+  checked?: boolean | undefined;
+  defaultChecked?: boolean | undefined;
+  onChange?: ((value: boolean) => void) | undefined;
 }) {
   const [checked, setChecked] = useControllableState({
     defaultProp: props.defaultChecked ?? false,

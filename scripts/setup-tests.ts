@@ -15,3 +15,9 @@ global.ResizeObserver = class ResizeObserver {
   unobserve() {}
   disconnect() {}
 };
+
+// jsdom does not implement `scrollIntoView`; several primitives (e.g. Select)
+// call it during focus management when open, so provide a no-op.
+if (!Element.prototype.scrollIntoView) {
+  Element.prototype.scrollIntoView = () => {};
+}

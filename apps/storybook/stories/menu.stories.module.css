@@ -59,6 +59,11 @@
   background-color: var(--color-gray100);
 }
 
+.scrollableMenu {
+  overflow: scroll;
+  height: 100px;
+}
+
 @keyframes menu-animateIn {
   from {
     transform: scale(0.95);

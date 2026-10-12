@@ -1,5 +1,61 @@
 # @radix-ui/react-focus-scope
 
+## 1.3.1
+
+- Fixed a type regression where callback props that were previously declared as methods rejected handlers whose parameter is narrower than the prop's.
+
+## 1.3.0
+
+- Allow explicit `undefined` for all optional types for compatibility with TypeScript's `exactOptionalPropertyTypes` flag.
+- Fixed `FocusScope` throwing a `TypeError` in test environments after teardown.
+- Updated dependencies: `@radix-ui/react-primitive@2.2.0`, `@radix-ui/react-use-callback-ref@1.1.5`
+
+## 1.2.0
+
+- Fixed nested, portalled layers being unusable inside a modal layer. A non-modal popover rendered inside a modal Dialog previously broke some user interactions because the modal layer's trapped `FocusScope` reclaimed focus, and its `RemoveScroll` only allowed scrolling within the modal content.
+- Added `FocusScopeBranchProviderProps` export
+- Updated dependencies: `@radix-ui/react-primitive@2.1.11`
+
+## 1.1.16
+
+- Reverted breaking changes that caused compatibility issues with React Server Components.
+- Updated dependencies: `@radix-ui/react-compose-refs@1.1.5`, `@radix-ui/react-primitive@2.1.10`, `@radix-ui/react-use-callback-ref@1.1.4`
+
+## 1.1.15
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.9`
+
+## 1.1.14
+
+- Republish through CI to attach provenance attestations. The previous versions of these packages were published manually outside of CI and therefore shipped without provenance; this patch re-releases the same code through the CI pipeline so every package includes an attestation.
+- Updated dependencies: `@radix-ui/react-compose-refs@1.1.4`, `@radix-ui/react-primitive@2.1.8`, `@radix-ui/react-use-callback-ref@1.1.3`
+
+## 1.1.13
+
+- Improved tree-shaking so bundlers can drop unused components. Component parts are now marked `/* @__PURE__ */` and use named render functions instead of `Component.displayName = ...` assignments, which previously prevented dead-code elimination with some bundlers.
+- Updated dependencies: `@radix-ui/react-compose-refs@1.1.3`, `@radix-ui/react-primitive@2.1.7`, `@radix-ui/react-use-callback-ref@1.1.2`
+
+## 1.1.12
+
+- Improved performance by reducing forced reflow in `FocusScope` and `Presence`
+
+## 1.1.11
+
+- Fixed infinite re-render loop in React 19 caused by unstable composed ref callback references.
+
+### Other updates
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.7`
+
+## 1.1.10
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.6`
+
+## 1.1.9
+
+- Added repository.directory to all package.json files
+- Updated dependencies: `@radix-ui/react-compose-refs@1.1.3`, `@radix-ui/react-primitive@2.1.5`, `@radix-ui/react-use-callback-ref@1.1.2`
+
 ## 1.1.8
 
 - Updated dependencies: `@radix-ui/react-primitive@2.1.4`

@@ -1,5 +1,58 @@
 # @radix-ui/react-radio-group
 
+## 1.5.1
+
+- Updated dependencies: `@radix-ui/react-roving-focus@1.2.1`
+
+## 1.5.0
+
+- Allow explicit `undefined` for all optional types for compatibility with TypeScript's `exactOptionalPropertyTypes` flag.
+- Fixed bugs in form-nested control components where a user-driven change was treated as programmatic in some cases, preventing bubbled event handlers from being called.
+- Updated dependencies: `@radix-ui/primitive@1.2.0`, `@radix-ui/react-context@1.3.0`, `@radix-ui/react-direction@1.2.0`, `@radix-ui/react-primitive@2.2.0`, `@radix-ui/react-roving-focus@1.2.0`, `@radix-ui/react-use-controllable-state@1.3.0`
+
+## 1.4.8
+
+- Updated dependencies: `@radix-ui/react-use-size@1.1.5`, `@radix-ui/react-roving-focus@1.1.20`, `@radix-ui/react-direction@1.1.5`, `@radix-ui/react-primitive@2.1.11`, `@radix-ui/react-presence@1.1.11`
+
+## 1.4.7
+
+- Reverted breaking changes that caused compatibility issues with React Server Components.
+- Updated dependencies: `@radix-ui/react-compose-refs@1.1.5`, `@radix-ui/react-context@1.2.2`, `@radix-ui/react-direction@1.1.4`, `@radix-ui/react-presence@1.1.10`, `@radix-ui/react-primitive@2.1.10`, `@radix-ui/react-roving-focus@1.1.19`, `@radix-ui/react-use-controllable-state@1.2.6`, `@radix-ui/react-use-size@1.1.4`
+
+## 1.4.6
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.9`, `@radix-ui/react-roving-focus@1.1.18`
+
+## 1.4.5
+
+- Republish through CI to attach provenance attestations. The previous versions of these packages were published manually outside of CI and therefore shipped without provenance; this patch re-releases the same code through the CI pipeline so every package includes an attestation.
+- Updated dependencies: `@radix-ui/primitive@1.1.7`, `@radix-ui/react-compose-refs@1.1.4`, `@radix-ui/react-context@1.2.1`, `@radix-ui/react-direction@1.1.3`, `@radix-ui/react-presence@1.1.9`, `@radix-ui/react-primitive@2.1.8`, `@radix-ui/react-roving-focus@1.1.17`, `@radix-ui/react-use-controllable-state@1.2.5`, `@radix-ui/react-use-size@1.1.3`
+
+## 1.4.4
+
+- Improved tree-shaking so bundlers can drop unused components. Component parts are now marked `/* @__PURE__ */` and use named render functions instead of `Component.displayName = ...` assignments, which previously prevented dead-code elimination with some bundlers.
+- Fixed a bug where updating a `Checkbox`, `Switch`, or `RadioGroup` value programmatically (eg. a "select all" control) while inside a `<form>` would dispatch a `click` event from the hidden bubble input that propagated to ancestor `onClick` handlers.
+- Updated dependencies: `@radix-ui/react-presence@1.1.8`, `@radix-ui/react-roving-focus@1.1.16`, `@radix-ui/react-use-controllable-state@1.2.4`, `@radix-ui/primitive@1.1.6`, `@radix-ui/react-compose-refs@1.1.3`, `@radix-ui/react-context@1.2.0`, `@radix-ui/react-direction@1.1.2`, `@radix-ui/react-primitive@2.1.7`, `@radix-ui/react-use-size@1.1.2`
+
+## 1.4.3
+
+- Fixed a bug in form control components to ensure their values are updated when their associated form's is reset. This affects `RadioGroup`, `Slider`, `Select`, and `Switch`.
+- Updated dependencies: `@radix-ui/primitive@1.1.5`, `@radix-ui/react-context@1.2.0`, `@radix-ui/react-roving-focus@1.1.15`, `@radix-ui/react-presence@1.1.7`
+
+## 1.4.2
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.7`, `@radix-ui/react-roving-focus@1.1.14`
+
+## 1.4.1
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.6`, `@radix-ui/react-roving-focus@1.1.13`
+
+## 1.4.0
+
+- Added unstable `RadioGroupItemProvider`, `RadioGroupItemTrigger` and `RadioGroupItemBubbleInput` parts. These expose the previously internal composition of a radio item (context provider, the interactive control, and the hidden form input) so consumers can directly access and recompose them. The `RadioGroupItem` component continues to render them by default.
+- Added repository.directory to all package.json files
+- Updated dependencies: `@radix-ui/react-presence@1.1.6`, `@radix-ui/react-direction@1.1.2`, `@radix-ui/primitive@1.1.4`, `@radix-ui/react-compose-refs@1.1.3`, `@radix-ui/react-context@1.1.4`, `@radix-ui/react-primitive@2.1.5`, `@radix-ui/react-roving-focus@1.1.12`, `@radix-ui/react-use-controllable-state@1.2.3`, `@radix-ui/react-use-previous@1.1.2`, `@radix-ui/react-use-size@1.1.2`
+
 ## 1.3.8
 
 - Updated dependencies: `@radix-ui/react-presence@1.1.5`, `@radix-ui/primitive@1.1.3`, `@radix-ui/react-context@1.1.3`, `@radix-ui/react-primitive@2.1.4`, `@radix-ui/react-roving-focus@1.1.11`

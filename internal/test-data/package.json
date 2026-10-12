@@ -5,16 +5,14 @@
   "license": "MIT",
   "type": "module",
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "eslint": "^9.38.0",
     "typescript": "^5.9.3"
   },
   "exports": {
     "./*": "./*.ts"
   },
   "scripts": {
-    "lint": "eslint --max-warnings 0 .",
+    "lint": "oxlint --max-warnings 0 .",
     "check-types": "tsc --noEmit"
   }
 }

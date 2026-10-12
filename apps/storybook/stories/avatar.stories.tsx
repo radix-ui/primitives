@@ -1,6 +1,6 @@
 import { Avatar } from 'radix-ui';
 import styles from './avatar.stories.module.css';
-import React from 'react';
+import * as React from 'react';
 
 export default { title: 'Components/Avatar' };
 

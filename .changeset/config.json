@@ -11,5 +11,12 @@
     "useCalculatedVersion": true,
     "prereleaseTemplate": "rc.{timestamp}"
   },
-  "ignore": ["@repo/ssr-testing", "@repo/storybook"]
+  "ignore": [
+    "@repo/ssr-testing",
+    "@repo/storybook",
+    "@repo/builder",
+    "@repo/test-data",
+    "@repo/test-utils",
+    "@repo/typescript-config"
+  ]
 }

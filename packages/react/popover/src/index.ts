@@ -7,6 +7,8 @@ export {
   PopoverTrigger,
   PopoverPortal,
   PopoverContent,
+  PopoverTitle,
+  PopoverDescription,
   PopoverClose,
   PopoverArrow,
   //
@@ -15,6 +17,8 @@ export {
   Trigger,
   Portal,
   Content,
+  Title,
+  Description,
   Close,
   Arrow,
 } from './popover';
@@ -24,6 +28,8 @@ export type {
   PopoverTriggerProps,
   PopoverPortalProps,
   PopoverContentProps,
+  PopoverTitleProps,
+  PopoverDescriptionProps,
   PopoverCloseProps,
   PopoverArrowProps,
 } from './popover';

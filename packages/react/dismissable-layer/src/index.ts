@@ -5,5 +5,7 @@ export {
   //
   Root,
   Branch,
+  /** @internal */
+  useDismissableLayerSurface,
 } from './dismissable-layer';
 export type { DismissableLayerProps } from './dismissable-layer';

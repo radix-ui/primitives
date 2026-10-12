@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { cleanup, render, screen, fireEvent } from '@testing-library/react';
+import { act, cleanup, render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { Slot, Slottable } from './slot';
+import * as Slot from './slot';
 import { afterEach, describe, it, beforeEach, vi, expect } from 'vitest';
 
 describe('given a slotted Trigger', () => {
@@ -12,7 +12,7 @@ describe('given a slotted Trigger', () => {
     beforeEach(() => {
       handleClick.mockReset();
       render(
-        <Trigger as={Slot} onClick={handleClick}>
+        <Trigger as={Slot.Root} onClick={handleClick}>
           <button type="button">Click me</button>
         </Trigger>,
       );
@@ -30,7 +30,7 @@ describe('given a slotted Trigger', () => {
     beforeEach(() => {
       handleClick.mockReset();
       render(
-        <Trigger as={Slot}>
+        <Trigger as={Slot.Root}>
           <button type="button" onClick={handleClick}>
             Click me
           </button>
@@ -52,7 +52,7 @@ describe('given a slotted Trigger', () => {
       handleTriggerClick.mockReset();
       handleChildClick.mockReset();
       render(
-        <Trigger as={Slot} onClick={handleTriggerClick}>
+        <Trigger as={Slot.Root} onClick={handleTriggerClick}>
           <button type="button" onClick={handleChildClick}>
             Click me
           </button>
@@ -76,7 +76,7 @@ describe('given a slotted Trigger', () => {
     beforeEach(() => {
       handleTriggerClick.mockReset();
       render(
-        <Trigger as={Slot} onClick={handleTriggerClick}>
+        <Trigger as={Slot.Root} onClick={handleTriggerClick}>
           <button type="button" onClick={undefined}>
             Click me
           </button>
@@ -96,7 +96,7 @@ describe('given a slotted Trigger', () => {
     beforeEach(() => {
       handleChildClick.mockReset();
       render(
-        <Trigger as={Slot} onClick={undefined}>
+        <Trigger as={Slot.Root} onClick={undefined}>
           <button type="button" onClick={handleChildClick}>
             Click me
           </button>
@@ -133,6 +133,57 @@ describe('given a Button with Slottable', () => {
             Button <em>text</em>
           </a>
         </Button>,
+      );
+
+      expect(tree.container).toMatchSnapshot();
+    });
+  });
+});
+
+describe('given a Button with Slottable nesting', () => {
+  afterEach(cleanup);
+  describe('without asChild', () => {
+    it('should render a button with a span around its children', async () => {
+      const tree = render(
+        <ButtonNested>
+          Button <em>text</em>
+        </ButtonNested>,
+      );
+
+      expect(tree.container).toMatchSnapshot();
+    });
+
+    it('should render a button with icon on the left/right and a span around its children', async () => {
+      const tree = render(
+        <ButtonNested iconLeft={<span>left</span>} iconRight={<span>right</span>}>
+          Button <em>text</em>
+        </ButtonNested>,
+      );
+
+      expect(tree.container).toMatchSnapshot();
+    });
+  });
+
+  describe('with asChild', () => {
+    it('should render a link with a span around its children', async () => {
+      const tree = render(
+        <ButtonNested asChild>
+          <a href="https://radix-ui.com">
+            Button <em>text</em>
+          </a>
+        </ButtonNested>,
+      );
+
+      expect(tree.container).toMatchSnapshot();
+    });
+
+    it('should render a link with icon on the left/right and a span around its children', async () => {
+      const tree = render(
+        <ButtonNested asChild iconLeft={<span>left</span>} iconRight={<span>right</span>}>
+          <a href="https://radix-ui.com">
+            Button <em>text</em>
+          </a>
+        </ButtonNested>,
       );
 
       expect(tree.container).toMatchSnapshot();
@@ -189,9 +240,9 @@ describe('given a Slot with React lazy components', () => {
 
       render(
         <React.Suspense fallback={<div>Loading...</div>}>
-          <Slot onClick={handleClick}>
+          <Slot.Root onClick={handleClick}>
             <LazyButton>Click me</LazyButton>
-          </Slot>
+          </Slot.Root>
         </React.Suspense>,
       );
 
@@ -231,6 +282,389 @@ describe('given a Slot with React lazy components', () => {
   });
 });
 
+describe('given a Slot with React Flight lazy references', () => {
+  afterEach(cleanup);
+
+  // Replica of how React Flight creates lazy references (`createLazyChunkWrapper`
+  // + `readChunk`): `_payload` is a thenable chunk carrying a `status`, and `_init`
+  // returns the value when fulfilled or throws the chunk to suspend when pending.
+  // `React.use(payload)` unwraps exactly one level, so a reference whose resolved
+  // value is itself a reference only unwraps to the inner reference.
+  const REACT_LAZY_TYPE = Symbol.for('react.lazy');
+  function createFlightLazy<T>(resolve: () => Promise<T> | T) {
+    let state: 'pending' | 'fulfilled' | 'rejected' = 'pending';
+    let value: T;
+    let reason: unknown;
+    const promise = Promise.resolve()
+      .then(resolve)
+      .then(
+        (v) => {
+          state = 'fulfilled';
+          value = v;
+        },
+        (e) => {
+          state = 'rejected';
+          reason = e;
+        },
+      );
+    const chunk = {
+      get status() {
+        return state;
+      },
+      get value() {
+        return value;
+      },
+      get reason() {
+        return reason;
+      },
+      then: promise.then.bind(promise),
+      catch: promise.catch.bind(promise),
+      finally: promise.finally.bind(promise),
+    };
+    return {
+      $$typeof: REACT_LAZY_TYPE,
+      _payload: chunk,
+      _init: (c: typeof chunk) => {
+        if (c.status === 'fulfilled') return c.value;
+        if (c.status === 'rejected') throw c.reason;
+        throw c;
+      },
+    } as unknown as React.ReactNode;
+  }
+
+  it('should unwrap a lazy reference that resolves to an element', async () => {
+    const lazyLink = createFlightLazy(() => <a href="/single">single link</a>);
+
+    await act(async () => {
+      render(
+        <React.Suspense fallback={<div>loading</div>}>
+          <Slot.Root className="slot">{lazyLink}</Slot.Root>
+        </React.Suspense>,
+      );
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+
+    const link = screen.getByRole('link');
+    expect(link.getAttribute('href')).toBe('/single');
+    expect(link.getAttribute('class')).toBe('slot');
+    expect(link.textContent).toBe('single link');
+  });
+
+  it('should unwrap a lazy reference that resolves to another lazy reference', async () => {
+    // A Server Component's child can cross the Flight boundary as a reference to
+    // a chunk that resolves to a reference to another chunk, e.g. when the
+    // resolved element's own subtree still has unresolved dependencies.
+    const innerLazy = createFlightLazy(() => <a href="/inner">inner link</a>);
+    const outerLazy = createFlightLazy(() => Promise.resolve(innerLazy));
+
+    await act(async () => {
+      render(
+        <React.Suspense fallback={<div>loading</div>}>
+          <Slot.Root className="slot">{outerLazy}</Slot.Root>
+        </React.Suspense>,
+      );
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+
+    const link = screen.getByRole('link');
+    expect(link.getAttribute('href')).toBe('/inner');
+    expect(link.getAttribute('class')).toBe('slot');
+    expect(link.textContent).toBe('inner link');
+  });
+
+  it('should unwrap a nested lazy reference reached through Slottable', async () => {
+    const innerLazy = createFlightLazy(() => <a href="/inner">inner link</a>);
+    const outerLazy = createFlightLazy(() => Promise.resolve(innerLazy));
+
+    await act(async () => {
+      render(
+        <React.Suspense fallback={<div>loading</div>}>
+          <Slot.Root className="slot">
+            <Slot.Slottable child={outerLazy}>{(slottable) => slottable}</Slot.Slottable>
+          </Slot.Root>
+        </React.Suspense>,
+      );
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+
+    const link = screen.getByRole('link');
+    expect(link.getAttribute('href')).toBe('/inner');
+    expect(link.getAttribute('class')).toBe('slot');
+  });
+});
+
+/* -------------------------------------------------------------------------------------------------
+ * Backwards compatibility & edge cases
+ *
+ * These guard the refactor in https://github.com/radix-ui/primitives/pull/3729
+ * which removed the internal `SlotClone` component, swapped the
+ * `React.Children.only()` throw for a dev warning, and added the nested
+ * `Slottable` API. They lock in the public contract so we don't silently
+ * regress prop/ref merging or start emitting warnings on legitimate conditional
+ * children.
+ * -----------------------------------------------------------------------------------------------*/
+
+describe('Slot prop and ref merging (single element child)', () => {
+  afterEach(cleanup);
+
+  it('merges className, forwards unknown props, and composes onClick (child first, then slot)', () => {
+    const order: string[] = [];
+    render(
+      <Slot.Root
+        className="slot"
+        data-from-slot="yes"
+        data-only-slot="1"
+        onClick={() => order.push('slot')}
+      >
+        <button
+          className="child"
+          data-from-child="yes"
+          onClick={() => order.push('child')}
+          type="button"
+        >
+          hi
+        </button>
+      </Slot.Root>,
+    );
+
+    const button = screen.getByRole('button');
+    expect(button.getAttribute('class')).toBe('slot child');
+    expect(button.getAttribute('data-from-slot')).toBe('yes');
+    expect(button.getAttribute('data-from-child')).toBe('yes');
+    expect(button.getAttribute('data-only-slot')).toBe('1');
+
+    fireEvent.click(button);
+    expect(order).toEqual(['child', 'slot']);
+  });
+
+  it('merges, normalizes, and deduplicates aria-describedby with the child ids first', () => {
+    render(
+      <Slot.Root aria-describedby={' shared-description  slot-description '}>
+        <button
+          aria-describedby={' child-description\tshared-description child-description '}
+          type="button"
+        >
+          hi
+        </button>
+      </Slot.Root>,
+    );
+
+    expect(screen.getByRole('button')).toHaveAttribute(
+      'aria-describedby',
+      'child-description shared-description slot-description',
+    );
+  });
+
+  it('composes the Slot ref and the child ref onto the same node', () => {
+    const slotRef = vi.fn();
+    const childRef = vi.fn();
+    render(
+      <Slot.Root ref={slotRef}>
+        <button ref={childRef} type="button">
+          hi
+        </button>
+      </Slot.Root>,
+    );
+
+    const button = screen.getByRole('button');
+    expect(slotRef).toHaveBeenCalledWith(button);
+    expect(childRef).toHaveBeenCalledWith(button);
+  });
+});
+
+describe('Slot with non-mergeable children', () => {
+  // Errors thrown during render are also logged by React; silence them to keep
+  // test output clean.
+  let errorSpy: ReturnType<typeof vi.spyOn>;
+  beforeEach(() => {
+    errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+  });
+  afterEach(() => {
+    errorSpy.mockRestore();
+    cleanup();
+  });
+
+  // Regression guard: Conditional / empty children are extremely common and
+  // must NOT throw.
+  it.each([
+    ['null', null],
+    ['undefined', undefined],
+    ['false (e.g. a falsy `&&` expression)', false],
+  ])('renders nothing and does not throw for %s children', (_label, children) => {
+    const { container } = render(<Slot.Root className="x">{children}</Slot.Root>);
+    expect(container).toBeEmptyDOMElement();
+  });
+
+  it('renders an empty Slot without throwing', () => {
+    const { container } = render(<Slot.Root className="x" />);
+    expect(container).toBeEmptyDOMElement();
+  });
+
+  // Previously this threw via the cryptic `React.Children.only`; it now throws
+  // a descriptive error.
+  it('throws a descriptive error when given multiple element children', () => {
+    expect(() =>
+      render(
+        <Slot.Root className="x" data-from-slot="yes">
+          <button type="button">one</button>
+          <button type="button">two</button>
+        </Slot.Root>,
+      ),
+    ).toThrow(/failed to slot onto its children/i);
+  });
+
+  it('throws a descriptive error for a single non-element child', () => {
+    expect(() => render(<Slot.Root className="x">hello</Slot.Root>)).toThrow(
+      /failed to slot onto its children/i,
+    );
+  });
+
+  // Regression guard: a `Slottable` whose content can't be resolved to a single
+  // element used to silently fall back to cloning the `Slottable` wrapper
+  // itself (dropping Slot props and attaching the ref to a function component).
+  // It must now throw a `Slottable`-specific error.
+  it('throws a Slottable error when a Slottable wraps multiple elements', () => {
+    expect(() =>
+      render(
+        <Slot.Root className="x">
+          <Slot.Slottable>
+            <a href="/">a</a>
+            <b>b</b>
+          </Slot.Slottable>
+        </Slot.Root>,
+      ),
+    ).toThrow(/Slottable.*single React element/i);
+  });
+
+  it('throws a Slottable error when a render-prop Slottable `child` is not an element', () => {
+    expect(() =>
+      render(
+        <Slot.Root className="x">
+          <Slot.Slottable child={'plain text' as never}>
+            {(slottable) => <span>{slottable}</span>}
+          </Slot.Slottable>
+        </Slot.Root>,
+      ),
+    ).toThrow(/Slottable.*single React element/i);
+  });
+
+  it('throws a Slottable error when a Slottable wraps a non-element child', () => {
+    expect(() =>
+      render(
+        <Slot.Root className="x">
+          <Slot.Slottable>just text</Slot.Slottable>
+        </Slot.Root>,
+      ),
+    ).toThrow(/Slottable.*single React element/i);
+  });
+});
+
+describe('Slottable identifier interoperability (Symbol.for)', () => {
+  afterEach(cleanup);
+
+  // The identifier is `Symbol.for('radix.slottable')` (global registry) rather
+  // than a unique `Symbol()`, so a `Slottable` produced by a *different
+  // copy/version* of the package is still recognized. This guards against
+  // accidentally reverting to a realm-local symbol.
+  it('recognizes a foreign Slottable marked with the shared symbol', () => {
+    const ForeignSlottable: any = (props: any) =>
+      'child' in props ? props.children(props.child) : props.children;
+    ForeignSlottable.__radixId = Symbol.for('radix.slottable');
+
+    const { container } = render(
+      <Slot.Root className="slot-class">
+        <span data-icon>icon</span>
+        <ForeignSlottable>
+          <a href="/">link</a>
+        </ForeignSlottable>
+      </Slot.Root>,
+    );
+
+    const link = container.querySelector('a')!;
+    expect(link).not.toBeNull();
+    // Slot props are merged onto the slottable's element, not the wrapper.
+    expect(link.getAttribute('class')).toBe('slot-class');
+    // The icon sibling is preserved inside the slotted element.
+    expect(link.querySelector('[data-icon]')).not.toBeNull();
+    expect(link).toHaveTextContent('iconlink');
+  });
+});
+
+describe('Slottable (siblings) merges Slot props onto the slotted element', () => {
+  afterEach(cleanup);
+
+  it('merges className/handlers onto the slotted element while keeping siblings', () => {
+    const handleClick = vi.fn();
+    render(
+      <Slot.Root className="slot" onClick={handleClick}>
+        <span data-icon-left>left</span>
+        <Slot.Slottable>
+          <a className="child" href="/">
+            link
+          </a>
+        </Slot.Slottable>
+        <span data-icon-right>right</span>
+      </Slot.Root>,
+    );
+
+    const link = screen.getByRole('link');
+    expect(link.getAttribute('class')).toBe('slot child');
+    expect(link.querySelector('[data-icon-left]')).not.toBeNull();
+    expect(link.querySelector('[data-icon-right]')).not.toBeNull();
+    fireEvent.click(link);
+    expect(handleClick).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('nested (render-prop) Slottable', () => {
+  afterEach(cleanup);
+
+  it('merges Slot props onto the rendered child and wraps the original children', () => {
+    const handleClick = vi.fn();
+    render(
+      <Slot.Root className="slot" onClick={handleClick}>
+        <Slot.Slottable child={<a href="/">link</a>}>
+          {(slottable) => <span data-wrapper>{slottable}</span>}
+        </Slot.Slottable>
+      </Slot.Root>,
+    );
+
+    const link = screen.getByRole('link');
+    // Slot props land on the resolved child element (the <a>), not the wrapper span.
+    expect(link.getAttribute('class')).toBe('slot');
+    // The render prop wraps the *original* children of the child element.
+    const wrapper = link.querySelector('[data-wrapper]')!;
+    expect(wrapper).not.toBeNull();
+    expect(wrapper).toHaveTextContent('link');
+    fireEvent.click(link);
+    expect(handleClick).toHaveBeenCalledTimes(1);
+  });
+
+  it('works under Suspense when the child element is lazy', async () => {
+    const LazyLink = React.lazy(() =>
+      Promise.resolve({
+        default: ({ children, ...props }: React.ComponentProps<'a'>) => (
+          <a {...props}>{children}</a>
+        ),
+      }),
+    );
+
+    render(
+      <React.Suspense fallback={<div>loading</div>}>
+        <Slot.Root className="slot">
+          <Slot.Slottable child={<LazyLink href="/">link</LazyLink>}>
+            {(slottable) => <span data-wrapper>{slottable}</span>}
+          </Slot.Slottable>
+        </Slot.Root>
+      </React.Suspense>,
+    );
+
+    const link = await screen.findByRole('link');
+    expect(link.getAttribute('class')).toBe('slot');
+    expect(link.querySelector('[data-wrapper]')).not.toBeNull();
+  });
+});
+
 type TriggerProps = React.ComponentProps<'button'> & { as: React.ElementType };
 
 const Trigger = ({ as: Comp = 'button', ...props }: TriggerProps) => <Comp {...props} />;
@@ -238,16 +672,34 @@ const Trigger = ({ as: Comp = 'button', ...props }: TriggerProps) => <Comp {...p
 const Button = React.forwardRef<
   React.ComponentRef<'button'>,
   React.ComponentProps<'button'> & {
-    asChild?: boolean;
-    iconLeft?: React.ReactNode;
-    iconRight?: React.ReactNode;
+    asChild?: boolean | undefined;
+    iconLeft?: React.ReactNode | undefined;
+    iconRight?: React.ReactNode | undefined;
   }
 >(({ children, asChild = false, iconLeft, iconRight, ...props }, forwardedRef) => {
-  const Comp = asChild ? Slot : 'button';
+  const Comp = asChild ? Slot.Root : 'button';
   return (
     <Comp {...props} ref={forwardedRef}>
       {iconLeft}
-      <Slottable>{children}</Slottable>
+      <Slot.Slottable>{children}</Slot.Slottable>
+      {iconRight}
+    </Comp>
+  );
+});
+
+const ButtonNested = React.forwardRef<
+  React.ComponentRef<'button'>,
+  React.ComponentProps<'button'> & {
+    asChild?: boolean | undefined;
+    iconLeft?: React.ReactNode | undefined;
+    iconRight?: React.ReactNode | undefined;
+  }
+>(({ children, asChild = false, iconLeft, iconRight, ...props }, forwardedRef) => {
+  const Comp = asChild ? Slot.Root : 'button';
+  return (
+    <Comp {...props} ref={forwardedRef}>
+      {iconLeft}
+      <Slot.Slottable child={children}>{(slottable) => <span>{slottable}</span>}</Slot.Slottable>
       {iconRight}
     </Comp>
   );
@@ -256,10 +708,10 @@ const Button = React.forwardRef<
 const Input = React.forwardRef<
   React.ComponentRef<'input'>,
   React.ComponentProps<'input'> & {
-    asChild?: boolean;
+    asChild?: boolean | undefined;
   }
 >(({ asChild, children, ...props }, forwardedRef) => {
-  const Comp = asChild ? Slot : 'input';
+  const Comp = asChild ? Slot.Root : 'input';
   const [value, setValue] = React.useState('');
 
   return (
@@ -272,4 +724,59 @@ const Input = React.forwardRef<
       {children}
     </Comp>
   );
+});
+
+describe('Slot.Root', () => {
+  afterEach(cleanup);
+
+  // Regression tests for https://github.com/radix-ui/primitives/issues/3799
+  describe('ref stability', () => {
+    afterEach(cleanup);
+    it('does not cause an infinite render loop when attaching the ref triggers a render', () => {
+      let renderCount = 0;
+
+      function App() {
+        renderCount++;
+        const [, forceRender] = React.useReducer((c) => c + 1, 0);
+        const ref = React.useCallback((node: HTMLElement | null) => {
+          if (node) forceRender();
+        }, []);
+
+        return (
+          <Slot.Root ref={ref}>
+            <button type="button">Click me</button>
+          </Slot.Root>
+        );
+      }
+
+      expect(() => render(<App />)).not.toThrow();
+      expect(renderCount).toBeLessThan(25);
+    });
+
+    it('passes a single stable composed ref to the child across re-renders', () => {
+      const refIdentities = new Set<unknown>();
+      let bump!: () => void;
+
+      const Child = React.forwardRef<HTMLButtonElement>(function Child(_props, ref) {
+        refIdentities.add(ref);
+        return <button type="button" ref={ref} />;
+      });
+
+      function App() {
+        const [, forceRender] = React.useReducer((c) => c + 1, 0);
+        bump = forceRender;
+        const forwardedRef = React.useRef<HTMLButtonElement>(null);
+        return (
+          <Slot.Root ref={forwardedRef}>
+            <Child />
+          </Slot.Root>
+        );
+      }
+
+      render(<App />);
+      act(() => bump());
+      act(() => bump());
+      expect(refIdentities.size).toBe(1);
+    });
+  });
 });

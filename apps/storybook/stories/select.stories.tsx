@@ -1,7 +1,10 @@
+/* eslint-disable react/jsx-pascal-case */
 import * as React from 'react';
-import { Dialog, Select, Label as LabelPrimitive } from 'radix-ui';
+import { createPortal } from 'react-dom';
+import { Dialog, Popover, Select, Label as LabelPrimitive } from 'radix-ui';
 import { foodGroups } from '@repo/test-data/foods';
 import styles from './select.stories.module.css';
+import { ExternalOverlayTrigger } from './external-overlay';
 
 const Label = LabelPrimitive.Root;
 
@@ -56,6 +59,88 @@ export const Styled = () => (
         </Select.Root>
       </Label>
     ))}
+  </div>
+);
+
+export const Animated = () => (
+  <div style={{ display: 'flex', gap: 20, padding: 50 }}>
+    <Label>
+      Choose a number:
+      <Select.Root defaultValue="two">
+        <Select.Trigger className={styles.trigger}>
+          <Select.Value />
+          <Select.Icon />
+        </Select.Trigger>
+        <Select.Portal>
+          <Select.Content
+            className={[styles.content, styles.animatedContent].join(' ')}
+            position="popper"
+            sideOffset={5}
+          >
+            <Select.Viewport className={styles.viewport}>
+              <Select.Item className={styles.item} value="one">
+                <Select.ItemText>One</Select.ItemText>
+                <Select.ItemIndicator className={styles.indicator}>
+                  <TickIcon />
+                </Select.ItemIndicator>
+              </Select.Item>
+              <Select.Item className={styles.item} value="two">
+                <Select.ItemText>Two</Select.ItemText>
+                <Select.ItemIndicator className={styles.indicator}>
+                  <TickIcon />
+                </Select.ItemIndicator>
+              </Select.Item>
+              <Select.Item className={styles.item} value="three">
+                <Select.ItemText>Three</Select.ItemText>
+                <Select.ItemIndicator className={styles.indicator}>
+                  <TickIcon />
+                </Select.ItemIndicator>
+              </Select.Item>
+            </Select.Viewport>
+            <Select.Arrow />
+          </Select.Content>
+        </Select.Portal>
+      </Select.Root>
+    </Label>
+  </div>
+);
+
+export const ForcedMount = () => (
+  <div style={{ display: 'flex', gap: 20, padding: 50 }}>
+    <Label>
+      Choose a number:
+      <Select.Root defaultValue="two">
+        <Select.Trigger className={styles.trigger}>
+          <Select.Value />
+          <Select.Icon />
+        </Select.Trigger>
+        <Select.Portal forceMount>
+          <Select.Content className={styles.content} position="popper" sideOffset={5}>
+            <Select.Viewport className={styles.viewport}>
+              <Select.Item className={styles.item} value="one">
+                <Select.ItemText>One</Select.ItemText>
+                <Select.ItemIndicator className={styles.indicator}>
+                  <TickIcon />
+                </Select.ItemIndicator>
+              </Select.Item>
+              <Select.Item className={styles.item} value="two">
+                <Select.ItemText>Two</Select.ItemText>
+                <Select.ItemIndicator className={styles.indicator}>
+                  <TickIcon />
+                </Select.ItemIndicator>
+              </Select.Item>
+              <Select.Item className={styles.item} value="three">
+                <Select.ItemText>Three</Select.ItemText>
+                <Select.ItemIndicator className={styles.indicator}>
+                  <TickIcon />
+                </Select.ItemIndicator>
+              </Select.Item>
+            </Select.Viewport>
+            <Select.Arrow />
+          </Select.Content>
+        </Select.Portal>
+      </Select.Root>
+    </Label>
   </div>
 );
 
@@ -117,6 +202,234 @@ export const Controlled = () => {
           </Select.Root>
         </Label>
       ))}
+    </div>
+  );
+};
+
+export const WithExtensionOverlay = () => {
+  const [open, setOpen] = React.useState(false);
+
+  return (
+    <div style={{ display: 'grid', gap: 20, padding: 50, justifyItems: 'start' }}>
+      <ExternalOverlayTrigger />
+      <Label>
+        Choose a number:
+        <Select.Root open={open} onOpenChange={setOpen} defaultValue="two">
+          <Select.Trigger className={styles.trigger}>
+            <Select.Value />
+            <Select.Icon />
+          </Select.Trigger>
+          <Select.Portal>
+            <Select.Content className={styles.content} position="popper" sideOffset={5}>
+              <Select.Viewport className={styles.viewport}>
+                <Select.Item className={styles.item} value="one">
+                  <Select.ItemText>One</Select.ItemText>
+                  <Select.ItemIndicator className={styles.indicator}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+                <Select.Item className={styles.item} value="two">
+                  <Select.ItemText>Two</Select.ItemText>
+                  <Select.ItemIndicator className={styles.indicator}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+                <Select.Item className={styles.item} value="three">
+                  <Select.ItemText>Three</Select.ItemText>
+                  <Select.ItemIndicator className={styles.indicator}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+              </Select.Viewport>
+            </Select.Content>
+          </Select.Portal>
+        </Select.Root>
+      </Label>
+      <div data-testid="select-state">{open ? 'open' : 'closed'}</div>
+    </div>
+  );
+};
+
+// Regression story for https://github.com/radix-ui/primitives/issues/3971
+export const DismissesOnlySelectInsideDialog = () => {
+  const [dialogOpen, setDialogOpen] = React.useState(false);
+  const [selectOpen, setSelectOpen] = React.useState(false);
+
+  if (!dialogOpen && selectOpen) {
+    setSelectOpen(false);
+  }
+
+  return (
+    <div style={{ display: 'grid', gap: 16, padding: 40, justifyItems: 'start' }}>
+      <Dialog.Root open={dialogOpen} onOpenChange={setDialogOpen}>
+        <Dialog.Trigger className={styles.trigger}>Open dialog</Dialog.Trigger>
+        <Dialog.Portal>
+          <Dialog.Content
+            aria-describedby={undefined}
+            style={{
+              position: 'fixed',
+              top: 100,
+              left: '50%',
+              transform: 'translateX(-50%)',
+              width: 360,
+              padding: 20,
+              backgroundColor: 'white',
+              border: '1px solid #ccc',
+              borderRadius: 8,
+            }}
+          >
+            <Dialog.Title>Dialog with nested select</Dialog.Title>
+            <Label>
+              Choose a value:
+              <Select.Root open={selectOpen} onOpenChange={setSelectOpen} defaultValue="two">
+                <Select.Trigger className={styles.trigger}>
+                  <Select.Value />
+                  <Select.Icon />
+                </Select.Trigger>
+                <Select.Portal>
+                  <Select.Content className={styles.content} sideOffset={5}>
+                    <Select.Viewport className={styles.viewport}>
+                      <Select.Item className={styles.item} value="one">
+                        <Select.ItemText>One</Select.ItemText>
+                        <Select.ItemIndicator className={styles.indicator}>
+                          <TickIcon />
+                        </Select.ItemIndicator>
+                      </Select.Item>
+                      <Select.Item className={styles.item} value="two">
+                        <Select.ItemText>Two</Select.ItemText>
+                        <Select.ItemIndicator className={styles.indicator}>
+                          <TickIcon />
+                        </Select.ItemIndicator>
+                      </Select.Item>
+                      <Select.Item className={styles.item} value="three">
+                        <Select.ItemText>Three</Select.ItemText>
+                        <Select.ItemIndicator className={styles.indicator}>
+                          <TickIcon />
+                        </Select.ItemIndicator>
+                      </Select.Item>
+                    </Select.Viewport>
+                  </Select.Content>
+                </Select.Portal>
+              </Select.Root>
+            </Label>
+            <p style={{ marginTop: 12, marginBottom: 0 }}>
+              dialog: {dialogOpen ? 'open' : 'closed'} | select: {selectOpen ? 'open' : 'closed'}
+            </p>
+            <Dialog.Close style={{ marginTop: 12 }}>Close dialog</Dialog.Close>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
+    </div>
+  );
+};
+
+// Regression story for https://github.com/radix-ui/primitives/issues/3166
+export const DismissesOnlySelectInPopover = () => {
+  const [popoverOpen, setPopoverOpen] = React.useState(false);
+  const [firstOpen, setFirstOpen] = React.useState(false);
+  const [secondOpen, setSecondOpen] = React.useState(false);
+
+  if (!popoverOpen) {
+    if (firstOpen) {
+      setFirstOpen(false);
+    }
+    if (secondOpen) {
+      setSecondOpen(false);
+    }
+  }
+
+  return (
+    <div style={{ display: 'grid', gap: 16, padding: 40, justifyItems: 'start' }}>
+      <Popover.Root open={popoverOpen} onOpenChange={setPopoverOpen}>
+        <Popover.Trigger className={styles.trigger}>Open popover</Popover.Trigger>
+        <Popover.Portal>
+          <Popover.Content
+            sideOffset={5}
+            style={{
+              display: 'grid',
+              gap: 12,
+              padding: 20,
+              backgroundColor: 'white',
+              border: '1px solid #ccc',
+              borderRadius: 8,
+              boxShadow: '0 10px 30px rgba(0, 0, 0, 0.15)',
+            }}
+          >
+            <div style={{ display: 'flex', gap: 12 }}>
+              <Label>
+                First select:
+                <Select.Root open={firstOpen} onOpenChange={setFirstOpen} defaultValue="one">
+                  <Select.Trigger className={styles.trigger} data-testid="first-trigger">
+                    <Select.Value />
+                    <Select.Icon />
+                  </Select.Trigger>
+                  <Select.Portal>
+                    <Select.Content className={styles.content} position="popper" sideOffset={5}>
+                      <Select.Viewport className={styles.viewport}>
+                        <Select.Item className={styles.item} value="one">
+                          <Select.ItemText>One</Select.ItemText>
+                          <Select.ItemIndicator className={styles.indicator}>
+                            <TickIcon />
+                          </Select.ItemIndicator>
+                        </Select.Item>
+                        <Select.Item className={styles.item} value="two">
+                          <Select.ItemText>Two</Select.ItemText>
+                          <Select.ItemIndicator className={styles.indicator}>
+                            <TickIcon />
+                          </Select.ItemIndicator>
+                        </Select.Item>
+                        <Select.Item className={styles.item} value="three">
+                          <Select.ItemText>Three</Select.ItemText>
+                          <Select.ItemIndicator className={styles.indicator}>
+                            <TickIcon />
+                          </Select.ItemIndicator>
+                        </Select.Item>
+                      </Select.Viewport>
+                    </Select.Content>
+                  </Select.Portal>
+                </Select.Root>
+              </Label>
+              <Label>
+                Second select:
+                <Select.Root open={secondOpen} onOpenChange={setSecondOpen} defaultValue="a">
+                  <Select.Trigger className={styles.trigger} data-testid="second-trigger">
+                    <Select.Value />
+                    <Select.Icon />
+                  </Select.Trigger>
+                  <Select.Portal>
+                    <Select.Content className={styles.content} position="popper" sideOffset={5}>
+                      <Select.Viewport className={styles.viewport}>
+                        <Select.Item className={styles.item} value="a">
+                          <Select.ItemText>A</Select.ItemText>
+                          <Select.ItemIndicator className={styles.indicator}>
+                            <TickIcon />
+                          </Select.ItemIndicator>
+                        </Select.Item>
+                        <Select.Item className={styles.item} value="b">
+                          <Select.ItemText>B</Select.ItemText>
+                          <Select.ItemIndicator className={styles.indicator}>
+                            <TickIcon />
+                          </Select.ItemIndicator>
+                        </Select.Item>
+                        <Select.Item className={styles.item} value="c">
+                          <Select.ItemText>C</Select.ItemText>
+                          <Select.ItemIndicator className={styles.indicator}>
+                            <TickIcon />
+                          </Select.ItemIndicator>
+                        </Select.Item>
+                      </Select.Viewport>
+                    </Select.Content>
+                  </Select.Portal>
+                </Select.Root>
+              </Label>
+            </div>
+            <p style={{ margin: 0 }}>
+              popover: {popoverOpen ? 'open' : 'closed'} | first: {firstOpen ? 'open' : 'closed'} |
+              second: {secondOpen ? 'open' : 'closed'}
+            </p>
+          </Popover.Content>
+        </Popover.Portal>
+      </Popover.Root>
     </div>
   );
 };
@@ -217,6 +530,60 @@ export const NoDefaultValue = () => (
         </Select.Root>
       </Label>
     ))}
+  </div>
+);
+
+export const Clearable = () => (
+  <div
+    style={{
+      display: 'flex',
+      gap: 20,
+      alignItems: 'center',
+      justifyContent: 'center',
+      height: '100vh',
+    }}
+  >
+    <Label>
+      Choose a number (optional):
+      <Select.Root defaultValue="two">
+        <Select.Trigger className={styles.trigger}>
+          <Select.Value placeholder="Pick an option" />
+          <Select.Icon />
+        </Select.Trigger>
+        <Select.Portal>
+          <Select.Content className={styles.content} sideOffset={5}>
+            <Select.Viewport className={styles.viewport}>
+              {/* An item with an empty value resets the selection back to the placeholder */}
+              <Select.Item className={styles.item} value="">
+                <Select.ItemText>None</Select.ItemText>
+                <Select.ItemIndicator className={styles.indicator}>
+                  <TickIcon />
+                </Select.ItemIndicator>
+              </Select.Item>
+              <Select.Item className={styles.item} value="one">
+                <Select.ItemText>One</Select.ItemText>
+                <Select.ItemIndicator className={styles.indicator}>
+                  <TickIcon />
+                </Select.ItemIndicator>
+              </Select.Item>
+              <Select.Item className={styles.item} value="two">
+                <Select.ItemText>Two</Select.ItemText>
+                <Select.ItemIndicator className={styles.indicator}>
+                  <TickIcon />
+                </Select.ItemIndicator>
+              </Select.Item>
+              <Select.Item className={styles.item} value="three">
+                <Select.ItemText>Three</Select.ItemText>
+                <Select.ItemIndicator className={styles.indicator}>
+                  <TickIcon />
+                </Select.ItemIndicator>
+              </Select.Item>
+            </Select.Viewport>
+            <Select.Arrow />
+          </Select.Content>
+        </Select.Portal>
+      </Select.Root>
+    </Label>
   </div>
 );
 
@@ -449,8 +816,10 @@ export const RightToLeft = () => (
 
 export const WithinForm = () => {
   const [data, setData] = React.useState({});
+  const [language, setLanguage] = React.useState('fr');
+  const [country, setCountry] = React.useState('fr');
 
-  function handleChange(event: React.FormEvent<HTMLFormElement>) {
+  function handleChange(event: React.ChangeEvent<HTMLFormElement>) {
     const formData = new FormData(event.currentTarget);
     setData(Object.fromEntries((formData as any).entries()));
   }
@@ -471,7 +840,103 @@ export const WithinForm = () => {
       <br />
       <Label style={{ display: 'block' }}>
         Country
-        <Select.Root name="country" autoComplete="country" defaultValue="fr">
+        <Select.Root
+          name="country"
+          autoComplete="country"
+          value={country}
+          onValueChange={(value) => {
+            if (value === 'de') {
+              window.alert('Germany is not supported');
+            } else {
+              setCountry(value);
+            }
+          }}
+        >
+          <Select.Trigger className={styles.trigger}>
+            <Select.Value />
+            <Select.Icon />
+          </Select.Trigger>
+          <Select.Portal>
+            <Select.Content className={styles.content}>
+              <Select.Viewport className={styles.viewport}>
+                <Select.Item className={styles.item} value="fr">
+                  <Select.ItemText>France</Select.ItemText>
+                  <Select.ItemIndicator className={styles.indicator}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+                <Select.Item className={styles.item} value="uk">
+                  <Select.ItemText>United Kingdom</Select.ItemText>
+                  <Select.ItemIndicator className={styles.indicator}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+                <Select.Item className={styles.item} value="es">
+                  <Select.ItemText>Spain</Select.ItemText>
+                  <Select.ItemIndicator className={styles.indicator}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+                <Select.Item className={styles.item} value="de">
+                  <Select.ItemText>Germany</Select.ItemText>
+                  <Select.ItemIndicator className={styles.indicator}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+              </Select.Viewport>
+            </Select.Content>
+          </Select.Portal>
+        </Select.Root>
+      </Label>
+      <Label style={{ display: 'block' }}>
+        Language
+        <select
+          name="language"
+          value={language}
+          onChange={(event) => {
+            if (event.target.value === 'de') {
+              window.alert('German is not supported');
+            } else {
+              setLanguage(event.target.value);
+            }
+          }}
+          className={styles.trigger}
+        >
+          <option value="fr">French</option>
+          <option value="en">English</option>
+          <option value="es">Spanish</option>
+          <option value="de">German</option>
+        </select>
+      </Label>
+      <br />
+      <button type="submit">Submit</button>
+      <br />
+      <div>
+        <h2>Form data:</h2>
+        <pre>{JSON.stringify(data, null, 2)}</pre>
+      </div>
+      <div>
+        Field state:
+        <pre>{JSON.stringify({ language, country }, null, 2)}</pre>
+      </div>
+    </form>
+  );
+};
+
+export const WithinFormReset = () => {
+  const [controlled, setControlled] = React.useState('fr');
+
+  return (
+    <form style={{ padding: 50 }} onSubmit={(event) => event.preventDefault()}>
+      <p>
+        Change the selections, then press <strong>Reset</strong>. Each select returns to its initial
+        value (the uncontrolled select via its <code>defaultValue</code>, the controlled select via
+        its initial <code>value</code> state).
+      </p>
+
+      <Label style={{ display: 'block' }}>
+        Uncontrolled (defaultValue)
+        <Select.Root name="uncontrolled" defaultValue="fr">
           <Select.Trigger className={styles.trigger}>
             <Select.Value />
             <Select.Icon />
@@ -502,10 +967,46 @@ export const WithinForm = () => {
           </Select.Portal>
         </Select.Root>
       </Label>
+
       <br />
-      <button type="submit">Submit</button>
+
+      <Label style={{ display: 'block' }}>
+        Controlled value: {controlled}
+        <Select.Root name="controlled" value={controlled} onValueChange={setControlled}>
+          <Select.Trigger className={styles.trigger}>
+            <Select.Value />
+            <Select.Icon />
+          </Select.Trigger>
+          <Select.Portal>
+            <Select.Content className={styles.content}>
+              <Select.Viewport className={styles.viewport}>
+                <Select.Item className={styles.item} value="fr">
+                  <Select.ItemText>France</Select.ItemText>
+                  <Select.ItemIndicator className={styles.indicator}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+                <Select.Item className={styles.item} value="uk">
+                  <Select.ItemText>United Kingdom</Select.ItemText>
+                  <Select.ItemIndicator className={styles.indicator}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+                <Select.Item className={styles.item} value="es">
+                  <Select.ItemText>Spain</Select.ItemText>
+                  <Select.ItemIndicator className={styles.indicator}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+              </Select.Viewport>
+            </Select.Content>
+          </Select.Portal>
+        </Select.Root>
+      </Label>
+
       <br />
-      <pre>{JSON.stringify(data, null, 2)}</pre>
+
+      <button type="reset">Reset</button>
     </form>
   );
 };
@@ -513,7 +1014,7 @@ export const WithinForm = () => {
 export const DisabledWithinForm = () => {
   const [data, setData] = React.useState({});
 
-  function handleChange(event: React.FormEvent<HTMLFormElement>) {
+  function handleChange(event: React.ChangeEvent<HTMLFormElement>) {
     const formData = new FormData(event.currentTarget);
     setData(Object.fromEntries((formData as any).entries()));
   }
@@ -576,7 +1077,7 @@ export const DisabledWithinForm = () => {
 export const RequiredWithinForm = () => {
   const [data, setData] = React.useState({});
 
-  function handleChange(event: React.FormEvent<HTMLFormElement>) {
+  function handleChange(event: React.ChangeEvent<HTMLFormElement>) {
     const formData = new FormData(event.currentTarget);
     setData(Object.fromEntries((formData as any).entries()));
   }
@@ -635,6 +1136,91 @@ export const RequiredWithinForm = () => {
     </form>
   );
 };
+
+export const Parts = () => {
+  const [data, setData] = React.useState({});
+
+  function handleChange(event: React.ChangeEvent<HTMLFormElement>) {
+    const formData = new FormData(event.currentTarget);
+    setData(Object.fromEntries((formData as any).entries()));
+  }
+
+  return (
+    <form
+      style={{ padding: 50 }}
+      onSubmit={(event) => {
+        handleChange(event);
+        event.preventDefault();
+      }}
+      onChange={handleChange}
+    >
+      <p>
+        Composed from the unstable parts. Unlike `Select.Root`, `Select.unstable_Provider` does not
+        render a hidden native control implicitly — `Select.unstable_BubbleInput` is rendered
+        explicitly to integrate with the form.
+      </p>
+      <Label style={{ display: 'block' }}>
+        Country
+        <Select.unstable_Provider name="country" autoComplete="country" defaultValue="fr">
+          <Select.Trigger className={styles.trigger}>
+            <Select.Value placeholder="Pick an option" />
+            <Select.Icon />
+          </Select.Trigger>
+          <Select.Portal>
+            <Select.Content className={styles.content}>
+              <Select.Viewport className={styles.viewport}>
+                <Select.Item className={styles.item} value="fr">
+                  <Select.ItemText>France</Select.ItemText>
+                  <Select.ItemIndicator className={styles.indicator}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+                <Select.Item className={styles.item} value="uk">
+                  <Select.ItemText>United Kingdom</Select.ItemText>
+                  <Select.ItemIndicator className={styles.indicator}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+                <Select.Item className={styles.item} value="es">
+                  <Select.ItemText>Spain</Select.ItemText>
+                  <Select.ItemIndicator className={styles.indicator}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
+              </Select.Viewport>
+            </Select.Content>
+          </Select.Portal>
+          <Select.unstable_BubbleInput />
+        </Select.unstable_Provider>
+      </Label>
+      <br />
+      <button type="submit">Submit</button>
+      <br />
+      <pre>{JSON.stringify(data, null, 2)}</pre>
+    </form>
+  );
+};
+
+export const AllItemsDisabled = () => (
+  <Select.Root defaultOpen>
+    <Select.Trigger className={styles.trigger}>
+      <Select.Value placeholder="Pick an option" />
+      <Select.Icon />
+    </Select.Trigger>
+    <Select.Portal>
+      <Select.Content className={styles.content}>
+        <Select.Viewport className={styles.viewport}>
+          <Select.Item className={styles.item} value="a" disabled>
+            <Select.ItemText>Option A</Select.ItemText>
+          </Select.Item>
+          <Select.Item className={styles.item} value="b" disabled>
+            <Select.ItemText>Option B</Select.ItemText>
+          </Select.Item>
+        </Select.Viewport>
+      </Select.Content>
+    </Select.Portal>
+  </Select.Root>
+);
 
 export const WithinDialog = () => (
   <div style={{ height: '120vh' }}>
@@ -815,12 +1401,17 @@ export const ChromaticNoDefaultValue = () => (
 ChromaticNoDefaultValue.parameters = { chromatic: { disable: false } };
 
 export const Cypress = () => {
-  const [data, setData] = React.useState<{ size?: 'S' | 'M' | 'L' }>({});
+  const [data, setData] = React.useState<{ size?: string; model?: string }>({});
   const [model, setModel] = React.useState<string | undefined>('');
+  const [openColor, setOpenColor] = React.useState(false);
+  const [color, setColor] = React.useState<string | undefined>('green');
 
-  function handleChange(event: React.FormEvent<HTMLFormElement>) {
+  function handleChange(event: React.ChangeEvent<HTMLFormElement>) {
     const formData = new FormData(event.currentTarget);
-    setData(Object.fromEntries((formData as any).entries()));
+    setData({
+      size: formData.get('size')?.toString(),
+      model: formData.get('model')?.toString(),
+    });
   }
 
   return (
@@ -874,7 +1465,13 @@ export const Cypress = () => {
 
       <hr />
 
-      <div style={{ padding: 50 }}>
+      <form
+        style={{ padding: 50 }}
+        onSubmit={(event) => {
+          handleChange(event);
+          event.preventDefault();
+        }}
+      >
         <Label>
           choose a model
           <Select.Root name="model" value={model} onValueChange={setModel}>
@@ -918,8 +1515,133 @@ export const Cypress = () => {
         <button type="button" style={{ width: 100, height: 50 }} onClick={() => setModel('')}>
           unset
         </button>
+        <button type="submit" style={{ width: 100, height: 50 }}>
+          submit model
+        </button>
+        {data.model !== undefined ? (
+          <p>Submitted model: {data.model === '' ? 'empty' : data.model}</p>
+        ) : null}
+      </form>
+
+      <div style={{ padding: 50 }}>
+        <Label>
+          choose an open color
+          <Select.Root
+            open={openColor}
+            onOpenChange={setOpenColor}
+            value={color}
+            onValueChange={setColor}
+          >
+            <Select.Trigger className={styles.trigger}>
+              <Select.Value placeholder="Pick a color" />
+              <Select.Icon />
+            </Select.Trigger>
+            <Select.Portal>
+              <Select.Content className={styles.content}>
+                <Select.Viewport className={styles.viewport}>
+                  <Select.Item className={styles.item} value="red">
+                    <Select.ItemText>Red</Select.ItemText>
+                    <Select.ItemIndicator className={styles.indicator}>
+                      <TickIcon />
+                    </Select.ItemIndicator>
+                  </Select.Item>
+                  <Select.Item className={styles.item} value="green">
+                    <Select.ItemText>Green</Select.ItemText>
+                    <Select.ItemIndicator className={styles.indicator}>
+                      <TickIcon />
+                    </Select.ItemIndicator>
+                  </Select.Item>
+                  <Select.Item className={styles.item} value="blue">
+                    <Select.ItemText>Blue</Select.ItemText>
+                    <Select.ItemIndicator className={styles.indicator}>
+                      <TickIcon />
+                    </Select.ItemIndicator>
+                  </Select.Item>
+                </Select.Viewport>
+              </Select.Content>
+            </Select.Portal>
+          </Select.Root>
+        </Label>
+
+        <button
+          type="button"
+          style={{ width: 160, height: 50 }}
+          onClick={() => setColor((value) => (value === '' ? 'green' : ''))}
+        >
+          toggle open color value
+        </button>
       </div>
     </>
+  );
+};
+
+/**
+ * Renders children inside a shadow root, mirroring all styles from the
+ * document head so that CSS module classes work inside the shadow DOM.
+ * Passes the shadow container element to children via a render prop so it
+ * can be forwarded to Select.Portal (or similar) as the portal target.
+ */
+function ShadowHost({ children }: { children: (container: HTMLElement) => React.ReactNode }) {
+  const hostRef = React.useRef<HTMLDivElement>(null);
+  const [container, setContainer] = React.useState<HTMLElement | null>(null);
+
+  React.useLayoutEffect(() => {
+    if (!hostRef.current || hostRef.current.shadowRoot) return;
+    const shadow = hostRef.current.attachShadow({ mode: 'open' });
+
+    // CSS modules are injected into document.head by style-loader; shadow DOM
+    // does not inherit those styles, so we clone them in.
+    for (const node of document.head.querySelectorAll('style, link[rel="stylesheet"]')) {
+      shadow.appendChild(node.cloneNode(true));
+    }
+
+    const div = document.createElement('div');
+    shadow.appendChild(div);
+    setContainer(div);
+  }, []);
+
+  return (
+    <div ref={hostRef} className="shadow-host">
+      {container !== null ? createPortal(children(container), container) : null}
+    </div>
+  );
+}
+
+export const CypressShadowDom = () => {
+  const [value, setValue] = React.useState<string | undefined>('');
+
+  return (
+    <ShadowHost>
+      {(shadowContainer) => (
+        <div style={{ padding: 50 }}>
+          <Select.Root value={value} onValueChange={setValue}>
+            <Select.Trigger className={styles.trigger} aria-label="pick a food">
+              <Select.Value placeholder="Pick a food" />
+              <Select.Icon />
+            </Select.Trigger>
+            <Select.Portal container={shadowContainer}>
+              <Select.Content position="popper" side="bottom" className={styles.content}>
+                {/* Constrain height so the viewport is scrollable, making it
+                easier to test the shadow DOM pointer up bug. */}
+                <Select.Viewport className={styles.viewport} style={{ maxHeight: '100px' }}>
+                  {foodGroups.map((foodGroup) =>
+                    foodGroup.foods.map((food) => (
+                      <Select.Item key={food.value} className={styles.item} value={food.value}>
+                        <Select.ItemText>{food.label}</Select.ItemText>
+                        <Select.ItemIndicator className={styles.indicator}>
+                          <TickIcon />
+                        </Select.ItemIndicator>
+                      </Select.Item>
+                    )),
+                  )}
+                </Select.Viewport>
+              </Select.Content>
+            </Select.Portal>
+          </Select.Root>
+          {value && <p>food: {value}</p>}
+        </div>
+      )}
+    </ShadowHost>
   );
 };
 

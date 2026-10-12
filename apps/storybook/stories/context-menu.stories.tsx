@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { ContextMenu } from 'radix-ui';
+import { ContextMenu, Dialog } from 'radix-ui';
 import { foodGroups } from '@repo/test-data/foods';
 import styles from './context-menu.stories.module.css';
+import { ExternalOverlayTrigger } from './external-overlay';
 
 export default { title: 'Components/ContextMenu' };
 
@@ -41,6 +42,64 @@ export const Styled = () => (
     </ContextMenu.Root>
   </div>
 );
+
+export const Controlled = () => {
+  const [open, setOpen] = React.useState(false);
+
+  return (
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '150vh',
+        maxWidth: 400,
+        gap: 16,
+        justifySelf: 'center',
+      }}
+    >
+      <p>
+        The menu is currently <strong>{open ? 'open' : 'closed'}</strong>.
+      </p>
+      <p>
+        The <code>open</code> state is controllable so you can read the state and close the menu
+        programmatically. We advise only opening the menu in response to user interaction, which is
+        managed internally in Radix in response to right click / long press, so the menu can be
+        positioned at the pointer.
+      </p>
+      <ContextMenu.Root open={open} onOpenChange={setOpen}>
+        <ContextMenu.Trigger className={styles.trigger}>Right click here</ContextMenu.Trigger>
+        <ContextMenu.Portal>
+          <ContextMenu.Content className={styles.content} alignOffset={-5}>
+            <div style={{ display: 'flex', gap: 6 }}>
+              <button type="button">Noop</button>
+              <button type="button" onClick={() => setOpen(false)}>
+                Close
+              </button>
+            </div>
+            <ContextMenu.Item className={styles.item} onSelect={() => console.log('undo')}>
+              Undo
+            </ContextMenu.Item>
+            <ContextMenu.Item className={styles.item} onSelect={() => console.log('redo')}>
+              Redo
+            </ContextMenu.Item>
+            <ContextMenu.Separator className={styles.separator} />
+            <ContextMenu.Item className={styles.item} onSelect={() => console.log('cut')}>
+              Cut
+            </ContextMenu.Item>
+            <ContextMenu.Item className={styles.item} onSelect={() => console.log('copy')}>
+              Copy
+            </ContextMenu.Item>
+            <ContextMenu.Item className={styles.item} onSelect={() => console.log('paste')}>
+              Paste
+            </ContextMenu.Item>
+          </ContextMenu.Content>
+        </ContextMenu.Portal>
+      </ContextMenu.Root>
+    </div>
+  );
+};
 
 export const Modality = () => (
   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '110vh' }}>
@@ -411,6 +470,93 @@ export const Submenus = () => {
           </ContextMenu.Portal>
         </ContextMenu.Root>
       </div>
+    </div>
+  );
+};
+
+export const WithExtensionOverlay = () => {
+  const [open, setOpen] = React.useState(false);
+
+  return (
+    <div style={{ display: 'grid', gap: 20, padding: 50, justifyItems: 'start' }}>
+      <ExternalOverlayTrigger />
+      <ContextMenu.Root open={open} onOpenChange={setOpen}>
+        <ContextMenu.Trigger className={styles.trigger}>Right Click Here</ContextMenu.Trigger>
+        <ContextMenu.Portal>
+          <ContextMenu.Content className={styles.content}>
+            <ContextMenu.Item className={styles.item}>New Tab</ContextMenu.Item>
+            <ContextMenu.Item className={styles.item}>New Window</ContextMenu.Item>
+          </ContextMenu.Content>
+        </ContextMenu.Portal>
+      </ContextMenu.Root>
+      <div data-testid="context-menu-state">{open ? 'open' : 'closed'}</div>
+    </div>
+  );
+};
+
+// Regression story for https://github.com/radix-ui/primitives/issues/3971
+export const DismissesOnlyContextMenuInsideDialog = () => {
+  const [dialogOpen, setDialogOpen] = React.useState(false);
+  const [menuOpen, setMenuOpen] = React.useState(false);
+  const [isModal, setIsModal] = React.useState<boolean | undefined>(undefined);
+
+  if (!dialogOpen && menuOpen) {
+    setMenuOpen(false);
+  }
+
+  return (
+    <div style={{ display: 'grid', gap: 16, padding: 40, justifyItems: 'start' }}>
+      <Dialog.Root open={dialogOpen} onOpenChange={setDialogOpen}>
+        <Dialog.Trigger className={styles.trigger}>Open dialog</Dialog.Trigger>
+        <label>
+          <input
+            type="checkbox"
+            checked={isModal || false}
+            ref={(node) => {
+              if (node && isModal === undefined) {
+                node.indeterminate = true;
+              }
+            }}
+            onChange={(event) => {
+              event.target.indeterminate = false;
+              setIsModal((prev) => !prev);
+            }}
+          />
+          <span>Modal</span>
+        </label>
+        <Dialog.Portal>
+          <Dialog.Content
+            style={{
+              position: 'fixed',
+              top: 100,
+              left: '50%',
+              transform: 'translateX(-50%)',
+              width: 360,
+              padding: 20,
+              backgroundColor: 'white',
+              border: '1px solid #ccc',
+              borderRadius: 8,
+            }}
+          >
+            <Dialog.Title>Dialog with nested context menu</Dialog.Title>
+            <ContextMenu.Root open={menuOpen} onOpenChange={setMenuOpen} modal={isModal}>
+              <ContextMenu.Trigger className={styles.trigger}>
+                Right click inside dialog
+              </ContextMenu.Trigger>
+              <ContextMenu.Portal>
+                <ContextMenu.Content className={styles.content}>
+                  <ContextMenu.Item className={styles.item}>Item one</ContextMenu.Item>
+                  <ContextMenu.Item className={styles.item}>Item two</ContextMenu.Item>
+                </ContextMenu.Content>
+              </ContextMenu.Portal>
+            </ContextMenu.Root>
+            <p style={{ marginTop: 12, marginBottom: 0 }}>
+              dialog: {dialogOpen ? 'open' : 'closed'} | menu: {menuOpen ? 'open' : 'closed'}
+            </p>
+            <Dialog.Close style={{ marginTop: 12 }}>Close dialog</Dialog.Close>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
     </div>
   );
 };

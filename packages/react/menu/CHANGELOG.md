@@ -1,5 +1,66 @@
 # @radix-ui/react-menu
 
+## 2.2.1
+
+- Fixed a type regression where callback props that were previously declared as methods rejected handlers whose parameter is narrower than the prop's.
+- Updated dependencies: `@radix-ui/react-dismissable-layer@1.2.1`, `@radix-ui/react-focus-scope@1.3.1`, `@radix-ui/react-roving-focus@1.2.1`
+
+## 2.2.0
+
+- Allow explicit `undefined` for all optional types for compatibility with TypeScript's `exactOptionalPropertyTypes` flag.
+- Fixed a bug resulting from incorrect tree-shaking in SWC-minified code.
+- Updated dependencies: `@radix-ui/react-collection@1.2.0`, `@radix-ui/primitive@1.2.0`, `@radix-ui/react-context@1.3.0`, `@radix-ui/react-direction@1.2.0`, `@radix-ui/react-dismissable-layer@1.2.0`, `@radix-ui/react-focus-guards@1.2.0`, `@radix-ui/react-focus-scope@1.3.0`, `@radix-ui/react-popper@1.4.0`, `@radix-ui/react-portal@1.2.0`, `@radix-ui/react-primitive@2.2.0`, `@radix-ui/react-roving-focus@1.2.0`, `@radix-ui/react-slot@1.5.0`, `@radix-ui/react-use-callback-ref@1.1.5`
+
+## 2.1.25
+
+- Fixed nested, portalled layers being unusable inside a modal layer. A non-modal popover rendered inside a modal Dialog previously broke some user interactions because the modal layer's trapped `FocusScope` reclaimed focus, and its `RemoveScroll` only allowed scrolling within the modal content.
+- Updated dependencies: `@radix-ui/react-focus-scope@1.2.0`, `@radix-ui/react-slot@1.4.0`, `@radix-ui/react-dismissable-layer@1.1.20`, `@radix-ui/react-roving-focus@1.1.20`, `@radix-ui/react-direction@1.1.5`, `@radix-ui/react-primitive@2.1.11`, `@radix-ui/react-presence@1.1.11`, `@radix-ui/react-popper@1.3.8`, `@radix-ui/react-portal@1.1.18`, `@radix-ui/react-collection@1.1.16`
+
+## 2.1.24
+
+- Reverted breaking changes that caused compatibility issues with React Server Components.
+- Updated dependencies: `@radix-ui/react-collection@1.1.15`, `@radix-ui/react-compose-refs@1.1.5`, `@radix-ui/react-context@1.2.2`, `@radix-ui/react-direction@1.1.4`, `@radix-ui/react-dismissable-layer@1.1.19`, `@radix-ui/react-focus-guards@1.1.6`, `@radix-ui/react-focus-scope@1.1.16`, `@radix-ui/react-id@1.1.4`, `@radix-ui/react-popper@1.3.7`, `@radix-ui/react-portal@1.1.17`, `@radix-ui/react-presence@1.1.10`, `@radix-ui/react-primitive@2.1.10`, `@radix-ui/react-roving-focus@1.1.19`, `@radix-ui/react-slot@1.3.3`, `@radix-ui/react-use-callback-ref@1.1.4`
+
+## 2.1.23
+
+- Updated dependencies: `@radix-ui/react-slot@1.3.2`, `@radix-ui/react-collection@1.1.14`, `@radix-ui/react-primitive@2.1.9`, `@radix-ui/react-roving-focus@1.1.18`, `@radix-ui/react-dismissable-layer@1.1.18`, `@radix-ui/react-focus-scope@1.1.15`, `@radix-ui/react-popper@1.3.6`, `@radix-ui/react-portal@1.1.16`
+
+## 2.1.22
+
+- Republish through CI to attach provenance attestations. The previous versions of these packages were published manually outside of CI and therefore shipped without provenance; this patch re-releases the same code through the CI pipeline so every package includes an attestation.
+- Updated dependencies: `@radix-ui/primitive@1.1.7`, `@radix-ui/react-collection@1.1.13`, `@radix-ui/react-compose-refs@1.1.4`, `@radix-ui/react-context@1.2.1`, `@radix-ui/react-direction@1.1.3`, `@radix-ui/react-dismissable-layer@1.1.17`, `@radix-ui/react-focus-guards@1.1.5`, `@radix-ui/react-focus-scope@1.1.14`, `@radix-ui/react-id@1.1.3`, `@radix-ui/react-popper@1.3.5`, `@radix-ui/react-portal@1.1.15`, `@radix-ui/react-presence@1.1.9`, `@radix-ui/react-primitive@2.1.8`, `@radix-ui/react-roving-focus@1.1.17`, `@radix-ui/react-slot@1.3.1`, `@radix-ui/react-use-callback-ref@1.1.3`
+
+## 2.1.21
+
+- Improved tree-shaking so bundlers can drop unused components. Component parts are now marked `/* @__PURE__ */` and use named render functions instead of `Component.displayName = ...` assignments, which previously prevented dead-code elimination with some bundlers.
+- Updated dependencies: `@radix-ui/react-popper@1.3.4`, `@radix-ui/react-dismissable-layer@1.1.16`, `@radix-ui/react-focus-scope@1.1.13`, `@radix-ui/react-portal@1.1.14`, `@radix-ui/react-presence@1.1.8`, `@radix-ui/react-roving-focus@1.1.16`, `@radix-ui/primitive@1.1.6`, `@radix-ui/react-collection@1.1.12`, `@radix-ui/react-compose-refs@1.1.3`, `@radix-ui/react-context@1.2.0`, `@radix-ui/react-direction@1.1.2`, `@radix-ui/react-focus-guards@1.1.4`, `@radix-ui/react-id@1.1.2`, `@radix-ui/react-primitive@2.1.7`, `@radix-ui/react-slot@1.3.0`, `@radix-ui/react-use-callback-ref@1.1.2`
+
+## 2.1.20
+
+- Fixed menu items, tab triggers, toolbar links, and select items intercepting `Space`/`Enter` keys that originate from focusable descendants.
+- Updated dependencies: `@radix-ui/react-dismissable-layer@1.1.15`, `@radix-ui/primitive@1.1.5`, `@radix-ui/react-context@1.2.0`, `@radix-ui/react-roving-focus@1.1.15`, `@radix-ui/react-focus-scope@1.1.12`, `@radix-ui/react-presence@1.1.7`, `@radix-ui/react-collection@1.1.12`, `@radix-ui/react-popper@1.3.3`
+
+## 2.1.19
+
+- Fixed infinite re-render loop in React 19 caused by unstable composed ref callback references.
+
+### Other updates
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.7`, `@radix-ui/react-dismissable-layer@1.1.14`, `@radix-ui/react-focus-scope@1.1.11`, `@radix-ui/react-popper@1.3.2`, `@radix-ui/react-collection@1.1.11`, `@radix-ui/react-portal@1.1.13`, `@radix-ui/react-roving-focus@1.1.14`
+
+## 2.1.18
+
+- Fixed a bug where menus and submenus remained open after a window loses focus.
+- Updated dependencies: `@radix-ui/react-slot@1.3.0`, `@radix-ui/react-popper@1.3.1`, `@radix-ui/react-dismissable-layer@1.1.13`, `@radix-ui/react-primitive@2.1.6`, `@radix-ui/react-collection@1.1.10`, `@radix-ui/react-focus-scope@1.1.10`, `@radix-ui/react-portal@1.1.12`, `@radix-ui/react-roving-focus@1.1.13`
+
+## 2.1.17
+
+- Fixed a bug where iOS text selection and editing on HTML inputs within `react-dialog` were broken
+- Fixed triggers referencing a non-existent element via `aria-controls` when their content is removed from the DOM (credit to [@dodomorandi](https://github.com/dodomorandi) for the [original PR](https://github.com/radix-ui/primitives/pull/3243))
+- Added repository.directory to all package.json files
+- Added `align` prop to `Menu.SubContent`
+- Updated dependencies: `@radix-ui/react-presence@1.1.6`, `@radix-ui/react-popper@1.3.0`, `@radix-ui/react-slot@1.2.5`, `@radix-ui/react-focus-guards@1.1.4`, `@radix-ui/react-dismissable-layer@1.1.12`, `@radix-ui/react-collection@1.1.9`, `@radix-ui/react-direction@1.1.2`, `@radix-ui/primitive@1.1.4`, `@radix-ui/react-compose-refs@1.1.3`, `@radix-ui/react-context@1.1.4`, `@radix-ui/react-focus-scope@1.1.9`, `@radix-ui/react-id@1.1.2`, `@radix-ui/react-portal@1.1.11`, `@radix-ui/react-primitive@2.1.5`, `@radix-ui/react-roving-focus@1.1.12`, `@radix-ui/react-use-callback-ref@1.1.2`
+
 ## 2.1.16
 
 - Updated dependencies: `@radix-ui/react-presence@1.1.5`, `@radix-ui/react-slot@1.2.4`, `@radix-ui/react-popper@1.2.8`, `@radix-ui/react-focus-guards@1.1.3`, `@radix-ui/primitive@1.1.3`, `@radix-ui/react-context@1.1.3`, `@radix-ui/react-collection@1.1.8`, `@radix-ui/react-primitive@2.1.4`, `@radix-ui/react-dismissable-layer@1.1.11`, `@radix-ui/react-roving-focus@1.1.11`, `@radix-ui/react-focus-scope@1.1.8`, `@radix-ui/react-portal@1.1.10`

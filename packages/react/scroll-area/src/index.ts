@@ -4,12 +4,14 @@ export {
   //
   ScrollArea,
   ScrollAreaViewport,
+  ScrollAreaContent,
   ScrollAreaScrollbar,
   ScrollAreaThumb,
   ScrollAreaCorner,
   //
   Root,
   Viewport,
+  Content,
   Scrollbar,
   Thumb,
   Corner,
@@ -17,6 +19,7 @@ export {
 export type {
   ScrollAreaProps,
   ScrollAreaViewportProps,
+  ScrollAreaContentProps,
   ScrollAreaScrollbarProps,
   ScrollAreaThumbProps,
   ScrollAreaCornerProps,

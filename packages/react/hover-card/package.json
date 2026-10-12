@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-hover-card",
-  "version": "1.1.15",
+  "version": "1.2.1",
   "license": "MIT",
   "source": "./src/index.ts",
   "main": "./src/index.ts",
@@ -28,7 +28,7 @@
   ],
   "sideEffects": false,
   "scripts": {
-    "lint": "eslint --max-warnings 0 src",
+    "lint": "oxlint --max-warnings 0 src",
     "clean": "rm -rf dist",
     "reset": "rm -rf dist node_modules",
     "typecheck": "tsc --noEmit",
@@ -39,6 +39,7 @@
     "@radix-ui/react-compose-refs": "workspace:*",
     "@radix-ui/react-context": "workspace:*",
     "@radix-ui/react-dismissable-layer": "workspace:*",
+    "@radix-ui/react-focus-scope": "workspace:*",
     "@radix-ui/react-popper": "workspace:*",
     "@radix-ui/react-portal": "workspace:*",
     "@radix-ui/react-presence": "workspace:*",
@@ -47,13 +48,11 @@
   },
   "devDependencies": {
     "@repo/builder": "workspace:*",
-    "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@types/react": "^19.2.2",
-    "@types/react-dom": "^19.2.2",
-    "eslint": "^9.38.0",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
     "typescript": "^5.9.3"
   },
   "peerDependencies": {
@@ -73,7 +72,8 @@
   "homepage": "https://radix-ui.com/primitives",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/radix-ui/primitives.git"
+    "url": "git+https://github.com/radix-ui/primitives.git",
+    "directory": "packages/react/hover-card"
   },
   "bugs": {
     "url": "https://github.com/radix-ui/primitives/issues"

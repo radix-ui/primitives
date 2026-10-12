@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Direction, ToggleGroup } from 'radix-ui';
+import { Direction, Dialog, ToggleGroup } from 'radix-ui';
 import styles from './toggle-group.stories.module.css';
 
 export default {
@@ -296,3 +296,39 @@ export const Chromatic = () => (
   </>
 );
 Chromatic.parameters = { chromatic: { disable: false } };
+
+// Regression story for https://github.com/radix-ui/primitives/issues/3077
+export const Cypress = () => (
+  <Dialog.Root>
+    <Dialog.Trigger>open</Dialog.Trigger>
+    <Dialog.Portal>
+      <Dialog.Overlay style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.3)' }} />
+      <Dialog.Content
+        style={{
+          position: 'fixed',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          background: 'white',
+          padding: 20,
+          borderRadius: 8,
+        }}
+      >
+        <Dialog.Title>title</Dialog.Title>
+        <ToggleGroup.Root type="single" className={styles.root} aria-label="Options">
+          <ToggleGroup.Item value="1" className={styles.item}>
+            Option 1
+          </ToggleGroup.Item>
+          <ToggleGroup.Item value="2" className={styles.item}>
+            Option 2
+          </ToggleGroup.Item>
+          <ToggleGroup.Item value="3" className={styles.item}>
+            Option 3
+          </ToggleGroup.Item>
+        </ToggleGroup.Root>
+        <Dialog.Close>close</Dialog.Close>
+      </Dialog.Content>
+    </Dialog.Portal>
+  </Dialog.Root>
+);
+Cypress.parameters = { chromatic: { disable: true } };

@@ -9,6 +9,7 @@ import { Portal as PortalPrimitive } from '@radix-ui/react-portal';
 import { Presence } from '@radix-ui/react-presence';
 import { Primitive } from '@radix-ui/react-primitive';
 import { DismissableLayer } from '@radix-ui/react-dismissable-layer';
+import { useFocusScopeBranch } from '@radix-ui/react-focus-scope';
 
 import type { Scope } from '@radix-ui/react-context';
 
@@ -20,7 +21,7 @@ let originalBodyUserSelect: string;
 
 const HOVERCARD_NAME = 'HoverCard';
 
-type ScopedProps<P> = P & { __scopeHoverCard?: Scope };
+type ScopedProps<P> = P & { __scopeHoverCard?: Scope | undefined };
 const [createHoverCardContext, createHoverCardScope] = createContextScope(HOVERCARD_NAME, [
   createPopperScope,
 ]);
@@ -40,12 +41,12 @@ const [HoverCardProvider, useHoverCardContext] =
   createHoverCardContext<HoverCardContextValue>(HOVERCARD_NAME);
 
 interface HoverCardProps {
-  children?: React.ReactNode;
-  open?: boolean;
-  defaultOpen?: boolean;
-  onOpenChange?: (open: boolean) => void;
-  openDelay?: number;
-  closeDelay?: number;
+  children?: React.ReactNode | undefined;
+  open?: boolean | undefined;
+  defaultOpen?: boolean | undefined;
+  onOpenChange?: { bivarianceHack(open: boolean): void }['bivarianceHack'] | undefined;
+  openDelay?: number | undefined;
+  closeDelay?: number | undefined;
 }
 
 const HoverCard: React.FC<HoverCardProps> = (props: ScopedProps<HoverCardProps>) => {
@@ -109,8 +110,6 @@ const HoverCard: React.FC<HoverCardProps> = (props: ScopedProps<HoverCardProps>)
   );
 };
 
-HoverCard.displayName = HOVERCARD_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * HoverCardTrigger
  * -----------------------------------------------------------------------------------------------*/
@@ -121,8 +120,12 @@ type HoverCardTriggerElement = React.ComponentRef<typeof Primitive.a>;
 type PrimitiveLinkProps = React.ComponentPropsWithoutRef<typeof Primitive.a>;
 interface HoverCardTriggerProps extends PrimitiveLinkProps {}
 
-const HoverCardTrigger = React.forwardRef<HoverCardTriggerElement, HoverCardTriggerProps>(
-  (props: ScopedProps<HoverCardTriggerProps>, forwardedRef) => {
+const HoverCardTrigger = /* @__PURE__ */ React.forwardRef<
+  HoverCardTriggerElement,
+  HoverCardTriggerProps
+>(
+  // blank line to reduce diff noise
+  function HoverCardTrigger(props: ScopedProps<HoverCardTriggerProps>, forwardedRef) {
     const { __scopeHoverCard, ...triggerProps } = props;
     const context = useHoverCardContext(TRIGGER_NAME, __scopeHoverCard);
     const popperScope = usePopperScope(__scopeHoverCard);
@@ -144,31 +147,29 @@ const HoverCardTrigger = React.forwardRef<HoverCardTriggerElement, HoverCardTrig
   },
 );
 
-HoverCardTrigger.displayName = TRIGGER_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * HoverCardPortal
  * -----------------------------------------------------------------------------------------------*/
 
 const PORTAL_NAME = 'HoverCardPortal';
 
-type PortalContextValue = { forceMount?: true };
+type PortalContextValue = { forceMount?: true | undefined };
 const [PortalProvider, usePortalContext] = createHoverCardContext<PortalContextValue>(PORTAL_NAME, {
   forceMount: undefined,
 });
 
 type PortalProps = React.ComponentPropsWithoutRef<typeof PortalPrimitive>;
 interface HoverCardPortalProps {
-  children?: React.ReactNode;
+  children?: React.ReactNode | undefined;
   /**
    * Specify a container element to portal the content into.
    */
-  container?: PortalProps['container'];
+  container?: PortalProps['container'] | undefined;
   /**
    * Used to force mounting when more control is needed. Useful when
    * controlling animation with React animation libraries.
    */
-  forceMount?: true;
+  forceMount?: true | undefined;
 }
 
 const HoverCardPortal: React.FC<HoverCardPortalProps> = (
@@ -187,8 +188,6 @@ const HoverCardPortal: React.FC<HoverCardPortalProps> = (
   );
 };
 
-HoverCardPortal.displayName = PORTAL_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * HoverCardContent
  * -----------------------------------------------------------------------------------------------*/
@@ -201,11 +200,15 @@ interface HoverCardContentProps extends HoverCardContentImplProps {
    * Used to force mounting when more control is needed. Useful when
    * controlling animation with React animation libraries.
    */
-  forceMount?: true;
+  forceMount?: true | undefined;
 }
 
-const HoverCardContent = React.forwardRef<HoverCardContentElement, HoverCardContentProps>(
-  (props: ScopedProps<HoverCardContentProps>, forwardedRef) => {
+const HoverCardContent = /* @__PURE__ */ React.forwardRef<
+  HoverCardContentElement,
+  HoverCardContentProps
+>(
+  // blank line to reduce diff noise
+  function HoverCardContent(props: ScopedProps<HoverCardContentProps>, forwardedRef) {
     const portalContext = usePortalContext(CONTENT_NAME, props.__scopeHoverCard);
     const { forceMount = portalContext.forceMount, ...contentProps } = props;
     const context = useHoverCardContext(CONTENT_NAME, props.__scopeHoverCard);
@@ -223,8 +226,6 @@ const HoverCardContent = React.forwardRef<HoverCardContentElement, HoverCardCont
   },
 );
 
-HoverCardContent.displayName = CONTENT_NAME;
-
 /* ---------------------------------------------------------------------------------------------- */
 
 type HoverCardContentImplElement = React.ComponentRef<typeof PopperPrimitive.Content>;
@@ -235,29 +236,29 @@ interface HoverCardContentImplProps extends Omit<PopperContentProps, 'onPlaced'>
    * Event handler called when the escape key is down.
    * Can be prevented.
    */
-  onEscapeKeyDown?: DismissableLayerProps['onEscapeKeyDown'];
+  onEscapeKeyDown?: DismissableLayerProps['onEscapeKeyDown'] | undefined;
   /**
    * Event handler called when the a `pointerdown` event happens outside of the `HoverCard`.
    * Can be prevented.
    */
-  onPointerDownOutside?: DismissableLayerProps['onPointerDownOutside'];
+  onPointerDownOutside?: DismissableLayerProps['onPointerDownOutside'] | undefined;
   /**
    * Event handler called when the focus moves outside of the `HoverCard`.
    * Can be prevented.
    */
-  onFocusOutside?: DismissableLayerProps['onFocusOutside'];
+  onFocusOutside?: DismissableLayerProps['onFocusOutside'] | undefined;
   /**
    * Event handler called when an interaction happens outside the `HoverCard`.
    * Specifically, when a `pointerdown` event happens outside or focus moves outside of it.
    * Can be prevented.
    */
-  onInteractOutside?: DismissableLayerProps['onInteractOutside'];
+  onInteractOutside?: DismissableLayerProps['onInteractOutside'] | undefined;
 }
 
-const HoverCardContentImpl = React.forwardRef<
+const HoverCardContentImpl = /* @__PURE__ */ React.forwardRef<
   HoverCardContentImplElement,
   HoverCardContentImplProps
->((props: ScopedProps<HoverCardContentImplProps>, forwardedRef) => {
+>(function HoverCardContentImpl(props: ScopedProps<HoverCardContentImplProps>, forwardedRef) {
   const {
     __scopeHoverCard,
     onEscapeKeyDown,
@@ -269,7 +270,15 @@ const HoverCardContentImpl = React.forwardRef<
   const context = useHoverCardContext(CONTENT_NAME, __scopeHoverCard);
   const popperScope = usePopperScope(__scopeHoverCard);
   const ref = React.useRef<HoverCardContentImplElement>(null);
-  const composedRefs = useComposedRefs(forwardedRef, ref);
+
+  // When this `HoverCard` is nested inside a modal layer (eg. a `Dialog`) but portalled outside of
+  // it, register its content with the ancestor layer so focus isn't reclaimed and scroll isn't
+  // locked for any interactive content within it. No-ops when there is no ancestor layer.
+  // See: https://github.com/radix-ui/primitives/issues/3423
+  const [branchNode, setBranchNode] = React.useState<HTMLElement | null>(null);
+  const composedRefs = useComposedRefs(forwardedRef, ref, setBranchNode);
+  useFocusScopeBranch(branchNode);
+
   const [containSelection, setContainSelection] = React.useState(false);
 
   React.useEffect(() => {
@@ -304,7 +313,9 @@ const HoverCardContentImpl = React.forwardRef<
       document.addEventListener('pointerup', handlePointerUp);
       return () => {
         document.removeEventListener('pointerup', handlePointerUp);
+        // oxlint-disable-next-line react-hooks/exhaustive-deps
         context.hasSelectionRef.current = false;
+        // oxlint-disable-next-line react-hooks/exhaustive-deps
         context.isPointerDownOnContentRef.current = false;
       };
     }
@@ -364,21 +375,17 @@ const HoverCardContentImpl = React.forwardRef<
  * HoverCardArrow
  * -----------------------------------------------------------------------------------------------*/
 
-const ARROW_NAME = 'HoverCardArrow';
-
 type HoverCardArrowElement = React.ComponentRef<typeof PopperPrimitive.Arrow>;
 type PopperArrowProps = React.ComponentPropsWithoutRef<typeof PopperPrimitive.Arrow>;
 interface HoverCardArrowProps extends PopperArrowProps {}
 
-const HoverCardArrow = React.forwardRef<HoverCardArrowElement, HoverCardArrowProps>(
-  (props: ScopedProps<HoverCardArrowProps>, forwardedRef) => {
+const HoverCardArrow = /* @__PURE__ */ React.forwardRef<HoverCardArrowElement, HoverCardArrowProps>(
+  function HoverCardArrow(props: ScopedProps<HoverCardArrowProps>, forwardedRef) {
     const { __scopeHoverCard, ...arrowProps } = props;
     const popperScope = usePopperScope(__scopeHoverCard);
     return <PopperPrimitive.Arrow {...popperScope} {...arrowProps} ref={forwardedRef} />;
   },
 );
-
-HoverCardArrow.displayName = ARROW_NAME;
 
 /* -----------------------------------------------------------------------------------------------*/
 
@@ -405,12 +412,6 @@ function getTabbableNodes(container: HTMLElement) {
   return nodes;
 }
 
-const Root = HoverCard;
-const Trigger = HoverCardTrigger;
-const Portal = HoverCardPortal;
-const Content = HoverCardContent;
-const Arrow = HoverCardArrow;
-
 export {
   createHoverCardScope,
   //
@@ -420,11 +421,11 @@ export {
   HoverCardContent,
   HoverCardArrow,
   //
-  Root,
-  Trigger,
-  Portal,
-  Content,
-  Arrow,
+  HoverCard as Root,
+  HoverCardTrigger as Trigger,
+  HoverCardPortal as Portal,
+  HoverCardContent as Content,
+  HoverCardArrow as Arrow,
 };
 export type {
   HoverCardProps,

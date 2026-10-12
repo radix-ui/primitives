@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { createContextScope } from '@radix-ui/react-context';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createSlot, type Slot } from '@radix-ui/react-slot';
@@ -14,7 +14,10 @@ interface CollectionProps extends SlotProps {
 // This is because we encountered issues with generic types that cannot be statically analysed
 // due to creating them dynamically via createCollection.
 
-function createCollection<ItemElement extends HTMLElement, ItemData = {}>(name: string) {
+/* @__NO_SIDE_EFFECTS__ */ function createCollection<
+  ItemElement extends HTMLElement,
+  ItemData = {},
+>(name: string) {
   /* -----------------------------------------------------------------------------------------------
    * CollectionProvider
    * ---------------------------------------------------------------------------------------------*/
@@ -35,7 +38,9 @@ function createCollection<ItemElement extends HTMLElement, ItemData = {}>(name: 
     { collectionRef: { current: null }, itemMap: new Map() },
   );
 
-  const CollectionProvider: React.FC<{ children?: React.ReactNode; scope: any }> = (props) => {
+  const CollectionProvider: React.FC<{ children?: React.ReactNode | undefined; scope: any }> = (
+    props,
+  ) => {
     const { scope, children } = props;
     const ref = React.useRef<CollectionElement>(null);
     const itemMap = React.useRef<ContextValue['itemMap']>(new Map()).current;

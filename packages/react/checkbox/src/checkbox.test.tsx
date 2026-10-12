@@ -195,7 +195,7 @@ describe('Checkbox', () => {
       render(
         <form
           onChange={(event) => {
-            const target = event.target as HTMLInputElement;
+            const target = event.target as unknown as HTMLInputElement;
             onChange(target.checked);
           }}
         >
@@ -219,7 +219,7 @@ describe('Checkbox', () => {
         render(
           <form
             onChange={(event) => {
-              const target = event.target as HTMLInputElement;
+              const target = event.target as unknown as HTMLInputElement;
               onChange(target.checked);
             }}
           >
@@ -263,7 +263,7 @@ describe('Checkbox', () => {
       render(
         <form
           onChange={(event) => {
-            const target = event.target as HTMLInputElement;
+            const target = event.target as unknown as HTMLInputElement;
             onChange(target.checked);
           }}
         >
@@ -283,7 +283,7 @@ describe('Checkbox', () => {
       render(
         <form
           onChange={(event) => {
-            const target = event.target as HTMLInputElement;
+            const target = event.target as unknown as HTMLInputElement;
             onChange(target.checked);
           }}
         >
@@ -294,6 +294,255 @@ describe('Checkbox', () => {
       const toggleButton = screen.getByText('Toggle checkbox');
       act(() => fireEvent.click(toggleButton));
       expect(onChange).toHaveBeenCalledWith(false);
+    });
+  });
+
+  describe('given a Checkbox with a clickable ancestor inside a form', () => {
+    const onParentClick = vi.fn();
+    const onFormChange = vi.fn();
+
+    afterEach(() => {
+      onParentClick.mockClear();
+      onFormChange.mockClear();
+    });
+
+    function App({ checked }: { checked: boolean }) {
+      return (
+        <form
+          onChange={(event) => onFormChange((event.target as unknown as HTMLInputElement).checked)}
+        >
+          <div onClick={onParentClick}>
+            <Checkbox.Root checked={checked}>
+              <Checkbox.Indicator data-testid={INDICATOR_TEST_ID} />
+            </Checkbox.Root>
+          </div>
+        </form>
+      );
+    }
+
+    // regression test for https://github.com/radix-ui/primitives/issues/3265
+    it('should not trigger the ancestor `onClick` when `checked` is updated programmatically', () => {
+      const { rerender } = render(<App checked={false} />);
+      act(() => rerender(<App checked={true} />));
+      expect(onParentClick).not.toHaveBeenCalled();
+      // the form should still be notified of the change
+      expect(onFormChange).toHaveBeenCalledWith(true);
+    });
+
+    it('should trigger the ancestor `onClick` on a real user click', () => {
+      render(
+        <form
+          onChange={(event) => onFormChange((event.target as unknown as HTMLInputElement).checked)}
+        >
+          <div onClick={onParentClick}>
+            <Checkbox.Root>
+              <Checkbox.Indicator data-testid={INDICATOR_TEST_ID} />
+            </Checkbox.Root>
+          </div>
+        </form>,
+      );
+      act(() => fireEvent.click(screen.getByRole(CHECKBOX_ROLE)));
+      expect(onParentClick).toHaveBeenCalledTimes(1);
+    });
+
+    // regression test for https://github.com/radix-ui/primitives/issues/3265
+    it('should not trigger the ancestor `onClick` on a programmatic update after a click that did not change `checked`', () => {
+      function LockedApp({ checked }: { checked: boolean }) {
+        return (
+          <form
+            onChange={(event) =>
+              onFormChange((event.target as unknown as HTMLInputElement).checked)
+            }
+          >
+            <div onClick={onParentClick}>
+              <Checkbox.Root checked={checked} onCheckedChange={() => void 0}>
+                <Checkbox.Indicator data-testid={INDICATOR_TEST_ID} />
+              </Checkbox.Root>
+            </div>
+          </form>
+        );
+      }
+
+      const { rerender } = render(<LockedApp checked={false} />);
+
+      act(() => fireEvent.click(screen.getByRole(CHECKBOX_ROLE)));
+      onParentClick.mockClear();
+      // subsequent programmatic update
+      act(() => rerender(<LockedApp checked />));
+      expect(onParentClick).not.toHaveBeenCalled();
+
+      // the form should still be notified of the change
+      expect(onFormChange).toHaveBeenCalledWith(true);
+    });
+
+    it('should trigger the ancestor `onClick` for a user click that the controlled parent ignores', () => {
+      render(
+        <form
+          onChange={(event) => onFormChange((event.target as unknown as HTMLInputElement).checked)}
+        >
+          <div onClick={onParentClick}>
+            <Checkbox.Root checked={false} onCheckedChange={() => void 0}>
+              <Checkbox.Indicator data-testid={INDICATOR_TEST_ID} />
+            </Checkbox.Root>
+          </div>
+        </form>,
+      );
+
+      act(() => fireEvent.click(screen.getByRole(CHECKBOX_ROLE)));
+
+      expect(screen.getByRole(CHECKBOX_ROLE)).toHaveAttribute('aria-checked', 'false');
+      expect(onParentClick).toHaveBeenCalledTimes(1);
+      expect(onFormChange).not.toHaveBeenCalled();
+    });
+
+    it('should trigger the ancestor `onClick` once and notify the form when the controlled parent applies `checked` after a timeout', async () => {
+      function DelayedApp() {
+        const [checked, setChecked] = React.useState(false);
+        return (
+          <form
+            onChange={(event) =>
+              onFormChange((event.target as unknown as HTMLInputElement).checked)
+            }
+          >
+            <div onClick={onParentClick}>
+              <Checkbox.Root
+                checked={checked}
+                onCheckedChange={(nextChecked) => {
+                  setTimeout(() => setChecked(nextChecked === true));
+                }}
+              >
+                <Checkbox.Indicator data-testid={INDICATOR_TEST_ID} />
+              </Checkbox.Root>
+            </div>
+          </form>
+        );
+      }
+
+      render(<DelayedApp />);
+      act(() => fireEvent.click(screen.getByRole(CHECKBOX_ROLE)));
+      await act(() => new Promise((resolve) => setTimeout(resolve)));
+
+      expect(screen.getByRole(CHECKBOX_ROLE)).toHaveAttribute('aria-checked', 'true');
+      expect(onParentClick).toHaveBeenCalledTimes(1);
+      expect(onFormChange).toHaveBeenCalledTimes(1);
+      expect(onFormChange).toHaveBeenCalledWith(true);
+    });
+
+    it('should trigger the ancestor `onClick` once and notify the form when the controlled parent applies `checked` in a transition', async () => {
+      function TransitionApp() {
+        const [checked, setChecked] = React.useState(false);
+        return (
+          <form
+            onChange={(event) =>
+              onFormChange((event.target as unknown as HTMLInputElement).checked)
+            }
+          >
+            <div onClick={onParentClick}>
+              <Checkbox.Root
+                checked={checked}
+                onCheckedChange={(nextChecked) => {
+                  React.startTransition(() => setChecked(nextChecked === true));
+                }}
+              >
+                <Checkbox.Indicator data-testid={INDICATOR_TEST_ID} />
+              </Checkbox.Root>
+            </div>
+          </form>
+        );
+      }
+
+      render(<TransitionApp />);
+      await act(async () => fireEvent.click(screen.getByRole(CHECKBOX_ROLE)));
+
+      expect(screen.getByRole(CHECKBOX_ROLE)).toHaveAttribute('aria-checked', 'true');
+      expect(onParentClick).toHaveBeenCalledTimes(1);
+      expect(onFormChange).toHaveBeenCalledTimes(1);
+      expect(onFormChange).toHaveBeenCalledWith(true);
+    });
+
+    it('should trigger the ancestor `onClick` once and notify the form when the controlled parent applies a different `checked` state than requested', () => {
+      function CoercingApp() {
+        const [checked, setChecked] = React.useState<Checkbox.CheckedState>(true);
+        return (
+          <form
+            onChange={(event) =>
+              onFormChange((event.target as unknown as HTMLInputElement).checked)
+            }
+          >
+            <div onClick={onParentClick}>
+              <Checkbox.Root
+                checked={checked}
+                onCheckedChange={(nextChecked) =>
+                  setChecked(nextChecked === false ? 'indeterminate' : nextChecked)
+                }
+              >
+                <Checkbox.Indicator data-testid={INDICATOR_TEST_ID} />
+              </Checkbox.Root>
+            </div>
+          </form>
+        );
+      }
+
+      render(<CoercingApp />);
+      act(() => fireEvent.click(screen.getByRole(CHECKBOX_ROLE)));
+
+      expect(screen.getByRole(CHECKBOX_ROLE)).toHaveAttribute('aria-checked', 'mixed');
+      expect(onParentClick).toHaveBeenCalledTimes(1);
+      expect(onFormChange).toHaveBeenCalledTimes(1);
+      expect(onFormChange).toHaveBeenCalledWith(false);
+    });
+
+    it('should not notify the form when propagation is stopped on the trigger and the controlled parent applies `checked` later', async () => {
+      function DelayedApp() {
+        const [checked, setChecked] = React.useState(false);
+        return (
+          <form
+            onChange={(event) =>
+              onFormChange((event.target as unknown as HTMLInputElement).checked)
+            }
+          >
+            <div onClick={onParentClick}>
+              <Checkbox.Root
+                checked={checked}
+                onCheckedChange={(nextChecked) => {
+                  setTimeout(() => setChecked(nextChecked === true));
+                }}
+                onClick={(event) => event.stopPropagation()}
+              >
+                <Checkbox.Indicator data-testid={INDICATOR_TEST_ID} />
+              </Checkbox.Root>
+            </div>
+          </form>
+        );
+      }
+
+      render(<DelayedApp />);
+      act(() => fireEvent.click(screen.getByRole(CHECKBOX_ROLE)));
+      await act(() => new Promise((resolve) => setTimeout(resolve)));
+
+      expect(screen.getByRole(CHECKBOX_ROLE)).toHaveAttribute('aria-checked', 'true');
+      expect(onParentClick).not.toHaveBeenCalled();
+      expect(onFormChange).not.toHaveBeenCalled();
+    });
+
+    it('should not notify the form when propagation is stopped on the trigger', () => {
+      render(
+        <form
+          onChange={(event) => onFormChange((event.target as unknown as HTMLInputElement).checked)}
+        >
+          <div onClick={onParentClick}>
+            <Checkbox.Root onClick={(event) => event.stopPropagation()}>
+              <Checkbox.Indicator data-testid={INDICATOR_TEST_ID} />
+            </Checkbox.Root>
+          </div>
+        </form>,
+      );
+
+      act(() => fireEvent.click(screen.getByRole(CHECKBOX_ROLE)));
+
+      expect(screen.getByRole(CHECKBOX_ROLE)).toHaveAttribute('aria-checked', 'true');
+      expect(onParentClick).not.toHaveBeenCalled();
+      expect(onFormChange).not.toHaveBeenCalled();
     });
   });
 });
@@ -417,7 +666,7 @@ describe('Legacy Checkbox', () => {
           const rendered = render(
             <form
               onChange={(event) => {
-                const target = event.target as HTMLInputElement;
+                const target = event.target as unknown as HTMLInputElement;
                 expect(target.defaultChecked).toBe(true);
               }}
             >
@@ -429,7 +678,7 @@ describe('Legacy Checkbox', () => {
           rendered.rerender(
             <form
               onChange={(event) => {
-                const target = event.target as HTMLInputElement;
+                const target = event.target as unknown as HTMLInputElement;
                 expect(target.defaultChecked).toBe(false);
                 done(null);
               }}
@@ -451,7 +700,7 @@ describe('Legacy Checkbox', () => {
           const rendered = render(
             <form
               onChange={(event) => {
-                const target = event.target as HTMLInputElement;
+                const target = event.target as unknown as HTMLInputElement;
                 expect(target.defaultChecked).toBe(true);
               }}
             >
@@ -463,7 +712,7 @@ describe('Legacy Checkbox', () => {
           rendered.rerender(
             <form
               onChange={(event) => {
-                const target = event.target as HTMLInputElement;
+                const target = event.target as unknown as HTMLInputElement;
                 expect(target.defaultChecked).toBe(true);
                 done(null);
               }}
@@ -496,3 +745,255 @@ function LegacyCheckbox(props: React.ComponentProps<typeof Checkbox.Root>) {
     </div>
   );
 }
+
+describe('Checkbox.Root', () => {
+  afterEach(cleanup);
+
+  it('spreads props it does not consume onto the element it renders', () => {
+    const ref = React.createRef<HTMLButtonElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Checkbox.Root
+        defaultChecked
+        ref={ref}
+        data-testid="root"
+        className="custom-class"
+        style={{ outlineColor: 'rgb(1, 2, 3)' }}
+        onClick={onClick}
+      >
+        <Checkbox.Indicator />
+      </Checkbox.Root>,
+    );
+
+    const root = screen.getByTestId('root');
+    expect(root).toHaveClass('custom-class');
+    expect(root.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(root);
+
+    fireEvent.click(root);
+    expect(onClick).toHaveBeenCalled();
+  });
+
+  it('forwards props to the child element when `asChild` is set', () => {
+    const ref = React.createRef<HTMLButtonElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Checkbox.Root
+        defaultChecked
+        asChild
+        ref={ref}
+        data-testid="root"
+        className="custom-class"
+        style={{ outlineColor: 'rgb(1, 2, 3)' }}
+        onClick={onClick}
+      >
+        <button type="button">
+          <Checkbox.Indicator />
+        </button>
+      </Checkbox.Root>,
+    );
+
+    const root = screen.getByTestId('root');
+    expect(root.tagName).toBe('BUTTON');
+    expect(root).toHaveAttribute('role', 'checkbox');
+    expect(root).toHaveAttribute('data-state', 'checked');
+    expect(root).toHaveClass('custom-class');
+    expect(root.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(root);
+
+    fireEvent.click(root);
+    expect(onClick).toHaveBeenCalled();
+  });
+});
+
+describe('Checkbox.unstable_Trigger', () => {
+  afterEach(cleanup);
+
+  it('spreads props it does not consume onto the element it renders', () => {
+    const ref = React.createRef<HTMLButtonElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Checkbox.unstable_Provider defaultChecked>
+        <Checkbox.unstable_Trigger
+          ref={ref}
+          data-testid="trigger"
+          className="custom-class"
+          style={{ outlineColor: 'rgb(1, 2, 3)' }}
+          onClick={onClick}
+        >
+          <Checkbox.Indicator />
+        </Checkbox.unstable_Trigger>
+      </Checkbox.unstable_Provider>,
+    );
+
+    const trigger = screen.getByTestId('trigger');
+    expect(trigger).toHaveClass('custom-class');
+    expect(trigger.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(trigger);
+
+    fireEvent.click(trigger);
+    expect(onClick).toHaveBeenCalled();
+  });
+
+  it('forwards props to the child element when `asChild` is set', () => {
+    const ref = React.createRef<HTMLButtonElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Checkbox.unstable_Provider defaultChecked>
+        <Checkbox.unstable_Trigger
+          asChild
+          ref={ref}
+          data-testid="trigger"
+          className="custom-class"
+          style={{ outlineColor: 'rgb(1, 2, 3)' }}
+          onClick={onClick}
+        >
+          <button type="button">
+            <Checkbox.Indicator />
+          </button>
+        </Checkbox.unstable_Trigger>
+      </Checkbox.unstable_Provider>,
+    );
+
+    const trigger = screen.getByTestId('trigger');
+    expect(trigger.tagName).toBe('BUTTON');
+    expect(trigger).toHaveAttribute('role', 'checkbox');
+    expect(trigger).toHaveAttribute('aria-checked', 'true');
+    expect(trigger).toHaveClass('custom-class');
+    expect(trigger.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(trigger);
+
+    fireEvent.click(trigger);
+    expect(onClick).toHaveBeenCalled();
+  });
+});
+
+describe('Checkbox.Indicator', () => {
+  afterEach(cleanup);
+
+  it('spreads props it does not consume onto the element it renders', () => {
+    const ref = React.createRef<HTMLSpanElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Checkbox.Root defaultChecked>
+        <Checkbox.Indicator
+          ref={ref}
+          data-testid="indicator"
+          className="custom-class"
+          style={{ outlineColor: 'rgb(1, 2, 3)' }}
+          onClick={onClick}
+        />
+      </Checkbox.Root>,
+    );
+
+    const indicator = screen.getByTestId('indicator');
+    expect(indicator).toHaveClass('custom-class');
+    // The indicator sets `pointerEvents` itself, so this also proves `style` is
+    // merged, not replaced.
+    expect(indicator.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(indicator.style.pointerEvents).toBe('none');
+    expect(ref.current).toBe(indicator);
+
+    fireEvent.click(indicator);
+    expect(onClick).toHaveBeenCalled();
+  });
+
+  it('forwards props to the child element when `asChild` is set', () => {
+    const ref = React.createRef<HTMLSpanElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Checkbox.Root defaultChecked>
+        <Checkbox.Indicator
+          asChild
+          ref={ref}
+          data-testid="indicator"
+          className="custom-class"
+          style={{ outlineColor: 'rgb(1, 2, 3)' }}
+          onClick={onClick}
+        >
+          <article />
+        </Checkbox.Indicator>
+      </Checkbox.Root>,
+    );
+
+    const indicator = screen.getByTestId('indicator');
+    expect(indicator.tagName).toBe('ARTICLE');
+    expect(indicator).toHaveAttribute('data-state', 'checked');
+    expect(indicator).toHaveClass('custom-class');
+    expect(indicator.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(indicator);
+
+    fireEvent.click(indicator);
+    expect(onClick).toHaveBeenCalled();
+  });
+});
+
+describe('Checkbox.unstable_BubbleInput', () => {
+  afterEach(cleanup);
+
+  it('spreads props it does not consume onto the element it renders', () => {
+    const ref = React.createRef<HTMLInputElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Checkbox.unstable_Provider defaultChecked>
+        <Checkbox.unstable_BubbleInput
+          ref={ref}
+          data-testid="bubble-input"
+          className="custom-class"
+          style={{ outlineColor: 'rgb(1, 2, 3)' }}
+          onClick={onClick}
+        />
+      </Checkbox.unstable_Provider>,
+    );
+
+    const input = screen.getByTestId('bubble-input');
+    expect(input).toHaveClass('custom-class');
+    expect(input.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(input);
+
+    // The input is visually hidden, so a real user never clicks it. The part
+    // composes `onClick` to swallow the synthetic clicks it dispatches at
+    // forms, and that composition is exactly where a consumer's handler could
+    // get dropped.
+    fireEvent.click(input);
+    expect(onClick).toHaveBeenCalled();
+  });
+
+  it('forwards props to the child element when `asChild` is set', () => {
+    const ref = React.createRef<HTMLInputElement>();
+    const onClick = vi.fn();
+
+    render(
+      <Checkbox.unstable_Provider defaultChecked>
+        <Checkbox.unstable_BubbleInput
+          asChild
+          ref={ref}
+          data-testid="bubble-input"
+          className="custom-class"
+          style={{ outlineColor: 'rgb(1, 2, 3)' }}
+          onClick={onClick}
+        >
+          <input />
+        </Checkbox.unstable_BubbleInput>
+      </Checkbox.unstable_Provider>,
+    );
+
+    const input = screen.getByTestId('bubble-input');
+    expect(input.tagName).toBe('INPUT');
+    expect(input).toHaveAttribute('type', 'checkbox');
+    expect(input).toHaveAttribute('aria-hidden', 'true');
+    expect(input).toHaveClass('custom-class');
+    expect(input.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(input);
+
+    fireEvent.click(input);
+    expect(onClick).toHaveBeenCalled();
+  });
+});

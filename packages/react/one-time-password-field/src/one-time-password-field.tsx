@@ -12,25 +12,43 @@ import type { Scope } from '@radix-ui/react-context';
 import { createContextScope } from '@radix-ui/react-context';
 import { useDirection } from '@radix-ui/react-direction';
 import { clamp } from '@radix-ui/number';
-import { useEffectEvent } from '@radix-ui/react-use-effect-event';
 
-type InputValidationType = 'alpha' | 'numeric' | 'alphanumeric' | 'none';
+const InputValidationType = {
+  Alpha: 'alpha',
+  Numeric: 'numeric',
+  Alphanumeric: 'alphanumeric',
+  None: 'none',
+} as const;
+
+const InputType = {
+  Password: 'password',
+  Text: 'text',
+} as const;
+
+const AutoComplete = {
+  Off: 'off',
+  OneTimeCode: 'one-time-code',
+} as const;
+
+type InputValidationType = (typeof InputValidationType)[keyof typeof InputValidationType];
+type InputType = (typeof InputType)[keyof typeof InputType];
+type AutoComplete = (typeof AutoComplete)[keyof typeof AutoComplete];
 
 const INPUT_VALIDATION_MAP = {
   numeric: {
-    type: 'numeric',
+    type: InputValidationType.Numeric,
     regexp: /[^\d]/g,
     pattern: '\\d{1}',
     inputMode: 'numeric',
   },
   alpha: {
-    type: 'alpha',
+    type: InputValidationType.Alpha,
     regexp: /[^a-zA-Z]/g,
     pattern: '[a-zA-Z]{1}',
     inputMode: 'text',
   },
   alphanumeric: {
-    type: 'alphanumeric',
+    type: InputValidationType.Alphanumeric,
     regexp: /[^a-zA-Z0-9]/g,
     pattern: '[a-zA-Z0-9]{1}',
     inputMode: 'text',
@@ -90,14 +108,14 @@ interface OneTimePasswordFieldOwnProps {
    * @defaultValue `"one-time-code"`
    * @see https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/autocomplete
    */
-  autoComplete?: AutoComplete;
+  autoComplete?: AutoComplete | undefined;
   /**
    * Whether or not the first fillable input should be focused on page-load.
    *
    * @defaultValue `false`
    * @see https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Global_attributes/autofocus
    */
-  autoFocus?: boolean;
+  autoFocus?: boolean | undefined;
   /**
    * Whether or not the component should attempt to automatically submit when
    * all fields are filled. If the field is associated with an HTML `form`
@@ -105,21 +123,21 @@ interface OneTimePasswordFieldOwnProps {
    *
    * @defaultValue `false`
    */
-  autoSubmit?: boolean;
+  autoSubmit?: boolean | undefined;
   /**
    * The initial value of the uncontrolled field.
    */
-  defaultValue?: string;
+  defaultValue?: string | undefined;
   /**
    * Indicates the horizontal directionality of the parent element's text.
    *
    * @see https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Global_attributes/dir
    */
-  dir?: RovingFocusGroupProps['dir'];
+  dir?: RovingFocusGroupProps['dir'] | undefined;
   /**
-   * Whether or not the the field's input elements are disabled.
+   * Whether or not the field's input elements are disabled.
    */
-  disabled?: boolean;
+  disabled?: boolean | undefined;
   /**
    * A string specifying the `form` element with which the input is associated.
    * This string's value, if present, must match the id of a `form` element in
@@ -140,18 +158,18 @@ interface OneTimePasswordFieldOwnProps {
    * before attempting to submit the associated form. It will be called whether
    * or not a form is located, or if submission is not allowed.
    */
-  onAutoSubmit?: (value: string) => void;
+  onAutoSubmit?: { bivarianceHack(value: string): void }['bivarianceHack'] | undefined;
   /**
    * A callback fired when the field's value changes. When the component is
    * controlled, this should update the state passed to the `value` prop.
    */
-  onValueChange?: (value: string) => void;
+  onValueChange?: { bivarianceHack(value: string): void }['bivarianceHack'] | undefined;
   /**
    * Indicates the vertical directionality of the input elements.
    *
    * @defaultValue `"horizontal"`
    */
-  orientation?: RovingFocusGroupProps['orientation'];
+  orientation?: RovingFocusGroupProps['orientation'] | undefined;
   /**
    * Defines the text displayed in a form control when the control has no value.
    *
@@ -163,37 +181,42 @@ interface OneTimePasswordFieldOwnProps {
    *
    * @see https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/readonly
    */
-  readOnly?: boolean;
+  readOnly?: boolean | undefined;
   /**
    * Function for custom sanitization when `validationType` is set to `"none"`.
    * This function will be called before updating values in response to user
    * interactions.
    */
-  sanitizeValue?: (value: string) => string;
+  sanitizeValue?: { bivarianceHack(value: string): string }['bivarianceHack'] | undefined;
   /**
    * The input type of the field's input elements. Can be `"password"` or `"text"`.
    */
-  type?: InputType;
+  type?: InputType | undefined;
   /**
    * Specifies the type of input validation to be used. Can be `"alpha"`,
    * `"numeric"`, `"alphanumeric"` or `"none"`.
    *
    * @defaultValue `"numeric"`
    */
-  validationType?: InputValidationType;
+  validationType?: InputValidationType | undefined;
   /**
    * The controlled value of the field.
    */
-  value?: string;
+  value?: string | undefined;
 }
 
-type ScopedProps<P> = P & { __scopeOneTimePasswordField?: Scope };
+type ScopedProps<P> = P & { __scopeOneTimePasswordField?: Scope | undefined };
 
 interface OneTimePasswordFieldProps
-  extends OneTimePasswordFieldOwnProps,
+  extends
+    OneTimePasswordFieldOwnProps,
     Omit<Primitive.PrimitivePropsWithRef<'div'>, keyof OneTimePasswordFieldOwnProps> {}
 
-const OneTimePasswordField = React.forwardRef<HTMLDivElement, OneTimePasswordFieldProps>(
+const OneTimePasswordField = /* @__PURE__ */ React.forwardRef<
+  HTMLDivElement,
+  OneTimePasswordFieldProps
+>(
+  // blank line to reduce diff noise
   function OneTimePasswordFieldImpl(
     {
       __scopeOneTimePasswordField,
@@ -206,16 +229,16 @@ const OneTimePasswordField = React.forwardRef<HTMLDivElement, OneTimePasswordFie
       onAutoSubmit,
       disabled = false,
       readOnly = false,
-      autoComplete = 'one-time-code',
+      autoComplete = AutoComplete.OneTimeCode,
       autoFocus = false,
       form,
       name,
       placeholder,
-      type = 'text',
+      type = InputType.Text,
       // TODO: Change default to vertical when inputs use vertical writing mode
       orientation = 'horizontal',
       dir,
-      validationType = 'numeric',
+      validationType = InputValidationType.Numeric,
       sanitizeValue: sanitizeValueProp,
       ...domProps
     }: ScopedProps<OneTimePasswordFieldProps>,
@@ -265,103 +288,115 @@ const OneTimePasswordField = React.forwardRef<HTMLDivElement, OneTimePasswordFie
       ),
     });
 
+    // Use a ref so dispatch always reads the latest value without needing
+    // value in its dependency array (which would change its identity every
+    // keystroke and cause cascading effect re-runs).
+    const latestValueRef = React.useRef(value);
+    latestValueRef.current = value;
+
     // Update function *specifically* for event handlers.
-    const dispatch = useEffectEvent<Dispatcher>((action) => {
-      switch (action.type) {
-        case 'SET_CHAR': {
-          const { index, char } = action;
-          const currentTarget = collection.at(index)?.element;
-          if (value[index] === char) {
-            const next = currentTarget && collection.from(currentTarget, 1)?.element;
-            focusInput(next);
-            return;
-          }
-
-          // empty values should be handled in the CLEAR_CHAR action
-          if (char === '') {
-            return;
-          }
-
-          if (validation) {
-            const regexp = new RegExp(validation.regexp);
-            const clean = char.replace(regexp, '');
-            if (clean !== char) {
-              // not valid; ignore
+    const dispatch = React.useCallback<Dispatcher>(
+      (action) => {
+        const value = latestValueRef.current;
+        switch (action.type) {
+          case 'SET_CHAR': {
+            const { index, char } = action;
+            const currentTarget = collection.at(index)?.element;
+            if (value[index] === char) {
+              const next = currentTarget && collection.from(currentTarget, 1)?.element;
+              focusInput(next);
               return;
             }
-          }
 
-          // no more space
-          if (value.length >= collection.size) {
-            // replace current value; move to next input
+            // empty values should be handled in the CLEAR_CHAR action
+            if (char === '') {
+              return;
+            }
+
+            if (validation) {
+              const regexp = new RegExp(validation.regexp);
+              const clean = char.replace(regexp, '');
+              if (clean !== char) {
+                // not valid; ignore
+                return;
+              }
+            }
+
+            // no more space
+            if (value.length >= collection.size) {
+              // replace current value; move to next input
+              const newValue = [...value];
+              newValue[index] = char;
+              flushSync(() => setValue(newValue));
+              const next = currentTarget && collection.from(currentTarget, 1)?.element;
+              focusInput(next);
+              return;
+            }
+
             const newValue = [...value];
             newValue[index] = char;
+
+            const lastElement = collection.at(-1)?.element;
             flushSync(() => setValue(newValue));
-            const next = currentTarget && collection.from(currentTarget, 1)?.element;
-            focusInput(next);
+            if (currentTarget !== lastElement) {
+              const next = currentTarget && collection.from(currentTarget, 1)?.element;
+              focusInput(next);
+            } else {
+              currentTarget?.select();
+            }
             return;
           }
 
-          const newValue = [...value];
-          newValue[index] = char;
+          case 'CLEAR_CHAR': {
+            const { index, reason } = action;
+            if (!value[index]) {
+              return;
+            }
 
-          const lastElement = collection.at(-1)?.element;
-          flushSync(() => setValue(newValue));
-          if (currentTarget !== lastElement) {
-            const next = currentTarget && collection.from(currentTarget, 1)?.element;
-            focusInput(next);
-          } else {
-            currentTarget?.select();
-          }
-          return;
-        }
+            const newValue = value.filter((_, i) => i !== index);
+            const currentTarget = collection.at(index)?.element;
+            const previous = currentTarget && collection.from(currentTarget, -1)?.element;
 
-        case 'CLEAR_CHAR': {
-          const { index, reason } = action;
-          if (!value[index]) {
+            flushSync(() => setValue(newValue));
+            if (reason === 'Backspace') {
+              focusInput(previous);
+            } else if (reason === 'Delete' || reason === 'Cut') {
+              focusInput(currentTarget);
+            }
             return;
           }
 
-          const newValue = value.filter((_, i) => i !== index);
-          const currentTarget = collection.at(index)?.element;
-          const previous = currentTarget && collection.from(currentTarget, -1)?.element;
+          case 'CLEAR': {
+            if (value.length === 0) {
+              return;
+            }
 
-          flushSync(() => setValue(newValue));
-          if (reason === 'Backspace') {
-            focusInput(previous);
-          } else if (reason === 'Delete' || reason === 'Cut') {
-            focusInput(currentTarget);
-          }
-          return;
-        }
-
-        case 'CLEAR': {
-          if (value.length === 0) {
+            if (action.reason === 'Backspace' || action.reason === 'Delete') {
+              flushSync(() => setValue([]));
+              focusInput(collection.at(0)?.element);
+            } else {
+              setValue([]);
+            }
             return;
           }
 
-          if (action.reason === 'Backspace' || action.reason === 'Delete') {
-            flushSync(() => setValue([]));
-            focusInput(collection.at(0)?.element);
-          } else {
-            setValue([]);
-          }
-          return;
-        }
+          case 'PASTE': {
+            const { value: pastedValue } = action;
+            const sanitizedValue = sanitizeValue(pastedValue);
+            if (!sanitizedValue) {
+              return;
+            }
 
-        case 'PASTE': {
-          const { value: pastedValue } = action;
-          const value = sanitizeValue(pastedValue);
-          if (!value) {
+            const value = sanitizedValue.slice(0, collection.size);
+
+            flushSync(() => setValue(value));
+            focusInput(collection.at(value.length - 1)?.element);
             return;
           }
-
-          flushSync(() => setValue(value));
-          focusInput(collection.at(value.length - 1)?.element);
-          return;
         }
-      }
-    });
+      },
+      [collection, sanitizeValue, setValue, validation],
+    );
 
     // re-validate when the validation type changes
     const validationTypeRef = React.useRef(validation);
@@ -467,7 +502,7 @@ const OneTimePasswordField = React.forwardRef<HTMLDivElement, OneTimePasswordFie
                   onPaste,
                   (event: React.ClipboardEvent<HTMLDivElement>) => {
                     event.preventDefault();
-                    const pastedValue = event.clipboardData.getData('Text');
+                    const pastedValue = event.clipboardData.getData('text/plain');
                     dispatch({ type: 'PASTE', value: pastedValue });
                   },
                 )}
@@ -486,20 +521,19 @@ const OneTimePasswordField = React.forwardRef<HTMLDivElement, OneTimePasswordFie
  * OneTimePasswordFieldHiddenInput
  * -----------------------------------------------------------------------------------------------*/
 
-interface OneTimePasswordFieldHiddenInputProps
-  extends Omit<
-    React.ComponentProps<'input'>,
-    | keyof 'value'
-    | 'defaultValue'
-    | 'type'
-    | 'onChange'
-    | 'readOnly'
-    | 'disabled'
-    | 'autoComplete'
-    | 'autoFocus'
-  > {}
+interface OneTimePasswordFieldHiddenInputProps extends Omit<
+  React.ComponentProps<'input'>,
+  | keyof 'value'
+  | 'defaultValue'
+  | 'type'
+  | 'onChange'
+  | 'readOnly'
+  | 'disabled'
+  | 'autoComplete'
+  | 'autoFocus'
+> {}
 
-const OneTimePasswordFieldHiddenInput = React.forwardRef<
+const OneTimePasswordFieldHiddenInput = /* @__PURE__ */ React.forwardRef<
   HTMLInputElement,
   OneTimePasswordFieldHiddenInputProps
 >(function OneTimePasswordFieldHiddenInput(
@@ -533,33 +567,32 @@ const OneTimePasswordFieldHiddenInput = React.forwardRef<
  * OneTimePasswordFieldInput
  * -----------------------------------------------------------------------------------------------*/
 
-interface OneTimePasswordFieldInputProps
-  extends Omit<
-    Primitive.PrimitivePropsWithRef<'input'>,
-    | 'value'
-    | 'defaultValue'
-    | 'disabled'
-    | 'readOnly'
-    | 'autoComplete'
-    | 'autoFocus'
-    | 'form'
-    | 'name'
-    | 'placeholder'
-    | 'type'
-  > {
+interface OneTimePasswordFieldInputProps extends Omit<
+  Primitive.PrimitivePropsWithRef<'input'>,
+  | 'value'
+  | 'defaultValue'
+  | 'disabled'
+  | 'readOnly'
+  | 'autoComplete'
+  | 'autoFocus'
+  | 'form'
+  | 'name'
+  | 'placeholder'
+  | 'type'
+> {
   /**
    * Callback fired when the user input fails native HTML input validation.
    */
-  onInvalidChange?: (character: string) => void;
+  onInvalidChange?: { bivarianceHack(character: string): void }['bivarianceHack'] | undefined;
   /**
    * User-provided index to determine the order of the inputs. This is useful if
    * you need certain index-based attributes to be set on the initial render,
    * often to prevent flickering after hydration.
    */
-  index?: number;
+  index?: number | undefined;
 }
 
-const OneTimePasswordFieldInput = React.forwardRef<
+const OneTimePasswordFieldInput = /* @__PURE__ */ React.forwardRef<
   HTMLInputElement,
   OneTimePasswordFieldInputProps
 >(function OneTimePasswordFieldInput(
@@ -643,7 +676,7 @@ const OneTimePasswordFieldInput = React.forwardRef<
               type={context.type}
               disabled={disabled}
               aria-label={`Character ${index + 1} of ${collection.size}`}
-              autoComplete={supportsAutoComplete ? context.autoComplete : 'off'}
+              autoComplete={supportsAutoComplete ? context.autoComplete : AutoComplete.Off}
               data-1p-ignore={supportsAutoComplete ? undefined : 'true'}
               data-lpignore={supportsAutoComplete ? undefined : 'true'}
               data-protonpass-ignore={supportsAutoComplete ? undefined : 'true'}
@@ -930,8 +963,6 @@ function isInputEvent(event: Event): event is InputEvent {
   return event.type === 'input';
 }
 
-type InputType = 'password' | 'text';
-type AutoComplete = 'off' | 'one-time-code';
 type KeyboardActionDetails =
   | {
       type: 'keydown';

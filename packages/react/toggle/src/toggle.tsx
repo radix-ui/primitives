@@ -15,55 +15,53 @@ interface ToggleProps extends PrimitiveButtonProps {
   /**
    * The controlled state of the toggle.
    */
-  pressed?: boolean;
+  pressed?: boolean | undefined;
   /**
    * The state of the toggle when initially rendered. Use `defaultPressed`
    * if you do not need to control the state of the toggle.
    * @defaultValue false
    */
-  defaultPressed?: boolean;
+  defaultPressed?: boolean | undefined;
   /**
    * The callback that fires when the state of the toggle changes.
    */
-  onPressedChange?(pressed: boolean): void;
+  onPressedChange?: { bivarianceHack(pressed: boolean): void }['bivarianceHack'] | undefined;
 }
 
-const Toggle = React.forwardRef<ToggleElement, ToggleProps>((props, forwardedRef) => {
-  const { pressed: pressedProp, defaultPressed, onPressedChange, ...buttonProps } = props;
+const Toggle = /* @__PURE__ */ React.forwardRef<ToggleElement, ToggleProps>(
+  function Toggle(props, forwardedRef) {
+    const { pressed: pressedProp, defaultPressed, onPressedChange, ...buttonProps } = props;
 
-  const [pressed, setPressed] = useControllableState({
-    prop: pressedProp,
-    onChange: onPressedChange,
-    defaultProp: defaultPressed ?? false,
-    caller: NAME,
-  });
+    const [pressed, setPressed] = useControllableState({
+      prop: pressedProp,
+      onChange: onPressedChange,
+      defaultProp: defaultPressed ?? false,
+      caller: NAME,
+    });
 
-  return (
-    <Primitive.button
-      type="button"
-      aria-pressed={pressed}
-      data-state={pressed ? 'on' : 'off'}
-      data-disabled={props.disabled ? '' : undefined}
-      {...buttonProps}
-      ref={forwardedRef}
-      onClick={composeEventHandlers(props.onClick, () => {
-        if (!props.disabled) {
-          setPressed(!pressed);
-        }
-      })}
-    />
-  );
-});
-
-Toggle.displayName = NAME;
+    return (
+      <Primitive.button
+        type="button"
+        aria-pressed={pressed}
+        data-state={pressed ? 'on' : 'off'}
+        data-disabled={props.disabled ? '' : undefined}
+        {...buttonProps}
+        ref={forwardedRef}
+        onClick={composeEventHandlers(props.onClick, () => {
+          if (!props.disabled) {
+            setPressed(!pressed);
+          }
+        })}
+      />
+    );
+  },
+);
 
 /* ---------------------------------------------------------------------------------------------- */
-
-const Root = Toggle;
 
 export {
   Toggle,
   //
-  Root,
+  Toggle as Root,
 };
 export type { ToggleProps };

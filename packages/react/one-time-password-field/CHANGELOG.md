@@ -1,5 +1,58 @@
 # @radix-ui/react-one-time-password-field
 
+## 0.2.1
+
+- Fixed a type regression where callback props that were previously declared as methods rejected handlers whose parameter is narrower than the prop's.
+- Updated dependencies: `@radix-ui/react-roving-focus@1.2.1`
+
+## 0.2.0
+
+- Allow explicit `undefined` for all optional types for compatibility with TypeScript's `exactOptionalPropertyTypes` flag.
+- Updated dependencies: `@radix-ui/react-collection@1.2.0`, `@radix-ui/primitive@1.2.0`, `@radix-ui/react-context@1.3.0`, `@radix-ui/react-direction@1.2.0`, `@radix-ui/react-primitive@2.2.0`, `@radix-ui/react-roving-focus@1.2.0`, `@radix-ui/react-use-controllable-state@1.3.0`
+
+## 0.1.17
+
+- Updated dependencies: `@radix-ui/react-roving-focus@1.1.20`, `@radix-ui/react-direction@1.1.5`, `@radix-ui/react-primitive@2.1.11`, `@radix-ui/react-collection@1.1.16`
+
+## 0.1.16
+
+- Reverted breaking changes that caused compatibility issues with React Server Components.
+- Updated dependencies: `@radix-ui/react-collection@1.1.15`, `@radix-ui/react-compose-refs@1.1.5`, `@radix-ui/react-context@1.2.2`, `@radix-ui/react-direction@1.1.4`, `@radix-ui/react-primitive@2.1.10`, `@radix-ui/react-roving-focus@1.1.19`, `@radix-ui/react-use-controllable-state@1.2.6`, `@radix-ui/react-use-effect-event@0.0.5`, `@radix-ui/react-use-is-hydrated@0.1.3`, `@radix-ui/react-use-layout-effect@1.1.4`
+
+## 0.1.15
+
+- Updated dependencies: `@radix-ui/react-collection@1.1.14`, `@radix-ui/react-primitive@2.1.9`, `@radix-ui/react-roving-focus@1.1.18`
+
+## 0.1.14
+
+- Republish through CI to attach provenance attestations. The previous versions of these packages were published manually outside of CI and therefore shipped without provenance; this patch re-releases the same code through the CI pipeline so every package includes an attestation.
+- Updated dependencies: `@radix-ui/number@1.1.3`, `@radix-ui/primitive@1.1.7`, `@radix-ui/react-collection@1.1.13`, `@radix-ui/react-compose-refs@1.1.4`, `@radix-ui/react-context@1.2.1`, `@radix-ui/react-direction@1.1.3`, `@radix-ui/react-primitive@2.1.8`, `@radix-ui/react-roving-focus@1.1.17`, `@radix-ui/react-use-controllable-state@1.2.5`, `@radix-ui/react-use-effect-event@0.0.4`, `@radix-ui/react-use-is-hydrated@0.1.2`, `@radix-ui/react-use-layout-effect@1.1.3`
+
+## 0.1.13
+
+- Improved tree-shaking so bundlers can drop unused components. Component parts are now marked `/* @__PURE__ */` and use named render functions instead of `Component.displayName = ...` assignments, which previously prevented dead-code elimination with some bundlers.
+- Updated dependencies: `@radix-ui/react-roving-focus@1.1.16`, `@radix-ui/react-use-controllable-state@1.2.4`, `@radix-ui/primitive@1.1.6`, `@radix-ui/number@1.1.2`, `@radix-ui/react-collection@1.1.12`, `@radix-ui/react-compose-refs@1.1.3`, `@radix-ui/react-context@1.2.0`, `@radix-ui/react-direction@1.1.2`, `@radix-ui/react-primitive@2.1.7`, `@radix-ui/react-use-effect-event@0.0.3`, `@radix-ui/react-use-is-hydrated@0.1.1`, `@radix-ui/react-use-layout-effect@1.1.2`
+
+## 0.1.12
+
+- Updated dependencies: `@radix-ui/primitive@1.1.5`, `@radix-ui/react-context@1.2.0`, `@radix-ui/react-roving-focus@1.1.15`, `@radix-ui/react-collection@1.1.12`
+
+## 0.1.11
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.7`, `@radix-ui/react-collection@1.1.11`, `@radix-ui/react-roving-focus@1.1.14`
+
+## 0.1.10
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.6`, `@radix-ui/react-collection@1.1.10`, `@radix-ui/react-roving-focus@1.1.13`
+
+## 0.1.9
+
+- Fixed OTP field dispatch using stale value/collection state in React 19.2+.
+- Truncate pasted values that exceed the field length
+- Added repository.directory to all package.json files
+- Fixed pasting into One-Time Password Field in environments that do not support the legacy `"Text"` clipboard format by reading the pasted value as `"text/plain"`
+- Updated dependencies: `@radix-ui/react-collection@1.1.9`, `@radix-ui/react-direction@1.1.2`, `@radix-ui/number@1.1.2`, `@radix-ui/primitive@1.1.4`, `@radix-ui/react-compose-refs@1.1.3`, `@radix-ui/react-context@1.1.4`, `@radix-ui/react-primitive@2.1.5`, `@radix-ui/react-roving-focus@1.1.12`, `@radix-ui/react-use-controllable-state@1.2.3`, `@radix-ui/react-use-effect-event@0.0.3`, `@radix-ui/react-use-is-hydrated@0.1.1`, `@radix-ui/react-use-layout-effect@1.1.2`
+
 ## 0.1.8
 
 - Fixed a bug so that all input elements are disabled when the `Root` component is disabled
@@ -16,7 +69,7 @@
 
 ## 0.1.5
 
-- - Update default input type to `text` and pass to the underlying input element ([#3510](https://github.com/radix-ui/primitives/pull/3510))
+- Update default input type to `text` and pass to the underlying input element ([#3510](https://github.com/radix-ui/primitives/pull/3510))
 - Updated dependencies: `@radix-ui/react-collection@1.1.5`, `@radix-ui/react-primitive@2.1.1`, `@radix-ui/react-roving-focus@1.1.8`
 
 ## 0.1.4

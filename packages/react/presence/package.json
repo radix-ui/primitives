@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-presence",
-  "version": "1.1.5",
+  "version": "1.1.11",
   "license": "MIT",
   "source": "./src/index.ts",
   "main": "./src/index.ts",
@@ -28,25 +28,22 @@
   ],
   "sideEffects": false,
   "scripts": {
-    "lint": "eslint --max-warnings 0 src",
+    "lint": "oxlint --max-warnings 0 src",
     "clean": "rm -rf dist",
     "reset": "rm -rf dist node_modules",
     "typecheck": "tsc --noEmit",
     "build": "radix-build"
   },
   "dependencies": {
-    "@radix-ui/react-compose-refs": "workspace:*",
     "@radix-ui/react-use-layout-effect": "workspace:*"
   },
   "devDependencies": {
     "@repo/builder": "workspace:*",
-    "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@types/react": "^19.2.2",
-    "@types/react-dom": "^19.2.2",
-    "eslint": "^9.38.0",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
     "typescript": "^5.9.3"
   },
   "peerDependencies": {
@@ -66,7 +63,8 @@
   "homepage": "https://radix-ui.com/primitives",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/radix-ui/primitives.git"
+    "url": "git+https://github.com/radix-ui/primitives.git",
+    "directory": "packages/react/presence"
   },
   "bugs": {
     "url": "https://github.com/radix-ui/primitives/issues"

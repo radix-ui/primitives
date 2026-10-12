@@ -4,6 +4,7 @@ import { Dialog, DropdownMenu, Tooltip } from 'radix-ui';
 import { Popper } from 'radix-ui/internal';
 import { foodGroups } from '@repo/test-data/foods';
 import styles from './dropdown-menu.stories.module.css';
+import { ExternalOverlayTrigger } from './external-overlay';
 
 const { SIDE_OPTIONS, ALIGN_OPTIONS } = Popper;
 
@@ -366,6 +367,105 @@ export const Submenus = () => {
   );
 };
 
+export const WithExtensionOverlay = () => {
+  const [open, setOpen] = React.useState(false);
+
+  return (
+    <div style={{ display: 'grid', gap: 20, padding: 50, justifyItems: 'start' }}>
+      <ExternalOverlayTrigger />
+      <DropdownMenu.Root open={open} onOpenChange={setOpen}>
+        <DropdownMenu.Trigger className={styles.trigger}>Open</DropdownMenu.Trigger>
+        <DropdownMenu.Portal>
+          <DropdownMenu.Content className={styles.content} sideOffset={5}>
+            <DropdownMenu.Item className={styles.item}>New Tab</DropdownMenu.Item>
+            <DropdownMenu.Item className={styles.item}>New Window</DropdownMenu.Item>
+          </DropdownMenu.Content>
+        </DropdownMenu.Portal>
+      </DropdownMenu.Root>
+      <div data-testid="dropdown-menu-state">{open ? 'open' : 'closed'}</div>
+    </div>
+  );
+};
+
+export const InvertedWithSubmenus = () => (
+  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
+    <DropdownMenu.Root>
+      <DropdownMenu.Trigger className={styles.trigger}>Open</DropdownMenu.Trigger>
+      <DropdownMenu.Portal>
+        <DropdownMenu.Content className={styles.content} sideOffset={5} side="top">
+          <DropdownMenu.Item className={styles.item} onSelect={() => console.log('new-tab')}>
+            New Tab
+          </DropdownMenu.Item>
+          <DropdownMenu.Item className={styles.item} onSelect={() => console.log('new-window')}>
+            New Window
+          </DropdownMenu.Item>
+          <DropdownMenu.Separator className={styles.separator} />
+          <DropdownMenu.Sub>
+            <DropdownMenu.SubTrigger className={subTriggerClass}>
+              Bookmarks →
+            </DropdownMenu.SubTrigger>
+            <DropdownMenu.Portal>
+              <DropdownMenu.SubContent
+                className={styles.content}
+                sideOffset={12}
+                alignOffset={-6}
+                align="end"
+              >
+                <DropdownMenu.Item className={styles.item} onSelect={() => console.log('index')}>
+                  Inbox
+                </DropdownMenu.Item>
+                <DropdownMenu.Item className={styles.item} onSelect={() => console.log('calendar')}>
+                  Calendar
+                </DropdownMenu.Item>
+                <DropdownMenu.Separator className={styles.separator} />
+                <DropdownMenu.Sub>
+                  <DropdownMenu.SubTrigger className={subTriggerClass}>
+                    WorkOS →
+                  </DropdownMenu.SubTrigger>
+                  <DropdownMenu.Portal>
+                    <DropdownMenu.SubContent
+                      className={styles.content}
+                      sideOffset={12}
+                      alignOffset={-6}
+                      align="end"
+                    >
+                      <DropdownMenu.Item
+                        className={styles.item}
+                        onSelect={() => console.log('stitches')}
+                      >
+                        Stitches
+                      </DropdownMenu.Item>
+                      <DropdownMenu.Item
+                        className={styles.item}
+                        onSelect={() => console.log('composer')}
+                      >
+                        Composer
+                      </DropdownMenu.Item>
+                      <DropdownMenu.Item
+                        className={styles.item}
+                        onSelect={() => console.log('radix')}
+                      >
+                        Radix
+                      </DropdownMenu.Item>
+                      <DropdownMenu.Arrow />
+                    </DropdownMenu.SubContent>
+                  </DropdownMenu.Portal>
+                </DropdownMenu.Sub>
+                <DropdownMenu.Separator className={styles.separator} />
+                <DropdownMenu.Item className={styles.item} onSelect={() => console.log('notion')}>
+                  Notion
+                </DropdownMenu.Item>
+                <DropdownMenu.Arrow />
+              </DropdownMenu.SubContent>
+            </DropdownMenu.Portal>
+          </DropdownMenu.Sub>
+          <DropdownMenu.Arrow />
+        </DropdownMenu.Content>
+      </DropdownMenu.Portal>
+    </DropdownMenu.Root>
+  </div>
+);
+
 export const WithLabels = () => (
   <div style={{ textAlign: 'center', padding: 50 }}>
     <DropdownMenu.Root>
@@ -460,6 +560,64 @@ export const NestedComposition = () => {
           </DropdownMenu.Content>
         </DropdownMenu.Portal>
       </DropdownMenu.Root>
+    </div>
+  );
+};
+
+// Regression story for https://github.com/radix-ui/primitives/issues/3971
+export const DismissesOnlyMenuInsideDialog = () => {
+  const [dialogOpen, setDialogOpen] = React.useState(false);
+  const [menuOpen, setMenuOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!dialogOpen) {
+      setMenuOpen(false);
+    }
+  }, [dialogOpen]);
+
+  return (
+    <div
+      style={{
+        display: 'grid',
+        gap: 16,
+        alignItems: 'start',
+        justifyItems: 'start',
+        padding: 40,
+      }}
+    >
+      <Dialog.Root open={dialogOpen} onOpenChange={setDialogOpen}>
+        <Dialog.Trigger className={styles.trigger}>Open dialog</Dialog.Trigger>
+        <Dialog.Portal>
+          <Dialog.Content className={styles.dialog}>
+            <Dialog.Title>Dialog with nested dropdown</Dialog.Title>
+            <DropdownMenu.Root open={menuOpen} onOpenChange={setMenuOpen}>
+              <DropdownMenu.Trigger
+                className={styles.trigger}
+                style={{ width: '100%', marginBottom: 12 }}
+              >
+                Open menu
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Portal>
+                <DropdownMenu.Content className={styles.content} sideOffset={5}>
+                  <DropdownMenu.Item className={styles.item}>Item one</DropdownMenu.Item>
+                  <DropdownMenu.Item className={styles.item}>Item two</DropdownMenu.Item>
+                  <DropdownMenu.Arrow />
+                </DropdownMenu.Content>
+              </DropdownMenu.Portal>
+            </DropdownMenu.Root>
+
+            <button type="button" className={styles.item} style={{ width: '100%' }}>
+              Dialog surface button
+            </button>
+
+            <p style={{ marginTop: 12, marginBottom: 0 }}>
+              dialog: {dialogOpen ? 'open' : 'closed'} | menu: {menuOpen ? 'open' : 'closed'}
+            </p>
+
+            <Dialog.Close style={{ marginTop: 12 }}>Close dialog</Dialog.Close>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
     </div>
   );
 };

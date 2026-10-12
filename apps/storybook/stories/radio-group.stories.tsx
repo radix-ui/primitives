@@ -1,8 +1,201 @@
+/* eslint-disable react/jsx-pascal-case */
 import * as React from 'react';
 import { Direction, Label as LabelPrimitive, RadioGroup } from 'radix-ui';
 import styles from './radio-group.stories.module.css';
 
 export default { title: 'Components/RadioGroup' };
+
+export const Parts = () => (
+  <Label>
+    Favourite pet
+    <RadioGroup.Root className={styles.root} defaultValue="1">
+      <Label>
+        <RadioGroup.unstable_ItemProvider value="1">
+          <RadioGroup.unstable_ItemTrigger className={styles.item}>
+            <RadioGroup.Indicator className={styles.indicator} />
+          </RadioGroup.unstable_ItemTrigger>
+        </RadioGroup.unstable_ItemProvider>
+        Cat
+      </Label>{' '}
+      <Label>
+        <RadioGroup.unstable_ItemProvider value="2">
+          <RadioGroup.unstable_ItemTrigger className={styles.item}>
+            <RadioGroup.Indicator className={styles.indicator} />
+          </RadioGroup.unstable_ItemTrigger>
+        </RadioGroup.unstable_ItemProvider>
+        Dog
+      </Label>{' '}
+      <Label>
+        <RadioGroup.unstable_ItemProvider value="3">
+          <RadioGroup.unstable_ItemTrigger className={styles.item}>
+            <RadioGroup.Indicator className={styles.indicator} />
+          </RadioGroup.unstable_ItemTrigger>
+        </RadioGroup.unstable_ItemProvider>
+        Rabbit
+      </Label>
+    </RadioGroup.Root>
+  </Label>
+);
+
+export const PartsWithinForm = () => {
+  const [formData, setFormData] = React.useState({
+    required: '',
+    stopprop: '',
+    native: '',
+  });
+  const [fieldData, setFieldData] = React.useState({
+    required: '1',
+    stopprop: '',
+    native: '',
+  });
+
+  const setFieldValue = <T extends keyof typeof fieldData>(name: T & string, value: string) => {
+    if (value === '4') {
+      window.alert('4 is not supported');
+    } else {
+      setFieldData((prevData) =>
+        !(name in prevData) || prevData[name] === value ? prevData : { ...prevData, [name]: value },
+      );
+    }
+  };
+
+  return (
+    <form
+      onSubmit={(event) => event.preventDefault()}
+      onChange={(event) => {
+        const radio = event.target as unknown as HTMLInputElement;
+        setFormData((prevData) => ({ ...prevData, [radio.name]: radio.value }));
+      }}
+    >
+      <fieldset>
+        <legend>required field</legend>
+        <RadioGroup.Root
+          className={styles.root}
+          name="required"
+          required
+          value={fieldData.required}
+          onValueChange={(value) => setFieldValue('required', value)}
+        >
+          {['1', '2', '3', '4'].map((value) => (
+            <RadioGroup.unstable_ItemProvider key={value} value={value}>
+              <RadioGroup.unstable_ItemTrigger className={styles.item} id={`required-${value}`}>
+                <RadioGroup.Indicator className={styles.indicator} />
+              </RadioGroup.unstable_ItemTrigger>
+              <RadioGroup.unstable_ItemBubbleInput />
+              <label htmlFor={`required-${value}`}>{value}</label>
+            </RadioGroup.unstable_ItemProvider>
+          ))}
+        </RadioGroup.Root>
+      </fieldset>
+
+      <br />
+
+      <fieldset>
+        <legend>With stop propagation</legend>
+        <RadioGroup.Root
+          className={styles.root}
+          name="stopprop"
+          value={fieldData.stopprop}
+          onValueChange={(value) => setFieldValue('stopprop', value)}
+        >
+          {['1', '2', '3', '4'].map((value) => (
+            <RadioGroup.unstable_ItemProvider key={value} value={value}>
+              <RadioGroup.unstable_ItemTrigger
+                className={styles.item}
+                onClick={(event) => event.stopPropagation()}
+                id={`stopprop-${value}`}
+              >
+                <RadioGroup.Indicator className={styles.indicator} />
+              </RadioGroup.unstable_ItemTrigger>
+              <RadioGroup.unstable_ItemBubbleInput />
+              <label htmlFor={`stopprop-${value}`}>{value}</label>
+            </RadioGroup.unstable_ItemProvider>
+          ))}
+        </RadioGroup.Root>
+      </fieldset>
+
+      <br />
+
+      <fieldset>
+        <legend>native inputs</legend>
+        <div className={styles.root}>
+          {['1', '2', '3', '4'].map((value) => (
+            <div key={value}>
+              <input
+                type="radio"
+                id={`native-${value}`}
+                name="native"
+                value={value}
+                checked={fieldData.native === value}
+                onChange={(event) => setFieldValue('native', event.target.value)}
+              />
+              <label htmlFor={`native-${value}`}>{value}</label>
+            </div>
+          ))}
+        </div>
+      </fieldset>
+      <button>Submit</button>
+      <hr />
+      <div>
+        <h2>Form data:</h2>
+        <pre>{JSON.stringify(formData, null, 2)}</pre>
+      </div>
+      <div>
+        <h2>Field data:</h2>
+        <pre>{JSON.stringify(fieldData, null, 2)}</pre>
+      </div>
+    </form>
+  );
+};
+
+export const WithinFormReset = () => {
+  const [controlled, setControlled] = React.useState('1');
+
+  return (
+    <form onSubmit={(event) => event.preventDefault()}>
+      <p>
+        Change the selection, then press <strong>Reset</strong>. Each group returns to its initial
+        value (the uncontrolled group via its <code>defaultValue</code>, the controlled group via
+        its initial <code>value</code> state).
+      </p>
+
+      <fieldset>
+        <legend>Uncontrolled (defaultValue)</legend>
+        <RadioGroup.Root className={styles.root} name="uncontrolled" defaultValue="1">
+          {['1', '2', '3'].map((value) => (
+            <RadioGroup.Item key={value} className={styles.item} value={value}>
+              <RadioGroup.Indicator className={styles.indicator} />
+            </RadioGroup.Item>
+          ))}
+        </RadioGroup.Root>
+      </fieldset>
+
+      <br />
+      <br />
+
+      <fieldset>
+        <legend>Controlled value: {controlled}</legend>
+        <RadioGroup.Root
+          className={styles.root}
+          name="controlled"
+          value={controlled}
+          onValueChange={setControlled}
+        >
+          {['1', '2', '3'].map((value) => (
+            <RadioGroup.Item key={value} className={styles.item} value={value}>
+              <RadioGroup.Indicator className={styles.indicator} />
+            </RadioGroup.Item>
+          ))}
+        </RadioGroup.Root>
+      </fieldset>
+
+      <br />
+      <br />
+
+      <button type="reset">Reset</button>
+    </form>
+  );
+};
 
 export const LegacyStyled = () => (
   <Label>
@@ -81,7 +274,7 @@ export const LegacyWithinForm = () => {
     <form
       onSubmit={(event) => event.preventDefault()}
       onChange={(event) => {
-        const radio = event.target as HTMLInputElement;
+        const radio = event.target as unknown as HTMLInputElement;
         setData((prevData) => ({ ...prevData, [radio.name]: radio.value }));
       }}
     >

@@ -4,37 +4,74 @@ on:
   pull_request:
     branches:
       - main
+      - stable
+  push:
+    branches:
+      - main
+      - stable
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          run_install: false
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: '.nvmrc'
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+      - name: CI setup
+        uses: ./.github/actions/ci-setup
 
       - name: Lint
         run: pnpm lint
 
-      - name: Run build
-        run: pnpm build
+      - name: Check composed refs
+        run: node scripts/check-composed-refs.mjs
 
-      - name: Run tests
-        run: pnpm test:ci
+      - name: Run build
+        run: pnpm build:ci
+
+  unit-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: CI setup
+        uses: ./.github/actions/ci-setup
+
+      - name: Run unit tests
+        run: pnpm vitest run
+
+  e2e-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: CI setup
+        uses: ./.github/actions/ci-setup
+
+      - name: Resolve Playwright version
+        id: playwright-version
+        run: echo "version=$(node --print "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright-version.outputs.version }}
+
+      - name: Install Playwright browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: pnpm e2e:install
+
+      - name: Install Playwright system dependencies
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: pnpm exec playwright install-deps chromium
+
+      - name: Run e2e tests
+        run: pnpm e2e

@@ -3,7 +3,6 @@ import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
-import { usePrevious } from '@radix-ui/react-use-previous';
 import { useSize } from '@radix-ui/react-use-size';
 import { Presence } from '@radix-ui/react-presence';
 import { Primitive } from '@radix-ui/react-primitive';
@@ -12,10 +11,15 @@ import type { Scope } from '@radix-ui/react-context';
 
 const CHECKBOX_NAME = 'Checkbox';
 
-type ScopedProps<P> = P & { __scopeCheckbox?: Scope };
+type ScopedProps<P> = P & { __scopeCheckbox?: Scope | undefined };
 const [createCheckboxContext, createCheckboxScope] = createContextScope(CHECKBOX_NAME);
 
 type CheckedState = boolean | 'indeterminate';
+
+interface CheckboxUserClick {
+  requestedChecked: boolean;
+  hasConsumerStoppedPropagation: boolean;
+}
 
 type CheckboxContextValue<State extends CheckedState | boolean = CheckedState> = {
   checked: State | boolean;
@@ -26,7 +30,8 @@ type CheckboxContextValue<State extends CheckedState | boolean = CheckedState> =
   name: string | undefined;
   form: string | undefined;
   value: string | number | readonly string[];
-  hasConsumerStoppedPropagationRef: React.RefObject<boolean>;
+  userClick: CheckboxUserClick | null;
+  onUserClick: (userClick: CheckboxUserClick) => void;
   required: boolean | undefined;
   defaultChecked: boolean | undefined;
   isFormControl: boolean;
@@ -42,15 +47,17 @@ const [CheckboxProviderImpl, useCheckboxContext] =
  * -----------------------------------------------------------------------------------------------*/
 
 interface CheckboxProviderProps<State extends CheckedState = CheckedState> {
-  checked?: State | boolean;
-  defaultChecked?: State | boolean;
-  required?: boolean;
-  onCheckedChange?(checked: State | boolean): void;
-  name?: string;
-  form?: string;
-  disabled?: boolean;
-  value?: string | number | readonly string[];
-  children?: React.ReactNode;
+  checked?: State | boolean | undefined;
+  defaultChecked?: State | boolean | undefined;
+  required?: boolean | undefined;
+  onCheckedChange?:
+    | { bivarianceHack(checked: State | boolean): void }['bivarianceHack']
+    | undefined;
+  name?: string | undefined;
+  form?: string | undefined;
+  disabled?: boolean | undefined;
+  value?: string | number | readonly string[] | undefined;
+  children?: React.ReactNode | undefined;
 }
 
 function CheckboxProvider<State extends CheckedState = CheckedState>(
@@ -79,7 +86,10 @@ function CheckboxProvider<State extends CheckedState = CheckedState>(
   });
   const [control, setControl] = React.useState<HTMLButtonElement | null>(null);
   const [bubbleInput, setBubbleInput] = React.useState<HTMLInputElement | null>(null);
-  const hasConsumerStoppedPropagationRef = React.useRef(false);
+  // The latest user click on the trigger. The bubble input dispatches the click
+  // to the form once React has handled it, whether or not `checked` changes in
+  // the same render.
+  const [userClick, setUserClick] = React.useState<CheckboxUserClick | null>(null);
   const isFormControl = control
     ? !!form || !!control.closest('form')
     : // We set this to true by default so that events bubble to forms without JS (SSR)
@@ -94,7 +104,8 @@ function CheckboxProvider<State extends CheckedState = CheckedState>(
     name: name,
     form: form,
     value: value,
-    hasConsumerStoppedPropagationRef: hasConsumerStoppedPropagationRef,
+    userClick: userClick,
+    onUserClick: setUserClick,
     required: required,
     defaultChecked: isIndeterminate(defaultChecked) ? false : defaultChecked,
     isFormControl: isFormControl,
@@ -118,19 +129,18 @@ function CheckboxProvider<State extends CheckedState = CheckedState>(
 
 const TRIGGER_NAME = 'CheckboxTrigger';
 
-interface CheckboxTriggerProps
-  extends Omit<
-    React.ComponentPropsWithoutRef<typeof Primitive.button>,
-    keyof CheckboxProviderProps
-  > {
-  children?: React.ReactNode;
+interface CheckboxTriggerProps extends Omit<
+  React.ComponentPropsWithoutRef<typeof Primitive.button>,
+  keyof CheckboxProviderProps
+> {
+  children?: React.ReactNode | undefined;
 }
 
-const CheckboxTrigger = React.forwardRef<HTMLButtonElement, CheckboxTriggerProps>(
-  (
+const CheckboxTrigger = /* @__PURE__ */ React.forwardRef<HTMLButtonElement, CheckboxTriggerProps>(
+  function CheckboxTrigger(
     { __scopeCheckbox, onKeyDown, onClick, ...checkboxProps }: ScopedProps<CheckboxTriggerProps>,
     forwardedRef,
-  ) => {
+  ) {
     const {
       control,
       value,
@@ -139,7 +149,7 @@ const CheckboxTrigger = React.forwardRef<HTMLButtonElement, CheckboxTriggerProps
       required,
       setControl,
       setChecked,
-      hasConsumerStoppedPropagationRef,
+      onUserClick,
       isFormControl,
       bubbleInput,
     } = useCheckboxContext(TRIGGER_NAME, __scopeCheckbox);
@@ -172,23 +182,25 @@ const CheckboxTrigger = React.forwardRef<HTMLButtonElement, CheckboxTriggerProps
           if (event.key === 'Enter') event.preventDefault();
         })}
         onClick={composeEventHandlers(onClick, (event) => {
+          const hasConsumerStoppedPropagation = event.isPropagationStopped();
+          onUserClick({
+            requestedChecked: isIndeterminate(checked) ? true : !checked,
+            hasConsumerStoppedPropagation,
+          });
           setChecked((prevChecked) => (isIndeterminate(prevChecked) ? true : !prevChecked));
           if (bubbleInput && isFormControl) {
-            hasConsumerStoppedPropagationRef.current = event.isPropagationStopped();
             // if checkbox has a bubble input and is a form control, stop
             // propagation from the button so that we only propagate one click
             // event (from the input). We propagate changes from an input so
             // that native form validation works and form events reflect
             // checkbox updates.
-            if (!hasConsumerStoppedPropagationRef.current) event.stopPropagation();
+            if (!hasConsumerStoppedPropagation) event.stopPropagation();
           }
         })}
       />
     );
   },
 );
-
-CheckboxTrigger.displayName = TRIGGER_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * Checkbox
@@ -197,14 +209,15 @@ CheckboxTrigger.displayName = TRIGGER_NAME;
 type CheckboxElement = React.ComponentRef<typeof Primitive.button>;
 type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Primitive.button>;
 interface CheckboxProps extends Omit<PrimitiveButtonProps, 'checked' | 'defaultChecked'> {
-  checked?: CheckedState;
-  defaultChecked?: CheckedState;
-  required?: boolean;
-  onCheckedChange?(checked: CheckedState): void;
+  checked?: CheckedState | undefined;
+  defaultChecked?: CheckedState | undefined;
+  required?: boolean | undefined;
+  onCheckedChange?: { bivarianceHack(checked: CheckedState): void }['bivarianceHack'] | undefined;
 }
 
-const Checkbox = React.forwardRef<CheckboxElement, CheckboxProps>(
-  (props: ScopedProps<CheckboxProps>, forwardedRef) => {
+const Checkbox = /* @__PURE__ */ React.forwardRef<CheckboxElement, CheckboxProps>(
+  // blank line to reduce diff noise
+  function Checkbox(props: ScopedProps<CheckboxProps>, forwardedRef) {
     const {
       __scopeCheckbox,
       name,
@@ -251,8 +264,6 @@ const Checkbox = React.forwardRef<CheckboxElement, CheckboxProps>(
   },
 );
 
-Checkbox.displayName = CHECKBOX_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * CheckboxIndicator
  * -----------------------------------------------------------------------------------------------*/
@@ -266,11 +277,15 @@ interface CheckboxIndicatorProps extends PrimitiveSpanProps {
    * Used to force mounting when more control is needed. Useful when
    * controlling animation with React animation libraries.
    */
-  forceMount?: true;
+  forceMount?: true | undefined;
 }
 
-const CheckboxIndicator = React.forwardRef<CheckboxIndicatorElement, CheckboxIndicatorProps>(
-  (props: ScopedProps<CheckboxIndicatorProps>, forwardedRef) => {
+const CheckboxIndicator = /* @__PURE__ */ React.forwardRef<
+  CheckboxIndicatorElement,
+  CheckboxIndicatorProps
+>(
+  // blank line to reduce diff noise
+  function CheckboxIndicator(props: ScopedProps<CheckboxIndicatorProps>, forwardedRef) {
     const { __scopeCheckbox, forceMount, ...indicatorProps } = props;
     const context = useCheckboxContext(INDICATOR_NAME, __scopeCheckbox);
     return (
@@ -289,8 +304,6 @@ const CheckboxIndicator = React.forwardRef<CheckboxIndicatorElement, CheckboxInd
   },
 );
 
-CheckboxIndicator.displayName = INDICATOR_NAME;
-
 /* -------------------------------------------------------------------------------------------------
  * CheckboxBubbleInput
  * -----------------------------------------------------------------------------------------------*/
@@ -300,11 +313,18 @@ const BUBBLE_INPUT_NAME = 'CheckboxBubbleInput';
 type InputProps = React.ComponentPropsWithoutRef<typeof Primitive.input>;
 interface CheckboxBubbleInputProps extends Omit<InputProps, 'checked'> {}
 
-const CheckboxBubbleInput = React.forwardRef<HTMLInputElement, CheckboxBubbleInputProps>(
-  ({ __scopeCheckbox, ...props }: ScopedProps<CheckboxBubbleInputProps>, forwardedRef) => {
+const CheckboxBubbleInput = /* @__PURE__ */ React.forwardRef<
+  HTMLInputElement,
+  CheckboxBubbleInputProps
+>(
+  // blank line to reduce diff noise
+  function CheckboxBubbleInput(
+    { __scopeCheckbox, onClick, ...props }: ScopedProps<CheckboxBubbleInputProps>,
+    forwardedRef,
+  ) {
     const {
       control,
-      hasConsumerStoppedPropagationRef,
+      userClick,
       checked,
       defaultChecked,
       required,
@@ -317,8 +337,22 @@ const CheckboxBubbleInput = React.forwardRef<HTMLInputElement, CheckboxBubbleInp
     } = useCheckboxContext(BUBBLE_INPUT_NAME, __scopeCheckbox);
 
     const composedRefs = useComposedRefs(forwardedRef, setBubbleInput);
-    const prevChecked = usePrevious(checked);
     const controlSize = useSize(control);
+    // When the checked change is not driven by a user interaction (e.g. a
+    // controlled `checked` update), the `click` event we dispatch to notify
+    // forms must not reach ancestor `onClick` handlers. We can't simply make it
+    // non-bubbling because React derives the checkbox's `change` event from a
+    // bubbling `click`. Instead we stop propagation of the synthetic click,
+    // which still lets the `change` event reach the form.
+    const shouldStopClickPropagationRef = React.useRef(false);
+    const prevCheckedRef = React.useRef(checked);
+    // The user click this input last dispatched, so each click is dispatched
+    // once.
+    const handledUserClickRef = React.useRef(userClick);
+    // A dispatched user click whose `checked` change hasn't been applied yet
+    // (e.g. a controlled parent applying it later). When it is applied, it
+    // must still respect the consumer stopping the click's propagation.
+    const pendingUserClickRef = React.useRef<CheckboxUserClick | null>(null);
 
     // Bubble checked change to parents (e.g form change event)
     React.useEffect(() => {
@@ -331,15 +365,41 @@ const CheckboxBubbleInput = React.forwardRef<HTMLInputElement, CheckboxBubbleInp
         'checked',
       ) as PropertyDescriptor;
       const setChecked = descriptor.set;
+      if (!setChecked) return;
 
-      const bubbles = !hasConsumerStoppedPropagationRef.current;
-      if (prevChecked !== checked && setChecked) {
-        const event = new Event('click', { bubbles });
+      const checkedChanged = prevCheckedRef.current !== checked;
+      prevCheckedRef.current = checked;
+      const isNewUserClick = userClick !== null && userClick !== handledUserClickRef.current;
+      handledUserClickRef.current = userClick;
+
+      if (isNewUserClick) {
+        // Dispatch the user's click even if `checked` hasn't changed (yet), so
+        // ancestors are notified of every click on the trigger.
+        pendingUserClickRef.current = checkedChanged ? null : userClick;
+        if (checkedChanged) {
+          input.indeterminate = isIndeterminate(checked);
+          setChecked.call(input, isIndeterminate(checked) ? false : checked);
+        }
+        input.dispatchEvent(
+          new Event('click', { bubbles: !userClick.hasConsumerStoppedPropagation }),
+        );
+      } else if (checkedChanged) {
+        const pendingUserClick = pendingUserClickRef.current;
+        pendingUserClickRef.current = null;
+        const isPendingUserChange = pendingUserClick?.requestedChecked === checked;
+        // The user's click already reached ancestors, and programmatic
+        // updates never do, so this click only notifies the form.
+        shouldStopClickPropagationRef.current = true;
         input.indeterminate = isIndeterminate(checked);
         setChecked.call(input, isIndeterminate(checked) ? false : checked);
-        input.dispatchEvent(event);
+        input.dispatchEvent(
+          new Event('click', {
+            bubbles: !(isPendingUserChange && pendingUserClick.hasConsumerStoppedPropagation),
+          }),
+        );
+        shouldStopClickPropagationRef.current = false;
       }
-    }, [bubbleInput, prevChecked, checked, hasConsumerStoppedPropagationRef]);
+    }, [bubbleInput, checked, userClick]);
 
     const defaultCheckedRef = React.useRef(isIndeterminate(checked) ? false : checked);
     return (
@@ -355,6 +415,14 @@ const CheckboxBubbleInput = React.forwardRef<HTMLInputElement, CheckboxBubbleInp
         {...props}
         tabIndex={-1}
         ref={composedRefs}
+        onClick={composeEventHandlers(onClick, (event) => {
+          // Prevent the synthetic click dispatched on controlled/programmatic
+          // updates from triggering ancestor `onClick` handlers, while still
+          // allowing the resulting `change` event to reach the form.
+          if (shouldStopClickPropagationRef.current) {
+            event.stopPropagation();
+          }
+        })}
         style={{
           ...props.style,
           ...controlSize,
@@ -371,8 +439,6 @@ const CheckboxBubbleInput = React.forwardRef<HTMLInputElement, CheckboxBubbleInp
     );
   },
 );
-
-CheckboxBubbleInput.displayName = BUBBLE_INPUT_NAME;
 
 /* ---------------------------------------------------------------------------------------------- */
 

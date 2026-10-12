@@ -2,6 +2,12 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { createSlot } from '@radix-ui/react-slot';
 
+declare module 'react' {
+  interface CSSProperties {
+    [varName: `--radix-${string}`]: string | number | undefined | null;
+  }
+}
+
 const NODES = [
   'a',
   'button',
@@ -24,17 +30,18 @@ const NODES = [
 
 type Primitives = { [E in (typeof NODES)[number]]: PrimitiveForwardRefComponent<E> };
 type PrimitivePropsWithRef<E extends React.ElementType> = React.ComponentPropsWithRef<E> & {
-  asChild?: boolean;
+  asChild?: boolean | undefined;
 };
 
-interface PrimitiveForwardRefComponent<E extends React.ElementType>
-  extends React.ForwardRefExoticComponent<PrimitivePropsWithRef<E>> {}
+interface PrimitiveForwardRefComponent<
+  E extends React.ElementType,
+> extends React.ForwardRefExoticComponent<PrimitivePropsWithRef<E>> {}
 
 /* -------------------------------------------------------------------------------------------------
  * Primitive
  * -----------------------------------------------------------------------------------------------*/
 
-const Primitive = NODES.reduce((primitive, node) => {
+/* @__NO_SIDE_EFFECTS__ */ const Primitive = NODES.reduce((primitive, node) => {
   const Slot = createSlot(`Primitive.${node}`);
   const Node = React.forwardRef((props: PrimitivePropsWithRef<typeof node>, forwardedRef: any) => {
     const { asChild, ...primitiveProps } = props;
@@ -99,12 +106,10 @@ function dispatchDiscreteCustomEvent<E extends CustomEvent>(target: E['target'],
 
 /* -----------------------------------------------------------------------------------------------*/
 
-const Root = Primitive;
-
 export {
   Primitive,
   //
-  Root,
+  Primitive as Root,
   //
   dispatchDiscreteCustomEvent,
 };

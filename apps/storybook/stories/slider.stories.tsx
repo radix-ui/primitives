@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-pascal-case */
 import * as React from 'react';
 import { Direction, Slider } from 'radix-ui';
 import serialize from 'form-serialize';
@@ -203,6 +204,50 @@ export const WithMinimumStepsBetweenThumbs = () => (
   </Slider.Root>
 );
 
+export const WithPreserveThumbOrder = () => (
+  <div style={{ display: 'flex', flexDirection: 'column', gap: 50 }}>
+    <div>
+      <h4>Default (thumbs can swap)</h4>
+      <Slider.Root className={styles.root} defaultValue={[10, 30]}>
+        <Slider.Track className={styles.track}>
+          <Slider.Range className={styles.range} />
+        </Slider.Track>
+        <Slider.Thumb className={styles.thumb} />
+        <Slider.Thumb className={styles.thumb} />
+      </Slider.Root>
+    </div>
+
+    <div>
+      <h4>preserveThumbOrder</h4>
+      <Slider.Root className={styles.root} defaultValue={[10, 30]} preserveThumbOrder>
+        <Slider.Track className={styles.track}>
+          <Slider.Range className={styles.range} />
+        </Slider.Track>
+        <Slider.Thumb className={styles.thumb} />
+        <Slider.Thumb className={styles.thumb} />
+      </Slider.Root>
+    </div>
+
+    <div>
+      <h4>preserveThumbOrder with minStepsBetweenThumbs</h4>
+      <Slider.Root
+        className={styles.root}
+        defaultValue={[10, 30, 60, 80]}
+        minStepsBetweenThumbs={10}
+        preserveThumbOrder
+      >
+        <Slider.Track className={styles.track}>
+          <Slider.Range className={styles.range} />
+        </Slider.Track>
+        <Slider.Thumb className={styles.thumb} />
+        <Slider.Thumb className={styles.thumb} />
+        <Slider.Thumb className={styles.thumb} />
+        <Slider.Thumb className={styles.thumb} />
+      </Slider.Root>
+    </div>
+  </div>
+);
+
 export const WithMultipleRanges = () => {
   const [minStepsBetweenThumbs, setMinStepsBetweenThumbs] = React.useState(0);
 
@@ -269,6 +314,15 @@ export const WithinForm = () => {
       max: 70,
     },
   });
+  const [fieldData, setFieldData] = React.useState({ controlled: 50, native: 50 });
+
+  const setFieldValue = (name: keyof typeof fieldData, value: number) => {
+    // Values above 80 are rejected so the controlled value stays put.
+    if (value <= 80) {
+      setFieldData((prevData) => ({ ...prevData, [name]: value }));
+    }
+  };
+
   return (
     <form
       onSubmit={(event) => {
@@ -320,6 +374,190 @@ export const WithinForm = () => {
         </Slider.Root>
       </fieldset>
 
+      <br />
+      <br />
+
+      <fieldset>
+        <legend>Controlled value (values above 80 are rejected)</legend>
+        <Slider.Root
+          name="controlled"
+          value={[fieldData.controlled]}
+          onValueChange={([value]) => setFieldValue('controlled', value!)}
+          className={styles.root}
+        >
+          <Slider.Track className={styles.track}>
+            <Slider.Range className={styles.range} />
+          </Slider.Track>
+          <Slider.Thumb className={styles.thumb} />
+        </Slider.Root>
+      </fieldset>
+
+      <br />
+      <br />
+
+      <fieldset>
+        <legend>Native input (values above 80 are rejected)</legend>
+        <input
+          type="range"
+          name="native"
+          min={0}
+          max={100}
+          value={fieldData.native}
+          onChange={(event) => setFieldValue('native', Number(event.target.value))}
+        />
+      </fieldset>
+
+      <br />
+      <br />
+
+      <button type="submit">Submit</button>
+      <hr />
+      <div>
+        <h2>Form data:</h2>
+        <pre>{JSON.stringify(data, null, 2)}</pre>
+      </div>
+      <div>
+        <h2>Field data:</h2>
+        <pre>{JSON.stringify(fieldData, null, 2)}</pre>
+      </div>
+    </form>
+  );
+};
+
+export const WithinFormReset = () => {
+  const [controlled, setControlled] = React.useState([40]);
+
+  return (
+    <form onSubmit={(event) => event.preventDefault()}>
+      <p>
+        Move the thumbs, then press <strong>Reset</strong>. Each slider returns to its initial value
+        (the uncontrolled slider via its <code>defaultValue</code>, the controlled slider via its
+        initial <code>value</code> state).
+      </p>
+
+      <fieldset>
+        <legend>Uncontrolled (defaultValue)</legend>
+        <Slider.Root name="uncontrolled" defaultValue={[20]} className={styles.root}>
+          <Slider.Track className={styles.track}>
+            <Slider.Range className={styles.range} />
+          </Slider.Track>
+          <Slider.Thumb className={styles.thumb} />
+        </Slider.Root>
+      </fieldset>
+
+      <br />
+      <br />
+
+      <fieldset>
+        <legend>Controlled value: {String(controlled)}</legend>
+        <Slider.Root
+          name="controlled"
+          value={controlled}
+          onValueChange={setControlled}
+          className={styles.root}
+        >
+          <Slider.Track className={styles.track}>
+            <Slider.Range className={styles.range} />
+          </Slider.Track>
+          <Slider.Thumb className={styles.thumb} />
+        </Slider.Root>
+      </fieldset>
+
+      <br />
+      <br />
+
+      <button type="reset">Reset</button>
+    </form>
+  );
+};
+
+export const BubbleInputWithinForm = () => {
+  const [data, setData] = React.useState<any>({ single: [25], price: { min: 30, max: 70 } });
+  return (
+    <form
+      onSubmit={(event) => {
+        event.preventDefault();
+        console.log(serialize(event.currentTarget, { hash: true }));
+      }}
+      onChange={(event) => {
+        setData(serialize(event.currentTarget, { hash: true }));
+      }}
+    >
+      <p>
+        Each thumb renders a hidden native control — the `Slider.unstable_BubbleInput` part — that
+        is submitted within the form.
+      </p>
+
+      <fieldset>
+        <legend>Single value: {String(data.single)}</legend>
+        <Slider.Root name="single" defaultValue={data.single} className={styles.root}>
+          <Slider.Track className={styles.track}>
+            <Slider.Range className={styles.range} />
+          </Slider.Track>
+          <Slider.Thumb className={styles.thumb} />
+        </Slider.Root>
+      </fieldset>
+
+      <br />
+      <br />
+
+      <fieldset>
+        <legend>Named thumbs: {JSON.stringify(data.price)}</legend>
+        <Slider.Root defaultValue={[data.price.min, data.price.max]} className={styles.root}>
+          <Slider.Track className={styles.track}>
+            <Slider.Range className={styles.range} />
+          </Slider.Track>
+          <Slider.Thumb className={styles.thumb} name="price[min]" />
+          <Slider.Thumb className={styles.thumb} name="price[max]" />
+        </Slider.Root>
+      </fieldset>
+
+      <br />
+      <button type="submit">Submit</button>
+    </form>
+  );
+};
+
+export const Parts = () => {
+  const [data, setData] = React.useState<any>({ price: { min: 30, max: 70 } });
+  return (
+    <form
+      onSubmit={(event) => {
+        event.preventDefault();
+        console.log(serialize(event.currentTarget, { hash: true }));
+      }}
+      onChange={(event) => {
+        setData(serialize(event.currentTarget, { hash: true }));
+      }}
+    >
+      <p>
+        Each thumb is composed from its individual parts. `Slider.unstable_ThumbProvider` exposes
+        the per-thumb context, `Slider.unstable_ThumbTrigger` renders the draggable thumb, and
+        `Slider.unstable_BubbleInput` renders the hidden native control. This lets you decouple the
+        bubble input from the thumb (e.g. render it elsewhere or customize it) instead of relying on
+        `Slider.Thumb` to render it implicitly.
+      </p>
+
+      <fieldset>
+        <legend>Named thumbs: {JSON.stringify(data.price)}</legend>
+        <Slider.Root defaultValue={[data.price.min, data.price.max]} className={styles.root}>
+          <Slider.Track className={styles.track}>
+            <Slider.Range className={styles.range} />
+          </Slider.Track>
+
+          <Slider.unstable_ThumbProvider name="price[min]">
+            <Slider.unstable_ThumbTrigger className={styles.thumb} />
+            <Slider.unstable_BubbleInput />
+          </Slider.unstable_ThumbProvider>
+
+          <Slider.unstable_ThumbProvider name="price[max]">
+            <Slider.unstable_ThumbTrigger className={styles.thumb} />
+            <Slider.unstable_BubbleInput />
+          </Slider.unstable_ThumbProvider>
+        </Slider.Root>
+      </fieldset>
+
+      <br />
       <button type="submit">Submit</button>
     </form>
   );
@@ -344,6 +582,26 @@ export const Strict = () => (
     </Slider.Root>
   </React.StrictMode>
 );
+
+export const InScrollableContext = () => {
+  const [value, setValue] = React.useState(0);
+
+  return (
+    <div style={{ width: '40vw', overflowX: 'scroll', border: '1px' }}>
+      <Slider.Root
+        className={styles.root}
+        style={{ width: '100vw' }}
+        value={[value]}
+        onValueChange={([newValue]) => setValue(newValue!)}
+      >
+        <Slider.Track className={styles.track}>
+          <Slider.Range className={styles.range} />
+        </Slider.Track>
+        <Slider.Thumb className={styles.thumb} />
+      </Slider.Root>
+    </div>
+  );
+};
 
 export const Chromatic = () => (
   <>

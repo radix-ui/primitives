@@ -29,6 +29,68 @@
   height: 100px;
 }
 
+.anchorFancy {
+  &[data-radix-popper-side='top'] {
+    &[data-radix-popper-align='start'] {
+      background-color: tomato;
+      color: white;
+    }
+    &[data-radix-popper-align='center'] {
+      background-color: lightcoral;
+      color: white;
+    }
+    &[data-radix-popper-align='end'] {
+      background-color: salmon;
+      color: white;
+    }
+  }
+
+  &[data-radix-popper-side='right'] {
+    &[data-radix-popper-align='start'] {
+      background-color: dodgerblue;
+      color: white;
+    }
+    &[data-radix-popper-align='center'] {
+      background-color: cornflowerblue;
+      color: white;
+    }
+    &[data-radix-popper-align='end'] {
+      background-color: steelblue;
+      color: white;
+    }
+  }
+
+  &[data-radix-popper-side='bottom'] {
+    &[data-radix-popper-align='start'] {
+      background-color: chartreuse;
+      color: black;
+    }
+    &[data-radix-popper-align='center'] {
+      background-color: lightgreen;
+      color: black;
+    }
+    &[data-radix-popper-align='end'] {
+      background-color: seagreen;
+      color: white;
+    }
+  }
+
+  &[data-radix-popper-side='left'] {
+    &[data-radix-popper-align='start'] {
+      background-color: goldenrod;
+      color: white;
+    }
+    &[data-radix-popper-align='center'] {
+      background-color: darkgoldenrod;
+      color: white;
+    }
+    &[data-radix-popper-align='end'] {
+      background-color: orange;
+      color: white;
+    }
+  }
+}
+
 .arrow {
   fill: var(--color-gray100);
 }

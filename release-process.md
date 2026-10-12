@@ -16,10 +16,14 @@ Run `pnpm changeset` to mark the appropriate type of change for those packages. 
 
 ### Publishing a stable release
 
-1. Checkout the `stable` branch and pull the latest changes from `main`
-2. Push the changes to `stable`. This will trigger the Changeset action, which will create a new release PR.
-3. Review the release PR, ensure all tests pass and make any necessary changes.
-4. Merge the PR. This will trigger the Changeset action to publish the new version to npm.
+There is no long-lived `stable` branch. We recreate it from `main` for every release, then delete it once the release is published. Don't expect a `stable` branch to exist between releases.
+
+1. Make sure your local `main` is up to date with the latest changes from `origin/main`.
+2. Create a fresh `stable` branch from `main` (e.g. `git checkout main && git pull && git checkout -B stable`).
+3. Push the new branch to `origin`. This will trigger the Changeset action, which will create a new release PR.
+4. Review the release PR, ensure all tests pass and make any necessary changes.
+5. Merge the PR. This will trigger the Changeset action to publish the new version to npm.
+6. Delete the `stable` branch (locally and on `origin`). It will be recreated from `main` for the next release.
 
 ### Release candidates
 

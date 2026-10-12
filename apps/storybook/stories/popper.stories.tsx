@@ -1,5 +1,7 @@
 import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 import { Portal } from 'radix-ui';
+import cx from 'clsx';
 import { Popper } from 'radix-ui/internal';
 import styles from './popper.stories.module.css';
 
@@ -95,6 +97,68 @@ export const WithPortal = () => {
   );
 };
 
+export const WithSideBasedAnchorStyling = () => {
+  const [open, setOpen] = React.useState(false);
+  const [preferredSide, setPreferredSide] = React.useState<'top' | 'right' | 'bottom' | 'left'>(
+    'top',
+  );
+  const [preferredAlign, setPreferredAlign] = React.useState<'start' | 'center' | 'end'>('start');
+  return (
+    <Scrollable>
+      <div style={{ display: 'flex', gap: '4rem', flexDirection: 'column' }}>
+        <div style={{ display: 'flex', gap: '1rem' }}>
+          <label>
+            <span>Side</span>
+            <select
+              value={preferredSide}
+              onChange={(e) =>
+                setPreferredSide(e.target.value as 'top' | 'right' | 'bottom' | 'left')
+              }
+            >
+              <option value="top">Top</option>
+              <option value="right">Right</option>
+              <option value="bottom">Bottom</option>
+              <option value="left">Left</option>
+            </select>
+          </label>
+          <label>
+            <span>Align</span>
+            <select
+              value={preferredAlign}
+              onChange={(e) => setPreferredAlign(e.target.value as 'start' | 'center' | 'end')}
+            >
+              <option value="start">Start</option>
+              <option value="center">Center</option>
+              <option value="end">End</option>
+            </select>
+          </label>
+        </div>
+        <Popper.Root>
+          <Popper.Anchor
+            className={cx(styles.anchor, styles.anchorFancy)}
+            onClick={() => setOpen(true)}
+          >
+            open
+          </Popper.Anchor>
+          {open && (
+            <Portal.Root asChild>
+              <Popper.Content
+                className={[styles.content, styles.animatedContent].join(' ')}
+                sideOffset={5}
+                side={preferredSide}
+                align={preferredAlign}
+              >
+                <button onClick={() => setOpen(false)}>close</button>
+                <Popper.Arrow className={styles.arrow} width={20} height={10} offset={25} />
+              </Popper.Content>
+            </Portal.Root>
+          )}
+        </Popper.Root>
+      </div>
+    </Scrollable>
+  );
+};
+
 export const WithUpdatePositionStrategyAlways = () => {
   const [open, setOpen] = React.useState(false);
   const [left, setLeft] = React.useState(0);
@@ -129,6 +193,97 @@ export const WithUpdatePositionStrategyAlways = () => {
         )}
       </Popper.Root>
     </Scrollable>
+  );
+};
+
+// Regression test for https://github.com/radix-ui/primitives/pull/3237
+
+// When `hideWhenDetached` is set and no explicit `collisionBoundary` is passed,
+// the `hide` middleware must detect the anchor being clipped by its scroll
+// container, not just the viewport. The anchor below is scrolled out of its
+// container while remaining inside the viewport, so the content should hide.
+export const HideWhenDetachedInScrollContainer = () => {
+  const [container, setContainer] = React.useState<HTMLDivElement | null>(null);
+  return (
+    <div style={{ paddingTop: 300, paddingLeft: 50 }}>
+      <div
+        ref={setContainer}
+        data-testid="scroll-container"
+        style={{ width: 300, height: 200, overflow: 'auto', border: '1px solid black' }}
+      >
+        <div style={{ height: 900, paddingTop: 20 }}>
+          <Popper.Root>
+            <Popper.Anchor
+              data-testid="anchor"
+              className={styles.anchor}
+              style={{ width: 80, height: 40 }}
+            >
+              anchor
+            </Popper.Anchor>
+            {container && (
+              <Portal.Root asChild>
+                <Popper.Content
+                  data-testid="content"
+                  className={styles.content}
+                  side="right"
+                  sideOffset={5}
+                  hideWhenDetached
+                >
+                  content
+                </Popper.Content>
+              </Portal.Root>
+            )}
+          </Popper.Root>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// When content is rendered via a custom portal into a transformed +
+// overflow-clipping container and no explicit `collisionBoundary` is passed,
+// the available size must be measured against the viewport (the documented
+// default), NOT clamped to the portal host. Here the host is only 120px tall,
+// so a correct `--radix-popper-available-height` should be far larger than
+// that.
+export const AvailableSizeWithCustomPortal = () => {
+  const [host, setHost] = React.useState<HTMLDivElement | null>(null);
+  return (
+    <div style={{ padding: 50 }}>
+      <Popper.Root>
+        <Popper.Anchor
+          data-testid="anchor"
+          className={styles.anchor}
+          style={{ width: 80, height: 40 }}
+        >
+          anchor
+        </Popper.Anchor>
+        {host &&
+          ReactDOM.createPortal(
+            <Popper.Content data-testid="content" className={styles.content} sideOffset={5}>
+              content
+            </Popper.Content>,
+            host,
+          )}
+      </Popper.Root>
+
+      {/* A custom portal host that both establishes a containing block (via
+          `transform`) and clips its children (via `overflow: hidden`), which is
+          what makes Floating UI treat it as a clipping ancestor. */}
+      <div
+        ref={setHost}
+        data-testid="portal-host"
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: 120,
+          height: 120,
+          overflow: 'hidden',
+          transform: 'translateZ(0)',
+        }}
+      />
+    </div>
   );
 };
 

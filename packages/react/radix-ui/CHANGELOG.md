@@ -1,5 +1,384 @@
 # radix-ui
 
+## 1.8.1
+
+- Fixed a type regression where callback props that were previously declared as methods rejected handlers whose parameter is narrower than the prop's.
+- Updated dependencies: `@radix-ui/react-accordion@1.3.1`, `@radix-ui/react-avatar@1.3.1`, `@radix-ui/react-checkbox@1.4.1`, `@radix-ui/react-collapsible@1.2.1`, `@radix-ui/react-context-menu@2.4.1`, `@radix-ui/react-dialog@1.3.1`, `@radix-ui/react-dismissable-layer@1.2.1`, `@radix-ui/react-dropdown-menu@2.2.1`, `@radix-ui/react-focus-scope@1.3.1`, `@radix-ui/react-hover-card@1.2.1`, `@radix-ui/react-menu@2.2.1`, `@radix-ui/react-menubar@1.2.1`, `@radix-ui/react-navigation-menu@1.4.1`, `@radix-ui/react-one-time-password-field@0.2.1`, `@radix-ui/react-password-toggle-field@0.2.1`, `@radix-ui/react-popover@1.3.1`, `@radix-ui/react-progress@1.2.1`, `@radix-ui/react-roving-focus@1.2.1`, `@radix-ui/react-select@2.4.1`, `@radix-ui/react-slider@1.6.1`, `@radix-ui/react-switch@1.4.1`, `@radix-ui/react-tabs@1.2.1`, `@radix-ui/react-toast@1.3.1`, `@radix-ui/react-toggle@1.2.1`, `@radix-ui/react-toggle-group@1.2.1`, `@radix-ui/react-tooltip@1.4.1`, `@radix-ui/react-alert-dialog@1.2.1`, `@radix-ui/react-radio-group@1.5.1`, `@radix-ui/react-toolbar@1.2.1`
+
+## 1.8.0
+
+### Context Menu
+
+- Allowed `side`, `sideOffset`, and `align` props to be overridden on `ContextMenu.Content`.
+
+### Navigation Menu
+
+- Added `data-state` attribute to the content element when using `NavigationMenu.Viewport` for consistency.
+
+### Popover
+
+- Fixed `aria-controls` being set on `Popover.Trigger` while the popover is closed.
+
+### Select
+
+- Fixed content alignment when all items are disabled.
+- Fixed a bug where updating a `Select` value programmatically while inside a `<form>` would dispatch a `click` event from the hidden bubble select that propagated to ancestor `onClick` handlers.
+
+### Slider
+
+- Fixed a bug where updating a `Slider` value programmatically while inside a `<form>` would dispatch an `input` event that propagated to ancestor `onInput` handlers.
+
+### Slot
+
+- Fixed `Slot` throwing when an `asChild` child is a lazy reference whose resolved value is itself a lazy reference.
+
+### Toast
+
+- Fixed `Toast.Viewport` forcing a still-hydrating Suspense boundary to client-render.
+
+### Tooltip
+
+- Fixed a bug where tabbing away from a focusable tooltip trigger nested in a modal popover moved focus to the popover's root instead of the next element in the popover.
+
+### Other updates
+
+- Allow explicit `undefined` for all optional types for compatibility with TypeScript's `exactOptionalPropertyTypes` flag.
+- Fixed bugs in form-nested control components where a user-driven change was treated as programmatic in some cases, preventing bubbled event handlers from being called.
+- Fixed timing bugs in `useCallbackRef`.
+- Fixed `FocusScope` throwing a `TypeError` in test environments after teardown.
+- Fixed a bug resulting from incorrect tree-shaking in SWC-minified code.
+- Some small and breaking changes in unstable collection APIs. This package is an internal utility, undocumented, and unstable APIs may change without a major version bump. Capturing those changes here just in case you did a naughty and used them.
+  - Renamed `unstable_CollectionProps` to `unstable_CollectionSlotProps` and `unstable_CollectionItemMap` to `unstable_CollectionDict`.
+  - Added `useGetCollection` to the functions returned from `unstable_createCollection`.
+  - Fixed display names of the collection context providers returned from `unstable_createCollection`.
+  - Fixed collections keeping a stale item order when React moved items in the DOM without remounting them.
+
+## 1.7.0
+
+### Dialog
+
+- Fixed nested, portalled layers being unusable inside a modal layer. A non-modal popover rendered inside a modal Dialog previously broke some user interactions because the modal layer's trapped `FocusScope` reclaimed focus, and its `RemoveScroll` only allowed scrolling within the modal content.
+
+### Navigation Menu
+
+- Added a `disableToggle` prop to `NavigationMenu.Sub`.
+  - `true`: Clicking the trigger of an already-open submenu item keeps it open. This is the default and matches existing behavior.
+  - `false`: Clicking the trigger of a submenu item toggles it open or closed.
+- Added an `activationMode` prop to `NavigationMenu.Root` and `NavigationMenu.Sub`.
+  - `"automatic"`: Hovering or focusing a trigger opens its item, and moving away from the trigger closes it after a short delay. This is the default and matches existing behavior.
+  - `"manual"`: Pointer entry and focus never open an item. The item opens when its trigger is clicked.
+  - When `activationMode` is omitted on `NavigationMenu.Sub`, it inherits the value from the parent `NavigationMenu.Root`, so setting `"manual"` on the root also applies to submenus unless a submenu opts back in to `"automatic"`.
+- Fixed a bug where a submenu's `defaultValue` was reset when an external element was focused before the menu opened.
+- Fixed a bug where `NavigationMenu.Viewport` discarded its children and rendered the active content in their place. The active content is now rendered inside the consumer's element alongside any children it already had.
+
+### Popover
+
+- Added `Popover.Title` and `Popover.Description` parts that provide accessible names and descriptions for popover content.
+
+### Scroll Area
+
+- Added a `ScrollArea.Content` part so consumers can own the wrapper element implicitly rendered by `ScrollArea.Viewport`. Pass `disableImplicitContentElement` to the viewport and render `ScrollArea.Content` as its child.
+
+  ```tsx
+  <ScrollArea.Root>
+    <ScrollArea.Viewport disableImplicitContentElement>
+      <ScrollArea.Content>{children}</ScrollArea.Content>
+    </ScrollArea.Viewport>
+    <ScrollArea.Scrollbar>
+      <ScrollArea.Thumb />
+    </ScrollArea.Scrollbar>
+  </ScrollArea.Root>
+  ```
+
+  In the next major release, the viewport will no longer render this element implicitly. We recommend migrating to this API now for a smoother upgrade.
+
+- Fixed a bug where `asChild` on `ScrollArea.Viewport` merged props onto the implicit content element instead of the consumer's element.
+
+### Slider
+
+- Added a `preserveThumbOrder` prop to `Slider` that prevents thumbs from crossing over one another. When enabled, each thumb is constrained to the values of its neighbors instead of swapping positions when dragged past them.
+
+### Other updates
+
+- Added support for multiple `aria-describedby` attributes, so id strings from a component and its child are merged, normalized, and deduplicated instead of one replacing the other.
+- Fixed a bug where internal event handlers were still called on disabled `Select.Item` elements.
+- Fixed a bug where a paused `Toast` would not auto-close after its `duration` changed while the timer was paused.
+- Fixed a bug where a focused element inside `Tabs.Content` did not fire a blur event before the tab switched. `Tabs.Trigger` now moves focus before the tab's state change.
+- Fixed compatibility issues with React Server Components.
+
+## 1.6.6, 1.6.7
+
+- Reverted breaking changes that caused compatibility issues with React Server Components.
+
+## 1.6.5
+
+- Republish through CI to attach provenance attestations. The previous versions of these packages were published manually outside of CI and therefore shipped without provenance; this patch re-releases the same code through the CI pipeline so every package includes an attestation.
+
+## 1.6.4
+
+- Fixed a regression where importing primitives from the root `radix-ui` entry point erased every primitive's types to `any`.
+
+## 1.6.3
+
+### Dialog
+
+- Fixed broken ARIA references in Dialogs where title or description elements are not rendered.
+
+### Slider
+
+- Fixed a bug where `onValueCommit` was not called when a slider thumb was dragged across another thumb.
+
+### Toast
+
+- Fixed `Toast` removing non-focused toasts when pressing `Escape`.
+
+### Tooltip
+
+- Fixed a bug where `Tooltip.Content` children were mounted to the DOM twice.
+
+### Other updates
+
+- Fixed overriding inline animation style in `Popper.Content`.
+- Improved tree-shaking so bundlers can drop unused components. Component parts are now marked `/* @__PURE__ */` and use named render functions instead of `Component.displayName = ...` assignments, which previously prevented dead-code elimination with some bundlers.
+- Widened `virtualRef` prop type to allow `RefObject<Measurable | null>` in popover components.
+- Fixed dev-only checks with conditional exports to drop dev-warnings from production builds.
+- Added per-primitive subpath entry points so each primitive can be imported directly, eg. `import { Accordion } from 'radix-ui/accordion'` or `import * as Accordion from 'radix-ui/accordion'`. This mirrors the namespaced exports available from the root `radix-ui` entry point.
+- Fixed a bug where updating a `Checkbox`, `Switch`, or `RadioGroup` value programmatically (eg. a "select all" control) while inside a `<form>` would dispatch a `click` event from the hidden bubble input that propagated to ancestor `onClick` handlers.
+
+## 1.6.2
+
+### Other updates
+
+- Added CSS custom properties for Navigation Menu item indicators' translate values.
+- Fixed a bug in Dismissable Layer causing background nested popovers to close all layers on outside click
+- Fixed runtime errors for `Form.Message`, `Form.Control`, `Form.Label` and `Form.ValidityState` that are correctly rendered outside of `Form.Field` components
+- Fixed a bug in form control components to ensure their values are updated when their associated form's is reset. This affects `RadioGroup`, `Slider`, `Select`, and `Switch`.
+- Fixed menu items, tab triggers, toolbar links, and select items intercepting `Space`/`Enter` keys that originate from focusable descendants.
+- Fixed a bug where calling an event handler without an argument would throw, preventing successive event handlers from being called. This affected all components that accept event handlers with internal implementations.
+- Fixed a bug in Context Menu to ensure that the menu properly re-anchors to the latest pointer position when re-triggered in its open state.
+- Fixed stale `onEscapeKeyDown`/`onDismiss` handlers on React 19.2.
+- Fixed items in a Roving Focus Group not being auto-focused on mount within a Focus Scope component.
+- Fixed a regression in Dismissable Layer originating from a [bug in React's `useEffectEvent`](https://github.com/react/react/pull/34831).
+- Fixed `--radix-scroll-area-corner-width` and `--radix-scroll-area-corner-height` not resetting to `0` when a corner is removed. Previously these values would stick around and leave a permanent gap on the remaining scrollbar.
+- Fixed a bug in Slider where stepping with the keyboard would skip a valid value when the current value is off the step grid. Stepping now snaps to the next step-aligned value in the direction of travel, matching native `<input type="range">` behavior.
+
+## 1.6.1
+
+- Cleared the close timer when unmounting `Toast` components to prevent memory leaks and errors in test environments.
+- Fixed infinite re-render loop in React 19 caused by unstable composed ref callback references.
+- Removed global `React.CSSProperties` augmentation from emitted declaration files.
+
+## 1.6.0
+
+```tsx
+const Slot = createSlot<HTMLButtonElement, MyCustomButtonProps>("Slot");
+```
+
+### Avatar
+
+- Fixed several edge cases with Avatar's loading state
+  - An avatar's fallback would not be displayed again if its image component unmounted. This is now fixed.
+  - Rendering multiple `Avatar.Image` components per `Avatar.Root` was never supported and results in buggy, unpredictable behavior. We now warn about this in development.
+  - Zero-sized images were treated as `loading`, meaning that `onLoadingStatusChange` is never called once loaded. A zero-sized image now triggers an `error` status on load.
+
+### Password Toggle Field
+
+- Renamed misspelled `onVisiblityChange` prop to `onVisibilityChange`.
+- Fixed prop type definitions to include `asChild` for all component parts.
+
+### Scroll Area
+
+- Stabilized the viewport style tag unless the nonce changes.
+
+### Slot
+
+- `SlotProps` and `createSlot` now accept generic type arguments to specify the type of element a slot should render, as well as its props.
+
+### Toggle Group
+
+- Updated single-select and multi-select toggle groups to use the `radiogroup` and `toolbar` roles, respectively.
+
+### Select
+
+- Allowed a `Select.Item` with an empty string value to act as a "clear" option. Selecting it resets the selection back to the placeholder, restoring the native `<select>` behavior for optional selects. Previously using an empty string value would throw an error.
+- Fixed a bug where typeahead search resulted in focusing an element that no longer exists.
+
+### Other updates
+
+- Fixed a regression in that caused submenu misalignment when using custom portals.
+- Removed dev-only warnings for dialogs when title and/or description is not rendered.
+- Fixed a bug where menus and submenus remained open after a window loses focus.
+- Fixed Dismissable Layer so outside interactions stopped by extension UI overlays do not dismiss dialogs or popovers.
+- Fixed `Duplicate index signature` errors that surfaced when consuming multiple packages together.
+
+## 1.5.0
+
+### Context Menu
+
+- Added support for a controlled `open` prop on `ContextMenu.Root`. This is intended for reading the open state and closing the menu programmatically, though we discourage opening the menu programmatically since opening the menu depends on user interaction to position the menu.
+
+  ```tsx
+  function ControlledContextMenu() {
+    const [open, setOpen] = React.useState(false);
+    return (
+      <ContextMenu.Root open={open} onOpenChange={setOpen}>
+        <ContextMenu.Trigger>Open</ContextMenu.Trigger>
+        <ContextMenu.Content>
+          <button type="button" onClick={() => setOpen(false)}>
+            Close me
+          </button>
+          <ContextMenu.Item>Item 1</ContextMenu.Item>
+          <ContextMenu.Item>Item 2</ContextMenu.Item>
+        </ContextMenu.Content>
+      </ContextMenu.Root>
+    );
+  }
+  ```
+
+- Fixed a bug in where submenus remained expanded after re-opening on long-press touch events.
+
+### Dialog
+
+- Fixed a bug where iOS text selection and editing on HTML inputs within dialogs were broken.
+- Fixed a bug causing disabled pointer events in closed dialogs.
+
+### One-Time Password Field
+
+- Fixed pasting into One-Time Password Field in environments that do not support the legacy `"Text"` clipboard format by reading the pasted value as `"text/plain"`.
+- Fixed issues with focus management in React 19.2+.
+- Fixed a bug to ensure that pasted values exceeding the field length are truncated.
+
+### Popper
+
+- Fixed a "Maximum update depth exceeded" bug for pages with a large number of popper instances.
+- Exposed `data-side` and `data-align` on `PopperAnchor` element
+
+### Presence
+
+- Fixed a "Maximum update depth exceeded" bug in React 19 that could occur when `Presence` was given a child with an unstable ref.
+
+### Radio Group
+
+- Added unstable `RadioGroupItemProvider`, `RadioGroupItemTrigger` and `RadioGroupItemBubbleInput` parts. These expose the previously internal composition of a radio item that included a visually hidden `input` so consumers can directly access and recompose them. The `RadioGroupItem` component continues to render them by default.
+
+  ```tsx
+  import { RadioGroup } from "radix-ui";
+
+  function ExampleRadioGroup() {
+    return (
+      <RadioGroup.Root>
+        {["one", "two", "three"].map((value) => (
+          <RadioGroup.unstable_ItemProvider key={value} value={value}>
+            <RadioGroup.unstable_ItemTrigger>
+              <RadioGroup.Indicator />
+            </RadioGroup.unstable_ItemTrigger>
+            {/* the hidden input is now exposed and can be omitted if not needed */}
+            <RadioGroup.unstable_ItemBubbleInput />
+          </RadioGroup.unstable_ItemProvider>
+        ))}
+      </RadioGroup.Root>
+    );
+  }
+  ```
+
+### Select
+
+- Added unstable `Provider` and `BubbleInput` parts to Select. These expose the previously internal composition that included a visually hidden `select` so consumers can directly access and recompose them. `Select` continues to render them by default.
+
+  ```tsx
+  import { Select } from "radix-ui";
+
+  function ExampleSelect() {
+    return (
+      <Select.unstable_Provider>
+        <Select.Trigger />
+        <Select.Portal />
+        {/* the hidden input is now exposed and can be omitted if not needed */}
+        <Select.unstable_BubbleInput />
+      </Select.unstable_Provider>
+    );
+  }
+  ```
+
+- Added support for presence-based exit animations.
+- Fixed the bubble hidden input so that submits an empty string when no value is selected.
+- Fixed select closing unexpectedly after touch-scrolling its content when rendered inside an open shadow DOM.
+- Fixed `SelectValue` logging invalid prop errors when used with both `asChild` and a placeholder
+
+### Slider
+
+- Added unstable `ThumbProvider`, `ThumbTrigger`, and `BubbleInput` parts to Slider. `SliderThumb` was previously a single component that implicitly rendered a hidden native input for form submission. It is now composed from these new parts, which are exposed so consumers can decouple the visually hidden input from the thumb. `SliderThumb` continues to render them by default.
+
+  ```tsx
+  import { Slider } from "radix-ui";
+
+  function ExampleSlider() {
+    return (
+      <Slider.Root defaultValue={[data.price.min, data.price.max]}>
+        <Slider.Track>
+          <Slider.Range />
+        </Slider.Track>
+
+        <Slider.unstable_ThumbProvider name="price[min]">
+          <Slider.unstable_ThumbTrigger />
+          {/* the hidden input is now exposed and can be omitted if not needed */}
+          <Slider.unstable_BubbleInput />
+        </Slider.unstable_ThumbProvider>
+
+        <Slider.unstable_ThumbProvider name="price[max]">
+          <Slider.unstable_ThumbTrigger />
+          <Slider.unstable_BubbleInput />
+        </Slider.unstable_ThumbProvider>
+      </Slider.Root>
+    );
+  }
+  ```
+
+- Added `focusVisible` for non-keyboard interactions with slider thumbs for progressively enabling styles using `:focus-visible` alongside programmatic focus management.
+- Fixed a Slider bug where very small `step` values made the thumbs unresponsive.
+- Fixed focus bugs for sliders in a scrollable context.
+
+### Slot
+
+- Added support for nested `Slottable` items via a render prop. This allows a slotted element to be wrapped while still merging Slot props and refs onto it.
+- Fixed infinite re-render loop in React 19 caused by `Slot` creating a new ref callback on every render.
+- Improved error messages for invalid slot children.
+
+### Switch
+
+- Added unstable `Provider`, `Trigger` and `BubbleInput` parts to Switch. These expose the previously internal composition that included a visually hidden `input` so consumers can directly access and recompose them. The `Switch` component continues to render them by default.
+
+  ```tsx
+  import { Switch } from "radix-ui";
+
+  function ExampleSwitch() {
+    return (
+      <Switch.unstable_Provider>
+        <Switch.unstable_Trigger>
+          <Switch.Thumb />
+        </Switch.unstable_Trigger>
+        {/* the hidden input is now exposed and can be omitted if not needed */}
+        <Switch.unstable_BubbleInput />
+      </Switch.unstable_Provider>
+    );
+  }
+  ```
+
+### Tooltip
+
+- Fixed a runtime error when an event target is a non-Node entity.
+- Fixed a Tooltip bug so that `skipDelayDuration={0}` works as expected. Previously, the open delay could still be skipped when moving between triggers.
+
+### Other changes
+
+- Use React's built-in `useSyncExternalStore` (React 18+) instead of importing the CJS-only `use-sync-external-store/shim`, with a fallback for React < 18. The shim called `require("react")` at module-evaluation time, which crashed ESM-only browser bundles when importing some components from the `radix-ui` package.
+- Fixed triggers referencing a non-existent elements via `aria-controls` when their content is removed from the DOM (credit to [@dodomorandi](https://github.com/dodomorandi) for the [original PR](https://github.com/radix-ui/primitives/pull/3243)).
+- Fixed a performance bottleneck where opening an overlay re-scanned the document and re-inserted the focus guards on every mount, forcing a synchronous reflow. The shared guard pair is now cached and only written to the DOM when their edge position actually changes.
+- Added missing `use client` directives to modules causing errors in RSC modules.
+- Added `align` prop to `Menu.SubContent`.
+- Fixed missing `data-state` attribute for Scroll Area scrollbars.
+- Allow to specify container for `Toast.Announce`.
+
 ## 1.4.3
 
 ### One-Time Password Field
@@ -52,14 +431,17 @@ This new primitive provides components for rendering a password input alongside 
 This API is currently unstable, and we hope you'll help us test it out! Import the primitive using the `unstable_` prefix.
 
 ```tsx
-import { unstable_PasswordToggleField as PasswordToggleField } from 'radix-ui';
+import { unstable_PasswordToggleField as PasswordToggleField } from "radix-ui";
 
 function FieldWithIconToggle() {
   return (
     <PasswordToggleField.Root>
       <PasswordToggleField.Input />
       <PasswordToggleField.Toggle>
-        <PasswordToggleField.Icon visible={<EyeOpenIcon />} hidden={<EyeClosedIcon />} />
+        <PasswordToggleField.Icon
+          visible={<EyeOpenIcon />}
+          hidden={<EyeClosedIcon />}
+        />
       </PasswordToggleField.Toggle>
     </PasswordToggleField.Root>
   );
@@ -70,7 +452,10 @@ function FieldWithTextToggle() {
     <PasswordToggleField.Root>
       <PasswordToggleField.Input />
       <PasswordToggleField.Toggle>
-        <PasswordToggleField.Slot visible="Hide password" hidden="Show password" />
+        <PasswordToggleField.Slot
+          visible="Hide password"
+          hidden="Show password"
+        />
       </PasswordToggleField.Toggle>
     </PasswordToggleField.Root>
   );
@@ -115,7 +500,7 @@ This new primitive is designed to implement the common design pattern for one-ti
 This API is currently unstable, and we hope you'll help us test it out! Import the primitive using the `unstable_` prefix.
 
 ```tsx
-import { unstable_OneTimePasswordField as OneTimePasswordField } from 'radix-ui';
+import { unstable_OneTimePasswordField as OneTimePasswordField } from "radix-ui";
 
 export function Verify() {
   return (

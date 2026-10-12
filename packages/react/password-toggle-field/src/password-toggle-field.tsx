@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { flushSync } from 'react-dom';
+import { IS_DEVELOPMENT } from '@radix-ui/primitive/is-development';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
-import { Primitive } from '@radix-ui/react-primitive';
+import { Primitive, type PrimitivePropsWithRef } from '@radix-ui/react-primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { useId } from '@radix-ui/react-id';
 import { useIsHydrated } from '@radix-ui/react-use-is-hydrated';
@@ -11,6 +12,13 @@ import type { Scope } from '@radix-ui/react-context';
 import { createContextScope } from '@radix-ui/react-context';
 
 const PASSWORD_TOGGLE_FIELD_NAME = 'PasswordToggleField';
+
+const AutoComplete = {
+  CurrentPassword: 'current-password',
+  NewPassword: 'new-password',
+} as const;
+
+type AutoComplete = (typeof AutoComplete)[keyof typeof AutoComplete];
 
 /* -------------------------------------------------------------------------------------------------
  * PasswordToggleFieldProvider
@@ -39,14 +47,14 @@ const [PasswordToggleFieldProvider, usePasswordToggleFieldContext] =
  * PasswordToggleField
  * -----------------------------------------------------------------------------------------------*/
 
-type ScopedProps<P> = P & { __scopePasswordToggleField?: Scope };
+type ScopedProps<P> = P & { __scopePasswordToggleField?: Scope | undefined };
 
 interface PasswordToggleFieldProps {
-  id?: string;
-  visible?: boolean;
-  defaultVisible?: boolean;
-  onVisiblityChange?: (visible: boolean) => void;
-  children?: React.ReactNode;
+  id?: string | undefined;
+  visible?: boolean | undefined;
+  defaultVisible?: boolean | undefined;
+  onVisibilityChange?: { bivarianceHack(visible: boolean): void }['bivarianceHack'] | undefined;
+  children?: React.ReactNode | undefined;
 }
 
 const INITIAL_FOCUS_STATE: InternalFocusState = {
@@ -69,12 +77,37 @@ const PasswordToggleField: React.FC<PasswordToggleFieldProps> = ({
     [],
   );
 
-  const { visible: visibleProp, defaultVisible, onVisiblityChange, children } = props;
+  const { visible: visibleProp, defaultVisible, children } = props;
+
+  let onVisibilityChange = props.onVisibilityChange;
+  let shouldWarn = false;
+  if (
+    !onVisibilityChange &&
+    'onVisiblityChange' in props &&
+    typeof props.onVisiblityChange === 'function'
+  ) {
+    shouldWarn = true;
+    onVisibilityChange = props.onVisiblityChange as (visible: boolean) => void;
+  } else {
+    onVisibilityChange = props.onVisibilityChange;
+  }
+
+  if (IS_DEVELOPMENT) {
+    // oxlint-disable-next-line react-hooks/rules-of-hooks
+    React.useEffect(() => {
+      if (shouldWarn) {
+        console.warn(
+          'PasswordToggleField: The misspelled `onVisiblityChange` prop has been removed. Please use `onVisibilityChange` instead.',
+        );
+      }
+    }, [shouldWarn]);
+  }
+
   const [visible = false, setVisible] = useControllableState({
     caller: PASSWORD_TOGGLE_FIELD_NAME,
     prop: visibleProp,
     defaultProp: defaultVisible ?? false,
-    onChange: onVisiblityChange,
+    onChange: onVisibilityChange,
   });
 
   const inputRef = React.useRef<HTMLInputElement | null>(null);
@@ -94,7 +127,6 @@ const PasswordToggleField: React.FC<PasswordToggleFieldProps> = ({
     </PasswordToggleFieldProvider>
   );
 };
-PasswordToggleField.displayName = PASSWORD_TOGGLE_FIELD_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * PasswordToggleFieldInput
@@ -102,30 +134,35 @@ PasswordToggleField.displayName = PASSWORD_TOGGLE_FIELD_NAME;
 
 const PASSWORD_TOGGLE_FIELD_INPUT_NAME = PASSWORD_TOGGLE_FIELD_NAME + 'Input';
 
-type PrimitiveInputProps = React.ComponentPropsWithoutRef<'input'>;
+type PrimitiveInputProps = PrimitivePropsWithRef<'input'>;
 
 interface PasswordToggleFieldOwnProps {
-  autoComplete?: 'current-password' | 'new-password';
+  autoComplete?: AutoComplete | undefined;
 }
 
 interface PasswordToggleFieldInputProps
-  extends PasswordToggleFieldOwnProps,
+  extends
+    PasswordToggleFieldOwnProps,
     Omit<PrimitiveInputProps, keyof PasswordToggleFieldOwnProps | 'type'> {
-  autoComplete?: 'current-password' | 'new-password';
+  autoComplete?: AutoComplete | undefined;
 }
 
-const PasswordToggleFieldInput = React.forwardRef<HTMLInputElement, PasswordToggleFieldInputProps>(
-  (
+const PasswordToggleFieldInput = /* @__PURE__ */ React.forwardRef<
+  HTMLInputElement,
+  PasswordToggleFieldInputProps
+>(
+  // blank line to reduce diff noise
+  function PasswordToggleFieldInput(
     {
       __scopePasswordToggleField,
-      autoComplete = 'current-password',
+      autoComplete = AutoComplete.CurrentPassword,
       autoCapitalize = 'off',
       spellCheck = false,
       id: idProp,
       ...props
     }: ScopedProps<PasswordToggleFieldInputProps>,
     forwardedRef,
-  ) => {
+  ) {
     const { visible, inputRef, inputId, syncInputId, setVisible, focusState } =
       usePasswordToggleFieldContext(PASSWORD_TOGGLE_FIELD_INPUT_NAME, __scopePasswordToggleField);
 
@@ -171,7 +208,7 @@ const PasswordToggleFieldInput = React.forwardRef<HTMLInputElement, PasswordTogg
       return () => {
         controller.abort();
       };
-    }, [inputRef, _setVisible]);
+    }, [inputRef]);
 
     return (
       <Primitive.input
@@ -192,7 +229,6 @@ const PasswordToggleFieldInput = React.forwardRef<HTMLInputElement, PasswordTogg
     );
   },
 );
-PasswordToggleFieldInput.displayName = PASSWORD_TOGGLE_FIELD_INPUT_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * PasswordToggleFieldToggle
@@ -200,15 +236,16 @@ PasswordToggleFieldInput.displayName = PASSWORD_TOGGLE_FIELD_INPUT_NAME;
 
 const PASSWORD_TOGGLE_FIELD_TOGGLE_NAME = PASSWORD_TOGGLE_FIELD_NAME + 'Toggle';
 
-type PrimitiveButtonProps = React.ComponentPropsWithoutRef<'button'>;
+type PrimitiveButtonProps = PrimitivePropsWithRef<'button'>;
 
 interface PasswordToggleFieldToggleProps extends Omit<PrimitiveButtonProps, 'type'> {}
 
-const PasswordToggleFieldToggle = React.forwardRef<
+const PasswordToggleFieldToggle = /* @__PURE__ */ React.forwardRef<
   HTMLButtonElement,
   PasswordToggleFieldToggleProps
 >(
-  (
+  // blank line to reduce diff noise
+  function PasswordToggleFieldToggle(
     {
       __scopePasswordToggleField,
       onClick,
@@ -224,7 +261,7 @@ const PasswordToggleFieldToggle = React.forwardRef<
       ...props
     }: ScopedProps<PasswordToggleFieldToggleProps>,
     forwardedRef,
-  ) => {
+  ) {
     const { setVisible, visible, inputRef, inputId, focusState } = usePasswordToggleFieldContext(
       PASSWORD_TOGGLE_FIELD_TOGGLE_NAME,
       __scopePasswordToggleField,
@@ -360,7 +397,6 @@ const PasswordToggleFieldToggle = React.forwardRef<
     );
   },
 );
-PasswordToggleFieldToggle.displayName = PASSWORD_TOGGLE_FIELD_TOGGLE_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * PasswordToggleFieldSlot
@@ -397,7 +433,6 @@ const PasswordToggleFieldSlot: React.FC<PasswordToggleFieldSlotProps> = ({
       ? props.visible
       : props.hidden;
 };
-PasswordToggleFieldSlot.displayName = PASSWORD_TOGGLE_FIELD_SLOT_NAME;
 
 /* -------------------------------------------------------------------------------------------------
  * PasswordToggleFieldIcon
@@ -405,15 +440,19 @@ PasswordToggleFieldSlot.displayName = PASSWORD_TOGGLE_FIELD_SLOT_NAME;
 
 const PASSWORD_TOGGLE_FIELD_ICON_NAME = PASSWORD_TOGGLE_FIELD_NAME + 'Icon';
 
-type PrimitiveSvgProps = React.ComponentPropsWithoutRef<'svg'>;
+type PrimitiveSvgProps = PrimitivePropsWithRef<'svg'>;
 
 interface PasswordToggleFieldIconProps extends Omit<PrimitiveSvgProps, 'children'> {
   visible: React.ReactElement;
   hidden: React.ReactElement;
 }
 
-const PasswordToggleFieldIcon = React.forwardRef<SVGSVGElement, PasswordToggleFieldIconProps>(
-  (
+const PasswordToggleFieldIcon = /* @__PURE__ */ React.forwardRef<
+  SVGSVGElement,
+  PasswordToggleFieldIconProps
+>(
+  // blank line to reduce diff noise
+  function PasswordToggleFieldIcon(
     {
       __scopePasswordToggleField,
       // @ts-expect-error
@@ -421,7 +460,7 @@ const PasswordToggleFieldIcon = React.forwardRef<SVGSVGElement, PasswordToggleFi
       ...props
     }: ScopedProps<PasswordToggleFieldIconProps>,
     forwardedRef,
-  ) => {
+  ) {
     const { visible } = usePasswordToggleFieldContext(
       PASSWORD_TOGGLE_FIELD_ICON_NAME,
       __scopePasswordToggleField,
@@ -434,7 +473,6 @@ const PasswordToggleFieldIcon = React.forwardRef<SVGSVGElement, PasswordToggleFi
     );
   },
 );
-PasswordToggleFieldIcon.displayName = PASSWORD_TOGGLE_FIELD_ICON_NAME;
 
 export {
   PasswordToggleField,

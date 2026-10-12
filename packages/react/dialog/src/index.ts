@@ -19,7 +19,7 @@ export {
   Title,
   Description,
   Close,
-  //
+  /** @deprecated Noop component to avoid breaking changes. */
   WarningProvider,
 } from './dialog';
 export type {

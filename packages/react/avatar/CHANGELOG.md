@@ -1,5 +1,63 @@
 # @radix-ui/react-avatar
 
+## 1.3.1
+
+- Fixed a type regression where callback props that were previously declared as methods rejected handlers whose parameter is narrower than the prop's.
+
+## 1.3.0
+
+- Allow explicit `undefined` for all optional types for compatibility with TypeScript's `exactOptionalPropertyTypes` flag.
+- Updated dependencies: `@radix-ui/primitive@1.2.0`, `@radix-ui/react-context@1.3.0`, `@radix-ui/react-primitive@2.2.0`, `@radix-ui/react-use-callback-ref@1.1.5`
+
+## 1.2.7
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.11`
+
+## 1.2.6
+
+- Reverted breaking changes that caused compatibility issues with React Server Components.
+- Updated dependencies: `@radix-ui/react-context@1.2.2`, `@radix-ui/react-primitive@2.1.10`, `@radix-ui/react-use-callback-ref@1.1.4`, `@radix-ui/react-use-is-hydrated@0.1.3`, `@radix-ui/react-use-layout-effect@1.1.4`
+
+## 1.2.5
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.9`
+
+## 1.2.4
+
+- Republish through CI to attach provenance attestations. The previous versions of these packages were published manually outside of CI and therefore shipped without provenance; this patch re-releases the same code through the CI pipeline so every package includes an attestation.
+- Updated dependencies: `@radix-ui/primitive@1.1.7`, `@radix-ui/react-context@1.2.1`, `@radix-ui/react-primitive@2.1.8`, `@radix-ui/react-use-callback-ref@1.1.3`, `@radix-ui/react-use-is-hydrated@0.1.2`, `@radix-ui/react-use-layout-effect@1.1.3`
+
+## 1.2.3
+
+- Improved tree-shaking so bundlers can drop unused components. Component parts are now marked `/* @__PURE__ */` and use named render functions instead of `Component.displayName = ...` assignments, which previously prevented dead-code elimination with some bundlers.
+- Fix dev-only checks with conditional exports to drop dev-warnings from production builds.
+- Updated dependencies: `@radix-ui/primitive@1.1.6`, `@radix-ui/react-context@1.2.0`, `@radix-ui/react-primitive@2.1.7`, `@radix-ui/react-use-callback-ref@1.1.2`, `@radix-ui/react-use-is-hydrated@0.1.1`, `@radix-ui/react-use-layout-effect@1.1.2`
+
+## 1.2.2
+
+- Updated dependencies: `@radix-ui/react-context@1.2.0`
+
+## 1.2.1
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.7`
+
+## 1.2.0
+
+- Fixed several edge cases with Avatar's loading state
+  - An avatar's fallback would not be displayed again if its image component unmounted. This is now fixed.
+  - Rendering multiple `Avatar.Image` components per `Avatar.Root` was never supported and results in buggy, unpredictable behavior. We now warn about this in development.
+  - Zero-sized images were treated as `loading`, meaning that `onLoadingStatusChange` is never called once loaded. A zero-sized image now triggers an `error` status on load.
+
+### Other updates
+
+- Fixed console warnings to show in test environments.
+- Updated dependencies: `@radix-ui/react-primitive@2.1.6`
+
+## 1.1.12
+
+- Added repository.directory to all package.json files
+- Updated dependencies: `@radix-ui/react-context@1.1.4`, `@radix-ui/react-primitive@2.1.5`, `@radix-ui/react-use-callback-ref@1.1.2`, `@radix-ui/react-use-is-hydrated@0.1.1`, `@radix-ui/react-use-layout-effect@1.1.2`
+
 ## 1.1.11
 
 - Updated dependencies: `@radix-ui/react-context@1.1.3`, `@radix-ui/react-primitive@2.1.4`

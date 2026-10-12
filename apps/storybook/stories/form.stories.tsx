@@ -181,6 +181,47 @@ export const Cypress = () => {
   );
 };
 
+export const OutsideField = () => {
+  return (
+    <Form.Root
+      className={styles.form}
+      onSubmit={(event) => {
+        event.preventDefault();
+        const formData = new FormData(event.currentTarget);
+        window.alert(JSON.stringify(Object.fromEntries(formData), null, 2));
+      }}
+    >
+      {/* Messages declared ahead of (and outside) the control they describe. */}
+      <Form.Message match="valueMissing" name="email">
+        Please enter your email address.
+      </Form.Message>
+      <Form.Message match="typeMismatch" name="email">
+        Please enter a valid email address.
+      </Form.Message>
+
+      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+        <Form.Label name="email" htmlFor="email">
+          Email
+        </Form.Label>
+        <Form.Control
+          id="email"
+          name="email"
+          type="email"
+          required
+          placeholder="rolli@example.com"
+        />
+      </div>
+
+      <Form.ValidityState name="email">
+        {(validity) => <pre>Email validity: {JSON.stringify(validity?.valid ?? null)}</pre>}
+      </Form.ValidityState>
+
+      <Form.Submit>Submit</Form.Submit>
+      <button type="reset">Reset</button>
+    </Form.Root>
+  );
+};
+
 async function wait(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
