@@ -3,7 +3,6 @@
 ## 1.8.1
 
 - Fixed a type regression where callback props that were previously declared as methods rejected handlers whose parameter is narrower than the prop's.
-- Updated dependencies: `@radix-ui/react-accordion@1.3.1`, `@radix-ui/react-checkbox@1.4.1`, `@radix-ui/react-collapsible@1.2.1`, `@radix-ui/react-context-menu@2.4.1`, `@radix-ui/react-dialog@1.3.1`, `@radix-ui/react-dropdown-menu@2.2.1`, `@radix-ui/react-menu@2.2.1`, `@radix-ui/react-menubar@1.2.1`, `@radix-ui/react-progress@1.2.1`, `@radix-ui/react-select@2.4.1`, `@radix-ui/react-slider@1.6.1`, `@radix-ui/react-switch@1.4.1`, `@radix-ui/react-toast@1.3.1`, `@radix-ui/react-toggle@1.2.1`, `@radix-ui/react-toggle-group@1.2.1`, `@radix-ui/react-alert-dialog@1.2.1`, `@radix-ui/react-toolbar@1.2.1`
 
 ## 1.8.0
 
