@@ -520,6 +520,45 @@ describe('DismissableLayer', () => {
 
     expect(onDismiss).not.toHaveBeenCalled();
   });
+
+  it('leaves an escape key that belongs to an IME composition to the input method', () => {
+    const onEscapeKeyDown = vi.fn();
+    const onDismiss = vi.fn();
+
+    renderDismissableLayer({ onEscapeKeyDown, onDismiss });
+
+    const notCancelled = fireEvent.keyDown(document, { key: 'Escape', isComposing: true });
+
+    expect(notCancelled).toBe(true);
+    expect(onEscapeKeyDown).not.toHaveBeenCalled();
+    expect(onDismiss).not.toHaveBeenCalled();
+  });
+
+  it('leaves an escape key the IME processed (keyCode 229) to the input method', () => {
+    const onEscapeKeyDown = vi.fn();
+    const onDismiss = vi.fn();
+
+    renderDismissableLayer({ onEscapeKeyDown, onDismiss });
+
+    const notCancelled = fireEvent.keyDown(document, { key: 'Escape', keyCode: 229 });
+
+    expect(notCancelled).toBe(true);
+    expect(onEscapeKeyDown).not.toHaveBeenCalled();
+    expect(onDismiss).not.toHaveBeenCalled();
+  });
+
+  it('dismisses on the escape key that follows a finished composition', () => {
+    const onEscapeKeyDown = vi.fn();
+    const onDismiss = vi.fn();
+
+    renderDismissableLayer({ onEscapeKeyDown, onDismiss });
+
+    fireEvent.keyDown(document, { key: 'Escape', isComposing: true });
+    fireEvent.keyDown(document, { key: 'Escape', keyCode: 27 });
+
+    expect(onEscapeKeyDown).toHaveBeenCalledTimes(1);
+    expect(onDismiss).toHaveBeenCalledTimes(1);
+  });
 });
 
 describe('DismissableLayer.Root', () => {
