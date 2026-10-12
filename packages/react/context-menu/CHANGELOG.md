@@ -1,5 +1,15 @@
 # @radix-ui/react-context-menu
 
+## 2.4.0
+
+- Allow explicit `undefined` for all optional types for compatibility with TypeScript's `exactOptionalPropertyTypes` flag.
+- Allowed `side`, `sideOffset`, and `align` props to be overridden on `ContextMenu.Content`.
+- Updated dependencies: `@radix-ui/primitive@1.2.0`, `@radix-ui/react-context@1.3.0`, `@radix-ui/react-menu@2.2.0`, `@radix-ui/react-primitive@2.2.0`, `@radix-ui/react-use-controllable-state@1.3.0`
+
+## 2.3.8
+
+- Updated dependencies: `@radix-ui/react-menu@2.1.25`, `@radix-ui/react-primitive@2.1.11`
+
 ## 2.3.7
 
 - Reverted breaking changes that caused compatibility issues with React Server Components.

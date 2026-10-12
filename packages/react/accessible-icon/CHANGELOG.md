@@ -1,5 +1,14 @@
 # @radix-ui/react-accessible-icon
 
+## 1.2.0
+
+- Allow explicit `undefined` for all optional types for compatibility with TypeScript's `exactOptionalPropertyTypes` flag.
+- Updated dependencies: `@radix-ui/react-visually-hidden@1.2.13`
+
+## 1.1.16
+
+- Updated dependencies: `@radix-ui/react-visually-hidden@1.2.12`
+
 ## 1.1.15
 
 - Reverted breaking changes that caused compatibility issues with React Server Components.

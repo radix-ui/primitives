@@ -28,7 +28,7 @@ import type { FocusScopeBranchRegistry } from '@radix-ui/react-focus-scope';
 
 const DIALOG_NAME = 'Dialog';
 
-type ScopedProps<P> = P & { __scopeDialog?: Scope };
+type ScopedProps<P> = P & { __scopeDialog?: Scope | undefined };
 const [createDialogContext, createDialogScope] = createContextScope(DIALOG_NAME);
 
 type DialogContextValue = {
@@ -55,11 +55,11 @@ type DialogContextValue = {
 const [DialogProvider, useDialogContext] = createDialogContext<DialogContextValue>(DIALOG_NAME);
 
 interface DialogProps {
-  children?: React.ReactNode;
-  open?: boolean;
-  defaultOpen?: boolean;
-  onOpenChange?(open: boolean): void;
-  modal?: boolean;
+  children?: React.ReactNode | undefined;
+  open?: boolean | undefined;
+  defaultOpen?: boolean | undefined;
+  onOpenChange?: ((open: boolean) => void) | undefined;
+  modal?: boolean | undefined;
 }
 
 const Dialog: React.FC<DialogProps> = (props: ScopedProps<DialogProps>) => {
@@ -144,23 +144,23 @@ const DialogTrigger = /* @__PURE__ */ React.forwardRef<DialogTriggerElement, Dia
 
 const PORTAL_NAME = 'DialogPortal';
 
-type PortalContextValue = { forceMount?: true };
+type PortalContextValue = { forceMount?: true | undefined };
 const [PortalProvider, usePortalContext] = createDialogContext<PortalContextValue>(PORTAL_NAME, {
   forceMount: undefined,
 });
 
 type PortalProps = React.ComponentPropsWithoutRef<typeof PortalPrimitive>;
 interface DialogPortalProps {
-  children?: React.ReactNode;
+  children?: React.ReactNode | undefined;
   /**
    * Specify a container element to portal the content into.
    */
-  container?: PortalProps['container'];
+  container?: PortalProps['container'] | undefined;
   /**
    * Used to force mounting when more control is needed. Useful when
    * controlling animation with React animation libraries.
    */
-  forceMount?: true;
+  forceMount?: true | undefined;
 }
 
 const DialogPortal: React.FC<DialogPortalProps> = (props: ScopedProps<DialogPortalProps>) => {
@@ -191,7 +191,7 @@ interface DialogOverlayProps extends DialogOverlayImplProps {
    * Used to force mounting when more control is needed. Useful when
    * controlling animation with React animation libraries.
    */
-  forceMount?: true;
+  forceMount?: true | undefined;
 }
 
 const DialogOverlay = /* @__PURE__ */ React.forwardRef<DialogOverlayElement, DialogOverlayProps>(
@@ -265,7 +265,7 @@ interface DialogContentProps extends DialogContentTypeProps {
    * Used to force mounting when more control is needed. Useful when
    * controlling animation with React animation libraries.
    */
-  forceMount?: true;
+  forceMount?: true | undefined;
 }
 
 const DialogContent = /* @__PURE__ */ React.forwardRef<DialogContentElement, DialogContentProps>(
@@ -411,19 +411,19 @@ interface DialogContentImplProps extends Omit<DismissableLayerProps, 'onDismiss'
    * pointer, or a programmatic focus.
    * @defaultValue false
    */
-  trapFocus?: FocusScopeProps['trapped'];
+  trapFocus?: FocusScopeProps['trapped'] | undefined;
 
   /**
    * Event handler called when auto-focusing on open.
    * Can be prevented.
    */
-  onOpenAutoFocus?: FocusScopeProps['onMountAutoFocus'];
+  onOpenAutoFocus?: FocusScopeProps['onMountAutoFocus'] | undefined;
 
   /**
    * Event handler called when auto-focusing on close.
    * Can be prevented.
    */
-  onCloseAutoFocus?: FocusScopeProps['onUnmountAutoFocus'];
+  onCloseAutoFocus?: FocusScopeProps['onUnmountAutoFocus'] | undefined;
 }
 
 const DialogContentImpl = /* @__PURE__ */ React.forwardRef<
@@ -553,7 +553,7 @@ const DialogClose = /* @__PURE__ */ React.forwardRef<DialogCloseElement, DialogC
 /** @deprecated Noop component to avoid breaking changes. */
 export const WarningProvider: React.FC<
   ScopedProps<{
-    children?: React.ReactNode;
+    children?: React.ReactNode | undefined;
     contentName: string;
     titleName: string;
     docsSlug: 'dialog';

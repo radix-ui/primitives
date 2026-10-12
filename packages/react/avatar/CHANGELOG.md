@@ -1,5 +1,14 @@
 # @radix-ui/react-avatar
 
+## 1.3.0
+
+- Allow explicit `undefined` for all optional types for compatibility with TypeScript's `exactOptionalPropertyTypes` flag.
+- Updated dependencies: `@radix-ui/primitive@1.2.0`, `@radix-ui/react-context@1.3.0`, `@radix-ui/react-primitive@2.2.0`, `@radix-ui/react-use-callback-ref@1.1.5`
+
+## 1.2.7
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.11`
+
 ## 1.2.6
 
 - Reverted breaking changes that caused compatibility issues with React Server Components.

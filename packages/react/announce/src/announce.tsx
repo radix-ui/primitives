@@ -43,7 +43,7 @@ interface AnnounceProps extends PrimitiveDivProps {
    * @see WAI-ARIA https://www.w3.org/TR/wai-aria-1.2/#aria-atomic
    * @see Demo     http://pauljadam.com/demos/aria-atomic-relevant.html
    */
-  'aria-atomic'?: boolean;
+  'aria-atomic'?: boolean | undefined;
   /**
    * Mirrors the `aria-relevant` DOM attribute for live regions. It is an optional attribute used to
    * describe what types of changes have occurred to the region, and which changes are relevant and
@@ -59,7 +59,7 @@ interface AnnounceProps extends PrimitiveDivProps {
    * @see Opinion  https://medium.com/dev-channel/why-authors-should-avoid-aria-relevant-5d3164fab1e3
    * @see Demo     http://pauljadam.com/demos/aria-atomic-relevant.html
    */
-  'aria-relevant'?: PrimitiveDivProps['aria-relevant'];
+  'aria-relevant'?: PrimitiveDivProps['aria-relevant'] | undefined;
   /**
    * React children of your component. Children can be mirrored directly or modified to optimize for
    * screen reader user experience.
@@ -75,14 +75,14 @@ interface AnnounceProps extends PrimitiveDivProps {
    * passing an id, you indicate that any content rendered by components with the same identifier
    * should be mirrored in a separate `aria-live` region.
    */
-  regionIdentifier?: string;
+  regionIdentifier?: string | undefined;
   /**
    * Mirrors the `role` DOM attribute. This is optional and may be useful as an override in some
    * cases. By default, the role is determined by the `type` prop.
    *
    * @see MDN https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Live_Regions#Preferring_specialized_live_region_roles
    */
-  role?: RegionRole;
+  role?: RegionRole | undefined;
   /**
    * Mirrors the `aria-live` DOM attribute. The `aria-live=POLITENESS_SETTING` is used to set the
    * priority with which screen reader should treat updates to live regions. Its possible settings
@@ -90,7 +90,7 @@ interface AnnounceProps extends PrimitiveDivProps {
    *
    * @see MDN https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Live_Regions
    */
-  type?: RegionType;
+  type?: RegionType | undefined;
 }
 
 const Announce = /* @__PURE__ */ React.forwardRef<AnnounceElement, AnnounceProps>(
@@ -193,10 +193,10 @@ const Announce = /* @__PURE__ */ React.forwardRef<AnnounceElement, AnnounceProps
 
 type LiveRegionOptions = {
   type: string;
-  relevant?: string;
+  relevant?: string | undefined;
   role: string;
-  atomic?: boolean;
-  id?: string;
+  atomic?: boolean | undefined;
+  id?: string | undefined;
 };
 
 function buildLiveRegionElement(

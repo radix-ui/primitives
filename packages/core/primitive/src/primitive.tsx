@@ -11,7 +11,7 @@ export const canUseDOM = !!(
 export function composeEventHandlers<E extends { defaultPrevented: boolean }>(
   originalEventHandler?: (event: E) => void,
   ourEventHandler?: (event: E) => void,
-  { checkForDefaultPrevented = true } = {},
+  { checkForDefaultPrevented = true }: { checkForDefaultPrevented?: boolean | undefined } = {},
 ) {
   return function handleEvent(event: E) {
     originalEventHandler?.(event);

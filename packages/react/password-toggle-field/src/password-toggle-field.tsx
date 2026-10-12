@@ -47,14 +47,14 @@ const [PasswordToggleFieldProvider, usePasswordToggleFieldContext] =
  * PasswordToggleField
  * -----------------------------------------------------------------------------------------------*/
 
-type ScopedProps<P> = P & { __scopePasswordToggleField?: Scope };
+type ScopedProps<P> = P & { __scopePasswordToggleField?: Scope | undefined };
 
 interface PasswordToggleFieldProps {
-  id?: string;
-  visible?: boolean;
-  defaultVisible?: boolean;
-  onVisibilityChange?: (visible: boolean) => void;
-  children?: React.ReactNode;
+  id?: string | undefined;
+  visible?: boolean | undefined;
+  defaultVisible?: boolean | undefined;
+  onVisibilityChange?: ((visible: boolean) => void) | undefined;
+  children?: React.ReactNode | undefined;
 }
 
 const INITIAL_FOCUS_STATE: InternalFocusState = {
@@ -137,14 +137,14 @@ const PASSWORD_TOGGLE_FIELD_INPUT_NAME = PASSWORD_TOGGLE_FIELD_NAME + 'Input';
 type PrimitiveInputProps = PrimitivePropsWithRef<'input'>;
 
 interface PasswordToggleFieldOwnProps {
-  autoComplete?: AutoComplete;
+  autoComplete?: AutoComplete | undefined;
 }
 
 interface PasswordToggleFieldInputProps
   extends
     PasswordToggleFieldOwnProps,
     Omit<PrimitiveInputProps, keyof PasswordToggleFieldOwnProps | 'type'> {
-  autoComplete?: AutoComplete;
+  autoComplete?: AutoComplete | undefined;
 }
 
 const PasswordToggleFieldInput = /* @__PURE__ */ React.forwardRef<

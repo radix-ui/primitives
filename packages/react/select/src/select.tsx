@@ -19,7 +19,6 @@ import { createSlot } from '@radix-ui/react-slot';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
-import { usePrevious } from '@radix-ui/react-use-previous';
 import { VISUALLY_HIDDEN_STYLES } from '@radix-ui/react-visually-hidden';
 import { hideOthers } from 'aria-hidden';
 import { RemoveScroll } from 'react-remove-scroll';
@@ -54,14 +53,19 @@ const [Collection, useCollection, createCollectionScope] = createCollection<
   ItemData
 >(SELECT_NAME);
 
-type ScopedProps<P> = P & { __scopeSelect?: Scope };
+type ScopedProps<P> = P & { __scopeSelect?: Scope | undefined };
 const [createSelectContext, createSelectScope] = createContextScope(SELECT_NAME, [
   createCollectionScope,
   createPopperScope,
 ]);
 const usePopperScope = createPopperScope();
 
-type SelectContextValue = {
+interface SelectUserSelection {
+  value: string;
+  hasConsumerStoppedPropagation: boolean;
+}
+
+interface SelectContextValue {
   trigger: SelectTriggerElement | null;
   onTriggerChange(node: SelectTriggerElement | null): void;
   valueNode: SelectValueElement | null;
@@ -71,19 +75,22 @@ type SelectContextValue = {
   contentId: string;
   value: string | undefined;
   onValueChange(value: string): void;
+  hasConsumerStoppedPropagationRef: React.RefObject<boolean>;
+  userSelection: SelectUserSelection | null;
+  onUserSelect(value: string): void;
   open: boolean;
-  required?: boolean;
+  required?: boolean | undefined;
   onOpenChange(open: boolean): void;
   dir: SelectProps['dir'];
   triggerPointerDownPosRef: React.MutableRefObject<{ x: number; y: number } | null>;
-  disabled?: boolean;
-  name?: string;
-  autoComplete?: string;
-  form?: string;
+  disabled?: boolean | undefined;
+  name?: string | undefined;
+  autoComplete?: string | undefined;
+  form?: string | undefined;
   nativeOptions: Set<NativeOption>;
   nativeSelectKey: string;
   isFormControl: boolean;
-};
+}
 
 const [SelectProviderImpl, useSelectContext] = createSelectContext<SelectContextValue>(SELECT_NAME);
 
@@ -98,23 +105,25 @@ const [SelectNativeOptionsProvider, useSelectNativeOptionsContext] =
 
 interface ControlledClearableSelectProps {
   value: string | undefined;
-  defaultValue?: never;
+  defaultValue?: never | undefined;
   onValueChange: (value: string | undefined) => void;
 }
 
 interface ControlledUnclearableSelectProps {
   value: string;
-  defaultValue?: never;
+  defaultValue?: never | undefined;
   onValueChange: (value: string) => void;
 }
 
 interface UncontrolledSelectProps {
-  value?: never;
-  defaultValue?: string;
-  onValueChange?: {
-    (value: string): void;
-    (value: string | undefined): void;
-  };
+  value?: never | undefined;
+  defaultValue?: string | undefined;
+  onValueChange?:
+    | {
+        (value: string): void;
+        (value: string | undefined): void;
+      }
+    | undefined;
 }
 
 type SelectControlProps =
@@ -123,16 +132,16 @@ type SelectControlProps =
   | UncontrolledSelectProps;
 
 export interface SelectSharedProps {
-  children?: React.ReactNode;
-  open?: boolean;
-  defaultOpen?: boolean;
-  onOpenChange?(open: boolean): void;
-  dir?: Direction;
-  name?: string;
-  autoComplete?: string;
-  disabled?: boolean;
-  required?: boolean;
-  form?: string;
+  children?: React.ReactNode | undefined;
+  open?: boolean | undefined;
+  defaultOpen?: boolean | undefined;
+  onOpenChange?: ((open: boolean) => void) | undefined;
+  dir?: Direction | undefined;
+  name?: string | undefined;
+  autoComplete?: string | undefined;
+  disabled?: boolean | undefined;
+  required?: boolean | undefined;
+  form?: string | undefined;
 }
 
 // TODO: Should improve typing somewhat, but this would be a breaking change.
@@ -141,9 +150,9 @@ export interface SelectSharedProps {
 type _FutureSelectProps = SelectSharedProps & SelectControlProps;
 
 type SelectProps = SelectSharedProps & {
-  value?: string;
-  defaultValue?: string;
-  onValueChange?(value: string): void;
+  value?: string | undefined;
+  defaultValue?: string | undefined;
+  onValueChange?: ((value: string) => void) | undefined;
 };
 
 /* -------------------------------------------------------------------------------------------------
@@ -151,9 +160,9 @@ type SelectProps = SelectSharedProps & {
  * -----------------------------------------------------------------------------------------------*/
 
 interface SelectProviderProps extends SelectSharedProps {
-  value?: string;
-  defaultValue?: string;
-  onValueChange?(value: string): void;
+  value?: string | undefined;
+  defaultValue?: string | undefined;
+  onValueChange?: ((value: string) => void) | undefined;
 }
 
 function SelectProvider(props: ScopedProps<SelectProviderProps>) {
@@ -193,6 +202,21 @@ function SelectProvider(props: ScopedProps<SelectProviderProps>) {
     caller: SELECT_NAME,
   });
   const triggerPointerDownPosRef = React.useRef<{ x: number; y: number } | null>(null);
+  const hasConsumerStoppedPropagationRef = React.useRef(false);
+
+  // The latest value selected by the user. The bubble input notifies the form
+  // of it once React has handled the selection, whether or not the value
+  // changes in the same render.
+  //
+  // See https://github.com/radix-ui/primitives/issues/4102
+  const [userSelection, setUserSelection] = React.useState<SelectUserSelection | null>(null);
+  const handleUserSelect = (nextValue: string) => {
+    setUserSelection({
+      value: nextValue,
+      hasConsumerStoppedPropagation: hasConsumerStoppedPropagationRef.current,
+    });
+    setValue(nextValue);
+  };
 
   const initialValueRef = React.useRef(value);
   React.useEffect(() => {
@@ -241,6 +265,9 @@ function SelectProvider(props: ScopedProps<SelectProviderProps>) {
     contentId,
     value,
     onValueChange: setValue,
+    hasConsumerStoppedPropagationRef,
+    userSelection,
+    onUserSelect: handleUserSelect,
     open,
     onOpenChange: setOpen,
     dir: direction,
@@ -324,7 +351,7 @@ const SelectTrigger = /* @__PURE__ */ React.forwardRef<SelectTriggerElement, Sel
       const currentItem = enabledItems.find((item) => item.value === context.value);
       const nextItem = findNextItem(enabledItems, search, currentItem);
       if (nextItem !== undefined) {
-        context.onValueChange(nextItem.value);
+        context.onUserSelect(nextItem.value);
       }
     });
 
@@ -395,7 +422,10 @@ const SelectTrigger = /* @__PURE__ */ React.forwardRef<SelectTriggerElement, Sel
           onKeyDown={composeEventHandlers(triggerProps.onKeyDown, (event) => {
             const isTypingAhead = searchRef.current !== '';
             const isModifierKey = event.ctrlKey || event.altKey || event.metaKey;
-            if (!isModifierKey && event.key.length === 1) handleTypeaheadSearch(event.key);
+            if (!isModifierKey && event.key.length === 1) {
+              context.hasConsumerStoppedPropagationRef.current = event.isPropagationStopped();
+              handleTypeaheadSearch(event.key);
+            }
             if (isTypingAhead && event.key === ' ') return;
             if (OPEN_KEYS.includes(event.key)) {
               handleOpen();
@@ -417,7 +447,7 @@ const VALUE_NAME = 'SelectValue';
 type SelectValueElement = React.ComponentRef<typeof Primitive.span>;
 type PrimitiveSpanProps = React.ComponentPropsWithoutRef<typeof Primitive.span>;
 interface SelectValueProps extends Omit<PrimitiveSpanProps, 'placeholder'> {
-  placeholder?: React.ReactNode;
+  placeholder?: React.ReactNode | undefined;
 }
 
 const SelectValue = /* @__PURE__ */ React.forwardRef<SelectValueElement, SelectValueProps>(
@@ -476,23 +506,23 @@ const SelectIcon = /* @__PURE__ */ React.forwardRef<SelectIconElement, SelectIco
 
 const PORTAL_NAME = 'SelectPortal';
 
-type PortalContextValue = { forceMount?: true };
+type PortalContextValue = { forceMount?: true | undefined };
 const [PortalProvider, usePortalContext] = createSelectContext<PortalContextValue>(PORTAL_NAME, {
   forceMount: undefined,
 });
 
 type PortalProps = React.ComponentPropsWithoutRef<typeof PortalPrimitive>;
 interface SelectPortalProps {
-  children?: React.ReactNode;
+  children?: React.ReactNode | undefined;
   /**
    * Specify a container element to portal the content into.
    */
-  container?: PortalProps['container'];
+  container?: PortalProps['container'] | undefined;
   /**
    * Used to force mounting when more control is needed. Useful when controlling
    * animation with React animation libraries.
    */
-  forceMount?: true;
+  forceMount?: true | undefined;
 }
 
 const SelectPortal: React.FC<SelectPortalProps> = (props: ScopedProps<SelectPortalProps>) => {
@@ -516,7 +546,7 @@ interface SelectContentProps extends SelectContentImplProps {
    * Used to force mounting when more control is needed. Useful when
    * controlling animation with React animation libraries.
    */
-  forceMount?: true;
+  forceMount?: true | undefined;
 }
 
 const SelectContent = /* @__PURE__ */ React.forwardRef<SelectContentElement, SelectContentProps>(
@@ -556,7 +586,7 @@ const SelectContent = /* @__PURE__ */ React.forwardRef<SelectContentElement, Sel
 
 type SelectContentFragmentElement = React.ComponentRef<typeof Primitive.div>;
 interface SelectContentFragmentProps extends SelectContentImplProps {
-  fragment?: DocumentFragment;
+  fragment?: DocumentFragment | undefined;
 }
 
 const SelectContentFragment = /* @__PURE__ */ React.forwardRef<
@@ -583,22 +613,22 @@ const SelectContentFragment = /* @__PURE__ */ React.forwardRef<
 const CONTENT_MARGIN = 10;
 
 type SelectContentContextValue = {
-  content?: SelectContentElement | null;
-  viewport?: SelectViewportElement | null;
-  onViewportChange?: (node: SelectViewportElement | null) => void;
-  itemRefCallback?: (node: SelectItemElement | null, value: string, disabled: boolean) => void;
-  selectedItem?: SelectItemElement | null;
-  onItemLeave?: () => void;
-  itemTextRefCallback?: (
-    node: SelectItemTextElement | null,
-    value: string,
-    disabled: boolean,
-  ) => void;
-  focusSelectedItem?: () => void;
-  selectedItemText?: SelectItemTextElement | null;
-  position?: SelectContentProps['position'];
-  isPositioned?: boolean;
-  searchRef?: React.RefObject<string>;
+  content?: SelectContentElement | null | undefined;
+  viewport?: SelectViewportElement | null | undefined;
+  onViewportChange?: ((node: SelectViewportElement | null) => void) | undefined;
+  itemRefCallback?:
+    | ((node: SelectItemElement | null, value: string, disabled: boolean) => void)
+    | undefined;
+  selectedItem?: SelectItemElement | null | undefined;
+  onItemLeave?: (() => void) | undefined;
+  itemTextRefCallback?:
+    | ((node: SelectItemTextElement | null, value: string, disabled: boolean) => void)
+    | undefined;
+  focusSelectedItem?: (() => void) | undefined;
+  selectedItemText?: SelectItemTextElement | null | undefined;
+  position?: SelectContentProps['position'] | undefined;
+  isPositioned?: boolean | undefined;
+  searchRef?: React.RefObject<string> | undefined;
 };
 
 const [SelectContentProvider, useSelectContentContext] =
@@ -608,7 +638,7 @@ type SelectContentImplElement = SelectPopperPositionElement | SelectItemAlignedP
 type DismissableLayerProps = React.ComponentPropsWithoutRef<typeof DismissableLayer>;
 type FocusScopeProps = React.ComponentPropsWithoutRef<typeof FocusScope>;
 
-type SelectPopperPrivateProps = { onPlaced?: PopperContentProps['onPlaced'] };
+type SelectPopperPrivateProps = { onPlaced?: PopperContentProps['onPlaced'] | undefined };
 
 interface SelectContentImplProps
   extends
@@ -618,19 +648,19 @@ interface SelectContentImplProps
    * Event handler called when auto-focusing on close.
    * Can be prevented.
    */
-  onCloseAutoFocus?: FocusScopeProps['onUnmountAutoFocus'];
+  onCloseAutoFocus?: FocusScopeProps['onUnmountAutoFocus'] | undefined;
   /**
    * Event handler called when the escape key is down.
    * Can be prevented.
    */
-  onEscapeKeyDown?: DismissableLayerProps['onEscapeKeyDown'];
+  onEscapeKeyDown?: DismissableLayerProps['onEscapeKeyDown'] | undefined;
   /**
    * Event handler called when the a `pointerdown` event happens outside of the `DismissableLayer`.
    * Can be prevented.
    */
-  onPointerDownOutside?: DismissableLayerProps['onPointerDownOutside'];
+  onPointerDownOutside?: DismissableLayerProps['onPointerDownOutside'] | undefined;
 
-  position?: Position;
+  position?: Position | undefined;
 }
 
 const Slot = createSlot('SelectContent.RemoveScroll');
@@ -673,6 +703,8 @@ const SelectContentImpl = /* @__PURE__ */ React.forwardRef<
     const getItems = useCollection(__scopeSelect);
     const [isPositioned, setIsPositioned] = React.useState(false);
     const firstValidItemFoundRef = React.useRef(false);
+    const firstItemFoundRef = React.useRef(false);
+    const firstItemTextFoundRef = React.useRef(false);
 
     // aria-hide everything except the content (better supported equivalent to setting aria-modal)
     React.useEffect(() => {
@@ -783,11 +815,16 @@ const SelectContentImpl = /* @__PURE__ */ React.forwardRef<
 
     const itemRefCallback = React.useCallback(
       (node: SelectItemElement | null, value: string, disabled: boolean) => {
+        const isFirstItem = !firstItemFoundRef.current;
+        if (isFirstItem) firstItemFoundRef.current = true;
+
         const isFirstValidItem = !firstValidItemFoundRef.current && !disabled;
         const isSelectedItem = context.value !== undefined && context.value === value;
         if (isSelectedItem || isFirstValidItem) {
           setSelectedItem(node);
           if (isFirstValidItem) firstValidItemFoundRef.current = true;
+        } else if (isFirstItem) {
+          setSelectedItem(node);
         }
       },
       [context.value],
@@ -795,9 +832,16 @@ const SelectContentImpl = /* @__PURE__ */ React.forwardRef<
     const handleItemLeave = React.useCallback(() => content?.focus(), [content]);
     const itemTextRefCallback = React.useCallback(
       (node: SelectItemTextElement | null, value: string, disabled: boolean) => {
+        if (!node) return;
+
+        const isFirstItem = !firstItemTextFoundRef.current;
+        if (isFirstItem) firstItemTextFoundRef.current = true;
+
         const isFirstValidItem = !firstValidItemFoundRef.current && !disabled;
         const isSelectedItem = context.value !== undefined && context.value === value;
         if (isSelectedItem || isFirstValidItem) {
+          setSelectedItemText(node);
+        } else if (isFirstItem) {
           setSelectedItemText(node);
         }
       },
@@ -1196,9 +1240,9 @@ const SelectPopperPosition = /* @__PURE__ */ React.forwardRef<
  * -----------------------------------------------------------------------------------------------*/
 
 type SelectViewportContextValue = {
-  contentWrapper?: HTMLDivElement | null;
-  shouldExpandOnScrollRef?: React.RefObject<boolean>;
-  onScrollButtonChange?: (node: SelectScrollButtonImplElement | null) => void;
+  contentWrapper?: HTMLDivElement | null | undefined;
+  shouldExpandOnScrollRef?: React.RefObject<boolean> | undefined;
+  onScrollButtonChange?: ((node: SelectScrollButtonImplElement | null) => void) | undefined;
 };
 
 const [SelectViewportProvider, useSelectViewportContext] =
@@ -1209,7 +1253,7 @@ const VIEWPORT_NAME = 'SelectViewport';
 type SelectViewportElement = React.ComponentRef<typeof Primitive.div>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface SelectViewportProps extends PrimitiveDivProps {
-  nonce?: string;
+  nonce?: string | undefined;
 }
 
 const SelectViewport = /* @__PURE__ */ React.forwardRef<SelectViewportElement, SelectViewportProps>(
@@ -1344,8 +1388,8 @@ const [SelectItemContextProvider, useSelectItemContext] =
 type SelectItemElement = React.ComponentRef<typeof Primitive.div>;
 interface SelectItemProps extends PrimitiveDivProps {
   value: string;
-  disabled?: boolean;
-  textValue?: string;
+  disabled?: boolean | undefined;
+  textValue?: string | undefined;
 }
 
 const SelectItem = /* @__PURE__ */ React.forwardRef<SelectItemElement, SelectItemProps>(
@@ -1369,10 +1413,11 @@ const SelectItem = /* @__PURE__ */ React.forwardRef<SelectItemElement, SelectIte
     const textId = useId();
     const pointerTypeRef = React.useRef<React.PointerEvent['pointerType']>('touch');
 
-    const handleSelect = () => {
-      context.onValueChange(value);
+    function handleSelect(event: { isPropagationStopped(): boolean }) {
+      context.hasConsumerStoppedPropagationRef.current = event.isPropagationStopped();
+      context.onUserSelect(value);
       context.onOpenChange(false);
-    };
+    }
 
     return (
       <SelectItemContextProvider
@@ -1405,17 +1450,17 @@ const SelectItem = /* @__PURE__ */ React.forwardRef<SelectItemElement, SelectIte
             ref={composedRefs}
             onFocus={composeEventHandlers(itemProps.onFocus, () => setIsFocused(true))}
             onBlur={composeEventHandlers(itemProps.onBlur, () => setIsFocused(false))}
-            onClick={composeEventHandlers(itemProps.onClick, () => {
+            onClick={composeEventHandlers(itemProps.onClick, (event) => {
               if (disabled) {
                 return;
               }
 
               // Open on click when using a touch or pen device
               if (pointerTypeRef.current !== 'mouse') {
-                handleSelect();
+                handleSelect(event);
               }
             })}
-            onPointerUp={composeEventHandlers(itemProps.onPointerUp, () => {
+            onPointerUp={composeEventHandlers(itemProps.onPointerUp, (event) => {
               if (disabled) {
                 return;
               }
@@ -1423,7 +1468,7 @@ const SelectItem = /* @__PURE__ */ React.forwardRef<SelectItemElement, SelectIte
               // Using a mouse you should be able to do pointer down, move through
               // the list, and release the pointer over the item to select it.
               if (pointerTypeRef.current === 'mouse') {
-                handleSelect();
+                handleSelect(event);
               }
             })}
             onPointerDown={composeEventHandlers(itemProps.onPointerDown, (event) => {
@@ -1461,7 +1506,7 @@ const SelectItem = /* @__PURE__ */ React.forwardRef<SelectItemElement, SelectIte
               }
 
               if (SELECTION_KEYS.includes(event.key)) {
-                handleSelect();
+                handleSelect(event);
               }
               // prevent page scroll if using the space key to select an item
               if (event.key === ' ') {
@@ -1770,12 +1815,17 @@ const SelectBubbleInput = /* @__PURE__ */ React.forwardRef<
     forwardedRef,
   ) {
     const context = useSelectContext(BUBBLE_INPUT_NAME, __scopeSelect);
-    const { value, onValueChange, required, disabled, name, autoComplete, form } = context;
+    const { value, onValueChange, required, disabled, name, autoComplete, form, userSelection } =
+      context;
     const { nativeOptions, nativeSelectKey } = context;
     const ref = React.useRef<SelectBubbleInputElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, ref);
     const selectValue = value ?? '';
-    const prevValue = usePrevious(selectValue);
+    const prevValueRef = React.useRef(selectValue);
+    // The user selection this input last accounted for, so each selection
+    // notifies the form once.
+    const handledUserSelectionRef = React.useRef(userSelection);
+    const isDispatchingUserSelectionRef = React.useRef(false);
 
     // A consumer may render a `Select.Item` with an empty value to act as a
     // "clear" option. In that case it already provides a native `<option>` with
@@ -1796,21 +1846,55 @@ const SelectBubbleInput = /* @__PURE__ */ React.forwardRef<
         'value',
       ) as PropertyDescriptor;
       const setValue = descriptor.set;
-      if (prevValue !== selectValue && setValue) {
-        const event = new Event('change', { bubbles: true });
+
+      const isNewUserSelection =
+        userSelection !== null && userSelection !== handledUserSelectionRef.current;
+      handledUserSelectionRef.current = userSelection;
+      const valueChanged = prevValueRef.current !== selectValue;
+      prevValueRef.current = selectValue;
+      const isUserInteraction = isNewUserSelection && valueChanged;
+
+      if (
+        isNewUserSelection &&
+        !valueChanged &&
+        userSelection.value !== selectValue &&
+        !userSelection.hasConsumerStoppedPropagation &&
+        setValue
+      ) {
+        // The user selected a value that a controlled parent hasn't applied
+        // yet. Notify the form of the selection now, since applying it later
+        // can't be told apart from a programmatic update.
+        isDispatchingUserSelectionRef.current = true;
+        try {
+          setValue.call(select, userSelection.value);
+          select.dispatchEvent(new Event('change', { bubbles: true }));
+        } finally {
+          isDispatchingUserSelectionRef.current = false;
+          setValue.call(select, selectValue);
+        }
+        return;
+      }
+
+      // Select dispatches `change` directly. A programmatic update must still
+      // sync the native select so form submission sees the value, but the event
+      // must not bubble to ancestor `onChange` handlers. User-driven selections
+      // bubble unless the consumer already stopped propagation.
+      const bubbles = isUserInteraction && !userSelection.hasConsumerStoppedPropagation;
+      if (valueChanged && setValue) {
+        const event = new Event('change', { bubbles });
         setValue.call(select, selectValue);
         select.dispatchEvent(event);
       }
-    }, [prevValue, selectValue]);
+    }, [selectValue, userSelection]);
 
     /**
      * We purposefully use a `select` here to support form autofill as much as
      * possible.
      *
      * We purposefully do not add the `value` attribute here to allow the value
-     * to be set programmatically and bubble to any parent form `onChange`
-     * event. Adding the `value` will cause React to consider the programmatic
-     * dispatch a duplicate and it will get swallowed.
+     * to be set programmatically and bubble a `change` event for user-driven
+     * selections. Adding the `value` will cause React to consider the
+     * programmatic dispatch a duplicate and it will get swallowed.
      *
      * We use visually hidden styles rather than `display: "none"` because
      * Safari autofill won't work otherwise.
@@ -1831,7 +1915,13 @@ const SelectBubbleInput = /* @__PURE__ */ React.forwardRef<
         autoComplete={autoComplete}
         disabled={disabled}
         form={form}
-        onChange={(event) => onValueChange(event.target.value)}
+        onChange={(event) => {
+          // A selection the controlled parent hasn't applied must not be
+          // applied again here.
+          if (!isDispatchingUserSelectionRef.current) {
+            onValueChange(event.target.value);
+          }
+        }}
         {...props}
         style={{ ...VISUALLY_HIDDEN_STYLES, ...props.style }}
         ref={composedRefs}
@@ -1864,12 +1954,13 @@ function useTypeaheadSearch(onSearchChange: (search: string) => void) {
       const search = searchRef.current + key;
       handleSearchChange(search);
 
-      (function updateSearch(value: string) {
+      function updateSearch(value: string) {
         searchRef.current = value;
         window.clearTimeout(timerRef.current);
         // Reset `searchRef` 1 second after it was last updated
         if (value !== '') timerRef.current = window.setTimeout(() => updateSearch(''), 1000);
-      })(search);
+      }
+      updateSearch(search);
     },
     [handleSearchChange],
   );

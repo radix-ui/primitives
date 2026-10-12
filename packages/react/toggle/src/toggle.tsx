@@ -15,17 +15,17 @@ interface ToggleProps extends PrimitiveButtonProps {
   /**
    * The controlled state of the toggle.
    */
-  pressed?: boolean;
+  pressed?: boolean | undefined;
   /**
    * The state of the toggle when initially rendered. Use `defaultPressed`
    * if you do not need to control the state of the toggle.
    * @defaultValue false
    */
-  defaultPressed?: boolean;
+  defaultPressed?: boolean | undefined;
   /**
    * The callback that fires when the state of the toggle changes.
    */
-  onPressedChange?(pressed: boolean): void;
+  onPressedChange?: ((pressed: boolean) => void) | undefined;
 }
 
 const Toggle = /* @__PURE__ */ React.forwardRef<ToggleElement, ToggleProps>(

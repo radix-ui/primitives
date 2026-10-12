@@ -21,14 +21,14 @@ interface FocusScopeProps extends PrimitiveDivProps {
    * and shift+tab from first item will focus last tababble.
    * @defaultValue false
    */
-  loop?: boolean;
+  loop?: boolean | undefined;
 
   /**
    * When `true`, focus cannot escape the focus scope via keyboard,
    * pointer, or a programmatic focus.
    * @defaultValue false
    */
-  trapped?: boolean;
+  trapped?: boolean | undefined;
 
   /**
    * A list of nodes that should be treated as part of the focus scope even
@@ -38,19 +38,19 @@ interface FocusScopeProps extends PrimitiveDivProps {
    *
    * See: https://github.com/radix-ui/primitives/issues/3423
    */
-  branches?: HTMLElement[];
+  branches?: HTMLElement[] | undefined;
 
   /**
    * Event handler called when auto-focusing on mount.
    * Can be prevented.
    */
-  onMountAutoFocus?: (event: Event) => void;
+  onMountAutoFocus?: ((event: Event) => void) | undefined;
 
   /**
    * Event handler called when auto-focusing on unmount.
    * Can be prevented.
    */
-  onUnmountAutoFocus?: (event: Event) => void;
+  onUnmountAutoFocus?: ((event: Event) => void) | undefined;
 }
 
 const FocusScope = /* @__PURE__ */ React.forwardRef<FocusScopeElement, FocusScopeProps>(
@@ -182,16 +182,18 @@ const FocusScope = /* @__PURE__ */ React.forwardRef<FocusScopeElement, FocusScop
 
         return () => {
           container.removeEventListener(AUTOFOCUS_ON_MOUNT, onMountAutoFocus);
+          const ownerDocument = container.ownerDocument;
+          const UnmountEvent = CustomEvent;
 
           // We hit a react bug (fixed in v17) with focusing in unmount.
           // We need to delay the focus a little to get around it for now.
           // See: https://github.com/facebook/react/issues/17894
           setTimeout(() => {
-            const unmountEvent = new CustomEvent(AUTOFOCUS_ON_UNMOUNT, EVENT_OPTIONS);
+            const unmountEvent = new UnmountEvent(AUTOFOCUS_ON_UNMOUNT, EVENT_OPTIONS);
             container.addEventListener(AUTOFOCUS_ON_UNMOUNT, onUnmountAutoFocus);
             container.dispatchEvent(unmountEvent);
             if (!unmountEvent.defaultPrevented) {
-              focus(previouslyFocusedElement ?? document.body, { select: true });
+              focus(previouslyFocusedElement ?? ownerDocument.body, { select: true });
             }
             // we need to remove the listener after we `dispatchEvent`
             container.removeEventListener(AUTOFOCUS_ON_UNMOUNT, onUnmountAutoFocus);
@@ -269,7 +271,7 @@ interface FocusScopeBranchProviderProps {
    * is the case for layers that don't trap focus or lock scroll, which have nothing to host.
    */
   registry: FocusScopeBranchRegistry | null | undefined;
-  children?: React.ReactNode;
+  children?: React.ReactNode | undefined;
 }
 
 function FocusScopeBranchProvider({ registry, children }: FocusScopeBranchProviderProps) {
@@ -344,17 +346,25 @@ function getTabbableEdges(container: HTMLElement) {
  */
 function getTabbableCandidates(container: HTMLElement) {
   const nodes: HTMLElement[] = [];
+  const document = container.ownerDocument;
   const walker = document.createTreeWalker(container, NodeFilter.SHOW_ELEMENT, {
-    acceptNode: (node: any) => {
-      const isHiddenInput = node.tagName === 'INPUT' && node.type === 'hidden';
-      if (node.disabled || node.hidden || isHiddenInput) return NodeFilter.FILTER_SKIP;
+    acceptNode: (node: Element) => {
+      const isHiddenInput =
+        node.tagName === 'INPUT' && (node as HTMLInputElement).type === 'hidden';
+      if ((node as HTMLInputElement).disabled || (node as HTMLElement).hidden || isHiddenInput) {
+        return NodeFilter.FILTER_SKIP;
+      }
       // `.tabIndex` is not the same as the `tabindex` attribute. It works on the
       // runtime's understanding of tabbability, so this automatically accounts
       // for any kind of element that could be tabbed to.
-      return node.tabIndex >= 0 ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP;
+      return (node as HTMLElement).tabIndex >= 0
+        ? NodeFilter.FILTER_ACCEPT
+        : NodeFilter.FILTER_SKIP;
     },
   });
-  while (walker.nextNode()) nodes.push(walker.currentNode as HTMLElement);
+  while (walker.nextNode()) {
+    nodes.push(walker.currentNode as HTMLElement);
+  }
   // we do not take into account the order of nodes with positive `tabIndex` as it
   // hinders accessibility to have tab order different from visual order.
   return nodes;
@@ -385,7 +395,7 @@ function findVisible(elements: HTMLElement[], container: HTMLElement) {
   }
 }
 
-function isHidden(node: HTMLElement, { upTo }: { upTo?: HTMLElement }) {
+function isHidden(node: HTMLElement, { upTo }: { upTo?: HTMLElement | undefined }) {
   if (getComputedStyle(node).visibility === 'hidden') return true;
   while (node) {
     // we stop at `upTo` (excluding it)
@@ -396,14 +406,20 @@ function isHidden(node: HTMLElement, { upTo }: { upTo?: HTMLElement }) {
   return false;
 }
 
-function isSelectableInput(element: any): element is FocusableTarget & { select: () => void } {
-  return element instanceof HTMLInputElement && 'select' in element;
+function isSelectableInput(element: FocusableTarget): element is HTMLInputElement {
+  return (
+    (element as HTMLElement).tagName === 'INPUT' &&
+    typeof (element as HTMLInputElement).select === 'function'
+  );
 }
 
 function focus(element?: FocusableTarget | null, { select = false } = {}) {
   // only focus if that element is focusable
   if (element && element.focus) {
-    const previouslyFocusedElement = document.activeElement;
+    // Prefer the element's own document over the global one: they can differ for elements in
+    // another realm, and the global may no longer exist when this runs from the unmount timer.
+    const ownerDocument = (element as Partial<HTMLElement>).ownerDocument ?? document;
+    const previouslyFocusedElement = ownerDocument.activeElement;
     // NOTE: we prevent scrolling on focus, to minimize jarring transitions for users
     element.focus({ preventScroll: true });
     // only select if its not the same element, it supports selection and we need to select

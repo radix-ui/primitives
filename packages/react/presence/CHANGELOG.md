@@ -1,5 +1,9 @@
 # @radix-ui/react-presence
 
+## 1.1.11
+
+- Internal refactoring only; no behavioral or API changes.
+
 ## 1.1.10
 
 - Reverted breaking changes that caused compatibility issues with React Server Components.

@@ -22,7 +22,7 @@ const ToggleGroupType = {
 
 type ToggleGroupType = (typeof ToggleGroupType)[keyof typeof ToggleGroupType];
 
-type ScopedProps<P> = P & { __scopeToggleGroup?: Scope };
+type ScopedProps<P> = P & { __scopeToggleGroup?: Scope | undefined };
 const [createToggleGroupContext, createToggleGroupScope] = createContextScope(TOGGLE_GROUP_NAME, [
   createRovingFocusGroupScope,
 ]);
@@ -72,16 +72,16 @@ interface ToggleGroupImplSingleProps extends ToggleGroupImplProps {
   /**
    * The controlled stateful value of the item that is pressed.
    */
-  value?: string;
+  value?: string | undefined;
   /**
    * The value of the item that is pressed when initially rendered. Use
    * `defaultValue` if you do not need to control the state of a toggle group.
    */
-  defaultValue?: string;
+  defaultValue?: string | undefined;
   /**
    * The callback that fires when the value of the toggle group changes.
    */
-  onValueChange?(value: string): void;
+  onValueChange?: ((value: string) => void) | undefined;
 }
 
 const ToggleGroupImplSingle = /* @__PURE__ */ React.forwardRef<
@@ -120,16 +120,16 @@ interface ToggleGroupImplMultipleProps extends ToggleGroupImplProps {
   /**
    * The controlled stateful value of the items that are pressed.
    */
-  value?: string[];
+  value?: string[] | undefined;
   /**
    * The value of the items that are pressed when initially rendered. Use
    * `defaultValue` if you do not need to control the state of a toggle group.
    */
-  defaultValue?: string[];
+  defaultValue?: string[] | undefined;
   /**
    * The callback that fires when the state of the toggle group changes.
    */
-  onValueChange?(value: string[]): void;
+  onValueChange?: ((value: string[]) => void) | undefined;
 }
 
 const ToggleGroupImplMultiple = /* @__PURE__ */ React.forwardRef<
@@ -189,15 +189,15 @@ interface ToggleGroupImplProps extends PrimitiveDivProps {
    * Whether the group is disabled from user interaction.
    * @defaultValue false
    */
-  disabled?: boolean;
+  disabled?: boolean | undefined;
   /**
    * Whether the group should maintain roving focus of its buttons.
    * @defaultValue true
    */
-  rovingFocus?: boolean;
-  loop?: RovingFocusGroupProps['loop'];
-  orientation?: RovingFocusGroupProps['orientation'];
-  dir?: RovingFocusGroupProps['dir'];
+  rovingFocus?: boolean | undefined;
+  loop?: RovingFocusGroupProps['loop'] | undefined;
+  orientation?: RovingFocusGroupProps['orientation'] | undefined;
+  dir?: RovingFocusGroupProps['dir'] | undefined;
 }
 
 const ToggleGroupImpl = /* @__PURE__ */ React.forwardRef<

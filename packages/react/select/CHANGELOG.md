@@ -1,5 +1,19 @@
 # @radix-ui/react-select
 
+## 2.4.0
+
+- Allow explicit `undefined` for all optional types for compatibility with TypeScript's `exactOptionalPropertyTypes` flag.
+- Fixed bugs in form-nested control components where a user-driven change was treated as programmatic in some cases, preventing bubbled event handlers from being called.
+- Fixed content alignment when all items are disabled.
+- Fixed a bug where updating a `Select` value programmatically while inside a `<form>` would dispatch a `click` event from the hidden bubble select that propagated to ancestor `onClick` handlers.
+- Fixed a bug resulting from incorrect tree-shaking in SWC-minified code.
+- Updated dependencies: `@radix-ui/react-collection@1.2.0`, `@radix-ui/primitive@1.2.0`, `@radix-ui/react-context@1.3.0`, `@radix-ui/react-direction@1.2.0`, `@radix-ui/react-dismissable-layer@1.2.0`, `@radix-ui/react-focus-guards@1.2.0`, `@radix-ui/react-focus-scope@1.3.0`, `@radix-ui/react-popper@1.4.0`, `@radix-ui/react-portal@1.2.0`, `@radix-ui/react-primitive@2.2.0`, `@radix-ui/react-slot@1.5.0`, `@radix-ui/react-use-controllable-state@1.3.0`, `@radix-ui/react-use-callback-ref@1.1.5`, `@radix-ui/react-visually-hidden@1.2.13`
+
+## 2.3.8
+
+- Fixed a bug where internal event handlers were still called on disabled `Select.Item` elements. Consumer-provided event handlers still run, but Radix's own selection logic no longer fires for disabled items.
+- Updated dependencies: `@radix-ui/react-focus-scope@1.2.0`, `@radix-ui/react-slot@1.4.0`, `@radix-ui/react-dismissable-layer@1.1.20`, `@radix-ui/react-visually-hidden@1.2.12`, `@radix-ui/react-direction@1.1.5`, `@radix-ui/react-primitive@2.1.11`, `@radix-ui/react-presence@1.1.11`, `@radix-ui/react-popper@1.3.8`, `@radix-ui/react-portal@1.1.18`, `@radix-ui/react-collection@1.1.16`
+
 ## 2.3.7
 
 - Reverted breaking changes that caused compatibility issues with React Server Components.

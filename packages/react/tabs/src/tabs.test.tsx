@@ -12,7 +12,7 @@ describe('blur of focusable descendants when switching tabs', () => {
   const TabsWithInput = ({
     onInputBlur,
     ...props
-  }: React.ComponentProps<typeof Tabs.Root> & { onInputBlur?: () => void }) => (
+  }: React.ComponentProps<typeof Tabs.Root> & { onInputBlur?: (() => void) | undefined }) => (
     <Tabs.Root defaultValue="one" {...props}>
       <Tabs.List>
         <Tabs.Trigger value="one">One</Tabs.Trigger>

@@ -23,7 +23,7 @@ type Direction = (typeof Direction)[keyof typeof Direction];
 
 const DROPDOWN_MENU_NAME = 'DropdownMenu';
 
-type ScopedProps<P> = P & { __scopeDropdownMenu?: Scope };
+type ScopedProps<P> = P & { __scopeDropdownMenu?: Scope | undefined };
 const [createDropdownMenuContext, createDropdownMenuScope] = createContextScope(
   DROPDOWN_MENU_NAME,
   [createMenuScope],
@@ -44,12 +44,12 @@ const [DropdownMenuProvider, useDropdownMenuContext] =
   createDropdownMenuContext<DropdownMenuContextValue>(DROPDOWN_MENU_NAME);
 
 interface DropdownMenuProps {
-  children?: React.ReactNode;
-  dir?: Direction;
-  open?: boolean;
-  defaultOpen?: boolean;
-  onOpenChange?(open: boolean): void;
-  modal?: boolean;
+  children?: React.ReactNode | undefined;
+  dir?: Direction | undefined;
+  open?: boolean | undefined;
+  defaultOpen?: boolean | undefined;
+  onOpenChange?: ((open: boolean) => void) | undefined;
+  modal?: boolean | undefined;
 }
 
 const DropdownMenu: React.FC<DropdownMenuProps> = (props: ScopedProps<DropdownMenuProps>) => {
@@ -395,10 +395,10 @@ const DropdownMenuArrow = /* @__PURE__ */ React.forwardRef<
  * -----------------------------------------------------------------------------------------------*/
 
 interface DropdownMenuSubProps {
-  children?: React.ReactNode;
-  open?: boolean;
-  defaultOpen?: boolean;
-  onOpenChange?(open: boolean): void;
+  children?: React.ReactNode | undefined;
+  open?: boolean | undefined;
+  defaultOpen?: boolean | undefined;
+  onOpenChange?: ((open: boolean) => void) | undefined;
 }
 
 const DropdownMenuSub: React.FC<DropdownMenuSubProps> = (

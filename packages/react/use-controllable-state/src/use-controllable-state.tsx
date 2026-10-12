@@ -12,8 +12,8 @@ type SetStateFn<T> = React.Dispatch<React.SetStateAction<T>>;
 interface UseControllableStateParams<T> {
   prop?: T | undefined;
   defaultProp: T;
-  onChange?: ChangeHandler<T>;
-  caller?: string;
+  onChange?: ChangeHandler<T> | undefined;
+  caller?: string | undefined;
 }
 
 export function useControllableState<T>({

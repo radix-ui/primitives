@@ -33,7 +33,7 @@ const [Collection, useCollection, createCollectionScope] = createCollection<
   ItemData
 >(MENUBAR_NAME);
 
-type ScopedProps<P> = P & { __scopeMenubar?: Scope };
+type ScopedProps<P> = P & { __scopeMenubar?: Scope | undefined };
 const [createMenubarContext, createMenubarScope] = createContextScope(MENUBAR_NAME, [
   createCollectionScope,
   createRovingFocusGroupScope,
@@ -58,11 +58,11 @@ type MenubarElement = React.ComponentRef<typeof Primitive.div>;
 type RovingFocusGroupProps = React.ComponentPropsWithoutRef<typeof RovingFocusGroup.Root>;
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface MenubarProps extends PrimitiveDivProps {
-  value?: string;
-  defaultValue?: string;
-  onValueChange?: (value: string) => void;
-  loop?: RovingFocusGroupProps['loop'];
-  dir?: RovingFocusGroupProps['dir'];
+  value?: string | undefined;
+  defaultValue?: string | undefined;
+  onValueChange?: ((value: string) => void) | undefined;
+  loop?: RovingFocusGroupProps['loop'] | undefined;
+  dir?: RovingFocusGroupProps['dir'] | undefined;
 }
 
 const Menubar = /* @__PURE__ */ React.forwardRef<MenubarElement, MenubarProps>(
@@ -153,8 +153,8 @@ const [MenubarMenuProvider, useMenubarMenuContext] =
   createMenubarContext<MenubarMenuContextValue>(MENU_NAME);
 
 interface MenubarMenuProps {
-  value?: string;
-  children?: React.ReactNode;
+  value?: string | undefined;
+  children?: React.ReactNode | undefined;
 }
 
 const MenubarMenu = (props: ScopedProps<MenubarMenuProps>) => {
@@ -560,10 +560,10 @@ const MenubarArrow = /* @__PURE__ */ React.forwardRef<MenubarArrowElement, Menub
 const SUB_NAME = 'MenubarSub';
 
 interface MenubarSubProps {
-  children?: React.ReactNode;
-  open?: boolean;
-  defaultOpen?: boolean;
-  onOpenChange?(open: boolean): void;
+  children?: React.ReactNode | undefined;
+  open?: boolean | undefined;
+  defaultOpen?: boolean | undefined;
+  onOpenChange?: ((open: boolean) => void) | undefined;
 }
 
 const MenubarSub: React.FC<MenubarSubProps> = (props: ScopedProps<MenubarSubProps>) => {

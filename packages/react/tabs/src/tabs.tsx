@@ -24,7 +24,7 @@ type ActivationMode = (typeof ActivationMode)[keyof typeof ActivationMode];
 
 const TABS_NAME = 'Tabs';
 
-type ScopedProps<P> = P & { __scopeTabs?: Scope };
+type ScopedProps<P> = P & { __scopeTabs?: Scope | undefined };
 const [createTabsContext, createTabsScope] = createContextScope(TABS_NAME, [
   createRovingFocusGroupScope,
 ]);
@@ -34,9 +34,9 @@ type TabsContextValue = {
   baseId: string;
   value: string;
   onValueChange: (value: string) => void;
-  orientation?: TabsProps['orientation'];
-  dir?: TabsProps['dir'];
-  activationMode?: TabsProps['activationMode'];
+  orientation?: TabsProps['orientation'] | undefined;
+  dir?: TabsProps['dir'] | undefined;
+  activationMode?: TabsProps['activationMode'] | undefined;
 };
 
 const [TabsProvider, useTabsContext] = createTabsContext<TabsContextValue>(TABS_NAME);
@@ -46,26 +46,26 @@ type RovingFocusGroupProps = React.ComponentPropsWithoutRef<typeof RovingFocusGr
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface TabsProps extends PrimitiveDivProps {
   /** The value for the selected tab, if controlled */
-  value?: string;
+  value?: string | undefined;
   /** The value of the tab to select by default, if uncontrolled */
-  defaultValue?: string;
+  defaultValue?: string | undefined;
   /** A function called when a new tab is selected */
-  onValueChange?: (value: string) => void;
+  onValueChange?: ((value: string) => void) | undefined;
   /**
    * The orientation the tabs are layed out.
    * Mainly so arrow navigation is done accordingly (left & right vs. up & down)
    * @defaultValue horizontal
    */
-  orientation?: RovingFocusGroupProps['orientation'];
+  orientation?: RovingFocusGroupProps['orientation'] | undefined;
   /**
    * The direction of navigation between toolbar items.
    */
-  dir?: RovingFocusGroupProps['dir'];
+  dir?: RovingFocusGroupProps['dir'] | undefined;
   /**
    * Whether a tab is activated automatically or manually.
    * @defaultValue automatic
    * */
-  activationMode?: ActivationMode;
+  activationMode?: ActivationMode | undefined;
 }
 
 const Tabs = /* @__PURE__ */ React.forwardRef<TabsElement, TabsProps>(
@@ -118,7 +118,7 @@ const TAB_LIST_NAME = 'TabsList';
 
 type TabsListElement = React.ComponentRef<typeof Primitive.div>;
 interface TabsListProps extends PrimitiveDivProps {
-  loop?: RovingFocusGroupProps['loop'];
+  loop?: RovingFocusGroupProps['loop'] | undefined;
 }
 
 const TabsList = /* @__PURE__ */ React.forwardRef<TabsListElement, TabsListProps>(
@@ -243,7 +243,7 @@ interface TabsContentProps extends PrimitiveDivProps {
    * Used to force mounting when more control is needed. Useful when
    * controlling animation with React animation libraries.
    */
-  forceMount?: true;
+  forceMount?: true | undefined;
 }
 
 const TabsContent = /* @__PURE__ */ React.forwardRef<TabsContentElement, TabsContentProps>(
