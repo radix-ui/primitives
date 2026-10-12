@@ -1,5 +1,9 @@
 # @radix-ui/primitive
 
+## 1.2.0
+
+- All optional types are now compatible with TypeScript's `exactOptionalPropertyTypes` flag. Optional props are now declared as `prop?: T | undefined`, so consumers compiling with that flag can forward a possibly-`undefined` value straight into an optional prop.
+
 ## 1.1.7
 
 - Republish through CI to attach provenance attestations. The previous versions of these packages were published manually outside of CI and therefore shipped without provenance; this patch re-releases the same code through the CI pipeline so every package includes an attestation.

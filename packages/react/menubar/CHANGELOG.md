@@ -1,5 +1,10 @@
 # @radix-ui/react-menubar
 
+## 1.2.0
+
+- All optional types are now compatible with TypeScript's `exactOptionalPropertyTypes` flag. Optional props are now declared as `prop?: T | undefined`, so consumers compiling with that flag can forward a possibly-`undefined` value straight into an optional prop.
+- Updated dependencies: `@radix-ui/react-collection@1.2.0`, `@radix-ui/primitive@1.2.0`, `@radix-ui/react-context@1.3.0`, `@radix-ui/react-direction@1.2.0`, `@radix-ui/react-menu@2.2.0`, `@radix-ui/react-primitive@2.2.0`, `@radix-ui/react-roving-focus@1.2.0`, `@radix-ui/react-use-controllable-state@1.3.0`
+
 ## 1.1.25
 
 - Updated dependencies: `@radix-ui/react-menu@2.1.25`, `@radix-ui/react-roving-focus@1.1.20`, `@radix-ui/react-direction@1.1.5`, `@radix-ui/react-primitive@2.1.11`, `@radix-ui/react-collection@1.1.16`

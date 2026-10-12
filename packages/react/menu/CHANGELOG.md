@@ -1,5 +1,11 @@
 # @radix-ui/react-menu
 
+## 2.2.0
+
+- All optional types are now compatible with TypeScript's `exactOptionalPropertyTypes` flag. Optional props are now declared as `prop?: T | undefined`, so consumers compiling with that flag can forward a possibly-`undefined` value straight into an optional prop.
+- Fixed a bug resulting from incorrect treeshaking in SWC-minified code.
+- Updated dependencies: `@radix-ui/react-collection@1.2.0`, `@radix-ui/primitive@1.2.0`, `@radix-ui/react-context@1.3.0`, `@radix-ui/react-direction@1.2.0`, `@radix-ui/react-dismissable-layer@1.2.0`, `@radix-ui/react-focus-guards@1.2.0`, `@radix-ui/react-focus-scope@1.3.0`, `@radix-ui/react-popper@1.4.0`, `@radix-ui/react-portal@1.2.0`, `@radix-ui/react-primitive@2.2.0`, `@radix-ui/react-roving-focus@1.2.0`, `@radix-ui/react-slot@1.5.0`, `@radix-ui/react-use-callback-ref@1.1.5`
+
 ## 2.1.25
 
 - Fixed nested, portalled layers being unusable inside a modal layer. A non-modal popover rendered inside a modal Dialog previously broke some user interactions because the modal layer's trapped `FocusScope` reclaimed focus, and its `RemoveScroll` only allowed scrolling within the modal content.

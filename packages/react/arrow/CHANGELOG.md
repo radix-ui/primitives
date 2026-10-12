@@ -1,5 +1,9 @@
 # @radix-ui/react-arrow
 
+## 1.1.17
+
+- Updated dependencies: `@radix-ui/react-primitive@2.2.0`
+
 ## 1.1.16
 
 - Updated dependencies: `@radix-ui/react-primitive@2.1.11`

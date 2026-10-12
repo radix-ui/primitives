@@ -1,5 +1,10 @@
 # @radix-ui/react-popper
 
+## 1.4.0
+
+- All optional types are now compatible with TypeScript's `exactOptionalPropertyTypes` flag. Optional props are now declared as `prop?: T | undefined`, so consumers compiling with that flag can forward a possibly-`undefined` value straight into an optional prop.
+- Updated dependencies: `@radix-ui/react-context@1.3.0`, `@radix-ui/react-primitive@2.2.0`, `@radix-ui/react-use-callback-ref@1.1.5`, `@radix-ui/react-arrow@1.1.17`
+
 ## 1.3.8
 
 - Updated dependencies: `@radix-ui/react-use-size@1.1.5`, `@radix-ui/react-primitive@2.1.11`, `@radix-ui/react-arrow@1.1.16`

@@ -1,5 +1,9 @@
 # @radix-ui/react-direction
 
+## 1.2.0
+
+- All optional types are now compatible with TypeScript's `exactOptionalPropertyTypes` flag. Optional props are now declared as `prop?: T | undefined`, so consumers compiling with that flag can forward a possibly-`undefined` value straight into an optional prop.
+
 ## 1.1.5
 
 - Internal refactoring only; no behavioral or API changes.

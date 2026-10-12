@@ -1,5 +1,10 @@
 # @radix-ui/react-announce
 
+## 0.3.0
+
+- All optional types are now compatible with TypeScript's `exactOptionalPropertyTypes` flag. Optional props are now declared as `prop?: T | undefined`, so consumers compiling with that flag can forward a possibly-`undefined` value straight into an optional prop.
+- Updated dependencies: `@radix-ui/react-primitive@2.2.0`
+
 ## 0.2.16
 
 - Updated dependencies: `@radix-ui/react-primitive@2.1.11`

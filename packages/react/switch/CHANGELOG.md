@@ -1,5 +1,11 @@
 # @radix-ui/react-switch
 
+## 1.4.0
+
+- All optional types are now compatible with TypeScript's `exactOptionalPropertyTypes` flag. Optional props are now declared as `prop?: T | undefined`, so consumers compiling with that flag can forward a possibly-`undefined` value straight into an optional prop.
+- Fixed bugs in form-nested control components where a user-driven change was treated as programmatic in some cases, preventing bubbled event handlers from being called.
+- Updated dependencies: `@radix-ui/primitive@1.2.0`, `@radix-ui/react-context@1.3.0`, `@radix-ui/react-primitive@2.2.0`, `@radix-ui/react-use-controllable-state@1.3.0`
+
 ## 1.3.8
 
 - Updated dependencies: `@radix-ui/react-use-size@1.1.5`, `@radix-ui/react-primitive@2.1.11`

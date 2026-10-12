@@ -1,5 +1,9 @@
 # @radix-ui/react-use-callback-ref
 
+## 1.1.5
+
+- Fixed timing bugs in `useCallbackRef`.
+
 ## 1.1.4
 
 - Reverted breaking changes that caused compatibility issues with React Server Components.

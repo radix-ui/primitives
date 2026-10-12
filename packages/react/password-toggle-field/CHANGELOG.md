@@ -1,5 +1,10 @@
 # @radix-ui/react-password-toggle-field
 
+## 0.2.0
+
+- All optional types are now compatible with TypeScript's `exactOptionalPropertyTypes` flag. Optional props are now declared as `prop?: T | undefined`, so consumers compiling with that flag can forward a possibly-`undefined` value straight into an optional prop.
+- Updated dependencies: `@radix-ui/primitive@1.2.0`, `@radix-ui/react-context@1.3.0`, `@radix-ui/react-primitive@2.2.0`, `@radix-ui/react-use-controllable-state@1.3.0`
+
 ## 0.1.12
 
 - Updated dependencies: `@radix-ui/react-primitive@2.1.11`
@@ -69,14 +74,17 @@ This new primitive provides components for rendering a password input alongside 
 This API is currently unstable, and we hope you'll help us test it out! Import the primitive using the `unstable_` prefix.
 
 ```tsx
-import { unstable_PasswordToggleField as PasswordToggleField } from 'radix-ui';
+import { unstable_PasswordToggleField as PasswordToggleField } from "radix-ui";
 
 function FieldWithIconToggle() {
   return (
     <PasswordToggleField.Root>
       <PasswordToggleField.Input />
       <PasswordToggleField.Toggle>
-        <PasswordToggleField.Icon visible={<EyeOpenIcon />} hidden={<EyeClosedIcon />} />
+        <PasswordToggleField.Icon
+          visible={<EyeOpenIcon />}
+          hidden={<EyeClosedIcon />}
+        />
       </PasswordToggleField.Toggle>
     </PasswordToggleField.Root>
   );
@@ -87,7 +95,10 @@ function FieldWithTextToggle() {
     <PasswordToggleField.Root>
       <PasswordToggleField.Input />
       <PasswordToggleField.Toggle>
-        <PasswordToggleField.Slot visible="Hide password" hidden="Show password" />
+        <PasswordToggleField.Slot
+          visible="Hide password"
+          hidden="Show password"
+        />
       </PasswordToggleField.Toggle>
     </PasswordToggleField.Root>
   );

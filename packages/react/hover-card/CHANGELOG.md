@@ -1,5 +1,10 @@
 # @radix-ui/react-hover-card
 
+## 1.2.0
+
+- All optional types are now compatible with TypeScript's `exactOptionalPropertyTypes` flag. Optional props are now declared as `prop?: T | undefined`, so consumers compiling with that flag can forward a possibly-`undefined` value straight into an optional prop.
+- Updated dependencies: `@radix-ui/primitive@1.2.0`, `@radix-ui/react-context@1.3.0`, `@radix-ui/react-dismissable-layer@1.2.0`, `@radix-ui/react-focus-scope@1.3.0`, `@radix-ui/react-popper@1.4.0`, `@radix-ui/react-portal@1.2.0`, `@radix-ui/react-primitive@2.2.0`, `@radix-ui/react-use-controllable-state@1.3.0`
+
 ## 1.1.24
 
 - Fixed nested, portalled layers being unusable inside a modal layer. A non-modal popover rendered inside a modal Dialog previously broke some user interactions because the modal layer's trapped `FocusScope` reclaimed focus, and its `RemoveScroll` only allowed scrolling within the modal content.

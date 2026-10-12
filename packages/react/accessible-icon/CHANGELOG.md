@@ -1,5 +1,10 @@
 # @radix-ui/react-accessible-icon
 
+## 1.2.0
+
+- All optional types are now compatible with TypeScript's `exactOptionalPropertyTypes` flag. Optional props are now declared as `prop?: T | undefined`, so consumers compiling with that flag can forward a possibly-`undefined` value straight into an optional prop.
+- Updated dependencies: `@radix-ui/react-visually-hidden@1.2.13`
+
 ## 1.1.16
 
 - Updated dependencies: `@radix-ui/react-visually-hidden@1.2.12`

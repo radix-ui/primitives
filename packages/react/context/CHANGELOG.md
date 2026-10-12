@@ -1,5 +1,9 @@
 # @radix-ui/react-context
 
+## 1.3.0
+
+- All optional types are now compatible with TypeScript's `exactOptionalPropertyTypes` flag. Optional props are now declared as `prop?: T | undefined`, so consumers compiling with that flag can forward a possibly-`undefined` value straight into an optional prop.
+
 ## 1.2.2
 
 - Reverted breaking changes that caused compatibility issues with React Server Components.

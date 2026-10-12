@@ -1,5 +1,12 @@
 # @radix-ui/react-slider
 
+## 1.6.0
+
+- All optional types are now compatible with TypeScript's `exactOptionalPropertyTypes` flag. Optional props are now declared as `prop?: T | undefined`, so consumers compiling with that flag can forward a possibly-`undefined` value straight into an optional prop.
+- Fixed bugs in form-nested control components where a user-driven change was treated as programmatic in some cases, preventing bubbled event handlers from being called.
+- Fixed a bug where updating a `Slider` value programmatically inside a `<form>` would dispatch an `input` event that propagated to ancestor `onInput` handlers.
+- Updated dependencies: `@radix-ui/react-collection@1.2.0`, `@radix-ui/primitive@1.2.0`, `@radix-ui/react-context@1.3.0`, `@radix-ui/react-direction@1.2.0`, `@radix-ui/react-primitive@2.2.0`, `@radix-ui/react-use-controllable-state@1.3.0`
+
 ## 1.5.0
 
 - Added a `preserveThumbOrder` prop to `Slider` that prevents thumbs from crossing over one another. When enabled, each thumb is constrained to the values of its neighbors instead of swapping positions when dragged past them.
