@@ -1,5 +1,9 @@
 # @radix-ui/react-toggle
 
+## 1.2.1
+
+- Fixed a type regression where callback props that were previously declared as methods rejected handlers whose parameter is narrower than the prop's.
+
 ## 1.2.0
 
 - Allow explicit `undefined` for all optional types for compatibility with TypeScript's `exactOptionalPropertyTypes` flag.
