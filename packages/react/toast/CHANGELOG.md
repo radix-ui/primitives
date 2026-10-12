@@ -2,7 +2,7 @@
 
 ## 1.3.0
 
-- All optional types are now compatible with TypeScript's `exactOptionalPropertyTypes` flag. Optional props are now declared as `prop?: T | undefined`, so consumers compiling with that flag can forward a possibly-`undefined` value straight into an optional prop.
+- Allow explicit `undefined` for all optional types for compatibility with TypeScript's `exactOptionalPropertyTypes` flag.
 - Fixed `Toast.Viewport` forcing a still-hydrating Suspense boundary to client-render.
 - Updated dependencies: `@radix-ui/react-collection@1.2.0`, `@radix-ui/primitive@1.2.0`, `@radix-ui/react-context@1.3.0`, `@radix-ui/react-dismissable-layer@1.2.0`, `@radix-ui/react-portal@1.2.0`, `@radix-ui/react-primitive@2.2.0`, `@radix-ui/react-use-controllable-state@1.3.0`, `@radix-ui/react-use-callback-ref@1.1.5`, `@radix-ui/react-visually-hidden@1.2.13`
 

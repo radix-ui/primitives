@@ -2,8 +2,8 @@
 
 ## 1.3.0
 
-- All optional types are now compatible with TypeScript's `exactOptionalPropertyTypes` flag. Optional props are now declared as `prop?: T | undefined`, so consumers compiling with that flag can forward a possibly-`undefined` value straight into an optional prop.
-- Only set `aria-controls` on the popover trigger element when the popover is open
+- Allow explicit `undefined` for all optional types for compatibility with TypeScript's `exactOptionalPropertyTypes` flag.
+- Fixed `aria-controls` being set on `Popover.Trigger` while the popover is closed.
 - Updated dependencies: `@radix-ui/primitive@1.2.0`, `@radix-ui/react-context@1.3.0`, `@radix-ui/react-dismissable-layer@1.2.0`, `@radix-ui/react-focus-guards@1.2.0`, `@radix-ui/react-focus-scope@1.3.0`, `@radix-ui/react-popper@1.4.0`, `@radix-ui/react-portal@1.2.0`, `@radix-ui/react-primitive@2.2.0`, `@radix-ui/react-slot@1.5.0`, `@radix-ui/react-use-controllable-state@1.3.0`
 
 ## 1.2.0

@@ -2,8 +2,8 @@
 
 ## 1.3.0
 
-- All optional types are now compatible with TypeScript's `exactOptionalPropertyTypes` flag. Optional props are now declared as `prop?: T | undefined`, so consumers compiling with that flag can forward a possibly-`undefined` value straight into an optional prop.
-- Migrated `Accordion` to an updated collection implementation. This is an implementation detail change and does not affect the public API.
+- Allow explicit `undefined` for all optional types for compatibility with TypeScript's `exactOptionalPropertyTypes` flag.
+- Migrated `Accordion` to an updated collection implementation. This is an implementation detail and does not affect the public API.
 - Updated dependencies: `@radix-ui/react-collection@1.2.0`, `@radix-ui/primitive@1.2.0`, `@radix-ui/react-collapsible@1.2.0`, `@radix-ui/react-context@1.3.0`, `@radix-ui/react-direction@1.2.0`, `@radix-ui/react-primitive@2.2.0`, `@radix-ui/react-use-controllable-state@1.3.0`
 
 ## 1.2.21

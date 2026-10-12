@@ -2,8 +2,8 @@
 
 ## 1.4.0
 
-- All optional types are now compatible with TypeScript's `exactOptionalPropertyTypes` flag. Optional props are now declared as `prop?: T | undefined`, so consumers compiling with that flag can forward a possibly-`undefined` value straight into an optional prop.
-- Fixed a bug in Tooltip so that tabbing away from focusable tooltip trigger nested in a modal popover moves focus to the next element in the popover instead of the popover's root.
+- Allow explicit `undefined` for all optional types for compatibility with TypeScript's `exactOptionalPropertyTypes` flag.
+- Fixed a bug where tabbing away from a focusable tooltip trigger nested in a modal popover moved focus to the popover's root instead of the next element in the popover.
 - Updated dependencies: `@radix-ui/primitive@1.2.0`, `@radix-ui/react-context@1.3.0`, `@radix-ui/react-dismissable-layer@1.2.0`, `@radix-ui/react-focus-scope@1.3.0`, `@radix-ui/react-popper@1.4.0`, `@radix-ui/react-portal@1.2.0`, `@radix-ui/react-primitive@2.2.0`, `@radix-ui/react-slot@1.5.0`, `@radix-ui/react-use-controllable-state@1.3.0`, `@radix-ui/react-visually-hidden@1.2.13`
 
 ## 1.3.0

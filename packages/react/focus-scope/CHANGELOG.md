@@ -2,8 +2,8 @@
 
 ## 1.3.0
 
-- All optional types are now compatible with TypeScript's `exactOptionalPropertyTypes` flag. Optional props are now declared as `prop?: T | undefined`, so consumers compiling with that flag can forward a possibly-`undefined` value straight into an optional prop.
-- Fixed `FocusScope` throwing `TypeError` in test environments after teardown.
+- Allow explicit `undefined` for all optional types for compatibility with TypeScript's `exactOptionalPropertyTypes` flag.
+- Fixed `FocusScope` throwing a `TypeError` in test environments after teardown.
 - Updated dependencies: `@radix-ui/react-primitive@2.2.0`, `@radix-ui/react-use-callback-ref@1.1.5`
 
 ## 1.2.0

@@ -2,8 +2,8 @@
 
 ## 1.4.0
 
-- All optional types are now compatible with TypeScript's `exactOptionalPropertyTypes` flag. Optional props are now declared as `prop?: T | undefined`, so consumers compiling with that flag can forward a possibly-`undefined` value straight into an optional prop.
-- Fixed a bug resulting from incorrect treeshaking in SWC-minified code.
+- Allow explicit `undefined` for all optional types for compatibility with TypeScript's `exactOptionalPropertyTypes` flag.
+- Fixed a bug resulting from incorrect tree-shaking in SWC-minified code.
 - Updated dependencies: `@radix-ui/primitive@1.2.0`, `@radix-ui/react-context@1.3.0`, `@radix-ui/react-direction@1.2.0`, `@radix-ui/react-primitive@2.2.0`, `@radix-ui/react-slot@1.5.0`, `@radix-ui/react-use-callback-ref@1.1.5`
 
 ## 1.3.0

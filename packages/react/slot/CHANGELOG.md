@@ -2,7 +2,7 @@
 
 ## 1.5.0
 
-- All optional types are now compatible with TypeScript's `exactOptionalPropertyTypes` flag. Optional props are now declared as `prop?: T | undefined`, so consumers compiling with that flag can forward a possibly-`undefined` value straight into an optional prop.
+- Allow explicit `undefined` for all optional types for compatibility with TypeScript's `exactOptionalPropertyTypes` flag.
 - Fixed `Slot` throwing when an `asChild` child is a lazy reference whose resolved value is itself a lazy reference.
 
 ## 1.4.0
@@ -26,7 +26,7 @@
 `SlotProps` and `createSlot` now accept generic type arguments to specify the type of element a slot should render, as well as its props.
 
 ```tsx
-const Slot = createSlot<HTMLButtonElement, MyCustomButtonProps>("Slot");
+const Slot = createSlot<HTMLButtonElement, MyCustomButtonProps>('Slot');
 ```
 
 ## 1.2.5
