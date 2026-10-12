@@ -102,8 +102,10 @@ interface RovingFocusGroupImplProps
   extends Omit<PrimitiveDivProps, 'dir'>, RovingFocusGroupOptions {
   currentTabStopId?: string | null | undefined;
   defaultCurrentTabStopId?: string | undefined;
-  onCurrentTabStopIdChange?: ((tabStopId: string | null) => void) | undefined;
-  onEntryFocus?: ((event: Event) => void) | undefined;
+  onCurrentTabStopIdChange?:
+    | { bivarianceHack(tabStopId: string | null): void }['bivarianceHack']
+    | undefined;
+  onEntryFocus?: { bivarianceHack(event: Event): void }['bivarianceHack'] | undefined;
   preventScrollOnEntryFocus?: boolean | undefined;
 }
 

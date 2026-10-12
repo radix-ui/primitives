@@ -62,7 +62,7 @@ interface PopoverProps {
   children?: React.ReactNode | undefined;
   open?: boolean | undefined;
   defaultOpen?: boolean | undefined;
-  onOpenChange?: ((open: boolean) => void) | undefined;
+  onOpenChange?: { bivarianceHack(open: boolean): void }['bivarianceHack'] | undefined;
   modal?: boolean | undefined;
 }
 

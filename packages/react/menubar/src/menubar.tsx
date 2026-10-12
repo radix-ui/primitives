@@ -60,7 +60,7 @@ type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>;
 interface MenubarProps extends PrimitiveDivProps {
   value?: string | undefined;
   defaultValue?: string | undefined;
-  onValueChange?: ((value: string) => void) | undefined;
+  onValueChange?: { bivarianceHack(value: string): void }['bivarianceHack'] | undefined;
   loop?: RovingFocusGroupProps['loop'] | undefined;
   dir?: RovingFocusGroupProps['dir'] | undefined;
 }

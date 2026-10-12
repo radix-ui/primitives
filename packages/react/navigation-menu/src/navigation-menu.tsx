@@ -99,7 +99,7 @@ interface NavigationMenuProps
     PrimitiveNavProps {
   value?: string | undefined;
   defaultValue?: string | undefined;
-  onValueChange?: ((value: string) => void) | undefined;
+  onValueChange?: { bivarianceHack(value: string): void }['bivarianceHack'] | undefined;
   dir?: Direction | undefined;
   orientation?: Orientation | undefined;
   /**
@@ -275,7 +275,7 @@ interface NavigationMenuSubProps
     PrimitiveDivProps {
   value?: string | undefined;
   defaultValue?: string | undefined;
-  onValueChange?: ((value: string) => void) | undefined;
+  onValueChange?: { bivarianceHack(value: string): void }['bivarianceHack'] | undefined;
   orientation?: Orientation | undefined;
   /**
    * Whether an item is activated automatically or manually.
@@ -667,7 +667,7 @@ type NavigationMenuLinkElement = React.ComponentRef<typeof Primitive.a>;
 type PrimitiveLinkProps = React.ComponentPropsWithoutRef<typeof Primitive.a>;
 interface NavigationMenuLinkProps extends Omit<PrimitiveLinkProps, 'onSelect'> {
   active?: boolean | undefined;
-  onSelect?: ((event: Event) => void) | undefined;
+  onSelect?: { bivarianceHack(event: Event): void }['bivarianceHack'] | undefined;
 }
 
 const NavigationMenuLink = /* @__PURE__ */ React.forwardRef<

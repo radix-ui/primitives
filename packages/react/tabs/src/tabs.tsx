@@ -50,7 +50,7 @@ interface TabsProps extends PrimitiveDivProps {
   /** The value of the tab to select by default, if uncontrolled */
   defaultValue?: string | undefined;
   /** A function called when a new tab is selected */
-  onValueChange?: ((value: string) => void) | undefined;
+  onValueChange?: { bivarianceHack(value: string): void }['bivarianceHack'] | undefined;
   /**
    * The orientation the tabs are layed out.
    * Mainly so arrow navigation is done accordingly (left & right vs. up & down)

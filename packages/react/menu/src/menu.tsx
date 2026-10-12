@@ -654,7 +654,7 @@ const ITEM_SELECT = 'menu.itemSelect';
 
 type MenuItemElement = MenuItemImplElement;
 interface MenuItemProps extends Omit<MenuItemImplProps, 'onSelect'> {
-  onSelect?: ((event: Event) => void) | undefined;
+  onSelect?: { bivarianceHack(event: Event): void }['bivarianceHack'] | undefined;
 }
 
 const MenuItem = /* @__PURE__ */ React.forwardRef<MenuItemElement, MenuItemProps>(
@@ -818,7 +818,7 @@ type CheckedState = boolean | 'indeterminate';
 interface MenuCheckboxItemProps extends MenuItemProps {
   checked?: CheckedState | undefined;
   // `onCheckedChange` can never be called with `"indeterminate"` from the inside
-  onCheckedChange?: ((checked: boolean) => void) | undefined;
+  onCheckedChange?: { bivarianceHack(checked: boolean): void }['bivarianceHack'] | undefined;
 }
 
 const MenuCheckboxItem = /* @__PURE__ */ React.forwardRef<
@@ -861,7 +861,7 @@ const [RadioGroupProvider, useRadioGroupContext] = createMenuContext<MenuRadioGr
 type MenuRadioGroupElement = React.ComponentRef<typeof MenuGroup>;
 interface MenuRadioGroupProps extends MenuGroupProps {
   value?: string | undefined;
-  onValueChange?: ((value: string) => void) | undefined;
+  onValueChange?: { bivarianceHack(value: string): void }['bivarianceHack'] | undefined;
 }
 
 const MenuRadioGroup = /* @__PURE__ */ React.forwardRef<MenuRadioGroupElement, MenuRadioGroupProps>(

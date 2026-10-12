@@ -53,7 +53,7 @@ interface PasswordToggleFieldProps {
   id?: string | undefined;
   visible?: boolean | undefined;
   defaultVisible?: boolean | undefined;
-  onVisibilityChange?: ((visible: boolean) => void) | undefined;
+  onVisibilityChange?: { bivarianceHack(visible: boolean): void }['bivarianceHack'] | undefined;
   children?: React.ReactNode | undefined;
 }
 

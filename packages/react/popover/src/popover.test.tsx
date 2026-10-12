@@ -729,3 +729,17 @@ function cleanupModal() {
   // A modal popover sets this on the `body` and only restores it on close.
   document.body.style.pointerEvents = '';
 }
+
+// Regression test for https://github.com/radix-ui/primitives/issues/4197
+describe('handlers with a narrower parameter type than the prop', () => {
+  afterEach(cleanup);
+
+  it('accepts an `onOpenChange` handler typed with a narrower parameter', () => {
+    const handleOpenChange = vi.fn((open: true) => open);
+
+    render(<PopoverTest onOpenChange={handleOpenChange} />);
+    fireEvent.click(screen.getByText(TRIGGER_TEXT));
+
+    expect(handleOpenChange).toHaveBeenCalledWith(true);
+  });
+});

@@ -158,12 +158,12 @@ interface OneTimePasswordFieldOwnProps {
    * before attempting to submit the associated form. It will be called whether
    * or not a form is located, or if submission is not allowed.
    */
-  onAutoSubmit?: ((value: string) => void) | undefined;
+  onAutoSubmit?: { bivarianceHack(value: string): void }['bivarianceHack'] | undefined;
   /**
    * A callback fired when the field's value changes. When the component is
    * controlled, this should update the state passed to the `value` prop.
    */
-  onValueChange?: ((value: string) => void) | undefined;
+  onValueChange?: { bivarianceHack(value: string): void }['bivarianceHack'] | undefined;
   /**
    * Indicates the vertical directionality of the input elements.
    *
@@ -187,7 +187,7 @@ interface OneTimePasswordFieldOwnProps {
    * This function will be called before updating values in response to user
    * interactions.
    */
-  sanitizeValue?: ((value: string) => string) | undefined;
+  sanitizeValue?: { bivarianceHack(value: string): string }['bivarianceHack'] | undefined;
   /**
    * The input type of the field's input elements. Can be `"password"` or `"text"`.
    */
@@ -583,7 +583,7 @@ interface OneTimePasswordFieldInputProps extends Omit<
   /**
    * Callback fired when the user input fails native HTML input validation.
    */
-  onInvalidChange?: ((character: string) => void) | undefined;
+  onInvalidChange?: { bivarianceHack(character: string): void }['bivarianceHack'] | undefined;
   /**
    * User-provided index to determine the order of the inputs. This is useful if
    * you need certain index-based attributes to be set on the initial render,

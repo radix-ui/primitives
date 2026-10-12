@@ -138,7 +138,7 @@ interface TooltipProps {
   children?: React.ReactNode | undefined;
   open?: boolean | undefined;
   defaultOpen?: boolean | undefined;
-  onOpenChange?: ((open: boolean) => void) | undefined;
+  onOpenChange?: { bivarianceHack(open: boolean): void }['bivarianceHack'] | undefined;
   /**
    * The duration from when the pointer enters the trigger until the tooltip gets opened. This will
    * override the prop with the same name passed to Provider.
