@@ -1,5 +1,10 @@
 # @radix-ui/react-slot
 
+## 1.5.0
+
+- Allow explicit `undefined` for all optional types for compatibility with TypeScript's `exactOptionalPropertyTypes` flag.
+- Fixed `Slot` throwing when an `asChild` child is a lazy reference whose resolved value is itself a lazy reference.
+
 ## 1.4.0
 
 - Added support for multiple `aria-describedby` attributes.

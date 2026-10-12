@@ -1,5 +1,10 @@
 # @radix-ui/react-tabs
 
+## 1.2.0
+
+- Allow explicit `undefined` for all optional types for compatibility with TypeScript's `exactOptionalPropertyTypes` flag.
+- Updated dependencies: `@radix-ui/primitive@1.2.0`, `@radix-ui/react-context@1.3.0`, `@radix-ui/react-direction@1.2.0`, `@radix-ui/react-primitive@2.2.0`, `@radix-ui/react-roving-focus@1.2.0`, `@radix-ui/react-use-controllable-state@1.3.0`
+
 ## 1.1.22
 
 - Fixed a bug where a focused element inside `Tabs.Content` did not fire a blur event before the tab switched. `Tabs.Trigger` now moves focus before the tab's state change.

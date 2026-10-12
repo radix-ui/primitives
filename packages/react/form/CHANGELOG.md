@@ -1,5 +1,10 @@
 # @radix-ui/react-form
 
+## 0.3.0
+
+- Allow explicit `undefined` for all optional types for compatibility with TypeScript's `exactOptionalPropertyTypes` flag.
+- Updated dependencies: `@radix-ui/primitive@1.2.0`, `@radix-ui/react-context@1.3.0`, `@radix-ui/react-primitive@2.2.0`, `@radix-ui/react-label@2.1.17`
+
 ## 0.2.0
 
 - Added support for multiple `aria-describedby` attributes.

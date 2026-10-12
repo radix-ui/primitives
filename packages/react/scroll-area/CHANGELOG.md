@@ -1,5 +1,11 @@
 # @radix-ui/react-scroll-area
 
+## 1.4.0
+
+- Allow explicit `undefined` for all optional types for compatibility with TypeScript's `exactOptionalPropertyTypes` flag.
+- Fixed a bug resulting from incorrect tree-shaking in SWC-minified code.
+- Updated dependencies: `@radix-ui/primitive@1.2.0`, `@radix-ui/react-context@1.3.0`, `@radix-ui/react-direction@1.2.0`, `@radix-ui/react-primitive@2.2.0`, `@radix-ui/react-slot@1.5.0`, `@radix-ui/react-use-callback-ref@1.1.5`
+
 ## 1.3.0
 
 - Added a `ScrollArea.Content` part so consumers can own the wrapper element implicitly rendered by `ScrollArea.Viewport`. Pass `disableImplicitContentElement` to the viewport and render `ScrollArea.Content` as its child.

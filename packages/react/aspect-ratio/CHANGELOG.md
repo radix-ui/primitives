@@ -1,5 +1,10 @@
 # @radix-ui/react-aspect-ratio
 
+## 1.2.0
+
+- Allow explicit `undefined` for all optional types for compatibility with TypeScript's `exactOptionalPropertyTypes` flag.
+- Updated dependencies: `@radix-ui/react-primitive@2.2.0`
+
 ## 1.1.16
 
 - Updated dependencies: `@radix-ui/react-primitive@2.1.11`

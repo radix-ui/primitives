@@ -1,5 +1,9 @@
 # @radix-ui/react-visually-hidden
 
+## 1.2.13
+
+- Updated dependencies: `@radix-ui/react-primitive@2.2.0`
+
 ## 1.2.12
 
 - Updated dependencies: `@radix-ui/react-primitive@2.1.11`

@@ -1,5 +1,9 @@
 # @radix-ui/react-focus-guards
 
+## 1.2.0
+
+- Allow explicit `undefined` for all optional types for compatibility with TypeScript's `exactOptionalPropertyTypes` flag.
+
 ## 1.1.6
 
 - Reverted breaking changes that caused compatibility issues with React Server Components.

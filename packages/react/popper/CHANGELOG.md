@@ -1,5 +1,10 @@
 # @radix-ui/react-popper
 
+## 1.4.0
+
+- Allow explicit `undefined` for all optional types for compatibility with TypeScript's `exactOptionalPropertyTypes` flag.
+- Updated dependencies: `@radix-ui/react-context@1.3.0`, `@radix-ui/react-primitive@2.2.0`, `@radix-ui/react-use-callback-ref@1.1.5`, `@radix-ui/react-arrow@1.1.17`
+
 ## 1.3.8
 
 - Updated dependencies: `@radix-ui/react-use-size@1.1.5`, `@radix-ui/react-primitive@2.1.11`, `@radix-ui/react-arrow@1.1.16`
