@@ -487,19 +487,20 @@ const MenuContentImpl = /* @__PURE__ */ React.forwardRef<
       <MenuContentProvider
         scope={__scopeMenu}
         searchRef={searchRef}
+        // ignore pointer movement once closed, the content stays mounted while animating out
         onItemEnter={React.useCallback(
           (event) => {
-            if (isPointerMovingToSubmenu(event)) event.preventDefault();
+            if (!context.open || isPointerMovingToSubmenu(event)) event.preventDefault();
           },
-          [isPointerMovingToSubmenu],
+          [context.open, isPointerMovingToSubmenu],
         )}
         onItemLeave={React.useCallback(
           (event) => {
-            if (isPointerMovingToSubmenu(event)) return;
+            if (!context.open || isPointerMovingToSubmenu(event)) return;
             contentRef.current?.focus();
             setCurrentItemId(null);
           },
-          [isPointerMovingToSubmenu],
+          [context.open, isPointerMovingToSubmenu],
         )}
         onTriggerLeave={React.useCallback(
           (event) => {
