@@ -70,4 +70,12 @@ Reference other packages and copy their `package.json`, `README.md`, and `tsconf
 - [ ] `pnpm lint` passes
 - [ ] `pnpm test` passes
 - [ ] `pnpm types:check` passes
-- [ ] Conventional Commit message format used (`feat:`, `fix:`, `feat!:` for breaking)
+- [ ] Follows commit message conventions:
+  - [ ] Commit message is succinct and prefixed with the affected package name. Exceptions to the prefix rule:
+    - If changes are wide-ranging and affect multiple packages, omit the package name if it makes a succinct headline commit is too long
+    - No packages are affected (cosmetic )
+  - [ ] Avoid Conventional Commit message format (`feat:`, `fix:`, `feat!:` for breaking)
+  - [ ] Avoid including too many implementation details in the commit message; prefer concise descriptions
+- [ ] PR title follows same conventions as commit messages
+- [ ] PR description is concise and includes a summary of the changes. Again, avoid including too many implementation details; prefer concise descriptions.
+- [ ] Include a link to the relevant issue in the PR description (if applicable)
