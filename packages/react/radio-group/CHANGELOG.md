@@ -1,5 +1,9 @@
 # @radix-ui/react-radio-group
 
+## 1.5.1
+
+- Updated dependencies: `@radix-ui/react-roving-focus@1.2.1`
+
 ## 1.5.0
 
 - Allow explicit `undefined` for all optional types for compatibility with TypeScript's `exactOptionalPropertyTypes` flag.

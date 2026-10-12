@@ -1,5 +1,9 @@
 # @radix-ui/react-toolbar
 
+## 1.2.1
+
+- Updated dependencies: `@radix-ui/react-roving-focus@1.2.1`, `@radix-ui/react-toggle-group@1.2.1`
+
 ## 1.2.0
 
 - Allow explicit `undefined` for all optional types for compatibility with TypeScript's `exactOptionalPropertyTypes` flag.
