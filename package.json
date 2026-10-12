@@ -7,7 +7,6 @@
     "lint": "pnpm -r --no-bail run lint",
     "types:check": "pnpm -r --no-bail --parallel run typecheck",
     "test": "vitest",
-    "test:ci": "vitest run && pnpm e2e:install && pnpm e2e",
     "storybook": "pnpm --filter=@repo/storybook run dev -p 9009 --no-open",
     "storybook:build": "BROWSER=none pnpm --filter=@repo/storybook run build",
     "storybook:serve": "pnpm --filter=@repo/storybook run serve",
