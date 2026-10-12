@@ -17,4 +17,4 @@
 'radix-ui': patch
 ---
 
-Fixed a type regression where callback props that were previously declared as methods, such as `onValueChange`, `onCheckedChange` and `onOpenChange`, rejected handlers whose parameter is narrower than the prop's, for example a `Select` handler typed with its item values. These props accept such handlers again, and still accept an explicit `undefined` under `exactOptionalPropertyTypes`.
+Fixed a type regression where callback props that were previously declared as methods rejected handlers whose parameter is narrower than the prop's.
