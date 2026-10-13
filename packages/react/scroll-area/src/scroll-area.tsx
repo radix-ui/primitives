@@ -302,6 +302,7 @@ const ScrollAreaContent = /* @__PURE__ */ React.forwardRef<
     // see what use-cases consumers come up with there before trying to resolve
     // it.
     <Primitive.div
+      role="presentation"
       {...contentProps}
       ref={composedRefs}
       style={{ minWidth: '100%', display: 'table', ...props.style }}
