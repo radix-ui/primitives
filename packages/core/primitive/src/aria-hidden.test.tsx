@@ -169,6 +169,11 @@ describe('hideOthers', () => {
     expect(
       getNearestAttribute(root.querySelector('#to-be-hidden')!, 'aria-hidden', { current: root }),
     ).toBe('true');
+    expect(
+      getNearestAttribute(root.querySelector('[aria-live="off"]')!, 'aria-hidden', {
+        current: root,
+      }),
+    ).toBe(null);
 
     expect(wrapper.baseElement.innerHTML).toMatchInlineSnapshot(
       `"<div><div><div><div id="to-be-hidden" data-aria-hidden="true" aria-hidden="true">hidden</div><div aria-live="polite">not-hidden life</div><div aria-live="off">hidden life</div></div><div>not-hidden</div></div></div>"`,
@@ -193,15 +198,202 @@ describe('hideOthers', () => {
 
     const unhide = hideOthers(new Set([root.firstElementChild!.lastElementChild!]), root);
 
-    expect(
-      getNearestAttribute(root.querySelector('script')!, 'aria-hidden', { current: root }),
-    ).toBe(null);
+    expect(root.querySelector('script')!.hasAttribute('aria-hidden')).toBe(false);
+    expect(root.querySelector('script')!.hasAttribute('data-aria-hidden')).toBe(false);
+    expect(scriptContainer.current!.getAttribute('aria-hidden')).toBe('true');
     expect(
       getNearestAttribute(root.querySelector('#to-be-hidden')!, 'aria-hidden', { current: root }),
     ).toBe('true');
 
     expect(wrapper.baseElement.innerHTML).toMatchInlineSnapshot(
-      `"<div><div><div><div id="to-be-hidden" data-aria-hidden="true" aria-hidden="true">hidden</div><script></script></div><div>not-hidden</div></div></div>"`,
+      `"<div><div><div data-aria-hidden="true" aria-hidden="true"><div id="to-be-hidden">hidden</div><script></script></div><div>not-hidden</div></div></div>"`,
+    );
+
+    unhide();
+
+    expect(scriptContainer.current!.hasAttribute('aria-hidden')).toBe(false);
+  });
+
+  it('handles style', () => {
+    const container = React.createRef<HTMLDivElement>();
+    const wrapper = render(
+      <div>
+        <div ref={container}>
+          <div id="to-be-hidden">hidden</div>
+        </div>
+        <div>not-hidden</div>
+      </div>,
+    );
+    container.current!.append(document.createElement('style'));
+    const root = wrapper.container;
+
+    const unhide = hideOthers(new Set([root.firstElementChild!.lastElementChild!]), root);
+
+    expect(root.querySelector('style')!.hasAttribute('aria-hidden')).toBe(false);
+    expect(root.querySelector('style')!.hasAttribute('data-aria-hidden')).toBe(false);
+    expect(container.current!.getAttribute('aria-hidden')).toBe('true');
+
+    expect(wrapper.baseElement.innerHTML).toMatchInlineSnapshot(
+      `"<div><div><div data-aria-hidden="true" aria-hidden="true"><div id="to-be-hidden">hidden</div><style></style></div><div>not-hidden</div></div></div>"`,
+    );
+
+    unhide();
+
+    expect(container.current!.hasAttribute('aria-hidden')).toBe(false);
+  });
+
+  it('handles link', () => {
+    const container = React.createRef<HTMLDivElement>();
+    const wrapper = render(
+      <div>
+        <div ref={container}>
+          <div id="to-be-hidden">hidden</div>
+        </div>
+        <div>not-hidden</div>
+      </div>,
+    );
+    // React hoists `<link>` into `<head>`, so it is inserted directly
+    container.current!.append(document.createElement('link'));
+    const root = wrapper.container;
+
+    const unhide = hideOthers(new Set([root.firstElementChild!.lastElementChild!]), root);
+
+    expect(root.querySelector('link')!.hasAttribute('aria-hidden')).toBe(false);
+    expect(root.querySelector('link')!.hasAttribute('data-aria-hidden')).toBe(false);
+    expect(container.current!.getAttribute('aria-hidden')).toBe('true');
+
+    expect(wrapper.baseElement.innerHTML).toMatchInlineSnapshot(
+      `"<div><div><div data-aria-hidden="true" aria-hidden="true"><div id="to-be-hidden">hidden</div><link></div><div>not-hidden</div></div></div>"`,
+    );
+
+    unhide();
+
+    expect(container.current!.hasAttribute('aria-hidden')).toBe(false);
+  });
+
+  it('handles meta', () => {
+    const container = React.createRef<HTMLDivElement>();
+    const wrapper = render(
+      <div>
+        <div ref={container}>
+          <div id="to-be-hidden">hidden</div>
+        </div>
+        <div>not-hidden</div>
+      </div>,
+    );
+    // React hoists `<meta>` into `<head>`, so it is inserted directly
+    container.current!.append(document.createElement('meta'));
+    const root = wrapper.container;
+
+    const unhide = hideOthers(new Set([root.firstElementChild!.lastElementChild!]), root);
+
+    expect(root.querySelector('meta')!.hasAttribute('aria-hidden')).toBe(false);
+    expect(root.querySelector('meta')!.hasAttribute('data-aria-hidden')).toBe(false);
+    expect(container.current!.getAttribute('aria-hidden')).toBe('true');
+
+    expect(wrapper.baseElement.innerHTML).toMatchInlineSnapshot(
+      `"<div><div><div data-aria-hidden="true" aria-hidden="true"><div id="to-be-hidden">hidden</div><meta></div><div>not-hidden</div></div></div>"`,
+    );
+
+    unhide();
+
+    expect(container.current!.hasAttribute('aria-hidden')).toBe(false);
+  });
+
+  it('handles template', () => {
+    const container = React.createRef<HTMLDivElement>();
+    const wrapper = render(
+      <div>
+        <div ref={container}>
+          <div id="to-be-hidden">hidden</div>
+        </div>
+        <div>not-hidden</div>
+      </div>,
+    );
+    container.current!.append(document.createElement('template'));
+    const root = wrapper.container;
+
+    const unhide = hideOthers(new Set([root.firstElementChild!.lastElementChild!]), root);
+
+    expect(root.querySelector('template')!.hasAttribute('aria-hidden')).toBe(false);
+    expect(root.querySelector('template')!.hasAttribute('data-aria-hidden')).toBe(false);
+    expect(container.current!.getAttribute('aria-hidden')).toBe('true');
+
+    expect(wrapper.baseElement.innerHTML).toMatchInlineSnapshot(
+      `"<div><div><div data-aria-hidden="true" aria-hidden="true"><div id="to-be-hidden">hidden</div><template></template></div><div>not-hidden</div></div></div>"`,
+    );
+
+    unhide();
+
+    expect(container.current!.hasAttribute('aria-hidden')).toBe(false);
+  });
+
+  it('handles noscript', () => {
+    const container = React.createRef<HTMLDivElement>();
+    const wrapper = render(
+      <div>
+        <div ref={container}>
+          <div id="to-be-hidden">hidden</div>
+        </div>
+        <div>not-hidden</div>
+      </div>,
+    );
+    container.current!.append(document.createElement('noscript'));
+    const root = wrapper.container;
+
+    const unhide = hideOthers(new Set([root.firstElementChild!.lastElementChild!]), root);
+
+    expect(root.querySelector('noscript')!.hasAttribute('aria-hidden')).toBe(false);
+    expect(root.querySelector('noscript')!.hasAttribute('data-aria-hidden')).toBe(false);
+    expect(container.current!.getAttribute('aria-hidden')).toBe('true');
+
+    expect(wrapper.baseElement.innerHTML).toMatchInlineSnapshot(
+      `"<div><div><div data-aria-hidden="true" aria-hidden="true"><div id="to-be-hidden">hidden</div><noscript></noscript></div><div>not-hidden</div></div></div>"`,
+    );
+
+    unhide();
+
+    expect(container.current!.hasAttribute('aria-hidden')).toBe(false);
+  });
+
+  it('does not skip svg title elements', () => {
+    const wrapper = render(
+      <div>
+        <svg>
+          <title>icon</title>
+          <circle />
+        </svg>
+        <div>not-hidden</div>
+      </div>,
+    );
+    const root = wrapper.container;
+
+    const unhide = hideOthers(new Set([root.querySelector('circle')!]), root);
+
+    expect(root.querySelector('title')!.getAttribute('aria-hidden')).toBe('true');
+
+    unhide();
+  });
+
+  it('does not mark script siblings of hidden elements', () => {
+    const wrapper = render(
+      <div>
+        <div id="to-be-hidden">hidden</div>
+        <div>not-hidden</div>
+      </div>,
+    );
+    // React warns when rendering `<script>`, so it is inserted directly
+    wrapper.container.firstElementChild!.append(document.createElement('script'));
+    const root = wrapper.container;
+
+    const unhide = hideOthers(new Set([root.firstElementChild!.children[1]!]), root);
+
+    expect(root.querySelector('script')!.hasAttribute('aria-hidden')).toBe(false);
+    expect(root.querySelector('script')!.hasAttribute('data-aria-hidden')).toBe(false);
+    expect(root.querySelector('#to-be-hidden')!.getAttribute('aria-hidden')).toBe('true');
+
+    expect(wrapper.baseElement.innerHTML).toMatchInlineSnapshot(
+      `"<div><div><div id="to-be-hidden" data-aria-hidden="true" aria-hidden="true">hidden</div><div>not-hidden</div><script></script></div></div>"`,
     );
 
     unhide();
