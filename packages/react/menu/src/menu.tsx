@@ -22,7 +22,7 @@ import * as RovingFocusGroup from '@radix-ui/react-roving-focus';
 import { createRovingFocusGroupScope } from '@radix-ui/react-roving-focus';
 import { createSlot } from '@radix-ui/react-slot';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
-import { hideOthers } from '@radix-ui/primitive';
+import { suppressOthers } from '@radix-ui/primitive';
 import { RemoveScroll } from 'react-remove-scroll';
 
 import type { Scope } from '@radix-ui/react-context';
@@ -287,7 +287,7 @@ const MenuRootContentModal = /* @__PURE__ */ React.forwardRef<
       const content = ref.current;
       if (content) {
         const ownerDocument = content.ownerDocument;
-        return hideOthers(new Set([content]), ownerDocument.body);
+        return suppressOthers(new Set([content]), ownerDocument.body);
       }
     }, []);
 

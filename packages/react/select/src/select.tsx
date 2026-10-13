@@ -20,7 +20,7 @@ import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { VISUALLY_HIDDEN_STYLES } from '@radix-ui/react-visually-hidden';
-import { hideOthers } from '@radix-ui/primitive';
+import { suppressOthers } from '@radix-ui/primitive';
 import { RemoveScroll } from 'react-remove-scroll';
 
 import type { Scope } from '@radix-ui/react-context';
@@ -716,7 +716,7 @@ const SelectContentImpl = /* @__PURE__ */ React.forwardRef<
     React.useEffect(() => {
       if (content) {
         const ownerDocument = content.ownerDocument;
-        return hideOthers(new Set([content]), ownerDocument.body);
+        return suppressOthers(new Set([content]), ownerDocument.body);
       }
     }, [content]);
 
