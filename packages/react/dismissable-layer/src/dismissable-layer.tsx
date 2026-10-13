@@ -341,9 +341,11 @@ function usePointerDownOutside(
   const isPointerInsideReactTreeRef = React.useRef(false);
   const isPointerDownOutsideRef = React.useRef(false);
   const interceptedOutsideInteractionEventsRef = React.useRef<Map<string, boolean>>(new Map());
-  const handleClickRef = React.useRef(() => {});
+  const handleClickRef = React.useRef((_event: Event) => {});
 
   React.useEffect(() => {
+    let isListening = true;
+    const timers = new Set<number>();
     function resetOutsideInteraction() {
       isPointerDownOutsideRef.current = false;
       isDeferredPointerDownOutsideRef.current = false;
@@ -369,11 +371,13 @@ function usePointerDownOutside(
       }
 
       if (event.type === 'click') {
-        window.setTimeout(() => {
+        const timerId = window.setTimeout(() => {
+          timers.delete(timerId);
           if (isPointerDownOutsideRef.current) {
-            handleClickRef.current();
+            handleClickRef.current(event);
           }
         }, 0);
+        timers.add(timerId);
       }
     }
 
@@ -442,10 +446,20 @@ function usePointerDownOutside(
           handleAndDispatchPointerDownOutsideEvent();
         } else {
           ownerDocument.removeEventListener('click', handleClickRef.current);
-          handleClickRef.current = () => {
-            // A click can be dispatched from a passive effect by a form control.
-            // Let React finish the commit before the discrete outside event calls flushSync.
-            queueMicrotask(handleAndDispatchPointerDownOutsideEvent);
+          handleClickRef.current = (event: Event) => {
+            if (event.isTrusted) {
+              handleAndDispatchPointerDownOutsideEvent();
+              return;
+            }
+
+            // Programmatic clicks can fire during a React commit, where
+            // flushSync is not allowed.
+            // See https://github.com/radix-ui/primitives/issues/4121
+            queueMicrotask(() => {
+              if (isListening && isPointerDownOutsideRef.current) {
+                handleAndDispatchPointerDownOutsideEvent();
+              }
+            });
           };
           ownerDocument.addEventListener('click', handleClickRef.current, { once: true });
         }
@@ -486,10 +500,16 @@ function usePointerDownOutside(
      * });
      */
     const timerId = window.setTimeout(() => {
+      timers.delete(timerId);
       ownerDocument.addEventListener('pointerdown', handlePointerDown);
     }, 0);
+    timers.add(timerId);
     return () => {
-      window.clearTimeout(timerId);
+      isListening = false;
+      resetOutsideInteraction();
+      for (const timerId of timers) {
+        window.clearTimeout(timerId);
+      }
       ownerDocument.removeEventListener('pointerdown', handlePointerDown);
       ownerDocument.removeEventListener('click', handleClickRef.current);
       for (const eventName of outsideInteractionEvents) {

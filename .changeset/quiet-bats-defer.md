@@ -3,4 +3,4 @@
 "radix-ui": patch
 ---
 
-Defer outside interaction dispatch until React finishes the current passive effect commit.
+Defer outside interaction dispatch for programmatic clicks until React finishes the current passive effect commit.
