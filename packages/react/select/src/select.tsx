@@ -1296,7 +1296,8 @@ const SelectViewport = /* @__PURE__ */ React.forwardRef<SelectViewportElement, S
               // This won't work in vertical writing modes, so we'll need to
               // revisit this if/when that is supported
               // https://developer.chrome.com/blog/vertical-form-controls
-              overflow: 'hidden auto',
+              overflowX: 'hidden',
+              overflowY: 'auto',
               ...viewportProps.style,
             }}
             onScroll={composeEventHandlers(viewportProps.onScroll, (event) => {
