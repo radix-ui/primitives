@@ -27,6 +27,7 @@
   },
   "files": [
     "dist",
+    "src",
     "README.md"
   ],
   "sideEffects": false,
@@ -36,6 +37,9 @@
     "reset": "rm -rf dist node_modules",
     "typecheck": "tsc --noEmit",
     "build": "radix-build"
+  },
+  "dependencies": {
+    "@radix-ui/env-check": "workspace:*"
   },
   "devDependencies": {
     "@repo/builder": "workspace:*",
