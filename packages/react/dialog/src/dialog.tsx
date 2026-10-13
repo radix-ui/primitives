@@ -21,6 +21,7 @@ import { createSlot } from '@radix-ui/react-slot';
 
 import type { Scope } from '@radix-ui/react-context';
 import type { FocusScopeBranchRegistry } from '@radix-ui/react-focus-scope';
+import { IS_DEVELOPMENT } from '@radix-ui/primitive/is-development';
 
 /* -------------------------------------------------------------------------------------------------
  * Dialog
@@ -31,16 +32,18 @@ const DIALOG_NAME = 'Dialog';
 type ScopedProps<P> = P & { __scopeDialog?: Scope | undefined };
 const [createDialogContext, createDialogScope] = createContextScope(DIALOG_NAME);
 
-type DialogContextValue = {
+interface DialogContextValue {
   triggerRef: React.RefObject<HTMLButtonElement | null>;
   contentRef: React.RefObject<DialogContentElement | null>;
   contentId: string;
+  setContentId: React.Dispatch<React.SetStateAction<string | undefined>>;
   titleId: string;
-  descriptionId: string;
   titlePresent: boolean;
   descriptionPresent: boolean;
   setTitleCount: React.Dispatch<React.SetStateAction<number>>;
-  setDescriptionCount: React.Dispatch<React.SetStateAction<number>>;
+  setTitleId: React.Dispatch<React.SetStateAction<string | undefined>>;
+  descriptionIds: Set<string>;
+  setDescriptionIds: React.Dispatch<React.SetStateAction<Set<string>>>;
   open: boolean;
   onOpenChange(open: boolean): void;
   onOpenToggle(): void;
@@ -50,7 +53,7 @@ type DialogContextValue = {
   // See https://github.com/radix-ui/primitives/issues/3423
   branchNodes: HTMLElement[];
   branchRegistry: FocusScopeBranchRegistry;
-};
+}
 
 const [DialogProvider, useDialogContext] = createDialogContext<DialogContextValue>(DIALOG_NAME);
 
@@ -81,21 +84,39 @@ const Dialog: React.FC<DialogProps> = (props: ScopedProps<DialogProps>) => {
     caller: DIALOG_NAME,
   });
 
+  const defaultTitleId = useId();
+  const defaultContentId = useId();
+  const [titleId, setTitleId] = React.useState<string | undefined>(defaultTitleId);
+  const [contentId, setContentId] = React.useState<string | undefined>(defaultContentId);
+  const [descriptionIds, setDescriptionIds] = React.useState(() => new Set<string>());
+
   const [titleCount, setTitleCount] = React.useState(0);
-  const [descriptionCount, setDescriptionCount] = React.useState(0);
+  if (IS_DEVELOPMENT) {
+    const hasMultipleTitles = titleCount > 1;
+    // oxlint-disable-next-line react-hooks/rules-of-hooks
+    React.useEffect(() => {
+      if (hasMultipleTitles) {
+        console.warn(
+          'Dialog has multiple titles. This is not supported and will lead to accessibility issues.',
+        );
+      }
+    }, [hasMultipleTitles]);
+  }
 
   return (
     <DialogProvider
       scope={__scopeDialog}
       triggerRef={triggerRef}
       contentRef={contentRef}
-      contentId={useId()}
-      titleId={useId()}
-      descriptionId={useId()}
+      contentId={contentId || defaultContentId}
+      setContentId={setContentId}
+      titleId={titleId || defaultTitleId}
+      setTitleId={setTitleId}
+      descriptionIds={descriptionIds}
+      setDescriptionIds={setDescriptionIds}
       titlePresent={titleCount > 0}
-      descriptionPresent={descriptionCount > 0}
+      descriptionPresent={descriptionIds.size > 0}
       setTitleCount={setTitleCount}
-      setDescriptionCount={setDescriptionCount}
       open={open}
       onOpenChange={setOpen}
       onOpenToggle={React.useCallback(() => setOpen((prevOpen) => !prevOpen), [setOpen])}
@@ -439,6 +460,7 @@ const DialogContentImpl = /* @__PURE__ */ React.forwardRef<
       onCloseAutoFocus,
       'aria-describedby': ariaDescribedby,
       children,
+      id: idProp,
       ...contentProps
     } = props;
     const context = useDialogContext(CONTENT_NAME, __scopeDialog);
@@ -446,6 +468,12 @@ const DialogContentImpl = /* @__PURE__ */ React.forwardRef<
     // Make sure the whole tree has focus guards as our `Dialog` will be
     // the last element in the DOM (because of the `Portal`)
     useFocusGuards();
+
+    const { setContentId } = context;
+    useLayoutEffect(() => {
+      setContentId(toValidId(idProp) || undefined);
+      return () => setContentId(undefined);
+    }, [idProp, setContentId]);
 
     return (
       <FocusScopeBranchProvider registry={context.branchRegistry}>
@@ -463,7 +491,7 @@ const DialogContentImpl = /* @__PURE__ */ React.forwardRef<
             aria-labelledby={context.titlePresent ? context.titleId : undefined}
             aria-describedby={
               context.descriptionPresent
-                ? concatAriaDescribedby(ariaDescribedby, context.descriptionId)
+                ? concatAriaDescribedby(ariaDescribedby, ...context.descriptionIds)
                 : ariaDescribedby
             }
             data-state={getState(context.open)}
@@ -490,13 +518,17 @@ interface DialogTitleProps extends PrimitiveHeading2Props {}
 
 const DialogTitle = /* @__PURE__ */ React.forwardRef<DialogTitleElement, DialogTitleProps>(
   function DialogTitle(props: ScopedProps<DialogTitleProps>, forwardedRef) {
-    const { __scopeDialog, ...titleProps } = props;
+    const { __scopeDialog, id: idProp, ...titleProps } = props;
     const context = useDialogContext('DialogTitle', __scopeDialog);
-    const { setTitleCount } = context;
+    const { setTitleCount, setTitleId } = context;
     useLayoutEffect(() => {
       setTitleCount((count) => count + 1);
       return () => setTitleCount((count) => count - 1);
     }, [setTitleCount]);
+    useLayoutEffect(() => {
+      setTitleId(toValidId(idProp) || undefined);
+      return () => setTitleId(undefined);
+    }, [idProp, setTitleId]);
     return <Primitive.h2 id={context.titleId} {...titleProps} ref={forwardedRef} />;
   },
 );
@@ -515,14 +547,35 @@ const DialogDescription = /* @__PURE__ */ React.forwardRef<
 >(
   // blank line to reduce diff noise
   function DialogDescription(props: ScopedProps<DialogDescriptionProps>, forwardedRef) {
-    const { __scopeDialog, ...descriptionProps } = props;
+    const { __scopeDialog, id: idProp, ...descriptionProps } = props;
     const context = useDialogContext('DialogDescription', __scopeDialog);
-    const { setDescriptionCount } = context;
+    const { setDescriptionIds } = context;
+
+    const generatedId = useId();
+    const id = toValidId(idProp) || generatedId;
+
     useLayoutEffect(() => {
-      setDescriptionCount((count) => count + 1);
-      return () => setDescriptionCount((count) => count - 1);
-    }, [setDescriptionCount]);
-    return <Primitive.p id={context.descriptionId} {...descriptionProps} ref={forwardedRef} />;
+      setDescriptionIds((descriptionIds) => {
+        if (descriptionIds.has(id)) {
+          return descriptionIds;
+        }
+
+        const newDescriptionIds = new Set(descriptionIds);
+        newDescriptionIds.add(id);
+        return newDescriptionIds;
+      });
+      return () => {
+        setDescriptionIds((descriptionIds) => {
+          const newDescriptionIds = new Set(descriptionIds);
+          newDescriptionIds.delete(id);
+          return newDescriptionIds.size === descriptionIds.size
+            ? descriptionIds
+            : newDescriptionIds;
+        });
+      };
+    }, [setDescriptionIds, id]);
+
+    return <Primitive.p id={id} {...descriptionProps} ref={forwardedRef} />;
   },
 );
 
@@ -565,12 +618,16 @@ export const WarningProvider: React.FC<
 /* -----------------------------------------------------------------------------------------------*/
 
 // TODO: Move to primitive once that package exposed individual sub-modules
-function concatAriaDescribedby(...values: unknown[]): string | undefined {
+function concatAriaDescribedby(...values: (string | null | undefined)[]): string | undefined {
   const ids = new Set<string>();
   for (const value of values) {
-    if (typeof value !== 'string') continue;
-    for (const id of String(value).trim().split(/\s+/)) {
-      if (id) ids.add(id);
+    if (typeof value !== 'string') {
+      continue;
+    }
+    for (const id of value.trim().split(/\s+/)) {
+      if (id) {
+        ids.add(id);
+      }
     }
   }
 
@@ -579,6 +636,15 @@ function concatAriaDescribedby(...values: unknown[]): string | undefined {
 
 function getState(open: boolean) {
   return open ? 'open' : 'closed';
+}
+
+function toValidId(value: number | string | undefined) {
+  // We type id's internally as strings, but in some version of React's types a
+  // number can be passed without type errors.
+  if (typeof value === 'number') {
+    return String(value);
+  }
+  return value;
 }
 
 export {

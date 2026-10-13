@@ -101,6 +101,22 @@ describe('aria-controls', () => {
     expect(trigger).toHaveAttribute('aria-controls', content.id);
     expect(document.getElementById(content.id)).toBe(content);
   });
+
+  it('should reference content with a custom id while open', () => {
+    const rendered = render(
+      <Dialog.Root>
+        <Dialog.Trigger>{OPEN_TEXT}</Dialog.Trigger>
+        <Dialog.Content id="custom-content">
+          <Dialog.Title>{TITLE_TEXT}</Dialog.Title>
+        </Dialog.Content>
+      </Dialog.Root>,
+    );
+    const trigger = rendered.getByText(OPEN_TEXT);
+    fireEvent.click(trigger);
+    const content = rendered.getByRole('dialog');
+    expect(content).toHaveAttribute('id', 'custom-content');
+    expect(trigger).toHaveAttribute('aria-controls', 'custom-content');
+  });
 });
 
 describe('aria-labelledby / aria-describedby references', () => {
@@ -200,6 +216,182 @@ describe('aria-labelledby / aria-describedby references', () => {
     rendered.rerender(<Test showText={false} />);
     expect(content).not.toHaveAttribute('aria-labelledby');
     expect(content).not.toHaveAttribute('aria-describedby');
+  });
+
+  it('should reference a `Title` with a custom id', () => {
+    const rendered = render(
+      <Dialog.Root defaultOpen>
+        <Dialog.Content>
+          <Dialog.Title id="custom-title">Title</Dialog.Title>
+        </Dialog.Content>
+      </Dialog.Root>,
+    );
+    const content = rendered.getByRole('dialog');
+    const title = rendered.getByText('Title');
+    expect(title).toHaveAttribute('id', 'custom-title');
+    expect(content).toHaveAttribute('aria-labelledby', 'custom-title');
+  });
+
+  it('should update the `Title` reference when its custom id changes or is removed', () => {
+    const Test = ({ titleId }: { titleId?: string }) => (
+      <Dialog.Root defaultOpen>
+        <Dialog.Content>
+          <Dialog.Title id={titleId}>Title</Dialog.Title>
+        </Dialog.Content>
+      </Dialog.Root>
+    );
+
+    const rendered = render(<Test titleId="first-title" />);
+    const content = rendered.getByRole('dialog');
+    const title = rendered.getByText('Title');
+    expect(title).toHaveAttribute('id', 'first-title');
+    expect(content).toHaveAttribute('aria-labelledby', 'first-title');
+
+    rendered.rerender(<Test titleId="second-title" />);
+    expect(title).toHaveAttribute('id', 'second-title');
+    expect(content).toHaveAttribute('aria-labelledby', 'second-title');
+
+    rendered.rerender(<Test titleId={undefined} />);
+    expect(title.id).toBeTruthy();
+    expect(title.id).not.toBe('second-title');
+    expect(content).toHaveAttribute('aria-labelledby', title.id);
+  });
+
+  it('should fall back to a generated id for a `Title` with an empty id', () => {
+    const rendered = render(
+      <Dialog.Root defaultOpen>
+        <Dialog.Content>
+          <Dialog.Title id="">Title</Dialog.Title>
+        </Dialog.Content>
+      </Dialog.Root>,
+    );
+    const content = rendered.getByRole('dialog');
+    const title = rendered.getByText('Title');
+    expect(title.id).toBeTruthy();
+    expect(content).toHaveAttribute('aria-labelledby', title.id);
+  });
+
+  it('should reference a `Description` with a custom id', () => {
+    const rendered = render(
+      <Dialog.Root defaultOpen>
+        <Dialog.Content>
+          <Dialog.Title>Title</Dialog.Title>
+          <Dialog.Description id="custom-description">Description</Dialog.Description>
+        </Dialog.Content>
+      </Dialog.Root>,
+    );
+    const content = rendered.getByRole('dialog');
+    const description = rendered.getByText('Description');
+    expect(description).toHaveAttribute('id', 'custom-description');
+    expect(content).toHaveAttribute('aria-describedby', 'custom-description');
+  });
+
+  it('should reference every rendered `Description` with unique ids', () => {
+    const rendered = render(
+      <Dialog.Root defaultOpen>
+        <Dialog.Content>
+          <Dialog.Title>Title</Dialog.Title>
+          <Dialog.Description>First description</Dialog.Description>
+          <Dialog.Description id="custom-description">Second description</Dialog.Description>
+          <Dialog.Description>Third description</Dialog.Description>
+        </Dialog.Content>
+      </Dialog.Root>,
+    );
+    const content = rendered.getByRole('dialog');
+    const firstDescription = rendered.getByText('First description');
+    const secondDescription = rendered.getByText('Second description');
+    const thirdDescription = rendered.getByText('Third description');
+    expect(firstDescription.id).toBeTruthy();
+    expect(thirdDescription.id).toBeTruthy();
+    expect(firstDescription.id).not.toBe(thirdDescription.id);
+    expect(secondDescription).toHaveAttribute('id', 'custom-description');
+    expect(content).toHaveAttribute(
+      'aria-describedby',
+      `${firstDescription.id} custom-description ${thirdDescription.id}`,
+    );
+  });
+
+  it('should merge `aria-describedby` on `Content` with custom `Description` ids', () => {
+    const rendered = render(
+      <>
+        <span id="existing-description">Existing description</span>
+        <Dialog.Root defaultOpen>
+          <Dialog.Content aria-describedby="existing-description">
+            <Dialog.Title>Title</Dialog.Title>
+            <Dialog.Description id="first-description">First description</Dialog.Description>
+            <Dialog.Description id="second-description">Second description</Dialog.Description>
+          </Dialog.Content>
+        </Dialog.Root>
+      </>,
+    );
+    const content = rendered.getByRole('dialog');
+    expect(content).toHaveAttribute(
+      'aria-describedby',
+      'existing-description first-description second-description',
+    );
+  });
+
+  it('should update the `Description` reference when its custom id changes or is removed', () => {
+    const Test = ({ descriptionId }: { descriptionId?: string }) => (
+      <Dialog.Root defaultOpen>
+        <Dialog.Content>
+          <Dialog.Title>Title</Dialog.Title>
+          <Dialog.Description id={descriptionId}>Description</Dialog.Description>
+        </Dialog.Content>
+      </Dialog.Root>
+    );
+
+    const rendered = render(<Test descriptionId="first-description" />);
+    const content = rendered.getByRole('dialog');
+    const description = rendered.getByText('Description');
+    expect(description).toHaveAttribute('id', 'first-description');
+    expect(content).toHaveAttribute('aria-describedby', 'first-description');
+
+    rendered.rerender(<Test descriptionId="second-description" />);
+    expect(description).toHaveAttribute('id', 'second-description');
+    expect(content).toHaveAttribute('aria-describedby', 'second-description');
+
+    rendered.rerender(<Test descriptionId={undefined} />);
+    expect(description.id).toBeTruthy();
+    expect(description.id).not.toBe('second-description');
+    expect(content).toHaveAttribute('aria-describedby', description.id);
+  });
+
+  it('should remove only the unmounted `Description` from `aria-describedby`', () => {
+    const Test = ({ showSecond }: { showSecond: boolean }) => (
+      <Dialog.Root defaultOpen>
+        <Dialog.Content>
+          <Dialog.Title>Title</Dialog.Title>
+          <Dialog.Description id="first-description">First description</Dialog.Description>
+          {showSecond ? (
+            <Dialog.Description id="second-description">Second description</Dialog.Description>
+          ) : null}
+        </Dialog.Content>
+      </Dialog.Root>
+    );
+
+    const rendered = render(<Test showSecond={true} />);
+    const content = rendered.getByRole('dialog');
+    expect(content).toHaveAttribute('aria-describedby', 'first-description second-description');
+
+    rendered.rerender(<Test showSecond={false} />);
+    expect(content).toHaveAttribute('aria-describedby', 'first-description');
+  });
+
+  it('should keep custom id references across React strict mode remounts', () => {
+    const rendered = render(
+      <React.StrictMode>
+        <Dialog.Root defaultOpen>
+          <Dialog.Content>
+            <Dialog.Title id="custom-title">Title</Dialog.Title>
+            <Dialog.Description id="custom-description">Description</Dialog.Description>
+          </Dialog.Content>
+        </Dialog.Root>
+      </React.StrictMode>,
+    );
+    const content = rendered.getByRole('dialog');
+    expect(content).toHaveAttribute('aria-labelledby', 'custom-title');
+    expect(content).toHaveAttribute('aria-describedby', 'custom-description');
   });
 });
 
