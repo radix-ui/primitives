@@ -1,5 +1,6 @@
 ---
 '@radix-ui/react-radio-group': patch
+'radix-ui': patch
 ---
 
-add aria-disabled on radio-group root
+Added `aria-disabled` to the root group element.
