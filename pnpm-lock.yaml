@@ -243,6 +243,18 @@ importers:
 
   internal/typescript-config: {}
 
+  packages/core/env-check:
+    devDependencies:
+      '@repo/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../../../internal/typescript-config
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
   packages/core/number:
     devDependencies:
       '@repo/builder':
@@ -491,6 +503,9 @@ importers:
 
   packages/react/avatar:
     dependencies:
+      '@radix-ui/env-check':
+        specifier: workspace:*
+        version: link:../../core/env-check
       '@radix-ui/primitive':
         specifier: workspace:*
         version: link:../../core/primitive
@@ -717,6 +732,9 @@ importers:
 
   packages/react/context-menu:
     dependencies:
+      '@radix-ui/env-check':
+        specifier: workspace:*
+        version: link:../../core/env-check
       '@radix-ui/primitive':
         specifier: workspace:*
         version: link:../../core/primitive
@@ -760,6 +778,9 @@ importers:
 
   packages/react/dialog:
     dependencies:
+      '@radix-ui/env-check':
+        specifier: workspace:*
+        version: link:../../core/env-check
       '@radix-ui/primitive':
         specifier: workspace:*
         version: link:../../core/primitive
@@ -1441,6 +1462,9 @@ importers:
 
   packages/react/password-toggle-field:
     dependencies:
+      '@radix-ui/env-check':
+        specifier: workspace:*
+        version: link:../../core/env-check
       '@radix-ui/primitive':
         specifier: workspace:*
         version: link:../../core/primitive
@@ -2039,6 +2063,9 @@ importers:
 
   packages/react/scroll-area:
     dependencies:
+      '@radix-ui/env-check':
+        specifier: workspace:*
+        version: link:../../core/env-check
       '@radix-ui/number':
         specifier: workspace:*
         version: link:../../core/number
@@ -2682,6 +2709,9 @@ importers:
 
   packages/react/use-controllable-state:
     dependencies:
+      '@radix-ui/env-check':
+        specifier: workspace:*
+        version: link:../../core/env-check
       '@radix-ui/primitive':
         specifier: workspace:*
         version: link:../../core/primitive

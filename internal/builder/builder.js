@@ -46,7 +46,7 @@ export async function build(relativePath) {
       .filter((file) => file.endsWith('.ts') && !file.endsWith('.d.ts') && file !== 'index.ts')
       .sort();
     files.push(...additionalEntryFiles);
-  } else if (pkg === '@radix-ui/primitive') {
+  } else if (pkg === '@radix-ui/env-check') {
     // Additional files exposed to consumers
     files.push(
       //

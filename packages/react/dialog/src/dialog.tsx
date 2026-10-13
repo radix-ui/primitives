@@ -21,7 +21,7 @@ import { createSlot } from '@radix-ui/react-slot';
 
 import type { Scope } from '@radix-ui/react-context';
 import type { FocusScopeBranchRegistry } from '@radix-ui/react-focus-scope';
-import { IS_DEVELOPMENT } from '@radix-ui/primitive/is-development';
+import { IS_DEVELOPMENT } from '@radix-ui/env-check/is-development';
 
 /* -------------------------------------------------------------------------------------------------
  * Dialog

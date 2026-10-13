@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { flushSync } from 'react-dom';
-import { IS_DEVELOPMENT } from '@radix-ui/primitive/is-development';
+import { IS_DEVELOPMENT } from '@radix-ui/env-check/is-development';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { Primitive, type PrimitivePropsWithRef } from '@radix-ui/react-primitive';
