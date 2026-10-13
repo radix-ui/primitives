@@ -249,7 +249,7 @@ const Slider = /* @__PURE__ */ React.forwardRef<HTMLSpanElement, SliderProps>(
         <Collection.Provider scope={props.__scopeSlider}>
           <Collection.Slot scope={props.__scopeSlider}>
             <SliderOrientation
-              aria-disabled={disabled}
+              aria-disabled={disabled || undefined}
               data-disabled={disabled ? '' : undefined}
               {...sliderProps}
               ref={composedRefs}
