@@ -9,18 +9,18 @@ import { IS_DEVELOPMENT } from '@radix-ui/env-check/is-development';
 
 type Undo = () => void;
 
-type ParentNode = Element | ShadowRoot;
+type DomParentNode = Element | ShadowRoot;
 
 let counterMap = /* @__PURE__ */ new WeakMap<Element, number>();
 let uncontrolledNodes = /* @__PURE__ */ new WeakMap<Element, boolean>();
 let lockCount = /* @__PURE__ */ 0;
 const markerMap = /* @__PURE__ */ new Map<string, WeakMap<Element, number>>();
 
-function unwrapHost(node: Element | ShadowRoot): Element | null {
+function unwrapHost(node: DomParentNode): Element | null {
   return node && ((node as ShadowRoot).host || unwrapHost(node.parentNode as Element));
 }
 
-function correctTargets(parent: ParentNode, targets: Set<Element>): Set<Element> {
+function correctTargets(parent: DomParentNode, targets: Set<Element>): Set<Element> {
   const correctedTargets = new Set<Element>();
   for (const target of targets) {
     if (parent.contains(target)) {
@@ -49,21 +49,20 @@ function correctTargets(parent: ParentNode, targets: Set<Element>): Set<Element>
 /**
  * Marks everything except given node(or nodes) as aria-hidden
  * @param originalTargets - elements to keep on the page
- * @param parentNode - top element, defaults to document.body
+ * @param parentNode - top element
  * @param markerName - a special attribute to mark every node
  * @param controlAttribute - html Attribute to control
  * @return undo command
  */
 function applyAttributeToOthers(
   originalTargets: Set<Element>,
-  parentNode: ParentNode,
+  parentNode: DomParentNode,
   markerName: string,
   controlAttribute: string,
 ): Undo {
   const targets = correctTargets(parentNode, originalTargets);
 
-  // We should not hide aria-live elements and script elements, as they have
-  // no impact on accessibility.
+  // We should not hide aria-live elements and script elements
   //
   // See https://github.com/theKashey/aria-hidden/issues/10
   const additionalTargets = parentNode.querySelectorAll('[aria-live], script');
@@ -112,7 +111,6 @@ function applyAttributeToOthers(
     if (!lockCount) {
       // clear
       counterMap = new WeakMap();
-      counterMap = new WeakMap();
       uncontrolledNodes = new WeakMap();
       markerMap.clear();
     }
@@ -127,7 +125,7 @@ function applyAttributeToOthers(
     keep(el.parentNode!);
   }
 
-  function deep(parent: Element | ShadowRoot | null) {
+  function deep(parent: DomParentNode | null) {
     if (!parent || elementsToStop.has(parent)) {
       return;
     }
@@ -170,14 +168,14 @@ function applyAttributeToOthers(
 /**
  * Marks everything except given nodes as aria-hidden
  *
- * @param originalTarget - elements to keep on the page
+ * @param originalTargets - elements to keep on the page
  * @param parentNode - top element
  * @param markerName - a special attribute to mark every node
  * @return undo command
  */
 function hideOthers(
   originalTargets: Set<Element>,
-  parentNode: ParentNode,
+  parentNode: DomParentNode,
   markerName = 'data-aria-hidden',
 ): Undo {
   return applyAttributeToOthers(originalTargets, parentNode, markerName, 'aria-hidden');
@@ -193,7 +191,7 @@ function hideOthers(
  */
 function inertOthers(
   originalTargets: Set<Element>,
-  parentNode: ParentNode,
+  parentNode: DomParentNode,
   markerName = 'data-inert-ed',
 ): Undo {
   return applyAttributeToOthers(originalTargets, parentNode, markerName, 'inert');
@@ -208,13 +206,13 @@ function supportsInert(): boolean {
  * possible way.
  *
  * @param originalTargets - elements to keep on the page
- * @param parentNode - top element, defaults to document.body
+ * @param parentNode - top element
  * @param markerName - a special attribute to mark every node
  * @return undo command
  */
 function suppressOthers(
   originalTargets: Set<Element>,
-  parentNode: HTMLElement | ShadowRoot,
+  parentNode: DomParentNode,
   markerName = 'data-suppressed',
 ): Undo {
   return (supportsInert() ? inertOthers : hideOthers)(originalTargets, parentNode, markerName);

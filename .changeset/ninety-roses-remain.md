@@ -7,4 +7,4 @@
 "radix-ui": patch
 ---
 
-Forked and internalized `aria-hidden` package for better optimization of modal popovers
+Replaced the `aria-hidden` dependency with an internal implementation. Behavior of modal components is unchanged.
