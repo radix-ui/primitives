@@ -72,7 +72,20 @@ test.describe('DropdownMenu', () => {
           const submenu = page.getByRole('menu').filter({ hasText: 'Radix' });
           await expect(submenu).toHaveAttribute('data-side', 'left');
 
-          await page.getByText('Radix', { exact: true }).click();
+          const consoleMessages: string[] = [];
+          page.on('console', (message) => consoleMessages.push(message.text()));
+
+          // `locator.click()` retries when its target detaches, which would
+          // hide the submenu closing mid-gesture. Raw mouse input jumps to the
+          // item in one move and clicks once.
+          const radixBox = (await page.getByText('Radix', { exact: true }).boundingBox())!;
+          expect(radixBox).not.toBeNull();
+
+          await page.mouse.move(radixBox.x + radixBox.width / 2, radixBox.y + radixBox.height / 2);
+          await page.mouse.down();
+          await page.mouse.up();
+
+          await expect.poll(() => consoleMessages).toContain('radix');
           await expect(page.getByText('New Tab', { exact: true })).toHaveCount(0);
         });
       });
