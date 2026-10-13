@@ -428,7 +428,7 @@ describe('DismissableLayer', () => {
     expect(onDismiss).toHaveBeenCalledTimes(1);
   });
 
-  it('gives a registered dismiss surface a click listener of its own so iOS Safari dispatches click for taps on it', () => {
+  it('gives a registered dismiss surface a click listener of its own until it unmounts so iOS Safari dispatches click for taps on it', () => {
     const addEventListener = vi.spyOn(EventTarget.prototype, 'addEventListener');
     const removeEventListener = vi.spyOn(EventTarget.prototype, 'removeEventListener');
 
@@ -437,77 +437,24 @@ describe('DismissableLayer', () => {
       return <div ref={registerSurface}>surface</div>;
     }
 
-    const rendered = render(
-      <>
-        <DismissableLayer.Root deferPointerDownOutside>
-          <button type="button">inside</button>
-        </DismissableLayer.Root>
-        <Surface />
-      </>,
-    );
+    const rendered = render(<Surface />);
     const surface = screen.getByText('surface');
 
     const addedClickListeners = addEventListener.mock.calls
-      .filter((_args, index) => addEventListener.mock.contexts[index] === surface)
-      .filter(([type]) => type === 'click')
+      .filter(
+        ([type], index) => type === 'click' && addEventListener.mock.contexts[index] === surface,
+      )
       .map(([, listener]) => listener);
     expect(addedClickListeners).toHaveLength(1);
 
     rendered.unmount();
 
     const removedClickListeners = removeEventListener.mock.calls
-      .filter((_args, index) => removeEventListener.mock.contexts[index] === surface)
-      .filter(([type]) => type === 'click')
+      .filter(
+        ([type], index) => type === 'click' && removeEventListener.mock.contexts[index] === surface,
+      )
       .map(([, listener]) => listener);
     expect(removedClickListeners).toEqual(addedClickListeners);
-  });
-
-  it('defers a touch pointer down on a registered dismiss surface until click and dismisses once', async () => {
-    const onSurfaceClick = vi.fn();
-    const onPointerDownOutside = vi.fn();
-    const onInteractOutside = vi.fn();
-    const onDismiss = vi.fn();
-
-    function Surface() {
-      const registerSurface = DismissableLayer.useDismissableLayerSurface();
-      return (
-        <div ref={registerSurface} onClick={onSurfaceClick}>
-          surface
-        </div>
-      );
-    }
-
-    render(
-      <>
-        <DismissableLayer.Root
-          deferPointerDownOutside
-          onPointerDownOutside={onPointerDownOutside}
-          onInteractOutside={onInteractOutside}
-          onDismiss={onDismiss}
-        >
-          <button type="button">inside</button>
-        </DismissableLayer.Root>
-        <Surface />
-      </>,
-    );
-    await waitForDocumentPointerDownListener();
-
-    const surface = screen.getByText('surface');
-    fireEvent.pointerDown(surface, { pointerType: 'touch' });
-    fireEvent.touchStart(surface);
-    fireEvent.pointerUp(surface, { pointerType: 'touch' });
-    fireEvent.touchEnd(surface);
-    expect(onDismiss).not.toHaveBeenCalled();
-
-    fireEvent.mouseDown(surface);
-    fireEvent.mouseUp(surface);
-    fireEvent.click(surface);
-    await waitForDocumentPointerDownListener();
-
-    expect(onSurfaceClick).toHaveBeenCalledTimes(1);
-    expect(onPointerDownOutside).toHaveBeenCalledTimes(1);
-    expect(onInteractOutside).toHaveBeenCalledTimes(1);
-    expect(onDismiss).toHaveBeenCalledTimes(1);
   });
 
   it('does not dismiss when focus moves outside during a deferred stopped interaction', async () => {

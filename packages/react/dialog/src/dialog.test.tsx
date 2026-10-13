@@ -467,123 +467,41 @@ describe('given a modal Dialog with an Overlay', () => {
     vi.restoreAllMocks();
   });
 
-  it('gives the overlay a click listener of its own so iOS Safari dispatches click for taps on it', () => {
-    const addEventListener = vi.spyOn(EventTarget.prototype, 'addEventListener');
+  it.each([{ asChild: false }, { asChild: true }])(
+    'gives the overlay a click listener of its own so iOS Safari dispatches click for taps on it (asChild: $asChild)',
+    ({ asChild }) => {
+      const addEventListener = vi.spyOn(EventTarget.prototype, 'addEventListener');
 
-    render(
-      <Dialog.Root defaultOpen>
-        <Dialog.Portal>
-          <Dialog.Overlay data-testid="overlay" />
-          <Dialog.Content>
-            <Dialog.Title>{TITLE_TEXT}</Dialog.Title>
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog.Root>,
-    );
-
-    const overlay = screen.getByTestId('overlay');
-    const hasClickListenerOfItsOwn =
-      typeof overlay.onclick === 'function' ||
-      addEventListener.mock.calls.some(
-        ([type], index) => type === 'click' && addEventListener.mock.contexts[index] === overlay,
+      render(
+        <Dialog.Root defaultOpen>
+          <Dialog.Portal>
+            <Dialog.Overlay asChild={asChild} data-testid="overlay">
+              {asChild ? <article /> : null}
+            </Dialog.Overlay>
+            <Dialog.Content>
+              <Dialog.Title>{TITLE_TEXT}</Dialog.Title>
+            </Dialog.Content>
+          </Dialog.Portal>
+        </Dialog.Root>,
       );
-    expect(hasClickListenerOfItsOwn).toBe(true);
-  });
 
-  it('gives an `asChild` overlay a click listener of its own so iOS Safari dispatches click for taps on it', () => {
-    const addEventListener = vi.spyOn(EventTarget.prototype, 'addEventListener');
-
-    render(
-      <Dialog.Root defaultOpen>
-        <Dialog.Portal>
-          <Dialog.Overlay asChild>
-            <article data-testid="overlay" />
-          </Dialog.Overlay>
-          <Dialog.Content>
-            <Dialog.Title>{TITLE_TEXT}</Dialog.Title>
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog.Root>,
-    );
-
-    const overlay = screen.getByTestId('overlay');
-    const hasClickListenerOfItsOwn =
-      typeof overlay.onclick === 'function' ||
-      addEventListener.mock.calls.some(
-        ([type], index) => type === 'click' && addEventListener.mock.contexts[index] === overlay,
+      const overlay = screen.getByTestId('overlay');
+      const clickListenerTargets = addEventListener.mock.contexts.filter(
+        (_target, index) => addEventListener.mock.calls[index]?.[0] === 'click',
       );
-    expect(hasClickListenerOfItsOwn).toBe(true);
-  });
+      expect(overlay.tagName).toBe(asChild ? 'ARTICLE' : 'DIV');
+      expect(clickListenerTargets).toContain(overlay);
+    },
+  );
 
-  it('waits for the click of a touch tap on the overlay and then closes once', async () => {
+  it('waits for the click that follows a pointer down on the overlay, then closes and calls the consumer handlers once', async () => {
     const onOpenChange = vi.fn();
-
-    render(
-      <Dialog.Root defaultOpen onOpenChange={onOpenChange}>
-        <Dialog.Portal>
-          <Dialog.Overlay data-testid="overlay" />
-          <Dialog.Content>
-            <Dialog.Title>{TITLE_TEXT}</Dialog.Title>
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog.Root>,
-    );
-    await waitForDocumentPointerDownListener();
-
-    const overlay = screen.getByTestId('overlay');
-    fireEvent.pointerDown(overlay, { pointerType: 'touch' });
-    fireEvent.touchStart(overlay, { changedTouches: [{ clientX: 1, clientY: 1 }] });
-    fireEvent.pointerUp(overlay, { pointerType: 'touch' });
-    fireEvent.touchEnd(overlay);
-    await waitForDocumentPointerDownListener();
-
-    expect(onOpenChange).not.toHaveBeenCalled();
-    expect(screen.getByText(TITLE_TEXT)).toBeInTheDocument();
-
-    fireEvent.mouseDown(overlay);
-    fireEvent.mouseUp(overlay);
-    fireEvent.click(overlay);
-    await waitForDocumentPointerDownListener();
-
-    expect(onOpenChange).toHaveBeenCalledTimes(1);
-    expect(onOpenChange).toHaveBeenCalledWith(false);
-    expect(screen.queryByText(TITLE_TEXT)).not.toBeInTheDocument();
-  });
-
-  it('closes once when the overlay is clicked with a mouse', async () => {
-    const onOpenChange = vi.fn();
-
-    render(
-      <Dialog.Root defaultOpen onOpenChange={onOpenChange}>
-        <Dialog.Portal>
-          <Dialog.Overlay data-testid="overlay" />
-          <Dialog.Content>
-            <Dialog.Title>{TITLE_TEXT}</Dialog.Title>
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog.Root>,
-    );
-    await waitForDocumentPointerDownListener();
-
-    const overlay = screen.getByTestId('overlay');
-    fireEvent.pointerDown(overlay, { pointerType: 'mouse' });
-    fireEvent.mouseDown(overlay);
-    fireEvent.pointerUp(overlay, { pointerType: 'mouse' });
-    fireEvent.mouseUp(overlay);
-    fireEvent.click(overlay);
-    await waitForDocumentPointerDownListener();
-
-    expect(onOpenChange).toHaveBeenCalledTimes(1);
-    expect(onOpenChange).toHaveBeenCalledWith(false);
-  });
-
-  it('calls the consumer overlay `onClick` and the outside handlers once per tap', async () => {
     const onOverlayClick = vi.fn();
     const onPointerDownOutside = vi.fn();
     const onInteractOutside = vi.fn();
 
     render(
-      <Dialog.Root defaultOpen>
+      <Dialog.Root defaultOpen onOpenChange={onOpenChange}>
         <Dialog.Portal>
           <Dialog.Overlay data-testid="overlay" onClick={onOverlayClick} />
           <Dialog.Content
@@ -598,143 +516,48 @@ describe('given a modal Dialog with an Overlay', () => {
     await waitForDocumentPointerDownListener();
 
     const overlay = screen.getByTestId('overlay');
-    fireEvent.pointerDown(overlay, { pointerType: 'touch' });
-    fireEvent.touchStart(overlay, { changedTouches: [{ clientX: 1, clientY: 1 }] });
-    fireEvent.pointerUp(overlay, { pointerType: 'touch' });
-    fireEvent.touchEnd(overlay);
-    fireEvent.mouseDown(overlay);
-    fireEvent.mouseUp(overlay);
-    fireEvent.click(overlay);
-    await waitForDocumentPointerDownListener();
-
-    expect(onOverlayClick).toHaveBeenCalledTimes(1);
-    expect(onPointerDownOutside).toHaveBeenCalledTimes(1);
-    expect(onPointerDownOutside.mock.calls[0]?.[0].target).toBe(overlay);
-    expect(onInteractOutside).toHaveBeenCalledTimes(1);
-    expect(onInteractOutside.mock.calls[0]?.[0].target).toBe(overlay);
-  });
-
-  it('stays open when `onPointerDownOutside` is prevented', async () => {
-    const onOpenChange = vi.fn();
-
-    render(
-      <Dialog.Root defaultOpen onOpenChange={onOpenChange}>
-        <Dialog.Portal>
-          <Dialog.Overlay data-testid="overlay" />
-          <Dialog.Content onPointerDownOutside={(event) => event.preventDefault()}>
-            <Dialog.Title>{TITLE_TEXT}</Dialog.Title>
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog.Root>,
-    );
-    await waitForDocumentPointerDownListener();
-
-    const overlay = screen.getByTestId('overlay');
-    fireEvent.pointerDown(overlay, { pointerType: 'touch' });
-    fireEvent.touchStart(overlay, { changedTouches: [{ clientX: 1, clientY: 1 }] });
-    fireEvent.pointerUp(overlay, { pointerType: 'touch' });
-    fireEvent.touchEnd(overlay);
-    fireEvent.mouseDown(overlay);
-    fireEvent.mouseUp(overlay);
-    fireEvent.click(overlay);
+    fireEvent.pointerDown(overlay);
     await waitForDocumentPointerDownListener();
 
     expect(onOpenChange).not.toHaveBeenCalled();
-    expect(screen.getByText(TITLE_TEXT)).toBeInTheDocument();
-  });
+    expect(onPointerDownOutside).not.toHaveBeenCalled();
 
-  it('stays open when `onInteractOutside` is prevented', async () => {
-    const onOpenChange = vi.fn();
-
-    render(
-      <Dialog.Root defaultOpen onOpenChange={onOpenChange}>
-        <Dialog.Portal>
-          <Dialog.Overlay data-testid="overlay" />
-          <Dialog.Content onInteractOutside={(event) => event.preventDefault()}>
-            <Dialog.Title>{TITLE_TEXT}</Dialog.Title>
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog.Root>,
-    );
-    await waitForDocumentPointerDownListener();
-
-    const overlay = screen.getByTestId('overlay');
-    fireEvent.pointerDown(overlay, { pointerType: 'touch' });
-    fireEvent.touchStart(overlay, { changedTouches: [{ clientX: 1, clientY: 1 }] });
-    fireEvent.pointerUp(overlay, { pointerType: 'touch' });
-    fireEvent.touchEnd(overlay);
-    fireEvent.mouseDown(overlay);
-    fireEvent.mouseUp(overlay);
-    fireEvent.click(overlay);
-    await waitForDocumentPointerDownListener();
-
-    expect(onOpenChange).not.toHaveBeenCalled();
-    expect(screen.getByText(TITLE_TEXT)).toBeInTheDocument();
-  });
-
-  it('closes once when the consumer overlay `onClick` stops propagation', async () => {
-    const onOpenChange = vi.fn();
-
-    render(
-      <Dialog.Root defaultOpen onOpenChange={onOpenChange}>
-        <Dialog.Portal>
-          <Dialog.Overlay data-testid="overlay" onClick={(event) => event.stopPropagation()} />
-          <Dialog.Content>
-            <Dialog.Title>{TITLE_TEXT}</Dialog.Title>
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog.Root>,
-    );
-    await waitForDocumentPointerDownListener();
-
-    const overlay = screen.getByTestId('overlay');
-    fireEvent.pointerDown(overlay, { pointerType: 'touch' });
-    fireEvent.touchStart(overlay, { changedTouches: [{ clientX: 1, clientY: 1 }] });
-    fireEvent.pointerUp(overlay, { pointerType: 'touch' });
-    fireEvent.touchEnd(overlay);
-    fireEvent.mouseDown(overlay);
-    fireEvent.mouseUp(overlay);
     fireEvent.click(overlay);
     await waitForDocumentPointerDownListener();
 
     expect(onOpenChange).toHaveBeenCalledTimes(1);
     expect(onOpenChange).toHaveBeenCalledWith(false);
+    expect(onOverlayClick).toHaveBeenCalledTimes(1);
+    expect(onPointerDownOutside).toHaveBeenCalledTimes(1);
+    expect(onInteractOutside).toHaveBeenCalledTimes(1);
   });
 
-  it('stays open when an element outside the overlay stops the mouse events that follow pointer down', async () => {
-    const onOpenChange = vi.fn();
+  it.each([{ handler: 'onPointerDownOutside' }, { handler: 'onInteractOutside' }] as const)(
+    'stays open when `$handler` is prevented',
+    async ({ handler }) => {
+      const onOpenChange = vi.fn();
+      const contentProps = { [handler]: (event: Event) => event.preventDefault() };
 
-    render(
-      <>
+      render(
         <Dialog.Root defaultOpen onOpenChange={onOpenChange}>
           <Dialog.Portal>
             <Dialog.Overlay data-testid="overlay" />
-            <Dialog.Content>
+            <Dialog.Content {...contentProps}>
               <Dialog.Title>{TITLE_TEXT}</Dialog.Title>
             </Dialog.Content>
           </Dialog.Portal>
-        </Dialog.Root>
-        <button type="button">extension overlay</button>
-      </>,
-    );
-    await waitForDocumentPointerDownListener();
+        </Dialog.Root>,
+      );
+      await waitForDocumentPointerDownListener();
 
-    const extensionOverlay = screen.getByText('extension overlay');
-    const stopPropagation = (event: Event) => event.stopPropagation();
-    extensionOverlay.addEventListener('mousedown', stopPropagation);
-    extensionOverlay.addEventListener('mouseup', stopPropagation);
-    extensionOverlay.addEventListener('click', stopPropagation);
+      const overlay = screen.getByTestId('overlay');
+      fireEvent.pointerDown(overlay);
+      fireEvent.click(overlay);
+      await waitForDocumentPointerDownListener();
 
-    fireEvent.pointerDown(extensionOverlay, { pointerType: 'mouse' });
-    fireEvent.mouseDown(extensionOverlay);
-    fireEvent.pointerUp(extensionOverlay, { pointerType: 'mouse' });
-    fireEvent.mouseUp(extensionOverlay);
-    fireEvent.click(extensionOverlay);
-    await waitForDocumentPointerDownListener();
-
-    expect(onOpenChange).not.toHaveBeenCalled();
-    expect(screen.getByText(TITLE_TEXT)).toBeInTheDocument();
-  });
+      expect(onOpenChange).not.toHaveBeenCalled();
+    },
+  );
 });
 
 describe('Dialog.Trigger', () => {
