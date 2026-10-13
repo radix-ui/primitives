@@ -297,4 +297,14 @@ test.describe('Dialog extension overlay interactions', () => {
 
     await expect(page.getByTestId('dialog-state')).toHaveText('open');
   });
+
+  test('closes the dialog when the overlay is tapped', async ({ page }) => {
+    await page.getByText('open', { exact: true }).click();
+    await expect(page.getByTestId('dialog-state')).toHaveText('open');
+    await page.waitForTimeout(150);
+
+    await page.touchscreen.tap(5, 5);
+
+    await expect(page.getByTestId('dialog-state')).toHaveText('closed');
+  });
 });
