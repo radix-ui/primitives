@@ -5,7 +5,7 @@
  * Copyright (c) 2017 Anton Korzunov
  */
 
-import { IS_DEVELOPMENT } from '@radix-ui/primitive/is-development';
+import { IS_DEVELOPMENT } from '@radix-ui/env-check/is-development';
 
 type Undo = () => void;
 
