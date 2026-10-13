@@ -820,9 +820,6 @@ importers:
       '@radix-ui/react-use-layout-effect':
         specifier: workspace:*
         version: link:../use-layout-effect
-      aria-hidden:
-        specifier: ^1.2.4
-        version: 1.2.6
       react-remove-scroll:
         specifier: ^2.7.2
         version: 2.7.2(@types/react@19.3.0)(react@19.3.0)
@@ -1236,9 +1233,6 @@ importers:
       '@radix-ui/react-use-callback-ref':
         specifier: workspace:*
         version: link:../use-callback-ref
-      aria-hidden:
-        specifier: ^1.2.4
-        version: 1.2.6
       react-remove-scroll:
         specifier: ^2.7.2
         version: 2.7.2(@types/react@19.3.0)(react@19.3.0)
@@ -1556,9 +1550,6 @@ importers:
       '@radix-ui/react-use-layout-effect':
         specifier: workspace:*
         version: link:../use-layout-effect
-      aria-hidden:
-        specifier: ^1.2.4
-        version: 1.2.6
       react-remove-scroll:
         specifier: ^2.7.2
         version: 2.7.2(@types/react@19.3.0)(react@19.3.0)
@@ -2181,9 +2172,6 @@ importers:
       '@radix-ui/react-visually-hidden':
         specifier: workspace:*
         version: link:../visually-hidden
-      aria-hidden:
-        specifier: ^1.2.4
-        version: 1.2.6
       react-remove-scroll:
         specifier: ^2.7.2
         version: 2.7.2(@types/react@19.3.0)(react@19.3.0)
@@ -4948,10 +4936,6 @@ packages:
 
   argparse@2.0.1:
     resolution: {integrity: sha512-8+9WqebbFzpX9OR+Wa6O29asIogeRMzcGtAINdpMHHyAg10f05aSFVBbcEqGf/PXw1EjAZ+q2/bEBg3DvurK3Q==}
-
-  aria-hidden@1.2.6:
-    resolution: {integrity: sha512-ik3ZgC9dY/lYVVM++OISsaYDeg1tb0VtP5uL3ouh1koGOaUMDPpbFIei4JkFimWUFPn90sbMNMXQAIVOlnYKJA==}
-    engines: {node: '>=10'}
 
   aria-query@5.3.0:
     resolution: {integrity: sha512-b0P0sZPKtyu8HkeRAfCq0IfURZK+SuwMjY1UXGBU27wpAiTwQAIlq56IbIO+ytk/JjS1fMR14ee5WBBfKi5J6A==}
@@ -8729,10 +8713,6 @@ snapshots:
       sprintf-js: 1.0.3
 
   argparse@2.0.1: {}
-
-  aria-hidden@1.2.6:
-    dependencies:
-      tslib: 2.8.1
 
   aria-query@5.3.0:
     dependencies:

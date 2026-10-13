@@ -20,7 +20,7 @@ import { Presence } from '@radix-ui/react-presence';
 import { Primitive } from '@radix-ui/react-primitive';
 import { createSlot } from '@radix-ui/react-slot';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
-import { hideOthers } from 'aria-hidden';
+import { hideOthers } from '@radix-ui/primitive';
 import { RemoveScroll } from 'react-remove-scroll';
 
 import type { Scope } from '@radix-ui/react-context';
@@ -282,7 +282,10 @@ const PopoverContentModal = /* @__PURE__ */ React.forwardRef<
     // aria-hide everything except the content (better supported equivalent to setting aria-modal)
     React.useEffect(() => {
       const content = contentRef.current;
-      if (content) return hideOthers(content);
+      if (content) {
+        const ownerDocument = content.ownerDocument;
+        return hideOthers(new Set([content]), ownerDocument.body);
+      }
     }, []);
 
     return (
