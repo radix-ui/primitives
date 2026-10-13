@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { IS_DEVELOPMENT } from '@radix-ui/primitive/is-development';
+import { IS_DEVELOPMENT } from '@radix-ui/env-check/is-development';
 import { useEffectEvent } from '@radix-ui/react-use-effect-event';
 
 type ChangeHandler<T> = (state: T) => void;

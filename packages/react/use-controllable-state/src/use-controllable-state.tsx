@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { IS_DEVELOPMENT } from '@radix-ui/primitive/is-development';
+import { IS_DEVELOPMENT } from '@radix-ui/env-check/is-development';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 
 // Prevent bundlers from trying to optimize the import
