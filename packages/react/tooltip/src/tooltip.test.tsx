@@ -418,6 +418,68 @@ describe('Tooltip behavior', () => {
   });
 });
 
+describe('Tooltip focus handling', () => {
+  afterEach(cleanup);
+
+  it('opens when the trigger is focused and there was no earlier pointer interaction', async () => {
+    render(
+      <Tooltip.Provider>
+        <Tooltip.Root>
+          <Tooltip.Trigger>Tooltip Trigger</Tooltip.Trigger>
+          <Tooltip.Portal>
+            <Tooltip.Content>Tooltip Content</Tooltip.Content>
+          </Tooltip.Portal>
+        </Tooltip.Root>
+      </Tooltip.Provider>,
+    );
+
+    act(() => screen.getByText('Tooltip Trigger').focus());
+
+    await waitFor(() => expect(screen.getAllByText('Tooltip Content').length).toBeGreaterThan(0));
+  });
+
+  it('does not open when focus is moved to the trigger by script after a pointer interaction', async () => {
+    render(
+      <Tooltip.Provider>
+        <Tooltip.Root>
+          <Tooltip.Trigger>Tooltip Trigger</Tooltip.Trigger>
+          <Tooltip.Portal>
+            <Tooltip.Content>Tooltip Content</Tooltip.Content>
+          </Tooltip.Portal>
+        </Tooltip.Root>
+      </Tooltip.Provider>,
+    );
+
+    fireEvent.pointerDown(document.body);
+    fireEvent.pointerUp(document.body);
+    act(() => screen.getByText('Tooltip Trigger').focus());
+
+    expect(screen.getByText('Tooltip Trigger')).toHaveFocus();
+    expect(screen.queryByText('Tooltip Content')).not.toBeInTheDocument();
+  });
+
+  it('opens when the trigger is reached with the keyboard after a pointer interaction', async () => {
+    const user = userEvent.setup();
+    render(
+      <Tooltip.Provider>
+        <Tooltip.Root>
+          <Tooltip.Trigger>Tooltip Trigger</Tooltip.Trigger>
+          <Tooltip.Portal>
+            <Tooltip.Content>Tooltip Content</Tooltip.Content>
+          </Tooltip.Portal>
+        </Tooltip.Root>
+      </Tooltip.Provider>,
+    );
+
+    fireEvent.pointerDown(document.body);
+    fireEvent.pointerUp(document.body);
+    await user.tab();
+
+    expect(screen.getByText('Tooltip Trigger')).toHaveFocus();
+    await waitFor(() => expect(screen.getAllByText('Tooltip Content').length).toBeGreaterThan(0));
+  });
+});
+
 describe('Tooltip.Trigger', () => {
   afterEach(cleanup);
 

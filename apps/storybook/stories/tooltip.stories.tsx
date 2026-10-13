@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Popper } from 'radix-ui/internal';
-import { Dialog, Tooltip } from 'radix-ui';
+import { Dialog, Popover, Tooltip } from 'radix-ui';
 import styles from './tooltip.stories.module.css';
 
 const { SIDE_OPTIONS, ALIGN_OPTIONS } = Popper;
@@ -655,6 +655,28 @@ export const WithinDialog = () => (
         </Tooltip.Root>
       </Dialog.Content>
     </Dialog.Root>
+  </Tooltip.Provider>
+);
+
+export const WithinPopover = () => (
+  <Tooltip.Provider>
+    <Popover.Root>
+      <Popover.Trigger>Open popover</Popover.Trigger>
+      <Popover.Portal>
+        <Popover.Content sideOffset={5}>
+          <Tooltip.Root>
+            <Tooltip.Trigger className={styles.trigger}>Hover or Focus me</Tooltip.Trigger>
+            <Tooltip.Portal>
+              <Tooltip.Content className={styles.content} sideOffset={5}>
+                Nicely done!
+                <Tooltip.Arrow className={styles.arrow} offset={10} />
+              </Tooltip.Content>
+            </Tooltip.Portal>
+          </Tooltip.Root>
+          <Popover.Close>Close popover</Popover.Close>
+        </Popover.Content>
+      </Popover.Portal>
+    </Popover.Root>
   </Tooltip.Provider>
 );
 
