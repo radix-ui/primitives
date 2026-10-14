@@ -1,5 +1,5 @@
 ---
-'@radix-ui/primitive': minor
+'@radix-ui/primitive': patch
 '@radix-ui/react-toast': minor
 'radix-ui': minor
 ---
