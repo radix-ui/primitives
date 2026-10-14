@@ -2,7 +2,11 @@ import * as React from 'react';
 import { act, cleanup, render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import * as Slot from './slot';
+import { unstable_mergeProps } from './merge-props';
+import type { unstable_MergePropsFunction } from './merge-props';
 import { afterEach, describe, it, beforeEach, vi, expect } from 'vitest';
+
+type AnyProps = Record<string, any>;
 
 describe('given a slotted Trigger', () => {
   afterEach(cleanup);
@@ -470,6 +474,26 @@ describe('Slot prop and ref merging (single element child)', () => {
     expect(slotRef).toHaveBeenCalledWith(button);
     expect(childRef).toHaveBeenCalledWith(button);
   });
+
+  it('does not attach a ref (or any props) to a Fragment child', () => {
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const slotRef = vi.fn();
+
+    render(
+      <Slot.Root ref={slotRef}>
+        <>
+          <span>a</span>
+          <span>b</span>
+        </>
+      </Slot.Root>,
+    );
+
+    // React logs an error if a `ref` (or any non-`key`/`children` prop) is
+    // passed to a Fragment. A clean render proves nothing leaked onto it.
+    expect(consoleErrorSpy).not.toHaveBeenCalled();
+    expect(slotRef).not.toHaveBeenCalled();
+    consoleErrorSpy.mockRestore();
+  });
 });
 
 describe('Slot with non-mergeable children', () => {
@@ -665,6 +689,110 @@ describe('nested (render-prop) Slottable', () => {
   });
 });
 
+describe('Slot with a custom mergeProps', () => {
+  afterEach(cleanup);
+
+  // Observably different from the default: classNames are joined with `__` + a
+  // marker attribute is added so we can detect that it ran.
+  const joinWithUnderscore: unstable_MergePropsFunction = (
+    slotProps: AnyProps,
+    childProps: AnyProps,
+  ) => ({
+    ...unstable_mergeProps(slotProps, childProps),
+    className: [slotProps.className, childProps.className].filter(Boolean).join('__'),
+    'data-merge-strategy': 'underscore',
+  });
+
+  it('uses an `unstableMergeProps` function passed directly to the Slot', () => {
+    render(
+      <Slot.Root className="slot" unstableMergeProps={joinWithUnderscore}>
+        <button className="child" type="button">
+          hi
+        </button>
+      </Slot.Root>,
+    );
+
+    const button = screen.getByRole('button');
+    expect(button.getAttribute('class')).toBe('slot__child');
+    expect(button.getAttribute('data-merge-strategy')).toBe('underscore');
+  });
+
+  it('receives (slotProps, childProps) in that order', () => {
+    const spy = vi.fn((slotProps: Record<string, any>, childProps: Record<string, any>) =>
+      unstable_mergeProps(slotProps, childProps),
+    );
+    render(
+      <Slot.Root data-from-slot="yes" unstableMergeProps={spy}>
+        <button data-from-child="yes" type="button">
+          hi
+        </button>
+      </Slot.Root>,
+    );
+
+    expect(spy).toHaveBeenCalledTimes(1);
+    const [slotProps, childProps] = spy.mock.calls[0]!;
+    expect(slotProps).toMatchObject({ 'data-from-slot': 'yes' });
+    expect(childProps).toMatchObject({ 'data-from-child': 'yes' });
+  });
+
+  it('applies an `unstableMergeProps` provided via Slot.Provider to nested Slots', () => {
+    render(
+      <Slot.Provider unstableMergeProps={joinWithUnderscore}>
+        <Slot.Root className="slot">
+          <button className="child" type="button">
+            hi
+          </button>
+        </Slot.Root>
+      </Slot.Provider>,
+    );
+
+    const button = screen.getByRole('button');
+    expect(button.getAttribute('class')).toBe('slot__child');
+    expect(button.getAttribute('data-merge-strategy')).toBe('underscore');
+  });
+
+  it('prefers the Slot `unstableMergeProps` prop over the one from Slot.Provider', () => {
+    const joinWithHash: unstable_MergePropsFunction = (
+      slotProps: AnyProps,
+      childProps: AnyProps,
+    ) => ({
+      ...unstable_mergeProps(slotProps, childProps),
+      className: [slotProps.className, childProps.className].filter(Boolean).join('##'),
+      'data-merge-strategy': 'hash',
+    });
+
+    render(
+      <Slot.Provider unstableMergeProps={joinWithUnderscore}>
+        <Slot.Root className="slot" unstableMergeProps={joinWithHash}>
+          <button className="child" type="button">
+            hi
+          </button>
+        </Slot.Root>
+      </Slot.Provider>,
+    );
+
+    const button = screen.getByRole('button');
+    expect(button.getAttribute('class')).toBe('slot##child');
+    expect(button.getAttribute('data-merge-strategy')).toBe('hash');
+  });
+
+  it('still composes the Slot ref and the child ref with a custom mergeProps', () => {
+    const slotRef = vi.fn();
+    const childRef = vi.fn();
+    render(
+      <Slot.Root unstableMergeProps={joinWithUnderscore} ref={slotRef}>
+        <button ref={childRef} type="button">
+          hi
+        </button>
+      </Slot.Root>,
+    );
+
+    const button = screen.getByRole('button');
+    expect(slotRef).toHaveBeenCalledWith(button);
+    expect(childRef).toHaveBeenCalledWith(button);
+  });
+});
+
 type TriggerProps = React.ComponentProps<'button'> & { as: React.ElementType };
 
 const Trigger = ({ as: Comp = 'button', ...props }: TriggerProps) => <Comp {...props} />;
@@ -717,7 +845,7 @@ const Input = React.forwardRef<
   return (
     <Comp
       {...props}
-      onChange={(event) => setValue(event.target.value)}
+      onChange={(event) => setValue((event.target as HTMLInputElement).value)}
       ref={forwardedRef}
       value={value}
     >

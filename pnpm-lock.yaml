@@ -2296,6 +2296,9 @@ importers:
 
   packages/react/slot:
     dependencies:
+      '@radix-ui/env-check':
+        specifier: workspace:*
+        version: link:../../core/env-check
       '@radix-ui/react-compose-refs':
         specifier: workspace:*
         version: link:../compose-refs

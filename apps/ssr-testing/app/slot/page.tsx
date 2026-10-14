@@ -112,30 +112,6 @@ export default function Page() {
       <Server.ButtonSlottable asChild>
         <Server.Link href="/">children</Server.Link>
       </Server.ButtonSlottable>
-
-      <h2>Server.ButtonNestedSlottable as Client.Link</h2>
-
-      <Server.ButtonNestedSlottable asChild>
-        <Client.Link href="/">children</Client.Link>
-      </Server.ButtonNestedSlottable>
-
-      <h2>Server.ButtonNestedSlottable as Server.Link</h2>
-
-      <Server.ButtonNestedSlottable asChild>
-        <Server.Link href="/">children</Server.Link>
-      </Server.ButtonNestedSlottable>
-
-      <h2>Server.IconButtonNestedSlottable as Server.Link</h2>
-
-      <Server.IconButtonNestedSlottable asChild>
-        <Server.Link href="/">children</Server.Link>
-      </Server.IconButtonNestedSlottable>
-
-      <h2>Server.IconButtonNestedSlottable as Client.Link</h2>
-
-      <Server.IconButtonNestedSlottable asChild>
-        <Client.Link href="/">children</Client.Link>
-      </Server.IconButtonNestedSlottable>
     </>
   );
 }
