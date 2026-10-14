@@ -3,6 +3,7 @@ import { hydrateRoot } from 'react-dom/client';
 import { renderToPipeableStream } from 'react-dom/server';
 import { PassThrough } from 'node:stream';
 import { render, cleanup, fireEvent, screen } from '@testing-library/react';
+import { hideOthers } from '@radix-ui/primitive';
 import * as Toast from './toast';
 import { describe, it, afterEach, beforeEach, vi, expect, type Mock } from 'vitest';
 import { assertStableComposedRef } from '@repo/test-utils/ref-stability';
@@ -292,6 +293,34 @@ describe('Toast.Viewport', () => {
 
     fireEvent.click(viewport);
     expect(onClick).toHaveBeenCalled();
+  });
+
+  // Regression test for https://github.com/radix-ui/primitives/issues/4115
+  it('stays in the accessibility tree while a modal layer hides the rest of the page', () => {
+    render(
+      <Toast.Provider>
+        <main>
+          <button type="button">Outside</button>
+          <Toast.Root open duration={Infinity}>
+            <Toast.Title>Saved</Toast.Title>
+            <Toast.Action altText="Undo the save">Undo</Toast.Action>
+          </Toast.Root>
+          <Toast.Viewport />
+        </main>
+        <div data-testid="modal-content">
+          <button type="button">Inside</button>
+        </div>
+      </Toast.Provider>,
+    );
+
+    const undo = hideOthers(new Set([screen.getByTestId('modal-content')]), document.body);
+
+    expect(screen.queryByRole('button', { name: 'Outside' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Inside' })).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: /Notifications/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Undo' })).toBeInTheDocument();
+
+    undo();
   });
 });
 
