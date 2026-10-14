@@ -1,5 +1,6 @@
-import { Separator } from 'radix-ui';
+import { Separator, Slot } from 'radix-ui';
 import styles from './separator.stories.module.css';
+import { customMergeProps } from './custom-merge-props';
 
 export default { title: 'Components/Separator' };
 
@@ -25,4 +26,12 @@ export const Styled = () => (
       <Separator.Root className={styles.root} orientation="vertical" decorative />
     </div>
   </>
+);
+
+export const WithCustomMergeProps = () => (
+  <Slot.Provider mergeProps={customMergeProps}>
+    <Separator.Root className={styles.root} orientation="horizontal" decorative asChild>
+      <hr data-custom-merge />
+    </Separator.Root>
+  </Slot.Provider>
 );

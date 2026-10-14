@@ -1,10 +1,11 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom/client';
-import { Dialog, DropdownMenu, Tooltip } from 'radix-ui';
+import { Dialog, DropdownMenu, Slot, Tooltip } from 'radix-ui';
 import { Popper } from 'radix-ui/internal';
 import { foodGroups } from '@repo/test-data/foods';
 import styles from './dropdown-menu.stories.module.css';
 import { ExternalOverlayTrigger } from './external-overlay';
+import { customMergeProps } from './custom-merge-props';
 
 const { SIDE_OPTIONS, ALIGN_OPTIONS } = Popper;
 
@@ -1023,6 +1024,26 @@ export const InPopupWindow = () => {
     </div>
   );
 };
+
+export const WithCustomMergeProps = () => (
+  <Slot.Provider mergeProps={customMergeProps}>
+    <DropdownMenu.Root>
+      <DropdownMenu.Trigger className={styles.trigger} asChild>
+        <button data-custom-merge>Open (asChild)</button>
+      </DropdownMenu.Trigger>
+      <DropdownMenu.Portal>
+        <DropdownMenu.Content className={styles.content} sideOffset={5}>
+          <DropdownMenu.Item className={styles.item} asChild onSelect={() => console.log('undo')}>
+            <div data-custom-merge>Undo (asChild)</div>
+          </DropdownMenu.Item>
+          <DropdownMenu.Item className={styles.item} onSelect={() => console.log('redo')}>
+            Redo
+          </DropdownMenu.Item>
+        </DropdownMenu.Content>
+      </DropdownMenu.Portal>
+    </DropdownMenu.Root>
+  </Slot.Provider>
+);
 
 // change order slightly for more pleasing visual
 const SIDES = [...SIDE_OPTIONS.filter((side) => side !== 'bottom'), 'bottom' as const];

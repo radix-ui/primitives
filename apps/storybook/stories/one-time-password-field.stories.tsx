@@ -1,10 +1,11 @@
 import * as React from 'react';
-import { unstable_OneTimePasswordField as OneTimePasswordField, Separator } from 'radix-ui';
+import { Slot, unstable_OneTimePasswordField as OneTimePasswordField, Separator } from 'radix-ui';
 import { Dialog as DialogPrimitive } from 'radix-ui';
 import dialogStyles from './dialog.stories.module.css';
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import { userEvent, within, expect } from 'storybook/test';
 import styles from './one-time-password-field.stories.module.css';
+import { customMergeProps } from './custom-merge-props';
 
 export default {
   title: 'Components/OneTimePasswordField',
@@ -236,6 +237,24 @@ export const PastedAndDeletedUncontrolled: Story = {
     // if we keep deleting while the first input is focused, we eventually get ,2,3,1,2,3
   },
 };
+
+export const WithCustomMergeProps = () => (
+  <Slot.Provider mergeProps={customMergeProps}>
+    <OneTimePasswordField.Root className={styles.otpRoot} asChild>
+      <div data-custom-merge>
+        <OneTimePasswordField.Input />
+        <OneTimePasswordField.Input />
+        <OneTimePasswordField.Input />
+        <OneTimePasswordField.Input />
+        <OneTimePasswordField.Input />
+        <OneTimePasswordField.Input asChild>
+          <input data-custom-merge />
+        </OneTimePasswordField.Input>
+        <OneTimePasswordField.HiddenInput name="code" />
+      </div>
+    </OneTimePasswordField.Root>
+  </Slot.Provider>
+);
 
 function ErrorMessage({ children }: { children: string }) {
   return <div className={styles.errorMessage}>{children}</div>;

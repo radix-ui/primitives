@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { Direction, Dialog, ToggleGroup } from 'radix-ui';
+import { Direction, Dialog, Slot, ToggleGroup } from 'radix-ui';
 import styles from './toggle-group.stories.module.css';
+import { customMergeProps } from './custom-merge-props';
 
 export default {
   title: 'Components/ToggleGroup',
@@ -110,6 +111,19 @@ export const Multiple = () => {
     </>
   );
 };
+
+export const WithCustomMergeProps = () => (
+  <Slot.Provider mergeProps={customMergeProps}>
+    <ToggleGroup.Root type="single" className={styles.root} aria-label="Options" defaultValue="1">
+      <ToggleGroup.Item value="1" className={styles.item} asChild>
+        <button data-custom-merge>Option 1 (asChild)</button>
+      </ToggleGroup.Item>
+      <ToggleGroup.Item value="2" className={styles.item}>
+        Option 2
+      </ToggleGroup.Item>
+    </ToggleGroup.Root>
+  </Slot.Provider>
+);
 
 export const Chromatic = () => (
   <>

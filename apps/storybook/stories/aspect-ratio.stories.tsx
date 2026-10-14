@@ -1,5 +1,6 @@
-import { AspectRatio } from 'radix-ui';
+import { AspectRatio, Slot } from 'radix-ui';
 import styles from './aspect-ratio.stories.module.css';
+import { customMergeProps } from './custom-merge-props';
 
 export default { title: 'Components/AspectRatio' };
 
@@ -37,6 +38,16 @@ export const CustomRatios = () => {
     </div>
   );
 };
+
+export const WithCustomMergeProps = () => (
+  <Slot.Provider mergeProps={customMergeProps}>
+    <div style={{ width: 300 }}>
+      <AspectRatio.Root className={styles.root} ratio={16 / 9} asChild>
+        <section>Custom merge (asChild)</section>
+      </AspectRatio.Root>
+    </div>
+  </Slot.Provider>
+);
 
 export const Chromatic = () => (
   <>

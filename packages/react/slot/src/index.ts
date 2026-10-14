@@ -1,9 +1,15 @@
 export {
   Slot,
   Slottable,
+  SlotProvider,
   //
   Root,
-  createSlot,
-  createSlottable,
+  Provider,
 } from './slot';
-export type { SlotProps } from './slot';
+export {
+  /** @deprecated Import from standalone entrypoint instead */
+  createSlot,
+  /** @deprecated Import from standalone entrypoint instead */
+  createSlottable,
+} from './create-slot';
+export type { SlotProps, SlottableProps, SlotProviderProps } from './slot';
