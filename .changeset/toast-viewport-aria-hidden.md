@@ -1,7 +1,7 @@
 ---
-'@radix-ui/primitive': patch
-'@radix-ui/react-toast': patch
-'radix-ui': patch
+'@radix-ui/primitive': minor
+'@radix-ui/react-toast': minor
+'radix-ui': minor
 ---
 
 Fixed `Toast.Viewport` being hidden from assistive technology while a modal popover is open.
