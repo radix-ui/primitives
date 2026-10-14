@@ -38,6 +38,7 @@ interface TooltipProviderContextValue {
   onClose(): void;
   onPointerInTransitChange(inTransit: boolean): void;
   isPointerInTransitRef: React.RefObject<boolean>;
+  isLastInteractionPointerRef: React.RefObject<boolean>;
   disableHoverableContent: boolean;
 }
 
@@ -75,11 +76,23 @@ const TooltipProvider: React.FC<TooltipProviderProps> = (
   } = props;
   const isOpenDelayedRef = React.useRef(true);
   const isPointerInTransitRef = React.useRef(false);
+  const isLastInteractionPointerRef = React.useRef(false);
   const skipDelayTimerRef = React.useRef(0);
 
   React.useEffect(() => {
     const skipDelayTimer = skipDelayTimerRef.current;
     return () => window.clearTimeout(skipDelayTimer);
+  }, []);
+
+  React.useEffect(() => {
+    const handlePointerDown = () => (isLastInteractionPointerRef.current = true);
+    const handleKeyDown = () => (isLastInteractionPointerRef.current = false);
+    document.addEventListener('pointerdown', handlePointerDown, true);
+    document.addEventListener('keydown', handleKeyDown, true);
+    return () => {
+      document.removeEventListener('pointerdown', handlePointerDown, true);
+      document.removeEventListener('keydown', handleKeyDown, true);
+    };
   }, []);
 
   return (
@@ -101,6 +114,7 @@ const TooltipProvider: React.FC<TooltipProviderProps> = (
         );
       }, [skipDelayDuration])}
       isPointerInTransitRef={isPointerInTransitRef}
+      isLastInteractionPointerRef={isLastInteractionPointerRef}
       onPointerInTransitChange={React.useCallback((inTransit: boolean) => {
         isPointerInTransitRef.current = inTransit;
       }, [])}
@@ -320,7 +334,12 @@ const TooltipTrigger = /* @__PURE__ */ React.forwardRef<TooltipTriggerElement, T
             document.addEventListener('pointerup', handlePointerUp, { once: true });
           })}
           onFocus={composeEventHandlers(props.onFocus, () => {
-            if (!isPointerDownRef.current) context.onOpen();
+            // Focus moved by script after a pointer interaction (e.g. a popover auto-focusing its
+            // content) is not a request to show the tooltip.
+            if (isPointerDownRef.current || providerContext.isLastInteractionPointerRef.current) {
+              return;
+            }
+            context.onOpen();
           })}
           onBlur={composeEventHandlers(props.onBlur, context.onClose)}
           onClick={composeEventHandlers(props.onClick, context.onClose)}
