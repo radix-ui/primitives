@@ -329,6 +329,7 @@ const ToastViewport = /* @__PURE__ */ React.forwardRef<ToastViewportElement, Toa
         ref={wrapperRef}
         role="region"
         aria-label={label.replace('{hotkey}', hotkeyLabel)}
+        data-radix-aria-hidden-exclude=""
         // Ensure virtual cursor from landmarks menus triggers focus/blur for pause/resume
         tabIndex={-1}
         // incase list has size when empty (e.g. padding), we remove pointer events so
