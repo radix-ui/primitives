@@ -36,6 +36,7 @@
     "clean": "rm -rf dist",
     "reset": "rm -rf dist node_modules",
     "typecheck": "tsc --noEmit",
+    "bench": "node bench/aria-hidden.bench.mts",
     "build": "radix-build"
   },
   "dependencies": {

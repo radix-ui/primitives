@@ -16,6 +16,20 @@ let uncontrolledNodes = /* @__PURE__ */ new WeakMap<Element, boolean>();
 let lockCount = /* @__PURE__ */ 0;
 const markerMap = /* @__PURE__ */ new Map<string, WeakMap<Element, number>>();
 
+// Elements that are never rendered and are not in the accessibility tree, so
+// marking them is wasted work.
+//
+// See https://html.spec.whatwg.org/multipage/rendering.html#hidden-elements
+const SKIPPED_ELEMENTS = new Set([
+  //
+  'link',
+  'meta',
+  'noscript',
+  'script',
+  'style',
+  'template',
+]);
+
 function unwrapHost(node: DomParentNode): Element | null {
   return node && ((node as ShadowRoot).host || unwrapHost(node.parentNode as Element));
 }
@@ -62,10 +76,10 @@ function applyAttributeToOthers(
 ): Undo {
   const targets = correctTargets(parentNode, originalTargets);
 
-  // We should not hide aria-live elements and script elements
+  // We should not hide aria-live elements
   //
   // See https://github.com/theKashey/aria-hidden/issues/10
-  const additionalTargets = parentNode.querySelectorAll('[aria-live], script');
+  const additionalTargets = parentNode.querySelectorAll('[aria-live]');
   for (const target of additionalTargets) {
     targets.add(target);
   }
@@ -131,12 +145,18 @@ function applyAttributeToOthers(
     }
 
     for (const node of parent.children) {
+      if (SKIPPED_ELEMENTS.has(node.localName)) {
+        continue;
+      }
+
       if (elementsToKeep.has(node)) {
         deep(node);
       } else {
         try {
           const attr = node.getAttribute(controlAttribute);
-          const alreadyHidden = attr !== null && attr !== 'false';
+          // `inert` is a boolean attribute, so `inert="false"` is still inert
+          const alreadyHidden =
+            controlAttribute === 'inert' ? attr !== null : attr !== null && attr !== 'false';
           const counterValue = (counterMap.get(node) || 0) + 1;
           const markerValue = (markerCounter?.get(node) || 0) + 1;
 
