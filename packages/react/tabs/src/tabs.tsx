@@ -166,6 +166,7 @@ const TabsTrigger = /* @__PURE__ */ React.forwardRef<TabsTriggerElement, TabsTri
     const triggerId = makeTriggerId(context.baseId, value);
     const contentId = makeContentId(context.baseId, value);
     const isSelected = value === context.value;
+    const isFocusingFromMouseDownRef = React.useRef(false);
     return (
       <RovingFocusGroup.Item
         asChild
@@ -194,7 +195,12 @@ const TabsTrigger = /* @__PURE__ */ React.forwardRef<TabsTriggerElement, TabsTri
               // from the DOM before its blur event fires, and focus gets lost
               // to the document until click is completed.
               // See https://github.com/radix-ui/primitives/issues/3600
+              // The value is changed below, so the focus handler should not
+              // also change it, otherwise `onValueChange` is called twice.
+              // See https://github.com/radix-ui/primitives/issues/2686
+              isFocusingFromMouseDownRef.current = true;
               event.currentTarget.focus();
+              isFocusingFromMouseDownRef.current = false;
               context.onValueChange(value);
             } else {
               // prevent focus to avoid accidental activation
@@ -219,7 +225,8 @@ const TabsTrigger = /* @__PURE__ */ React.forwardRef<TabsTriggerElement, TabsTri
             // handle "automatic" activation if necessary
             // ie. activate tab following focus
             const isAutomaticActivation = context.activationMode !== ActivationMode.Manual;
-            if (!isSelected && !disabled && isAutomaticActivation) {
+            const isFocusingFromMouseDown = isFocusingFromMouseDownRef.current;
+            if (!isSelected && !disabled && isAutomaticActivation && !isFocusingFromMouseDown) {
               context.onValueChange(value);
             }
           })}

@@ -49,6 +49,85 @@ describe('blur of focusable descendants when switching tabs', () => {
   });
 });
 
+// Regression tests for https://github.com/radix-ui/primitives/issues/2686
+describe('onValueChange when clicking a trigger', () => {
+  afterEach(cleanup);
+
+  const ControlledTabs = ({
+    onValueChange,
+    delayed = false,
+  }: {
+    onValueChange: (value: string) => void;
+    delayed?: boolean;
+  }) => {
+    const [value, setValue] = React.useState('one');
+    return (
+      <Tabs.Root
+        value={value}
+        onValueChange={(nextValue) => {
+          onValueChange(nextValue);
+          if (delayed) {
+            setTimeout(() => setValue(nextValue), 0);
+          } else {
+            setValue(nextValue);
+          }
+        }}
+      >
+        <Tabs.List>
+          <Tabs.Trigger value="one">One</Tabs.Trigger>
+          <Tabs.Trigger value="two">Two</Tabs.Trigger>
+        </Tabs.List>
+        <Tabs.Content value="one">One content</Tabs.Content>
+        <Tabs.Content value="two">Two content</Tabs.Content>
+      </Tabs.Root>
+    );
+  };
+
+  it('calls onValueChange once when a controlled value is updated synchronously', async () => {
+    const user = userEvent.setup();
+    const onValueChange = vi.fn();
+    render(<ControlledTabs onValueChange={onValueChange} />);
+
+    await user.click(screen.getByText('Two'));
+
+    expect(onValueChange).toHaveBeenCalledTimes(1);
+    expect(onValueChange).toHaveBeenCalledWith('two');
+    expect(screen.getByText('Two content')).toBeVisible();
+  });
+
+  it('calls onValueChange once when a controlled value is updated asynchronously', async () => {
+    const user = userEvent.setup();
+    const onValueChange = vi.fn();
+    render(<ControlledTabs onValueChange={onValueChange} delayed />);
+
+    await user.click(screen.getByText('Two'));
+
+    expect(onValueChange).toHaveBeenCalledTimes(1);
+    expect(onValueChange).toHaveBeenCalledWith('two');
+    expect(await screen.findByText('Two content')).toBeVisible();
+  });
+
+  it('calls onValueChange once when uncontrolled', async () => {
+    const user = userEvent.setup();
+    const onValueChange = vi.fn();
+    render(
+      <Tabs.Root defaultValue="one" onValueChange={onValueChange}>
+        <Tabs.List>
+          <Tabs.Trigger value="one">One</Tabs.Trigger>
+          <Tabs.Trigger value="two">Two</Tabs.Trigger>
+        </Tabs.List>
+        <Tabs.Content value="one">One content</Tabs.Content>
+        <Tabs.Content value="two">Two content</Tabs.Content>
+      </Tabs.Root>,
+    );
+
+    await user.click(screen.getByText('Two'));
+
+    expect(onValueChange).toHaveBeenCalledTimes(1);
+    expect(onValueChange).toHaveBeenCalledWith('two');
+  });
+});
+
 // Regression tests for https://github.com/radix-ui/primitives/issues/3232
 describe('keys from focusable descendants', () => {
   afterEach(cleanup);
