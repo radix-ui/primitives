@@ -16,7 +16,7 @@ import { Primitive } from '@radix-ui/react-primitive';
 import { useFocusGuards } from '@radix-ui/react-focus-guards';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 import { RemoveScroll } from 'react-remove-scroll';
-import { hideOthers } from '@radix-ui/primitive';
+import { suppressOthers } from '@radix-ui/primitive';
 import { createSlot } from '@radix-ui/react-slot';
 
 import type { Scope } from '@radix-ui/react-context';
@@ -35,6 +35,8 @@ const [createDialogContext, createDialogScope] = createContextScope(DIALOG_NAME)
 interface DialogContextValue {
   triggerRef: React.RefObject<HTMLButtonElement | null>;
   contentRef: React.RefObject<DialogContentElement | null>;
+  overlay: DialogOverlayElement | null;
+  onOverlayChange(overlay: DialogOverlayElement | null): void;
   contentId: string;
   setContentId: React.Dispatch<React.SetStateAction<string | undefined>>;
   titleId: string;
@@ -76,6 +78,7 @@ const Dialog: React.FC<DialogProps> = (props: ScopedProps<DialogProps>) => {
   } = props;
   const triggerRef = React.useRef<HTMLButtonElement>(null);
   const contentRef = React.useRef<DialogContentElement>(null);
+  const [overlay, setOverlay] = React.useState<DialogOverlayElement | null>(null);
   const { nodes: branchNodes, registry: branchRegistry } = useFocusScopeBranchRegistry();
   const [open, setOpen] = useControllableState({
     prop: openProp,
@@ -108,6 +111,8 @@ const Dialog: React.FC<DialogProps> = (props: ScopedProps<DialogProps>) => {
       scope={__scopeDialog}
       triggerRef={triggerRef}
       contentRef={contentRef}
+      overlay={overlay}
+      onOverlayChange={setOverlay}
       contentId={contentId || defaultContentId}
       setContentId={setContentId}
       titleId={titleId || defaultTitleId}
@@ -247,7 +252,11 @@ const DialogOverlayImpl = /* @__PURE__ */ React.forwardRef<
     // `stopPropagation` on it (eg. to avoid triggering parent handlers) does not
     // prevent the dialog from closing. See: https://github.com/radix-ui/primitives/issues/3346
     const registerDismissableSurface = useDismissableLayerSurface();
-    const composedRefs = useComposedRefs(forwardedRef, registerDismissableSurface);
+    const composedRefs = useComposedRefs(
+      forwardedRef,
+      registerDismissableSurface,
+      context.onOverlayChange,
+    );
 
     return (
       // Make sure `Content` is scrollable even when it doesn't live inside
@@ -324,14 +333,21 @@ const DialogContentModal = /* @__PURE__ */ React.forwardRef<
     const contentRef = React.useRef<HTMLDivElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, context.contentRef, contentRef);
 
-    // aria-hide everything except the content (better supported equivalent to setting aria-modal)
+    // Suppress everything except the content and overlay (better supported
+    // equivalent to setting aria-modal). The overlay must stay interactive so
+    // that consumer event handlers and styles on it keep working.
+    const { overlay } = context;
     React.useEffect(() => {
       const content = contentRef.current;
       if (content) {
         const ownerDocument = content.ownerDocument;
-        return hideOthers(new Set([content]), ownerDocument.body);
+        const elementsToKeep = new Set<Element>([content]);
+        if (overlay) {
+          elementsToKeep.add(overlay);
+        }
+        return suppressOthers(elementsToKeep, ownerDocument.body);
       }
-    }, []);
+    }, [overlay]);
 
     return (
       <DialogContentImpl

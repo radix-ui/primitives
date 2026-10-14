@@ -438,6 +438,70 @@ describe('given a modal Dialog', () => {
     const zoomWheelPrevented = !fireEvent.wheel(content, { ctrlKey: true, deltaY: 10 });
     expect(zoomWheelPrevented).toBe(false);
   });
+
+  it('should suppress elements outside the dialog but not the overlay or content', () => {
+    const rendered = render(
+      <Dialog.Root>
+        <Dialog.Trigger>{OPEN_TEXT}</Dialog.Trigger>
+        <Dialog.Portal>
+          <Dialog.Overlay data-testid="overlay" />
+          <Dialog.Content>
+            <Dialog.Title>{TITLE_TEXT}</Dialog.Title>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>,
+    );
+    fireEvent.click(screen.getByText(OPEN_TEXT));
+
+    const overlay = screen.getByTestId('overlay');
+    const content = screen.getByRole('dialog');
+    expect(rendered.container).toHaveAttribute('data-suppressed', 'true');
+    expect(overlay.parentElement).not.toHaveAttribute('data-suppressed');
+    expect(overlay).not.toHaveAttribute('data-suppressed');
+    expect(content.parentElement).not.toHaveAttribute('data-suppressed');
+    expect(content).not.toHaveAttribute('data-suppressed');
+  });
+
+  it('should not suppress an overlay that mounts after the content', () => {
+    const Test = ({ showOverlay }: { showOverlay: boolean }) => (
+      <Dialog.Root defaultOpen>
+        <Dialog.Portal>
+          {showOverlay ? <Dialog.Overlay data-testid="overlay" /> : null}
+          <Dialog.Content>
+            <Dialog.Title>{TITLE_TEXT}</Dialog.Title>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
+    );
+    const rendered = render(<Test showOverlay={false} />);
+    rendered.rerender(<Test showOverlay={true} />);
+
+    const overlay = screen.getByTestId('overlay');
+    expect(overlay.parentElement).not.toHaveAttribute('data-suppressed');
+    expect(overlay).not.toHaveAttribute('data-suppressed');
+  });
+
+  it('should remove suppression from elements outside the dialog after closing', () => {
+    const rendered = render(
+      <Dialog.Root>
+        <Dialog.Trigger>{OPEN_TEXT}</Dialog.Trigger>
+        <Dialog.Portal>
+          <Dialog.Overlay />
+          <Dialog.Content>
+            <Dialog.Title>{TITLE_TEXT}</Dialog.Title>
+            <Dialog.Close>{CLOSE_TEXT}</Dialog.Close>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>,
+    );
+    fireEvent.click(screen.getByText(OPEN_TEXT));
+    expect(rendered.container).toHaveAttribute('data-suppressed', 'true');
+
+    fireEvent.click(screen.getByText(CLOSE_TEXT));
+    expect(rendered.container).not.toHaveAttribute('data-suppressed');
+    expect(rendered.container).not.toHaveAttribute('aria-hidden');
+    expect(rendered.container).not.toHaveAttribute('inert');
+  });
 });
 
 describe('given a Dialog with `asChild` on the Content', () => {

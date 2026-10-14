@@ -20,7 +20,7 @@ import { Presence } from '@radix-ui/react-presence';
 import { Primitive } from '@radix-ui/react-primitive';
 import { createSlot } from '@radix-ui/react-slot';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
-import { hideOthers } from '@radix-ui/primitive';
+import { suppressOthers } from '@radix-ui/primitive';
 import { RemoveScroll } from 'react-remove-scroll';
 
 import type { Scope } from '@radix-ui/react-context';
@@ -284,7 +284,7 @@ const PopoverContentModal = /* @__PURE__ */ React.forwardRef<
       const content = contentRef.current;
       if (content) {
         const ownerDocument = content.ownerDocument;
-        return hideOthers(new Set([content]), ownerDocument.body);
+        return suppressOthers(new Set([content]), ownerDocument.body);
       }
     }, []);
 
