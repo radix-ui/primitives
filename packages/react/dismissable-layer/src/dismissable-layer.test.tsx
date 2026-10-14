@@ -726,6 +726,27 @@ describe('DismissableLayer.Root', () => {
     fireEvent.click(layer);
     expect(onClick).toHaveBeenCalled();
   });
+
+  // Regression test for httpp://github.com/radix-ui/primitives/issues/4093
+  it('renders pointer-events auto override before the body is disabled', () => {
+    let bodyPointerEvents = '';
+    let layerPointerEvents = '';
+    const handleUpdate = () => {
+      bodyPointerEvents = document.body.style.pointerEvents;
+      layerPointerEvents = screen.getByTestId('layer').style.pointerEvents;
+    };
+    document.addEventListener('dismissableLayer.update', handleUpdate);
+
+    render(
+      <DismissableLayer.Root disableOutsidePointerEvents data-testid="layer">
+        <button type="button">inside</button>
+      </DismissableLayer.Root>,
+    );
+
+    document.removeEventListener('dismissableLayer.update', handleUpdate);
+    expect(bodyPointerEvents).toBe('none');
+    expect(layerPointerEvents).toBe('auto');
+  });
 });
 
 describe('DismissableLayer.Branch', () => {

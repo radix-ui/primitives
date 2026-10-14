@@ -102,7 +102,12 @@ const DismissableLayer = /* @__PURE__ */ React.forwardRef<
         ? layers.indexOf(highestLayerWithOutsidePointerEventsDisabled)
         : -1;
     const index = node ? layers.indexOf(node) : -1;
-    const isBodyPointerEventsDisabled = context.layersWithOutsidePointerEventsDisabled.size > 0;
+    // Apply the override before the effect disables `body` pointer-events so
+    // the layer is never painted while inheriting `none`
+    //
+    // See https://github.com/radix-ui/primitives/issues/4093
+    const isBodyPointerEventsDisabled =
+      context.layersWithOutsidePointerEventsDisabled.size > 0 || disableOutsidePointerEvents;
     const isPointerEventsEnabled = index >= highestLayerWithOutsidePointerEventsDisabledIndex;
     const isDeferredPointerDownOutsideRef = React.useRef(false);
 
