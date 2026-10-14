@@ -119,7 +119,7 @@ export const InsideForm = {
 } satisfies Story;
 
 export const WithCustomMergeProps = () => (
-  <Slot.Provider mergeProps={customMergeProps}>
+  <Slot.Provider unstableMergeProps={customMergeProps}>
     <div className={styles.viewport}>
       <PasswordToggleField.Root>
         <div className={styles.field}>

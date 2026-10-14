@@ -1026,7 +1026,7 @@ export const InPopupWindow = () => {
 };
 
 export const WithCustomMergeProps = () => (
-  <Slot.Provider mergeProps={customMergeProps}>
+  <Slot.Provider unstableMergeProps={customMergeProps}>
     <DropdownMenu.Root>
       <DropdownMenu.Trigger className={styles.trigger} asChild>
         <button data-custom-merge>Open (asChild)</button>

@@ -2,9 +2,11 @@ import * as React from 'react';
 import { act, cleanup, render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import * as Slot from './slot';
-import { mergeProps } from './merge-props';
-import type { AnyProps, MergePropsFunction } from './merge-props';
+import { unstable_mergeProps } from './merge-props';
+import type { unstable_MergePropsFunction } from './merge-props';
 import { afterEach, describe, it, beforeEach, vi, expect } from 'vitest';
+
+type AnyProps = Record<string, any>;
 
 describe('given a slotted Trigger', () => {
   afterEach(cleanup);
@@ -692,15 +694,18 @@ describe('Slot with a custom mergeProps', () => {
 
   // Observably different from the default: classNames are joined with `__` + a
   // marker attribute is added so we can detect that it ran.
-  const joinWithUnderscore: MergePropsFunction = (slotProps: AnyProps, childProps: AnyProps) => ({
-    ...mergeProps(slotProps, childProps),
+  const joinWithUnderscore: unstable_MergePropsFunction = (
+    slotProps: AnyProps,
+    childProps: AnyProps,
+  ) => ({
+    ...unstable_mergeProps(slotProps, childProps),
     className: [slotProps.className, childProps.className].filter(Boolean).join('__'),
     'data-merge-strategy': 'underscore',
   });
 
-  it('uses a `mergeProps` function passed directly to the Slot', () => {
+  it('uses an `unstableMergeProps` function passed directly to the Slot', () => {
     render(
-      <Slot.Root className="slot" mergeProps={joinWithUnderscore}>
+      <Slot.Root className="slot" unstableMergeProps={joinWithUnderscore}>
         <button className="child" type="button">
           hi
         </button>
@@ -714,10 +719,10 @@ describe('Slot with a custom mergeProps', () => {
 
   it('receives (slotProps, childProps) in that order', () => {
     const spy = vi.fn((slotProps: Record<string, any>, childProps: Record<string, any>) =>
-      mergeProps(slotProps, childProps),
+      unstable_mergeProps(slotProps, childProps),
     );
     render(
-      <Slot.Root data-from-slot="yes" mergeProps={spy}>
+      <Slot.Root data-from-slot="yes" unstableMergeProps={spy}>
         <button data-from-child="yes" type="button">
           hi
         </button>
@@ -730,9 +735,9 @@ describe('Slot with a custom mergeProps', () => {
     expect(childProps).toMatchObject({ 'data-from-child': 'yes' });
   });
 
-  it('applies a `mergeProps` provided via Slot.Provider to nested Slots', () => {
+  it('applies an `unstableMergeProps` provided via Slot.Provider to nested Slots', () => {
     render(
-      <Slot.Provider mergeProps={joinWithUnderscore}>
+      <Slot.Provider unstableMergeProps={joinWithUnderscore}>
         <Slot.Root className="slot">
           <button className="child" type="button">
             hi
@@ -746,16 +751,19 @@ describe('Slot with a custom mergeProps', () => {
     expect(button.getAttribute('data-merge-strategy')).toBe('underscore');
   });
 
-  it('prefers the Slot `mergeProps` prop over the one from Slot.Provider', () => {
-    const joinWithHash: MergePropsFunction = (slotProps: AnyProps, childProps: AnyProps) => ({
-      ...mergeProps(slotProps, childProps),
+  it('prefers the Slot `unstableMergeProps` prop over the one from Slot.Provider', () => {
+    const joinWithHash: unstable_MergePropsFunction = (
+      slotProps: AnyProps,
+      childProps: AnyProps,
+    ) => ({
+      ...unstable_mergeProps(slotProps, childProps),
       className: [slotProps.className, childProps.className].filter(Boolean).join('##'),
       'data-merge-strategy': 'hash',
     });
 
     render(
-      <Slot.Provider mergeProps={joinWithUnderscore}>
-        <Slot.Root className="slot" mergeProps={joinWithHash}>
+      <Slot.Provider unstableMergeProps={joinWithUnderscore}>
+        <Slot.Root className="slot" unstableMergeProps={joinWithHash}>
           <button className="child" type="button">
             hi
           </button>
@@ -772,7 +780,7 @@ describe('Slot with a custom mergeProps', () => {
     const slotRef = vi.fn();
     const childRef = vi.fn();
     render(
-      <Slot.Root mergeProps={joinWithUnderscore} ref={slotRef}>
+      <Slot.Root unstableMergeProps={joinWithUnderscore} ref={slotRef}>
         <button ref={childRef} type="button">
           hi
         </button>

@@ -881,7 +881,7 @@ export const Nested = () => (
 );
 
 export const WithCustomMergeProps = () => (
-  <Slot.Provider mergeProps={customMergeProps}>
+  <Slot.Provider unstableMergeProps={customMergeProps}>
     <ContextMenu.Root>
       <ContextMenu.Trigger className={styles.trigger} asChild>
         <span data-custom-merge>Right click here (asChild)</span>

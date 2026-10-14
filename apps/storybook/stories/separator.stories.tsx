@@ -29,7 +29,7 @@ export const Styled = () => (
 );
 
 export const WithCustomMergeProps = () => (
-  <Slot.Provider mergeProps={customMergeProps}>
+  <Slot.Provider unstableMergeProps={customMergeProps}>
     <Separator.Root className={styles.root} orientation="horizontal" decorative asChild>
       <hr data-custom-merge />
     </Separator.Root>

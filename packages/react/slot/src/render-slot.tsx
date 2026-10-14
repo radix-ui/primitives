@@ -26,7 +26,7 @@ export function useRenderSlot<
   const { context, ownerName, props, ref: forwardedRef } = args;
   let {
     //
-    mergeProps: mergePropsProp = context,
+    unstableMergeProps: mergePropsProp = context,
     children,
     ...slotProps
   } = props;

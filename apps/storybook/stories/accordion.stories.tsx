@@ -494,7 +494,7 @@ export const Horizontal = () => (
 );
 
 export const WithCustomMergeProps = () => (
-  <Slot.Provider mergeProps={customMergeProps}>
+  <Slot.Provider unstableMergeProps={customMergeProps}>
     <Accordion.Root type="single" className={styles.root}>
       <Accordion.Item className={styles.item} value="one">
         <Accordion.Header className={styles.header}>

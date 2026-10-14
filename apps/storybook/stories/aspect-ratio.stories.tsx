@@ -40,7 +40,7 @@ export const CustomRatios = () => {
 };
 
 export const WithCustomMergeProps = () => (
-  <Slot.Provider mergeProps={customMergeProps}>
+  <Slot.Provider unstableMergeProps={customMergeProps}>
     <div style={{ width: 300 }}>
       <AspectRatio.Root className={styles.root} ratio={16 / 9} asChild>
         <section>Custom merge (asChild)</section>

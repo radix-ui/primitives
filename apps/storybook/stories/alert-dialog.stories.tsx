@@ -64,7 +64,7 @@ export const Controlled = () => {
 };
 
 export const WithCustomMergeProps = () => (
-  <Slot.Provider mergeProps={customMergeProps}>
+  <Slot.Provider unstableMergeProps={customMergeProps}>
     <AlertDialog.Root>
       <AlertDialog.Trigger className={styles.trigger} asChild>
         <button>delete everything (asChild)</button>

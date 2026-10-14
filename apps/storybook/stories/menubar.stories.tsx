@@ -276,7 +276,7 @@ export const DismissesOnlyMenubarInsideDialog = () => {
   );
 };
 export const WithCustomMergeProps = () => (
-  <Slot.Provider mergeProps={customMergeProps}>
+  <Slot.Provider unstableMergeProps={customMergeProps}>
     <Menubar.Root className={styles.root}>
       <Menubar.Menu>
         <Menubar.Trigger className={styles.trigger} asChild>

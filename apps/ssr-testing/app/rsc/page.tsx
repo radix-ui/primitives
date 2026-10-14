@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { AspectRatio, Label, Separator, Slot, VisuallyHidden } from 'radix-ui';
-import { mergeProps, type MergePropsFunction } from 'radix-ui/slot/merge-props';
+import { unstable_mergeProps, type unstable_MergePropsFunction } from 'radix-ui/slot/merge-props';
 
 // IMPORTANT: This is intentionally a Server Component. This page is a
 // build-time guard against import-time RSC regressions.
@@ -8,11 +8,11 @@ import { mergeProps, type MergePropsFunction } from 'radix-ui/slot/merge-props';
 const ServerSlot = Slot.createSlot('SsrTest.Slot');
 const ServerSlottable = Slot.createSlottable('SsrTest.Slottable');
 
-// A consumer-defined `mergeProps` passed directly to a Slot must still work in a
+// A consumer-defined `unstableMergeProps` passed directly to a Slot must still work in a
 // Server Component. The per-instance prop bypasses context (which is client
 // only), so it applies during server render just like on the client.
-const serverMergeProps: MergePropsFunction = (slotProps, childProps) => ({
-  ...mergeProps(slotProps, childProps),
+const serverMergeProps: unstable_MergePropsFunction = (slotProps, childProps) => ({
+  ...unstable_mergeProps(slotProps, childProps),
   'data-server-merged': 'true',
 });
 
@@ -40,9 +40,9 @@ export default function Page() {
       {/*
         Rendering a Slot in a Server Component: `useComposedRefs` relies only on
         `useCallback` (available in the server build), and the per-instance
-        `mergeProps` prop is honored without a client boundary.
+        `unstableMergeProps` prop is honored without a client boundary.
       */}
-      <ServerSlot mergeProps={serverMergeProps} className="from-slot">
+      <ServerSlot unstableMergeProps={serverMergeProps} className="from-slot">
         <a href="/">consumer-defined mergeProps applied on the server</a>
       </ServerSlot>
     </div>

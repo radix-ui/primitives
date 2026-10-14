@@ -289,7 +289,7 @@ export const PartsWithinForm = () => {
 };
 
 export const WithCustomMergeProps = () => (
-  <Slot.Provider mergeProps={customMergeProps}>
+  <Slot.Provider unstableMergeProps={customMergeProps}>
     <Switch.Root className={styles.root} asChild>
       <button data-custom-merge>
         <Switch.Thumb className={styles.thumb} />

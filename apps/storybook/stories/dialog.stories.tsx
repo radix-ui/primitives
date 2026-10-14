@@ -309,7 +309,7 @@ export const OuterScrollable = () => (
 );
 
 export const WithCustomMergeProps = () => (
-  <Slot.Provider mergeProps={customMergeProps}>
+  <Slot.Provider unstableMergeProps={customMergeProps}>
     <Dialog.Root>
       <Dialog.Trigger className={styles.trigger} asChild>
         <button data-custom-merge>open (asChild)</button>

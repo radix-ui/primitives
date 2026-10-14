@@ -1,5 +1,5 @@
 import * as React from 'react';
-import type { MergePropsFunction } from './merge-props';
+import type { unstable_MergePropsFunction } from './merge-props';
 import type { Slottable } from './slot';
 
 declare module 'react' {
@@ -10,7 +10,7 @@ declare module 'react' {
 
 type SlotProps<Elem extends Element = HTMLElement, Props = React.HTMLAttributes<Elem>> = Props & {
   children?: React.ReactNode | undefined;
-  mergeProps?: MergePropsFunction | undefined;
+  unstableMergeProps?: unstable_MergePropsFunction | undefined;
 };
 
 const SLOTTABLE_IDENTIFIER = Symbol.for('radix.slottable');

@@ -113,7 +113,7 @@ export const Multiple = () => {
 };
 
 export const WithCustomMergeProps = () => (
-  <Slot.Provider mergeProps={customMergeProps}>
+  <Slot.Provider unstableMergeProps={customMergeProps}>
     <ToggleGroup.Root type="single" className={styles.root} aria-label="Options" defaultValue="1">
       <ToggleGroup.Item value="1" className={styles.item} asChild>
         <button data-custom-merge>Option 1 (asChild)</button>

@@ -398,7 +398,7 @@ export const Submenus = {
 } satisfies SubmenusStory;
 
 export const WithCustomMergeProps = () => (
-  <Slot.Provider mergeProps={customMergeProps}>
+  <Slot.Provider unstableMergeProps={customMergeProps}>
     <NavigationMenu.Root>
       <NavigationMenu.List className={styles.mainList}>
         <NavigationMenu.Item>

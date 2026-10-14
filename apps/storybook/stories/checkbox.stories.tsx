@@ -255,7 +255,7 @@ export const WithinForm = () => {
 };
 
 export const WithCustomMergeProps = () => (
-  <Slot.Provider mergeProps={customMergeProps}>
+  <Slot.Provider unstableMergeProps={customMergeProps}>
     <Checkbox.unstable_Provider>
       <Checkbox.unstable_Trigger className={styles.root} asChild>
         <button data-custom-merge>

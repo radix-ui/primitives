@@ -456,7 +456,7 @@ export const WithSlottedContent = () => (
 );
 
 export const WithCustomMergeProps = () => (
-  <Slot.Provider mergeProps={customMergeProps}>
+  <Slot.Provider unstableMergeProps={customMergeProps}>
     <div style={{ padding: 50, display: 'flex', justifyContent: 'center' }}>
       <HoverCard.Root>
         <HoverCard.Trigger className={styles.trigger} asChild>

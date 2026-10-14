@@ -1,6 +1,6 @@
 import * as React from 'react';
-import type { MergePropsFunction } from './merge-props';
-import { mergeProps } from './merge-props';
+import type { unstable_MergePropsFunction } from './merge-props';
+import { unstable_mergeProps } from './merge-props';
 
 declare module 'react' {
   interface ReactElement {
@@ -8,7 +8,7 @@ declare module 'react' {
   }
 }
 
-type SlotContextValue = MergePropsFunction;
+type SlotContextValue = unstable_MergePropsFunction;
 
 /**
  * Created lazily so that importing this module never calls
@@ -22,7 +22,7 @@ let slotContext: React.Context<SlotContextValue> | undefined;
 
 function getSlotContext(): React.Context<SlotContextValue> {
   if (!slotContext) {
-    slotContext = React.createContext<SlotContextValue>(mergeProps);
+    slotContext = React.createContext<SlotContextValue>(unstable_mergeProps);
     slotContext.displayName = 'SlotContext';
   }
   return slotContext;
@@ -38,7 +38,7 @@ const IS_CLIENT_BUILD = typeof React.createContext === 'function';
  */
 function useSlotContext(): SlotContextValue {
   if (!IS_CLIENT_BUILD) {
-    return mergeProps;
+    return unstable_mergeProps;
   }
 
   // eslint-disable-next-line react-hooks/rules-of-hooks

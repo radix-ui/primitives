@@ -239,7 +239,7 @@ export const PastedAndDeletedUncontrolled: Story = {
 };
 
 export const WithCustomMergeProps = () => (
-  <Slot.Provider mergeProps={customMergeProps}>
+  <Slot.Provider unstableMergeProps={customMergeProps}>
     <OneTimePasswordField.Root className={styles.otpRoot} asChild>
       <div data-custom-merge>
         <OneTimePasswordField.Input />

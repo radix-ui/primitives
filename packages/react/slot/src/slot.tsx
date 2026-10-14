@@ -1,9 +1,11 @@
 'use client';
 import * as React from 'react';
-import type { AnyProps, MergePropsFunction } from './merge-props';
+import type { unstable_MergePropsFunction } from './merge-props';
 import { useRenderSlot, useRenderSlottable } from './render-slot';
 import { getSlottableIdentifier } from './slot-utils';
 import { getSlotContext, useSlotContext } from './slot-context';
+
+type AnyProps = Record<string, any>;
 
 /* -------------------------------------------------------------------------------------------------
  * SlotProvider
@@ -11,12 +13,12 @@ import { getSlotContext, useSlotContext } from './slot-context';
 
 interface SlotProviderProps {
   children: React.ReactNode;
-  mergeProps: MergePropsFunction<AnyProps, AnyProps, AnyProps>;
+  unstableMergeProps: unstable_MergePropsFunction<AnyProps, AnyProps, AnyProps>;
 }
 
-const SlotProvider: React.FC<SlotProviderProps> = ({ children, mergeProps }) => {
+const SlotProvider: React.FC<SlotProviderProps> = ({ children, unstableMergeProps }) => {
   const SlotContext = getSlotContext();
-  return <SlotContext.Provider value={mergeProps}>{children}</SlotContext.Provider>;
+  return <SlotContext.Provider value={unstableMergeProps}>{children}</SlotContext.Provider>;
 };
 
 /* -------------------------------------------------------------------------------------------------
@@ -27,7 +29,7 @@ export type Usable<T> = PromiseLike<T> | React.Context<T>;
 
 type SlotProps<Elem extends Element = HTMLElement, Props = React.HTMLAttributes<Elem>> = Props & {
   children?: React.ReactNode | undefined;
-  mergeProps?: MergePropsFunction | undefined;
+  unstableMergeProps?: unstable_MergePropsFunction | undefined;
 };
 
 const Slot = /* @__PURE__ */ React.forwardRef<

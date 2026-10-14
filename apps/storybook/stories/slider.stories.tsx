@@ -605,7 +605,7 @@ export const InScrollableContext = () => {
 };
 
 export const WithCustomMergeProps = () => (
-  <Slot.Provider mergeProps={customMergeProps}>
+  <Slot.Provider unstableMergeProps={customMergeProps}>
     <Slider.Root className={styles.root} defaultValue={[40]}>
       <Slider.Track className={styles.track}>
         <Slider.Range className={styles.range} />

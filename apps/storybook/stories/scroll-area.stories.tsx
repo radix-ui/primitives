@@ -107,7 +107,7 @@ export const Animated = () => {
 };
 
 export const WithCustomMergeProps = () => (
-  <Slot.Provider mergeProps={customMergeProps}>
+  <Slot.Provider unstableMergeProps={customMergeProps}>
     <ScrollArea.Root style={{ width: 200, height: 100, overflow: 'hidden' }} asChild>
       <div data-custom-merge>
         <ScrollArea.Viewport style={{ width: '100%', height: '100%' }}>

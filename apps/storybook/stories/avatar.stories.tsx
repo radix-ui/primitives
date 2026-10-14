@@ -52,7 +52,7 @@ export const Styled = () => (
 );
 
 export const WithCustomMergeProps = () => (
-  <Slot.Provider mergeProps={customMergeProps}>
+  <Slot.Provider unstableMergeProps={customMergeProps}>
     <Avatar.Root className={styles.root}>
       <Avatar.Fallback className={styles.fallback} asChild>
         <span>JS</span>

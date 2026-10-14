@@ -27,7 +27,7 @@ export const Styled = () => {
 };
 
 export const WithCustomMergeProps = () => (
-  <Slot.Provider mergeProps={customMergeProps}>
+  <Slot.Provider unstableMergeProps={customMergeProps}>
     <Progress.Root className={styles.root} value={50} max={100} asChild>
       <div data-custom-merge>
         <Progress.Indicator className={styles.indicator} style={{ width: '50%' }} asChild>

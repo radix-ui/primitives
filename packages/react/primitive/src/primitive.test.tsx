@@ -359,7 +359,7 @@ describe('Primitive `asChild` with a custom mergeProps from SlotProvider', () =>
 
   it('uses the provided mergeProps when merging Primitive props onto the `asChild` element', () => {
     render(
-      <SlotProvider mergeProps={joinWithUnderscore}>
+      <SlotProvider unstableMergeProps={joinWithUnderscore}>
         <Primitive.button className="primitive" asChild>
           <a className="child" href="/">
             link
@@ -375,7 +375,7 @@ describe('Primitive `asChild` with a custom mergeProps from SlotProvider', () =>
 
   it('applies to multiple, independently created Primitive slots in the same tree', () => {
     render(
-      <SlotProvider mergeProps={joinWithUnderscore}>
+      <SlotProvider unstableMergeProps={joinWithUnderscore}>
         <Primitive.div className="outer" asChild>
           <section className="child-outer">
             <Primitive.span className="inner" asChild>
@@ -394,7 +394,7 @@ describe('Primitive `asChild` with a custom mergeProps from SlotProvider', () =>
     const order: string[] = [];
     const ref = vi.fn();
     render(
-      <SlotProvider mergeProps={joinWithUnderscore}>
+      <SlotProvider unstableMergeProps={joinWithUnderscore}>
         <Primitive.button asChild onClick={() => order.push('primitive')} ref={ref}>
           <button onClick={() => order.push('child')} type="button">
             hi

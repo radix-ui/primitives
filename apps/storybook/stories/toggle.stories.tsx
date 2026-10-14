@@ -18,7 +18,7 @@ export const Controlled = () => {
 };
 
 export const WithCustomMergeProps = () => (
-  <Slot.Provider mergeProps={customMergeProps}>
+  <Slot.Provider unstableMergeProps={customMergeProps}>
     <Toggle.Root className={styles.root} asChild>
       <button data-custom-merge>Toggle (asChild)</button>
     </Toggle.Root>

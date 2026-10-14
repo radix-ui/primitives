@@ -134,7 +134,7 @@ export const Animated = () => (
 );
 
 export const WithCustomMergeProps = () => (
-  <Slot.Provider mergeProps={customMergeProps}>
+  <Slot.Provider unstableMergeProps={customMergeProps}>
     <Tabs.Root defaultValue="tab1" className={styles.root}>
       <Tabs.List aria-label="tabs example" className={styles.list}>
         <Tabs.Trigger value="tab1" className={styles.trigger} asChild>

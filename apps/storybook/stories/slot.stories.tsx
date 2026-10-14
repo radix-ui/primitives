@@ -106,7 +106,7 @@ export const WithLazyComponent = () => {
 export const WithCustomMergePropsProp = () => (
   <Slot.Root
     className="slot-class"
-    mergeProps={customMergeProps}
+    unstableMergeProps={customMergeProps}
     onClick={() => console.log('slot click')}
   >
     <button data-custom-merge className="child-class" onClick={() => console.log('child click')}>
@@ -116,7 +116,7 @@ export const WithCustomMergePropsProp = () => (
 );
 
 export const WithCustomMergePropsProvider = () => (
-  <Slot.Provider mergeProps={customMergeProps}>
+  <Slot.Provider unstableMergeProps={customMergeProps}>
     <h1>Bare Slot under the provider</h1>
     <Slot.Root className="slot-class">
       <button className="child-class" data-custom-merge>

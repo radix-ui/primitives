@@ -41,7 +41,7 @@ const Control = (props: any) => {
 };
 
 export const WithCustomMergeProps = () => (
-  <Slot.Provider mergeProps={customMergeProps}>
+  <Slot.Provider unstableMergeProps={customMergeProps}>
     <Label className={styles.root} asChild>
       <span data-custom-merge>Label (asChild)</span>
     </Label>

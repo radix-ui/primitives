@@ -60,7 +60,7 @@ export const AnimatedHorizontal = () => {
 };
 
 export const WithCustomMergeProps = () => (
-  <Slot.Provider mergeProps={customMergeProps}>
+  <Slot.Provider unstableMergeProps={customMergeProps}>
     <Collapsible.Root className={styles.root}>
       <Collapsible.Trigger className={styles.trigger} asChild>
         <button data-custom-merge>Trigger (asChild)</button>

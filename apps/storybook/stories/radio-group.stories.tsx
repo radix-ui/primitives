@@ -198,7 +198,7 @@ export const WithinFormReset = () => {
   );
 };
 export const WithCustomMergeProps = () => (
-  <Slot.Provider mergeProps={customMergeProps}>
+  <Slot.Provider unstableMergeProps={customMergeProps}>
     <RadioGroup.Root className={styles.root} defaultValue="1">
       <RadioGroup.Item className={styles.item} value="1" asChild>
         <button data-custom-merge>

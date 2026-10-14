@@ -1,4 +1,4 @@
-import { mergeProps, type MergePropsFunction } from 'radix-ui/slot/merge-props';
+import { unstable_mergeProps, type unstable_MergePropsFunction } from 'radix-ui/slot/merge-props';
 
 /**
  * A demonstration `mergeProps` strategy shared by the "WithCustomMergeProps" stories across
@@ -6,14 +6,14 @@ import { mergeProps, type MergePropsFunction } from 'radix-ui/slot/merge-props';
  * marker attribute and a visible dashed outline so it's obvious the custom function ran when
  * merging `Slot` / `asChild` props onto the consumer's element.
  *
- * Drop it onto a single `Slot.Root` via the `mergeProps` prop for one-off needs, or onto a
+ * Drop it onto a single `Slot.Root` via the `unstableMergeProps` prop for one-off needs, or onto a
  * `Slot.Provider` to apply it to every nested Radix component that renders via `asChild`.
  */
-export const customMergeProps: MergePropsFunction = (
+export const customMergeProps: unstable_MergePropsFunction = (
   slotProps: Record<string, any>,
   childProps: Record<string, any>,
 ) => {
-  const merged = mergeProps(slotProps, childProps);
+  const merged = unstable_mergeProps(slotProps, childProps);
   return {
     ...merged,
     'data-custom-merge': 'true',

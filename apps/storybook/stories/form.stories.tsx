@@ -76,7 +76,7 @@ export const Basic = () => {
 };
 
 export const WithCustomMergeProps = () => (
-  <Slot.Provider mergeProps={customMergeProps}>
+  <Slot.Provider unstableMergeProps={customMergeProps}>
     <Form.Root className={styles.form}>
       <Form.Field name="email">
         <Form.Label>Email</Form.Label>

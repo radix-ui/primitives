@@ -402,7 +402,7 @@ export const WithSlottedTrigger = () => {
 };
 
 export const WithCustomMergeProps = () => (
-  <Slot.Provider mergeProps={customMergeProps}>
+  <Slot.Provider unstableMergeProps={customMergeProps}>
     <Popover.Root>
       <Popover.Trigger className={styles.trigger} asChild>
         <button data-custom-merge>open (asChild)</button>

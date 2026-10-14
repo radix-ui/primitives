@@ -791,7 +791,7 @@ export const DisableHoverableContent = () => (
 );
 
 export const WithCustomMergeProps = () => (
-  <Slot.Provider mergeProps={customMergeProps}>
+  <Slot.Provider unstableMergeProps={customMergeProps}>
     <Tooltip.Provider>
       <Tooltip.Root>
         <Tooltip.Trigger className={styles.trigger} asChild>

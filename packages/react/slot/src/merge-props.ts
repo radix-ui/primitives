@@ -84,5 +84,5 @@ interface MergePropsFunction<
 type AnyProps = Record<string, any>;
 type UnknownProps = Record<string, unknown>;
 
-export { mergeProps };
-export type { MergePropsFunction, AnyProps, UnknownProps };
+export { mergeProps as unstable_mergeProps };
+export type { MergePropsFunction as unstable_MergePropsFunction };

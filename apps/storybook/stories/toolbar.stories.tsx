@@ -12,7 +12,7 @@ export const Styled = () => (
 );
 
 export const WithCustomMergeProps = () => (
-  <Slot.Provider mergeProps={customMergeProps}>
+  <Slot.Provider unstableMergeProps={customMergeProps}>
     <Toolbar.Root className={styles.toolbar} aria-label="Custom merge toolbar">
       <Toolbar.Button className={styles.toolbarItem} asChild>
         <button data-custom-merge>Button (asChild)</button>

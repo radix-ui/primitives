@@ -1358,7 +1358,7 @@ export const WithScrollArea = () => (
 );
 
 export const WithCustomMergeProps = () => (
-  <Slot.Provider mergeProps={customMergeProps}>
+  <Slot.Provider unstableMergeProps={customMergeProps}>
     <Select.Root defaultValue="two">
       <Select.Trigger className={styles.trigger} asChild>
         <button data-custom-merge>
