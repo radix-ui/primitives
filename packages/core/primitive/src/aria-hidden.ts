@@ -41,6 +41,33 @@ const SKIPPED_ELEMENTS = new Set([
 // don't want to break their apps.
 const EXCLUDED_SELECTOR = '[aria-live], [data-radix-aria-hidden-exclude]';
 
+// Like the attribute, these event names must stay stable across versions
+const EXCLUDED_ELEMENT_MOUNT_EVENT = 'radix-aria-hidden-exclude-mount';
+const EXCLUDED_ELEMENT_UNMOUNT_EVENT = 'radix-aria-hidden-exclude-unmount';
+
+/**
+ * Notifies active `hideOthers`, `inertOthers` and `suppressOthers` calls that
+ * an element with `data-radix-aria-hidden-exclude` has mounted after they ran,
+ * so it is not left inside a hidden subtree.
+ */
+function notifyExcludedElementMounted(element: Element): void {
+  element.dispatchEvent(new Event(EXCLUDED_ELEMENT_MOUNT_EVENT, { bubbles: true, composed: true }));
+}
+
+/**
+ * Notifies active `hideOthers`, `inertOthers` and `suppressOthers` calls that
+ * an element with `data-radix-aria-hidden-exclude` is unmounting, so ancestors
+ * kept visible on its behalf can be hidden again.
+ *
+ * Must be called while the element is still connected to the DOM (eg. in a
+ * layout effect cleanup) or the notification cannot reach them.
+ */
+function notifyExcludedElementUnmounting(element: Element): void {
+  element.dispatchEvent(
+    new Event(EXCLUDED_ELEMENT_UNMOUNT_EVENT, { bubbles: true, composed: true }),
+  );
+}
+
 function unwrapHost(node: DomParentNode): Element | null {
   return node && ((node as ShadowRoot).host || unwrapHost(node.parentNode as Element));
 }
@@ -87,27 +114,53 @@ function applyAttributeToOthers(
 ): Undo {
   const targets = correctTargets(parentNode, originalTargets);
 
-  const additionalTargets = parentNode.querySelectorAll(EXCLUDED_SELECTOR);
-  for (const target of additionalTargets) {
-    targets.add(target);
-  }
-
-  let markerCounter = markerMap.get(markerName);
-  if (!markerCounter) {
-    markerCounter = new WeakMap();
-    markerMap.set(markerName, markerCounter);
-  }
+  const markerCounter = markerMap.get(markerName) ?? new WeakMap<Element, number>();
+  markerMap.set(markerName, markerCounter);
 
   const hiddenNodes = new Set<Element>();
-  const elementsToKeep = new Set<Node>();
-  const elementsToStop = new Set<Node>(targets);
+  let keptTargets = new Set<Element>();
+  let elementsToKeep = new Set<Node>();
+  let elementsToStop = new Set<Node>();
+  let isReleased = false;
+  let isRefreshScheduled = false;
 
-  targets.forEach(keep);
-  deep(parentNode);
-  elementsToKeep.clear();
+  apply();
   lockCount++;
 
+  parentNode.addEventListener(EXCLUDED_ELEMENT_MOUNT_EVENT, handleExcludedElementMount);
+  parentNode.addEventListener(EXCLUDED_ELEMENT_UNMOUNT_EVENT, handleExcludedElementUnmount);
+
   return () => {
+    isReleased = true;
+    parentNode.removeEventListener(EXCLUDED_ELEMENT_MOUNT_EVENT, handleExcludedElementMount);
+    parentNode.removeEventListener(EXCLUDED_ELEMENT_UNMOUNT_EVENT, handleExcludedElementUnmount);
+    release();
+
+    lockCount--;
+
+    if (!lockCount) {
+      // clear
+      counterMap = new WeakMap();
+      uncontrolledNodes = new WeakMap();
+      markerMap.clear();
+    }
+  };
+
+  function apply() {
+    keptTargets = new Set(targets);
+    for (const target of parentNode.querySelectorAll(EXCLUDED_SELECTOR)) {
+      keptTargets.add(target);
+    }
+
+    elementsToKeep = new Set();
+    elementsToStop = new Set(keptTargets);
+    keptTargets.forEach(keep);
+    deep(parentNode);
+    elementsToKeep.clear();
+    elementsToStop.clear();
+  }
+
+  function release() {
     for (const node of hiddenNodes) {
       const counterValue = counterMap.get(node)! - 1;
       const markerValue = markerCounter.get(node)! - 1;
@@ -128,15 +181,44 @@ function applyAttributeToOthers(
       }
     }
 
-    lockCount--;
+    hiddenNodes.clear();
+  }
 
-    if (!lockCount) {
-      // clear
-      counterMap = new WeakMap();
-      uncontrolledNodes = new WeakMap();
-      markerMap.clear();
+  function handleExcludedElementMount(event: Event) {
+    let node = event.target as Node | null;
+    while (node && node !== parentNode) {
+      if (hiddenNodes.has(node as Element)) {
+        scheduleRefresh();
+        return;
+      }
+      node = node.parentNode;
     }
-  };
+  }
+
+  function handleExcludedElementUnmount(event: Event) {
+    if (keptTargets.has(event.target as Element)) {
+      scheduleRefresh();
+    }
+  }
+
+  function scheduleRefresh() {
+    if (isRefreshScheduled) {
+      return;
+    }
+
+    isRefreshScheduled = true;
+    // An unmounting element is still connected when it notifies us, so the
+    // refresh must wait until it has been removed from the DOM
+    queueMicrotask(() => {
+      isRefreshScheduled = false;
+      if (isReleased) {
+        return;
+      }
+
+      release();
+      apply();
+    });
+  }
 
   function keep(el: Node | undefined) {
     if (!el || elementsToKeep.has(el)) {
@@ -166,10 +248,10 @@ function applyAttributeToOthers(
           const alreadyHidden =
             controlAttribute === 'inert' ? attr !== null : attr !== null && attr !== 'false';
           const counterValue = (counterMap.get(node) || 0) + 1;
-          const markerValue = (markerCounter?.get(node) || 0) + 1;
+          const markerValue = (markerCounter.get(node) || 0) + 1;
 
           counterMap.set(node, counterValue);
-          markerCounter?.set(node, markerValue);
+          markerCounter.set(node, markerValue);
           hiddenNodes.add(node);
 
           if (counterValue === 1 && alreadyHidden) {
@@ -246,5 +328,12 @@ function suppressOthers(
   return (supportsInert() ? inertOthers : hideOthers)(originalTargets, parentNode, markerName);
 }
 
-export { hideOthers, inertOthers, supportsInert, suppressOthers };
+export {
+  hideOthers,
+  inertOthers,
+  notifyExcludedElementMounted,
+  notifyExcludedElementUnmounting,
+  supportsInert,
+  suppressOthers,
+};
 export type { Undo };

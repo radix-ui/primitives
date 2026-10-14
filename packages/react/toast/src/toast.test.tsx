@@ -2,7 +2,7 @@ import * as React from 'react';
 import { hydrateRoot } from 'react-dom/client';
 import { renderToPipeableStream } from 'react-dom/server';
 import { PassThrough } from 'node:stream';
-import { render, cleanup, fireEvent, screen } from '@testing-library/react';
+import { act, render, cleanup, fireEvent, screen } from '@testing-library/react';
 import { hideOthers } from '@radix-ui/primitive';
 import * as Toast from './toast';
 import { describe, it, afterEach, beforeEach, vi, expect, type Mock } from 'vitest';
@@ -321,6 +321,93 @@ describe('Toast.Viewport', () => {
     expect(screen.getByRole('button', { name: 'Undo' })).toBeInTheDocument();
 
     undo();
+  });
+
+  it('shows toasts that open after a modal layer hides the rest of the page', () => {
+    function App({ isToastOpen }: { isToastOpen: boolean }) {
+      return (
+        <Toast.Provider>
+          <main>
+            <button type="button">Outside</button>
+            <Toast.Root open={isToastOpen} duration={Infinity}>
+              <Toast.Title>Saved</Toast.Title>
+              <Toast.Action altText="Undo the save">Undo</Toast.Action>
+            </Toast.Root>
+            <Toast.Viewport />
+          </main>
+          <div data-testid="modal-content">
+            <button type="button">Inside</button>
+          </div>
+        </Toast.Provider>
+      );
+    }
+
+    const { rerender } = render(<App isToastOpen={false} />);
+    const undo = hideOthers(new Set([screen.getByTestId('modal-content')]), document.body);
+
+    rerender(<App isToastOpen />);
+
+    expect(screen.queryByRole('button', { name: 'Outside' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Undo' })).toBeInTheDocument();
+
+    undo();
+  });
+
+  it('stays in the accessibility tree when it mounts after a modal layer hides the rest of the page', async () => {
+    function App({ hasViewport }: { hasViewport: boolean }) {
+      return (
+        <Toast.Provider>
+          <main>
+            <button type="button">Outside</button>
+            <Toast.Root open duration={Infinity}>
+              <Toast.Title>Saved</Toast.Title>
+              <Toast.Action altText="Undo the save">Undo</Toast.Action>
+            </Toast.Root>
+            {hasViewport && <Toast.Viewport />}
+          </main>
+          <div data-testid="modal-content">
+            <button type="button">Inside</button>
+          </div>
+        </Toast.Provider>
+      );
+    }
+
+    const { rerender } = render(<App hasViewport={false} />);
+    const undo = hideOthers(new Set([screen.getByTestId('modal-content')]), document.body);
+
+    await act(async () => rerender(<App hasViewport />));
+
+    expect(screen.queryByRole('button', { name: 'Outside' })).not.toBeInTheDocument();
+    expect(screen.getByRole('region', { name: /Notifications/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Undo' })).toBeInTheDocument();
+
+    undo();
+  });
+
+  it('lets the rest of the page be hidden again when it unmounts during a modal layer', async () => {
+    function App({ hasViewport }: { hasViewport: boolean }) {
+      return (
+        <Toast.Provider>
+          <main>{hasViewport ? <Toast.Viewport /> : <button type="button">Late</button>}</main>
+          <div data-testid="modal-content">
+            <button type="button">Inside</button>
+          </div>
+        </Toast.Provider>
+      );
+    }
+
+    const { rerender } = render(<App hasViewport />);
+    const undo = hideOthers(new Set([screen.getByTestId('modal-content')]), document.body);
+    expect(screen.getByRole('region', { name: /Notifications/ })).toBeInTheDocument();
+
+    await act(async () => rerender(<App hasViewport={false} />));
+
+    expect(screen.queryByRole('button', { name: 'Late' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Inside' })).toBeInTheDocument();
+
+    undo();
+
+    expect(screen.getByRole('button', { name: 'Late' })).toBeInTheDocument();
   });
 });
 

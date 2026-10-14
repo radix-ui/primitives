@@ -1,6 +1,10 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { composeEventHandlers } from '@radix-ui/primitive';
+import {
+  composeEventHandlers,
+  notifyExcludedElementMounted,
+  notifyExcludedElementUnmounting,
+} from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createCollection } from '@radix-ui/react-collection';
 import { createContextScope } from '@radix-ui/react-context';
@@ -202,6 +206,18 @@ const ToastViewport = /* @__PURE__ */ React.forwardRef<ToastViewportElement, Toa
     const composedRefs = useComposedRefs(forwardedRef, ref, context.onViewportChange);
     const hotkeyLabel = hotkey.join('+').replace(/Key/g, '').replace(/Digit/g, '');
     const hasToasts = context.toastCount > 0;
+
+    // Using a layout effect so the unmount notification is sent while the
+    // wrapper is still connected
+    useLayoutEffect(() => {
+      const wrapper = wrapperRef.current;
+      if (!wrapper) {
+        return;
+      }
+
+      notifyExcludedElementMounted(wrapper);
+      return () => notifyExcludedElementUnmounting(wrapper);
+    }, []);
 
     React.useEffect(() => {
       const handleKeyDown = (event: KeyboardEvent) => {
