@@ -1,6 +1,10 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { composeEventHandlers } from '@radix-ui/primitive';
+import {
+  composeEventHandlers,
+  notifyExcludedElementMounted,
+  notifyExcludedElementUnmounting,
+} from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createCollection } from '@radix-ui/react-collection';
 import { createContextScope } from '@radix-ui/react-context';
@@ -203,6 +207,18 @@ const ToastViewport = /* @__PURE__ */ React.forwardRef<ToastViewportElement, Toa
     const hotkeyLabel = hotkey.join('+').replace(/Key/g, '').replace(/Digit/g, '');
     const hasToasts = context.toastCount > 0;
 
+    // Using a layout effect so the unmount notification is sent while the
+    // wrapper is still connected
+    useLayoutEffect(() => {
+      const wrapper = wrapperRef.current;
+      if (!wrapper) {
+        return;
+      }
+
+      notifyExcludedElementMounted(wrapper);
+      return () => notifyExcludedElementUnmounting(wrapper);
+    }, []);
+
     React.useEffect(() => {
       const handleKeyDown = (event: KeyboardEvent) => {
         // we use `event.code` as it is consistent regardless of meta keys that were pressed.
@@ -329,6 +345,7 @@ const ToastViewport = /* @__PURE__ */ React.forwardRef<ToastViewportElement, Toa
         ref={wrapperRef}
         role="region"
         aria-label={label.replace('{hotkey}', hotkeyLabel)}
+        data-radix-aria-hidden-exclude=""
         // Ensure virtual cursor from landmarks menus triggers focus/blur for pause/resume
         tabIndex={-1}
         // incase list has size when empty (e.g. padding), we remove pointer events so

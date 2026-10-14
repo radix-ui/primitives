@@ -10,7 +10,14 @@ import * as React from 'react';
 import { createRoot } from 'react-dom/client';
 import type { Root } from 'react-dom/client';
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { hideOthers, supportsInert, inertOthers, suppressOthers } from '.';
+import {
+  hideOthers,
+  supportsInert,
+  inertOthers,
+  suppressOthers,
+  notifyExcludedElementMounted,
+  notifyExcludedElementUnmounting,
+} from './aria-hidden';
 
 afterEach(() => {
   cleanup();
@@ -180,6 +187,60 @@ describe('hideOthers', () => {
     );
 
     unhide();
+  });
+
+  it('does not hide excluded elements or their ancestors', () => {
+    const excludedContainer = React.createRef<HTMLDivElement>();
+    const excluded = React.createRef<HTMLDivElement>();
+    const sibling = React.createRef<HTMLDivElement>();
+    const wrapper = render(
+      <div>
+        <div ref={excludedContainer}>
+          <div ref={sibling}>hidden</div>
+          <div ref={excluded} data-radix-aria-hidden-exclude="">
+            not hidden
+          </div>
+        </div>
+        <div>target</div>
+      </div>,
+    );
+    const root = wrapper.container;
+
+    const unhide = hideOthers(new Set([root.firstElementChild!.lastElementChild!]), root);
+
+    expect(getNearestAttribute(excluded.current!, 'aria-hidden', { current: root })).toBe(null);
+    expect(excludedContainer.current!.hasAttribute('aria-hidden')).toBe(false);
+    expect(sibling.current!.getAttribute('aria-hidden')).toBe('true');
+
+    unhide();
+
+    expect(sibling.current!.hasAttribute('aria-hidden')).toBe(false);
+  });
+
+  it('does not make excluded elements inert', () => {
+    const excluded = React.createRef<HTMLDivElement>();
+    const sibling = React.createRef<HTMLDivElement>();
+    const wrapper = render(
+      <div>
+        <div>
+          <div ref={sibling}>inert</div>
+          <div ref={excluded} data-radix-aria-hidden-exclude="">
+            not inert
+          </div>
+        </div>
+        <div>target</div>
+      </div>,
+    );
+    const root = wrapper.container;
+
+    const undo = inertOthers(new Set([root.firstElementChild!.lastElementChild!]), root);
+
+    expect(getNearestAttribute(excluded.current!, 'inert', { current: root })).toBe(null);
+    expect(sibling.current!.hasAttribute('inert')).toBe(true);
+
+    undo();
+
+    expect(sibling.current!.hasAttribute('inert')).toBe(false);
   });
 
   it('handles script', () => {
@@ -530,6 +591,175 @@ describe('suppressOthers', () => {
       unsuppressDetached();
       act(() => webComp.reactRoot.unmount());
     });
+  });
+});
+
+describe('excluded elements that mount or unmount while others are hidden', () => {
+  afterEach(() => {
+    document.body.innerHTML = '';
+  });
+
+  it('stops hiding the ancestors of an excluded element that mounts later', async () => {
+    const app = document.createElement('div');
+    const appContent = document.createElement('div');
+    const modal = document.createElement('div');
+    app.append(appContent);
+    document.body.append(app, modal);
+
+    const undo = hideOthers(new Set([modal]), document.body);
+    expect(app.getAttribute('aria-hidden')).toBe('true');
+
+    const excluded = document.createElement('div');
+    excluded.setAttribute('data-radix-aria-hidden-exclude', '');
+    app.append(excluded);
+    notifyExcludedElementMounted(excluded);
+    await Promise.resolve();
+
+    expect(getNearestAttribute(excluded, 'aria-hidden', document.body)).toBe(null);
+    expect(appContent.getAttribute('aria-hidden')).toBe('true');
+
+    undo();
+
+    expect(document.body.querySelector('[aria-hidden]')).toBe(null);
+    expect(document.body.querySelector('[data-aria-hidden]')).toBe(null);
+  });
+
+  it('stops making the ancestors of an excluded element that mounts later inert', async () => {
+    const app = document.createElement('div');
+    const appContent = document.createElement('div');
+    const modal = document.createElement('div');
+    app.append(appContent);
+    document.body.append(app, modal);
+
+    const undo = inertOthers(new Set([modal]), document.body);
+    expect(app.hasAttribute('inert')).toBe(true);
+
+    const excluded = document.createElement('div');
+    excluded.setAttribute('data-radix-aria-hidden-exclude', '');
+    app.append(excluded);
+    notifyExcludedElementMounted(excluded);
+    await Promise.resolve();
+
+    expect(getNearestAttribute(excluded, 'inert', document.body)).toBe(null);
+    expect(appContent.hasAttribute('inert')).toBe(true);
+
+    undo();
+
+    expect(document.body.querySelector('[inert]')).toBe(null);
+  });
+
+  it('hides the ancestors of an excluded element again after it unmounts', async () => {
+    const app = document.createElement('div');
+    const appContent = document.createElement('div');
+    const excluded = document.createElement('div');
+    excluded.setAttribute('data-radix-aria-hidden-exclude', '');
+    const modal = document.createElement('div');
+    app.append(appContent, excluded);
+    document.body.append(app, modal);
+
+    const undo = hideOthers(new Set([modal]), document.body);
+    expect(app.hasAttribute('aria-hidden')).toBe(false);
+    expect(appContent.getAttribute('aria-hidden')).toBe('true');
+
+    notifyExcludedElementUnmounting(excluded);
+    excluded.remove();
+    await Promise.resolve();
+
+    expect(app.getAttribute('aria-hidden')).toBe('true');
+    expect(appContent.hasAttribute('aria-hidden')).toBe(false);
+
+    undo();
+
+    expect(document.body.querySelector('[aria-hidden]')).toBe(null);
+    expect(document.body.querySelector('[data-aria-hidden]')).toBe(null);
+  });
+
+  it('keeps ancestors visible while another excluded element still needs them', async () => {
+    const app = document.createElement('div');
+    const appContent = document.createElement('div');
+    const firstExcluded = document.createElement('div');
+    firstExcluded.setAttribute('data-radix-aria-hidden-exclude', '');
+    const secondExcluded = document.createElement('div');
+    secondExcluded.setAttribute('data-radix-aria-hidden-exclude', '');
+    const modal = document.createElement('div');
+    app.append(appContent, firstExcluded, secondExcluded);
+    document.body.append(app, modal);
+
+    const undo = hideOthers(new Set([modal]), document.body);
+
+    notifyExcludedElementUnmounting(firstExcluded);
+    firstExcluded.remove();
+    await Promise.resolve();
+
+    expect(app.hasAttribute('aria-hidden')).toBe(false);
+    expect(getNearestAttribute(secondExcluded, 'aria-hidden', document.body)).toBe(null);
+    expect(appContent.getAttribute('aria-hidden')).toBe('true');
+
+    undo();
+  });
+
+  it('does not hide anything when undone before an unmount refresh runs', async () => {
+    const app = document.createElement('div');
+    const excluded = document.createElement('div');
+    excluded.setAttribute('data-radix-aria-hidden-exclude', '');
+    const modal = document.createElement('div');
+    app.append(excluded);
+    document.body.append(app, modal);
+
+    const undo = hideOthers(new Set([modal]), document.body);
+
+    notifyExcludedElementUnmounting(excluded);
+    excluded.remove();
+    undo();
+    await Promise.resolve();
+
+    expect(document.body.querySelector('[aria-hidden]')).toBe(null);
+    expect(document.body.querySelector('[data-aria-hidden]')).toBe(null);
+  });
+
+  it('stops hiding a late excluded element when multiple layers are hiding others', async () => {
+    const app = document.createElement('div');
+    const firstModal = document.createElement('div');
+    const secondModal = document.createElement('div');
+    document.body.append(app, firstModal, secondModal);
+
+    const undoFirst = hideOthers(new Set([firstModal]), document.body);
+    const undoSecond = hideOthers(new Set([secondModal]), document.body);
+
+    const excluded = document.createElement('div');
+    excluded.setAttribute('data-radix-aria-hidden-exclude', '');
+    app.append(excluded);
+    notifyExcludedElementMounted(excluded);
+    await Promise.resolve();
+
+    expect(getNearestAttribute(excluded, 'aria-hidden', document.body)).toBe(null);
+    expect(firstModal.getAttribute('aria-hidden')).toBe('true');
+
+    undoSecond();
+    undoFirst();
+
+    expect(document.body.querySelector('[aria-hidden]')).toBe(null);
+    expect(document.body.querySelector('[data-aria-hidden]')).toBe(null);
+  });
+
+  it('ignores excluded elements that mount outside hidden subtrees', async () => {
+    const app = document.createElement('div');
+    const modal = document.createElement('div');
+    document.body.append(app, modal);
+
+    const undo = hideOthers(new Set([modal]), document.body);
+    const querySelectorAll = vi.spyOn(document.body, 'querySelectorAll');
+
+    const excluded = document.createElement('div');
+    excluded.setAttribute('data-radix-aria-hidden-exclude', '');
+    modal.append(excluded);
+    notifyExcludedElementMounted(excluded);
+    await Promise.resolve();
+
+    expect(querySelectorAll).not.toHaveBeenCalled();
+    expect(app.getAttribute('aria-hidden')).toBe('true');
+
+    undo();
   });
 });
 
