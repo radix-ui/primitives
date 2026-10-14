@@ -148,7 +148,23 @@ test.describe('Select (shadow DOM)', () => {
 
       // trigger a touch scroll, triggering the pointer move event and ensuring
       // we do not preventDefault on the upcoming pointer up event
-      await touchSwipe(page, host.locator('[data-radix-select-viewport]'), 'toTop', 30);
+      const viewport = host.locator('[data-radix-select-viewport]');
+      const initialScrollTop = await viewport.evaluate((viewport) => {
+        viewport.addEventListener(
+          'scrollend',
+          () => viewport.setAttribute('data-test-scroll-ended', 'true'),
+          { once: true },
+        );
+        return viewport.scrollTop;
+      });
+      await touchSwipe(page, viewport, 'toTop', 30);
+      // The gesture itself must scroll; scrolling the option into view below
+      // cannot stand in for a real touch scroll. Wait for the gesture to end
+      // before tapping to avoid overlapping a native scrolling gesture.
+      await expect
+        .poll(() => viewport.evaluate((viewport) => viewport.scrollTop))
+        .toBeGreaterThan(initialScrollTop);
+      await expect(viewport).toHaveAttribute('data-test-scroll-ended', 'true');
 
       // assert the select content is still open after swiping
       await expect(host.getByRole('listbox')).toBeAttached();

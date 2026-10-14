@@ -21,6 +21,8 @@ export default defineConfig({
   },
   use: {
     baseURL,
+    // Use full Chromium to avoid headless-shell touch-scroll issues on Windows.
+    channel: 'chromium',
     viewport: { width: 1024, height: 768 },
     // Required so `locator.tap()` (the `cy.realTouch()` equivalent) works.
     hasTouch: true,
