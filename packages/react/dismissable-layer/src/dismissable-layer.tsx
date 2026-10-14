@@ -288,6 +288,8 @@ const DismissableLayerBranch = /* @__PURE__ */ React.forwardRef<
 
 /* -----------------------------------------------------------------------------------------------*/
 
+const NOOP_CLICK_LISTENER_FOR_IOS_SAFARI_TAPS = () => {};
+
 /**
  * Registers a node as a "dismiss surface" for the enclosing DismissableLayer
  */
@@ -300,8 +302,10 @@ function useDismissableLayerSurface(): React.RefCallback<DismissableLayerBranchE
       return;
     }
     context.dismissableSurfaces.add(node);
+    node.addEventListener('click', NOOP_CLICK_LISTENER_FOR_IOS_SAFARI_TAPS);
     return () => {
       context.dismissableSurfaces.delete(node);
+      node.removeEventListener('click', NOOP_CLICK_LISTENER_FOR_IOS_SAFARI_TAPS);
     };
   }, [node, context.dismissableSurfaces]);
 

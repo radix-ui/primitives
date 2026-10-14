@@ -428,6 +428,35 @@ describe('DismissableLayer', () => {
     expect(onDismiss).toHaveBeenCalledTimes(1);
   });
 
+  it('gives a registered dismiss surface a click listener of its own until it unmounts so iOS Safari dispatches click for taps on it', () => {
+    const addEventListener = vi.spyOn(EventTarget.prototype, 'addEventListener');
+    const removeEventListener = vi.spyOn(EventTarget.prototype, 'removeEventListener');
+
+    function Surface() {
+      const registerSurface = DismissableLayer.useDismissableLayerSurface();
+      return <div ref={registerSurface}>surface</div>;
+    }
+
+    const rendered = render(<Surface />);
+    const surface = screen.getByText('surface');
+
+    const addedClickListeners = addEventListener.mock.calls
+      .filter(
+        ([type], index) => type === 'click' && addEventListener.mock.contexts[index] === surface,
+      )
+      .map(([, listener]) => listener);
+    expect(addedClickListeners).toHaveLength(1);
+
+    rendered.unmount();
+
+    const removedClickListeners = removeEventListener.mock.calls
+      .filter(
+        ([type], index) => type === 'click' && removeEventListener.mock.contexts[index] === surface,
+      )
+      .map(([, listener]) => listener);
+    expect(removedClickListeners).toEqual(addedClickListeners);
+  });
+
   it('does not dismiss when focus moves outside during a deferred stopped interaction', async () => {
     const onDismiss = vi.fn();
 

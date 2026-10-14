@@ -647,6 +647,111 @@ describe('given a modal Dialog containing a nested modal layer (eg. a DropdownMe
   });
 });
 
+describe('given a modal Dialog with an Overlay', () => {
+  async function waitForDocumentPointerDownListener() {
+    await act(async () => {
+      await new Promise((resolve) => window.setTimeout(resolve, 0));
+    });
+  }
+
+  afterEach(() => {
+    cleanupModal();
+    vi.restoreAllMocks();
+  });
+
+  it.each([{ asChild: false }, { asChild: true }])(
+    'gives the overlay a click listener of its own so iOS Safari dispatches click for taps on it (asChild: $asChild)',
+    ({ asChild }) => {
+      const addEventListener = vi.spyOn(EventTarget.prototype, 'addEventListener');
+
+      render(
+        <Dialog.Root defaultOpen>
+          <Dialog.Portal>
+            <Dialog.Overlay asChild={asChild} data-testid="overlay">
+              {asChild ? <article /> : null}
+            </Dialog.Overlay>
+            <Dialog.Content>
+              <Dialog.Title>{TITLE_TEXT}</Dialog.Title>
+            </Dialog.Content>
+          </Dialog.Portal>
+        </Dialog.Root>,
+      );
+
+      const overlay = screen.getByTestId('overlay');
+      const clickListenerTargets = addEventListener.mock.contexts.filter(
+        (_target, index) => addEventListener.mock.calls[index]?.[0] === 'click',
+      );
+      expect(overlay.tagName).toBe(asChild ? 'ARTICLE' : 'DIV');
+      expect(clickListenerTargets).toContain(overlay);
+    },
+  );
+
+  it('waits for the click that follows a pointer down on the overlay, then closes and calls the consumer handlers once', async () => {
+    const onOpenChange = vi.fn();
+    const onOverlayClick = vi.fn();
+    const onPointerDownOutside = vi.fn();
+    const onInteractOutside = vi.fn();
+
+    render(
+      <Dialog.Root defaultOpen onOpenChange={onOpenChange}>
+        <Dialog.Portal>
+          <Dialog.Overlay data-testid="overlay" onClick={onOverlayClick} />
+          <Dialog.Content
+            onPointerDownOutside={onPointerDownOutside}
+            onInteractOutside={onInteractOutside}
+          >
+            <Dialog.Title>{TITLE_TEXT}</Dialog.Title>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>,
+    );
+    await waitForDocumentPointerDownListener();
+
+    const overlay = screen.getByTestId('overlay');
+    fireEvent.pointerDown(overlay);
+    await waitForDocumentPointerDownListener();
+
+    expect(onOpenChange).not.toHaveBeenCalled();
+    expect(onPointerDownOutside).not.toHaveBeenCalled();
+
+    fireEvent.click(overlay);
+    await waitForDocumentPointerDownListener();
+
+    expect(onOpenChange).toHaveBeenCalledTimes(1);
+    expect(onOpenChange).toHaveBeenCalledWith(false);
+    expect(onOverlayClick).toHaveBeenCalledTimes(1);
+    expect(onPointerDownOutside).toHaveBeenCalledTimes(1);
+    expect(onInteractOutside).toHaveBeenCalledTimes(1);
+  });
+
+  it.each([{ handler: 'onPointerDownOutside' }, { handler: 'onInteractOutside' }] as const)(
+    'stays open when `$handler` is prevented',
+    async ({ handler }) => {
+      const onOpenChange = vi.fn();
+      const contentProps = { [handler]: (event: Event) => event.preventDefault() };
+
+      render(
+        <Dialog.Root defaultOpen onOpenChange={onOpenChange}>
+          <Dialog.Portal>
+            <Dialog.Overlay data-testid="overlay" />
+            <Dialog.Content {...contentProps}>
+              <Dialog.Title>{TITLE_TEXT}</Dialog.Title>
+            </Dialog.Content>
+          </Dialog.Portal>
+        </Dialog.Root>,
+      );
+      await waitForDocumentPointerDownListener();
+
+      const overlay = screen.getByTestId('overlay');
+      fireEvent.pointerDown(overlay);
+      fireEvent.click(overlay);
+      await waitForDocumentPointerDownListener();
+
+      expect(onOpenChange).not.toHaveBeenCalled();
+    },
+  );
+});
+
 describe('Dialog.Trigger', () => {
   afterEach(cleanupModal);
 
