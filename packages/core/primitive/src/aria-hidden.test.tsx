@@ -432,6 +432,29 @@ describe('inert', () => {
 
     unhide();
   });
+
+  it('preserves inert="false" since it is still inert', () => {
+    const wrapper = render(
+      <div>
+        <div id="already-inert">already inert</div>
+        <div id="not-to-be-hidden">not-hidden</div>
+      </div>,
+    );
+    const root = wrapper.container;
+    const alreadyInert = root.querySelector('#already-inert')!;
+
+    alreadyInert.setAttribute('inert', 'false');
+
+    const unhide = inertOthers(new Set([root.querySelector('#not-to-be-hidden')!]), root);
+
+    expect(alreadyInert.getAttribute('inert')).toBe('false');
+    expect(alreadyInert.getAttribute('data-inert-ed')).toBe('true');
+
+    unhide();
+
+    expect(alreadyInert.getAttribute('inert')).toBe('false');
+    expect(alreadyInert.hasAttribute('data-inert-ed')).toBe(false);
+  });
 });
 
 describe('suppressOthers', () => {

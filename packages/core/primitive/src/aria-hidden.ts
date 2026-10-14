@@ -154,7 +154,9 @@ function applyAttributeToOthers(
       } else {
         try {
           const attr = node.getAttribute(controlAttribute);
-          const alreadyHidden = attr !== null && attr !== 'false';
+          // `inert` is a boolean attribute, so `inert="false"` is still inert
+          const alreadyHidden =
+            controlAttribute === 'inert' ? attr !== null : attr !== null && attr !== 'false';
           const counterValue = (counterMap.get(node) || 0) + 1;
           const markerValue = (markerCounter?.get(node) || 0) + 1;
 
