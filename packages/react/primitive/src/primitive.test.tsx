@@ -1,7 +1,10 @@
 import * as React from 'react';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { SlotProvider } from '@radix-ui/react-slot';
-import { mergeProps, type MergePropsFunction } from '@radix-ui/react-slot/merge-props';
+import {
+  unstable_mergeProps as mergeProps,
+  type unstable_MergePropsFunction as MergePropsFunction,
+} from '@radix-ui/react-slot/merge-props';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { Primitive } from './primitive';
 
