@@ -3,18 +3,20 @@
 "radix-ui": minor
 ---
 
-Added entrypoints to control how `Slot` merges props with its child. You can now:
+Added unstable APIs to control how `Slot` merges props with its child. You can now:
 
-1. pass a `mergeProps` function to an individual `Slot` for one-off needs, or
-2. Use the new `Slot.Provider` to apply a custom merge strategy to all nested components that use `Slot` under the hood.
+1. pass a function to `unstableMergeProps` to an individual `Slot` for one-off needs, or
+2. use the new `Slot.Provider` to apply a custom merge strategy to all nested components that use `Slot` under the hood.
+
+**These APIs are unstable and may change in a minor release.**
 
 ```tsx
 import { Slot } from "radix-ui";
-import { mergeProps, type MergePropsFunction } from "radix-ui/slot/merge-props";
+import { unstable_mergeProps, type unstable_MergePropsFunction } from "radix-ui/slot/merge-props";
 
-const mergeProps: MergePropsFunction = (slotProps, childProps) => {
+const customMergeProps: unstable_MergePropsFunction = (slotProps, childProps) => {
   // your custom merge strategy, optionally delegating to the default
-  const merged = Slot.mergeProps(slotProps, childProps);
+  const merged = unstable_mergeProps(slotProps, childProps);
   return {
     ...merged,
     className: classNameProcessor(slotProps, childProps),
@@ -23,30 +25,30 @@ const mergeProps: MergePropsFunction = (slotProps, childProps) => {
 };
 
 // one-off
-<Slot.Root mergeProps={mergeProps}>{child}</Slot.Root>
+<Slot.Root unstableMergeProps={customMergeProps}>{child}</Slot.Root>
 
 // applies to all nested `asChild` components
-<Slot.Provider mergeProps={mergeProps}>
+<Slot.Provider unstableMergeProps={customMergeProps}>
   <App />
 </Slot.Provider>
 ```
 
-**IMPORTANT:** The `mergeProps` function should be stable across renders to avoid excessive rendering of Slot components. We recommend defining it outside of the component scope.
+**IMPORTANT:** The `unstableMergeProps` function should be stable across renders to avoid excessive rendering of Slot components. We recommend defining it outside of the component scope.
 
 ```tsx
-// good, mergeProps is stable across renders
-const mergeProps = (slotProps, childProps) => {
+// good, customMergeProps is stable across renders
+const customMergeProps = (slotProps, childProps) => {
   // ...
 };
 function Good() {
-  return <Slot.Root mergeProps={mergeProps} />;
+  return <Slot.Root unstableMergeProps={customMergeProps} />;
 }
 
-// not so good, mergeProps is recreated on every render
+// not so good, the merge function is recreated on every render
 function LessGood() {
   return (
     <Slot.Root
-      mergeProps={(slotProps, childProps) => {
+      unstableMergeProps={(slotProps, childProps) => {
         // ...
       }}
     />
