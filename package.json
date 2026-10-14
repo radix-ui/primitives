@@ -20,7 +20,7 @@
     "build:ci": "pnpm -r --workspace-concurrency=4 --filter \"./packages/**/*\" run build",
     "clean": "pnpm -r run clean",
     "reset": "rm -rf node_modules && pnpm -r run reset",
-    "bump:stable": "changeset version",
+    "bump:stable": "changeset version && pnpm format",
     "bump:next": "changeset version --snapshot",
     "bump:check": "changeset status --since=main",
     "release:stable": "pnpm publish -r --access public",
