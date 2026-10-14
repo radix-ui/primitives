@@ -30,6 +30,17 @@ const SKIPPED_ELEMENTS = new Set([
   'template',
 ]);
 
+// Elements (and their ancestors) matching this selector are never hidden.
+// `aria-live` regions are preserved so announcements still reach assistive
+// technology. `data-radix-aria-hidden-exclude` lets components opt out
+// explicitly, and must stay stable since different versions of Radix may share
+// a page.
+//
+// TODO(2.0): Only exclude `aria-live` elements that are not set to `"off" since
+// these are not live regions. Some users have used this as a workaround and we
+// don't want to break their apps.
+const EXCLUDED_SELECTOR = '[aria-live], [data-radix-aria-hidden-exclude]';
+
 function unwrapHost(node: DomParentNode): Element | null {
   return node && ((node as ShadowRoot).host || unwrapHost(node.parentNode as Element));
 }
@@ -76,10 +87,7 @@ function applyAttributeToOthers(
 ): Undo {
   const targets = correctTargets(parentNode, originalTargets);
 
-  // We should not hide aria-live elements
-  //
-  // See https://github.com/theKashey/aria-hidden/issues/10
-  const additionalTargets = parentNode.querySelectorAll('[aria-live]');
+  const additionalTargets = parentNode.querySelectorAll(EXCLUDED_SELECTOR);
   for (const target of additionalTargets) {
     targets.add(target);
   }

@@ -182,6 +182,60 @@ describe('hideOthers', () => {
     unhide();
   });
 
+  it('does not hide excluded elements or their ancestors', () => {
+    const excludedContainer = React.createRef<HTMLDivElement>();
+    const excluded = React.createRef<HTMLDivElement>();
+    const sibling = React.createRef<HTMLDivElement>();
+    const wrapper = render(
+      <div>
+        <div ref={excludedContainer}>
+          <div ref={sibling}>hidden</div>
+          <div ref={excluded} data-radix-aria-hidden-exclude="">
+            not hidden
+          </div>
+        </div>
+        <div>target</div>
+      </div>,
+    );
+    const root = wrapper.container;
+
+    const unhide = hideOthers(new Set([root.firstElementChild!.lastElementChild!]), root);
+
+    expect(getNearestAttribute(excluded.current!, 'aria-hidden', { current: root })).toBe(null);
+    expect(excludedContainer.current!.hasAttribute('aria-hidden')).toBe(false);
+    expect(sibling.current!.getAttribute('aria-hidden')).toBe('true');
+
+    unhide();
+
+    expect(sibling.current!.hasAttribute('aria-hidden')).toBe(false);
+  });
+
+  it('does not make excluded elements inert', () => {
+    const excluded = React.createRef<HTMLDivElement>();
+    const sibling = React.createRef<HTMLDivElement>();
+    const wrapper = render(
+      <div>
+        <div>
+          <div ref={sibling}>inert</div>
+          <div ref={excluded} data-radix-aria-hidden-exclude="">
+            not inert
+          </div>
+        </div>
+        <div>target</div>
+      </div>,
+    );
+    const root = wrapper.container;
+
+    const undo = inertOthers(new Set([root.firstElementChild!.lastElementChild!]), root);
+
+    expect(getNearestAttribute(excluded.current!, 'inert', { current: root })).toBe(null);
+    expect(sibling.current!.hasAttribute('inert')).toBe(true);
+
+    undo();
+
+    expect(sibling.current!.hasAttribute('inert')).toBe(false);
+  });
+
   it('handles script', () => {
     const scriptContainer = React.createRef<HTMLDivElement>();
     const wrapper = render(
