@@ -192,6 +192,62 @@ function ControlledImpl(props: OneTimePasswordField.OneTimePasswordFieldProps) {
   );
 }
 
+export const ControlledWithVirtualKeyboard: Story = {
+  render: (args) => <ControlledWithPresetAndVirtualKeyboard {...args} />,
+  name: 'Controlled with preset and virtual keyboard',
+};
+
+function ControlledWithPresetAndVirtualKeyboard(
+  props: OneTimePasswordField.OneTimePasswordFieldProps
+) {
+  const [code, setCode] = React.useState('1');
+  const rootRef = React.useRef<HTMLDivElement | null>(null);
+
+  const appendRandomDigit = React.useCallback(() => {
+    if (code.length >= 6) {
+      return;
+    }
+
+    const randomDigit = String(Math.floor(Math.random() * 10));
+    setCode((previous) => previous + randomDigit);
+  }, [code.length]);
+
+  return (
+    <div className={styles.viewport}>
+      <div className={styles.field}>
+        <OneTimePasswordField.Root
+          className={styles.otpRoot}
+          autoFocus
+          ref={rootRef}
+          onValueChange={(value) => setCode(value)}
+          value={code}
+          {...props}
+        >
+          <OneTimePasswordField.Input />
+          <Separator.Root orientation="vertical" className={styles.separator} />
+          <OneTimePasswordField.Input />
+          <Separator.Root orientation="vertical" className={styles.separator} />
+          <OneTimePasswordField.Input />
+          <Separator.Root orientation="vertical" className={styles.separator} />
+          <OneTimePasswordField.Input />
+          <Separator.Root orientation="vertical" className={styles.separator} />
+          <OneTimePasswordField.Input />
+          <Separator.Root orientation="vertical" className={styles.separator} />
+          <OneTimePasswordField.Input />
+
+          <OneTimePasswordField.HiddenInput name="code" />
+        </OneTimePasswordField.Root>
+      </div>
+
+      <button type="button" onClick={appendRandomDigit} disabled={code.length >= 6}>
+        Add random digit
+      </button>
+
+      <output className={styles.output}>{code || 'code'}</output>
+    </div>
+  );
+}
+
 export const PastedAndDeletedControlled: Story = {
   render: (args) => <ControlledImpl {...args} />,
   name: 'Pasted and deleted (controlled test)',
