@@ -565,6 +565,7 @@ const TooltipContentImpl = /* @__PURE__ */ React.forwardRef<
       <DismissableLayer
         asChild
         disableOutsidePointerEvents={false}
+        deferPointerDownOutside
         onEscapeKeyDown={onEscapeKeyDown}
         onPointerDownOutside={onPointerDownOutside}
         onFocusOutside={(event) => event.preventDefault()}

@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Dialog, HoverCard } from 'radix-ui';
 import { Popper } from 'radix-ui/internal';
 import styles from './hover-card.stories.module.css';
+import { ExternalOverlayTrigger } from './external-overlay';
 
 const { SIDE_OPTIONS, ALIGN_OPTIONS } = Popper;
 
@@ -29,6 +30,27 @@ export const Basic = () => {
           </HoverCard.Content>
         </HoverCard.Portal>
       </HoverCard.Root>
+    </div>
+  );
+};
+
+export const WithExtensionOverlay = () => {
+  const [open, setOpen] = React.useState(true);
+  return (
+    <div style={{ padding: 50, display: 'flex', justifyContent: 'center' }}>
+      <HoverCard.Root open={open} onOpenChange={setOpen}>
+        <HoverCard.Trigger href="/" className={styles.trigger}>
+          trigger
+        </HoverCard.Trigger>
+        <HoverCard.Portal>
+          <HoverCard.Content className={styles.content} sideOffset={5}>
+            <HoverCard.Arrow className={styles.arrow} width={20} height={10} />
+            <ExternalOverlayTrigger />
+            <CardContentPlaceholder />
+          </HoverCard.Content>
+        </HoverCard.Portal>
+      </HoverCard.Root>
+      <div data-testid="hover-card-state">{open ? 'open' : 'closed'}</div>
     </div>
   );
 };

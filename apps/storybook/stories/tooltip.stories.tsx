@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Popper } from 'radix-ui/internal';
 import { Dialog, Tooltip } from 'radix-ui';
 import styles from './tooltip.stories.module.css';
+import { ExternalOverlayTrigger } from './external-overlay';
 
 const { SIDE_OPTIONS, ALIGN_OPTIONS } = Popper;
 
@@ -37,6 +38,27 @@ export const Controlled = () => {
         </Tooltip.Portal>
       </Tooltip.Root>
     </Tooltip.Provider>
+  );
+};
+
+export const WithExtensionOverlay = () => {
+  const [open, setOpen] = React.useState(true);
+  return (
+    <div style={{ padding: 100 }}>
+      <Tooltip.Provider>
+        <Tooltip.Root open={open} onOpenChange={setOpen}>
+          <Tooltip.Trigger style={{ margin: 100 }}>Hover or Focus me</Tooltip.Trigger>
+          <Tooltip.Portal>
+            <Tooltip.Content className={styles.content} sideOffset={5}>
+              Nicely done!
+              <ExternalOverlayTrigger />
+              <Tooltip.Arrow className={styles.arrow} offset={10} />
+            </Tooltip.Content>
+          </Tooltip.Portal>
+        </Tooltip.Root>
+      </Tooltip.Provider>
+      <div data-testid="tooltip-state">{open ? 'open' : 'closed'}</div>
+    </div>
   );
 };
 
