@@ -339,6 +339,7 @@ const HoverCardContentImpl = /* @__PURE__ */ React.forwardRef<
         event.preventDefault();
       })}
       onDismiss={context.onDismiss}
+      deferPointerDownOutside
     >
       <PopperPrimitive.Content
         {...popperScope}

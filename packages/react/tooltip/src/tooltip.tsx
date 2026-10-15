@@ -569,6 +569,7 @@ const TooltipContentImpl = /* @__PURE__ */ React.forwardRef<
         onPointerDownOutside={onPointerDownOutside}
         onFocusOutside={(event) => event.preventDefault()}
         onDismiss={onClose}
+        deferPointerDownOutside
       >
         <PopperPrimitive.Content
           data-state={context.stateAttribute}
