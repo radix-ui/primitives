@@ -124,7 +124,7 @@ const DismissableLayer = /* @__PURE__ */ React.forwardRef<
         dismissableSurfaces: context.dismissableSurfaces,
         shouldHandlePointerDownOutside: React.useCallback(
           (target: EventTarget | null) => {
-            if (!(target instanceof Node)) {
+            if (!isNode(target)) {
               return false;
             }
 
@@ -372,8 +372,7 @@ function usePointerDownOutside(
 
       const target = event.target;
       const isDismissableSurface =
-        target instanceof Node &&
-        [...dismissableSurfaces].some((surface) => surface.contains(target as Node));
+        isNode(target) && [...dismissableSurfaces].some((surface) => surface.contains(target));
 
       if (!isDismissableSurface) {
         interceptedOutsideInteractionEventsRef.current.set(event.type, true);
@@ -569,6 +568,15 @@ function useFocusOutside(
     onFocusCapture: () => (isFocusInsideReactTreeRef.current = true),
     onBlurCapture: () => (isFocusInsideReactTreeRef.current = false),
   };
+}
+
+/**
+ * `instanceof Node` only matches nodes created in this window, so it misses
+ * targets in another window's document (eg, content portalled into a
+ * `window.open` popup or an iframe).
+ */
+function isNode(target: EventTarget | null): target is Node {
+  return target !== null && typeof (target as Partial<Node>).nodeType === 'number';
 }
 
 function dispatchUpdate() {
