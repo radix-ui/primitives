@@ -10,7 +10,7 @@ export default defineConfig({
         test: {
           name: 'unit',
           setupFiles: ['./scripts/setup-tests.ts'],
-          environment: 'jsdom',
+          environment: 'warpdom',
           include: ['**/*.test.?(c|m)[jt]s?(x)'],
           exclude: [...configDefaults.exclude, RSC_TEST_GLOB],
           retry: 1,
