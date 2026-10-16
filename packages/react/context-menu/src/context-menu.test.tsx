@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { axe } from 'vitest-axe';
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import * as ContextMenu from './context-menu';
 import type { MockInstance } from 'vitest';
 import { afterEach, beforeEach, describe, it, expect, vi, beforeAll, afterAll } from 'vitest';
@@ -1519,3 +1519,81 @@ function cleanupModal() {
   // Modal menus set this on the `body` and only restore it on close.
   document.body.style.pointerEvents = '';
 }
+
+describe('touch long press with nested triggers', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+  afterEach(() => {
+    cleanup();
+    vi.useRealTimers();
+  });
+
+  function NestedContextMenuTest(props: { innerDisabled?: boolean }) {
+    return (
+      <ContextMenu.Root>
+        <ContextMenu.Trigger data-testid="outer">
+          <ContextMenu.Root>
+            <ContextMenu.Trigger data-testid="inner" disabled={props.innerDisabled}>
+              {TRIGGER_TEXT}
+            </ContextMenu.Trigger>
+            <ContextMenu.Portal>
+              <ContextMenu.Content aria-label="inner menu">
+                <ContextMenu.Item>Inner item</ContextMenu.Item>
+              </ContextMenu.Content>
+            </ContextMenu.Portal>
+          </ContextMenu.Root>
+        </ContextMenu.Trigger>
+        <ContextMenu.Portal>
+          <ContextMenu.Content aria-label="outer menu">
+            <ContextMenu.Item>Outer item</ContextMenu.Item>
+          </ContextMenu.Content>
+        </ContextMenu.Portal>
+      </ContextMenu.Root>
+    );
+  }
+
+  const openMenus = () =>
+    screen.queryAllByRole('menu').map((menu) => menu.getAttribute('aria-label'));
+
+  it('opens only the innermost menu on a touch long press', () => {
+    render(<NestedContextMenuTest />);
+    fireEvent.pointerDown(screen.getByTestId('inner'), { pointerType: 'touch' });
+    act(() => {
+      vi.advanceTimersByTime(750);
+    });
+    expect(openMenus()).toEqual(['inner menu']);
+  });
+
+  it('opens only the innermost menu when the platform fires contextmenu during the long press', () => {
+    render(<NestedContextMenuTest />);
+    const inner = screen.getByTestId('inner');
+    fireEvent.pointerDown(inner, { pointerType: 'touch' });
+    act(() => {
+      vi.advanceTimersByTime(520);
+    });
+    fireEvent.contextMenu(inner);
+    act(() => {
+      vi.advanceTimersByTime(300);
+    });
+    expect(openMenus()).toEqual(['inner menu']);
+  });
+
+  it('opens the menu on a touch long press', () => {
+    render(<ContextMenuTest />);
+    fireEvent.pointerDown(screen.getByText(TRIGGER_TEXT), { pointerType: 'touch' });
+    act(() => {
+      vi.advanceTimersByTime(750);
+    });
+    expect(screen.getByRole('menu')).toBeInTheDocument();
+  });
+
+  it('opens the outer menu when the inner trigger is disabled', () => {
+    render(<NestedContextMenuTest innerDisabled />);
+    fireEvent.pointerDown(screen.getByTestId('inner'), { pointerType: 'touch' });
+    act(() => {
+      vi.advanceTimersByTime(750);
+    });
+    expect(openMenus()).toEqual(['outer menu']);
+  });
+});

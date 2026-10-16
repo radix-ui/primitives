@@ -12,7 +12,7 @@ describe('blur of focusable descendants when switching tabs', () => {
   const TabsWithInput = ({
     onInputBlur,
     ...props
-  }: React.ComponentProps<typeof Tabs.Root> & { onInputBlur?: () => void }) => (
+  }: React.ComponentProps<typeof Tabs.Root> & { onInputBlur?: (() => void) | undefined }) => (
     <Tabs.Root defaultValue="one" {...props}>
       <Tabs.List>
         <Tabs.Trigger value="one">One</Tabs.Trigger>
@@ -376,5 +376,28 @@ describe('Tabs.Content', () => {
 
     fireEvent.click(content);
     expect(onClick).toHaveBeenCalled();
+  });
+});
+
+// Regression test for https://github.com/radix-ui/primitives/issues/4197
+describe('handlers with a narrower parameter type than the prop', () => {
+  afterEach(cleanup);
+
+  type TabValue = 'one' | 'two';
+
+  it('accepts an `onValueChange` handler typed with the tab values', () => {
+    const handleValueChange = vi.fn((value: TabValue) => value);
+
+    render(
+      <Tabs.Root defaultValue="one" onValueChange={handleValueChange}>
+        <Tabs.List>
+          <Tabs.Trigger value="one">One</Tabs.Trigger>
+          <Tabs.Trigger value="two">Two</Tabs.Trigger>
+        </Tabs.List>
+      </Tabs.Root>,
+    );
+    fireEvent.mouseDown(screen.getByText('Two'), { button: 0 });
+
+    expect(handleValueChange).toHaveBeenCalledWith('two');
   });
 });

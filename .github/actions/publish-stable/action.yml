@@ -11,6 +11,8 @@ runs:
   steps:
     - name: CI Setup
       uses: ./.github/actions/ci-setup
+      with:
+        npm-trusted-publishing: 'true'
 
     - name: Build packages
       shell: bash

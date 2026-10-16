@@ -1,5 +1,14 @@
 # @radix-ui/react-portal
 
+## 1.2.0
+
+- Allow explicit `undefined` for all optional types for compatibility with TypeScript's `exactOptionalPropertyTypes` flag.
+- Updated dependencies: `@radix-ui/react-primitive@2.2.0`
+
+## 1.1.18
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.11`
+
 ## 1.1.17
 
 - Reverted breaking changes that caused compatibility issues with React Server Components.

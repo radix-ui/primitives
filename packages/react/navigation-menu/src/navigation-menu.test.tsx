@@ -965,6 +965,65 @@ describe('NavigationMenu.Viewport', () => {
     expect(onClick).toHaveBeenCalled();
   });
 
-  // TODO: Fix bug so this test passes.
-  it.todo('forwards props to the child element when `asChild` is set');
+  it('forwards props to the child element when `asChild` is set', () => {
+    const ref = React.createRef<HTMLDivElement>();
+    const onClick = vi.fn();
+
+    render(
+      <NavigationMenu.Root defaultValue="one">
+        <NavigationMenu.List>
+          <NavigationMenu.Item value="one">
+            <NavigationMenu.Trigger>Trigger</NavigationMenu.Trigger>
+            <NavigationMenu.Content>
+              <NavigationMenu.Link href="/">Link</NavigationMenu.Link>
+            </NavigationMenu.Content>
+          </NavigationMenu.Item>
+        </NavigationMenu.List>
+        <NavigationMenu.Viewport asChild>
+          <section
+            ref={ref}
+            data-testid="viewport"
+            className="custom-class"
+            style={{ outlineColor: 'rgb(1, 2, 3)' }}
+            onClick={onClick}
+          />
+        </NavigationMenu.Viewport>
+      </NavigationMenu.Root>,
+    );
+
+    const viewport = screen.getByTestId('viewport');
+    expect(viewport.tagName).toBe('SECTION');
+    expect(viewport).toHaveAttribute('data-state', 'open');
+    expect(viewport).toHaveAttribute('data-orientation', 'horizontal');
+    expect(viewport).toHaveClass('custom-class');
+    expect(viewport.style.outlineColor).toBe('rgb(1, 2, 3)');
+    expect(ref.current).toBe(viewport);
+
+    fireEvent.click(viewport);
+    expect(onClick).toHaveBeenCalled();
+  });
+
+  it('renders the active content inside the child element when `asChild` is set', () => {
+    render(
+      <NavigationMenu.Root defaultValue="one">
+        <NavigationMenu.List>
+          <NavigationMenu.Item value="one">
+            <NavigationMenu.Trigger>Trigger</NavigationMenu.Trigger>
+            <NavigationMenu.Content>
+              <NavigationMenu.Link href="/">Link</NavigationMenu.Link>
+            </NavigationMenu.Content>
+          </NavigationMenu.Item>
+        </NavigationMenu.List>
+        <NavigationMenu.Viewport asChild>
+          <section data-testid="viewport">
+            <span data-testid="decoration" />
+          </section>
+        </NavigationMenu.Viewport>
+      </NavigationMenu.Root>,
+    );
+
+    const viewport = screen.getByTestId('viewport');
+    expect(viewport).toContainElement(screen.getByTestId('decoration'));
+    expect(viewport).toContainElement(screen.getByRole('link', { name: 'Link' }));
+  });
 });

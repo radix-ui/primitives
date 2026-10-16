@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-avatar",
-  "version": "1.2.6",
+  "version": "1.3.1",
   "license": "MIT",
   "source": "./src/index.ts",
   "main": "./src/index.ts",
@@ -35,6 +35,7 @@
     "build": "radix-build"
   },
   "dependencies": {
+    "@radix-ui/env-check": "workspace:*",
     "@radix-ui/primitive": "workspace:*",
     "@radix-ui/react-context": "workspace:*",
     "@radix-ui/react-primitive": "workspace:*",
@@ -45,10 +46,10 @@
   "devDependencies": {
     "@repo/builder": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@types/react": "^19.2.17",
-    "@types/react-dom": "^19.2.3",
-    "react": "^19.2.8",
-    "react-dom": "^19.2.8",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
     "typescript": "^5.9.3"
   },
   "peerDependencies": {

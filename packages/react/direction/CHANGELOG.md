@@ -1,5 +1,13 @@
 # @radix-ui/react-direction
 
+## 1.2.0
+
+- Allow explicit `undefined` for all optional types for compatibility with TypeScript's `exactOptionalPropertyTypes` flag.
+
+## 1.1.5
+
+- Internal refactoring only; no behavioral or API changes.
+
 ## 1.1.4
 
 - Reverted breaking changes that caused compatibility issues with React Server Components.

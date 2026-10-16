@@ -133,6 +133,87 @@ describe('keys from focusable descendants', () => {
   });
 });
 
+// Regression tests for https://github.com/radix-ui/primitives/issues/4195
+describe('pointer movement while closing', () => {
+  afterEach(cleanupModal);
+
+  // `forceMount` keeps the content mounted after it closes, as an exit animation does.
+  const ClosingMenu = ({ open }: { open: boolean }) => (
+    <>
+      <DropdownMenu.Root open={open}>
+        <DropdownMenu.Trigger>{TRIGGER_TEXT}</DropdownMenu.Trigger>
+        <DropdownMenu.Portal forceMount>
+          <DropdownMenu.Content forceMount>
+            <DropdownMenu.Item>{ITEM_TEXT}</DropdownMenu.Item>
+          </DropdownMenu.Content>
+        </DropdownMenu.Portal>
+      </DropdownMenu.Root>
+      <input data-testid="input" />
+    </>
+  );
+
+  async function renderClosed() {
+    const { rerender } = render(<ClosingMenu open />);
+    const item = await waitFor(() => screen.getByText(ITEM_TEXT));
+    rerender(<ClosingMenu open={false} />);
+    const input = screen.getByTestId('input');
+    input.focus();
+    return { item, input };
+  }
+
+  it('does not take focus when the pointer leaves an item', async () => {
+    const { item, input } = await renderClosed();
+    fireEvent.pointerLeave(item, { pointerType: 'mouse' });
+    expect(input).toHaveFocus();
+  });
+
+  it('does not focus an item the pointer moves over', async () => {
+    const { item, input } = await renderClosed();
+    fireEvent.pointerMove(item, { pointerType: 'mouse' });
+    expect(input).toHaveFocus();
+  });
+
+  const MenuWithClosingSub = ({ subOpen }: { subOpen: boolean }) => (
+    <DropdownMenu.Root open>
+      <DropdownMenu.Trigger>{TRIGGER_TEXT}</DropdownMenu.Trigger>
+      <DropdownMenu.Portal>
+        <DropdownMenu.Content>
+          <DropdownMenu.Item>{ITEM_TEXT}</DropdownMenu.Item>
+          <DropdownMenu.Sub open={subOpen}>
+            <DropdownMenu.SubTrigger>{SUB_TRIGGER_TEXT}</DropdownMenu.SubTrigger>
+            <DropdownMenu.Portal forceMount>
+              <DropdownMenu.SubContent forceMount>
+                <DropdownMenu.Item>{SUB_ITEM_TEXT}</DropdownMenu.Item>
+              </DropdownMenu.SubContent>
+            </DropdownMenu.Portal>
+          </DropdownMenu.Sub>
+        </DropdownMenu.Content>
+      </DropdownMenu.Portal>
+    </DropdownMenu.Root>
+  );
+
+  async function renderClosedSub() {
+    const { rerender } = render(<MenuWithClosingSub subOpen />);
+    const subItem = await waitFor(() => screen.getByText(SUB_ITEM_TEXT));
+    rerender(<MenuWithClosingSub subOpen={false} />);
+    const item = screen.getByText(ITEM_TEXT);
+    item.focus();
+    return { item, subItem };
+  }
+
+  it('does not take focus when the pointer leaves an item in a closed submenu', async () => {
+    const { item, subItem } = await renderClosedSub();
+    fireEvent.pointerLeave(subItem, { pointerType: 'mouse' });
+    expect(item).toHaveFocus();
+  });
+
+  it('does not focus an item the pointer moves over in a closed submenu', async () => {
+    const { item, subItem } = await renderClosedSub();
+    fireEvent.pointerMove(subItem, { pointerType: 'mouse' });
+    expect(item).toHaveFocus();
+  });
+});
+
 describe('given a DropdownMenu with `asChild` on the Content', () => {
   afterEach(cleanupModal);
 

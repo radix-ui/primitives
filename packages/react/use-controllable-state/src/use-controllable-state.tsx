@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { IS_DEVELOPMENT } from '@radix-ui/primitive/is-development';
+import { IS_DEVELOPMENT } from '@radix-ui/env-check/is-development';
 import { useLayoutEffect } from '@radix-ui/react-use-layout-effect';
 
 // Prevent bundlers from trying to optimize the import
@@ -12,8 +12,8 @@ type SetStateFn<T> = React.Dispatch<React.SetStateAction<T>>;
 interface UseControllableStateParams<T> {
   prop?: T | undefined;
   defaultProp: T;
-  onChange?: ChangeHandler<T>;
-  caller?: string;
+  onChange?: ChangeHandler<T> | undefined;
+  caller?: string | undefined;
 }
 
 export function useControllableState<T>({

@@ -1,5 +1,11 @@
 name: Setup CI
 
+inputs:
+  npm-trusted-publishing:
+    description: Install an npm version that supports OIDC trusted publishing
+    required: false
+    default: 'false'
+
 runs:
   using: composite
   steps:
@@ -34,6 +40,7 @@ runs:
     # crashes mid-publish (changesets#2099). Stay on v11 until changesets
     # fully handles npm 12.
     - name: Ensure npm supports OIDC trusted publishing
+      if: inputs.npm-trusted-publishing == 'true'
       shell: bash
       run: |
         npm install -g npm@11.18.0

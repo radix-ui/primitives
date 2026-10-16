@@ -48,7 +48,7 @@ function createContext<ContextValueType extends object | null>(
 
   function useContext(
     consumerName: string,
-    options: { optional?: boolean } = {},
+    options: { optional?: boolean | undefined } = {},
   ): ContextValueType | undefined {
     const { optional = false } = options;
     const context = React.useContext(Context);
@@ -85,7 +85,7 @@ interface UseScopedContext<ContextValueType extends object | null> {
   (
     consumerName: string,
     scope: Scope<ContextValueType | undefined>,
-    options: { optional?: true },
+    options: { optional?: true | undefined },
   ): ContextValueType | undefined;
 }
 
@@ -146,7 +146,7 @@ interface CreateScopedContext {
     function useContext(
       consumerName: string,
       scope: Scope<ContextValueType | undefined>,
-      options: { optional?: boolean } = {},
+      options: { optional?: boolean | undefined } = {},
     ): ContextValueType | undefined {
       const { optional = false } = options;
       const Context = scope?.[scopeName]?.[index] || BaseContext;

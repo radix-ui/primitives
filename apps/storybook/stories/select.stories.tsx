@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-pascal-case */
 import * as React from 'react';
 import { createPortal } from 'react-dom';
-import { Dialog, Popover, Select, Label as LabelPrimitive } from 'radix-ui';
+import { Dialog, Popover, Select, ScrollArea, Label as LabelPrimitive } from 'radix-ui';
 import { foodGroups } from '@repo/test-data/foods';
 import styles from './select.stories.module.css';
 import { ExternalOverlayTrigger } from './external-overlay';
@@ -816,6 +816,8 @@ export const RightToLeft = () => (
 
 export const WithinForm = () => {
   const [data, setData] = React.useState({});
+  const [language, setLanguage] = React.useState('fr');
+  const [country, setCountry] = React.useState('fr');
 
   function handleChange(event: React.ChangeEvent<HTMLFormElement>) {
     const formData = new FormData(event.currentTarget);
@@ -838,7 +840,18 @@ export const WithinForm = () => {
       <br />
       <Label style={{ display: 'block' }}>
         Country
-        <Select.Root name="country" autoComplete="country" defaultValue="fr">
+        <Select.Root
+          name="country"
+          autoComplete="country"
+          value={country}
+          onValueChange={(value) => {
+            if (value === 'de') {
+              window.alert('Germany is not supported');
+            } else {
+              setCountry(value);
+            }
+          }}
+        >
           <Select.Trigger className={styles.trigger}>
             <Select.Value />
             <Select.Icon />
@@ -864,15 +877,48 @@ export const WithinForm = () => {
                     <TickIcon />
                   </Select.ItemIndicator>
                 </Select.Item>
+                <Select.Item className={styles.item} value="de">
+                  <Select.ItemText>Germany</Select.ItemText>
+                  <Select.ItemIndicator className={styles.indicator}>
+                    <TickIcon />
+                  </Select.ItemIndicator>
+                </Select.Item>
               </Select.Viewport>
             </Select.Content>
           </Select.Portal>
         </Select.Root>
       </Label>
+      <Label style={{ display: 'block' }}>
+        Language
+        <select
+          name="language"
+          value={language}
+          onChange={(event) => {
+            if (event.target.value === 'de') {
+              window.alert('German is not supported');
+            } else {
+              setLanguage(event.target.value);
+            }
+          }}
+          className={styles.trigger}
+        >
+          <option value="fr">French</option>
+          <option value="en">English</option>
+          <option value="es">Spanish</option>
+          <option value="de">German</option>
+        </select>
+      </Label>
       <br />
       <button type="submit">Submit</button>
       <br />
-      <pre>{JSON.stringify(data, null, 2)}</pre>
+      <div>
+        <h2>Form data:</h2>
+        <pre>{JSON.stringify(data, null, 2)}</pre>
+      </div>
+      <div>
+        Field state:
+        <pre>{JSON.stringify({ language, country }, null, 2)}</pre>
+      </div>
     </form>
   );
 };
@@ -1155,6 +1201,27 @@ export const Parts = () => {
   );
 };
 
+export const AllItemsDisabled = () => (
+  <Select.Root defaultOpen>
+    <Select.Trigger className={styles.trigger}>
+      <Select.Value placeholder="Pick an option" />
+      <Select.Icon />
+    </Select.Trigger>
+    <Select.Portal>
+      <Select.Content className={styles.content}>
+        <Select.Viewport className={styles.viewport}>
+          <Select.Item className={styles.item} value="a" disabled>
+            <Select.ItemText>Option A</Select.ItemText>
+          </Select.Item>
+          <Select.Item className={styles.item} value="b" disabled>
+            <Select.ItemText>Option B</Select.ItemText>
+          </Select.Item>
+        </Select.Viewport>
+      </Select.Content>
+    </Select.Portal>
+  </Select.Root>
+);
+
 export const WithinDialog = () => (
   <div style={{ height: '120vh' }}>
     <Dialog.Root>
@@ -1232,6 +1299,60 @@ export const WithVeryLongSelectItems = () => (
         </Select.Portal>
       </Select.Root>
     </Label>
+  </div>
+);
+
+export const WithScrollArea = () => (
+  <div style={{ padding: 50 }}>
+    <p style={{ marginBottom: 16, fontSize: 13, color: '#666', maxWidth: 400 }}>
+      Open the browser console. Before the fix, opening this select logs a React style conflict
+      warning:{' '}
+      <em>
+        "Updating a style property during rerender (overflowY) when a conflicting property is set
+        (overflow)"
+      </em>
+      . After the fix, no warning should appear.
+    </p>
+    <Select.Root>
+      <Select.Trigger className={styles.trigger}>
+        <Select.Value placeholder="Pick a fruit…" />
+        <Select.Icon />
+      </Select.Trigger>
+      <Select.Portal>
+        <Select.Content className={styles.content} position="popper" sideOffset={5}>
+          <ScrollArea.Root style={{ height: 200 }} type="auto">
+            <Select.Viewport asChild>
+              <ScrollArea.Viewport className={styles.viewport}>
+                {[
+                  'Apple',
+                  'Banana',
+                  'Blueberry',
+                  'Grapes',
+                  'Pineapple',
+                  'Mango',
+                  'Strawberry',
+                  'Watermelon',
+                  'Peach',
+                  'Plum',
+                  'Cherry',
+                  'Kiwi',
+                ].map((fruit) => (
+                  <Select.Item key={fruit} className={styles.item} value={fruit.toLowerCase()}>
+                    <Select.ItemText>{fruit}</Select.ItemText>
+                    <Select.ItemIndicator className={styles.indicator}>
+                      <TickIcon />
+                    </Select.ItemIndicator>
+                  </Select.Item>
+                ))}
+              </ScrollArea.Viewport>
+            </Select.Viewport>
+            <ScrollArea.Scrollbar orientation="vertical" style={{ width: 6 }}>
+              <ScrollArea.Thumb style={{ background: 'rgba(0,0,0,0.3)', borderRadius: 3 }} />
+            </ScrollArea.Scrollbar>
+          </ScrollArea.Root>
+        </Select.Content>
+      </Select.Portal>
+    </Select.Root>
   </div>
 );
 

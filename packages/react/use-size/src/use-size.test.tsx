@@ -4,7 +4,7 @@ import { afterEach, beforeAll, afterAll, beforeEach, describe, expect, it, vi } 
 import { useSize } from './use-size';
 
 type BorderBoxSize = { inlineSize: number; blockSize: number };
-type Entry = { borderBoxSize?: BorderBoxSize | BorderBoxSize[] };
+type Entry = { borderBoxSize?: BorderBoxSize | BorderBoxSize[] | undefined };
 
 class MockResizeObserver {
   static instances: MockResizeObserver[] = [];
@@ -85,7 +85,7 @@ function SizeProbe({ element }: { element: HTMLElement | null }) {
  * Renders a real element into the DOM, then reports its measured size. Toggling `disabled`
  * passes `null` to `useSize` to exercise the reset path.
  */
-function Harness({ disabled = false }: { disabled?: boolean }) {
+function Harness({ disabled = false }: { disabled?: boolean | undefined }) {
   const [node, setNode] = React.useState<HTMLElement | null>(null);
   return (
     <>

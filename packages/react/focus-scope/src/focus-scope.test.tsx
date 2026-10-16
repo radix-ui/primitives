@@ -55,6 +55,39 @@ describe('FocusScope', () => {
       await userEvent.tab();
       await waitFor(() => expect(tabbableFirst).toHaveFocus());
     });
+
+    it('should wrap focus on a plain shift+tab keydown from the first element in scope', () => {
+      tabbableFirst.focus();
+      const notCancelled = fireEvent.keyDown(tabbableFirst, {
+        key: 'Tab',
+        shiftKey: true,
+        keyCode: 9,
+      });
+      expect(notCancelled).toBe(false);
+      expect(tabbableLast).toHaveFocus();
+    });
+
+    it('should leave a tab that belongs to an IME composition to the input method', () => {
+      tabbableFirst.focus();
+      const notCancelled = fireEvent.keyDown(tabbableFirst, {
+        key: 'Tab',
+        shiftKey: true,
+        isComposing: true,
+      });
+      expect(notCancelled).toBe(true);
+      expect(tabbableFirst).toHaveFocus();
+    });
+
+    it('should leave a tab the IME processed (keyCode 229) to the input method', () => {
+      tabbableFirst.focus();
+      const notCancelled = fireEvent.keyDown(tabbableFirst, {
+        key: 'Tab',
+        shiftKey: true,
+        keyCode: 229,
+      });
+      expect(notCancelled).toBe(true);
+      expect(tabbableFirst).toHaveFocus();
+    });
   });
 
   describe('given a FocusScope where the first focusable has a negative tabindex', () => {
@@ -167,6 +200,71 @@ describe('FocusScope', () => {
           <button type="button">Click me</button>
         </FocusScope.Root>
       ));
+    });
+  });
+
+  // Regression test for https://github.com/radix-ui/primitives/issues/4148
+  describe('unmount timer', () => {
+    afterEach(() => {
+      vi.unstubAllGlobals();
+      vi.useRealTimers();
+    });
+
+    it('does not read realm globals after the environment has been torn down', () => {
+      vi.useFakeTimers();
+      const onUnmountAutoFocus = vi.fn();
+      const rendered = render(
+        <FocusScope.Root trapped onUnmountAutoFocus={onUnmountAutoFocus}>
+          <TestField label={INNER_NAME_INPUT_LABEL} />
+        </FocusScope.Root>,
+      );
+      const body = document.body;
+
+      rendered.unmount();
+
+      // Simulate a test runner restoring Node's globals once the test file has finished (vitest +
+      // jsdom): the container's document still exists, but the globals no longer belong to it.
+      // Node's `CustomEvent` isn't a jsdom `Event`, so dispatching one would throw.
+      class NodeCustomEvent {
+        constructor(public type: string) {}
+      }
+      vi.stubGlobal('CustomEvent', NodeCustomEvent);
+      vi.stubGlobal('HTMLInputElement', undefined);
+      vi.stubGlobal('document', undefined);
+
+      expect(() => vi.runAllTimers()).not.toThrow();
+      expect(onUnmountAutoFocus).toHaveBeenCalledTimes(1);
+      expect(body.ownerDocument.activeElement).toBe(body);
+    });
+
+    it('still restores focus and honours `preventDefault` after unmount', () => {
+      vi.useFakeTimers();
+      const outer = document.createElement('input');
+      document.body.appendChild(outer);
+      outer.focus();
+
+      const rendered = render(
+        <FocusScope.Root trapped>
+          <TestField label={INNER_NAME_INPUT_LABEL} />
+        </FocusScope.Root>,
+      );
+      expect(rendered.getByLabelText(INNER_NAME_INPUT_LABEL)).toHaveFocus();
+      rendered.unmount();
+      vi.runAllTimers();
+      expect(outer).toHaveFocus();
+
+      const prevented = render(
+        <FocusScope.Root trapped onUnmountAutoFocus={(event) => event.preventDefault()}>
+          <TestField label={INNER_EMAIL_INPUT_LABEL} />
+        </FocusScope.Root>,
+      );
+      const inner = prevented.getByLabelText(INNER_EMAIL_INPUT_LABEL);
+      expect(inner).toHaveFocus();
+      prevented.unmount();
+      vi.runAllTimers();
+      expect(outer).not.toHaveFocus();
+
+      outer.remove();
     });
   });
 

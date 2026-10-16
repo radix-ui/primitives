@@ -1,5 +1,18 @@
 # @radix-ui/react-collapsible
 
+## 1.2.1
+
+- Fixed a type regression where callback props that were previously declared as methods rejected handlers whose parameter is narrower than the prop's.
+
+## 1.2.0
+
+- Allow explicit `undefined` for all optional types for compatibility with TypeScript's `exactOptionalPropertyTypes` flag.
+- Updated dependencies: `@radix-ui/primitive@1.2.0`, `@radix-ui/react-context@1.3.0`, `@radix-ui/react-primitive@2.2.0`, `@radix-ui/react-use-controllable-state@1.3.0`
+
+## 1.1.21
+
+- Updated dependencies: `@radix-ui/react-primitive@2.1.11`, `@radix-ui/react-presence@1.1.11`
+
 ## 1.1.20
 
 - Reverted breaking changes that caused compatibility issues with React Server Components.

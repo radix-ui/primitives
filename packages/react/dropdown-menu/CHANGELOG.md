@@ -1,5 +1,19 @@
 # @radix-ui/react-dropdown-menu
 
+## 2.2.1
+
+- Fixed a type regression where callback props that were previously declared as methods rejected handlers whose parameter is narrower than the prop's.
+- Updated dependencies: `@radix-ui/react-menu@2.2.1`
+
+## 2.2.0
+
+- Allow explicit `undefined` for all optional types for compatibility with TypeScript's `exactOptionalPropertyTypes` flag.
+- Updated dependencies: `@radix-ui/primitive@1.2.0`, `@radix-ui/react-context@1.3.0`, `@radix-ui/react-menu@2.2.0`, `@radix-ui/react-primitive@2.2.0`, `@radix-ui/react-use-controllable-state@1.3.0`
+
+## 2.1.25
+
+- Updated dependencies: `@radix-ui/react-menu@2.1.25`, `@radix-ui/react-primitive@2.1.11`
+
 ## 2.1.24
 
 - Reverted breaking changes that caused compatibility issues with React Server Components.

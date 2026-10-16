@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { IS_DEVELOPMENT } from '@radix-ui/primitive/is-development';
+import { IS_DEVELOPMENT } from '@radix-ui/env-check/is-development';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { createContextScope } from '@radix-ui/react-context';
 import { Primitive } from '@radix-ui/react-primitive';
@@ -23,7 +23,7 @@ type Point = { x: number; y: number };
 
 const CONTEXT_MENU_NAME = 'ContextMenu';
 
-type ScopedProps<P> = P & { __scopeContextMenu?: Scope };
+type ScopedProps<P> = P & { __scopeContextMenu?: Scope | undefined };
 const [createContextMenuContext, createContextMenuScope] = createContextScope(CONTEXT_MENU_NAME, [
   createMenuScope,
 ]);
@@ -40,11 +40,11 @@ const [ContextMenuProvider, useContextMenuContext] =
   createContextMenuContext<ContextMenuContextValue>(CONTEXT_MENU_NAME);
 
 interface ContextMenuProps {
-  children?: React.ReactNode;
-  open?: boolean;
-  onOpenChange?(open: boolean): void;
-  dir?: Direction;
-  modal?: boolean;
+  children?: React.ReactNode | undefined;
+  open?: boolean | undefined;
+  onOpenChange?: { bivarianceHack(open: boolean): void }['bivarianceHack'] | undefined;
+  dir?: Direction | undefined;
+  modal?: boolean | undefined;
 }
 
 const ContextMenu: React.FC<ContextMenuProps> = (props: ScopedProps<ContextMenuProps>) => {
@@ -103,10 +103,15 @@ const ContextMenu: React.FC<ContextMenuProps> = (props: ScopedProps<ContextMenuP
 
 const TRIGGER_NAME = 'ContextMenuTrigger';
 
+// Native pointerdown events that a trigger has already armed a long press for.
+// Nested triggers all receive the same bubbling event, so only the innermost
+// one (which handles it first) may start a long press timer.
+const claimedLongPressEvents = /* @__PURE__ */ new WeakSet<Event>();
+
 type ContextMenuTriggerElement = React.ComponentRef<typeof Primitive.span>;
 type PrimitiveSpanProps = React.ComponentPropsWithoutRef<typeof Primitive.span>;
 interface ContextMenuTriggerProps extends PrimitiveSpanProps {
-  disabled?: boolean;
+  disabled?: boolean | undefined;
 }
 
 const ContextMenuTrigger = /* @__PURE__ */ React.forwardRef<
@@ -178,6 +183,10 @@ const ContextMenuTrigger = /* @__PURE__ */ React.forwardRef<
                     if (context.open) {
                       context.onOpenChange(false);
                     }
+                    if (claimedLongPressEvents.has(event.nativeEvent)) {
+                      return;
+                    }
+                    claimedLongPressEvents.add(event.nativeEvent);
                     longPressTimerRef.current = window.setTimeout(() => handleOpen(event), 700);
                   }),
                 )
@@ -226,10 +235,7 @@ const CONTENT_NAME = 'ContextMenuContent';
 
 type ContextMenuContentElement = React.ComponentRef<typeof MenuPrimitive.Content>;
 type MenuContentProps = React.ComponentPropsWithoutRef<typeof MenuPrimitive.Content>;
-interface ContextMenuContentProps extends Omit<
-  MenuContentProps,
-  'onEntryFocus' | 'side' | 'sideOffset' | 'align'
-> {}
+interface ContextMenuContentProps extends Omit<MenuContentProps, 'onEntryFocus'> {}
 
 const ContextMenuContent = /* @__PURE__ */ React.forwardRef<
   ContextMenuContentElement,
@@ -245,11 +251,11 @@ const ContextMenuContent = /* @__PURE__ */ React.forwardRef<
     return (
       <MenuPrimitive.Content
         {...menuScope}
-        {...contentProps}
-        ref={forwardedRef}
         side="right"
         sideOffset={2}
         align="start"
+        {...contentProps}
+        ref={forwardedRef}
         onCloseAutoFocus={(event) => {
           props.onCloseAutoFocus?.(event);
 
@@ -455,10 +461,10 @@ const ContextMenuArrow = /* @__PURE__ */ React.forwardRef<
 const SUB_NAME = 'ContextMenuSub';
 
 interface ContextMenuSubProps {
-  children?: React.ReactNode;
-  open?: boolean;
-  defaultOpen?: boolean;
-  onOpenChange?(open: boolean): void;
+  children?: React.ReactNode | undefined;
+  open?: boolean | undefined;
+  defaultOpen?: boolean | undefined;
+  onOpenChange?: { bivarianceHack(open: boolean): void }['bivarianceHack'] | undefined;
 }
 
 const ContextMenuSub: React.FC<ContextMenuSubProps> = (props: ScopedProps<ContextMenuSubProps>) => {

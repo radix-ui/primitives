@@ -34,38 +34,42 @@ interface DismissableLayerProps extends PrimitiveDivProps {
    * the `DismissableLayer`. Users will need to click twice on outside elements to
    * interact with them: once to close the `DismissableLayer`, and again to trigger the element.
    */
-  disableOutsidePointerEvents?: boolean;
+  disableOutsidePointerEvents?: boolean | undefined;
   /**
    * When `true`, a `'pointerdown'` event outside of the layered element will
    * wait for the interaction's click event before dispatching, allowing
    * third-party code to stop propagation of later events and cancel dismissal.
    */
-  deferPointerDownOutside?: boolean;
+  deferPointerDownOutside?: boolean | undefined;
   /**
    * Event handler called when the escape key is down.
    * Can be prevented.
    */
-  onEscapeKeyDown?: (event: KeyboardEvent) => void;
+  onEscapeKeyDown?: { bivarianceHack(event: KeyboardEvent): void }['bivarianceHack'] | undefined;
   /**
    * Event handler called when the a `pointerdown` event happens outside of the `DismissableLayer`.
    * Can be prevented.
    */
-  onPointerDownOutside?: (event: PointerDownOutsideEvent) => void;
+  onPointerDownOutside?:
+    | { bivarianceHack(event: PointerDownOutsideEvent): void }['bivarianceHack']
+    | undefined;
   /**
    * Event handler called when the focus moves outside of the `DismissableLayer`.
    * Can be prevented.
    */
-  onFocusOutside?: (event: FocusOutsideEvent) => void;
+  onFocusOutside?: { bivarianceHack(event: FocusOutsideEvent): void }['bivarianceHack'] | undefined;
   /**
    * Event handler called when an interaction happens outside the `DismissableLayer`.
    * Specifically, when a `pointerdown` event happens outside or focus moves outside of it.
    * Can be prevented.
    */
-  onInteractOutside?: (event: PointerDownOutsideEvent | FocusOutsideEvent) => void;
+  onInteractOutside?:
+    | { bivarianceHack(event: PointerDownOutsideEvent | FocusOutsideEvent): void }['bivarianceHack']
+    | undefined;
   /**
    * Handler called when the `DismissableLayer` should be dismissed
    */
-  onDismiss?: () => void;
+  onDismiss?: (() => void) | undefined;
 }
 
 const DismissableLayer = /* @__PURE__ */ React.forwardRef<
@@ -98,7 +102,12 @@ const DismissableLayer = /* @__PURE__ */ React.forwardRef<
         ? layers.indexOf(highestLayerWithOutsidePointerEventsDisabled)
         : -1;
     const index = node ? layers.indexOf(node) : -1;
-    const isBodyPointerEventsDisabled = context.layersWithOutsidePointerEventsDisabled.size > 0;
+    // Apply the override before the effect disables `body` pointer-events so
+    // the layer is never painted while inheriting `none`
+    //
+    // See https://github.com/radix-ui/primitives/issues/4093
+    const isBodyPointerEventsDisabled =
+      context.layersWithOutsidePointerEventsDisabled.size > 0 || disableOutsidePointerEvents;
     const isPointerEventsEnabled = index >= highestLayerWithOutsidePointerEventsDisabledIndex;
     const isDeferredPointerDownOutsideRef = React.useRef(false);
 
@@ -155,6 +164,15 @@ const DismissableLayer = /* @__PURE__ */ React.forwardRef<
     // - https://github.com/react/react/pull/34831
     const handleKeyDown = useCallbackRef((event: KeyboardEvent) => {
       if (event.key !== 'Escape') {
+        return;
+      }
+
+      // An Escape pressed while an IME composition is open cancels the composition or the
+      // conversion, so it belongs to the input method, not to the layer. On macOS it arrives
+      // with the real key: Chromium sends `key: "Escape"` with `isComposing: true` and
+      // `keyCode: 229`, and Safari sends it after `compositionend` with `isComposing: false`
+      // and `keyCode: 229`, so the key alone does not tell them apart.
+      if (event.isComposing || event.keyCode === 229) {
         return;
       }
 
@@ -282,6 +300,8 @@ const DismissableLayerBranch = /* @__PURE__ */ React.forwardRef<
 
 /* -----------------------------------------------------------------------------------------------*/
 
+const NOOP_CLICK_LISTENER_FOR_IOS_SAFARI_TAPS = () => {};
+
 /**
  * Registers a node as a "dismiss surface" for the enclosing DismissableLayer
  */
@@ -294,8 +314,10 @@ function useDismissableLayerSurface(): React.RefCallback<DismissableLayerBranchE
       return;
     }
     context.dismissableSurfaces.add(node);
+    node.addEventListener('click', NOOP_CLICK_LISTENER_FOR_IOS_SAFARI_TAPS);
     return () => {
       context.dismissableSurfaces.delete(node);
+      node.removeEventListener('click', NOOP_CLICK_LISTENER_FOR_IOS_SAFARI_TAPS);
     };
   }, [node, context.dismissableSurfaces]);
 
@@ -319,7 +341,9 @@ function usePointerDownOutside(
     deferPointerDownOutside: boolean;
     isDeferredPointerDownOutsideRef: React.RefObject<boolean>;
     dismissableSurfaces: Set<DismissableLayerBranchElement>;
-    shouldHandlePointerDownOutside?: (target: EventTarget | null) => boolean;
+    shouldHandlePointerDownOutside?:
+      | { bivarianceHack(target: EventTarget | null): boolean }['bivarianceHack']
+      | undefined;
   },
 ) {
   const {
@@ -333,9 +357,11 @@ function usePointerDownOutside(
   const isPointerInsideReactTreeRef = React.useRef(false);
   const isPointerDownOutsideRef = React.useRef(false);
   const interceptedOutsideInteractionEventsRef = React.useRef<Map<string, boolean>>(new Map());
-  const handleClickRef = React.useRef(() => {});
+  const handleClickRef = React.useRef((_event: Event) => {});
 
   React.useEffect(() => {
+    let isListening = true;
+    const timers = new Set<number>();
     function resetOutsideInteraction() {
       isPointerDownOutsideRef.current = false;
       isDeferredPointerDownOutsideRef.current = false;
@@ -361,11 +387,13 @@ function usePointerDownOutside(
       }
 
       if (event.type === 'click') {
-        window.setTimeout(() => {
+        const timerId = window.setTimeout(() => {
+          timers.delete(timerId);
           if (isPointerDownOutsideRef.current) {
-            handleClickRef.current();
+            handleClickRef.current(event);
           }
         }, 0);
+        timers.add(timerId);
       }
     }
 
@@ -434,7 +462,21 @@ function usePointerDownOutside(
           handleAndDispatchPointerDownOutsideEvent();
         } else {
           ownerDocument.removeEventListener('click', handleClickRef.current);
-          handleClickRef.current = handleAndDispatchPointerDownOutsideEvent;
+          handleClickRef.current = (event: Event) => {
+            if (event.isTrusted) {
+              handleAndDispatchPointerDownOutsideEvent();
+              return;
+            }
+
+            // Programmatic clicks can fire during a React commit, where
+            // flushSync is not allowed.
+            // See https://github.com/radix-ui/primitives/issues/4121
+            queueMicrotask(() => {
+              if (isListening && isPointerDownOutsideRef.current) {
+                handleAndDispatchPointerDownOutsideEvent();
+              }
+            });
+          };
           ownerDocument.addEventListener('click', handleClickRef.current, { once: true });
         }
       } else {
@@ -474,10 +516,16 @@ function usePointerDownOutside(
      * });
      */
     const timerId = window.setTimeout(() => {
+      timers.delete(timerId);
       ownerDocument.addEventListener('pointerdown', handlePointerDown);
     }, 0);
+    timers.add(timerId);
     return () => {
-      window.clearTimeout(timerId);
+      isListening = false;
+      resetOutsideInteraction();
+      for (const timerId of timers) {
+        window.clearTimeout(timerId);
+      }
       ownerDocument.removeEventListener('pointerdown', handlePointerDown);
       ownerDocument.removeEventListener('click', handleClickRef.current);
       for (const eventName of outsideInteractionEvents) {

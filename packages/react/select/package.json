@@ -1,6 +1,6 @@
 {
   "name": "@radix-ui/react-select",
-  "version": "2.3.7",
+  "version": "2.4.1",
   "license": "MIT",
   "source": "./src/index.ts",
   "main": "./src/index.ts",
@@ -53,9 +53,7 @@
     "@radix-ui/react-use-callback-ref": "workspace:*",
     "@radix-ui/react-use-controllable-state": "workspace:*",
     "@radix-ui/react-use-layout-effect": "workspace:*",
-    "@radix-ui/react-use-previous": "workspace:*",
     "@radix-ui/react-visually-hidden": "workspace:*",
-    "aria-hidden": "^1.2.4",
     "react-remove-scroll": "^2.7.2"
   },
   "devDependencies": {
@@ -63,10 +61,10 @@
     "@repo/test-data": "workspace:*",
     "@repo/test-utils": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@types/react": "^19.2.17",
-    "@types/react-dom": "^19.2.3",
-    "react": "^19.2.8",
-    "react-dom": "^19.2.8",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
     "typescript": "^5.9.3"
   },
   "peerDependencies": {

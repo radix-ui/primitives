@@ -1,17 +1,10 @@
-/* eslint-disable no-restricted-properties */
-
-/* eslint-disable no-restricted-globals */
-export const canUseDOM = !!(
-  typeof window !== 'undefined' &&
-  window.document &&
-  window.document.createElement
-);
-/* eslint-enable no-restricted-globals */
+/* oxlint-disable no-restricted-properties */
+import { canUseDOM } from './can-use-dom';
 
 export function composeEventHandlers<E extends { defaultPrevented: boolean }>(
   originalEventHandler?: (event: E) => void,
   ourEventHandler?: (event: E) => void,
-  { checkForDefaultPrevented = true } = {},
+  { checkForDefaultPrevented = true }: { checkForDefaultPrevented?: boolean | undefined } = {},
 ) {
   return function handleEvent(event: E) {
     originalEventHandler?.(event);
@@ -26,7 +19,7 @@ export function getOwnerWindow(element: Node | null | undefined) {
   if (!canUseDOM) {
     throw new Error('Cannot access window outside of the DOM');
   }
-  // eslint-disable-next-line no-restricted-globals
+  // oxlint-disable-next-line no-restricted-globals
   return element?.ownerDocument?.defaultView ?? window;
 }
 
@@ -34,7 +27,7 @@ export function getOwnerDocument(element: Node | null | undefined) {
   if (!canUseDOM) {
     throw new Error('Cannot access document outside of the DOM');
   }
-  // eslint-disable-next-line no-restricted-globals
+  // oxlint-disable-next-line no-restricted-globals
   return element?.ownerDocument ?? document;
 }
 

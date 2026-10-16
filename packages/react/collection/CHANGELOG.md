@@ -1,5 +1,18 @@
 # @radix-ui/react-collection
 
+## 1.2.0
+
+- **Breaking:** Renamed `unstable_CollectionProps` to `unstable_CollectionSlotProps` and `unstable_CollectionItemMap` to `unstable_CollectionDict`.
+- Added `useGetCollection` to the functions returned from `unstable_createCollection`.
+- Fixed display names of the collection context providers returned from `unstable_createCollection`.
+- Allow explicit `undefined` for all optional types for compatibility with TypeScript's `exactOptionalPropertyTypes` flag.
+- Fixed collections keeping a stale item order when React moved items in the DOM without remounting them.
+- Updated dependencies: `@radix-ui/react-context@1.3.0`, `@radix-ui/react-primitive@2.2.0`, `@radix-ui/react-slot@1.5.0`
+
+## 1.1.16
+
+- Updated dependencies: `@radix-ui/react-slot@1.4.0`, `@radix-ui/react-primitive@2.1.11`
+
 ## 1.1.15
 
 - Reverted breaking changes that caused compatibility issues with React Server Components.

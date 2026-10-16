@@ -63,7 +63,10 @@ function ShadowButton() {
 }
 
 describe('DismissableLayer', () => {
-  afterEach(cleanup);
+  afterEach(() => {
+    cleanup();
+    vi.restoreAllMocks();
+  });
 
   it('dismisses on an outside pointer interaction', async () => {
     const onPointerDownOutside = vi.fn();
@@ -179,8 +182,57 @@ describe('DismissableLayer', () => {
     fireEvent.pointerDown(screen.getByText('outside'), { pointerType: 'touch' });
     expect(onDismiss).not.toHaveBeenCalled();
 
-    fireEvent.click(screen.getByText('outside'));
+    await act(async () => {
+      fireEvent.click(screen.getByText('outside'));
+    });
 
+    expect(onDismiss).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not flush sync when a deferred outside click is dispatched from a passive effect', async () => {
+    const onDismiss = vi.fn();
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    function DispatchClickOnMount({
+      targetRef,
+    }: {
+      targetRef: React.RefObject<HTMLButtonElement | null>;
+    }) {
+      React.useEffect(() => {
+        targetRef.current?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+      }, [targetRef]);
+
+      return null;
+    }
+
+    function Test({ dispatchClick }: { dispatchClick: boolean }) {
+      const outsideRef = React.useRef<HTMLButtonElement>(null);
+
+      return (
+        <form>
+          <DismissableLayer.Root deferPointerDownOutside onDismiss={onDismiss}>
+            <button type="button">inside</button>
+          </DismissableLayer.Root>
+          <button type="button" ref={outsideRef}>
+            outside
+          </button>
+          {dispatchClick && <DispatchClickOnMount targetRef={outsideRef} />}
+        </form>
+      );
+    }
+
+    const rendered = render(<Test dispatchClick={false} />);
+    await waitForDocumentPointerDownListener();
+
+    fireEvent.pointerDown(screen.getByText('outside'));
+
+    await act(async () => {
+      rendered.rerender(<Test dispatchClick />);
+    });
+
+    expect(consoleError).not.toHaveBeenCalledWith(
+      expect.stringContaining('flushSync was called from inside a lifecycle method'),
+    );
     expect(onDismiss).toHaveBeenCalledTimes(1);
   });
 
@@ -376,6 +428,35 @@ describe('DismissableLayer', () => {
     expect(onDismiss).toHaveBeenCalledTimes(1);
   });
 
+  it('gives a registered dismiss surface a click listener of its own until it unmounts so iOS Safari dispatches click for taps on it', () => {
+    const addEventListener = vi.spyOn(EventTarget.prototype, 'addEventListener');
+    const removeEventListener = vi.spyOn(EventTarget.prototype, 'removeEventListener');
+
+    function Surface() {
+      const registerSurface = DismissableLayer.useDismissableLayerSurface();
+      return <div ref={registerSurface}>surface</div>;
+    }
+
+    const rendered = render(<Surface />);
+    const surface = screen.getByText('surface');
+
+    const addedClickListeners = addEventListener.mock.calls
+      .filter(
+        ([type], index) => type === 'click' && addEventListener.mock.contexts[index] === surface,
+      )
+      .map(([, listener]) => listener);
+    expect(addedClickListeners).toHaveLength(1);
+
+    rendered.unmount();
+
+    const removedClickListeners = removeEventListener.mock.calls
+      .filter(
+        ([type], index) => type === 'click' && removeEventListener.mock.contexts[index] === surface,
+      )
+      .map(([, listener]) => listener);
+    expect(removedClickListeners).toEqual(addedClickListeners);
+  });
+
   it('does not dismiss when focus moves outside during a deferred stopped interaction', async () => {
     const onDismiss = vi.fn();
 
@@ -560,6 +641,45 @@ describe('DismissableLayer', () => {
 
     expect(onDismiss).not.toHaveBeenCalled();
   });
+
+  it('leaves an escape key that belongs to an IME composition to the input method', () => {
+    const onEscapeKeyDown = vi.fn();
+    const onDismiss = vi.fn();
+
+    renderDismissableLayer({ onEscapeKeyDown, onDismiss });
+
+    const notCancelled = fireEvent.keyDown(document, { key: 'Escape', isComposing: true });
+
+    expect(notCancelled).toBe(true);
+    expect(onEscapeKeyDown).not.toHaveBeenCalled();
+    expect(onDismiss).not.toHaveBeenCalled();
+  });
+
+  it('leaves an escape key the IME processed (keyCode 229) to the input method', () => {
+    const onEscapeKeyDown = vi.fn();
+    const onDismiss = vi.fn();
+
+    renderDismissableLayer({ onEscapeKeyDown, onDismiss });
+
+    const notCancelled = fireEvent.keyDown(document, { key: 'Escape', keyCode: 229 });
+
+    expect(notCancelled).toBe(true);
+    expect(onEscapeKeyDown).not.toHaveBeenCalled();
+    expect(onDismiss).not.toHaveBeenCalled();
+  });
+
+  it('dismisses on the escape key that follows a finished composition', () => {
+    const onEscapeKeyDown = vi.fn();
+    const onDismiss = vi.fn();
+
+    renderDismissableLayer({ onEscapeKeyDown, onDismiss });
+
+    fireEvent.keyDown(document, { key: 'Escape', isComposing: true });
+    fireEvent.keyDown(document, { key: 'Escape', keyCode: 27 });
+
+    expect(onEscapeKeyDown).toHaveBeenCalledTimes(1);
+    expect(onDismiss).toHaveBeenCalledTimes(1);
+  });
 });
 
 describe('DismissableLayer.Root', () => {
@@ -645,6 +765,27 @@ describe('DismissableLayer.Root', () => {
 
     fireEvent.click(layer);
     expect(onClick).toHaveBeenCalled();
+  });
+
+  // Regression test for httpp://github.com/radix-ui/primitives/issues/4093
+  it('renders pointer-events auto override before the body is disabled', () => {
+    let bodyPointerEvents = '';
+    let layerPointerEvents = '';
+    const handleUpdate = () => {
+      bodyPointerEvents = document.body.style.pointerEvents;
+      layerPointerEvents = screen.getByTestId('layer').style.pointerEvents;
+    };
+    document.addEventListener('dismissableLayer.update', handleUpdate);
+
+    render(
+      <DismissableLayer.Root disableOutsidePointerEvents data-testid="layer">
+        <button type="button">inside</button>
+      </DismissableLayer.Root>,
+    );
+
+    document.removeEventListener('dismissableLayer.update', handleUpdate);
+    expect(bodyPointerEvents).toBe('none');
+    expect(layerPointerEvents).toBe('auto');
   });
 });
 

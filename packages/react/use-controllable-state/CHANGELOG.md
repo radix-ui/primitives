@@ -1,5 +1,10 @@
 # @radix-ui/react-use-controllable-state
 
+## 1.3.0
+
+- Allow explicit `undefined` for all optional types for compatibility with TypeScript's `exactOptionalPropertyTypes` flag.
+- Updated dependencies: `@radix-ui/primitive@1.2.0`
+
 ## 1.2.6
 
 - Reverted breaking changes that caused compatibility issues with React Server Components.

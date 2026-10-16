@@ -1,13 +1,12 @@
 {
   "name": "@radix-ui/primitive",
-  "version": "1.1.7",
+  "version": "1.2.0",
   "license": "MIT",
   "source": "./src/index.ts",
   "main": "./src/index.ts",
   "module": "./src/index.ts",
   "exports": {
-    ".": "./src/index.ts",
-    "./is-development": "./src/internal/is-development.true.ts"
+    ".": "./src/index.ts"
   },
   "publishConfig": {
     "main": "./dist/index.js",
@@ -23,43 +22,12 @@
           "types": "./dist/index.d.ts",
           "default": "./dist/index.js"
         }
-      },
-      "./is-development": {
-        "development": {
-          "import": {
-            "types": "./dist/internal/is-development.true.d.mts",
-            "default": "./dist/internal/is-development.true.mjs"
-          },
-          "require": {
-            "types": "./dist/internal/is-development.true.d.ts",
-            "default": "./dist/internal/is-development.true.js"
-          }
-        },
-        "production": {
-          "import": {
-            "types": "./dist/internal/is-development.false.d.mts",
-            "default": "./dist/internal/is-development.false.mjs"
-          },
-          "require": {
-            "types": "./dist/internal/is-development.false.d.ts",
-            "default": "./dist/internal/is-development.false.js"
-          }
-        },
-        "default": {
-          "import": {
-            "types": "./dist/internal/is-development.false.d.mts",
-            "default": "./dist/internal/is-development.false.mjs"
-          },
-          "require": {
-            "types": "./dist/internal/is-development.false.d.ts",
-            "default": "./dist/internal/is-development.false.js"
-          }
-        }
       }
     }
   },
   "files": [
     "dist",
+    "src",
     "README.md"
   ],
   "sideEffects": false,
@@ -68,7 +36,11 @@
     "clean": "rm -rf dist",
     "reset": "rm -rf dist node_modules",
     "typecheck": "tsc --noEmit",
+    "bench": "node bench/aria-hidden.bench.mts",
     "build": "radix-build"
+  },
+  "dependencies": {
+    "@radix-ui/env-check": "workspace:*"
   },
   "devDependencies": {
     "@repo/builder": "workspace:*",

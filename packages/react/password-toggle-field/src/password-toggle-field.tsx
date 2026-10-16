@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { flushSync } from 'react-dom';
-import { IS_DEVELOPMENT } from '@radix-ui/primitive/is-development';
+import { IS_DEVELOPMENT } from '@radix-ui/env-check/is-development';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { Primitive, type PrimitivePropsWithRef } from '@radix-ui/react-primitive';
@@ -47,14 +47,14 @@ const [PasswordToggleFieldProvider, usePasswordToggleFieldContext] =
  * PasswordToggleField
  * -----------------------------------------------------------------------------------------------*/
 
-type ScopedProps<P> = P & { __scopePasswordToggleField?: Scope };
+type ScopedProps<P> = P & { __scopePasswordToggleField?: Scope | undefined };
 
 interface PasswordToggleFieldProps {
-  id?: string;
-  visible?: boolean;
-  defaultVisible?: boolean;
-  onVisibilityChange?: (visible: boolean) => void;
-  children?: React.ReactNode;
+  id?: string | undefined;
+  visible?: boolean | undefined;
+  defaultVisible?: boolean | undefined;
+  onVisibilityChange?: { bivarianceHack(visible: boolean): void }['bivarianceHack'] | undefined;
+  children?: React.ReactNode | undefined;
 }
 
 const INITIAL_FOCUS_STATE: InternalFocusState = {
@@ -137,14 +137,14 @@ const PASSWORD_TOGGLE_FIELD_INPUT_NAME = PASSWORD_TOGGLE_FIELD_NAME + 'Input';
 type PrimitiveInputProps = PrimitivePropsWithRef<'input'>;
 
 interface PasswordToggleFieldOwnProps {
-  autoComplete?: AutoComplete;
+  autoComplete?: AutoComplete | undefined;
 }
 
 interface PasswordToggleFieldInputProps
   extends
     PasswordToggleFieldOwnProps,
     Omit<PrimitiveInputProps, keyof PasswordToggleFieldOwnProps | 'type'> {
-  autoComplete?: AutoComplete;
+  autoComplete?: AutoComplete | undefined;
 }
 
 const PasswordToggleFieldInput = /* @__PURE__ */ React.forwardRef<

@@ -1,5 +1,20 @@
 # @radix-ui/react-tabs
 
+## 1.2.1
+
+- Fixed a type regression where callback props that were previously declared as methods rejected handlers whose parameter is narrower than the prop's.
+- Updated dependencies: `@radix-ui/react-roving-focus@1.2.1`
+
+## 1.2.0
+
+- Allow explicit `undefined` for all optional types for compatibility with TypeScript's `exactOptionalPropertyTypes` flag.
+- Updated dependencies: `@radix-ui/primitive@1.2.0`, `@radix-ui/react-context@1.3.0`, `@radix-ui/react-direction@1.2.0`, `@radix-ui/react-primitive@2.2.0`, `@radix-ui/react-roving-focus@1.2.0`, `@radix-ui/react-use-controllable-state@1.3.0`
+
+## 1.1.22
+
+- Fixed a bug where a focused element inside `Tabs.Content` did not fire a blur event before the tab switched. `Tabs.Trigger` now moves focus before the tab's state change.
+- Updated dependencies: `@radix-ui/react-roving-focus@1.1.20`, `@radix-ui/react-direction@1.1.5`, `@radix-ui/react-primitive@2.1.11`, `@radix-ui/react-presence@1.1.11`
+
 ## 1.1.21
 
 - Reverted breaking changes that caused compatibility issues with React Server Components.

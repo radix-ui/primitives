@@ -1,5 +1,9 @@
 # @radix-ui/react-use-size
 
+## 1.1.5
+
+- Wrap the `ResizeObserver` callback in `requestAnimationFrame` to avoid the benign `ResizeObserver loop completed with undelivered notifications` error in performance-heavy applications.
+
 ## 1.1.4
 
 - Reverted breaking changes that caused compatibility issues with React Server Components.

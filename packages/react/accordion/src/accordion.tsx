@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { createContextScope } from '@radix-ui/react-context';
-import { createCollection } from '@radix-ui/react-collection';
+import { unstable_createCollection as createCollection } from '@radix-ui/react-collection';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
@@ -38,10 +38,10 @@ type Direction = (typeof Direction)[keyof typeof Direction];
 const ACCORDION_NAME = 'Accordion';
 const ACCORDION_KEYS = ['Home', 'End', 'ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight'];
 
-const [Collection, useCollection, createCollectionScope] =
+const [Collection, { useGetCollection, createCollectionScope }] =
   createCollection<AccordionTriggerElement>(ACCORDION_NAME);
 
-type ScopedProps<P> = P & { __scopeAccordion?: Scope };
+type ScopedProps<P> = P & { __scopeAccordion?: Scope | undefined };
 const [createAccordionContext, createAccordionScope] = createContextScope(ACCORDION_NAME, [
   createCollectionScope,
   createCollapsibleScope,
@@ -101,21 +101,21 @@ interface AccordionImplSingleProps extends AccordionImplProps {
   /**
    * The controlled stateful value of the accordion item whose content is expanded.
    */
-  value?: string;
+  value?: string | undefined;
   /**
    * The value of the item whose content is expanded when the accordion is initially rendered. Use
    * `defaultValue` if you do not need to control the state of an accordion.
    */
-  defaultValue?: string;
+  defaultValue?: string | undefined;
   /**
    * The callback that fires when the state of the accordion changes.
    */
-  onValueChange?(value: string): void;
+  onValueChange?: { bivarianceHack(value: string): void }['bivarianceHack'] | undefined;
   /**
    * Whether an accordion item can be collapsed after it has been opened.
    * @default false
    */
-  collapsible?: boolean;
+  collapsible?: boolean | undefined;
 }
 
 const AccordionImplSingle = /* @__PURE__ */ React.forwardRef<
@@ -161,16 +161,16 @@ interface AccordionImplMultipleProps extends AccordionImplProps {
   /**
    * The controlled stateful value of the accordion items whose contents are expanded.
    */
-  value?: string[];
+  value?: string[] | undefined;
   /**
    * The value of the items whose contents are expanded when the accordion is initially rendered. Use
    * `defaultValue` if you do not need to control the state of an accordion.
    */
-  defaultValue?: string[];
+  defaultValue?: string[] | undefined;
   /**
    * The callback that fires when the state of the accordion changes.
    */
-  onValueChange?(value: string[]): void;
+  onValueChange?: { bivarianceHack(value: string[]): void }['bivarianceHack'] | undefined;
 }
 
 const AccordionImplMultiple = /* @__PURE__ */ React.forwardRef<
@@ -219,7 +219,7 @@ const AccordionImplMultiple = /* @__PURE__ */ React.forwardRef<
 /* -----------------------------------------------------------------------------------------------*/
 
 type AccordionImplContextValue = {
-  disabled?: boolean;
+  disabled?: boolean | undefined;
   direction: AccordionImplProps['dir'];
   orientation: AccordionImplProps['orientation'];
 };
@@ -235,16 +235,16 @@ interface AccordionImplProps extends PrimitiveDivProps {
    *
    * @defaultValue false
    */
-  disabled?: boolean;
+  disabled?: boolean | undefined;
   /**
    * The layout in which the Accordion operates.
    * @default vertical
    */
-  orientation?: Orientation;
+  orientation?: Orientation | undefined;
   /**
    * The language read direction.
    */
-  dir?: Direction;
+  dir?: Direction | undefined;
 }
 
 const AccordionImpl = /* @__PURE__ */ React.forwardRef<AccordionImplElement, AccordionImplProps>(
@@ -258,18 +258,23 @@ const AccordionImpl = /* @__PURE__ */ React.forwardRef<AccordionImplElement, Acc
     } = props;
     const accordionRef = React.useRef<AccordionImplElement>(null);
     const composedRefs = useComposedRefs(accordionRef, forwardedRef);
-    const getItems = useCollection(__scopeAccordion);
+    const getCollection = useGetCollection(__scopeAccordion);
     const direction = useDirection(dir);
     const isDirectionLTR = direction === Direction.LTR;
 
     const handleKeyDown = composeEventHandlers(props.onKeyDown, (event) => {
-      if (!ACCORDION_KEYS.includes(event.key)) return;
+      if (!ACCORDION_KEYS.includes(event.key)) {
+        return;
+      }
+      const collection = getCollection();
       const target = event.target as HTMLElement;
-      const triggerCollection = getItems().filter((item) => !item.ref.current?.disabled);
-      const triggerIndex = triggerCollection.findIndex((item) => item.ref.current === target);
-      const triggerCount = triggerCollection.length;
+      const triggerCollection = collection.filter(([, item]) => !item.element.disabled);
+      const triggerIndex = triggerCollection.findIndex(([, item]) => item.element === target);
+      const triggerCount = triggerCollection.size;
 
-      if (triggerIndex === -1) return;
+      if (triggerIndex === -1) {
+        return;
+      }
 
       // Prevents page scroll while user is navigating
       event.preventDefault();
@@ -330,7 +335,7 @@ const AccordionImpl = /* @__PURE__ */ React.forwardRef<AccordionImplElement, Acc
       }
 
       const clampedIndex = nextIndex % triggerCount;
-      triggerCollection[clampedIndex]!.ref.current?.focus();
+      triggerCollection.at(clampedIndex)?.element.focus();
     });
 
     return (
@@ -359,7 +364,11 @@ const AccordionImpl = /* @__PURE__ */ React.forwardRef<AccordionImplElement, Acc
 
 const ITEM_NAME = 'AccordionItem';
 
-type AccordionItemContextValue = { open?: boolean; disabled?: boolean; triggerId: string };
+type AccordionItemContextValue = {
+  open?: boolean | undefined;
+  disabled?: boolean | undefined;
+  triggerId: string;
+};
 const [AccordionItemProvider, useAccordionItemContext] =
   createAccordionContext<AccordionItemContextValue>(ITEM_NAME);
 
@@ -374,7 +383,7 @@ interface AccordionItemProps extends Omit<
    *
    * @defaultValue false
    */
-  disabled?: boolean;
+  disabled?: boolean | undefined;
   /**
    * A string value for the accordion item. All items within an accordion should use a unique value.
    */
