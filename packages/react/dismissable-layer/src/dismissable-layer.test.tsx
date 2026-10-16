@@ -1,4 +1,5 @@
 import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { assertStableComposedRef } from '@repo/test-utils/ref-stability';
@@ -292,6 +293,76 @@ describe('DismissableLayer', () => {
     dispatchComposedPointerDown(shadowButton!);
 
     expect(onDismiss).not.toHaveBeenCalled();
+  });
+
+  it('dismisses on pointer down outside when rendered into a document from another window', async () => {
+    const onDismiss = vi.fn();
+    const iframe = document.createElement('iframe');
+    document.body.append(iframe);
+    const iframeDocument = iframe.contentDocument!;
+    // The iframe has its own globals, like a `window.open` popup
+    expect(iframeDocument.body).not.toBeInstanceOf(Node);
+
+    const { unmount } = render(
+      ReactDOM.createPortal(
+        <>
+          <DismissableLayer.Root onDismiss={onDismiss}>
+            <button type="button">inside</button>
+          </DismissableLayer.Root>
+          <button type="button">outside</button>
+        </>,
+        iframeDocument.body,
+      ),
+    );
+    await waitForDocumentPointerDownListener();
+
+    const outside = [...iframeDocument.querySelectorAll('button')].find(
+      (button) => button.textContent === 'outside',
+    )!;
+    fireEvent.pointerDown(outside);
+
+    expect(onDismiss).toHaveBeenCalledTimes(1);
+    unmount();
+    iframe.remove();
+  });
+
+  it('dismisses when a registered dismiss surface in a document from another window stops propagation', async () => {
+    const onDismiss = vi.fn();
+    const iframe = document.createElement('iframe');
+    document.body.append(iframe);
+    const iframeDocument = iframe.contentDocument!;
+
+    function Surface() {
+      const registerSurface = DismissableLayer.useDismissableLayerSurface();
+      return (
+        <div ref={registerSurface} onClick={(event) => event.stopPropagation()}>
+          surface
+        </div>
+      );
+    }
+
+    const { unmount } = render(
+      ReactDOM.createPortal(
+        <>
+          <DismissableLayer.Root deferPointerDownOutside onDismiss={onDismiss}>
+            <button type="button">inside</button>
+          </DismissableLayer.Root>
+          <Surface />
+        </>,
+        iframeDocument.body,
+      ),
+    );
+    await waitForDocumentPointerDownListener();
+
+    const surface = [...iframeDocument.querySelectorAll('div')].find(
+      (element) => element.textContent === 'surface',
+    )!;
+    firePointerMouseClick(surface);
+    await waitForDocumentPointerDownListener();
+
+    expect(onDismiss).toHaveBeenCalledTimes(1);
+    unmount();
+    iframe.remove();
   });
 
   it('dismisses when a later outside interaction event is stopped by default', async () => {
