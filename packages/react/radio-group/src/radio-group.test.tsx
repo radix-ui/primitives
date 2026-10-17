@@ -622,6 +622,46 @@ describe('RadioGroup', () => {
         expect(radios[1]).toHaveAttribute('aria-checked', 'false');
       });
 
+      it('should restore the `defaultValue` it was last given when the form is reset', () => {
+        function Harness() {
+          const [defaultValue, setDefaultValue] = React.useState('1');
+          return (
+            <>
+              <form aria-label="pet form">
+                <ClassicRadioGroup name="pet" defaultValue={defaultValue} />
+                <button type="reset">Reset</button>
+              </form>
+              <button type="button" onClick={() => setDefaultValue('2')}>
+                Change default
+              </button>
+            </>
+          );
+        }
+
+        render(<Harness />);
+
+        const form = screen.getByRole<HTMLFormElement>('form', { name: 'pet form' });
+        const radios = screen.getAllByRole(RADIO_ROLE);
+        act(() => fireEvent.click(radios[2]!));
+        act(() => fireEvent.click(screen.getByText('Change default')));
+
+        // Changing the default does not move the selection by itself.
+        expect(radios[2]).toHaveAttribute('aria-checked', 'true');
+        expect(new FormData(form).get('pet')).toBe('3');
+
+        act(() => fireEvent.click(screen.getByText('Reset')));
+
+        expect(radios[1]).toHaveAttribute('aria-checked', 'true');
+        expect(radios[0]).toHaveAttribute('aria-checked', 'false');
+        expect(radios[2]).toHaveAttribute('aria-checked', 'false');
+        expect(new FormData(form).get('pet')).toBe('2');
+
+        // A second reset restores the same default, not the mounted one.
+        act(() => fireEvent.click(screen.getByText('Reset')));
+        expect(radios[1]).toHaveAttribute('aria-checked', 'true');
+        expect(new FormData(form).get('pet')).toBe('2');
+      });
+
       it('should restore an empty selection when there is no `defaultValue`', () => {
         render(
           <form>

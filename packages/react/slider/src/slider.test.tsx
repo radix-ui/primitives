@@ -307,6 +307,46 @@ describe('Slider', () => {
       expect(getThumbValue()).toBe(20);
     });
 
+    it('should restore the `defaultValue` it was last given when the form is reset', async () => {
+      function Harness() {
+        const [defaultValue, setDefaultValue] = React.useState([20]);
+        return (
+          <>
+            <form aria-label="audio form">
+              <Slider.Root name="volume" defaultValue={defaultValue} min={0} max={100}>
+                <Slider.Track>
+                  <Slider.Range />
+                </Slider.Track>
+                <Slider.Thumb />
+              </Slider.Root>
+              <button type="reset">Reset</button>
+            </form>
+            <button type="button" onClick={() => setDefaultValue([40])}>
+              Change default
+            </button>
+          </>
+        );
+      }
+
+      const user = userEvent.setup();
+      render(<Harness />);
+
+      const form = screen.getByRole<HTMLFormElement>('form', { name: 'audio form' });
+      screen.getByRole('slider').focus();
+      await user.keyboard('{ArrowRight}');
+      expect(getThumbValue()).toBe(21);
+
+      await user.click(screen.getByText('Change default'));
+
+      // Changing the default does not move the thumb by itself.
+      expect(getThumbValue()).toBe(21);
+
+      await user.click(screen.getByText('Reset'));
+
+      expect(getThumbValue()).toBe(40);
+      expect(new FormData(form).get('volume')).toBe('40');
+    });
+
     it('should restore its initial `value` when the form is reset (controlled)', async () => {
       function ControlledSlider() {
         const [value, setValue] = React.useState([20]);

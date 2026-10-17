@@ -155,16 +155,21 @@ const Slider = /* @__PURE__ */ React.forwardRef<HTMLSpanElement, SliderProps>(
     const valuesBeforeSlideStartRef = React.useRef(values);
 
     const initialValuesRef = React.useRef(values);
+    // A form reset restores the default the slider has now, not the one it was
+    // mounted with: React resets a form after an action, and consumers then set
+    // `defaultValue` to the values that action saved. `value` is not a default,
+    // so a controlled slider keeps restoring the value it started with.
+    const resetValues = value === undefined ? defaultValue : initialValuesRef.current;
     React.useEffect(() => {
       const associatedForm = form
         ? control?.ownerDocument.getElementById(form)
         : control?.closest('form');
       if (associatedForm instanceof HTMLFormElement) {
-        const reset = () => setValues(initialValuesRef.current);
+        const reset = () => setValues(resetValues);
         associatedForm.addEventListener('reset', reset);
         return () => associatedForm.removeEventListener('reset', reset);
       }
-    }, [control, form, setValues]);
+    }, [control, form, setValues, resetValues]);
 
     function handleSlideStart(value: number) {
       const closestIndex = getClosestValueIndex(values, value);

@@ -40,6 +40,7 @@ type RadioGroupContextValue = {
   required: boolean;
   disabled: boolean;
   value: string | null;
+  defaultValue: string | null;
   onValueChange(value: string): void;
 };
 
@@ -90,16 +91,22 @@ const RadioGroup = /* @__PURE__ */ React.forwardRef<RadioGroupElement, RadioGrou
     const composedRefs = useComposedRefs(forwardedRef, setControl);
 
     const initialValueRef = React.useRef(value);
+    // A form reset restores the default the group has now, not the one it was
+    // mounted with: React resets a form after an action, and consumers then
+    // set `defaultValue` to the values that action saved. `value` is not a
+    // default, so a controlled group keeps restoring the value it started
+    // with.
+    const resetValue = valueProp === undefined ? (defaultValue ?? null) : initialValueRef.current;
     React.useEffect(() => {
       const associatedForm = form
         ? control?.ownerDocument.getElementById(form)
         : control?.closest('form');
       if (associatedForm instanceof HTMLFormElement) {
-        const reset = () => setValue(initialValueRef.current);
+        const reset = () => setValue(resetValue);
         associatedForm.addEventListener('reset', reset);
         return () => associatedForm.removeEventListener('reset', reset);
       }
-    }, [control, form, setValue]);
+    }, [control, form, setValue, resetValue]);
 
     return (
       <RadioGroupProvider
@@ -109,6 +116,7 @@ const RadioGroup = /* @__PURE__ */ React.forwardRef<RadioGroupElement, RadioGrou
         required={required}
         disabled={disabled}
         value={value}
+        defaultValue={resetValue}
         onValueChange={setValue}
       >
         <RovingFocusGroup.Root
@@ -163,6 +171,7 @@ function RadioGroupItemProvider(props: ScopedProps<RadioGroupItemProviderProps>)
     <RadioProvider
       {...radioScope}
       checked={context.value === value}
+      defaultChecked={context.defaultValue === value}
       disabled={isDisabled}
       required={context.required}
       name={context.name}

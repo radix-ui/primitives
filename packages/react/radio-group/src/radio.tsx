@@ -19,6 +19,7 @@ type RadioUserClick = {
 
 type RadioContextValue = {
   checked: boolean;
+  defaultChecked: boolean;
   disabled: boolean | undefined;
   required: boolean | undefined;
   name: string | undefined;
@@ -42,6 +43,7 @@ const [RadioProviderImpl, useRadioContext] = createRadioContext<RadioContextValu
 
 interface RadioProviderProps {
   checked?: boolean | undefined;
+  defaultChecked?: boolean | undefined;
   required?: boolean | undefined;
   disabled?: boolean | undefined;
   name?: string | undefined;
@@ -55,6 +57,7 @@ function RadioProvider(props: ScopedProps<RadioProviderProps>) {
   const {
     __scopeRadio,
     checked = false,
+    defaultChecked,
     children,
     disabled,
     form,
@@ -78,8 +81,15 @@ function RadioProvider(props: ScopedProps<RadioProviderProps>) {
     : // We set this to true by default so that events bubble to forms without JS (SSR)
       true;
 
+  // A form reset restores the input's `checked` content attribute, so the
+  // attribute has to be the value a reset restores. Consumers that have no
+  // such value (a standalone `Radio`) keep the one it was rendered with, as
+  // before.
+  const initialCheckedRef = React.useRef(checked);
+
   const context: RadioContextValue = {
     checked,
+    defaultChecked: defaultChecked ?? initialCheckedRef.current,
     disabled,
     required,
     name,
@@ -272,6 +282,7 @@ const RadioBubbleInput = /* @__PURE__ */ React.forwardRef<HTMLInputElement, Radi
       name,
       value,
       form,
+      defaultChecked,
       bubbleInput,
       setBubbleInput,
       userClick,
@@ -340,12 +351,23 @@ const RadioBubbleInput = /* @__PURE__ */ React.forwardRef<HTMLInputElement, Radi
       }
     }, [bubbleInput, checked, userClick]);
 
-    const defaultCheckedRef = React.useRef(checked);
+    // `defaultChecked` only reaches the DOM on mount. Keep the attribute in
+    // sync so a reset restores the value the group currently defaults to,
+    // while leaving the input's own checked state alone.
+    React.useEffect(() => {
+      if (!bubbleInput) {
+        return;
+      }
+      const isChecked = bubbleInput.checked;
+      bubbleInput.defaultChecked = defaultChecked;
+      bubbleInput.checked = isChecked;
+    }, [bubbleInput, defaultChecked]);
+
     return (
       <Primitive.input
         type="radio"
         aria-hidden
-        defaultChecked={defaultCheckedRef.current}
+        defaultChecked={defaultChecked}
         required={required}
         disabled={disabled}
         name={name}
