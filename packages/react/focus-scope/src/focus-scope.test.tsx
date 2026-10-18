@@ -302,7 +302,87 @@ describe('FocusScope', () => {
       await waitFor(() => expect(visibleFirst).toHaveFocus());
     });
   });
+
+  describe('given a FocusScope ending with a native radio group', () => {
+    function renderScope(checked: string | null) {
+      return render(
+        <div>
+          <FocusScope.Root asChild loop trapped>
+            <form>
+              <button type="button">{INNER_SUBMIT_LABEL}</button>
+              <RadioGroupField checked={checked} />
+            </form>
+          </FocusScope.Root>
+          <button>some outer button</button>
+        </div>,
+      );
+    }
+
+    it('should focus the first element in scope on tab from the checked radio', async () => {
+      const rendered = renderScope('b');
+      rendered.getByLabelText('b').focus();
+      await userEvent.tab();
+      await waitFor(() => expect(rendered.getByText(INNER_SUBMIT_LABEL)).toHaveFocus());
+    });
+
+    it('should focus the first element in scope on tab from a radio when none is checked', async () => {
+      const rendered = renderScope(null);
+      rendered.getByLabelText('a').focus();
+      await userEvent.tab();
+      await waitFor(() => expect(rendered.getByText(INNER_SUBMIT_LABEL)).toHaveFocus());
+    });
+
+    it('should focus the checked radio on shift+tab from the first element in scope', async () => {
+      const rendered = renderScope('b');
+      rendered.getByText(INNER_SUBMIT_LABEL).focus();
+      await userEvent.tab({ shift: true });
+      await waitFor(() => expect(rendered.getByLabelText('b')).toHaveFocus());
+    });
+  });
+
+  describe('given a FocusScope starting with a native radio group', () => {
+    function renderScope(checked: string | null) {
+      return render(
+        <div>
+          <button>some outer button</button>
+          <FocusScope.Root asChild loop trapped>
+            <form>
+              <RadioGroupField checked={checked} />
+              <button type="button">{INNER_SUBMIT_LABEL}</button>
+            </form>
+          </FocusScope.Root>
+        </div>,
+      );
+    }
+
+    it('should focus the last element in scope on shift+tab from the checked radio', async () => {
+      const rendered = renderScope('b');
+      rendered.getByLabelText('b').focus();
+      await userEvent.tab({ shift: true });
+      await waitFor(() => expect(rendered.getByText(INNER_SUBMIT_LABEL)).toHaveFocus());
+    });
+
+    it('should focus the checked radio on tab from the last element in scope', async () => {
+      const rendered = renderScope('b');
+      rendered.getByText(INNER_SUBMIT_LABEL).focus();
+      await userEvent.tab();
+      await waitFor(() => expect(rendered.getByLabelText('b')).toHaveFocus());
+    });
+  });
 });
+
+function RadioGroupField({ checked }: { checked: string | null }) {
+  return (
+    <fieldset>
+      {['a', 'b', 'c'].map((value) => (
+        <label key={value}>
+          <input type="radio" name="size" value={value} defaultChecked={value === checked} />
+          {value}
+        </label>
+      ))}
+    </fieldset>
+  );
+}
 
 function TestField({ label, ...props }: { label: string } & React.ComponentProps<'input'>) {
   return (
