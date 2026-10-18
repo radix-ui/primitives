@@ -52,6 +52,48 @@ describe('given a Switch in a form', () => {
       act(() => fireEvent.click(screen.getByText('Reset')));
       expect(switchControl).toHaveAttribute('aria-checked', 'true');
     });
+
+    it('should restore the `defaultChecked` it was last given when the form is reset', () => {
+      function Harness() {
+        const [defaultChecked, setDefaultChecked] = React.useState(false);
+        return (
+          <>
+            <form aria-label="settings form">
+              <Switch.Root name="notifications" defaultChecked={defaultChecked}>
+                <Switch.Thumb />
+              </Switch.Root>
+              <button type="reset">Reset</button>
+            </form>
+            <button type="button" onClick={() => setDefaultChecked(true)}>
+              Change default
+            </button>
+          </>
+        );
+      }
+
+      render(<Harness />);
+
+      const form = screen.getByRole<HTMLFormElement>('form', { name: 'settings form' });
+      const switchControl = screen.getByRole(SWITCH_ROLE);
+      act(() => fireEvent.click(switchControl));
+      expect(switchControl).toHaveAttribute('aria-checked', 'true');
+
+      act(() => fireEvent.click(screen.getByText('Change default')));
+
+      // Changing the default does not move the switch by itself.
+      expect(switchControl).toHaveAttribute('aria-checked', 'true');
+      expect(new FormData(form).get('notifications')).toBe('on');
+
+      // Moving away from the new default, then resetting, must land on it.
+      act(() => fireEvent.click(switchControl));
+      expect(switchControl).toHaveAttribute('aria-checked', 'false');
+      expect(new FormData(form).get('notifications')).toBe(null);
+
+      act(() => fireEvent.click(screen.getByText('Reset')));
+
+      expect(switchControl).toHaveAttribute('aria-checked', 'true');
+      expect(new FormData(form).get('notifications')).toBe('on');
+    });
   });
 
   describe('controlled', () => {

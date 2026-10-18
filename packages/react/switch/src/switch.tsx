@@ -30,7 +30,7 @@ interface SwitchContextValue {
   userClick: SwitchUserClick | null;
   onUserClick: (userClick: SwitchUserClick) => void;
   required: boolean | undefined;
-  defaultChecked: boolean | undefined;
+  defaultChecked: boolean;
   isFormControl: boolean;
   bubbleInput: HTMLInputElement | null;
   setBubbleInput: React.Dispatch<React.SetStateAction<HTMLInputElement | null>>;
@@ -83,6 +83,7 @@ function SwitchProvider(props: ScopedProps<SwitchProviderProps>) {
   // the same render.
   const [userClick, setUserClick] = React.useState<SwitchUserClick | null>(null);
 
+  const initialCheckedRef = React.useRef(checked);
   const isFormControl = control
     ? !!form || !!control.closest('form')
     : // We set this to true by default so that events bubble to forms without JS (SSR)
@@ -100,7 +101,12 @@ function SwitchProvider(props: ScopedProps<SwitchProviderProps>) {
     userClick,
     onUserClick: setUserClick,
     required,
-    defaultChecked,
+    // A form reset restores the default the switch has now, not the one it was
+    // mounted with: React resets a form after an action, and consumers then set
+    // `defaultChecked` to the values that action saved. `checked` is not a
+    // default, so a controlled switch keeps restoring the value it started with.
+    defaultChecked:
+      checkedProp === undefined ? (defaultChecked ?? false) : initialCheckedRef.current,
     isFormControl,
     bubbleInput,
     setBubbleInput,
@@ -143,18 +149,18 @@ const SwitchTrigger = /* @__PURE__ */ React.forwardRef<HTMLButtonElement, Switch
       onUserClick,
       isFormControl,
       bubbleInput,
+      defaultChecked,
     } = useSwitchContext(TRIGGER_NAME, __scopeSwitch);
     const composedRefs = useComposedRefs(forwardedRef, setControl);
 
-    const initialCheckedStateRef = React.useRef(checked);
     React.useEffect(() => {
       const associatedForm = form ? control?.ownerDocument.getElementById(form) : control?.form;
       if (associatedForm instanceof HTMLFormElement) {
-        const reset = () => setChecked(initialCheckedStateRef.current);
+        const reset = () => setChecked(defaultChecked);
         associatedForm.addEventListener('reset', reset);
         return () => associatedForm.removeEventListener('reset', reset);
       }
-    }, [control, form, setChecked]);
+    }, [control, form, setChecked, defaultChecked]);
 
     return (
       <Primitive.button
@@ -372,12 +378,23 @@ const SwitchBubbleInput = /* @__PURE__ */ React.forwardRef<
       }
     }, [bubbleInput, checked, userClick]);
 
-    const defaultCheckedRef = React.useRef(checked);
+    // `defaultChecked` only reaches the DOM on mount. Keep the attribute in
+    // sync so a reset restores the value the switch currently defaults to,
+    // while leaving the input's own checked state alone.
+    React.useEffect(() => {
+      if (!bubbleInput) {
+        return;
+      }
+      const isChecked = bubbleInput.checked;
+      bubbleInput.defaultChecked = defaultChecked;
+      bubbleInput.checked = isChecked;
+    }, [bubbleInput, defaultChecked]);
+
     return (
       <Primitive.input
         type="checkbox"
         aria-hidden
-        defaultChecked={defaultChecked ?? defaultCheckedRef.current}
+        defaultChecked={defaultChecked}
         required={required}
         disabled={disabled}
         name={name}
