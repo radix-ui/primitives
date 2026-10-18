@@ -87,6 +87,85 @@ describe('closing on window blur', () => {
   });
 });
 
+// Regression tests for https://github.com/radix-ui/primitives/issues/2551
+describe('opening sub menus with `defaultOpen`', () => {
+  afterEach(cleanup);
+
+  it('should open a sub menu with `defaultOpen` when the menu has `defaultOpen`', () => {
+    render(
+      <DropdownMenu.Root defaultOpen>
+        <DropdownMenu.Trigger>{TRIGGER_TEXT}</DropdownMenu.Trigger>
+        <DropdownMenu.Portal>
+          <DropdownMenu.Content>
+            <DropdownMenu.Item>{ITEM_TEXT}</DropdownMenu.Item>
+            <DropdownMenu.Sub defaultOpen>
+              <DropdownMenu.SubTrigger>{SUB_TRIGGER_TEXT}</DropdownMenu.SubTrigger>
+              <DropdownMenu.SubContent>
+                <DropdownMenu.Item>{SUB_ITEM_TEXT}</DropdownMenu.Item>
+              </DropdownMenu.SubContent>
+            </DropdownMenu.Sub>
+          </DropdownMenu.Content>
+        </DropdownMenu.Portal>
+      </DropdownMenu.Root>,
+    );
+
+    expect(screen.getByText(SUB_TRIGGER_TEXT)).toHaveAttribute('aria-expanded', 'true');
+    expect(screen.getByText(SUB_ITEM_TEXT)).toBeInTheDocument();
+  });
+
+  it('should open a sub menu with `defaultOpen` when the menu is opened via the trigger', () => {
+    render(
+      <DropdownMenu.Root>
+        <DropdownMenu.Trigger>{TRIGGER_TEXT}</DropdownMenu.Trigger>
+        <DropdownMenu.Portal>
+          <DropdownMenu.Content>
+            <DropdownMenu.Item>{ITEM_TEXT}</DropdownMenu.Item>
+            <DropdownMenu.Sub defaultOpen>
+              <DropdownMenu.SubTrigger>{SUB_TRIGGER_TEXT}</DropdownMenu.SubTrigger>
+              <DropdownMenu.SubContent>
+                <DropdownMenu.Item>{SUB_ITEM_TEXT}</DropdownMenu.Item>
+              </DropdownMenu.SubContent>
+            </DropdownMenu.Sub>
+          </DropdownMenu.Content>
+        </DropdownMenu.Portal>
+      </DropdownMenu.Root>,
+    );
+
+    fireEvent.pointerDown(screen.getByText(TRIGGER_TEXT), { button: 0, ctrlKey: false });
+
+    expect(screen.getByText(SUB_TRIGGER_TEXT)).toHaveAttribute('aria-expanded', 'true');
+    expect(screen.getByText(SUB_ITEM_TEXT)).toBeInTheDocument();
+  });
+
+  it('should close a sub menu opened with `defaultOpen` when focus moves to another item in the parent menu', () => {
+    render(
+      <DropdownMenu.Root defaultOpen>
+        <DropdownMenu.Trigger>{TRIGGER_TEXT}</DropdownMenu.Trigger>
+        <DropdownMenu.Portal>
+          <DropdownMenu.Content>
+            <DropdownMenu.Item>{ITEM_TEXT}</DropdownMenu.Item>
+            <DropdownMenu.Sub defaultOpen>
+              <DropdownMenu.SubTrigger>{SUB_TRIGGER_TEXT}</DropdownMenu.SubTrigger>
+              <DropdownMenu.SubContent>
+                <DropdownMenu.Item>{SUB_ITEM_TEXT}</DropdownMenu.Item>
+              </DropdownMenu.SubContent>
+            </DropdownMenu.Sub>
+          </DropdownMenu.Content>
+        </DropdownMenu.Portal>
+      </DropdownMenu.Root>,
+    );
+
+    expect(screen.getByText(SUB_ITEM_TEXT)).toBeInTheDocument();
+
+    act(() => {
+      screen.getByText(ITEM_TEXT).focus();
+    });
+
+    expect(screen.getByText(SUB_TRIGGER_TEXT)).toHaveAttribute('aria-expanded', 'false');
+    expect(screen.queryByText(SUB_ITEM_TEXT)).not.toBeInTheDocument();
+  });
+});
+
 // Regression tests for https://github.com/radix-ui/primitives/issues/3232
 describe('keys from focusable descendants', () => {
   afterEach(cleanup);
