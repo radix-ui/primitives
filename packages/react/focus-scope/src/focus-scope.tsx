@@ -228,10 +228,10 @@ const FocusScope = /* @__PURE__ */ React.forwardRef<FocusScopeElement, FocusScop
           if (!hasTabbableElementsInside) {
             if (focusedElement === container) event.preventDefault();
           } else {
-            if (!event.shiftKey && focusedElement === last) {
+            if (!event.shiftKey && isTabStop(focusedElement, last)) {
               event.preventDefault();
               if (loop) focus(first, { select: true });
-            } else if (event.shiftKey && focusedElement === first) {
+            } else if (event.shiftKey && isTabStop(focusedElement, first)) {
               event.preventDefault();
               if (loop) focus(last, { select: true });
             }
@@ -360,6 +360,11 @@ function getTabbableCandidates(container: HTMLElement) {
       if ((node as HTMLInputElement).disabled || (node as HTMLElement).hidden || isHiddenInput) {
         return NodeFilter.FILTER_SKIP;
       }
+      // A native radio group is a single tab stop: its checked radio, or any of them when none is
+      // checked. The other radios still report a `tabIndex` of 0, so they are skipped here.
+      if (isRadioInput(node) && !isRadioGroupTabStop(node)) {
+        return NodeFilter.FILTER_SKIP;
+      }
       // `.tabIndex` is not the same as the `tabindex` attribute. It works on the
       // runtime's understanding of tabbability, so this automatically accounts
       // for any kind of element that could be tabbed to.
@@ -374,6 +379,42 @@ function getTabbableCandidates(container: HTMLElement) {
   // we do not take into account the order of nodes with positive `tabIndex` as it
   // hinders accessibility to have tab order different from visual order.
   return nodes;
+}
+
+function isRadioInput(node: Element): node is HTMLInputElement {
+  return node.tagName === 'INPUT' && (node as HTMLInputElement).type === 'radio';
+}
+
+/**
+ * Returns the radios in the same group as `radio`: the same `name` and the same form owner.
+ */
+function getRadioGroup(radio: HTMLInputElement) {
+  if (!radio.name) {
+    return [radio];
+  }
+  const elements = radio.form
+    ? Array.from(radio.form.elements)
+    : Array.from((radio.getRootNode() as Document | ShadowRoot).querySelectorAll('input'));
+  return elements.filter(
+    (element): element is HTMLInputElement =>
+      isRadioInput(element) && element.name === radio.name && element.form === radio.form,
+  );
+}
+
+function isRadioGroupTabStop(radio: HTMLInputElement) {
+  const checkedRadio = getRadioGroup(radio).find((element) => element.checked && !element.disabled);
+  return !checkedRadio || checkedRadio === radio;
+}
+
+/**
+ * Whether `element` is the tab stop `edge`. Tab leaves a native radio group from any of its
+ * radios, so a focused radio counts as the edge when the edge is a radio of the same group.
+ */
+function isTabStop(element: HTMLElement, edge: HTMLElement) {
+  if (element === edge) {
+    return true;
+  }
+  return isRadioInput(element) && isRadioInput(edge) && getRadioGroup(edge).includes(element);
 }
 
 /**
