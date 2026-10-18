@@ -175,9 +175,18 @@ const RovingFocusGroupImpl = /* @__PURE__ */ React.forwardRef<
         {...groupProps}
         ref={composedRefs}
         style={{ outline: 'none', ...props.style }}
-        onMouseDown={composeEventHandlers(props.onMouseDown, () => {
+        onMouseDownCapture={composeEventHandlers(props.onMouseDownCapture, () => {
           isClickFocusRef.current = true;
         })}
+        onMouseDown={composeEventHandlers(
+          props.onMouseDown,
+          (event) => {
+            if (event.defaultPrevented) {
+              isClickFocusRef.current = false;
+            }
+          },
+          { checkForDefaultPrevented: false },
+        )}
         onFocus={composeEventHandlers(props.onFocus, (event) => {
           // We normally wouldn't need this check, because we already check
           // that the focus is on the current target and not bubbling to it.
