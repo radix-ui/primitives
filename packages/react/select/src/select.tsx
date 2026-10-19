@@ -642,6 +642,9 @@ const [SelectContentProvider, useSelectContentContext] =
 
 type SelectContentImplElement = SelectPopperPositionElement | SelectItemAlignedPositionElement;
 type DismissableLayerProps = React.ComponentPropsWithoutRef<typeof DismissableLayer>;
+type PointerDownOutsideEvent = Parameters<
+  NonNullable<DismissableLayerProps['onPointerDownOutside']>
+>[0];
 type FocusScopeProps = React.ComponentPropsWithoutRef<typeof FocusScope>;
 
 type SelectPopperPrivateProps = { onPlaced?: PopperContentProps['onPlaced'] | undefined };
@@ -809,6 +812,60 @@ const SelectContentImpl = /* @__PURE__ */ React.forwardRef<
       };
     }, [onOpenChange]);
 
+    // A primary pointer press outside the content closes the select on release rather than on
+    // press, and releasing back inside the content cancels it. This satisfies WCAG 2.5.2 Pointer
+    // Cancellation: https://www.w3.org/WAI/WCAG22/Understanding/pointer-cancellation.html
+    const cancelPendingOutsidePressRef = React.useRef<(() => void) | null>(null);
+    React.useEffect(() => {
+      return () => cancelPendingOutsidePressRef.current?.();
+    }, []);
+
+    const handlePointerDownOutside = (event: PointerDownOutsideEvent) => {
+      onPointerDownOutside?.(event);
+      if (event.defaultPrevented || !content) {
+        return;
+      }
+
+      const pointerDownEvent = event.detail.originalEvent;
+      // Non-primary buttons keep dismissing on press, matching `DismissableLayer`.
+      if (pointerDownEvent.button !== 0) {
+        return;
+      }
+
+      // Stop `DismissableLayer` from dismissing on press; we decide on release instead.
+      event.preventDefault();
+      cancelPendingOutsidePressRef.current?.();
+
+      const ownerDocument = content.ownerDocument;
+      const handlePointerUp = (pointerUpEvent: PointerEvent) => {
+        if (pointerUpEvent.pointerId !== pointerDownEvent.pointerId) {
+          return;
+        }
+        cancelPendingOutsidePress();
+        // `composedPath()` pierces open shadow roots, unlike `event.target` at document level.
+        if (pointerUpEvent.composedPath().includes(content)) {
+          // Released back inside the content: abort, and don't let this release select an item.
+          pointerUpEvent.preventDefault();
+        } else {
+          onOpenChange(false);
+        }
+      };
+      const handlePointerCancel = (pointerCancelEvent: PointerEvent) => {
+        if (pointerCancelEvent.pointerId === pointerDownEvent.pointerId) {
+          cancelPendingOutsidePress();
+        }
+      };
+      function cancelPendingOutsidePress() {
+        ownerDocument.removeEventListener('pointerup', handlePointerUp, { capture: true });
+        ownerDocument.removeEventListener('pointercancel', handlePointerCancel, { capture: true });
+        cancelPendingOutsidePressRef.current = null;
+      }
+
+      ownerDocument.addEventListener('pointerup', handlePointerUp, { capture: true });
+      ownerDocument.addEventListener('pointercancel', handlePointerCancel, { capture: true });
+      cancelPendingOutsidePressRef.current = cancelPendingOutsidePress;
+    };
+
     const [searchRef, handleTypeaheadSearch] = useTypeaheadSearch((search) => {
       const enabledItems = getItems().filter((item) => !item.disabled);
       const currentItem = enabledItems.find((item) => item.ref.current === document.activeElement);
@@ -912,7 +969,7 @@ const SelectContentImpl = /* @__PURE__ */ React.forwardRef<
               asChild
               disableOutsidePointerEvents
               onEscapeKeyDown={onEscapeKeyDown}
-              onPointerDownOutside={onPointerDownOutside}
+              onPointerDownOutside={handlePointerDownOutside}
               // When focus is trapped, a focusout event may still happen.
               // We make sure we don't trigger our `onDismiss` in such case.
               onFocusOutside={(event) => event.preventDefault()}

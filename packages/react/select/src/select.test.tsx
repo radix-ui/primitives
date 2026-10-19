@@ -836,6 +836,131 @@ describe('Select.Content', () => {
   });
 });
 
+describe('given an outside pointer press (#3146)', () => {
+  afterEach(cleanupModal);
+
+  async function waitForOutsidePointerListener() {
+    // `DismissableLayer` registers its document `pointerdown` listener on the next tick
+    await act(async () => {
+      await new Promise((resolve) => window.setTimeout(resolve, 0));
+    });
+  }
+
+  it('stays open while the press is held and closes on release', async () => {
+    const onOpenChange = vi.fn();
+    render(
+      <>
+        <SelectTest defaultOpen onOpenChange={onOpenChange} />
+        <button type="button">outside</button>
+      </>,
+    );
+    await waitForOutsidePointerListener();
+    const outside = screen.getByText('outside');
+
+    fireEvent.pointerDown(outside, { button: 0, pointerId: 1, pointerType: 'mouse' });
+    expect(screen.getByRole('listbox')).toBeInTheDocument();
+    expect(onOpenChange).not.toHaveBeenCalled();
+
+    fireEvent.pointerUp(outside, { button: 0, pointerId: 1, pointerType: 'mouse' });
+    expect(onOpenChange).toHaveBeenCalledWith(false);
+    expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+  });
+
+  it('stays open and does not select an item when released back inside the content', async () => {
+    const onOpenChange = vi.fn();
+    const onValueChange = vi.fn();
+    render(
+      <>
+        <SelectTest defaultOpen onOpenChange={onOpenChange} onValueChange={onValueChange} />
+        <button type="button">outside</button>
+      </>,
+    );
+    await waitForOutsidePointerListener();
+    const outside = screen.getByText('outside');
+    const item = screen.getByRole('option', { name: 'Banana' });
+
+    fireEvent.pointerDown(outside, { button: 0, pointerId: 1, pointerType: 'mouse' });
+    fireEvent.pointerMove(item, { pointerId: 1, pointerType: 'mouse' });
+    fireEvent.pointerUp(item, { button: 0, pointerId: 1, pointerType: 'mouse' });
+
+    expect(screen.getByRole('listbox')).toBeInTheDocument();
+    expect(onOpenChange).not.toHaveBeenCalled();
+    expect(onValueChange).not.toHaveBeenCalled();
+  });
+
+  it('stays open when the press is cancelled', async () => {
+    const onOpenChange = vi.fn();
+    render(
+      <>
+        <SelectTest defaultOpen onOpenChange={onOpenChange} />
+        <button type="button">outside</button>
+      </>,
+    );
+    await waitForOutsidePointerListener();
+    const outside = screen.getByText('outside');
+
+    fireEvent.pointerDown(outside, { button: 0, pointerId: 1, pointerType: 'touch' });
+    fireEvent.pointerCancel(outside, { pointerId: 1, pointerType: 'touch' });
+    fireEvent.pointerUp(outside, { button: 0, pointerId: 1, pointerType: 'touch' });
+
+    expect(screen.getByRole('listbox')).toBeInTheDocument();
+    expect(onOpenChange).not.toHaveBeenCalled();
+  });
+
+  it('closes on press for non-primary buttons', async () => {
+    const onOpenChange = vi.fn();
+    render(
+      <>
+        <SelectTest defaultOpen onOpenChange={onOpenChange} />
+        <button type="button">outside</button>
+      </>,
+    );
+    await waitForOutsidePointerListener();
+
+    fireEvent.pointerDown(screen.getByText('outside'), {
+      button: 2,
+      pointerId: 1,
+      pointerType: 'mouse',
+    });
+
+    expect(onOpenChange).toHaveBeenCalledWith(false);
+    expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+  });
+
+  it('calls `onPointerDownOutside` on press and stays open when it is prevented', async () => {
+    const onOpenChange = vi.fn();
+    const onPointerDownOutside = vi.fn((event: Event) => event.preventDefault());
+    render(
+      <>
+        <Select.Root defaultOpen onOpenChange={onOpenChange}>
+          <Select.Trigger aria-label="Choice">
+            <Select.Value placeholder={PLACEHOLDER_TEXT} />
+          </Select.Trigger>
+          <Select.Portal>
+            <Select.Content position="popper" onPointerDownOutside={onPointerDownOutside}>
+              <Select.Viewport>
+                <Select.Item value="apple">
+                  <Select.ItemText>Apple</Select.ItemText>
+                </Select.Item>
+              </Select.Viewport>
+            </Select.Content>
+          </Select.Portal>
+        </Select.Root>
+        <button type="button">outside</button>
+      </>,
+    );
+    await waitForOutsidePointerListener();
+    const outside = screen.getByText('outside');
+
+    fireEvent.pointerDown(outside, { button: 0, pointerId: 1, pointerType: 'mouse' });
+    expect(onPointerDownOutside).toHaveBeenCalledTimes(1);
+
+    fireEvent.pointerUp(outside, { button: 0, pointerId: 1, pointerType: 'mouse' });
+    expect(screen.getByRole('listbox')).toBeInTheDocument();
+    expect(onOpenChange).not.toHaveBeenCalled();
+  });
+});
+
 describe('Select.Viewport', () => {
   afterEach(cleanupModal);
 

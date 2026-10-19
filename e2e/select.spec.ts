@@ -88,6 +88,54 @@ test.describe('Select extension overlay interactions', () => {
   });
 });
 
+test.describe('Select pointer cancellation (#3146)', () => {
+  test.beforeEach(async ({ page }) => {
+    await visitStory(page, 'select--with-extension-overlay');
+  });
+
+  test('closes on release of an outside press, not on press', async ({ page }) => {
+    await page.getByRole('combobox').click();
+    await expect(page.getByRole('listbox')).toBeVisible();
+
+    await page.mouse.move(900, 600);
+    await page.mouse.down();
+    await expect(page.getByTestId('select-state')).toHaveText('open');
+    await expect(page.getByRole('listbox')).toBeVisible();
+
+    await page.mouse.up();
+    await expect(page.getByTestId('select-state')).toHaveText('closed');
+    await expect(page.getByRole('listbox')).toHaveCount(0);
+  });
+
+  test('stays open without selecting when an outside press is released inside', async ({
+    page,
+  }) => {
+    await page.getByRole('combobox').click();
+    const option = page.getByRole('option', { name: 'One' });
+    await expect(option).toBeVisible();
+
+    await page.mouse.move(900, 600);
+    await page.mouse.down();
+    await option.hover();
+    await page.mouse.up();
+
+    await expect(page.getByTestId('select-state')).toHaveText('open');
+    await expect(page.getByRole('combobox', { includeHidden: true })).toContainText('Two');
+  });
+
+  test('still selects with a press, drag and release from the trigger', async ({ page }) => {
+    await page.getByRole('combobox').hover();
+    await page.mouse.down();
+    const option = page.getByRole('option', { name: 'Three' });
+    await expect(option).toBeVisible();
+    await option.hover();
+    await page.mouse.up();
+
+    await expect(page.getByTestId('select-state')).toHaveText('closed');
+    await expect(page.getByRole('combobox')).toContainText('Three');
+  });
+});
+
 test.describe('Select nested in Dialog', () => {
   test.beforeEach(async ({ page }) => {
     await visitStory(page, 'select--dismisses-only-select-inside-dialog');
