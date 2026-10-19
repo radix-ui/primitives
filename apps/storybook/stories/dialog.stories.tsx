@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Dialog, DropdownMenu, HoverCard, Popover } from 'radix-ui';
+import { AlertDialog, Dialog, DropdownMenu, HoverCard, Popover } from 'radix-ui';
 import styles from './dialog.stories.module.css';
 import { ExternalOverlayTrigger } from './external-overlay';
 
@@ -92,6 +92,74 @@ export const FocusTrap = () => (
     <input type="text" placeholder="Another focusable element" />
   </>
 );
+
+export const Suspense = () => {
+  const [pending, setPending] = React.useState<{
+    promise: Promise<void>;
+    resolve: () => void;
+  } | null>(null);
+
+  function suspend() {
+    let resolvePromise: () => void;
+    const promise = new Promise<void>((resolve) => {
+      resolvePromise = resolve;
+    });
+    setPending({
+      promise,
+      resolve: () => {
+        setPending(null);
+        resolvePromise();
+      },
+    });
+  }
+
+  return (
+    <React.Suspense
+      fallback={
+        <button type="button" style={{ pointerEvents: 'auto' }} onClick={() => pending?.resolve()}>
+          Resume dialogs
+        </button>
+      }
+    >
+      <Dialog.Root open>
+        <Dialog.Portal>
+          <Dialog.Overlay className={styles.overlay} />
+          <Dialog.Content className={styles.contentDefault}>
+            <Dialog.Title>Edit profile</Dialog.Title>
+            <Dialog.Description>Reveal this dialog, then open a confirmation.</Dialog.Description>
+            <label>
+              Name <input aria-label="Name" />
+            </label>
+            <button type="button" onClick={suspend}>
+              Suspend dialog
+            </button>
+            <AlertDialog.Root>
+              <AlertDialog.Trigger>Open confirmation</AlertDialog.Trigger>
+              <AlertDialog.Portal>
+                <AlertDialog.Overlay className={styles.overlay} />
+                <AlertDialog.Content className={styles.contentDefault}>
+                  <AlertDialog.Title>Discard changes?</AlertDialog.Title>
+                  <AlertDialog.Description>
+                    Focus should stay in this confirmation.
+                  </AlertDialog.Description>
+                  <AlertDialog.Cancel>Cancel</AlertDialog.Cancel>
+                  <button type="button" onClick={suspend}>
+                    Suspend dialogs
+                  </button>
+                </AlertDialog.Content>
+              </AlertDialog.Portal>
+            </AlertDialog.Root>
+            {pending && <SuspendDialog promise={pending.promise} />}
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
+    </React.Suspense>
+  );
+};
+
+function SuspendDialog({ promise }: { promise: Promise<void> }): never {
+  throw promise;
+}
 
 export const CustomFocus = () => {
   const firstNameRef = React.useRef<HTMLInputElement>(null);

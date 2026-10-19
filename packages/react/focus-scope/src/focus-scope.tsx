@@ -67,6 +67,7 @@ const FocusScope = /* @__PURE__ */ React.forwardRef<FocusScopeElement, FocusScop
     const onMountAutoFocus = useCallbackRef(onMountAutoFocusProp);
     const onUnmountAutoFocus = useCallbackRef(onUnmountAutoFocusProp);
     const lastFocusedElementRef = React.useRef<HTMLElement | null>(null);
+    const unmountTimerRef = React.useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
     const composedRefs = useComposedRefs(forwardedRef, setContainer);
 
     // Keep the latest branches in a ref so the trap effect below doesn't need to resubscribe its
@@ -164,6 +165,8 @@ const FocusScope = /* @__PURE__ */ React.forwardRef<FocusScopeElement, FocusScop
 
     React.useEffect(() => {
       if (container) {
+        // Suspense can reconnect this scope before its previous cleanup timer has run.
+        clearTimeout(unmountTimerRef.current);
         focusScopesStack.add(focusScope);
         const previouslyFocusedElement = document.activeElement as HTMLElement | null;
         const hasFocusedCandidate = container.contains(previouslyFocusedElement);
@@ -188,7 +191,7 @@ const FocusScope = /* @__PURE__ */ React.forwardRef<FocusScopeElement, FocusScop
           // We hit a react bug (fixed in v17) with focusing in unmount.
           // We need to delay the focus a little to get around it for now.
           // See: https://github.com/facebook/react/issues/17894
-          setTimeout(() => {
+          unmountTimerRef.current = setTimeout(() => {
             const unmountEvent = new UnmountEvent(AUTOFOCUS_ON_UNMOUNT, EVENT_OPTIONS);
             container.addEventListener(AUTOFOCUS_ON_UNMOUNT, onUnmountAutoFocus);
             container.dispatchEvent(unmountEvent);
@@ -447,14 +450,14 @@ function createFocusScopesStack() {
 
   return {
     add(focusScope: FocusScopeAPI) {
-      // pause the currently active focus scope (at the top of the stack)
-      const activeFocusScope = stack[0];
-      if (focusScope !== activeFocusScope) {
-        activeFocusScope?.pause();
+      // Reconnecting an existing scope must preserve its position below any newer scopes.
+      if (stack.includes(focusScope)) {
+        return;
       }
-      // remove in case it already exists (because we'll re-add it at the top of the stack)
-      stack = arrayRemove(stack, focusScope);
+      // pause the currently active focus scope (at the top of the stack)
+      stack[0]?.pause();
       stack.unshift(focusScope);
+      focusScope.resume();
     },
 
     remove(focusScope: FocusScopeAPI) {
