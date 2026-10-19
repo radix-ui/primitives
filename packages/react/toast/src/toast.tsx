@@ -15,8 +15,9 @@ import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 
 import type { Scope } from '@radix-ui/react-context';
 
-const startTransition: ((scope: React.TransitionFunction) => void) | undefined =
-  (React as any)[' startTransition '.trim().toString()] || (() => undefined);
+const startTransition: ((scope: React.TransitionFunction) => void) | undefined = (React as any)[
+  ' startTransition '.trim().toString()
+];
 
 /* -------------------------------------------------------------------------------------------------
  * ToastProvider
