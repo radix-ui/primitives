@@ -1,6 +1,6 @@
 import * as React from 'react';
 import userEvent from '@testing-library/user-event';
-import { cleanup, render, waitFor, fireEvent, screen } from '@testing-library/react';
+import { act, cleanup, render, waitFor, fireEvent, screen } from '@testing-library/react';
 import * as FocusScope from './focus-scope';
 import type { RenderResult } from '@testing-library/react';
 import { afterEach, describe, it, beforeEach, vi, expect } from 'vitest';
@@ -265,6 +265,133 @@ describe('FocusScope', () => {
       expect(outer).not.toHaveFocus();
 
       outer.remove();
+    });
+  });
+
+  // Regression tests for https://github.com/radix-ui/primitives/issues/4226
+  describe('Suspense hide and reveal', () => {
+    const pending = new Promise<never>(() => {});
+
+    function Suspend({ suspended }: { suspended: boolean }) {
+      if (suspended) {
+        throw pending;
+      }
+      return null;
+    }
+
+    beforeEach(() => {
+      vi.useFakeTimers();
+    });
+
+    afterEach(() => {
+      cleanup();
+      act(() => vi.runOnlyPendingTimers());
+      vi.useRealTimers();
+    });
+
+    it('keeps a revealed scope registered so the next scope can pause it', () => {
+      const onUnmountAutoFocus = vi.fn((event: Event) => event.preventDefault());
+      function Test({ suspended = false, secondOpen = false }) {
+        return (
+          <React.Suspense fallback={<p>Loading</p>}>
+            <FocusScope.Root trapped onUnmountAutoFocus={onUnmountAutoFocus}>
+              <TestField label="First scope" />
+              <Suspend suspended={suspended} />
+            </FocusScope.Root>
+            {secondOpen && (
+              <FocusScope.Root trapped>
+                <TestField label="Second scope" />
+              </FocusScope.Root>
+            )}
+          </React.Suspense>
+        );
+      }
+
+      const rendered = render(<Test />);
+      rendered.rerender(<Test suspended />);
+      expect(screen.getByText('Loading')).toBeVisible();
+      rendered.rerender(<Test />);
+      expect(screen.queryByText('Loading')).not.toBeInTheDocument();
+      act(() => vi.runOnlyPendingTimers());
+      expect(onUnmountAutoFocus).not.toHaveBeenCalled();
+
+      rendered.rerender(<Test secondOpen />);
+      expect(screen.getByLabelText('Second scope')).toHaveFocus();
+      screen.getByLabelText('First scope').focus();
+      expect(screen.getByLabelText('Second scope')).toHaveFocus();
+
+      rendered.rerender(<Test />);
+      act(() => vi.runOnlyPendingTimers());
+      expect(screen.getByLabelText('First scope')).toHaveFocus();
+      expect(onUnmountAutoFocus).not.toHaveBeenCalled();
+    });
+
+    it('keeps the top scope active when sibling scopes are hidden and revealed together', () => {
+      const onUnmountAutoFocus = vi.fn((event: Event) => event.preventDefault());
+      function Test({ suspended = false }) {
+        return (
+          <>
+            <input aria-label="Outside" />
+            <React.Suspense fallback={<p>Loading</p>}>
+              <FocusScope.Root trapped onUnmountAutoFocus={onUnmountAutoFocus}>
+                <TestField label="First scope" />
+              </FocusScope.Root>
+              <FocusScope.Root trapped onUnmountAutoFocus={onUnmountAutoFocus}>
+                <TestField label="Second scope" />
+                <Suspend suspended={suspended} />
+              </FocusScope.Root>
+            </React.Suspense>
+          </>
+        );
+      }
+
+      const rendered = render(<Test />);
+      expect(screen.getByLabelText('Second scope')).toHaveFocus();
+      rendered.rerender(<Test suspended />);
+      expect(screen.getByText('Loading')).toBeVisible();
+      rendered.rerender(<Test />);
+      expect(screen.queryByText('Loading')).not.toBeInTheDocument();
+      act(() => vi.runOnlyPendingTimers());
+      expect(onUnmountAutoFocus).not.toHaveBeenCalled();
+
+      screen.getByLabelText('Second scope').focus();
+      screen.getByLabelText('Outside').focus();
+      expect(screen.getByLabelText('Second scope')).toHaveFocus();
+      screen.getByLabelText('First scope').focus();
+      expect(screen.getByLabelText('Second scope')).toHaveFocus();
+    });
+
+    it('keeps the top scope active when nested scopes are hidden and revealed together', () => {
+      const onUnmountAutoFocus = vi.fn((event: Event) => event.preventDefault());
+      function Test({ suspended = false, secondOpen = false }) {
+        return (
+          <React.Suspense fallback={<p>Loading</p>}>
+            <FocusScope.Root trapped onUnmountAutoFocus={onUnmountAutoFocus}>
+              <TestField label="First scope" />
+              {secondOpen && (
+                <FocusScope.Root trapped onUnmountAutoFocus={onUnmountAutoFocus}>
+                  <TestField label="Second scope" />
+                  <Suspend suspended={suspended} />
+                </FocusScope.Root>
+              )}
+            </FocusScope.Root>
+          </React.Suspense>
+        );
+      }
+
+      const rendered = render(<Test />);
+      rendered.rerender(<Test secondOpen />);
+      expect(screen.getByLabelText('Second scope')).toHaveFocus();
+      rendered.rerender(<Test suspended secondOpen />);
+      expect(screen.getByText('Loading')).toBeVisible();
+      rendered.rerender(<Test secondOpen />);
+      expect(screen.queryByText('Loading')).not.toBeInTheDocument();
+      act(() => vi.runOnlyPendingTimers());
+      expect(onUnmountAutoFocus).not.toHaveBeenCalled();
+
+      screen.getByLabelText('Second scope').focus();
+      screen.getByLabelText('First scope').focus();
+      expect(screen.getByLabelText('Second scope')).toHaveFocus();
     });
   });
 
