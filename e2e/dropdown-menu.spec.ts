@@ -325,3 +325,41 @@ test.describe('DropdownMenu nested in Dialog', () => {
     await expect(page.getByText('Item one', { exact: true })).toHaveCount(0);
   });
 });
+
+test.describe('DropdownMenu pointer cancellation (#3124)', () => {
+  test.beforeEach(async ({ page }) => {
+    await visitStory(page, 'dropdownmenu--submenus');
+  });
+
+  test('closes when a press on the trigger is released outside', async ({ page }) => {
+    await page.getByText('Open', { exact: true }).hover();
+    await page.mouse.down();
+    await expect(page.getByText('New Tab', { exact: true })).toBeVisible();
+
+    await page.mouse.move(20, 700);
+    await page.mouse.up();
+
+    await expect(page.getByText('New Tab', { exact: true })).toHaveCount(0);
+    await expect(page.getByText('Open', { exact: true })).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  test('stays open when a press on the trigger is released over it', async ({ page }) => {
+    await page.getByText('Open', { exact: true }).click();
+
+    await expect(page.getByText('New Tab', { exact: true })).toBeVisible();
+    await expect(page.getByText('Open', { exact: true })).toHaveAttribute('aria-expanded', 'true');
+  });
+
+  test('still selects an item with a press, drag and release from the trigger', async ({
+    page,
+  }) => {
+    const selected = page.waitForEvent('console', (message) => message.text() === 'new-window');
+    await page.getByText('Open', { exact: true }).hover();
+    await page.mouse.down();
+    await page.getByText('New Window', { exact: true }).hover();
+    await page.mouse.up();
+
+    await selected;
+    await expect(page.getByText('New Tab', { exact: true })).toHaveCount(0);
+  });
+});

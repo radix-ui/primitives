@@ -109,6 +109,61 @@ const DropdownMenuTrigger = /* @__PURE__ */ React.forwardRef<
     const context = useDropdownMenuContext(TRIGGER_NAME, __scopeDropdownMenu);
     const menuScope = useMenuScope(__scopeDropdownMenu);
     const composedRefs = useComposedRefs(forwardedRef, context.triggerRef);
+
+    // A mouse press on the trigger opens the menu on `pointerdown` so that a press, drag and
+    // release can select an item. Releasing that press outside the trigger and any menu content
+    // closes the menu again. This satisfies WCAG 2.5.2 Pointer Cancellation (up reversal):
+    // https://www.w3.org/WAI/WCAG22/Understanding/pointer-cancellation.html
+    const [openingPointerId, setOpeningPointerId] = React.useState<number | null>(null);
+    const { open, onOpenChange, triggerRef } = context;
+    React.useEffect(() => {
+      const trigger = triggerRef.current;
+      if (openingPointerId === null || !trigger) {
+        return;
+      }
+
+      const ownerDocument = trigger.ownerDocument;
+      const handlePointerUp = (event: PointerEvent) => {
+        if (event.pointerId !== openingPointerId) {
+          return;
+        }
+        setOpeningPointerId(null);
+        if (!open) {
+          return;
+        }
+
+        // `composedPath()` pierces open shadow roots, unlike `event.target` at document level.
+        const path = event.composedPath();
+        // A modal menu disables pointer events outside its content, so a release over the
+        // trigger targets the root element. Hit test the trigger by its box as well.
+        const triggerRect = trigger.getBoundingClientRect();
+        const isReleasedOverTrigger =
+          path.includes(trigger) ||
+          (event.clientX >= triggerRect.left &&
+            event.clientX <= triggerRect.right &&
+            event.clientY >= triggerRect.top &&
+            event.clientY <= triggerRect.bottom);
+        const isReleasedOverMenuContent = path.some(
+          (target) => target instanceof Element && target.hasAttribute('data-radix-menu-content'),
+        );
+        if (!isReleasedOverTrigger && !isReleasedOverMenuContent) {
+          onOpenChange(false);
+        }
+      };
+      const handlePointerCancel = (event: PointerEvent) => {
+        if (event.pointerId === openingPointerId) {
+          setOpeningPointerId(null);
+        }
+      };
+
+      ownerDocument.addEventListener('pointerup', handlePointerUp, { capture: true });
+      ownerDocument.addEventListener('pointercancel', handlePointerCancel, { capture: true });
+      return () => {
+        ownerDocument.removeEventListener('pointerup', handlePointerUp, { capture: true });
+        ownerDocument.removeEventListener('pointercancel', handlePointerCancel, { capture: true });
+      };
+    }, [openingPointerId, open, onOpenChange, triggerRef]);
+
     return (
       <MenuPrimitive.Anchor asChild {...menuScope}>
         <Primitive.button
@@ -126,6 +181,9 @@ const DropdownMenuTrigger = /* @__PURE__ */ React.forwardRef<
             // only call handler if it's the left button (mousedown gets triggered by all mouse buttons)
             // but not when the control key is pressed (avoiding MacOS right click)
             if (!disabled && event.button === 0 && event.ctrlKey === false) {
+              if (!context.open && event.pointerType === 'mouse') {
+                setOpeningPointerId(event.pointerId);
+              }
               context.onOpenToggle();
               // prevent trigger focusing when opening
               // this allows the content to be given focus without competition
