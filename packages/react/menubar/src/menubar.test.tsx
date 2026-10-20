@@ -170,6 +170,45 @@ describe('Menubar.Trigger', () => {
     fireEvent.click(trigger);
     expect(onClick).toHaveBeenCalled();
   });
+
+  it('does not open its menu on pointer enter when disabled while another menu is open', async () => {
+    const onPointerEnter = vi.fn();
+
+    render(
+      <Menubar.Root defaultValue="file">
+        <Menubar.Menu value="file">
+          <Menubar.Trigger>File</Menubar.Trigger>
+          <Menubar.Portal>
+            <Menubar.Content>
+              <Menubar.Item>New</Menubar.Item>
+            </Menubar.Content>
+          </Menubar.Portal>
+        </Menubar.Menu>
+        <Menubar.Menu value="edit">
+          <Menubar.Trigger disabled onPointerEnter={onPointerEnter}>
+            Edit
+          </Menubar.Trigger>
+          <Menubar.Portal>
+            <Menubar.Content>
+              <Menubar.Item>Undo</Menubar.Item>
+            </Menubar.Content>
+          </Menubar.Portal>
+        </Menubar.Menu>
+      </Menubar.Root>,
+    );
+
+    const fileTrigger = screen.getByText('File');
+    const disabledEditTrigger = screen.getByText('Edit');
+    await waitFor(() => screen.getByText('New'));
+
+    fireEvent.pointerEnter(disabledEditTrigger);
+
+    expect(onPointerEnter).toHaveBeenCalled();
+    expect(screen.queryByText('Undo')).not.toBeInTheDocument();
+    expect(screen.getByText('New')).toBeInTheDocument();
+    expect(disabledEditTrigger).toHaveAttribute('data-state', 'closed');
+    expect(fileTrigger).toHaveAttribute('data-state', 'open');
+  });
 });
 
 describe('Menubar.Content', () => {

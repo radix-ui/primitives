@@ -253,6 +253,9 @@ const MenubarTrigger = /* @__PURE__ */ React.forwardRef<MenubarTriggerElement, M
                 }
               })}
               onPointerEnter={composeEventHandlers(props.onPointerEnter, () => {
+                if (disabled) {
+                  return;
+                }
                 const menubarOpen = Boolean(context.value);
                 if (menubarOpen && !open) {
                   context.onMenuOpen(menuContext.value);
