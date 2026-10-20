@@ -334,24 +334,30 @@ const FormControl = /* @__PURE__ */ React.forwardRef<FormControlElement, FormCon
         const matcherArgs: CustomMatcherArgs = [control.value, formData];
 
         //------------------------------------------------------------------------------------------
-        // 3. split sync and async custom matcher entries
+        // 3. run sync custom matchers and split out async ones (each matcher is called at most once)
 
-        const syncCustomMatcherEntries: Array<SyncCustomMatcherEntry> = [];
-        const ayncCustomMatcherEntries: Array<AsyncCustomMatcherEntry> = [];
-        customMatcherEntries.forEach((customMatcherEntry) => {
-          if (isAsyncCustomMatcherEntry(customMatcherEntry, matcherArgs)) {
-            ayncCustomMatcherEntries.push(customMatcherEntry);
-          } else if (isSyncCustomMatcherEntry(customMatcherEntry)) {
-            syncCustomMatcherEntries.push(customMatcherEntry);
+        const syncCustomErrors: Array<readonly [string, boolean]> = [];
+        const asyncCustomMatchers: Array<{ id: string; getMatches: () => Promise<boolean> }> = [];
+        customMatcherEntries.forEach(({ id, match }) => {
+          if (isAsyncFunction(match)) {
+            // defer calling async functions until we know there are no sync errors
+            asyncCustomMatchers.push({
+              id,
+              getMatches: () => Promise.resolve(match(...matcherArgs)),
+            });
+            return;
+          }
+          const matchResult = match(...matcherArgs);
+          if (matchResult instanceof Promise) {
+            asyncCustomMatchers.push({ id, getMatches: () => matchResult });
+          } else if (isSyncFunction(match)) {
+            syncCustomErrors.push([id, matchResult] as const);
           }
         });
 
         //------------------------------------------------------------------------------------------
-        // 4. run sync custom matchers and update control validity / internal validity + errors
+        // 4. update control validity / internal validity + errors from sync custom matchers
 
-        const syncCustomErrors = syncCustomMatcherEntries.map(({ id, match }) => {
-          return [id, match(...matcherArgs)] as const;
-        });
         const syncCustomErrorsById = Object.fromEntries(syncCustomErrors);
         const hasSyncCustomErrors = Object.values(syncCustomErrorsById).some(Boolean);
         const hasCustomError = hasSyncCustomErrors;
@@ -363,9 +369,9 @@ const FormControl = /* @__PURE__ */ React.forwardRef<FormControlElement, FormCon
         //------------------------------------------------------------------------------------------
         // 5. run async custom matchers and update control validity / internal validity + errors
 
-        if (!hasSyncCustomErrors && ayncCustomMatcherEntries.length > 0) {
-          const promisedCustomErrors = ayncCustomMatcherEntries.map(({ id, match }) =>
-            match(...matcherArgs).then((matches) => [id, matches] as const),
+        if (!hasSyncCustomErrors && asyncCustomMatchers.length > 0) {
+          const promisedCustomErrors = asyncCustomMatchers.map(({ id, getMatches }) =>
+            getMatches().then((matches) => [id, matches] as const),
           );
           const asyncCustomErrors = await Promise.all(promisedCustomErrors);
           const asyncCustomErrorsById = Object.fromEntries(asyncCustomErrors);
@@ -669,8 +675,6 @@ type SyncCustomMatcher = (value: string, formData: FormData) => boolean;
 type AsyncCustomMatcher = (value: string, formData: FormData) => Promise<boolean>;
 type CustomMatcher = SyncCustomMatcher | AsyncCustomMatcher;
 type CustomMatcherEntry = { id: string; match: CustomMatcher };
-type SyncCustomMatcherEntry = { id: string; match: SyncCustomMatcher };
-type AsyncCustomMatcherEntry = { id: string; match: AsyncCustomMatcher };
 type CustomMatcherArgs = [string, FormData];
 
 function validityStateToObject(validity: ValidityState) {
@@ -702,19 +706,12 @@ function getFirstInvalidControl(form: HTMLFormElement): HTMLElement | null {
   return firstInvalidControl ?? null;
 }
 
-function isAsyncCustomMatcherEntry(
-  entry: CustomMatcherEntry,
-  args: CustomMatcherArgs,
-): entry is AsyncCustomMatcherEntry {
-  return entry.match.constructor.name === 'AsyncFunction' || returnsPromise(entry.match, args);
+function isAsyncFunction(func: CustomMatcher) {
+  return func.constructor.name === 'AsyncFunction';
 }
 
-function isSyncCustomMatcherEntry(entry: CustomMatcherEntry): entry is SyncCustomMatcherEntry {
-  return entry.match.constructor.name === 'Function';
-}
-
-function returnsPromise(func: Function, args: Array<unknown>) {
-  return func(...args) instanceof Promise;
+function isSyncFunction(func: CustomMatcher) {
+  return func.constructor.name === 'Function';
 }
 
 function hasBuiltInError(validity: ValidityState) {

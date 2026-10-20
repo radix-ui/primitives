@@ -717,6 +717,124 @@ describe('Form.Message with a custom `match`', () => {
   });
 });
 
+describe('Form.Message with a custom `match` during validation', () => {
+  afterEach(cleanup);
+
+  // Browsers fire `input` before `change`, so the value is set via `input` first to
+  // avoid React's `onChange` (which resets validity) running on the `change` event.
+
+  it('calls a sync custom matcher once per validation', async () => {
+    const match = vi.fn((value: string) => value === 'invalid');
+
+    render(
+      <Form.Root>
+        <Form.Field name="username">
+          <Form.Control />
+          <Form.Message match={match}>Username is invalid</Form.Message>
+        </Form.Field>
+      </Form.Root>,
+    );
+
+    const control = screen.getByRole('textbox');
+    await act(async () => {
+      fireEvent.input(control, { target: { value: 'invalid' } });
+      fireEvent.change(control);
+    });
+
+    expect(match).toHaveBeenCalledTimes(1);
+    expect(screen.getByText('Username is invalid')).toBeInTheDocument();
+
+    await act(async () => {
+      fireEvent.input(control, { target: { value: 'valid' } });
+      fireEvent.change(control);
+    });
+
+    expect(match).toHaveBeenCalledTimes(2);
+    expect(screen.queryByText('Username is invalid')).not.toBeInTheDocument();
+  });
+
+  it('calls a promise-returning custom matcher once per validation', async () => {
+    const match = vi.fn((value: string) => Promise.resolve(value === 'taken'));
+
+    render(
+      <Form.Root>
+        <Form.Field name="username">
+          <Form.Control />
+          <Form.Message match={match}>Username is taken</Form.Message>
+        </Form.Field>
+      </Form.Root>,
+    );
+
+    const control = screen.getByRole('textbox');
+    await act(async () => {
+      fireEvent.input(control, { target: { value: 'taken' } });
+      fireEvent.change(control);
+    });
+
+    expect(match).toHaveBeenCalledTimes(1);
+    expect(screen.getByText('Username is taken')).toBeInTheDocument();
+
+    await act(async () => {
+      fireEvent.input(control, { target: { value: 'available' } });
+      fireEvent.change(control);
+    });
+
+    expect(match).toHaveBeenCalledTimes(2);
+    expect(screen.queryByText('Username is taken')).not.toBeInTheDocument();
+  });
+
+  it('calls an async function custom matcher once per validation', async () => {
+    const calls: Array<string> = [];
+    const match = async (value: string) => {
+      calls.push(value);
+      return value === 'taken';
+    };
+
+    render(
+      <Form.Root>
+        <Form.Field name="username">
+          <Form.Control />
+          <Form.Message match={match}>Username is taken</Form.Message>
+        </Form.Field>
+      </Form.Root>,
+    );
+
+    const control = screen.getByRole('textbox');
+    await act(async () => {
+      fireEvent.input(control, { target: { value: 'taken' } });
+      fireEvent.change(control);
+    });
+
+    expect(calls).toEqual(['taken']);
+    expect(screen.getByText('Username is taken')).toBeInTheDocument();
+  });
+
+  it('does not apply async custom matcher results when a sync custom matcher fails', async () => {
+    const syncMatch = vi.fn((value: string) => value.length < 3);
+    const asyncMatch = vi.fn(() => Promise.resolve(false));
+
+    render(
+      <Form.Root>
+        <Form.Field name="username">
+          <Form.Control />
+          <Form.Message match={syncMatch}>Username is too short</Form.Message>
+          <Form.Message match={asyncMatch}>Username is taken</Form.Message>
+        </Form.Field>
+      </Form.Root>,
+    );
+
+    const control = screen.getByRole('textbox');
+    await act(async () => {
+      fireEvent.input(control, { target: { value: 'ab' } });
+      fireEvent.change(control);
+    });
+
+    expect(syncMatch).toHaveBeenCalledTimes(1);
+    expect(screen.getByText('Username is too short')).toBeInTheDocument();
+    expect(control).toHaveAttribute('data-invalid', 'true');
+  });
+});
+
 describe('Form.Submit', () => {
   afterEach(cleanup);
 
