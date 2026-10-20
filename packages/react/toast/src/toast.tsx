@@ -899,7 +899,8 @@ function getAnnounceTextContent(container: HTMLElement) {
   childNodes.forEach((node) => {
     if (node.nodeType === node.TEXT_NODE && node.textContent) textContent.push(node.textContent);
     if (isHTMLElement(node)) {
-      const isHidden = node.ariaHidden || node.hidden || node.style.display === 'none';
+      const isHidden =
+        node.getAttribute('aria-hidden') === 'true' || node.hidden || node.style.display === 'none';
       const isExcluded = node.dataset.radixToastAnnounceExclude === '';
 
       if (!isHidden) {

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { hydrateRoot } from 'react-dom/client';
 import { renderToPipeableStream } from 'react-dom/server';
 import { PassThrough } from 'node:stream';
-import { render, cleanup, fireEvent, screen } from '@testing-library/react';
+import { render, cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import * as Toast from './toast';
 import { describe, it, afterEach, beforeEach, vi, expect, type Mock } from 'vitest';
 import { assertStableComposedRef } from '@repo/test-utils/ref-stability';
@@ -671,5 +671,45 @@ describe('hydration alongside a pending Suspense boundary', () => {
       }
       root?.unmount();
     }
+  });
+});
+
+describe('announce text content', () => {
+  afterEach(cleanup);
+
+  it('includes content inside an element with aria-hidden="false"', async () => {
+    render(
+      <Toast.Provider>
+        <Toast.Root open duration={Infinity}>
+          <Toast.Title>Title</Toast.Title>
+          <Toast.Description>
+            <span aria-hidden="false">Visible description</span>
+          </Toast.Description>
+        </Toast.Root>
+        <Toast.Viewport />
+      </Toast.Provider>,
+    );
+
+    const announcer = screen.getByRole('status');
+    await waitFor(() => expect(announcer).toHaveTextContent('Title'));
+    expect(announcer).toHaveTextContent('Visible description');
+  });
+
+  it('excludes content inside an element with aria-hidden="true"', async () => {
+    render(
+      <Toast.Provider>
+        <Toast.Root open duration={Infinity}>
+          <Toast.Title>Title</Toast.Title>
+          <Toast.Description>
+            <span aria-hidden="true">Hidden description</span>
+          </Toast.Description>
+        </Toast.Root>
+        <Toast.Viewport />
+      </Toast.Provider>,
+    );
+
+    const announcer = screen.getByRole('status');
+    await waitFor(() => expect(announcer).toHaveTextContent('Title'));
+    expect(announcer).not.toHaveTextContent('Hidden description');
   });
 });
