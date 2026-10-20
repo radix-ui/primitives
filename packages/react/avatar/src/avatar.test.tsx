@@ -1,6 +1,6 @@
 import { axe } from 'vitest-axe';
 import type { RenderResult } from '@testing-library/react';
-import { cleanup, render, waitFor, fireEvent, screen } from '@testing-library/react';
+import { act, cleanup, render, waitFor, fireEvent, screen } from '@testing-library/react';
 import * as Avatar from './avatar';
 import * as React from 'react';
 import { renderToString } from 'react-dom/server';
@@ -272,6 +272,40 @@ describe('given an Avatar with fallback and delayed render', () => {
     expect(fallback).not.toBeInTheDocument();
     fallback = await rendered.findByText(FALLBACK_TEXT);
     expect(fallback).toBeInTheDocument();
+  });
+});
+
+describe('given an Avatar with fallback whose delay is removed before it elapses', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    cleanup();
+    vi.useRealTimers();
+  });
+
+  it('should render the fallback', () => {
+    const rendered = render(
+      <Avatar.Root data-testid={ROOT_TEST_ID}>
+        <Avatar.Fallback delayMs={500}>{FALLBACK_TEXT}</Avatar.Fallback>
+      </Avatar.Root>,
+    );
+    expect(rendered.queryByText(FALLBACK_TEXT)).not.toBeInTheDocument();
+
+    act(() => {
+      vi.advanceTimersByTime(200);
+    });
+    rendered.rerender(
+      <Avatar.Root data-testid={ROOT_TEST_ID}>
+        <Avatar.Fallback>{FALLBACK_TEXT}</Avatar.Fallback>
+      </Avatar.Root>,
+    );
+    act(() => {
+      vi.advanceTimersByTime(1000);
+    });
+
+    expect(rendered.queryByText(FALLBACK_TEXT)).toBeInTheDocument();
   });
 });
 

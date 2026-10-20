@@ -128,11 +128,12 @@ const AvatarFallback = /* @__PURE__ */ React.forwardRef<AvatarFallbackElement, A
   function AvatarFallback(props: ScopedProps<AvatarFallbackProps>, forwardedRef) {
     const { __scopeAvatar, delayMs, ...fallbackProps } = props;
     const context = useAvatarContext(FALLBACK_NAME, __scopeAvatar);
-    const [canRender, setCanRender] = React.useState(delayMs === undefined);
+    const [hasDelayElapsed, setHasDelayElapsed] = React.useState(delayMs === undefined);
+    const canRender = hasDelayElapsed || delayMs === undefined;
 
     React.useEffect(() => {
       if (delayMs !== undefined) {
-        const timerId = window.setTimeout(() => setCanRender(true), delayMs);
+        const timerId = window.setTimeout(() => setHasDelayElapsed(true), delayMs);
         return () => window.clearTimeout(timerId);
       }
     }, [delayMs]);
