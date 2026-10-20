@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { cleanup, render } from '@testing-library/react';
-import { afterEach, describe, it, expect } from 'vitest';
+import { act, cleanup, render } from '@testing-library/react';
+import { afterEach, beforeEach, describe, it, expect, vi } from 'vitest';
 import { Presence } from './presence';
 
 // Regression tests for https://github.com/radix-ui/primitives/issues/3664
@@ -141,5 +141,58 @@ describe('render function children', () => {
       </Presence>,
     );
     expect(receivedPresent).toBe(true);
+  });
+});
+
+describe('exit animation', () => {
+  beforeEach(() => {
+    // jsdom's computed styles are a static snapshot, so read from the element's
+    // live inline styles instead to emulate animation names changing over time.
+    vi.spyOn(window, 'getComputedStyle').mockImplementation(
+      (element) => (element as HTMLElement).style,
+    );
+    if (typeof globalThis.CSS?.escape !== 'function') {
+      vi.stubGlobal('CSS', { escape: (value: string) => value });
+    }
+  });
+
+  afterEach(() => {
+    cleanup();
+    vi.restoreAllMocks();
+    vi.unstubAllGlobals();
+  });
+
+  it('ignores the cancelled enter animation when its name is a substring of the exit animation name', () => {
+    const { queryByRole, rerender } = render(
+      <Presence present>
+        <button type="button" style={{ animationName: 'slide' }}>
+          Hello
+        </button>
+      </Presence>,
+    );
+    const button = queryByRole('button')!;
+
+    rerender(
+      <Presence present={false}>
+        <button type="button" style={{ animationName: 'slideOut' }}>
+          Hello
+        </button>
+      </Presence>,
+    );
+    expect(queryByRole('button')).not.toBeNull();
+
+    act(() => {
+      const animationCancelEvent = new Event('animationcancel');
+      Object.assign(animationCancelEvent, { animationName: 'slide' });
+      button.dispatchEvent(animationCancelEvent);
+    });
+    expect(queryByRole('button')).not.toBeNull();
+
+    act(() => {
+      const animationEndEvent = new Event('animationend');
+      Object.assign(animationEndEvent, { animationName: 'slideOut' });
+      button.dispatchEvent(animationEndEvent);
+    });
+    expect(queryByRole('button')).toBeNull();
   });
 });

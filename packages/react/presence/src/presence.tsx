@@ -113,10 +113,13 @@ function usePresence(present: boolean) {
        * make sure we only trigger ANIMATION_END for the currently active animation.
        */
       const handleAnimationEnd = (event: AnimationEvent) => {
-        const currentAnimationName = getAnimationName(stylesRef.current);
+        const currentAnimationNames = getAnimationName(stylesRef.current)
+          .split(',')
+          .map((animationName) => animationName.trim());
         // The event.animationName is unescaped for CSS syntax,
         // so we need to escape it to compare with the animationName computed from the style.
-        const isCurrentAnimation = currentAnimationName.includes(CSS.escape(event.animationName));
+        // Compare whole names so that e.g. `slide` does not match `slideOut`.
+        const isCurrentAnimation = currentAnimationNames.includes(CSS.escape(event.animationName));
         if (event.target === node && isCurrentAnimation) {
           // With React 18 concurrency this update is applied a frame after the
           // animation ends, creating a flash of visible content. By setting the
