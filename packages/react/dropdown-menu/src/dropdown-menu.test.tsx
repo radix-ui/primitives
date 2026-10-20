@@ -347,6 +347,86 @@ describe('DropdownMenu.Trigger', () => {
   });
 });
 
+describe('DropdownMenu.Trigger with touch and pen (#4221)', () => {
+  afterEach(cleanupModal);
+
+  // Read once, before opening: a modal menu hides the trigger from the accessibility tree.
+  const getTrigger = () => screen.getByRole('button', { name: TRIGGER_TEXT });
+
+  it('does not open while the finger is down', () => {
+    render(<DropdownMenuTest />);
+    const trigger = getTrigger();
+    fireEvent.pointerDown(trigger, { button: 0, pointerType: 'touch' });
+    expect(trigger).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  it('does not open when the press becomes a scroll', () => {
+    render(<DropdownMenuTest />);
+    const trigger = getTrigger();
+    fireEvent.pointerDown(trigger, { button: 0, pointerType: 'touch' });
+    fireEvent.pointerCancel(trigger, { pointerType: 'touch' });
+    expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    expect(screen.queryByText(ITEM_TEXT)).not.toBeInTheDocument();
+  });
+
+  it.each(['touch', 'pen'])('opens on the click that ends a %s press', (pointerType) => {
+    render(<DropdownMenuTest />);
+    const trigger = getTrigger();
+    fireEvent.pointerDown(trigger, { button: 0, pointerType });
+    fireEvent.pointerUp(trigger, { button: 0, pointerType });
+    fireEvent.click(trigger);
+    expect(trigger).toHaveAttribute('aria-expanded', 'true');
+    expect(screen.getByText(ITEM_TEXT)).toBeInTheDocument();
+  });
+
+  it('closes on a tap on the trigger while open', async () => {
+    render(<DropdownMenuTest modal={false} />);
+    const trigger = getTrigger();
+    fireEvent.pointerDown(trigger, { button: 0, pointerType: 'touch' });
+    fireEvent.click(trigger);
+    expect(trigger).toHaveAttribute('aria-expanded', 'true');
+    // DismissableLayer starts listening for outside presses on the next tick.
+    await act(() => new Promise((resolve) => setTimeout(resolve, 0)));
+
+    fireEvent.pointerDown(trigger, { button: 0, pointerType: 'touch' });
+    fireEvent.click(trigger);
+    expect(trigger).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  it('still opens on mouse press, and the click that follows keeps it open', () => {
+    render(<DropdownMenuTest />);
+    const trigger = getTrigger();
+    fireEvent.pointerDown(trigger, { button: 0, pointerType: 'mouse' });
+    expect(trigger).toHaveAttribute('aria-expanded', 'true');
+    fireEvent.click(trigger);
+    expect(trigger).toHaveAttribute('aria-expanded', 'true');
+  });
+
+  it('ignores a click that no touch or pen press started', () => {
+    render(<DropdownMenuTest />);
+    const trigger = getTrigger();
+    fireEvent.click(trigger);
+    expect(trigger).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  it('does not open a disabled trigger', () => {
+    render(
+      <DropdownMenu.Root>
+        <DropdownMenu.Trigger disabled>{TRIGGER_TEXT}</DropdownMenu.Trigger>
+        <DropdownMenu.Portal>
+          <DropdownMenu.Content>
+            <DropdownMenu.Item>{ITEM_TEXT}</DropdownMenu.Item>
+          </DropdownMenu.Content>
+        </DropdownMenu.Portal>
+      </DropdownMenu.Root>,
+    );
+    const trigger = getTrigger();
+    fireEvent.pointerDown(trigger, { button: 0, pointerType: 'touch' });
+    fireEvent.click(trigger);
+    expect(trigger).toHaveAttribute('aria-expanded', 'false');
+  });
+});
+
 describe('DropdownMenu.Content', () => {
   afterEach(cleanupModal);
 

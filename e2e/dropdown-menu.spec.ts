@@ -325,3 +325,56 @@ test.describe('DropdownMenu nested in Dialog', () => {
     await expect(page.getByText('Item one', { exact: true })).toHaveCount(0);
   });
 });
+
+test.describe('DropdownMenu on a touch screen (#4221)', () => {
+  test.beforeEach(async ({ page }) => {
+    await visitStory(page, 'dropdownmenu--styled');
+  });
+
+  test('opens on tap and closes on a tap on the trigger', async ({ page }) => {
+    const trigger = page.locator('button[aria-haspopup="menu"]');
+    await trigger.tap();
+    await expect(page.getByRole('menuitem', { name: 'Undo' })).toBeVisible();
+
+    // A finger on the trigger of the open menu: the press closes it, and the click that
+    // follows must not open it again.
+    const box = await trigger.boundingBox();
+    if (!box) throw new Error('trigger not rendered');
+    await page.touchscreen.tap(box.x + box.width / 2, box.y + box.height / 2);
+    await expect(page.getByRole('menuitem', { name: 'Undo' })).toHaveCount(0);
+    await expect(trigger).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  test('does not open when a scroll starts on the trigger', async ({ page }) => {
+    const trigger = page.locator('button[aria-haspopup="menu"]');
+    // The story centres the trigger on a 200vh page, just below the fold.
+    await trigger.scrollIntoViewIfNeeded();
+    const scrollYBefore = await page.evaluate(() => window.scrollY);
+    const box = await trigger.boundingBox();
+    if (!box) throw new Error('trigger not rendered');
+    const x = box.x + box.width / 2;
+    const y = box.y + box.height / 2;
+
+    // A finger that lands on the trigger and drags up: the page scrolls, and the browser
+    // sends pointercancel instead of a click.
+    const cdp = await page.context().newCDPSession(page);
+    await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y }] });
+    for (let step = 1; step <= 10; step++) {
+      await cdp.send('Input.dispatchTouchEvent', {
+        type: 'touchMove',
+        touchPoints: [{ x, y: y - step * 20 }],
+      });
+    }
+    await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+
+    await expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    await expect(page.getByRole('menuitem', { name: 'Undo' })).toHaveCount(0);
+    // An open modal menu would also have locked the page, so it would not have scrolled.
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(scrollYBefore);
+  });
+
+  test('still opens on mouse press', async ({ page }) => {
+    await page.getByRole('button', { name: 'Open' }).click();
+    await expect(page.getByRole('menuitem', { name: 'Undo' })).toBeVisible();
+  });
+});

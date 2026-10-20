@@ -109,6 +109,9 @@ const DropdownMenuTrigger = /* @__PURE__ */ React.forwardRef<
     const context = useDropdownMenuContext(TRIGGER_NAME, __scopeDropdownMenu);
     const menuScope = useMenuScope(__scopeDropdownMenu);
     const composedRefs = useComposedRefs(forwardedRef, context.triggerRef);
+    // A touch or pen press on the trigger, until the click that ends it, and whether the menu
+    // was open when it started.
+    const touchPressRef = React.useRef<{ wasOpen: boolean } | null>(null);
     return (
       <MenuPrimitive.Anchor asChild {...menuScope}>
         <Primitive.button
@@ -122,10 +125,32 @@ const DropdownMenuTrigger = /* @__PURE__ */ React.forwardRef<
           disabled={disabled}
           {...triggerProps}
           ref={composedRefs}
+          onClick={composeEventHandlers(props.onClick, () => {
+            // Touch and pen open on click, when the finger lifts, like `Select.Trigger`. A press
+            // that becomes a scroll ends in `pointercancel` and never clicks. A click without a
+            // touch or pen press (keyboard, label) is left alone, as before.
+            const touchPress = touchPressRef.current;
+            touchPressRef.current = null;
+            // The click only opens: a menu that was open when the press started has already been
+            // closed by the press, as an outside interaction of its content.
+            if (!disabled && touchPress && !touchPress.wasOpen) {
+              context.onOpenChange(true);
+            }
+          })}
           onPointerDown={composeEventHandlers(props.onPointerDown, (event) => {
+            touchPressRef.current = isTouchOrPen(event.pointerType)
+              ? { wasOpen: context.open }
+              : null;
             // only call handler if it's the left button (mousedown gets triggered by all mouse buttons)
-            // but not when the control key is pressed (avoiding MacOS right click)
-            if (!disabled && event.button === 0 && event.ctrlKey === false) {
+            // but not when the control key is pressed (avoiding MacOS right click); also not for touch
+            // and pen, which open on click instead, so a scroll that starts on the trigger does not
+            // open the menu
+            if (
+              !disabled &&
+              event.button === 0 &&
+              event.ctrlKey === false &&
+              !isTouchOrPen(event.pointerType)
+            ) {
               context.onOpenToggle();
               // prevent trigger focusing when opening
               // this allows the content to be given focus without competition
@@ -145,6 +170,10 @@ const DropdownMenuTrigger = /* @__PURE__ */ React.forwardRef<
     );
   },
 );
+
+function isTouchOrPen(pointerType: string) {
+  return pointerType === 'touch' || pointerType === 'pen';
+}
 
 /* -------------------------------------------------------------------------------------------------
  * DropdownMenuPortal
