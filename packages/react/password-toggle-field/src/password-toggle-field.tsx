@@ -57,11 +57,13 @@ interface PasswordToggleFieldProps {
   children?: React.ReactNode | undefined;
 }
 
-const INITIAL_FOCUS_STATE: InternalFocusState = {
-  clickTriggered: false,
-  selectionStart: null,
-  selectionEnd: null,
-};
+function createInitialFocusState(): InternalFocusState {
+  return {
+    clickTriggered: false,
+    selectionStart: null,
+    selectionEnd: null,
+  };
+}
 
 const PasswordToggleField: React.FC<PasswordToggleFieldProps> = ({
   __scopePasswordToggleField,
@@ -111,7 +113,7 @@ const PasswordToggleField: React.FC<PasswordToggleFieldProps> = ({
   });
 
   const inputRef = React.useRef<HTMLInputElement | null>(null);
-  const focusState = React.useRef<InternalFocusState>(INITIAL_FOCUS_STATE);
+  const focusState = React.useRef<InternalFocusState>(createInitialFocusState());
 
   return (
     <PasswordToggleFieldProvider
@@ -346,7 +348,7 @@ const PasswordToggleFieldToggle = /* @__PURE__ */ React.forwardRef<
           // reset the ref on cancellation, regardless of whether the user has
           // called preventDefault on the event
           onPointerCancel?.(event);
-          focusState.current = INITIAL_FOCUS_STATE;
+          focusState.current = createInitialFocusState();
         }}
         // do not use `composeEventHandlers` here because we always want to
         // reset the ref after click, regardless of whether the user has
@@ -354,7 +356,7 @@ const PasswordToggleFieldToggle = /* @__PURE__ */ React.forwardRef<
         onClick={(event) => {
           onClick?.(event);
           if (event.defaultPrevented) {
-            focusState.current = INITIAL_FOCUS_STATE;
+            focusState.current = createInitialFocusState();
             return;
           }
 
@@ -379,7 +381,7 @@ const PasswordToggleFieldToggle = /* @__PURE__ */ React.forwardRef<
               }
             }
           }
-          focusState.current = INITIAL_FOCUS_STATE;
+          focusState.current = createInitialFocusState();
         }}
         onPointerUp={(event) => {
           onPointerUp?.(event);
@@ -387,7 +389,7 @@ const PasswordToggleFieldToggle = /* @__PURE__ */ React.forwardRef<
           // intercepted, in which case we still want to reset our internal
           // state
           setTimeout(() => {
-            focusState.current = INITIAL_FOCUS_STATE;
+            focusState.current = createInitialFocusState();
           }, 50);
         }}
         type="button"

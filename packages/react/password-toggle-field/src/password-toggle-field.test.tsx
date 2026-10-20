@@ -181,6 +181,55 @@ describe('given a PasswordToggleField in a form', () => {
   });
 });
 
+describe('given multiple PasswordToggleFields', () => {
+  let user: UserEvent;
+
+  afterEach(cleanup);
+
+  beforeEach(() => {
+    user = userEvent.setup();
+    render(
+      <>
+        <label htmlFor="first-password">First password</label>
+        <PasswordToggleField.Root>
+          <PasswordToggleField.Input id="first-password" />
+          <PasswordToggleField.Toggle>
+            <PasswordToggleField.Slot visible="Hide first" hidden="Show first" />
+          </PasswordToggleField.Toggle>
+        </PasswordToggleField.Root>
+        <label htmlFor="second-password">Second password</label>
+        <PasswordToggleField.Root>
+          <PasswordToggleField.Input id="second-password" />
+          <PasswordToggleField.Toggle>
+            <PasswordToggleField.Slot visible="Hide second" hidden="Show second" />
+          </PasswordToggleField.Toggle>
+        </PasswordToggleField.Root>
+      </>,
+    );
+  });
+
+  it("should not restore another field's selection after toggling", async () => {
+    const firstInput = screen.getByLabelText<HTMLInputElement>('First password');
+    const firstToggle = screen.getByRole('button', { name: 'Show first' });
+    await act(async () => await user.type(firstInput, 'password'));
+    firstInput.selectionStart = 0;
+    firstInput.selectionEnd = 4;
+    await act(async () => await user.click(firstToggle));
+
+    const secondInput = screen.getByLabelText<HTMLInputElement>('Second password');
+    const secondToggle = screen.getByRole('button', { name: 'Show second' });
+    fireEvent.change(secondInput, { target: { value: 'secret' } });
+    await act(async () => await user.click(secondToggle));
+    await act(() => new Promise((resolve) => requestAnimationFrame(resolve)));
+
+    // the second field was never blurred, so its own selection (at the end of
+    // the value) should be left untouched
+    expect(document.activeElement).toBe(secondInput);
+    expect(secondInput.selectionStart).toBe(6);
+    expect(secondInput.selectionEnd).toBe(6);
+  });
+});
+
 function EyeClosedIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
