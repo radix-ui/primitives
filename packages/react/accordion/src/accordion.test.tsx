@@ -701,6 +701,51 @@ describe('Accordion.Root', () => {
     fireEvent.click(root);
     expect(onClick).toHaveBeenCalled();
   });
+
+  it('calls a consumer `onKeyDown` when `disabled`', () => {
+    const onKeyDown = vi.fn();
+    render(
+      <Accordion.Root type="single" disabled data-testid="root" onKeyDown={onKeyDown}>
+        <Accordion.Item value="one">
+          <Accordion.Header>
+            <Accordion.Trigger>Trigger One</Accordion.Trigger>
+          </Accordion.Header>
+        </Accordion.Item>
+      </Accordion.Root>,
+    );
+
+    fireEvent.keyDown(screen.getByTestId('root'), { key: 'a' });
+    expect(onKeyDown).toHaveBeenCalledTimes(1);
+
+    fireEvent.keyDown(screen.getByText('Trigger One'), { key: 'ArrowDown' });
+    expect(onKeyDown).toHaveBeenCalledTimes(2);
+  });
+
+  it('does not handle keyboard navigation when `disabled` and a consumer `onKeyDown` is provided', () => {
+    const onKeyDown = vi.fn();
+    render(
+      <Accordion.Root type="single" disabled onKeyDown={onKeyDown}>
+        <Accordion.Item value="one">
+          <Accordion.Header>
+            <Accordion.Trigger>Trigger One</Accordion.Trigger>
+          </Accordion.Header>
+        </Accordion.Item>
+        <Accordion.Item value="two">
+          <Accordion.Header>
+            <Accordion.Trigger>Trigger Two</Accordion.Trigger>
+          </Accordion.Header>
+        </Accordion.Item>
+      </Accordion.Root>,
+    );
+
+    const isDefaultPrevented = !fireEvent.keyDown(screen.getByText('Trigger One'), {
+      key: 'ArrowDown',
+    });
+    expect(onKeyDown).toHaveBeenCalledTimes(1);
+    expect(isDefaultPrevented).toBe(false);
+    expect(screen.getByText('Trigger One')).not.toHaveFocus();
+    expect(screen.getByText('Trigger Two')).not.toHaveFocus();
+  });
 });
 
 describe('Accordion.Item', () => {

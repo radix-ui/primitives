@@ -263,6 +263,9 @@ const AccordionImpl = /* @__PURE__ */ React.forwardRef<AccordionImplElement, Acc
     const isDirectionLTR = direction === Direction.LTR;
 
     const handleKeyDown = composeEventHandlers(props.onKeyDown, (event) => {
+      if (disabled) {
+        return;
+      }
       if (!ACCORDION_KEYS.includes(event.key)) {
         return;
       }
@@ -350,7 +353,7 @@ const AccordionImpl = /* @__PURE__ */ React.forwardRef<AccordionImplElement, Acc
             {...accordionProps}
             data-orientation={orientation}
             ref={composedRefs}
-            onKeyDown={disabled ? undefined : handleKeyDown}
+            onKeyDown={handleKeyDown}
           />
         </Collection.Slot>
       </AccordionImplProvider>
