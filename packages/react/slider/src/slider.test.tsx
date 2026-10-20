@@ -110,6 +110,39 @@ describe('Slider', () => {
   });
 
   // Regression tests for https://github.com/radix-ui/primitives/issues/3963
+  describe('when `min` equals `max`', () => {
+    it('does not render `NaN` in the range position', () => {
+      render(
+        <Slider.Root value={[5]} min={5} max={5}>
+          <Slider.Track>
+            <Slider.Range data-testid="range" />
+          </Slider.Track>
+          <Slider.Thumb />
+        </Slider.Root>,
+      );
+
+      const range = screen.getByTestId('range');
+      expect(range.getAttribute('style')).not.toContain('NaN');
+      expect(range.style.left).toBe('0%');
+      expect(range.style.right).toBe('100%');
+    });
+
+    it('does not render `NaN` in the thumb position', () => {
+      render(
+        <Slider.Root value={[5]} min={5} max={5}>
+          <Slider.Track>
+            <Slider.Range />
+          </Slider.Track>
+          <Slider.Thumb />
+        </Slider.Root>,
+      );
+
+      const thumbWrapper = screen.getByRole('slider').parentElement!;
+      expect(thumbWrapper.getAttribute('style')).not.toContain('NaN');
+      expect(thumbWrapper.style.left).toBe('calc(0% + 0px)');
+    });
+  });
+
   describe('ref stability', () => {
     it('keeps a stable composed ref on the root', () => {
       assertStableComposedRef((ref) => (

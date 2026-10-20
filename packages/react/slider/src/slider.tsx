@@ -923,6 +923,10 @@ function getNextSortedValues(prevValues: number[] = [], nextValue: number, atInd
 
 function convertValueToPercentage(value: number, min: number, max: number) {
   const maxSteps = max - min;
+  // Avoid dividing by zero when `min` equals `max`, which would produce `NaN`
+  if (maxSteps === 0) {
+    return 0;
+  }
   const percentPerStep = 100 / maxSteps;
   const percentage = percentPerStep * (value - min);
   return clamp(percentage, [0, 100]);
