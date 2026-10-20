@@ -336,7 +336,6 @@ const PasswordToggleFieldToggle = /* @__PURE__ */ React.forwardRef<
         aria-hidden={ariaHidden}
         aria-label={ariaLabel}
         ref={ref}
-        id={inputId}
         {...props}
         onPointerDown={composeEventHandlers(onPointerDown, () => {
           focusState.current.clickTriggered = true;

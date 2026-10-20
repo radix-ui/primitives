@@ -284,6 +284,54 @@ describe('PasswordToggleField.Input', () => {
 describe('PasswordToggleField.Toggle', () => {
   afterEach(cleanup);
 
+  it('does not render with the same `id` as the input', () => {
+    render(
+      <PasswordToggleField.Root>
+        <PasswordToggleField.Input data-testid="input" />
+        <PasswordToggleField.Toggle data-testid="toggle">Show</PasswordToggleField.Toggle>
+      </PasswordToggleField.Root>,
+    );
+
+    const input = screen.getByTestId('input');
+    const toggle = screen.getByTestId('toggle');
+    expect(input.id).not.toBe('');
+    expect(toggle.id).not.toBe(input.id);
+    expect(toggle).toHaveAttribute('aria-controls', input.id);
+  });
+
+  it('does not render with the same `id` as an input with a custom `id`', () => {
+    render(
+      <>
+        <label htmlFor="password">Password</label>
+        <PasswordToggleField.Root>
+          <PasswordToggleField.Input id="password" />
+          <PasswordToggleField.Toggle data-testid="toggle">Show</PasswordToggleField.Toggle>
+        </PasswordToggleField.Root>
+      </>,
+    );
+
+    const input = screen.getByLabelText('Password');
+    const toggle = screen.getByTestId('toggle');
+    expect(input.tagName).toBe('INPUT');
+    expect(toggle).not.toHaveAttribute('id', 'password');
+    expect(document.querySelectorAll('#password')).toHaveLength(1);
+    expect(toggle).toHaveAttribute('aria-controls', 'password');
+  });
+
+  it('renders a custom `id` passed to the toggle', () => {
+    render(
+      <PasswordToggleField.Root>
+        <PasswordToggleField.Input data-testid="input" />
+        <PasswordToggleField.Toggle data-testid="toggle" id="toggle-id">
+          Show
+        </PasswordToggleField.Toggle>
+      </PasswordToggleField.Root>,
+    );
+
+    const toggle = screen.getByTestId('toggle');
+    expect(toggle).toHaveAttribute('id', 'toggle-id');
+  });
+
   it('spreads props it does not consume onto the element it renders', () => {
     const ref = React.createRef<HTMLButtonElement>();
     const onClick = vi.fn();
