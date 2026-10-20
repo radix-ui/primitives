@@ -57,4 +57,86 @@ describe('Label.Root', () => {
     fireEvent.click(label);
     expect(onClick).toHaveBeenCalled();
   });
+
+  it('calls `onMouseDown` when the mousedown target is the label itself', () => {
+    const onMouseDown = vi.fn();
+
+    render(
+      <Label.Root data-testid="label" onMouseDown={onMouseDown}>
+        Label
+      </Label.Root>,
+    );
+
+    fireEvent.mouseDown(screen.getByTestId('label'));
+    expect(onMouseDown).toHaveBeenCalledTimes(1);
+  });
+
+  it('calls `onMouseDown` when the mousedown target is a nested input', () => {
+    const onMouseDown = vi.fn();
+
+    render(
+      <Label.Root onMouseDown={onMouseDown}>
+        Label
+        <input data-testid="input" />
+      </Label.Root>,
+    );
+
+    fireEvent.mouseDown(screen.getByTestId('input'));
+    expect(onMouseDown).toHaveBeenCalledTimes(1);
+  });
+
+  it('calls `onMouseDown` when the mousedown target is a nested button', () => {
+    const onMouseDown = vi.fn();
+
+    render(
+      <Label.Root onMouseDown={onMouseDown}>
+        Label
+        <button type="button" data-testid="button">
+          Button
+        </button>
+      </Label.Root>,
+    );
+
+    fireEvent.mouseDown(screen.getByTestId('button'));
+    expect(onMouseDown).toHaveBeenCalledTimes(1);
+  });
+
+  it('prevents text selection when double clicking the label itself', () => {
+    render(<Label.Root data-testid="label">Label</Label.Root>);
+
+    const notPrevented = fireEvent.mouseDown(screen.getByTestId('label'), { detail: 2 });
+    expect(notPrevented).toBe(false);
+  });
+
+  it('does not prevent the default action when double clicking a nested input', () => {
+    const onMouseDown = vi.fn();
+
+    render(
+      <Label.Root onMouseDown={onMouseDown}>
+        Label
+        <input data-testid="input" />
+      </Label.Root>,
+    );
+
+    const notPrevented = fireEvent.mouseDown(screen.getByTestId('input'), { detail: 2 });
+    expect(notPrevented).toBe(true);
+    expect(onMouseDown).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not prevent the default action when double clicking a nested button', () => {
+    const onMouseDown = vi.fn();
+
+    render(
+      <Label.Root onMouseDown={onMouseDown}>
+        Label
+        <button type="button" data-testid="button">
+          Button
+        </button>
+      </Label.Root>,
+    );
+
+    const notPrevented = fireEvent.mouseDown(screen.getByTestId('button'), { detail: 2 });
+    expect(notPrevented).toBe(true);
+    expect(onMouseDown).toHaveBeenCalledTimes(1);
+  });
 });

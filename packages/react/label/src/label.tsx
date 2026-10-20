@@ -16,13 +16,19 @@ const Label = /* @__PURE__ */ React.forwardRef<LabelElement, LabelProps>(
         {...props}
         ref={forwardedRef}
         onMouseDown={(event) => {
+          props.onMouseDown?.(event);
+
           // only prevent text selection if clicking inside the label itself
           const target = event.target as HTMLElement;
-          if (target.closest('button, input, select, textarea')) return;
+          const isTargetNestedControl = target.closest('button, input, select, textarea') !== null;
+          if (isTargetNestedControl) {
+            return;
+          }
 
-          props.onMouseDown?.(event);
           // prevent text selection when double clicking label
-          if (!event.defaultPrevented && event.detail > 1) event.preventDefault();
+          if (!event.defaultPrevented && event.detail > 1) {
+            event.preventDefault();
+          }
         }}
       />
     );
