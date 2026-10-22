@@ -344,6 +344,15 @@ const PopoverContentNonModal = /* @__PURE__ */ React.forwardRef<
     const hasInteractedOutsideRef = React.useRef(false);
     const hasPointerDownOutsideRef = React.useRef(false);
 
+    // Reopening while animating out keeps this content mounted, so forget the outside
+    // interaction that closed it. Otherwise the next close does not focus the trigger.
+    React.useEffect(() => {
+      if (context.open) {
+        hasInteractedOutsideRef.current = false;
+        hasPointerDownOutsideRef.current = false;
+      }
+    }, [context.open]);
+
     return (
       <PopoverContentImpl
         {...props}
@@ -365,7 +374,12 @@ const PopoverContentNonModal = /* @__PURE__ */ React.forwardRef<
         onInteractOutside={(event) => {
           props.onInteractOutside?.(event);
 
-          if (!event.defaultPrevented) {
+          const target = event.target as HTMLElement;
+          const targetIsTrigger = context.triggerRef.current?.contains(target);
+
+          // The trigger is not outside. A press on it can reopen this content while it
+          // animates out, and that interaction lands after the reset on open.
+          if (!event.defaultPrevented && !targetIsTrigger) {
             hasInteractedOutsideRef.current = true;
             if (event.detail.originalEvent.type === 'pointerdown') {
               hasPointerDownOutsideRef.current = true;
@@ -375,8 +389,6 @@ const PopoverContentNonModal = /* @__PURE__ */ React.forwardRef<
           // Prevent dismissing when clicking the trigger.
           // As the trigger is already setup to close, without doing so would
           // cause it to close and immediately open.
-          const target = event.target as HTMLElement;
-          const targetIsTrigger = context.triggerRef.current?.contains(target);
           if (targetIsTrigger) event.preventDefault();
 
           // On Safari if the trigger is inside a container with tabIndex={0}, when clicked

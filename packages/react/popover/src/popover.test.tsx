@@ -1,6 +1,6 @@
 import * as React from 'react';
 import type { RenderResult } from '@testing-library/react';
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, it, expect, vi } from 'vitest';
 import * as Popover from './popover';
 
@@ -64,6 +64,120 @@ describe('aria-controls', () => {
     fireEvent.click(trigger);
 
     expect(trigger).not.toHaveAttribute('aria-controls');
+  });
+});
+
+// Regression tests for https://github.com/radix-ui/primitives/issues/4246
+describe('reopening while animating out', () => {
+  const CLOSE_TEXT = 'Close';
+  const OUTSIDE_TEXT = 'Outside';
+
+  afterEach(cleanup);
+
+  async function waitForDocumentPointerDownListener() {
+    // `DismissableLayer` registers its `pointerdown` listener in a `setTimeout`.
+    await act(async () => {
+      await new Promise((resolve) => window.setTimeout(resolve, 0));
+    });
+  }
+
+  function firePointerMouseClick(target: Element) {
+    fireEvent.pointerDown(target, { pointerType: 'mouse' });
+    fireEvent.mouseDown(target);
+    fireEvent.pointerUp(target, { pointerType: 'mouse' });
+    fireEvent.mouseUp(target);
+    fireEvent.click(target);
+  }
+
+  // `forceMount` keeps the content mounted after it closes, as an exit animation does.
+  const AnimatingPopover = ({ animatingOut }: { animatingOut: boolean }) => (
+    <>
+      <Popover.Root defaultOpen>
+        <Popover.Trigger>{TRIGGER_TEXT}</Popover.Trigger>
+        <Popover.Portal forceMount={animatingOut ? true : undefined}>
+          <Popover.Content forceMount={animatingOut ? true : undefined}>
+            <Popover.Close>{CLOSE_TEXT}</Popover.Close>
+          </Popover.Content>
+        </Popover.Portal>
+      </Popover.Root>
+      <button type="button">{OUTSIDE_TEXT}</button>
+    </>
+  );
+
+  it('should focus the trigger on close after the trigger reopened it', async () => {
+    const { rerender } = render(<AnimatingPopover animatingOut />);
+    await waitForDocumentPointerDownListener();
+    const trigger = screen.getByText(TRIGGER_TEXT);
+
+    fireEvent.click(screen.getByText(CLOSE_TEXT));
+    firePointerMouseClick(trigger);
+    await waitForDocumentPointerDownListener();
+    expect(trigger).toHaveAttribute('aria-expanded', 'true');
+
+    fireEvent.click(screen.getByText(CLOSE_TEXT));
+    rerender(<AnimatingPopover animatingOut={false} />);
+    // `FocusScope` moves focus on unmount in a `setTimeout`.
+    await act(async () => {
+      await new Promise((resolve) => window.setTimeout(resolve, 0));
+    });
+
+    expect(trigger).toHaveFocus();
+  });
+
+  it('should focus the trigger on close after an outside click closed it before it reopened', async () => {
+    const { rerender } = render(<AnimatingPopover animatingOut />);
+    await waitForDocumentPointerDownListener();
+    const trigger = screen.getByText(TRIGGER_TEXT);
+
+    firePointerMouseClick(screen.getByText(OUTSIDE_TEXT));
+    await waitForDocumentPointerDownListener();
+    expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    fireEvent.click(trigger);
+    await waitForDocumentPointerDownListener();
+
+    fireEvent.click(screen.getByText(CLOSE_TEXT));
+    rerender(<AnimatingPopover animatingOut={false} />);
+    // `FocusScope` moves focus on unmount in a `setTimeout`.
+    await act(async () => {
+      await new Promise((resolve) => window.setTimeout(resolve, 0));
+    });
+
+    expect(trigger).toHaveFocus();
+  });
+
+  it('should leave focus where the outside click moved it', async () => {
+    render(<AnimatingPopover animatingOut={false} />);
+    await waitForDocumentPointerDownListener();
+    const trigger = screen.getByText(TRIGGER_TEXT);
+    const outside = screen.getByText(OUTSIDE_TEXT);
+
+    firePointerMouseClick(outside);
+    act(() => outside.focus());
+    await waitForDocumentPointerDownListener();
+    expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    // `FocusScope` moves focus on unmount in a `setTimeout`.
+    await act(async () => {
+      await new Promise((resolve) => window.setTimeout(resolve, 0));
+    });
+
+    expect(outside).toHaveFocus();
+  });
+
+  it('should close when focus moves outside after an outside click closed it before it reopened', async () => {
+    render(<AnimatingPopover animatingOut />);
+    await waitForDocumentPointerDownListener();
+    const trigger = screen.getByText(TRIGGER_TEXT);
+    const outside = screen.getByText(OUTSIDE_TEXT);
+
+    firePointerMouseClick(outside);
+    await waitForDocumentPointerDownListener();
+    fireEvent.click(trigger);
+    await waitForDocumentPointerDownListener();
+    expect(trigger).toHaveAttribute('aria-expanded', 'true');
+
+    act(() => outside.focus());
+
+    expect(trigger).toHaveAttribute('aria-expanded', 'false');
   });
 });
 
