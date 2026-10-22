@@ -1628,6 +1628,80 @@ describe('Select.BubbleInput', () => {
   it.todo('forwards props to the child element when `asChild` is set');
 });
 
+// Regression tests for https://github.com/radix-ui/primitives/issues/3294
+describe('trigger id', () => {
+  afterEach(cleanupModal);
+
+  it('puts the trigger id on the native select inside a form, and not on the trigger', () => {
+    render(
+      <form>
+        <label htmlFor="fruit">Fruit</label>
+        <Select.Root required name="fruit">
+          <Select.Trigger id="fruit">
+            <Select.Value placeholder={PLACEHOLDER_TEXT} />
+          </Select.Trigger>
+        </Select.Root>
+      </form>,
+    );
+
+    const trigger = screen.getByRole('combobox');
+    const nativeSelect = document.getElementById('fruit');
+
+    expect(trigger).not.toHaveAttribute('id');
+    expect(nativeSelect).toBeInstanceOf(HTMLSelectElement);
+    expect(nativeSelect).toHaveAttribute('aria-hidden', 'true');
+    expect(nativeSelect).toHaveAttribute('required');
+    expect(document.querySelectorAll('#fruit')).toHaveLength(1);
+
+    // Label activation focuses the native select. Focus moves to the trigger.
+    fireEvent.focus(nativeSelect!);
+    expect(trigger).toHaveFocus();
+  });
+
+  it('keeps the id on the trigger when the native select is not mounted', () => {
+    const { container } = render(
+      <Select.Root>
+        <Select.Trigger id="fruit">
+          <Select.Value placeholder={PLACEHOLDER_TEXT} />
+        </Select.Trigger>
+      </Select.Root>,
+    );
+
+    expect(screen.getByRole('combobox')).toHaveAttribute('id', 'fruit');
+    expect(container.querySelector('select')).not.toBeInTheDocument();
+    expect(document.querySelectorAll('#fruit')).toHaveLength(1);
+  });
+
+  it('keeps an id passed to the bubble input', () => {
+    render(
+      <form>
+        <Select.Provider>
+          <Select.Trigger id="trigger-id" />
+          <Select.BubbleInput id="bubble-id" data-testid="bubble-input" />
+        </Select.Provider>
+      </form>,
+    );
+
+    expect(screen.getByRole('combobox')).not.toHaveAttribute('id');
+    expect(screen.getByTestId('bubble-input')).toHaveAttribute('id', 'bubble-id');
+    expect(document.querySelectorAll('#trigger-id')).toHaveLength(0);
+    expect(document.querySelectorAll('#bubble-id')).toHaveLength(1);
+  });
+
+  it('does not copy the trigger id onto a bubble input outside a form', () => {
+    const { container } = render(
+      <Select.Provider>
+        <Select.Trigger id="fruit" />
+        <Select.BubbleInput data-testid="bubble-input" />
+      </Select.Provider>,
+    );
+
+    expect(screen.getByRole('combobox')).toHaveAttribute('id', 'fruit');
+    expect(container.querySelector('[data-testid="bubble-input"]')).not.toHaveAttribute('id');
+    expect(document.querySelectorAll('#fruit')).toHaveLength(1);
+  });
+});
+
 describe('Select.Value', () => {
   afterEach(cleanupModal);
 
