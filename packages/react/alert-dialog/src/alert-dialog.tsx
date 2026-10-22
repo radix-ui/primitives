@@ -112,7 +112,10 @@ const AlertDialogContent = React.forwardRef<AlertDialogContentElement, AlertDial
           ref={composedRefs}
           onOpenAutoFocus={composeEventHandlers(contentProps.onOpenAutoFocus, (event) => {
             event.preventDefault();
-            cancelRef.current?.focus({ preventScroll: true });
+            // Without a `Cancel` button, focus the content itself rather than its first tabbable
+            // element, which is usually the (often destructive) `Action` button.
+            const elementToFocus = cancelRef.current ?? contentRef.current;
+            elementToFocus?.focus({ preventScroll: true });
           })}
           onPointerDownOutside={(event) => event.preventDefault()}
           onInteractOutside={(event) => event.preventDefault()}
