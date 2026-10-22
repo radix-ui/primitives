@@ -83,6 +83,9 @@ interface SelectContextValue {
   onOpenChange(open: boolean): void;
   dir: SelectProps['dir'];
   triggerPointerDownPosRef: React.MutableRefObject<{ x: number; y: number } | null>;
+  // The id passed to `Select.Trigger`. The trigger writes it during render,
+  // before `SelectBubbleInput`, so the native select can use it in the same commit.
+  triggerIdRef: React.MutableRefObject<string | undefined>;
   disabled?: boolean | undefined;
   name?: string | undefined;
   autoComplete?: string | undefined;
@@ -203,6 +206,7 @@ function SelectProvider(props: ScopedProps<SelectProviderProps>) {
   });
   const triggerPointerDownPosRef = React.useRef<{ x: number; y: number } | null>(null);
   const hasConsumerStoppedPropagationRef = React.useRef(false);
+  const triggerIdRef = React.useRef<string | undefined>(undefined);
 
   // The latest value selected by the user. The bubble input notifies the form
   // of it once React has handled the selection, whether or not the value
@@ -272,6 +276,7 @@ function SelectProvider(props: ScopedProps<SelectProviderProps>) {
     onOpenChange: setOpen,
     dir: direction,
     triggerPointerDownPosRef,
+    triggerIdRef,
     disabled,
     name,
     autoComplete,
@@ -338,9 +343,11 @@ interface SelectTriggerProps extends PrimitiveButtonProps {}
 
 const SelectTrigger = /* @__PURE__ */ React.forwardRef<SelectTriggerElement, SelectTriggerProps>(
   function SelectTrigger(props: ScopedProps<SelectTriggerProps>, forwardedRef) {
-    const { __scopeSelect, disabled = false, ...triggerProps } = props;
+    const { __scopeSelect, disabled = false, id, ...triggerProps } = props;
     const popperScope = usePopperScope(__scopeSelect);
     const context = useSelectContext(TRIGGER_NAME, __scopeSelect);
+    // Publish before the bubble input renders so its `id` is set in this commit.
+    context.triggerIdRef.current = id;
     const isDisabled = context.disabled || disabled;
     const composedRefs = useComposedRefs(forwardedRef, context.onTriggerChange);
     const getItems = useCollection(__scopeSelect);
@@ -385,6 +392,10 @@ const SelectTrigger = /* @__PURE__ */ React.forwardRef<SelectTriggerElement, Sel
           data-disabled={isDisabled ? '' : undefined}
           data-placeholder={shouldShowPlaceholder(context.value) ? '' : undefined}
           {...triggerProps}
+          // One id, one element. The native select owns it while mounted so
+          // `htmlFor` and native form association point at that control.
+          // Outside a form the native select is not rendered, so the id stays here.
+          id={context.isFormControl ? undefined : id}
           ref={composedRefs}
           // Enable compatibility with native label or custom `Label` "click" for Safari:
           onClick={composeEventHandlers(triggerProps.onClick, (event) => {
@@ -1935,6 +1946,13 @@ const SelectBubbleInput = /* @__PURE__ */ React.forwardRef<
           }
         }}
         {...props}
+        // The trigger's id, when it has one. A consumer id on this part still applies.
+        id={context.triggerIdRef.current ?? props.id}
+        // Label activation focuses this hidden select. Move focus to the trigger
+        // so `htmlFor` reaches the visible control. This select stays aria-hidden.
+        onFocus={composeEventHandlers(props.onFocus, () => {
+          context.trigger?.focus();
+        })}
         style={{ ...VISUALLY_HIDDEN_STYLES, ...props.style }}
         ref={composedRefs}
         defaultValue={selectValue}
