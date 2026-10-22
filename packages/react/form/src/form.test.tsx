@@ -44,6 +44,49 @@ describe('Form', () => {
       // the control gets an auto-generated id that the label points at
       expect(control.id).toBeTruthy();
     });
+
+    // https://github.com/radix-ui/primitives/issues/2380
+    it('should scope validity to fields when controls share a name', async () => {
+      render(
+        <Form.Root data-testid="form">
+          <Form.Field name="address" data-testid="first-field">
+            <Form.Label data-testid="first-label">Address 1</Form.Label>
+            <Form.Control data-testid="first-control" defaultValue="First address" required />
+            <Form.Message match="valueMissing">First address is required</Form.Message>
+          </Form.Field>
+          <Form.Field name="address" data-testid="second-field">
+            <Form.Label data-testid="second-label">Address 2</Form.Label>
+            <Form.Control data-testid="second-control" required />
+            <Form.Message match="valueMissing">Second address is required</Form.Message>
+          </Form.Field>
+        </Form.Root>,
+      );
+
+      const formData = new FormData(screen.getByTestId('form') as HTMLFormElement);
+      expect(formData.getAll('address')).toEqual(['First address', '']);
+
+      await act(async () => {
+        fireEvent.invalid(screen.getByTestId('second-control'));
+      });
+
+      expect(
+        screen.getByTestId('first-field').hasAttribute('data-invalid'),
+        'duplicate-name field validity leaked to the valid field',
+      ).toBe(false);
+      expect(screen.getByTestId('first-label')).not.toHaveAttribute('data-invalid');
+      expect(screen.getByTestId('first-control')).not.toHaveAttribute('data-invalid');
+      expect(screen.getByTestId('first-control')).not.toHaveAttribute('aria-describedby');
+      expect(screen.queryByText('First address is required')).not.toBeInTheDocument();
+
+      expect(screen.getByTestId('second-field')).toHaveAttribute('data-invalid', 'true');
+      expect(screen.getByTestId('second-label')).toHaveAttribute('data-invalid', 'true');
+      expect(screen.getByTestId('second-control')).toHaveAttribute('data-invalid', 'true');
+      const secondMessage = screen.getByText('Second address is required');
+      expect(screen.getByTestId('second-control')).toHaveAttribute(
+        'aria-describedby',
+        secondMessage.id,
+      );
+    });
   });
 
   describe('given components used outside `Form.Field` (explicit wiring)', () => {
