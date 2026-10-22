@@ -61,6 +61,58 @@ describe('given a default AlertDialog', () => {
   });
 });
 
+describe('given an AlertDialog without a Cancel button', () => {
+  let rendered: RenderResult;
+  let trigger: HTMLElement;
+
+  afterEach(cleanup);
+
+  beforeEach(() => {
+    rendered = render(
+      <AlertDialog.Root>
+        <AlertDialog.Trigger>{OPEN_TEXT}</AlertDialog.Trigger>
+        <AlertDialog.Content>
+          <AlertDialog.Title>{TITLE_TEXT}</AlertDialog.Title>
+          <AlertDialog.Description>{DESC_TEXT}</AlertDialog.Description>
+          <AlertDialog.Action>{ACTION_TEXT}</AlertDialog.Action>
+        </AlertDialog.Content>
+      </AlertDialog.Root>,
+    );
+    trigger = rendered.getByText(OPEN_TEXT);
+  });
+
+  describe('after opening it with the trigger', () => {
+    beforeEach(() => {
+      trigger.focus();
+      fireEvent.click(trigger);
+    });
+
+    it('should focus the content itself', () => {
+      expect(trigger).not.toHaveFocus();
+      expect(rendered.getByRole('alertdialog')).toHaveFocus();
+    });
+
+    it('should not focus the action button', () => {
+      expect(rendered.getByText(ACTION_TEXT)).not.toHaveFocus();
+    });
+
+    it('should keep focus trapped inside the content', () => {
+      const content = rendered.getByRole('alertdialog');
+      trigger.focus();
+      expect(content).toHaveFocus();
+    });
+
+    it('should keep focus on the action button when tabbing from it', () => {
+      const actionButton = rendered.getByText(ACTION_TEXT);
+      actionButton.focus();
+      fireEvent.keyDown(actionButton, { key: 'Tab' });
+      expect(actionButton).toHaveFocus();
+      fireEvent.keyDown(actionButton, { key: 'Tab', shiftKey: true });
+      expect(actionButton).toHaveFocus();
+    });
+  });
+});
+
 describe('AlertDialog.Trigger', () => {
   afterEach(cleanupModal);
 
