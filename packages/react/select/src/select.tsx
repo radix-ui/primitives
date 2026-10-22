@@ -1946,8 +1946,9 @@ const SelectBubbleInput = /* @__PURE__ */ React.forwardRef<
           }
         }}
         {...props}
-        // The trigger's id, when it has one. A consumer id on this part still applies.
-        id={context.triggerIdRef.current ?? props.id}
+        // Inside a form, the trigger id belongs here unless this part sets its own.
+        // Outside a form the trigger keeps the id, so copying it would duplicate it.
+        id={props.id ?? (context.isFormControl ? context.triggerIdRef.current : undefined)}
         // Label activation focuses this hidden select. Move focus to the trigger
         // so `htmlFor` reaches the visible control. This select stays aria-hidden.
         onFocus={composeEventHandlers(props.onFocus, () => {

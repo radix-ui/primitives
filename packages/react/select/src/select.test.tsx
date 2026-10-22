@@ -1671,6 +1671,35 @@ describe('trigger id', () => {
     expect(container.querySelector('select')).not.toBeInTheDocument();
     expect(document.querySelectorAll('#fruit')).toHaveLength(1);
   });
+
+  it('keeps an id passed to the bubble input', () => {
+    render(
+      <form>
+        <Select.Provider>
+          <Select.Trigger id="trigger-id" />
+          <Select.BubbleInput id="bubble-id" data-testid="bubble-input" />
+        </Select.Provider>
+      </form>,
+    );
+
+    expect(screen.getByRole('combobox')).not.toHaveAttribute('id');
+    expect(screen.getByTestId('bubble-input')).toHaveAttribute('id', 'bubble-id');
+    expect(document.querySelectorAll('#trigger-id')).toHaveLength(0);
+    expect(document.querySelectorAll('#bubble-id')).toHaveLength(1);
+  });
+
+  it('does not copy the trigger id onto a bubble input outside a form', () => {
+    const { container } = render(
+      <Select.Provider>
+        <Select.Trigger id="fruit" />
+        <Select.BubbleInput data-testid="bubble-input" />
+      </Select.Provider>,
+    );
+
+    expect(screen.getByRole('combobox')).toHaveAttribute('id', 'fruit');
+    expect(container.querySelector('[data-testid="bubble-input"]')).not.toHaveAttribute('id');
+    expect(document.querySelectorAll('#fruit')).toHaveLength(1);
+  });
 });
 
 describe('Select.Value', () => {
