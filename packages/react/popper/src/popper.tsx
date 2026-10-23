@@ -447,7 +447,15 @@ const transformOrigin = (options: { arrowWidth: number; arrowHeight: number }): 
     const arrowHeight = isArrowHidden ? 0 : options.arrowHeight;
 
     const [placedSide, placedAlign] = getSideAndAlignFromPlacement(placement);
-    const noArrowAlign = { start: '0%', center: '50%', end: '100%' }[placedAlign];
+    const alignPercentage = { start: '0%', center: '50%', end: '100%' }[placedAlign];
+    // Without an arrow, keep the origin attached to the unshifted alignment point.
+    // Preserve the existing fallback when an arrow cannot be centered.
+    const alignmentShift = middlewareData.arrow
+      ? 0
+      : (middlewareData.shift?.[placedSide === 'top' || placedSide === 'bottom' ? 'x' : 'y'] ?? 0);
+    const noArrowAlign = alignmentShift
+      ? `calc(${alignPercentage} - ${alignmentShift}px)`
+      : alignPercentage;
 
     const arrowXCenter = (middlewareData.arrow?.x ?? 0) + arrowWidth / 2;
     const arrowYCenter = (middlewareData.arrow?.y ?? 0) + arrowHeight / 2;
