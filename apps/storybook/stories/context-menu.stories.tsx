@@ -6,6 +6,29 @@ import { ExternalOverlayTrigger } from './external-overlay';
 
 export default { title: 'Components/ContextMenu' };
 
+export const OriginAwareAnimation = () => (
+  <ContextMenu.Root>
+    <ContextMenu.Trigger
+      className={styles.trigger}
+      style={{ width: 'calc(100vw - 32px)', height: 'calc(100vh - 32px)' }}
+    >
+      Right click near an edge to test the animation origin
+    </ContextMenu.Trigger>
+    <ContextMenu.Portal>
+      <ContextMenu.Content
+        className={[styles.content, styles.animatedContent].join(' ')}
+        style={{ width: 220 }}
+      >
+        {['Undo', 'Redo', 'Cut', 'Copy', 'Paste', 'Duplicate', 'Rename', 'Delete'].map((item) => (
+          <ContextMenu.Item key={item} className={styles.item}>
+            {item}
+          </ContextMenu.Item>
+        ))}
+      </ContextMenu.Content>
+    </ContextMenu.Portal>
+  </ContextMenu.Root>
+);
+
 export const Styled = () => (
   <div
     style={{

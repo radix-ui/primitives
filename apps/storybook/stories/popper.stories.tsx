@@ -97,6 +97,71 @@ export const WithPortal = () => {
   );
 };
 
+export const TransformOrigin = () => {
+  const [side, setSide] = React.useState<'top' | 'right' | 'bottom' | 'left'>('right');
+  const [align, setAlign] = React.useState<'start' | 'center' | 'end'>('start');
+  const [withArrow, setWithArrow] = React.useState(false);
+  const [arrowPadding, setArrowPadding] = React.useState(0);
+
+  return (
+    <div style={{ minHeight: '200vh' }}>
+      <label>
+        Side
+        <select value={side} onChange={(event) => setSide(event.target.value as typeof side)}>
+          {Popper.SIDE_OPTIONS.map((side) => (
+            <option key={side}>{side}</option>
+          ))}
+        </select>
+      </label>
+      <label>
+        Align
+        <select value={align} onChange={(event) => setAlign(event.target.value as typeof align)}>
+          {Popper.ALIGN_OPTIONS.map((align) => (
+            <option key={align}>{align}</option>
+          ))}
+        </select>
+      </label>
+      <label>
+        <input
+          type="checkbox"
+          checked={withArrow}
+          onChange={(event) => setWithArrow(event.target.checked)}
+        />
+        Arrow
+      </label>
+      <label>
+        Arrow padding
+        <input
+          type="number"
+          value={arrowPadding}
+          onChange={(event) => setArrowPadding(Number(event.target.value))}
+        />
+      </label>
+      <p>Scroll or resize to move the content against the viewport edges.</p>
+      <Popper.Root>
+        <Popper.Anchor
+          data-testid="anchor"
+          className={styles.anchor}
+          style={{ position: 'absolute', left: '50%', top: '75vh', width: 20, height: 20 }}
+        />
+        <Portal.Root asChild>
+          <Popper.Content
+            data-testid="content"
+            className={styles.content}
+            side={side}
+            align={align}
+            arrowPadding={arrowPadding}
+            style={{ width: 200, height: 160, boxSizing: 'border-box' }}
+          >
+            Content
+            {withArrow && <Popper.Arrow data-testid="arrow" width={20} height={10} />}
+          </Popper.Content>
+        </Portal.Root>
+      </Popper.Root>
+    </div>
+  );
+};
+
 export const WithSideBasedAnchorStyling = () => {
   const [open, setOpen] = React.useState(false);
   const [preferredSide, setPreferredSide] = React.useState<'top' | 'right' | 'bottom' | 'left'>(

@@ -9,6 +9,39 @@ import {
 } from './helpers';
 
 test.describe('ContextMenu', () => {
+  for (const width of [1024, 360]) {
+    test(`keeps the animation origin at the pointer after a bottom collision at ${width}px`, async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width, height: 600 });
+      await visitStory(page, 'contextmenu--origin-aware-animation');
+      await expect(
+        page.getByText('Right click near an edge to test the animation origin'),
+      ).toBeVisible();
+      const point = { x: width - 50, y: 550 };
+      await page.mouse.click(point.x, point.y, { button: 'right' });
+      const menu = page.getByRole('menu');
+      await expect(menu).toBeVisible();
+      // Wait for the opening animation to finish before measuring its final bounds.
+      await menu.evaluate(async (element) => {
+        await Promise.all(element.getAnimations().map((animation) => animation.finished));
+      });
+      await expect
+        .poll(() =>
+          menu.evaluate((element, point) => {
+            const rect = element.getBoundingClientRect();
+            const originY = parseFloat(getComputedStyle(element).transformOrigin.split(' ')[1]!);
+            return Math.abs(rect.top + originY - point.y);
+          }, point),
+        )
+        .toBeLessThan(1);
+      await page.keyboard.press('ArrowDown');
+      await expect(page.getByRole('menuitem', { name: 'Undo', exact: true })).toBeFocused();
+      await page.keyboard.press('Escape');
+      await expect(menu).toHaveCount(0);
+    });
+  }
+
   test.describe('given submenu user', () => {
     test.beforeEach(async ({ page }) => {
       await visitStory(page, 'contextmenu--submenus');
