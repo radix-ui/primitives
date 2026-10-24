@@ -1,6 +1,7 @@
 import * as React from 'react';
+import userEvent from '@testing-library/user-event';
 import type { RenderResult } from '@testing-library/react';
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, it, expect, vi } from 'vitest';
 import * as Popover from './popover';
 
@@ -301,6 +302,66 @@ describe('Popover.Trigger', () => {
 
 describe('Popover.Content', () => {
   afterEach(cleanupModal);
+
+  it('loops focus in a non-modal popover by default', async () => {
+    render(
+      <div>
+        <Popover.Root defaultOpen>
+          <Popover.Trigger>Open</Popover.Trigger>
+          <Popover.Content>
+            <button>First</button>
+            <button>Last</button>
+          </Popover.Content>
+        </Popover.Root>
+        <button>After</button>
+      </div>,
+    );
+
+    screen.getByRole('button', { name: 'Last' }).focus();
+    await userEvent.tab();
+
+    await waitFor(() => expect(screen.getByRole('button', { name: 'First' })).toHaveFocus());
+  });
+
+  it('allows focus to leave a non-modal popover when `loop` is false', async () => {
+    render(
+      <div>
+        <Popover.Root defaultOpen>
+          <Popover.Trigger>Open</Popover.Trigger>
+          <Popover.Content loop={false}>
+            <button>First</button>
+            <button>Last</button>
+          </Popover.Content>
+        </Popover.Root>
+        <button>After</button>
+      </div>,
+    );
+
+    screen.getByRole('button', { name: 'Last' }).focus();
+    await userEvent.tab();
+
+    await waitFor(() => expect(screen.getByRole('button', { name: 'After' })).toHaveFocus());
+  });
+
+  it('keeps looping focus in a modal popover when `loop` is false', async () => {
+    render(
+      <div>
+        <Popover.Root defaultOpen modal>
+          <Popover.Trigger>Open</Popover.Trigger>
+          <Popover.Content loop={false}>
+            <button>First</button>
+            <button>Last</button>
+          </Popover.Content>
+        </Popover.Root>
+        <button>After</button>
+      </div>,
+    );
+
+    screen.getByRole('button', { name: 'Last' }).focus();
+    await userEvent.tab();
+
+    await waitFor(() => expect(screen.getByRole('button', { name: 'First' })).toHaveFocus());
+  });
 
   it('spreads props it does not consume onto the element it renders', () => {
     const ref = React.createRef<HTMLDivElement>();
