@@ -302,6 +302,7 @@ const PopoverContentModal = /* @__PURE__ */ React.forwardRef<
           // we make sure we're not trapping once it's been closed
           // (closed !== unmounted when animating out)
           trapFocus={context.open}
+          loop
           disableOutsidePointerEvents
           onCloseAutoFocus={composeEventHandlers(props.onCloseAutoFocus, (event) => {
             event.preventDefault();
@@ -416,6 +417,14 @@ interface PopoverContentImplProps
   onCloseAutoFocus?: FocusScopeProps['onUnmountAutoFocus'];
 
   /**
+   * When `true`, tabbing from the last item will focus the first tabbable
+   * and shift+tab from the first item will focus the last tabbable.
+   * Only applies to non-modal popovers, modal popovers always loop focus.
+   * @defaultValue true
+   */
+  loop?: FocusScopeProps['loop'] | undefined;
+
+  /**
    * Branch nodes registered by nested, portalled layers. Passed to the trapped
    * `FocusScope` so focus isn't reclaimed from them. Only provided by the modal
    * variant.
@@ -440,6 +449,7 @@ const PopoverContentImpl = /* @__PURE__ */ React.forwardRef<
     const {
       __scopePopover,
       trapFocus,
+      loop = true,
       onOpenAutoFocus,
       onCloseAutoFocus,
       disableOutsidePointerEvents,
@@ -472,7 +482,7 @@ const PopoverContentImpl = /* @__PURE__ */ React.forwardRef<
       <FocusScopeBranchProvider registry={branchRegistry}>
         <FocusScope
           asChild
-          loop={trapFocus}
+          loop={loop}
           trapped={trapFocus}
           branches={branchNodes}
           onMountAutoFocus={onOpenAutoFocus}
