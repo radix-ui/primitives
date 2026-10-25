@@ -347,7 +347,7 @@ function usePointerDownOutside(
     shouldHandlePointerDownOutside = IS_TRUE,
   } = args;
   const handlePointerDownOutside = useCallbackRef(onPointerDownOutside) as EventListener;
-  const isPointerInsideReactTreeRef = React.useRef(false);
+  const pointerDownInsideReactTreeRef = React.useRef<Event | null>(null);
   const isPointerDownOutsideRef = React.useRef(false);
   const interceptedOutsideInteractionEventsRef = React.useRef<Map<string, boolean>>(new Map());
   const handleClickRef = React.useRef((_event: Event) => {});
@@ -397,11 +397,12 @@ function usePointerDownOutside(
     }
 
     const handlePointerDown = (event: PointerEvent) => {
-      if (event.target && !isPointerInsideReactTreeRef.current) {
+      const isPointerInsideReactTree = pointerDownInsideReactTreeRef.current === event;
+      pointerDownInsideReactTreeRef.current = null;
+      if (event.target && !isPointerInsideReactTree) {
         if (!shouldHandlePointerDownOutside(event.target)) {
           ownerDocument.removeEventListener('click', handleClickRef.current);
           resetOutsideInteraction();
-          isPointerInsideReactTreeRef.current = false;
           return;
         }
 
@@ -478,7 +479,6 @@ function usePointerDownOutside(
         ownerDocument.removeEventListener('click', handleClickRef.current);
         resetOutsideInteraction();
       }
-      isPointerInsideReactTreeRef.current = false;
     };
 
     const outsideInteractionEvents = [
@@ -537,7 +537,9 @@ function usePointerDownOutside(
 
   return {
     // ensures we check React component tree (not just DOM tree)
-    onPointerDownCapture: () => (isPointerInsideReactTreeRef.current = true),
+    onPointerDownCapture: (event: React.PointerEvent) => {
+      pointerDownInsideReactTreeRef.current = event.nativeEvent;
+    },
   };
 }
 

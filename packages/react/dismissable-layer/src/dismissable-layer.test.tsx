@@ -540,6 +540,72 @@ describe('DismissableLayer', () => {
     expect(onParentDismiss).not.toHaveBeenCalled();
   });
 
+  // Regression test for https://github.com/radix-ui/primitives/issues/4249
+  it('dismisses a modal layer on outside press after an inner layer with outside pointer events disabled closes', async () => {
+    const onDialogDismiss = vi.fn();
+
+    function App() {
+      const [selectOpen, setSelectOpen] = React.useState(false);
+      return (
+        <>
+          <DismissableLayer.Root disableOutsidePointerEvents onDismiss={onDialogDismiss}>
+            <button type="button" onPointerDown={() => setSelectOpen(true)}>
+              open select
+            </button>
+            {selectOpen && (
+              <DismissableLayer.Root
+                disableOutsidePointerEvents
+                onEscapeKeyDown={() => setSelectOpen(false)}
+              >
+                <button type="button">inside select</button>
+              </DismissableLayer.Root>
+            )}
+          </DismissableLayer.Root>
+          <button type="button">outside</button>
+        </>
+      );
+    }
+
+    render(<App />);
+    await waitForDocumentPointerDownListener();
+
+    // 1. Click "open select" with pointerdown
+    fireEvent.pointerDown(screen.getByText('open select'));
+    await waitForDocumentPointerDownListener();
+    expect(screen.getByText('inside select')).toBeInTheDocument();
+
+    // 2. Close select via Escape
+    fireEvent.keyDown(document, { key: 'Escape' });
+    await waitForDocumentPointerDownListener();
+    expect(screen.queryByText('inside select')).not.toBeInTheDocument();
+
+    // 3. Now press outside the dialog
+    fireEvent.pointerDown(screen.getByText('outside'));
+    expect(onDialogDismiss).toHaveBeenCalledTimes(1);
+  });
+
+  // Regression test for https://github.com/radix-ui/primitives/issues/2782
+  it('dismisses on outside press after an inside pointerdown event stopped propagation', async () => {
+    const onDismiss = vi.fn();
+
+    render(
+      <>
+        <DismissableLayer.Root onDismiss={onDismiss}>
+          <button type="button" onPointerDown={(event) => event.stopPropagation()}>
+            inside stop
+          </button>
+        </DismissableLayer.Root>
+        <button type="button">outside</button>
+      </>,
+    );
+    await waitForDocumentPointerDownListener();
+
+    fireEvent.pointerDown(screen.getByText('inside stop'));
+
+    fireEvent.pointerDown(screen.getByText('outside'));
+    expect(onDismiss).toHaveBeenCalledTimes(1);
+  });
+
   // Regression test for https://github.com/radix-ui/primitives/issues/3963
   it('keeps a stable composed ref (no infinite render loop)', () => {
     assertStableComposedRef((ref) => (
