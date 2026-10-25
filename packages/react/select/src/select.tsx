@@ -712,14 +712,6 @@ const SelectContentImpl = /* @__PURE__ */ React.forwardRef<
     const firstItemFoundRef = React.useRef(false);
     const firstItemTextFoundRef = React.useRef(false);
 
-    // aria-hide everything except the content (better supported equivalent to setting aria-modal)
-    React.useEffect(() => {
-      if (content) {
-        const ownerDocument = content.ownerDocument;
-        return hideOthers(new Set([content]), ownerDocument.body);
-      }
-    }, [content]);
-
     // Make sure the whole tree has focus guards as our `Select` may be
     // the last element in the DOM (because of the `Portal`)
     useFocusGuards();
@@ -756,6 +748,15 @@ const SelectContentImpl = /* @__PURE__ */ React.forwardRef<
         focusSelectedItem();
       }
     }, [isPositioned, focusSelectedItem]);
+
+    // aria-hide everything except the content (better supported equivalent to setting aria-modal).
+    // Gated on `isPositioned` so focus moves into the content before outside elements are hidden.
+    React.useEffect(() => {
+      if (content && isPositioned) {
+        const ownerDocument = content.ownerDocument;
+        return hideOthers(new Set([content]), ownerDocument.body);
+      }
+    }, [content, isPositioned]);
 
     // prevent selecting items on `pointerup` in some cases after opening from `pointerdown`
     // and close on `pointerup` outside.

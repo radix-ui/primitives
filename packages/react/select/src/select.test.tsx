@@ -1,6 +1,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { afterEach, describe, it, expect, vi } from 'vitest';
 import { assertStableComposedRef } from '@repo/test-utils/ref-stability';
 import * as Select from './select';
@@ -2035,6 +2036,55 @@ describe('bubble input change events', () => {
 
     expect(screen.getByRole('combobox', { name: 'Choice' })).toHaveTextContent('Banana');
     expect(onFormChange).not.toHaveBeenCalled();
+  });
+
+  describe('aria-hidden and focus ordering (#4250)', () => {
+    afterEach(() => {
+      cleanupModal();
+    });
+
+    it('does not aria-hide an element that contains activeElement while opening via keyboard', async () => {
+      const user = userEvent.setup();
+      const hiddenElementsHoldingFocus: Element[] = [];
+
+      const observer = new MutationObserver((mutations) => {
+        for (const mutation of mutations) {
+          if (
+            mutation.type === 'attributes' &&
+            mutation.attributeName === 'aria-hidden' &&
+            mutation.target instanceof Element &&
+            mutation.target.getAttribute('aria-hidden') === 'true'
+          ) {
+            if (document.activeElement && mutation.target.contains(document.activeElement)) {
+              hiddenElementsHoldingFocus.push(mutation.target);
+            }
+          }
+        }
+      });
+
+      observer.observe(document.body, {
+        attributes: true,
+        attributeFilter: ['aria-hidden'],
+        subtree: true,
+      });
+
+      render(
+        <section data-testid="container">
+          <SelectTest />
+        </section>,
+      );
+
+      const trigger = screen.getByRole('combobox', { name: 'Choice' });
+      trigger.focus();
+      expect(document.activeElement).toBe(trigger);
+
+      await user.keyboard('{Enter}');
+      await screen.findByRole('listbox');
+
+      observer.disconnect();
+
+      expect(hiddenElementsHoldingFocus).toEqual([]);
+    });
   });
 });
 
