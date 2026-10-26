@@ -197,15 +197,24 @@ const RadioGroupItemTrigger = /* @__PURE__ */ React.forwardRef<
   const isArrowKeyPressedRef = React.useRef(false);
 
   React.useEffect(() => {
+    let keyUpTimeout = 0;
     const handleKeyDown = (event: KeyboardEvent) => {
       if (ARROW_KEYS.includes(event.key)) {
+        window.clearTimeout(keyUpTimeout);
         isArrowKeyPressedRef.current = true;
       }
     };
-    const handleKeyUp = () => (isArrowKeyPressedRef.current = false);
+    const handleKeyUp = () => {
+      window.clearTimeout(keyUpTimeout);
+      // Roving focus may run after keyup when an arrow key is released quickly.
+      keyUpTimeout = window.setTimeout(() => {
+        isArrowKeyPressedRef.current = false;
+      });
+    };
     document.addEventListener('keydown', handleKeyDown);
     document.addEventListener('keyup', handleKeyUp);
     return () => {
+      window.clearTimeout(keyUpTimeout);
       document.removeEventListener('keydown', handleKeyDown);
       document.removeEventListener('keyup', handleKeyUp);
     };

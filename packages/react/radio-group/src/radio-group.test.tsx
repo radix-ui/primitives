@@ -259,20 +259,41 @@ describe('RadioGroup', () => {
   });
 
   describe('keyboard navigation', () => {
-    it('should check an item that receives focus while an arrow key is pressed', async () => {
-      render(<ClassicRadioGroup />);
-      const radios = screen.getAllByRole(RADIO_ROLE);
+    it('should check the next item when an arrow key is released before focus moves', async () => {
+      vi.useFakeTimers();
+      try {
+        render(<ClassicRadioGroup />);
+        const radios = screen.getAllByRole(RADIO_ROLE);
 
-      await act(async () => radios[0]!.focus());
-      // `RovingFocusGroup` moves focus to the next item on arrow keys; once an
-      // item is focused during arrow navigation it should also become checked.
-      await act(async () => {
-        fireEvent.keyDown(radios[0]!, { key: 'ArrowDown' });
-        radios[1]!.focus();
-      });
+        await act(async () => radios[0]!.focus());
+        await act(async () => {
+          fireEvent.keyDown(radios[0]!, { key: 'ArrowDown' });
+          fireEvent.keyUp(radios[0]!, { key: 'ArrowDown' });
+          vi.runAllTimers();
+        });
 
-      expect(radios[1]).toHaveAttribute('aria-checked', 'true');
-      expect(screen.queryByTestId(`${INDICATOR_TEST_ID}-2`)).toBeVisible();
+        expect(radios[1]).toHaveFocus();
+        expect(radios[1]).toHaveAttribute('aria-checked', 'true');
+        expect(screen.queryByTestId(`${INDICATOR_TEST_ID}-2`)).toBeVisible();
+
+        await act(async () => {
+          fireEvent.keyDown(radios[1]!, { key: 'ArrowDown' });
+          vi.runAllTimers();
+        });
+        expect(radios[2]).toHaveFocus();
+        expect(radios[2]).toHaveAttribute('aria-checked', 'true');
+
+        await act(async () => {
+          fireEvent.keyUp(radios[2]!, { key: 'ArrowDown' });
+          fireEvent.keyDown(radios[2]!, { key: 'ArrowDown' });
+          fireEvent.keyUp(radios[2]!, { key: 'ArrowDown' });
+          vi.runAllTimers();
+        });
+        expect(radios[0]).toHaveFocus();
+        expect(radios[0]).toHaveAttribute('aria-checked', 'true');
+      } finally {
+        vi.useRealTimers();
+      }
     });
 
     it('should not check an item that receives focus without arrow navigation', async () => {
