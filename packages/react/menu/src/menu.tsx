@@ -127,7 +127,12 @@ const Menu: React.FC<MenuProps> = (props: ScopedProps<MenuProps>) => {
     if (!open) {
       return;
     }
-    const handleBlur = () => handleOpenChange(false);
+    const handleBlur = () => {
+      if (hasFocusMovedToAnotherFrameOfThePage(window)) {
+        return;
+      }
+      handleOpenChange(false);
+    };
     window.addEventListener('blur', handleBlur);
     return () => window.removeEventListener('blur', handleBlur);
   }, [open, handleOpenChange]);
@@ -1391,6 +1396,18 @@ function isPointerInGraceArea(event: React.PointerEvent, area?: Polygon) {
 
 function whenMouse<E>(handler: React.PointerEventHandler<E>): React.PointerEventHandler<E> {
   return (event) => (event.pointerType === 'mouse' ? handler(event) : undefined);
+}
+
+function hasFocusMovedToAnotherFrameOfThePage(frameWindow: Window) {
+  const topWindow = frameWindow.top;
+  if (!topWindow || topWindow === frameWindow) {
+    return false;
+  }
+  try {
+    return topWindow.document.hasFocus();
+  } catch {
+    return false;
+  }
 }
 
 export {

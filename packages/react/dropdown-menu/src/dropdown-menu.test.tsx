@@ -85,6 +85,64 @@ describe('closing on window blur', () => {
     expect(screen.queryByText(ITEM_TEXT)).not.toBeInTheDocument();
     expect(trigger).toHaveAttribute('aria-expanded', 'false');
   });
+
+  describe('given the menu renders inside an iframe', () => {
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    it('should stay open when focus moves to another frame of the same page', async () => {
+      const topWindow = { document: { hasFocus: () => true } } as unknown as Window;
+      vi.spyOn(window, 'top', 'get').mockReturnValue(topWindow);
+      render(<DropdownMenuTest defaultOpen />);
+      const trigger = screen.getByText(TRIGGER_TEXT);
+      const content = await waitFor(() => screen.getByRole('menu'));
+      await waitFor(() => expect(content).toHaveFocus());
+
+      act(() => {
+        window.dispatchEvent(new FocusEvent('blur'));
+      });
+      await act(() => new Promise((resolve) => setTimeout(resolve, 0)));
+
+      expect(screen.getByRole('menu')).toBe(content);
+      expect(trigger).toHaveAttribute('aria-expanded', 'true');
+      expect(trigger).not.toHaveFocus();
+    });
+
+    it('should close when the page loses focus', async () => {
+      const topWindow = { document: { hasFocus: () => false } } as unknown as Window;
+      vi.spyOn(window, 'top', 'get').mockReturnValue(topWindow);
+      render(<DropdownMenuTest defaultOpen />);
+      const trigger = screen.getByText(TRIGGER_TEXT);
+      await waitFor(() => expect(screen.getByRole('menu')).toBeInTheDocument());
+
+      act(() => {
+        window.dispatchEvent(new FocusEvent('blur'));
+      });
+
+      await waitFor(() => expect(screen.queryByRole('menu')).not.toBeInTheDocument());
+      expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    });
+
+    it('should close when the top-level document is not accessible', async () => {
+      const topWindow = {
+        get document(): Document {
+          throw new DOMException('Blocked a frame from accessing a cross-origin frame.');
+        },
+      } as unknown as Window;
+      vi.spyOn(window, 'top', 'get').mockReturnValue(topWindow);
+      render(<DropdownMenuTest defaultOpen />);
+      const trigger = screen.getByText(TRIGGER_TEXT);
+      await waitFor(() => expect(screen.getByRole('menu')).toBeInTheDocument());
+
+      act(() => {
+        window.dispatchEvent(new FocusEvent('blur'));
+      });
+
+      await waitFor(() => expect(screen.queryByRole('menu')).not.toBeInTheDocument());
+      expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    });
+  });
 });
 
 // Regression tests for https://github.com/radix-ui/primitives/issues/3232
