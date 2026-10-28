@@ -163,6 +163,26 @@ describe('FocusScope', () => {
       branchInput.focus();
       await waitFor(() => expect(branchInput).toHaveFocus());
     });
+
+    it('does not recurse when an outside element refocuses itself on blur', async () => {
+      const rendered = render(
+        <div>
+          <FocusScope.Root asChild loop trapped>
+            <form>
+              <TestField label={INNER_NAME_INPUT_LABEL} />
+              <button>{INNER_SUBMIT_LABEL}</button>
+            </form>
+          </FocusScope.Root>
+          <input aria-label="outside-input" onBlur={(event) => event.currentTarget.focus()} />
+        </div>,
+      );
+      const inner = rendered.getByLabelText(INNER_NAME_INPUT_LABEL) as HTMLInputElement;
+      const outsideInput = rendered.getByLabelText('outside-input') as HTMLInputElement;
+      inner.focus();
+      outsideInput.focus();
+      await waitFor(() => expect(inner).toHaveFocus());
+      expect(outsideInput).not.toHaveFocus();
+    });
   });
 
   describe('given a FocusScope with internal focus handlers', () => {
