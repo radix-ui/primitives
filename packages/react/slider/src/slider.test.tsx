@@ -589,6 +589,40 @@ describe('Slider.Range', () => {
     fireEvent.click(range);
     expect(onClick).toHaveBeenCalled();
   });
+
+  describe('origin', () => {
+    function renderRange(props: React.ComponentProps<typeof Slider.Root>, origin?: number) {
+      render(
+        <Slider.Root min={-100} max={100} {...props}>
+          <Slider.Track>
+            <Slider.Range data-testid="range" origin={origin} />
+          </Slider.Track>
+        </Slider.Root>,
+      );
+      const range = screen.getByTestId('range');
+      return [range.style.left, range.style.right];
+    }
+
+    it('fills from `min` by default', () => {
+      expect(renderRange({ defaultValue: [50] })).toEqual(['0%', '25%']);
+    });
+
+    it('fills from `origin` to a thumb above it', () => {
+      expect(renderRange({ defaultValue: [50] }, 0)).toEqual(['50%', '25%']);
+    });
+
+    it('fills from `origin` to a thumb below it', () => {
+      expect(renderRange({ defaultValue: [-50] }, 0)).toEqual(['25%', '50%']);
+    });
+
+    it('follows `inverted`', () => {
+      expect(renderRange({ defaultValue: [50], inverted: true }, 0)).toEqual(['25%', '50%']);
+    });
+
+    it('is ignored with multiple thumbs', () => {
+      expect(renderRange({ defaultValue: [-60, 20] }, 80)).toEqual(['20%', '40%']);
+    });
+  });
 });
 
 describe('Slider.Thumb', () => {

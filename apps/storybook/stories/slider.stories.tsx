@@ -248,6 +248,40 @@ export const WithPreserveThumbOrder = () => (
   </div>
 );
 
+export const WithOrigin = () => (
+  <div style={{ display: 'flex', flexDirection: 'column', gap: 50 }}>
+    <div>
+      <h4>origin={'{0}'}, from -100 to 100</h4>
+      <Slider.Root className={styles.root} min={-100} max={100} defaultValue={[-40]}>
+        <Slider.Track className={styles.track}>
+          <Slider.Range className={styles.range} origin={0} />
+        </Slider.Track>
+        <Slider.Thumb className={styles.thumb} />
+      </Slider.Root>
+    </div>
+
+    <div>
+      <h4>origin={'{0}'}, from -5 to 35</h4>
+      <Slider.Root className={styles.root} min={-5} max={35} defaultValue={[20]}>
+        <Slider.Track className={styles.track}>
+          <Slider.Range className={styles.range} origin={0} />
+        </Slider.Track>
+        <Slider.Thumb className={styles.thumb} />
+      </Slider.Root>
+    </div>
+
+    <div>
+      <h4>origin={'{0}'}, right-to-left</h4>
+      <Slider.Root className={styles.root} min={-100} max={100} defaultValue={[40]} dir="rtl">
+        <Slider.Track className={styles.track}>
+          <Slider.Range className={styles.range} origin={0} />
+        </Slider.Track>
+        <Slider.Thumb className={styles.thumb} />
+      </Slider.Root>
+    </div>
+  </div>
+);
+
 export const WithMultipleRanges = () => {
   const [minStepsBetweenThumbs, setMinStepsBetweenThumbs] = React.useState(0);
 

@@ -594,11 +594,19 @@ const SliderTrack = /* @__PURE__ */ React.forwardRef<HTMLSpanElement, SliderTrac
 
 const RANGE_NAME = 'SliderRange';
 
-interface SliderRangeProps extends PrimitiveSpanProps {}
+interface SliderRangeProps extends PrimitiveSpanProps {
+  /**
+   * The value the range fills from when the slider has a single thumb, such as
+   * `0` for a slider from `-100` to `100`. Ignored when there are multiple thumbs.
+   *
+   * @defaultValue min
+   */
+  origin?: number | undefined;
+}
 
 const SliderRange = /* @__PURE__ */ React.forwardRef<HTMLSpanElement, SliderRangeProps>(
   function SliderRange(props: ScopedProps<SliderRangeProps>, forwardedRef) {
-    const { __scopeSlider, ...rangeProps } = props;
+    const { __scopeSlider, origin, ...rangeProps } = props;
     const context = useSliderContext(RANGE_NAME, __scopeSlider);
     const orientation = useSliderOrientationContext(RANGE_NAME, __scopeSlider);
     const ref = React.useRef<HTMLSpanElement>(null);
@@ -607,7 +615,11 @@ const SliderRange = /* @__PURE__ */ React.forwardRef<HTMLSpanElement, SliderRang
     const percentages = context.values.map((value) =>
       convertValueToPercentage(value, context.min, context.max),
     );
-    const offsetStart = valuesCount > 1 ? Math.min(...percentages) : 0;
+    // With a single thumb, the range fills from `origin` to the thumb.
+    if (valuesCount < 2) {
+      percentages.push(convertValueToPercentage(origin ?? context.min, context.min, context.max));
+    }
+    const offsetStart = Math.min(...percentages);
     const offsetEnd = 100 - Math.max(...percentages);
 
     return (
