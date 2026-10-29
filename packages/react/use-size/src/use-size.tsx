@@ -23,6 +23,10 @@ function useSize(element: HTMLElement | null) {
         }
 
         const entry = entries[0]!;
+        const writingMode =
+          'borderBoxSize' in entry ? window.getComputedStyle(element).writingMode : '';
+        const isVertical =
+          writingMode.startsWith('vertical-') || writingMode.startsWith('sideways-');
 
         /**
          * Resize Observer will throw an often benign error that says
@@ -45,8 +49,9 @@ function useSize(element: HTMLElement | null) {
             const borderSize = Array.isArray(borderSizeEntry)
               ? borderSizeEntry[0]
               : borderSizeEntry;
-            width = borderSize['inlineSize'];
-            height = borderSize['blockSize'];
+            // ResizeObserver sizes are logical axes; consumers need physical width and height.
+            width = borderSize[isVertical ? 'blockSize' : 'inlineSize'];
+            height = borderSize[isVertical ? 'inlineSize' : 'blockSize'];
           } else {
             // for browsers that don't support `borderBoxSize`
             // we calculate it ourselves to get the correct border box.

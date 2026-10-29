@@ -151,7 +151,31 @@ describe('useSize', () => {
     await waitFor(() => expect(getOutput()).toBe('320x240'));
   });
 
+  it.each(['vertical-rl', 'vertical-lr', 'sideways-rl', 'sideways-lr'])(
+    'maps logical border-box dimensions to physical size for %s',
+    async (writingMode) => {
+      render(<Harness />);
+      screen.getByTestId('box').style.writingMode = writingMode;
+      act(() => {
+        MockResizeObserver.latest.emit([{ borderBoxSize: [{ inlineSize: 40, blockSize: 120 }] }]);
+      });
+      await waitFor(() => expect(getOutput()).toBe('120x40'));
+    },
+  );
+
+  it('keeps the writing mode paired with the observed dimensions until the frame runs', async () => {
+    render(<Harness />);
+    const box = screen.getByTestId('box');
+    box.style.writingMode = 'horizontal-tb';
+    act(() => {
+      MockResizeObserver.latest.emit([{ borderBoxSize: [{ inlineSize: 120, blockSize: 40 }] }]);
+      box.style.writingMode = 'vertical-rl';
+    });
+    await waitFor(() => expect(getOutput()).toBe('120x40'));
+  });
+
   it('falls back to offset dimensions when `borderBoxSize` is unavailable', async () => {
+    const getComputedStyle = vi.spyOn(window, 'getComputedStyle');
     mockOffsetWidth = 55;
     mockOffsetHeight = 66;
     render(<Harness />);
@@ -160,6 +184,7 @@ describe('useSize', () => {
       MockResizeObserver.latest.emit([{}]);
     });
     await waitFor(() => expect(getOutput()).toBe('55x66'));
+    expect(getComputedStyle).not.toHaveBeenCalled();
   });
 
   it('ignores empty or non-array observer payloads', async () => {
