@@ -1,9 +1,42 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { afterEach, describe, it, expect, vi } from 'vitest';
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import * as Tabs from './tabs';
+
+describe('sequential arrow key navigation', () => {
+  afterEach(cleanup);
+
+  it('applies key presses received before deferred focus runs', async () => {
+    render(
+      <Tabs.Root defaultValue="one">
+        <Tabs.List>
+          <Tabs.Trigger value="one">One</Tabs.Trigger>
+          <Tabs.Trigger value="two">Two</Tabs.Trigger>
+          <Tabs.Trigger value="three">Three</Tabs.Trigger>
+        </Tabs.List>
+        <Tabs.Content value="one">One content</Tabs.Content>
+        <Tabs.Content value="two">Two content</Tabs.Content>
+        <Tabs.Content value="three">Three content</Tabs.Content>
+      </Tabs.Root>,
+    );
+
+    const firstTab = screen.getByRole('tab', { name: 'One' });
+    const thirdTab = screen.getByRole('tab', { name: 'Three' });
+    firstTab.focus();
+
+    fireEvent.keyDown(firstTab, { key: 'ArrowRight' });
+    fireEvent.keyDown(firstTab, { key: 'ArrowRight' });
+
+    expect(firstTab).toHaveFocus();
+
+    await waitFor(() => {
+      expect(thirdTab).toHaveFocus();
+      expect(thirdTab).toHaveAttribute('data-state', 'active');
+    });
+  });
+});
 
 // Regression test for https://github.com/radix-ui/primitives/issues/3600
 describe('blur of focusable descendants when switching tabs', () => {
