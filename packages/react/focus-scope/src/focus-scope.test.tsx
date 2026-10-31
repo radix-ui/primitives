@@ -1,6 +1,6 @@
 import * as React from 'react';
 import userEvent from '@testing-library/user-event';
-import { cleanup, render, waitFor, fireEvent, screen } from '@testing-library/react';
+import { act, cleanup, render, waitFor, fireEvent, screen } from '@testing-library/react';
 import * as FocusScope from './focus-scope';
 import type { RenderResult } from '@testing-library/react';
 import { afterEach, describe, it, beforeEach, vi, expect } from 'vitest';
@@ -162,6 +162,153 @@ describe('FocusScope', () => {
       inner.focus();
       branchInput.focus();
       await waitFor(() => expect(branchInput).toHaveFocus());
+    });
+  });
+
+  // Regression tests for https://github.com/radix-ui/primitives/issues/4261
+  describe('when the focused element is removed', () => {
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    it('recovers focus immediately while the document has focus', async () => {
+      vi.spyOn(document, 'hasFocus').mockReturnValue(true);
+      render(
+        <FocusScope.Root trapped data-testid="scope">
+          <input aria-label="removable" />
+        </FocusScope.Root>,
+      );
+      const input = screen.getByLabelText('removable');
+      expect(input).toHaveFocus();
+
+      await act(async () => input.remove());
+
+      expect(screen.getByTestId('scope')).toHaveFocus();
+    });
+
+    it('waits for the document to regain focus and keeps subsequent tabbing trapped', async () => {
+      const hasFocus = vi.spyOn(document, 'hasFocus').mockReturnValue(true);
+      render(
+        <>
+          <FocusScope.Root trapped loop data-testid="scope">
+            <input aria-label="removable" />
+            <input aria-label="remaining" />
+            <button>Last</button>
+          </FocusScope.Root>
+          <input aria-label="outside" />
+        </>,
+      );
+      const scope = screen.getByTestId('scope');
+      const focus = vi.spyOn(scope, 'focus');
+      hasFocus.mockReturnValue(false);
+      fireEvent(window, new FocusEvent('blur'));
+
+      await act(async () => screen.getByLabelText('removable').remove());
+
+      expect(document.body).toHaveFocus();
+      expect(focus).not.toHaveBeenCalled();
+
+      hasFocus.mockReturnValue(true);
+      fireEvent(window, new FocusEvent('focus'));
+      expect(scope).toHaveFocus();
+
+      await userEvent.tab();
+      expect(screen.getByLabelText('remaining')).toHaveFocus();
+      await userEvent.tab();
+      expect(screen.getByRole('button', { name: 'Last' })).toHaveFocus();
+      await userEvent.tab();
+      expect(screen.getByLabelText('remaining')).toHaveFocus();
+      screen.getByLabelText('outside').focus();
+      expect(screen.getByLabelText('remaining')).toHaveFocus();
+    });
+
+    it('preserves a control already focused when the document regains focus', async () => {
+      const hasFocus = vi.spyOn(document, 'hasFocus').mockReturnValue(true);
+      render(
+        <FocusScope.Root trapped data-testid="scope">
+          <input aria-label="removable" />
+          <input aria-label="remaining" />
+        </FocusScope.Root>,
+      );
+      const focus = vi.spyOn(screen.getByTestId('scope'), 'focus');
+      hasFocus.mockReturnValue(false);
+      await act(async () => screen.getByLabelText('removable').remove());
+      expect(focus).not.toHaveBeenCalled();
+
+      hasFocus.mockReturnValue(true);
+      screen.getByLabelText('remaining').focus();
+      fireEvent(window, new FocusEvent('focus'));
+
+      expect(screen.getByLabelText('remaining')).toHaveFocus();
+      expect(focus).not.toHaveBeenCalled();
+    });
+
+    it('does not let a paused scope recover focus from a newer scope', async () => {
+      vi.spyOn(document, 'hasFocus').mockReturnValue(true);
+      render(
+        <FocusScope.Root trapped data-testid="paused-scope">
+          <input aria-label="removable" />
+        </FocusScope.Root>,
+      );
+      const pausedFocus = vi.spyOn(screen.getByTestId('paused-scope'), 'focus');
+      render(
+        <FocusScope.Root trapped onMountAutoFocus={(event) => event.preventDefault()}>
+          <input aria-label="new-scope" />
+        </FocusScope.Root>,
+      );
+
+      await act(async () => screen.getByLabelText('removable').remove());
+      fireEvent(window, new FocusEvent('focus'));
+
+      expect(pausedFocus).not.toHaveBeenCalled();
+    });
+
+    it('cancels deferred recovery when trapping is disabled', async () => {
+      const hasFocus = vi.spyOn(document, 'hasFocus').mockReturnValue(true);
+      const rendered = render(
+        <FocusScope.Root trapped data-testid="scope">
+          <input aria-label="removable" />
+        </FocusScope.Root>,
+      );
+      const focus = vi.spyOn(screen.getByTestId('scope'), 'focus');
+      hasFocus.mockReturnValue(false);
+      await act(async () => screen.getByLabelText('removable').remove());
+      expect(focus).not.toHaveBeenCalled();
+
+      rendered.rerender(
+        <FocusScope.Root trapped={false} data-testid="scope">
+          <input aria-label="removable" />
+        </FocusScope.Root>,
+      );
+      hasFocus.mockReturnValue(true);
+      fireEvent(window, new FocusEvent('focus'));
+
+      expect(focus).not.toHaveBeenCalled();
+    });
+
+    it('recovers focus when a nested scope unmounts and the parent resumes', async () => {
+      vi.spyOn(document, 'hasFocus').mockReturnValue(true);
+      function Example({ open }: { open: boolean }) {
+        return (
+          <FocusScope.Root trapped data-testid="scope">
+            <input aria-label="remaining" />
+            {open && (
+              <FocusScope.Root onUnmountAutoFocus={(event) => event.preventDefault()}>
+                <input aria-label="removable" />
+              </FocusScope.Root>
+            )}
+          </FocusScope.Root>
+        );
+      }
+      const rendered = render(<Example open={false} />);
+      rendered.rerender(<Example open />);
+      expect(screen.getByLabelText('removable')).toHaveFocus();
+
+      rendered.rerender(<Example open={false} />);
+
+      await waitFor(() => expect(screen.getByTestId('scope')).toHaveFocus());
+      await userEvent.tab();
+      expect(screen.getByLabelText('remaining')).toHaveFocus();
     });
   });
 

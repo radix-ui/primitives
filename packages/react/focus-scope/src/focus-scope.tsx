@@ -66,6 +66,7 @@ const FocusScope = /* @__PURE__ */ React.forwardRef<FocusScopeElement, FocusScop
     const [container, setContainer] = React.useState<HTMLElement | null>(null);
     const onMountAutoFocus = useCallbackRef(onMountAutoFocusProp);
     const onUnmountAutoFocus = useCallbackRef(onUnmountAutoFocusProp);
+    const onResume = React.useRef<(() => void) | undefined>(undefined);
     const lastFocusedElementRef = React.useRef<HTMLElement | null>(null);
     const composedRefs = useComposedRefs(forwardedRef, setContainer);
 
@@ -94,16 +95,20 @@ const FocusScope = /* @__PURE__ */ React.forwardRef<FocusScopeElement, FocusScop
       },
       resume() {
         this.paused = false;
+        onResume.current?.();
       },
     }).current;
 
     // Takes care of trapping focus if focus is moved outside programmatically for example
     React.useEffect(() => {
       if (trapped) {
+        let hasPendingFocusRecovery = false;
+
         function handleFocusIn(event: FocusEvent) {
           if (focusScope.paused || !container) return;
           const target = event.target as HTMLElement | null;
           if (isTargetInScope(target)) {
+            hasPendingFocusRecovery = false;
             lastFocusedElementRef.current = target;
           } else {
             focus(lastFocusedElementRef.current, { select: true });
@@ -140,27 +145,44 @@ const FocusScope = /* @__PURE__ */ React.forwardRef<FocusScopeElement, FocusScop
 
         // When the focused element gets removed from the DOM, browsers move focus
         // back to the document.body. In this case, we move focus to the container
-        // to keep focus trapped correctly.
+        // to keep focus trapped correctly. If the document has lost focus, defer
+        // recovery so an iframe doesn't steal focus back from another pane.
         function handleMutations(mutations: MutationRecord[]) {
           const focusedElement = document.activeElement as HTMLElement | null;
           if (focusedElement !== document.body) return;
-          for (const mutation of mutations) {
-            if (mutation.removedNodes.length > 0) focus(container);
+          if (mutations.some((mutation) => mutation.removedNodes.length > 0)) {
+            hasPendingFocusRecovery = true;
+            recoverFocus();
+          }
+        }
+
+        function recoverFocus() {
+          if (!hasPendingFocusRecovery || focusScope.paused || !document.hasFocus()) {
+            return;
+          }
+          hasPendingFocusRecovery = false;
+          // The browser or user may already have focused a control on return.
+          if (document.activeElement === document.body) {
+            focus(container);
           }
         }
 
         document.addEventListener('focusin', handleFocusIn);
         document.addEventListener('focusout', handleFocusOut);
+        window.addEventListener('focus', recoverFocus);
+        onResume.current = recoverFocus;
         const mutationObserver = new MutationObserver(handleMutations);
         if (container) mutationObserver.observe(container, { childList: true, subtree: true });
 
         return () => {
           document.removeEventListener('focusin', handleFocusIn);
           document.removeEventListener('focusout', handleFocusOut);
+          window.removeEventListener('focus', recoverFocus);
+          onResume.current = undefined;
           mutationObserver.disconnect();
         };
       }
-    }, [trapped, container, focusScope.paused, isTargetInScope]);
+    }, [trapped, container, focusScope, isTargetInScope]);
 
     React.useEffect(() => {
       if (container) {
