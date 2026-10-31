@@ -18,6 +18,21 @@ const ActivationMode = {
 
 type ActivationMode = (typeof ActivationMode)[keyof typeof ActivationMode];
 
+declare global {
+  interface FocusOptions {
+    /**
+     * A boolean value that should be set to `true` to force, or `false` to prevent
+     * visible indication that the element is focused. If the property is not
+     * specified, a browser will provide visible indication if it determines
+     * that this would improve accessibility for users.
+     *
+     * @see
+     * https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus#focusvisible
+     */
+    focusVisible?: boolean | undefined;
+  }
+}
+
 /* -------------------------------------------------------------------------------------------------
  * Tabs
  * -----------------------------------------------------------------------------------------------*/
@@ -194,7 +209,12 @@ const TabsTrigger = /* @__PURE__ */ React.forwardRef<TabsTriggerElement, TabsTri
               // from the DOM before its blur event fires, and focus gets lost
               // to the document until click is completed.
               // See https://github.com/radix-ui/primitives/issues/3600
-              event.currentTarget.focus();
+              //
+              // During mousedown the browser has not registered the pointer
+              // yet, so a bare `focus()` can match `:focus-visible` as if it
+              // came from the keyboard.
+              // See https://github.com/radix-ui/primitives/issues/4262
+              event.currentTarget.focus({ focusVisible: false });
               context.onValueChange(value);
             } else {
               // prevent focus to avoid accidental activation
