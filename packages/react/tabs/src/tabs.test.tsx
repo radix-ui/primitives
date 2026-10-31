@@ -401,3 +401,29 @@ describe('handlers with a narrower parameter type than the prop', () => {
     expect(handleValueChange).toHaveBeenCalledWith('two');
   });
 });
+
+// Regression test for https://github.com/radix-ui/primitives/issues/4262
+describe('focus-visible on mouse click', () => {
+  afterEach(() => {
+    cleanup();
+    vi.restoreAllMocks();
+  });
+
+  it('focuses the trigger on mousedown without forcing a visible focus indicator', () => {
+    const focusSpy = vi.spyOn(HTMLElement.prototype, 'focus');
+    render(
+      <Tabs.Root defaultValue="one">
+        <Tabs.List>
+          <Tabs.Trigger value="one">One</Tabs.Trigger>
+          <Tabs.Trigger value="two">Two</Tabs.Trigger>
+        </Tabs.List>
+      </Tabs.Root>,
+    );
+
+    const trigger = screen.getByText('Two');
+    fireEvent.mouseDown(trigger, { button: 0 });
+
+    expect(trigger).toHaveFocus();
+    expect(focusSpy).toHaveBeenCalledWith(expect.objectContaining({ focusVisible: false }));
+  });
+});
