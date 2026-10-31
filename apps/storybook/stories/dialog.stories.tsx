@@ -2,8 +2,58 @@ import * as React from 'react';
 import { Dialog, DropdownMenu, HoverCard, Popover } from 'radix-ui';
 import styles from './dialog.stories.module.css';
 import { ExternalOverlayTrigger } from './external-overlay';
+import popoverStyles from './popover.stories.module.css';
 
 export default { title: 'Components/Dialog' };
+
+export const InIframe = () => (
+  <div style={{ display: 'flex', gap: 20 }}>
+    <iframe
+      title="Dialog pane"
+      width={600}
+      height={400}
+      src="/iframe.html?id=components-dialog--with-popover-closing-on-window-blur&viewMode=story"
+    />
+    <iframe title="Other pane" srcDoc={'<input aria-label="Other input" />'} />
+  </div>
+);
+
+// Embed this story in an iframe to check that closing the popover on window blur
+// does not move focus back from another pane when its exit animation finishes.
+export const WithPopoverClosingOnWindowBlur = () => {
+  const [dialogContent, setDialogContent] = React.useState<HTMLDivElement | null>(null);
+  const [popoverOpen, setPopoverOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    const handleBlur = () => setPopoverOpen(false);
+    window.addEventListener('blur', handleBlur);
+    return () => window.removeEventListener('blur', handleBlur);
+  }, []);
+
+  return (
+    <Dialog.Root defaultOpen>
+      <Dialog.Portal>
+        <Dialog.Content ref={setDialogContent} style={{ padding: 20, border: '1px solid' }}>
+          <Dialog.Title>Dialog pane</Dialog.Title>
+          <Dialog.Description>The popover closes when this pane loses focus.</Dialog.Description>
+          <Popover.Root open={popoverOpen} onOpenChange={setPopoverOpen}>
+            <Popover.Trigger>Open popover</Popover.Trigger>
+            <Popover.Portal container={dialogContent}>
+              <Popover.Content
+                className={popoverStyles.animatedContent}
+                onCloseAutoFocus={(event) => event.preventDefault()}
+              >
+                <input aria-label="Popover input" />
+              </Popover.Content>
+            </Popover.Portal>
+          </Popover.Root>
+          <input aria-label="Dialog input" />
+          <Dialog.Close>Close dialog</Dialog.Close>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
+  );
+};
 
 export const Styled = () => (
   <Dialog.Root>
