@@ -1409,11 +1409,12 @@ const SelectItem = /* @__PURE__ */ React.forwardRef<SelectItemElement, SelectIte
     const {
       __scopeSelect,
       value,
-      disabled = false,
+      disabled: disabledProp = false,
       textValue: textValueProp,
       ...itemProps
     } = props;
     const context = useSelectContext(ITEM_NAME, __scopeSelect);
+    const disabled = disabledProp || context.disabled === true;
     const contentContext = useSelectContentContext(ITEM_NAME, __scopeSelect);
     const isSelected = context.value === value;
     const [textValue, setTextValue] = React.useState(textValueProp ?? '');

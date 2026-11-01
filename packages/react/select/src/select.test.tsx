@@ -2044,3 +2044,35 @@ function cleanupModal() {
   // restores it on close.
   document.body.style.pointerEvents = '';
 }
+
+describe('disabling an open select', () => {
+  afterEach(cleanup);
+
+  it.each([false, true])('disables options with controlled open = %s', async (controlledOpen) => {
+    const onValueChange = vi.fn();
+    const openProps = controlledOpen ? { open: true } : { defaultOpen: true };
+    const { rerender } = render(
+      <SelectTest {...openProps} defaultValue="apple" onValueChange={onValueChange} />,
+    );
+    const banana = await waitFor(() =>
+      screen.getByRole('option', { name: 'Banana', hidden: true }),
+    );
+
+    rerender(
+      <SelectTest {...openProps} defaultValue="apple" disabled onValueChange={onValueChange} />,
+    );
+    expect(screen.getByRole('listbox')).toBeInTheDocument();
+    expect(banana).toHaveAttribute('aria-disabled', 'true');
+    fireEvent.click(banana);
+    fireEvent.pointerDown(banana, { pointerType: 'mouse' });
+    fireEvent.pointerUp(banana, { pointerType: 'mouse' });
+    fireEvent.keyDown(banana, { key: 'Enter' });
+    expect(onValueChange).not.toHaveBeenCalled();
+
+    rerender(<SelectTest {...openProps} defaultValue="apple" onValueChange={onValueChange} />);
+    expect(banana).not.toHaveAttribute('aria-disabled');
+    fireEvent.pointerDown(banana, { pointerType: 'mouse' });
+    fireEvent.pointerUp(banana, { pointerType: 'mouse' });
+    expect(onValueChange).toHaveBeenCalledWith('banana');
+  });
+});
