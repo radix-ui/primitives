@@ -166,6 +166,7 @@ const TabsTrigger = /* @__PURE__ */ React.forwardRef<TabsTriggerElement, TabsTri
     const triggerId = makeTriggerId(context.baseId, value);
     const contentId = makeContentId(context.baseId, value);
     const isSelected = value === context.value;
+    const hasActivatedOnFocusRef = React.useRef(false);
     return (
       <RovingFocusGroup.Item
         asChild
@@ -189,13 +190,19 @@ const TabsTrigger = /* @__PURE__ */ React.forwardRef<TabsTriggerElement, TabsTri
             // triggered by all mouse buttons) but not when the control key is
             // pressed (avoiding MacOS right click)
             if (!disabled && event.button === 0 && event.ctrlKey === false) {
+              hasActivatedOnFocusRef.current = false;
               // Move focus to the trigger before changing the value. If focus
               // is currently in the active tab, the element will be removed
               // from the DOM before its blur event fires, and focus gets lost
               // to the document until click is completed.
               // See https://github.com/radix-ui/primitives/issues/3600
               event.currentTarget.focus();
-              context.onValueChange(value);
+              // In automatic activation mode, focus() synchronously activates the tab via onFocus.
+              // Only call onValueChange if focus didn't already activate it.
+              // See https://github.com/radix-ui/primitives/issues/4266
+              if (!hasActivatedOnFocusRef.current) {
+                context.onValueChange(value);
+              }
             } else {
               // prevent focus to avoid accidental activation
               event.preventDefault();
@@ -220,6 +227,7 @@ const TabsTrigger = /* @__PURE__ */ React.forwardRef<TabsTriggerElement, TabsTri
             // ie. activate tab following focus
             const isAutomaticActivation = context.activationMode !== ActivationMode.Manual;
             if (!isSelected && !disabled && isAutomaticActivation) {
+              hasActivatedOnFocusRef.current = true;
               context.onValueChange(value);
             }
           })}
