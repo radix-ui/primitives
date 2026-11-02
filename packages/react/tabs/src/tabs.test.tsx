@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { afterEach, describe, it, expect, vi } from 'vitest';
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import * as Tabs from './tabs';
 
@@ -399,5 +399,96 @@ describe('handlers with a narrower parameter type than the prop', () => {
     fireEvent.mouseDown(screen.getByText('Two'), { button: 0 });
 
     expect(handleValueChange).toHaveBeenCalledWith('two');
+  });
+});
+
+// Regression test for https://github.com/radix-ui/primitives/issues/4266
+describe('controlled onValueChange', () => {
+  afterEach(cleanup);
+
+  it('calls onValueChange once on click in automatic activation mode', async () => {
+    const user = userEvent.setup();
+    const handleValueChange = vi.fn();
+
+    render(
+      <Tabs.Root value="one" onValueChange={handleValueChange}>
+        <Tabs.List>
+          <Tabs.Trigger value="one">One</Tabs.Trigger>
+          <Tabs.Trigger value="two">Two</Tabs.Trigger>
+        </Tabs.List>
+        <Tabs.Content value="one">One content</Tabs.Content>
+        <Tabs.Content value="two">Two content</Tabs.Content>
+      </Tabs.Root>,
+    );
+
+    await user.click(screen.getByText('Two'));
+
+    expect(handleValueChange).toHaveBeenCalledTimes(1);
+    expect(handleValueChange).toHaveBeenCalledWith('two');
+  });
+
+  it('calls onValueChange once on click with activationMode="manual"', async () => {
+    const user = userEvent.setup();
+    const handleValueChange = vi.fn();
+
+    render(
+      <Tabs.Root value="one" activationMode="manual" onValueChange={handleValueChange}>
+        <Tabs.List>
+          <Tabs.Trigger value="one">One</Tabs.Trigger>
+          <Tabs.Trigger value="two">Two</Tabs.Trigger>
+        </Tabs.List>
+        <Tabs.Content value="one">One content</Tabs.Content>
+        <Tabs.Content value="two">Two content</Tabs.Content>
+      </Tabs.Root>,
+    );
+
+    await user.click(screen.getByText('Two'));
+
+    expect(handleValueChange).toHaveBeenCalledTimes(1);
+    expect(handleValueChange).toHaveBeenCalledWith('two');
+  });
+
+  it('calls onValueChange once on click with activationMode="manual" when trigger is already focused', async () => {
+    const user = userEvent.setup();
+    const handleValueChange = vi.fn();
+
+    render(
+      <Tabs.Root value="one" activationMode="manual" onValueChange={handleValueChange}>
+        <Tabs.List>
+          <Tabs.Trigger value="one">One</Tabs.Trigger>
+          <Tabs.Trigger value="two">Two</Tabs.Trigger>
+        </Tabs.List>
+        <Tabs.Content value="one">One content</Tabs.Content>
+        <Tabs.Content value="two">Two content</Tabs.Content>
+      </Tabs.Root>,
+    );
+
+    const triggerTwo = screen.getByText('Two');
+    act(() => triggerTwo.focus());
+
+    await user.click(triggerTwo);
+
+    expect(handleValueChange).toHaveBeenCalledTimes(1);
+    expect(handleValueChange).toHaveBeenCalledWith('two');
+  });
+
+  it('does not call onValueChange when clicking an already-selected tab in automatic mode', async () => {
+    const user = userEvent.setup();
+    const handleValueChange = vi.fn();
+
+    render(
+      <Tabs.Root value="one" onValueChange={handleValueChange}>
+        <Tabs.List>
+          <Tabs.Trigger value="one">One</Tabs.Trigger>
+          <Tabs.Trigger value="two">Two</Tabs.Trigger>
+        </Tabs.List>
+        <Tabs.Content value="one">One content</Tabs.Content>
+        <Tabs.Content value="two">Two content</Tabs.Content>
+      </Tabs.Root>,
+    );
+
+    await user.click(screen.getByText('One'));
+
+    expect(handleValueChange).toHaveBeenCalledTimes(0);
   });
 });
