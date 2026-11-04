@@ -482,10 +482,12 @@ type NavigationMenuItemContextValue = {
   contentRef: React.RefObject<NavigationMenuContentElement | null>;
   focusProxyRef: React.RefObject<FocusProxyElement | null>;
   wasEscapeCloseRef: React.MutableRefObject<boolean>;
+  hasTabbableContent: boolean;
   onEntryKeyDown(): void;
   onFocusProxyEnter(side: 'start' | 'end'): void;
   onRootContentClose(): void;
   onContentFocusOutside(): void;
+  onContentChange(): void;
 };
 
 const [NavigationMenuItemContextProvider, useNavigationMenuItemContext] =
@@ -511,12 +513,14 @@ const NavigationMenuItem = /* @__PURE__ */ React.forwardRef<
     const contentRef = React.useRef<NavigationMenuContentElement>(null);
     const triggerRef = React.useRef<NavigationMenuTriggerElement>(null);
     const focusProxyRef = React.useRef<FocusProxyElement>(null);
-    const restoreContentTabOrderRef = React.useRef(() => {});
+    const restoreContentTabOrderRef = React.useRef<(() => void) | null>(null);
     const wasEscapeCloseRef = React.useRef(false);
+    const [hasTabbableContent, setHasTabbableContent] = React.useState(true);
 
     const handleContentEntry = React.useCallback((side = 'start') => {
       if (contentRef.current) {
-        restoreContentTabOrderRef.current();
+        restoreContentTabOrderRef.current?.();
+        restoreContentTabOrderRef.current = null;
         const candidates = getTabbableCandidates(contentRef.current);
         if (candidates.length) focusFirst(side === 'start' ? candidates : candidates.reverse());
       }
@@ -529,6 +533,16 @@ const NavigationMenuItem = /* @__PURE__ */ React.forwardRef<
       }
     }, []);
 
+    const handleContentChange = React.useCallback(() => {
+      if (contentRef.current) {
+        // Candidates removed from the tab order on exit are restored on entry,
+        // so they still count as tabbable content
+        const isRemovedFromTabOrder = restoreContentTabOrderRef.current !== null;
+        const candidates = getTabbableCandidates(contentRef.current);
+        setHasTabbableContent(isRemovedFromTabOrder || candidates.length > 0);
+      }
+    }, []);
+
     return (
       <NavigationMenuItemContextProvider
         scope={__scopeNavigationMenu}
@@ -537,10 +551,12 @@ const NavigationMenuItem = /* @__PURE__ */ React.forwardRef<
         contentRef={contentRef}
         focusProxyRef={focusProxyRef}
         wasEscapeCloseRef={wasEscapeCloseRef}
+        hasTabbableContent={hasTabbableContent}
         onEntryKeyDown={handleContentEntry}
         onFocusProxyEnter={handleContentEntry}
         onRootContentClose={handleContentExit}
         onContentFocusOutside={handleContentExit}
+        onContentChange={handleContentChange}
       >
         <Primitive.li {...itemProps} ref={forwardedRef} />
       </NavigationMenuItemContextProvider>
@@ -636,7 +652,8 @@ const NavigationMenuTrigger = /* @__PURE__ */ React.forwardRef<
         <>
           <VisuallyHiddenPrimitive.Root
             aria-hidden
-            tabIndex={0}
+            // Only a tab stop when there is content to move focus into
+            tabIndex={itemContext.hasTabbableContent ? 0 : -1}
             ref={itemContext.focusProxyRef}
             onFocus={(event) => {
               const content = itemContext.contentRef.current;
@@ -851,6 +868,7 @@ const NavigationMenuContent = /* @__PURE__ */ React.forwardRef<
     wasEscapeCloseRef: itemContext.wasEscapeCloseRef,
     onContentFocusOutside: itemContext.onContentFocusOutside,
     onRootContentClose: itemContext.onRootContentClose,
+    onContentChange: itemContext.onContentChange,
     ...contentProps,
   };
 
@@ -930,6 +948,7 @@ interface NavigationMenuContentImplPrivateProps {
   wasEscapeCloseRef: React.MutableRefObject<boolean>;
   onContentFocusOutside(): void;
   onRootContentClose(): void;
+  onContentChange(): void;
 }
 interface NavigationMenuContentImplProps
   extends
@@ -951,6 +970,7 @@ const NavigationMenuContentImpl = /* @__PURE__ */ React.forwardRef<
     wasEscapeCloseRef,
     onRootContentClose,
     onContentFocusOutside,
+    onContentChange,
     ...contentProps
   } = props;
   const context = useNavigationMenuContext(CONTENT_NAME, __scopeNavigationMenu);
@@ -977,6 +997,17 @@ const NavigationMenuContentImpl = /* @__PURE__ */ React.forwardRef<
       return () => content.removeEventListener(ROOT_CONTENT_DISMISS, handleClose);
     }
   }, [context.isRootMenu, props.value, triggerRef, onItemDismiss, onRootContentClose]);
+
+  // Keep the item informed as tabbable elements are added to or removed from the content
+  React.useEffect(() => {
+    const content = ref.current;
+    if (content) {
+      const observer = new MutationObserver(onContentChange);
+      observer.observe(content, { attributes: true, childList: true, subtree: true });
+      onContentChange();
+      return () => observer.disconnect();
+    }
+  }, [onContentChange]);
 
   const motionAttribute = React.useMemo(() => {
     const items = getItems();

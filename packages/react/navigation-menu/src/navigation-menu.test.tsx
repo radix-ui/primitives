@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { afterEach, describe, it, expect, vi } from 'vitest';
 import { assertStableComposedRef } from '@repo/test-utils/ref-stability';
 import * as NavigationMenu from './navigation-menu';
@@ -371,6 +372,119 @@ describe('focus outside', () => {
     fireEvent.focusIn(outside, { relatedTarget: link });
 
     expect(onValueChange).toHaveBeenCalledWith('');
+  });
+});
+
+// See: https://github.com/radix-ui/primitives/issues/3085
+describe('focus proxy', () => {
+  afterEach(cleanup);
+
+  it('should not be a tab stop when the content has nothing tabbable', async () => {
+    render(
+      <NavigationMenu.Root defaultValue="one">
+        <NavigationMenu.List>
+          <NavigationMenu.Item value="one">
+            <NavigationMenu.Trigger>{TRIGGER_TEXT}</NavigationMenu.Trigger>
+            <NavigationMenu.Content>{CONTENT_TEXT}</NavigationMenu.Content>
+          </NavigationMenu.Item>
+          <NavigationMenu.Item value="two">
+            <NavigationMenu.Link href="#">Item Two</NavigationMenu.Link>
+          </NavigationMenu.Item>
+        </NavigationMenu.List>
+        <NavigationMenu.Viewport />
+      </NavigationMenu.Root>,
+    );
+    await waitFor(() => expect(screen.getByText(CONTENT_TEXT)).toBeInTheDocument());
+    const trigger = screen.getByText(TRIGGER_TEXT);
+    const nextLink = screen.getByText('Item Two');
+
+    trigger.focus();
+    await userEvent.tab();
+    expect(nextLink).toHaveFocus();
+
+    await userEvent.tab({ shift: true });
+    expect(trigger).toHaveFocus();
+  });
+
+  it('should not be a tab stop when the content has nothing tabbable without a viewport', async () => {
+    render(
+      <NavigationMenu.Root defaultValue="one">
+        <NavigationMenu.List>
+          <NavigationMenu.Item value="one">
+            <NavigationMenu.Trigger>{TRIGGER_TEXT}</NavigationMenu.Trigger>
+            <NavigationMenu.Content>{CONTENT_TEXT}</NavigationMenu.Content>
+          </NavigationMenu.Item>
+          <NavigationMenu.Item value="two">
+            <NavigationMenu.Link href="#">Item Two</NavigationMenu.Link>
+          </NavigationMenu.Item>
+        </NavigationMenu.List>
+      </NavigationMenu.Root>,
+    );
+    await waitFor(() => expect(screen.getByText(CONTENT_TEXT)).toBeInTheDocument());
+    const trigger = screen.getByText(TRIGGER_TEXT);
+    const nextLink = screen.getByText('Item Two');
+
+    trigger.focus();
+    await userEvent.tab();
+    expect(nextLink).toHaveFocus();
+
+    await userEvent.tab({ shift: true });
+    expect(trigger).toHaveFocus();
+  });
+
+  it('should move focus between the trigger and tabbable content', async () => {
+    render(
+      <NavigationMenu.Root defaultValue="one">
+        <NavigationMenu.List>
+          <NavigationMenu.Item value="one">
+            <NavigationMenu.Trigger>{TRIGGER_TEXT}</NavigationMenu.Trigger>
+            <NavigationMenu.Content>
+              <NavigationMenu.Link href="#">{CONTENT_TEXT}</NavigationMenu.Link>
+            </NavigationMenu.Content>
+          </NavigationMenu.Item>
+          <NavigationMenu.Item value="two">
+            <NavigationMenu.Link href="#">Item Two</NavigationMenu.Link>
+          </NavigationMenu.Item>
+        </NavigationMenu.List>
+        <NavigationMenu.Viewport />
+      </NavigationMenu.Root>,
+    );
+    await waitFor(() => expect(screen.getByText(CONTENT_TEXT)).toBeInTheDocument());
+    const trigger = screen.getByText(TRIGGER_TEXT);
+    const contentLink = screen.getByText(CONTENT_TEXT);
+
+    trigger.focus();
+    await userEvent.tab();
+    expect(contentLink).toHaveFocus();
+
+    // Leaving the content removes its links from the tab order until it is
+    // entered again through the proxy
+    trigger.focus();
+    await userEvent.tab();
+    expect(contentLink).toHaveFocus();
+  });
+
+  it('should become a tab stop when tabbable content is added', async () => {
+    const MenuWithLateLink = ({ hasLink }: { hasLink: boolean }) => (
+      <NavigationMenu.Root defaultValue="one">
+        <NavigationMenu.List>
+          <NavigationMenu.Item value="one">
+            <NavigationMenu.Trigger>{TRIGGER_TEXT}</NavigationMenu.Trigger>
+            <NavigationMenu.Content>
+              {hasLink ? <NavigationMenu.Link href="#">{CONTENT_TEXT}</NavigationMenu.Link> : null}
+            </NavigationMenu.Content>
+          </NavigationMenu.Item>
+        </NavigationMenu.List>
+        <NavigationMenu.Viewport />
+      </NavigationMenu.Root>
+    );
+    const rendered = render(<MenuWithLateLink hasLink={false} />);
+    rendered.rerender(<MenuWithLateLink hasLink />);
+    await waitFor(() => expect(screen.getByText(CONTENT_TEXT)).toBeInTheDocument());
+
+    screen.getByText(TRIGGER_TEXT).focus();
+    await userEvent.tab();
+    expect(screen.getByText(CONTENT_TEXT)).toHaveFocus();
   });
 });
 
