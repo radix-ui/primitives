@@ -118,6 +118,13 @@ const DismissableLayer = /* @__PURE__ */ React.forwardRef<
         if (!event.defaultPrevented) onDismiss?.();
       },
       {
+        // The layer unmounted before the deferred `click` arrived (eg, the click already closed
+        // it). The interaction still happened, so notify without dismissing again.
+        // See https://github.com/radix-ui/primitives/issues/4268
+        onPendingPointerDownOutsideAtUnmount: (event) => {
+          onPointerDownOutside?.(event);
+          onInteractOutside?.(event);
+        },
         ownerDocument,
         deferPointerDownOutside,
         isDeferredPointerDownOutsideRef,
@@ -330,6 +337,7 @@ const IS_TRUE = () => true;
 function usePointerDownOutside(
   onPointerDownOutside: ((event: PointerDownOutsideEvent) => void) | undefined,
   args: {
+    onPendingPointerDownOutsideAtUnmount: (event: PointerDownOutsideEvent) => void;
     ownerDocument: Document | undefined;
     deferPointerDownOutside: boolean;
     isDeferredPointerDownOutsideRef: React.RefObject<boolean>;
@@ -340,6 +348,7 @@ function usePointerDownOutside(
   },
 ) {
   const {
+    onPendingPointerDownOutsideAtUnmount,
     ownerDocument = globalThis?.document,
     deferPointerDownOutside = false,
     isDeferredPointerDownOutsideRef,
@@ -351,6 +360,27 @@ function usePointerDownOutside(
   const isPointerDownOutsideRef = React.useRef(false);
   const interceptedOutsideInteractionEventsRef = React.useRef<Map<string, boolean>>(new Map());
   const handleClickRef = React.useRef((_event: Event) => {});
+  const handlePendingAtUnmount = useCallbackRef(onPendingPointerDownOutsideAtUnmount);
+  const pendingDeferredEventDetailRef = React.useRef<{ originalEvent: PointerEvent } | null>(null);
+
+  // Declared before the listener effect so its cleanup runs before the pending state is reset.
+  React.useEffect(() => {
+    return () => {
+      const eventDetail = pendingDeferredEventDetailRef.current;
+      pendingDeferredEventDetailRef.current = null;
+      const wasIntercepted = Array.from(
+        interceptedOutsideInteractionEventsRef.current.values(),
+      ).some(Boolean);
+      if (eventDetail && !wasIntercepted) {
+        handleAndDispatchCustomEvent(
+          POINTER_DOWN_OUTSIDE,
+          handlePendingAtUnmount as EventListener,
+          eventDetail,
+          { discrete: false },
+        );
+      }
+    };
+  }, [handlePendingAtUnmount]);
 
   React.useEffect(() => {
     let isListening = true;
@@ -358,6 +388,7 @@ function usePointerDownOutside(
     function resetOutsideInteraction() {
       isPointerDownOutsideRef.current = false;
       isDeferredPointerDownOutsideRef.current = false;
+      pendingDeferredEventDetailRef.current = null;
       interceptedOutsideInteractionEventsRef.current.clear();
     }
 
@@ -455,6 +486,7 @@ function usePointerDownOutside(
           handleAndDispatchPointerDownOutsideEvent();
         } else {
           ownerDocument.removeEventListener('click', handleClickRef.current);
+          pendingDeferredEventDetailRef.current = eventDetail;
           handleClickRef.current = (event: Event) => {
             if (event.isTrusted) {
               handleAndDispatchPointerDownOutsideEvent();

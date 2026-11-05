@@ -1,6 +1,6 @@
 import * as React from 'react';
 import type { RenderResult } from '@testing-library/react';
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, it, expect, vi } from 'vitest';
 import * as Popover from './popover';
 
@@ -741,5 +741,56 @@ describe('handlers with a narrower parameter type than the prop', () => {
     fireEvent.click(screen.getByText(TRIGGER_TEXT));
 
     expect(handleOpenChange).toHaveBeenCalledWith(true);
+  });
+});
+
+describe('sibling Popovers sharing one controlled `open` state', () => {
+  afterEach(cleanup);
+
+  it('keeps the second Popover open when its trigger is clicked while the first is open', async () => {
+    function SharedStatePopovers() {
+      const [openPopover, setOpenPopover] = React.useState<'a' | 'b' | null>('a');
+      return (
+        <>
+          <Popover.Root
+            open={openPopover === 'a'}
+            onOpenChange={(open) => setOpenPopover(open ? 'a' : null)}
+          >
+            <Popover.Trigger>Trigger A</Popover.Trigger>
+            <Popover.Portal>
+              <Popover.Content>Content A</Popover.Content>
+            </Popover.Portal>
+          </Popover.Root>
+          <Popover.Root
+            open={openPopover === 'b'}
+            onOpenChange={(open) => setOpenPopover(open ? 'b' : null)}
+          >
+            <Popover.Trigger>Trigger B</Popover.Trigger>
+            <Popover.Portal>
+              <Popover.Content>Content B</Popover.Content>
+            </Popover.Portal>
+          </Popover.Root>
+        </>
+      );
+    }
+
+    render(<SharedStatePopovers />);
+    await act(async () => {
+      await new Promise((resolve) => window.setTimeout(resolve, 0));
+    });
+
+    const triggerB = screen.getByText('Trigger B');
+    await act(async () => {
+      fireEvent.pointerDown(triggerB, { pointerType: 'mouse' });
+      fireEvent.mouseDown(triggerB);
+      triggerB.focus();
+      fireEvent.pointerUp(triggerB, { pointerType: 'mouse' });
+      fireEvent.mouseUp(triggerB);
+      fireEvent.click(triggerB);
+    });
+
+    expect(screen.queryByText('Content A')).not.toBeInTheDocument();
+    expect(screen.getByText('Content B')).toBeInTheDocument();
+    expect(document.activeElement).not.toBe(screen.getByText('Trigger A'));
   });
 });
