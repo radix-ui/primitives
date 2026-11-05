@@ -640,6 +640,51 @@ describe('DismissableLayer', () => {
     expect(onEscapeKeyDown).toHaveBeenCalledTimes(1);
     expect(onDismiss).toHaveBeenCalledTimes(1);
   });
+
+  // Regression test for https://github.com/radix-ui/primitives/issues/4253
+  it('dismisses the top layer on Escape even when it has not re-rendered since registering', () => {
+    const onParentDismiss = vi.fn();
+    const onChildDismiss = vi.fn();
+
+    function Test() {
+      const [childOpen, setChildOpen] = React.useState(false);
+      return (
+        <>
+          <DismissableLayer.Root onDismiss={onParentDismiss}>
+            <button type="button">parent</button>
+          </DismissableLayer.Root>
+          {childOpen && (
+            <DismissableLayer.Root
+              onDismiss={() => {
+                onChildDismiss();
+                setChildOpen(false);
+              }}
+            >
+              <button type="button">child</button>
+            </DismissableLayer.Root>
+          )}
+          <button type="button" onClick={() => setChildOpen(true)}>
+            open child
+          </button>
+        </>
+      );
+    }
+
+    render(<Test />);
+
+    // Open the child layer, then press Escape before anything re-renders
+    // the child layer again: the child registered after its last render,
+    // so only an event-time check can see that it is on top.
+    fireEvent.click(screen.getByText('open child'));
+
+    fireEvent.keyDown(document, { key: 'Escape' });
+    expect(onChildDismiss).toHaveBeenCalledTimes(1);
+    expect(onParentDismiss).not.toHaveBeenCalled();
+
+    // With the child gone, the next Escape dismisses the parent.
+    fireEvent.keyDown(document, { key: 'Escape' });
+    expect(onParentDismiss).toHaveBeenCalledTimes(1);
+  });
 });
 
 describe('DismissableLayer.Root', () => {

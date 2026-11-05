@@ -151,8 +151,6 @@ const DismissableLayer = /* @__PURE__ */ React.forwardRef<
       if (!event.defaultPrevented) onDismiss?.();
     }, ownerDocument);
 
-    const isHighestLayer = node ? index === layers.length - 1 : false;
-
     // Stabilize via `useCallbackRef` rather than `useEffectEvent`: React's
     // native `useEffectEvent` returns a stale closure inside `forwardRef`
     // components on React 19.2.x, which caused escape handlers to observe
@@ -176,6 +174,17 @@ const DismissableLayer = /* @__PURE__ */ React.forwardRef<
         return;
       }
 
+      // Decide "highest" from the live layer set at event time, not from the
+      // index captured at render. The top layer's last render can predate its
+      // own registration, leaving the render-time index stale (-1), so an
+      // Escape in that window would otherwise be ignored entirely.
+      // See https://github.com/radix-ui/primitives/issues/4253
+      const activeLayers = Array.from(context.layers);
+      const isHighestLayer = node != null && activeLayers[activeLayers.length - 1] === node;
+      if (!isHighestLayer) {
+        return;
+      }
+
       onEscapeKeyDown?.(event);
       if (!event.defaultPrevented && onDismiss) {
         event.preventDefault();
@@ -183,14 +192,19 @@ const DismissableLayer = /* @__PURE__ */ React.forwardRef<
       }
     });
 
+    // Attach the listener whenever the layer is mounted and let the handler
+    // decide at event time whether this layer is on top. Gating the
+    // attachment on the render-time index misses the case where the layer
+    // registered after its last render.
+    // See https://github.com/radix-ui/primitives/issues/4253
     React.useEffect(() => {
-      if (!isHighestLayer) {
+      if (!node) {
         return;
       }
 
       ownerDocument.addEventListener('keydown', handleKeyDown, { capture: true });
       return () => ownerDocument.removeEventListener('keydown', handleKeyDown, { capture: true });
-    }, [ownerDocument, isHighestLayer, handleKeyDown]);
+    }, [ownerDocument, node, handleKeyDown]);
 
     React.useEffect(() => {
       if (!node) return;
