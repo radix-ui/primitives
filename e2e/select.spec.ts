@@ -185,3 +185,27 @@ test.describe('Select (shadow DOM)', () => {
     });
   });
 });
+
+test.describe('Select page navigation', () => {
+  for (const [index, position] of ['item-aligned', 'popper'].entries()) {
+    test(`pages through options in ${position} content`, async ({ page }) => {
+      await visitStory(page, 'select--typeahead');
+      const trigger = page.getByRole('combobox').nth(index);
+      await trigger.focus();
+      await page.keyboard.press('ArrowDown');
+      const options = page.getByRole('option');
+      await page.keyboard.press('Home');
+      await expect(options.first()).toBeFocused();
+      await page.keyboard.press('PageDown');
+      await expect(options.nth(10)).toBeFocused();
+      await page.keyboard.press('PageUp');
+      await expect(options.first()).toBeFocused();
+      await page.keyboard.press('End');
+      await page.keyboard.press('PageDown');
+      await expect(options.last()).toBeFocused();
+      await page.keyboard.press('Escape');
+      await expect(trigger).toBeFocused();
+      await expect(trigger).toContainText('Banana');
+    });
+  }
+});

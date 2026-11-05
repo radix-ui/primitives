@@ -2044,3 +2044,43 @@ function cleanupModal() {
   // restores it on close.
   document.body.style.pointerEvents = '';
 }
+
+describe('page navigation', () => {
+  afterEach(cleanup);
+
+  it('moves by ten enabled options and stops at the ends without changing the value', async () => {
+    const onValueChange = vi.fn();
+    render(
+      <Select.Root defaultOpen defaultValue="0" onValueChange={onValueChange}>
+        <Select.Trigger aria-label="Choice">
+          <Select.Value />
+        </Select.Trigger>
+        <Select.Content position="popper">
+          <Select.Viewport>
+            {Array.from({ length: 25 }, (_, index) => (
+              <Select.Item key={index} value={String(index)} disabled={index === 5}>
+                <Select.ItemText>Option {index}</Select.ItemText>
+              </Select.Item>
+            ))}
+          </Select.Viewport>
+        </Select.Content>
+      </Select.Root>,
+    );
+    const options = screen.getAllByRole('option');
+    await waitFor(() => expect(options[0]).toHaveFocus());
+    for (const [key, index] of [
+      ['PageDown', 11],
+      ['PageDown', 21],
+      ['PageDown', 24],
+      ['PageDown', 24],
+      ['PageUp', 14],
+      ['PageUp', 3],
+      ['PageUp', 0],
+      ['PageUp', 0],
+    ] as const) {
+      expect(fireEvent.keyDown(document.activeElement!, { key })).toBe(false);
+      await waitFor(() => expect(options[index]).toHaveFocus());
+    }
+    expect(onValueChange).not.toHaveBeenCalled();
+  });
+});

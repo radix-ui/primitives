@@ -944,17 +944,25 @@ const SelectContentImpl = /* @__PURE__ */ React.forwardRef<
 
                   if (!isModifierKey && event.key.length === 1) handleTypeaheadSearch(event.key);
 
-                  if (['ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) {
+                  if (
+                    ['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End'].includes(
+                      event.key,
+                    )
+                  ) {
                     const items = getItems().filter((item) => !item.disabled);
                     let candidateNodes = items.map((item) => item.ref.current!);
 
-                    if (['ArrowUp', 'End'].includes(event.key)) {
+                    if (['ArrowUp', 'PageUp', 'End'].includes(event.key)) {
                       candidateNodes = candidateNodes.slice().reverse();
                     }
-                    if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
+                    if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown'].includes(event.key)) {
                       const currentElement = event.target as SelectItemElement;
                       const currentIndex = candidateNodes.indexOf(currentElement);
-                      candidateNodes = candidateNodes.slice(currentIndex + 1);
+                      const isPageKey = event.key === 'PageUp' || event.key === 'PageDown';
+                      const nextIndex = isPageKey
+                        ? Math.min(currentIndex + 10, candidateNodes.length - 1)
+                        : currentIndex + 1;
+                      candidateNodes = candidateNodes.slice(nextIndex);
                     }
 
                     /**
