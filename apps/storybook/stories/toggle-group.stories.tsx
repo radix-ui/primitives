@@ -7,7 +7,7 @@ export default {
 };
 
 export const Single = () => {
-  const [value, setValue] = React.useState<string>();
+  const [value, setValue] = React.useState('');
   return (
     <>
       <h1>Uncontrolled</h1>
