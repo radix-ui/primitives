@@ -201,6 +201,7 @@ test.describe('Select page navigation', () => {
       await page.keyboard.press('PageUp');
       await expect(options.first()).toBeFocused();
       await page.keyboard.press('End');
+      await expect(options.last()).toBeFocused();
       await page.keyboard.press('PageDown');
       await expect(options.last()).toBeFocused();
       await page.keyboard.press('Escape');
