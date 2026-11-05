@@ -189,6 +189,44 @@ describe('DismissableLayer', () => {
     expect(onDismiss).toHaveBeenCalledTimes(1);
   });
 
+  it('notifies without dismissing when the layer unmounts before a deferred outside click', async () => {
+    const onDismiss = vi.fn();
+    const onPointerDownOutside = vi.fn();
+    const onInteractOutside = vi.fn();
+
+    function Test() {
+      const [isOpen, setIsOpen] = React.useState(true);
+      return (
+        <>
+          {isOpen ? (
+            <DismissableLayer.Root
+              deferPointerDownOutside
+              onDismiss={onDismiss}
+              onPointerDownOutside={onPointerDownOutside}
+              onInteractOutside={onInteractOutside}
+            >
+              <button type="button">inside</button>
+            </DismissableLayer.Root>
+          ) : null}
+          <button type="button" onClick={() => setIsOpen(false)}>
+            outside
+          </button>
+        </>
+      );
+    }
+
+    render(<Test />);
+    await waitForDocumentPointerDownListener();
+
+    await act(async () => {
+      firePointerMouseClick(screen.getByText('outside'));
+    });
+
+    expect(onPointerDownOutside).toHaveBeenCalledTimes(1);
+    expect(onInteractOutside).toHaveBeenCalledTimes(1);
+    expect(onDismiss).not.toHaveBeenCalled();
+  });
+
   it('does not flush sync when a deferred outside click is dispatched from a passive effect', async () => {
     const onDismiss = vi.fn();
     const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
