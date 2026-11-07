@@ -316,8 +316,10 @@ const FormControl = /* @__PURE__ */ React.forwardRef<FormControlElement, FormCon
 
     const { onFieldValidityChange, onFieldCustomErrorsChange, onFieldValiditionClear } =
       validationContext;
+    const validationRunRef = React.useRef(0);
     const updateControlValidity = React.useCallback(
       async (control: FormControlElement) => {
+        const validationRun = ++validationRunRef.current;
         //------------------------------------------------------------------------------------------
         // 1. first, if we have built-in errors we stop here
 
@@ -368,6 +370,9 @@ const FormControl = /* @__PURE__ */ React.forwardRef<FormControlElement, FormCon
             match(...matcherArgs).then((matches) => [id, matches] as const),
           );
           const asyncCustomErrors = await Promise.all(promisedCustomErrors);
+          if (validationRun !== validationRunRef.current || control.value !== matcherArgs[0]) {
+            return;
+          }
           const asyncCustomErrorsById = Object.fromEntries(asyncCustomErrors);
           const hasAsyncCustomErrors = Object.values(asyncCustomErrorsById).some(Boolean);
           const hasCustomError = hasAsyncCustomErrors;
@@ -403,8 +408,12 @@ const FormControl = /* @__PURE__ */ React.forwardRef<FormControlElement, FormCon
     React.useEffect(() => {
       const form = ref.current?.form;
       if (form) {
-        form.addEventListener('reset', resetControlValidity);
-        return () => form.removeEventListener('reset', resetControlValidity);
+        const handleReset = () => {
+          validationRunRef.current++;
+          resetControlValidity();
+        };
+        form.addEventListener('reset', handleReset);
+        return () => form.removeEventListener('reset', handleReset);
       }
     }, [resetControlValidity]);
 
