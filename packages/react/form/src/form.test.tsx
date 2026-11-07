@@ -780,3 +780,128 @@ describe('Form.Submit', () => {
     expect(onClick).toHaveBeenCalled();
   });
 });
+
+describe('Form.Control asynchronous validation', () => {
+  afterEach(cleanup);
+
+  it('does not restore a custom error after the value changes without another validation', async () => {
+    let finishValidation!: (matches: boolean) => void;
+    const validation = new Promise<boolean>((resolve) => {
+      finishValidation = resolve;
+    });
+    render(
+      <Form.Root>
+        <Form.Field name="name">
+          <Form.Control />
+          <Form.Message match={async () => validation}>Invalid name</Form.Message>
+        </Form.Field>
+      </Form.Root>,
+    );
+    const control = screen.getByRole('textbox') as HTMLInputElement;
+    await act(async () => {
+      fireEvent.change(control, { target: { value: 'old' } });
+    });
+    fireEvent.input(control, { target: { value: 'new' } });
+    await act(async () => {
+      finishValidation(true);
+      await validation;
+    });
+    expect(control.validity.customError).toBe(false);
+    expect(screen.queryByText('Invalid name')).not.toBeInTheDocument();
+  });
+
+  it('does not restore a custom error after the form resets to the same value', async () => {
+    let finishValidation!: (matches: boolean) => void;
+    const validation = new Promise<boolean>((resolve) => {
+      finishValidation = resolve;
+    });
+    render(
+      <Form.Root>
+        <Form.Field name="name">
+          <Form.Control defaultValue="old" />
+          <Form.Message match={async () => validation}>Invalid name</Form.Message>
+        </Form.Field>
+      </Form.Root>,
+    );
+    const control = screen.getByRole('textbox') as HTMLInputElement;
+    await act(async () => {
+      fireEvent.change(control, { target: { value: 'old' } });
+    });
+    act(() => control.form!.reset());
+    await act(async () => {
+      finishValidation(true);
+      await validation;
+    });
+    expect(control.value).toBe('old');
+    expect(control.validity.customError).toBe(false);
+    expect(screen.queryByText('Invalid name')).not.toBeInTheDocument();
+  });
+
+  it('does not restore an old custom error after a newer value has been validated', async () => {
+    let finishOldValidation!: (matches: boolean) => void;
+    const oldValidation = new Promise<boolean>((resolve) => {
+      finishOldValidation = resolve;
+    });
+    const match = async (value: string) => (value === 'old' ? oldValidation : false);
+
+    render(
+      <Form.Root>
+        <Form.Field name="name">
+          <Form.Control />
+          <Form.Message match={match}>Invalid name</Form.Message>
+        </Form.Field>
+      </Form.Root>,
+    );
+    const control = screen.getByRole('textbox') as HTMLInputElement;
+
+    await act(async () => {
+      fireEvent.change(control, { target: { value: 'old' } });
+    });
+    await act(async () => {
+      fireEvent.change(control, { target: { value: 'new' } });
+    });
+    expect(control.validity.customError).toBe(false);
+
+    await act(async () => {
+      finishOldValidation(true);
+      await oldValidation;
+    });
+
+    expect(control.validity.customError).toBe(false);
+    expect(screen.queryByText('Invalid name')).not.toBeInTheDocument();
+  });
+
+  it('does not clear a newer custom error when an older validation succeeds', async () => {
+    let finishOldValidation!: (matches: boolean) => void;
+    const oldValidation = new Promise<boolean>((resolve) => {
+      finishOldValidation = resolve;
+    });
+    const match = async (value: string) => (value === 'old' ? oldValidation : true);
+
+    render(
+      <Form.Root>
+        <Form.Field name="name">
+          <Form.Control />
+          <Form.Message match={match}>Invalid name</Form.Message>
+        </Form.Field>
+      </Form.Root>,
+    );
+    const control = screen.getByRole('textbox') as HTMLInputElement;
+
+    await act(async () => {
+      fireEvent.change(control, { target: { value: 'old' } });
+    });
+    await act(async () => {
+      fireEvent.change(control, { target: { value: 'new' } });
+    });
+    expect(control.validity.customError).toBe(true);
+
+    await act(async () => {
+      finishOldValidation(false);
+      await oldValidation;
+    });
+
+    expect(control.validity.customError).toBe(true);
+    expect(screen.getByText('Invalid name')).toBeInTheDocument();
+  });
+});
