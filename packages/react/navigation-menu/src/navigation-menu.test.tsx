@@ -926,6 +926,82 @@ describe('NavigationMenu.Indicator', () => {
     fireEvent.click(indicator);
     expect(onClick).toHaveBeenCalled();
   });
+
+  it('follows the active trigger when the list scrolls vertically', async () => {
+    render(
+      <NavigationMenu.Root orientation="vertical" defaultValue="one">
+        <NavigationMenu.List data-testid="list" style={{ maxHeight: '100px', overflowY: 'auto' }}>
+          <NavigationMenu.Item value="one">
+            <NavigationMenu.Trigger>One</NavigationMenu.Trigger>
+          </NavigationMenu.Item>
+          <NavigationMenu.Item value="two">
+            <NavigationMenu.Trigger>Two</NavigationMenu.Trigger>
+          </NavigationMenu.Item>
+          <NavigationMenu.Indicator data-testid="indicator" />
+        </NavigationMenu.List>
+      </NavigationMenu.Root>,
+    );
+
+    const indicator = await waitFor(() => screen.getByTestId('indicator'));
+    const list = screen.getByTestId('list');
+    const trigger = screen.getByText('One');
+    const track = list.parentElement!;
+
+    // jsdom does not lay out elements, so mock the geometry the indicator
+    // measures: the trigger sits 120px below the top of the track and the
+    // list has been scrolled down 30px.
+    Object.defineProperty(trigger, 'offsetTop', { configurable: true, value: 120 });
+    Object.defineProperty(trigger, 'offsetHeight', { configurable: true, value: 40 });
+    Object.defineProperty(trigger, 'offsetParent', { configurable: true, value: track });
+    Object.defineProperty(list, 'scrollTop', { configurable: true, value: 30 });
+
+    fireEvent.scroll(list);
+    await waitFor(() => expect(indicator.style.transform).toBe('translateY(90px)'));
+    expect(indicator.style.height).toBe('40px');
+
+    // Scrolling further moves the indicator along with the trigger.
+    Object.defineProperty(list, 'scrollTop', { configurable: true, value: 80 });
+    fireEvent.scroll(list);
+    await waitFor(() => expect(indicator.style.transform).toBe('translateY(40px)'));
+  });
+
+  it('follows the active trigger when the list scrolls horizontally', async () => {
+    render(
+      <NavigationMenu.Root defaultValue="one">
+        <NavigationMenu.List data-testid="list" style={{ maxWidth: '100px', overflowX: 'auto' }}>
+          <NavigationMenu.Item value="one">
+            <NavigationMenu.Trigger>One</NavigationMenu.Trigger>
+          </NavigationMenu.Item>
+          <NavigationMenu.Item value="two">
+            <NavigationMenu.Trigger>Two</NavigationMenu.Trigger>
+          </NavigationMenu.Item>
+          <NavigationMenu.Indicator data-testid="indicator" />
+        </NavigationMenu.List>
+      </NavigationMenu.Root>,
+    );
+
+    const indicator = await waitFor(() => screen.getByTestId('indicator'));
+    const list = screen.getByTestId('list');
+    const trigger = screen.getByText('One');
+    const track = list.parentElement!;
+
+    // jsdom does not lay out elements, so mock the geometry the indicator
+    // measures: the trigger sits 200px from the left of the track and the
+    // list has been scrolled right 50px.
+    Object.defineProperty(trigger, 'offsetLeft', { configurable: true, value: 200 });
+    Object.defineProperty(trigger, 'offsetWidth', { configurable: true, value: 60 });
+    Object.defineProperty(trigger, 'offsetParent', { configurable: true, value: track });
+    Object.defineProperty(list, 'scrollLeft', { configurable: true, value: 50 });
+
+    fireEvent.scroll(list);
+    await waitFor(() => expect(indicator.style.transform).toBe('translateX(150px)'));
+    expect(indicator.style.width).toBe('60px');
+
+    // Scrolling further moves the indicator along with the trigger.
+    Object.defineProperty(list, 'scrollLeft', { configurable: true, value: 180 });
+    fireEvent.scroll(list);
+    await waitFor(() => expect(indicator.style.transform).toBe('translateX(20px)'));
+  });
 });
 
 describe('NavigationMenu.Viewport', () => {

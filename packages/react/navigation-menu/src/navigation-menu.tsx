@@ -773,17 +773,25 @@ const NavigationMenuIndicatorImpl = /* @__PURE__ */ React.forwardRef<
 
   /**
    * Update position when the indicator or parent track size changes
+   *
+   * `offsetTop` / `offsetLeft` are layout offsets relative to the trigger's
+   * offset parent and do not move when an ancestor between the trigger and
+   * the indicator track scrolls. Subtract the scroll offset of those
+   * ancestors so the indicator follows the trigger as the list scrolls.
    */
   const handlePositionChange = () => {
     if (activeTrigger) {
       setPosition({
         size: isHorizontal ? activeTrigger.offsetWidth : activeTrigger.offsetHeight,
-        offset: isHorizontal ? activeTrigger.offsetLeft : activeTrigger.offsetTop,
+        offset: isHorizontal
+          ? getTriggerOffset(activeTrigger, context.indicatorTrack, 'left')
+          : getTriggerOffset(activeTrigger, context.indicatorTrack, 'top'),
       });
     }
   };
   useResizeObserver(activeTrigger, handlePositionChange);
   useResizeObserver(context.indicatorTrack, handlePositionChange);
+  useScrollListener(context.indicatorTrack, handlePositionChange);
 
   // We need to wait for the indicator position to be available before rendering to
   // snap immediately into position rather than transitioning from initial
@@ -1366,6 +1374,50 @@ function useResizeObserver(element: HTMLElement | null, onResize: () => void) {
 
 function getOpenState(open: boolean) {
   return open ? 'open' : 'closed';
+}
+
+/**
+ * Returns the trigger's offset relative to the indicator track, accounting
+ * for scrolling of any ancestor between the trigger and the track.
+ * Falls back to the trigger's plain offset when the track is not an
+ * offset-parent ancestor (e.g. the indicator is rendered elsewhere).
+ */
+function getTriggerOffset(trigger: HTMLElement, track: HTMLElement | null, axis: 'top' | 'left') {
+  const offsetProp = axis === 'top' ? 'offsetTop' : 'offsetLeft';
+  const scrollProp = axis === 'top' ? 'scrollTop' : 'scrollLeft';
+  let offset = 0;
+  let element: HTMLElement | null = trigger;
+  while (element && element !== track) {
+    offset += element[offsetProp];
+    element = element.offsetParent as HTMLElement | null;
+  }
+  if (element !== track) {
+    return trigger[offsetProp];
+  }
+  let scroll = 0;
+  let ancestor = trigger.parentElement;
+  while (ancestor && ancestor !== track) {
+    scroll += ancestor[scrollProp];
+    ancestor = ancestor.parentElement;
+  }
+  return offset - scroll;
+}
+
+function useScrollListener(element: HTMLElement | null, onScroll: () => void) {
+  const handleScroll = useCallbackRef(onScroll);
+  useLayoutEffect(() => {
+    if (element) {
+      /**
+       * Scroll events do not bubble, so listen in the capture phase to catch
+       * scrolling of any descendant (e.g. the list) between the trigger and
+       * the indicator track.
+       */
+      element.addEventListener('scroll', handleScroll, true);
+      return () => {
+        element.removeEventListener('scroll', handleScroll, true);
+      };
+    }
+  }, [element, handleScroll]);
 }
 
 function makeTriggerId(baseId: string, value: string) {
