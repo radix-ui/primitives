@@ -62,6 +62,12 @@ export const Styled = () => (
   </div>
 );
 
+Styled.parameters = {
+  docs: {
+    description: { story: 'Tap the popper-positioned trigger twice to open and dismiss the list.' },
+  },
+};
+
 export const Animated = () => (
   <div style={{ display: 'flex', gap: 20, padding: 50 }}>
     <Label>

@@ -39,8 +39,9 @@ interface DismissableLayerProps extends PrimitiveDivProps {
    * When `true`, a `'pointerdown'` event outside of the layered element will
    * wait for the interaction's click event before dispatching, allowing
    * third-party code to stop propagation of later events and cancel dismissal.
+   * Use 'touch' to defer only touch interactions.
    */
-  deferPointerDownOutside?: boolean | undefined;
+  deferPointerDownOutside?: boolean | 'touch' | undefined;
   /**
    * Event handler called when the escape key is down.
    * Can be prevented.
@@ -331,7 +332,7 @@ function usePointerDownOutside(
   onPointerDownOutside: ((event: PointerDownOutsideEvent) => void) | undefined,
   args: {
     ownerDocument: Document | undefined;
-    deferPointerDownOutside: boolean;
+    deferPointerDownOutside: NonNullable<DismissableLayerProps['deferPointerDownOutside']>;
     isDeferredPointerDownOutsideRef: React.RefObject<boolean>;
     dismissableSurfaces: Set<DismissableLayerBranchElement>;
     shouldHandlePointerDownOutside?:
@@ -407,7 +408,11 @@ function usePointerDownOutside(
 
         const eventDetail = { originalEvent: event };
         isPointerDownOutsideRef.current = true;
-        isDeferredPointerDownOutsideRef.current = deferPointerDownOutside && event.button === 0;
+        const shouldDefer =
+          event.button === 0 &&
+          (deferPointerDownOutside === true ||
+            (deferPointerDownOutside === 'touch' && event.pointerType === 'touch'));
+        isDeferredPointerDownOutsideRef.current = shouldDefer;
         interceptedOutsideInteractionEventsRef.current.clear();
 
         function handleAndDispatchPointerDownOutsideEvent() {
@@ -451,7 +456,7 @@ function usePointerDownOutside(
          * For non-primary buttons, we dispatch the event immediately because we
          * cannot be certain that the event was canceled.
          */
-        if (!deferPointerDownOutside || event.button !== 0) {
+        if (!shouldDefer) {
           handleAndDispatchPointerDownOutsideEvent();
         } else {
           ownerDocument.removeEventListener('click', handleClickRef.current);
