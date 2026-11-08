@@ -747,6 +747,97 @@ describe('DismissableLayer.Root', () => {
     expect(bodyPointerEvents).toBe('none');
     expect(layerPointerEvents).toBe('auto');
   });
+
+  it('leaves `body` pointer-events alone when its outside is covered by an overlay', () => {
+    render(
+      <DismissableLayer.Root
+        disableOutsidePointerEvents
+        outsideCoveredByOverlay
+        data-testid="layer"
+      >
+        <button type="button">inside</button>
+      </DismissableLayer.Root>,
+    );
+
+    expect(document.body.style.pointerEvents).toBe('');
+    expect(screen.getByTestId('layer').style.pointerEvents).toBe('auto');
+  });
+
+  it('keeps the layers beneath it inert when its outside is covered by an overlay', async () => {
+    const onBeneathDismiss = vi.fn();
+
+    render(
+      <>
+        <DismissableLayer.Root data-testid="beneath" onDismiss={onBeneathDismiss}>
+          beneath
+        </DismissableLayer.Root>
+        <DismissableLayer.Root disableOutsidePointerEvents outsideCoveredByOverlay>
+          <button type="button">inside</button>
+        </DismissableLayer.Root>
+      </>,
+    );
+    await waitForDocumentPointerDownListener();
+
+    firePointerMouseClick(screen.getByText('inside'));
+
+    expect(screen.getByTestId('beneath').style.pointerEvents).toBe('none');
+    expect(onBeneathDismiss).not.toHaveBeenCalled();
+  });
+
+  it('disables `body` pointer-events for an uncovered layer opened over a covered one, until the uncovered one closes', () => {
+    function Layers(props: { covered: boolean; uncovered: boolean }) {
+      return (
+        <>
+          {props.covered ? (
+            <DismissableLayer.Root disableOutsidePointerEvents outsideCoveredByOverlay>
+              covered
+            </DismissableLayer.Root>
+          ) : null}
+          {props.uncovered ? (
+            <DismissableLayer.Root disableOutsidePointerEvents>uncovered</DismissableLayer.Root>
+          ) : null}
+        </>
+      );
+    }
+
+    const { rerender } = render(<Layers covered uncovered={false} />);
+    expect(document.body.style.pointerEvents).toBe('');
+
+    rerender(<Layers covered uncovered />);
+    expect(document.body.style.pointerEvents).toBe('none');
+
+    rerender(<Layers covered={false} uncovered />);
+    expect(document.body.style.pointerEvents).toBe('none');
+
+    rerender(<Layers covered={false} uncovered={false} />);
+    expect(document.body.style.pointerEvents).toBe('');
+  });
+
+  it('restores `body` pointer-events when the last uncovered layer closes, even while a covered one stays open', () => {
+    function Layers(props: { covered: boolean; uncovered: boolean }) {
+      return (
+        <>
+          {props.uncovered ? (
+            <DismissableLayer.Root disableOutsidePointerEvents>uncovered</DismissableLayer.Root>
+          ) : null}
+          {props.covered ? (
+            <DismissableLayer.Root disableOutsidePointerEvents outsideCoveredByOverlay>
+              covered
+            </DismissableLayer.Root>
+          ) : null}
+        </>
+      );
+    }
+
+    const { rerender } = render(<Layers covered={false} uncovered />);
+    expect(document.body.style.pointerEvents).toBe('none');
+
+    rerender(<Layers covered uncovered />);
+    expect(document.body.style.pointerEvents).toBe('none');
+
+    rerender(<Layers covered uncovered={false} />);
+    expect(document.body.style.pointerEvents).toBe('');
+  });
 });
 
 describe('DismissableLayer.Branch', () => {

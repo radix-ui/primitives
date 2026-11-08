@@ -42,6 +42,8 @@ interface DialogContextValue {
   descriptionPresent: boolean;
   setTitleCount: React.Dispatch<React.SetStateAction<number>>;
   setTitleId: React.Dispatch<React.SetStateAction<string | undefined>>;
+  overlayPresent: boolean;
+  setOverlayCount: React.Dispatch<React.SetStateAction<number>>;
   descriptionIds: Set<string>;
   setDescriptionIds: React.Dispatch<React.SetStateAction<Set<string>>>;
   open: boolean;
@@ -103,6 +105,8 @@ const Dialog: React.FC<DialogProps> = (props: ScopedProps<DialogProps>) => {
     }, [hasMultipleTitles]);
   }
 
+  const [overlayCount, setOverlayCount] = React.useState(0);
+
   return (
     <DialogProvider
       scope={__scopeDialog}
@@ -117,6 +121,8 @@ const Dialog: React.FC<DialogProps> = (props: ScopedProps<DialogProps>) => {
       titlePresent={titleCount > 0}
       descriptionPresent={descriptionIds.size > 0}
       setTitleCount={setTitleCount}
+      overlayPresent={overlayCount > 0}
+      setOverlayCount={setOverlayCount}
       open={open}
       onOpenChange={setOpen}
       onOpenToggle={React.useCallback(() => setOpen((prevOpen) => !prevOpen), [setOpen])}
@@ -249,6 +255,14 @@ const DialogOverlayImpl = /* @__PURE__ */ React.forwardRef<
     const registerDismissableSurface = useDismissableLayerSurface();
     const composedRefs = useComposedRefs(forwardedRef, registerDismissableSurface);
 
+    // Let the content know that the page is covered before it would disable
+    // pointer events on `body`, which it then leaves alone.
+    const { setOverlayCount } = context;
+    useLayoutEffect(() => {
+      setOverlayCount((count) => count + 1);
+      return () => setOverlayCount((count) => count - 1);
+    }, [setOverlayCount]);
+
     return (
       // Make sure `Content` is scrollable even when it doesn't live inside
       // `RemoveScroll` (eg. when `Overlay` and `Content` are siblings). Nested
@@ -311,7 +325,7 @@ const DialogContent = /* @__PURE__ */ React.forwardRef<DialogContentElement, Dia
 type DialogContentTypeElement = DialogContentImplElement;
 interface DialogContentTypeProps extends Omit<
   DialogContentImplProps,
-  'trapFocus' | 'disableOutsidePointerEvents'
+  'trapFocus' | 'disableOutsidePointerEvents' | 'outsideCoveredByOverlay'
 > {}
 
 const DialogContentModal = /* @__PURE__ */ React.forwardRef<
@@ -341,6 +355,7 @@ const DialogContentModal = /* @__PURE__ */ React.forwardRef<
         // (closed !== unmounted when animating out)
         trapFocus={context.open}
         disableOutsidePointerEvents={context.open}
+        outsideCoveredByOverlay={context.overlayPresent}
         onCloseAutoFocus={composeEventHandlers(props.onCloseAutoFocus, (event) => {
           event.preventDefault();
           context.triggerRef.current?.focus();
