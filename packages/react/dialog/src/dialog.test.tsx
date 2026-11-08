@@ -399,7 +399,16 @@ describe('given a modal Dialog', () => {
   afterEach(cleanupModal);
 
   it('should restore `body` pointer-events after closing', () => {
-    const { getByText } = render(<DialogTest />);
+    // Without an `Overlay`: with one, `body` is left alone (see below).
+    const { getByText } = render(
+      <Dialog.Root>
+        <Dialog.Trigger>{OPEN_TEXT}</Dialog.Trigger>
+        <Dialog.Content>
+          <Dialog.Title>{TITLE_TEXT}</Dialog.Title>
+          <Dialog.Close>{CLOSE_TEXT}</Dialog.Close>
+        </Dialog.Content>
+      </Dialog.Root>,
+    );
     expect(document.body.style.pointerEvents).toBe('');
     fireEvent.click(getByText(OPEN_TEXT));
     expect(document.body.style.pointerEvents).toBe('none');
@@ -534,6 +543,7 @@ describe('given two overlapping modal Dialogs (forceMount)', () => {
   // controlling presence with an animation library. This is the scenario that
   // leaks `pointer-events: none` on the `body` when multiple layers overlap.
   // https://github.com/radix-ui/primitives/issues/3645
+  // No `Overlay`: with one, `body` is left alone.
   const TwoDialogsTest = () => {
     const [openA, setOpenA] = React.useState(true);
     const [openB, setOpenB] = React.useState(true);
@@ -541,7 +551,6 @@ describe('given two overlapping modal Dialogs (forceMount)', () => {
       <>
         <Dialog.Root open={openA} onOpenChange={setOpenA}>
           <Dialog.Portal forceMount>
-            <Dialog.Overlay />
             <Dialog.Content forceMount>
               <Dialog.Title>A</Dialog.Title>
               <Dialog.Description>A</Dialog.Description>
@@ -551,7 +560,6 @@ describe('given two overlapping modal Dialogs (forceMount)', () => {
         </Dialog.Root>
         <Dialog.Root open={openB} onOpenChange={setOpenB}>
           <Dialog.Portal forceMount>
-            <Dialog.Overlay />
             <Dialog.Content forceMount>
               <Dialog.Title>B</Dialog.Title>
               <Dialog.Description>B</Dialog.Description>
@@ -750,6 +758,47 @@ describe('given a modal Dialog with an Overlay', () => {
       expect(onOpenChange).not.toHaveBeenCalled();
     },
   );
+
+  it('leaves `body` pointer-events alone, since the overlay covers the page', () => {
+    // Read at every layer update, so a write undone right after it would show too.
+    const bodyPointerEvents: string[] = [];
+    const recordBodyPointerEvents = () => {
+      bodyPointerEvents.push(document.body.style.pointerEvents);
+    };
+    document.addEventListener('dismissableLayer.update', recordBodyPointerEvents);
+
+    render(<DialogTest />);
+    fireEvent.click(screen.getByText(OPEN_TEXT));
+    const pointerEventsWhileOpen = document.body.style.pointerEvents;
+    fireEvent.click(screen.getByText(CLOSE_TEXT));
+
+    document.removeEventListener('dismissableLayer.update', recordBodyPointerEvents);
+    expect(pointerEventsWhileOpen).toBe('');
+    expect(bodyPointerEvents.length).toBeGreaterThan(0);
+    expect(bodyPointerEvents).not.toContain('none');
+  });
+
+  it('disables `body` pointer-events while the overlay is not rendered', () => {
+    function DialogWithOptionalOverlay(props: { overlay: boolean }) {
+      return (
+        <Dialog.Root defaultOpen>
+          {props.overlay ? <Dialog.Overlay /> : null}
+          <Dialog.Content>
+            <Dialog.Title>{TITLE_TEXT}</Dialog.Title>
+          </Dialog.Content>
+        </Dialog.Root>
+      );
+    }
+
+    const { rerender } = render(<DialogWithOptionalOverlay overlay />);
+    expect(document.body.style.pointerEvents).toBe('');
+
+    rerender(<DialogWithOptionalOverlay overlay={false} />);
+    expect(document.body.style.pointerEvents).toBe('none');
+
+    rerender(<DialogWithOptionalOverlay overlay />);
+    expect(document.body.style.pointerEvents).toBe('');
+  });
 });
 
 describe('Dialog.Trigger', () => {

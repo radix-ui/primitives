@@ -16,6 +16,9 @@ let originalBodyPointerEvents: string;
 const DismissableLayerContext = React.createContext({
   layers: new Set<DismissableLayerElement>(),
   layersWithOutsidePointerEventsDisabled: new Set<DismissableLayerElement>(),
+  // The layers among them that also disable pointer events on `body`, ie. those
+  // whose outside is not covered by an overlay.
+  layersWithBodyPointerEventsDisabled: new Set<DismissableLayerElement>(),
   branches: new Set<DismissableLayerBranchElement>(),
 
   // Outside elements that belong to a layer's own dismiss affordance (eg, a
@@ -35,6 +38,13 @@ interface DismissableLayerProps extends PrimitiveDivProps {
    * interact with them: once to close the `DismissableLayer`, and again to trigger the element.
    */
   disableOutsidePointerEvents?: boolean | undefined;
+  /**
+   * When `true` along with `disableOutsidePointerEvents`, the outside is already covered by
+   * an element that takes the pointer (eg. a modal overlay), so `pointer-events` is not set
+   * on `body`. Layers beneath this one are still disabled. `pointer-events` is inherited, so
+   * setting it on `body` restyles every element on the page, when opening and when closing.
+   */
+  outsideCoveredByOverlay?: boolean | undefined;
   /**
    * When `true`, a `'pointerdown'` event outside of the layered element will
    * wait for the interaction's click event before dispatching, allowing
@@ -80,6 +90,7 @@ const DismissableLayer = /* @__PURE__ */ React.forwardRef<
   function DismissableLayer(props, forwardedRef) {
     const {
       disableOutsidePointerEvents = false,
+      outsideCoveredByOverlay = false,
       deferPointerDownOutside = false,
       onEscapeKeyDown,
       onPointerDownOutside,
@@ -195,9 +206,12 @@ const DismissableLayer = /* @__PURE__ */ React.forwardRef<
     React.useEffect(() => {
       if (!node) return;
       if (disableOutsidePointerEvents) {
-        if (context.layersWithOutsidePointerEventsDisabled.size === 0) {
-          originalBodyPointerEvents = ownerDocument.body.style.pointerEvents;
-          ownerDocument.body.style.pointerEvents = 'none';
+        if (!outsideCoveredByOverlay) {
+          if (context.layersWithBodyPointerEventsDisabled.size === 0) {
+            originalBodyPointerEvents = ownerDocument.body.style.pointerEvents;
+            ownerDocument.body.style.pointerEvents = 'none';
+          }
+          context.layersWithBodyPointerEventsDisabled.add(node);
         }
         context.layersWithOutsidePointerEventsDisabled.add(node);
       }
@@ -212,12 +226,15 @@ const DismissableLayer = /* @__PURE__ */ React.forwardRef<
         // See: https://github.com/radix-ui/primitives/issues/3645
         if (disableOutsidePointerEvents) {
           context.layersWithOutsidePointerEventsDisabled.delete(node);
-          if (context.layersWithOutsidePointerEventsDisabled.size === 0) {
+          if (
+            context.layersWithBodyPointerEventsDisabled.delete(node) &&
+            context.layersWithBodyPointerEventsDisabled.size === 0
+          ) {
             ownerDocument.body.style.pointerEvents = originalBodyPointerEvents;
           }
         }
       };
-    }, [node, ownerDocument, disableOutsidePointerEvents, context]);
+    }, [node, ownerDocument, disableOutsidePointerEvents, outsideCoveredByOverlay, context]);
 
     /**
      * We purposefully prevent combining this effect with the `disableOutsidePointerEvents` effect
