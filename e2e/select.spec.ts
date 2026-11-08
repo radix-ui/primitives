@@ -71,6 +71,34 @@ test.describe('Select', () => {
   });
 });
 
+test('tapping the open select trigger closes it without reopening', async ({ page }) => {
+  await visitStory(page, 'select--styled');
+  const trigger = page.locator('[role=combobox]').nth(1);
+  const bounds = (await trigger.boundingBox())!;
+  const x = bounds.x + bounds.width / 2;
+  const y = bounds.y + bounds.height / 2;
+
+  await page.touchscreen.tap(x, y);
+  await expect(page.getByRole('listbox')).toBeVisible();
+
+  // Use coordinates because the open layer blocks pointer events on the trigger.
+  const client = await page.context().newCDPSession(page);
+  try {
+    await client.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y }] });
+    await page.evaluate(
+      () => new Promise<void>((resolve) => requestAnimationFrame(() => resolve())),
+    );
+    // Dismissing before touchend can send the synthesized click to the trigger.
+    await expect(trigger).toHaveAttribute('aria-expanded', 'true', { timeout: 1000 });
+    await client.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+  } finally {
+    await client.detach();
+  }
+
+  await expect(trigger).toHaveAttribute('aria-expanded', 'false');
+  await expect(page.getByRole('listbox')).toHaveCount(0);
+});
+
 test.describe('Select extension overlay interactions', () => {
   test.beforeEach(async ({ page }) => {
     await visitStory(page, 'select--with-extension-overlay');
