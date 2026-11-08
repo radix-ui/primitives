@@ -268,13 +268,13 @@ const Slider = /* @__PURE__ */ React.forwardRef<HTMLSpanElement, SliderProps>(
               onHomeKeyDown={() => {
                 if (!disabled) {
                   isKeyboardInteractionRef.current = true;
-                  updateValues(min, 0, { commit: true });
+                  updateValues(min, valueIndexToChangeRef.current, { commit: true });
                 }
               }}
               onEndKeyDown={() => {
                 if (!disabled) {
                   isKeyboardInteractionRef.current = true;
-                  updateValues(max, values.length - 1, { commit: true });
+                  updateValues(max, valueIndexToChangeRef.current, { commit: true });
                 }
               }}
               onStepKeyDown={({ event, direction: stepDirection }) => {

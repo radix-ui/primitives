@@ -208,6 +208,121 @@ describe('Slider', () => {
     });
   });
 
+  // Regression tests for https://github.com/radix-ui/primitives/issues/4280
+  describe('Home and End keys on a range slider', () => {
+    it('moves the focused second thumb to the minimum and follows it with focus', async () => {
+      const user = userEvent.setup();
+      const handleValueCommit = vi.fn();
+      render(
+        <Slider.Root defaultValue={[20, 80]} min={0} max={100} onValueCommit={handleValueCommit}>
+          <Slider.Track>
+            <Slider.Range />
+          </Slider.Track>
+          <Slider.Thumb />
+          <Slider.Thumb />
+        </Slider.Root>,
+      );
+
+      const [firstThumb, secondThumb] = screen.getAllByRole('slider');
+      await user.tab();
+      await user.tab();
+      expect(secondThumb).toHaveFocus();
+
+      await user.keyboard('{Home}');
+
+      expect(getThumbValues()).toEqual([0, 20]);
+      expect(firstThumb).toHaveFocus();
+      expect(handleValueCommit).toHaveBeenCalledExactlyOnceWith([0, 20]);
+    });
+
+    it('moves the focused first thumb to the maximum and follows it with focus', async () => {
+      const user = userEvent.setup();
+      const handleValueCommit = vi.fn();
+      render(
+        <Slider.Root defaultValue={[20, 80]} min={0} max={100} onValueCommit={handleValueCommit}>
+          <Slider.Track>
+            <Slider.Range />
+          </Slider.Track>
+          <Slider.Thumb />
+          <Slider.Thumb />
+        </Slider.Root>,
+      );
+
+      const [firstThumb, secondThumb] = screen.getAllByRole('slider');
+      await user.tab();
+      expect(firstThumb).toHaveFocus();
+
+      await user.keyboard('{End}');
+
+      expect(getThumbValues()).toEqual([80, 100]);
+      expect(secondThumb).toHaveFocus();
+      expect(handleValueCommit).toHaveBeenCalledExactlyOnceWith([80, 100]);
+    });
+
+    it('keeps focus on the second thumb and respects the minimum gap on Home', async () => {
+      const user = userEvent.setup();
+      const handleValueCommit = vi.fn();
+      render(
+        <Slider.Root
+          defaultValue={[20, 80]}
+          min={0}
+          max={100}
+          minStepsBetweenThumbs={5}
+          preserveThumbOrder
+          onValueCommit={handleValueCommit}
+        >
+          <Slider.Track>
+            <Slider.Range />
+          </Slider.Track>
+          <Slider.Thumb />
+          <Slider.Thumb />
+        </Slider.Root>,
+      );
+
+      const [, secondThumb] = screen.getAllByRole('slider');
+      await user.tab();
+      await user.tab();
+      expect(secondThumb).toHaveFocus();
+
+      await user.keyboard('{Home}');
+
+      expect(getThumbValues()).toEqual([20, 25]);
+      expect(secondThumb).toHaveFocus();
+      expect(handleValueCommit).toHaveBeenCalledExactlyOnceWith([20, 25]);
+    });
+
+    it('keeps focus on the first thumb and respects the minimum gap on End', async () => {
+      const user = userEvent.setup();
+      const handleValueCommit = vi.fn();
+      render(
+        <Slider.Root
+          defaultValue={[20, 80]}
+          min={0}
+          max={100}
+          minStepsBetweenThumbs={5}
+          preserveThumbOrder
+          onValueCommit={handleValueCommit}
+        >
+          <Slider.Track>
+            <Slider.Range />
+          </Slider.Track>
+          <Slider.Thumb />
+          <Slider.Thumb />
+        </Slider.Root>,
+      );
+
+      const [firstThumb] = screen.getAllByRole('slider');
+      await user.tab();
+      expect(firstThumb).toHaveFocus();
+
+      await user.keyboard('{End}');
+
+      expect(getThumbValues()).toEqual([75, 80]);
+      expect(firstThumb).toHaveFocus();
+      expect(handleValueCommit).toHaveBeenCalledExactlyOnceWith([75, 80]);
+    });
+  });
+
   describe('preserveThumbOrder', () => {
     it('allows thumbs to swap by default', async () => {
       const user = userEvent.setup();

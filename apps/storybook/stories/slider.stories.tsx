@@ -206,6 +206,7 @@ export const WithMinimumStepsBetweenThumbs = () => (
 
 export const WithPreserveThumbOrder = () => (
   <div style={{ display: 'flex', flexDirection: 'column', gap: 50 }}>
+    <p>Tab to either thumb, then press Home or End to move the focused thumb.</p>
     <div>
       <h4>Default (thumbs can swap)</h4>
       <Slider.Root className={styles.root} defaultValue={[10, 30]}>
