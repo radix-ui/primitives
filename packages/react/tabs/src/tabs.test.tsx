@@ -49,6 +49,90 @@ describe('blur of focusable descendants when switching tabs', () => {
   });
 });
 
+// Regression tests for https://github.com/radix-ui/primitives/issues/4273
+describe('onValueChange when clicking a trigger', () => {
+  afterEach(cleanup);
+
+  const ControlledTabs = (props: React.ComponentProps<typeof Tabs.Root>) => {
+    const [value, setValue] = React.useState('one');
+    return (
+      <Tabs.Root
+        value={value}
+        {...props}
+        onValueChange={(nextValue) => {
+          props.onValueChange?.(nextValue);
+          setValue(nextValue);
+        }}
+      >
+        <Tabs.List>
+          <Tabs.Trigger value="one">One</Tabs.Trigger>
+          <Tabs.Trigger value="two">Two</Tabs.Trigger>
+          <Tabs.Trigger value="three">Three</Tabs.Trigger>
+        </Tabs.List>
+        <Tabs.Content value="one">One content</Tabs.Content>
+        <Tabs.Content value="two">Two content</Tabs.Content>
+        <Tabs.Content value="three">Three content</Tabs.Content>
+      </Tabs.Root>
+    );
+  };
+
+  it('calls onValueChange once per click on controlled tabs', async () => {
+    const user = userEvent.setup();
+    const onValueChange = vi.fn();
+    render(<ControlledTabs onValueChange={onValueChange} />);
+
+    await user.click(screen.getByText('Two'));
+
+    expect(onValueChange).toHaveBeenCalledTimes(1);
+    expect(onValueChange).toHaveBeenCalledWith('two');
+    expect(screen.getByText('Two content')).toBeVisible();
+  });
+
+  it('calls onValueChange once per click on controlled tabs with manual activation', async () => {
+    const user = userEvent.setup();
+    const onValueChange = vi.fn();
+    render(<ControlledTabs activationMode="manual" onValueChange={onValueChange} />);
+
+    await user.click(screen.getByText('Two'));
+
+    expect(onValueChange).toHaveBeenCalledTimes(1);
+    expect(onValueChange).toHaveBeenCalledWith('two');
+  });
+
+  it('calls onValueChange once per click on uncontrolled tabs', async () => {
+    const user = userEvent.setup();
+    const onValueChange = vi.fn();
+    render(
+      <Tabs.Root defaultValue="one" onValueChange={onValueChange}>
+        <Tabs.List>
+          <Tabs.Trigger value="one">One</Tabs.Trigger>
+          <Tabs.Trigger value="two">Two</Tabs.Trigger>
+        </Tabs.List>
+        <Tabs.Content value="one">One content</Tabs.Content>
+        <Tabs.Content value="two">Two content</Tabs.Content>
+      </Tabs.Root>,
+    );
+
+    await user.click(screen.getByText('Two'));
+
+    expect(onValueChange).toHaveBeenCalledTimes(1);
+    expect(onValueChange).toHaveBeenCalledWith('two');
+  });
+
+  it('still activates a controlled tab when it receives focus from the keyboard', async () => {
+    const user = userEvent.setup();
+    const onValueChange = vi.fn();
+    render(<ControlledTabs onValueChange={onValueChange} />);
+
+    screen.getByText('One').focus();
+    await user.keyboard('{ArrowRight}');
+
+    expect(onValueChange).toHaveBeenCalledTimes(1);
+    expect(onValueChange).toHaveBeenCalledWith('two');
+    expect(screen.getByText('Two content')).toBeVisible();
+  });
+});
+
 // Regression tests for https://github.com/radix-ui/primitives/issues/3232
 describe('keys from focusable descendants', () => {
   afterEach(cleanup);
