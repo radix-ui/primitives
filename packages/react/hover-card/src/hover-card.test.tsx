@@ -39,6 +39,58 @@ describe('HoverCard', () => {
     }
   });
 
+  it('does not call onOpenChange after unmount when the trigger is hovered then focused', () => {
+    vi.useFakeTimers();
+    try {
+      const onOpenChange = vi.fn();
+      const { unmount } = render(
+        <HoverCard.Root open={false} openDelay={700} onOpenChange={onOpenChange}>
+          <HoverCard.Trigger>Trigger</HoverCard.Trigger>
+          <HoverCard.Portal>
+            <HoverCard.Content>Content</HoverCard.Content>
+          </HoverCard.Portal>
+        </HoverCard.Root>,
+      );
+      const trigger = screen.getByText('Trigger');
+
+      act(() => void fireEvent.pointerEnter(trigger, { pointerType: 'mouse' }));
+      act(() => void fireEvent.focus(trigger));
+      unmount();
+
+      act(() => void vi.advanceTimersByTime(700));
+
+      expect(onOpenChange).not.toHaveBeenCalled();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('does not call onOpenChange after unmount when the trigger is left then blurred', () => {
+    vi.useFakeTimers();
+    try {
+      const onOpenChange = vi.fn();
+      const { unmount } = render(
+        <HoverCard.Root open closeDelay={300} onOpenChange={onOpenChange}>
+          <HoverCard.Trigger>Trigger</HoverCard.Trigger>
+          <HoverCard.Portal>
+            <HoverCard.Content>Content</HoverCard.Content>
+          </HoverCard.Portal>
+        </HoverCard.Root>,
+      );
+      const trigger = screen.getByText('Trigger');
+
+      act(() => void fireEvent.pointerLeave(trigger, { pointerType: 'mouse' }));
+      act(() => void fireEvent.blur(trigger));
+      unmount();
+
+      act(() => void vi.advanceTimersByTime(300));
+
+      expect(onOpenChange).not.toHaveBeenCalled();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it('opens after the open delay when the trigger stays hovered', () => {
     vi.useFakeTimers();
     try {
