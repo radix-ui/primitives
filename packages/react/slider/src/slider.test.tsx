@@ -206,6 +206,61 @@ describe('Slider', () => {
 
       expect(handleValueCommit).not.toHaveBeenCalled();
     });
+
+    it('keeps dragging the same thumb after a controlled parent corrects a tie', () => {
+      function CorrectedSlider() {
+        const [value, setValue] = React.useState([100, 103]);
+        return (
+          <Slider.Root
+            value={value}
+            // Both thumbs may not share the min: the parent moves the upper one a step up.
+            onValueChange={([low, high]) =>
+              setValue(low === 100 && high === 100 ? [100, 101] : [low!, high!])
+            }
+            min={100}
+            max={110}
+            step={1}
+            data-testid="slider"
+          >
+            <Slider.Track>
+              <Slider.Range />
+            </Slider.Track>
+            <Slider.Thumb />
+            <Slider.Thumb />
+          </Slider.Root>
+        );
+      }
+      const { slider } = renderRangeSlider(<CorrectedSlider />);
+
+      // Grab the upper thumb (103 → 30px), drag it onto the lower one at the min (0px), then
+      // back to 106 (60px). The lower thumb must stay at the min.
+      fireEvent.pointerDown(slider, { pointerId: 1, clientX: 30 });
+      fireEvent.pointerMove(slider, { pointerId: 1, clientX: 0 });
+      fireEvent.pointerMove(slider, { pointerId: 1, clientX: 60 });
+      fireEvent.pointerUp(slider, { pointerId: 1, clientX: 60 });
+
+      expect(getThumbValues()).toEqual([100, 106]);
+    });
+
+    it('still hands the drag over when a thumb strictly crosses the other', () => {
+      const { slider } = renderRangeSlider(
+        <Slider.Root defaultValue={[105, 107]} min={100} max={110} step={1} data-testid="slider">
+          <Slider.Track>
+            <Slider.Range />
+          </Slider.Track>
+          <Slider.Thumb />
+          <Slider.Thumb />
+        </Slider.Root>,
+      );
+
+      // Grab the upper thumb (107 → 70px), drag it past the lower one to 103 (30px), then to 102.
+      fireEvent.pointerDown(slider, { pointerId: 1, clientX: 70 });
+      fireEvent.pointerMove(slider, { pointerId: 1, clientX: 30 });
+      fireEvent.pointerMove(slider, { pointerId: 1, clientX: 20 });
+      fireEvent.pointerUp(slider, { pointerId: 1, clientX: 20 });
+
+      expect(getThumbValues()).toEqual([102, 105]);
+    });
   });
 
   describe('preserveThumbOrder', () => {
