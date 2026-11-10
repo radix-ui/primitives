@@ -191,7 +191,7 @@ describe('Checkbox', () => {
   describe('given an uncontrolled Checkbox in form with bubble input', () => {
     const onChange = vi.fn();
 
-    it('should receive change event with next state', async () => {
+    it('should receive change event with next state', () => {
       render(
         <form
           onChange={(event) => {
@@ -210,12 +210,16 @@ describe('Checkbox', () => {
 
       const checkbox = screen.getByRole(CHECKBOX_ROLE);
       act(() => fireEvent.click(checkbox));
+
       expect(onChange).toHaveBeenCalledWith(true);
     });
 
     describe('when `defaultChecked` is true', () => {
-      it('should receive change event with next state', async () => {
-        console.log(parseInt(React.version));
+      beforeEach(() => {
+        onChange.mockClear();
+      });
+
+      it('should receive change event with next state', () => {
         render(
           <form
             onChange={(event) => {
@@ -234,7 +238,46 @@ describe('Checkbox', () => {
 
         const checkbox = screen.getByRole(CHECKBOX_ROLE);
         act(() => fireEvent.click(checkbox));
+
         expect(onChange).toHaveBeenCalledWith(false);
+      });
+
+      it('should restore the visual state to the latest `defaultChecked` prop when the form is reset', () => {
+        function App({ defaultChecked }: { defaultChecked: boolean }) {
+          return (
+            <form>
+              <Checkbox.unstable_Provider defaultChecked={defaultChecked}>
+                <Checkbox.unstable_Trigger aria-label="basic checkbox">
+                  <Checkbox.Indicator data-testid={INDICATOR_TEST_ID} />
+                </Checkbox.unstable_Trigger>
+                <Checkbox.unstable_BubbleInput />
+              </Checkbox.unstable_Provider>
+            </form>
+          );
+        }
+
+        const { rerender } = render(<App defaultChecked={false} />);
+
+        const checkbox = screen.getByRole(CHECKBOX_ROLE);
+        const form = checkbox.closest('form')!;
+
+        act(() => fireEvent.click(checkbox));
+
+        expect(screen.getByTestId(INDICATOR_TEST_ID)).toBeVisible();
+
+        // Update the default checked state
+        act(() => rerender(<App defaultChecked />));
+
+        // Change the current checked state to false
+        act(() => fireEvent.click(checkbox));
+
+        expect(checkbox).toHaveAttribute('aria-checked', 'false');
+
+        // Reset the form
+        act(() => fireEvent.reset(form));
+
+        expect(checkbox).toHaveAttribute('aria-checked', 'true');
+        expect(screen.getByTestId(INDICATOR_TEST_ID)).toBeVisible();
       });
     });
   });
