@@ -326,12 +326,15 @@ const DialogContentModal = /* @__PURE__ */ React.forwardRef<
 
     // aria-hide everything except the content (better supported equivalent to setting aria-modal)
     React.useEffect(() => {
+      if (!context.open) {
+        return;
+      }
       const content = contentRef.current;
       if (content) {
         const ownerDocument = content.ownerDocument;
         return hideOthers(new Set([content]), ownerDocument.body);
       }
-    }, []);
+    }, [context.open]);
 
     return (
       <DialogContentImpl

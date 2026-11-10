@@ -259,19 +259,32 @@ export const Animated = () => (
   </Dialog.Root>
 );
 
-export const ForcedMount = () => (
-  <Dialog.Root>
-    <Dialog.Trigger>open</Dialog.Trigger>
-    <Dialog.Portal forceMount>
-      <Dialog.Overlay className={styles.overlay} />
-      <Dialog.Content className={styles.contentDefault}>
-        <Dialog.Title>Title</Dialog.Title>
-        <Dialog.Description>Description</Dialog.Description>
-        <Dialog.Close>close</Dialog.Close>
-      </Dialog.Content>
-    </Dialog.Portal>
-  </Dialog.Root>
-);
+export const ForcedMount = () => {
+  const [open, setOpen] = React.useState(false);
+  return (
+    <>
+      <main>Page content</main>
+      <Dialog.Root open={open} onOpenChange={setOpen}>
+        <Dialog.Trigger>open</Dialog.Trigger>
+        <Dialog.Portal forceMount>
+          <Dialog.Overlay className={styles.overlay} hidden={!open} />
+          <Dialog.Content
+            className={styles.contentDefault}
+            hidden={!open}
+            onInteractOutside={(event) => event.preventDefault()}
+          >
+            <Dialog.Title>Title</Dialog.Title>
+            <Dialog.Description>Description</Dialog.Description>
+            <label>
+              Name <input />
+            </label>
+            <Dialog.Close>close</Dialog.Close>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
+    </>
+  );
+};
 
 export const InnerScrollable = () => (
   <Dialog.Root>
