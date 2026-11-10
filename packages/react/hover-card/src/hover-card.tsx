@@ -74,6 +74,7 @@ const HoverCard: React.FC<HoverCardProps> = (props: ScopedProps<HoverCardProps>)
 
   const handleOpen = React.useCallback(() => {
     clearTimeout(closeTimerRef.current);
+    clearTimeout(openTimerRef.current);
     openTimerRef.current = window.setTimeout(() => setOpen(true), openDelay);
   }, [openDelay, setOpen]);
 
