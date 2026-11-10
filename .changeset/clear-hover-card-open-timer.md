@@ -3,4 +3,4 @@
 'radix-ui': patch
 ---
 
-Fixed `HoverCard` leaving an open timer running after unmount when the trigger received pointer enter and focus in quick succession.
+Fixed `HoverCard` leaving an open or close timer running after unmount when the trigger received multiple events in quick succession.

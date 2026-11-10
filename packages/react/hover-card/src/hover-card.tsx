@@ -80,6 +80,7 @@ const HoverCard: React.FC<HoverCardProps> = (props: ScopedProps<HoverCardProps>)
 
   const handleClose = React.useCallback(() => {
     clearTimeout(openTimerRef.current);
+    clearTimeout(closeTimerRef.current);
     if (!hasSelectionRef.current && !isPointerDownOnContentRef.current) {
       closeTimerRef.current = window.setTimeout(() => setOpen(false), closeDelay);
     }
