@@ -207,7 +207,12 @@ const Slider = /* @__PURE__ */ React.forwardRef<HTMLSpanElement, SliderProps>(
         }
         return {
           nextValues,
-          changedIndex: preserveThumbOrder ? atIndex : nextValues.indexOf(constrainedValue),
+          // On a tie the sort leaves the dragged value at its index: keep that thumb active rather than
+          // letting `indexOf` hand the drag to the first thumb of the same value.
+          changedIndex:
+            preserveThumbOrder || nextValues[atIndex] === constrainedValue
+              ? atIndex
+              : nextValues.indexOf(constrainedValue),
           hasChanged: String(nextValues) !== String(prevValues),
         };
       }
