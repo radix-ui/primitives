@@ -528,6 +528,99 @@ describe('given a Dialog with `asChild` on the Content', () => {
   });
 });
 
+describe('given a force-mounted Dialog', () => {
+  const ForceMountedDialog = ({ open, modal = true }: { open: boolean; modal?: boolean }) => (
+    <>
+      <main>Page content</main>
+      <Dialog.Root open={open} modal={modal}>
+        <Dialog.Trigger>{OPEN_TEXT}</Dialog.Trigger>
+        <Dialog.Portal forceMount>
+          <Dialog.Content hidden={!open}>
+            <Dialog.Title>{TITLE_TEXT}</Dialog.Title>
+            <Dialog.Description>Description</Dialog.Description>
+            <Dialog.Close>{CLOSE_TEXT}</Dialog.Close>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
+    </>
+  );
+
+  afterEach(cleanupModal);
+
+  it.each([false, true])(
+    'should hide the page only while open (initialOpen: %s)',
+    (initialOpen) => {
+      const rendered = render(<ForceMountedDialog open={initialOpen} />);
+      const page = screen.getByText('Page content');
+      const content = screen.getByText(TITLE_TEXT).closest('[role="dialog"]');
+
+      expect(page.closest('[aria-hidden="true"]') !== null).toBe(initialOpen);
+
+      rendered.rerender(<ForceMountedDialog open={false} />);
+      expect(screen.getByRole('main')).toBe(page);
+      expect(content).toBeInTheDocument();
+
+      rendered.rerender(<ForceMountedDialog open={true} />);
+      expect(screen.queryByRole('main')).not.toBeInTheDocument();
+      expect(screen.getByRole('dialog')).toBe(content);
+
+      rendered.rerender(<ForceMountedDialog open={false} />);
+      expect(screen.getByRole('main')).toBe(page);
+      expect(content).toBeInTheDocument();
+    },
+  );
+
+  it('should not hide the page for a non-modal dialog', () => {
+    const rendered = render(<ForceMountedDialog open={false} modal={false} />);
+    const page = screen.getByRole('main');
+
+    rendered.rerender(<ForceMountedDialog open={true} modal={false} />);
+    expect(screen.getByRole('main')).toBe(page);
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+
+    rendered.rerender(<ForceMountedDialog open={false} modal={false} />);
+    expect(screen.getByRole('main')).toBe(page);
+  });
+
+  it('should keep the page hidden after a nested dialog closes until the parent closes', () => {
+    const Test = ({ open, nestedOpen }: { open: boolean; nestedOpen: boolean }) => (
+      <>
+        <main>Page content</main>
+        <Dialog.Root open={open}>
+          <Dialog.Portal forceMount>
+            <Dialog.Content hidden={!open}>
+              <Dialog.Title>Parent</Dialog.Title>
+              <Dialog.Description>Parent description</Dialog.Description>
+              <Dialog.Root open={nestedOpen}>
+                <Dialog.Trigger>Open nested dialog</Dialog.Trigger>
+                <Dialog.Portal>
+                  <Dialog.Content>
+                    <Dialog.Title>Nested</Dialog.Title>
+                    <Dialog.Description>Nested description</Dialog.Description>
+                  </Dialog.Content>
+                </Dialog.Portal>
+              </Dialog.Root>
+            </Dialog.Content>
+          </Dialog.Portal>
+        </Dialog.Root>
+      </>
+    );
+    const rendered = render(<Test open={true} nestedOpen={false} />);
+    expect(screen.queryByRole('main')).not.toBeInTheDocument();
+
+    rendered.rerender(<Test open={true} nestedOpen={true} />);
+    expect(screen.getByRole('dialog', { name: 'Nested' })).toBeInTheDocument();
+    expect(screen.queryByRole('dialog', { name: 'Parent' })).not.toBeInTheDocument();
+
+    rendered.rerender(<Test open={true} nestedOpen={false} />);
+    expect(screen.getByRole('dialog', { name: 'Parent' })).toBeInTheDocument();
+    expect(screen.queryByRole('main')).not.toBeInTheDocument();
+
+    rendered.rerender(<Test open={false} nestedOpen={false} />);
+    expect(screen.getByRole('main')).toBeInTheDocument();
+  });
+});
+
 describe('given two overlapping modal Dialogs (forceMount)', () => {
   // Forcing mount keeps the content (and its `DismissableLayer`) mounted while
   // `open` toggles, which mirrors what happens during exit animations or when

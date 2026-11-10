@@ -225,6 +225,31 @@ test.describe('Dialog', () => {
   });
 });
 
+test('force-mounted Dialog hides the page only while open and preserves its content', async ({
+  page,
+}) => {
+  await visitStory(page, 'dialog--forced-mount');
+
+  await expect(page.getByRole('main')).toHaveText('Page content');
+  const content = page.getByRole('dialog', { includeHidden: true });
+  await expect(content).toBeAttached();
+  await expect(content).toBeHidden();
+
+  await page.getByRole('button', { name: 'open', exact: true }).click();
+  await expect(page.getByRole('main')).toHaveCount(0);
+  await expect(page.getByRole('dialog')).toBeVisible();
+  await page.getByRole('textbox', { name: 'Name' }).fill('Ada');
+
+  await page.getByRole('button', { name: 'close', exact: true }).click();
+  await expect(page.getByRole('main')).toHaveText('Page content');
+  await expect(content).toBeAttached();
+  await expect(content).toBeHidden();
+
+  await page.getByRole('button', { name: 'open', exact: true }).click();
+  await expect(page.getByRole('main')).toHaveCount(0);
+  await expect(page.getByRole('textbox', { name: 'Name' })).toHaveValue('Ada');
+});
+
 test.describe('Dialog with a nested DropdownMenu', () => {
   test.beforeEach(async ({ page }) => {
     await visitStory(page, 'dialog--with-dropdown-menu');
