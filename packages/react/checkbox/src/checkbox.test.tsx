@@ -297,6 +297,82 @@ describe('Checkbox', () => {
     });
   });
 
+  describe('given an uncontrolled Checkbox in a form with an action', () => {
+    function ActionForm() {
+      const [saved, formAction] = React.useActionState(
+        (_previous: boolean, formData: FormData) => formData.get('accept') === 'on',
+        false,
+      );
+      return (
+        <form action={formAction}>
+          <Checkbox.Root name="accept" aria-label="accept" defaultChecked={saved}>
+            <Checkbox.Indicator data-testid={INDICATOR_TEST_ID} />
+          </Checkbox.Root>
+          <output data-testid="saved">{String(saved)}</output>
+          <button type="submit">Save</button>
+        </form>
+      );
+    }
+
+    it('should keep the `defaultChecked` saved by the action after the form resets', async () => {
+      render(<ActionForm />);
+
+      const checkbox = screen.getByRole(CHECKBOX_ROLE);
+      await act(async () => fireEvent.click(checkbox));
+      await act(async () => fireEvent.click(screen.getByText('Save')));
+      await waitFor(() => expect(screen.getByTestId('saved')).toHaveTextContent('true'));
+
+      expect(checkbox).toHaveAttribute('aria-checked', 'true');
+      expect(screen.getByTestId(INDICATOR_TEST_ID)).toBeInTheDocument();
+    });
+  });
+
+  describe('given an uncontrolled Checkbox whose `defaultChecked` changes', () => {
+    function FormWithDefault({ defaultChecked }: { defaultChecked: boolean }) {
+      return (
+        <form>
+          <Checkbox.Root aria-label="basic checkbox" defaultChecked={defaultChecked}>
+            <Checkbox.Indicator data-testid={INDICATOR_TEST_ID} />
+          </Checkbox.Root>
+        </form>
+      );
+    }
+
+    it('should reset to the current `defaultChecked`', async () => {
+      const { rerender, container } = render(<FormWithDefault defaultChecked={false} />);
+      rerender(<FormWithDefault defaultChecked />);
+
+      const checkbox = screen.getByRole(CHECKBOX_ROLE);
+      expect(checkbox).toHaveAttribute('aria-checked', 'false');
+
+      await act(async () => container.querySelector('form')!.reset());
+      expect(checkbox).toHaveAttribute('aria-checked', 'true');
+    });
+  });
+
+  describe('given a controlled Checkbox in a form', () => {
+    it('should reset to the checked state it was rendered with first', async () => {
+      const onCheckedChange = vi.fn();
+      const { rerender, container } = render(
+        <form>
+          <Checkbox.Root
+            aria-label="basic checkbox"
+            checked={false}
+            onCheckedChange={onCheckedChange}
+          />
+        </form>,
+      );
+      rerender(
+        <form>
+          <Checkbox.Root aria-label="basic checkbox" checked onCheckedChange={onCheckedChange} />
+        </form>,
+      );
+
+      await act(async () => container.querySelector('form')!.reset());
+      expect(onCheckedChange).toHaveBeenLastCalledWith(false);
+    });
+  });
+
   describe('given a Checkbox with a clickable ancestor inside a form', () => {
     const onParentClick = vi.fn();
     const onFormChange = vi.fn();

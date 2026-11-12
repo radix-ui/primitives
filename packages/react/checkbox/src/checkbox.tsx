@@ -34,6 +34,7 @@ type CheckboxContextValue<State extends CheckedState | boolean = CheckedState> =
   onUserClick: (userClick: CheckboxUserClick) => void;
   required: boolean | undefined;
   defaultChecked: boolean | undefined;
+  uncontrolledDefaultChecked: State | boolean | undefined;
   isFormControl: boolean;
   bubbleInput: HTMLInputElement | null;
   setBubbleInput: React.Dispatch<React.SetStateAction<HTMLInputElement | null>>;
@@ -108,6 +109,7 @@ function CheckboxProvider<State extends CheckedState = CheckedState>(
     onUserClick: setUserClick,
     required: required,
     defaultChecked: isIndeterminate(defaultChecked) ? false : defaultChecked,
+    uncontrolledDefaultChecked: checkedProp === undefined ? (defaultChecked ?? false) : undefined,
     isFormControl: isFormControl,
     bubbleInput,
     setBubbleInput,
@@ -152,14 +154,22 @@ const CheckboxTrigger = /* @__PURE__ */ React.forwardRef<HTMLButtonElement, Chec
       onUserClick,
       isFormControl,
       bubbleInput,
+      uncontrolledDefaultChecked,
     } = useCheckboxContext(TRIGGER_NAME, __scopeCheckbox);
     const composedRefs = useComposedRefs(forwardedRef, setControl);
 
     const initialCheckedStateRef = React.useRef(checked);
+    // An uncontrolled checkbox resets to its current `defaultChecked`, like a
+    // native checkbox. React resets a form after a form action, and the default
+    // may have changed since mount.
+    // Updated during render: React resets the form before it runs effects.
+    const uncontrolledDefaultCheckedRef = React.useRef(uncontrolledDefaultChecked);
+    uncontrolledDefaultCheckedRef.current = uncontrolledDefaultChecked;
     React.useEffect(() => {
       const form = control?.form;
       if (form) {
-        const reset = () => setChecked(initialCheckedStateRef.current);
+        const reset = () =>
+          setChecked(uncontrolledDefaultCheckedRef.current ?? initialCheckedStateRef.current);
         form.addEventListener('reset', reset);
         return () => form.removeEventListener('reset', reset);
       }
