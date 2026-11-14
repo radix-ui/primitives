@@ -229,6 +229,27 @@ describe('Slider', () => {
       // The first thumb crosses the second and they swap positions.
       expect(getThumbValues()).toEqual([30, 35]);
     });
+    it('keeps the active thumb when its value matches another thumb', async () => {
+      const user = userEvent.setup();
+      render(
+        <Slider.Root defaultValue={[10, 30]} min={0} max={100} step={1}>
+          <Slider.Track>
+            <Slider.Range />
+          </Slider.Track>
+          <Slider.Thumb />
+          <Slider.Thumb />
+        </Slider.Root>,
+      );
+
+  screen.getAllByRole('slider')[1]!.focus();
+
+  for (let i = 0; i < 20; i++) {
+    await user.keyboard('{ArrowLeft}');
+  }
+
+  expect(getThumbValues()).toEqual([10, 10]);
+});
+
 
     it('prevents a thumb from crossing its neighbour when set', async () => {
       const user = userEvent.setup();
