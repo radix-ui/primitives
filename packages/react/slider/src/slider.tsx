@@ -207,7 +207,10 @@ const Slider = /* @__PURE__ */ React.forwardRef<HTMLSpanElement, SliderProps>(
         }
         return {
           nextValues,
-          changedIndex: preserveThumbOrder ? atIndex : nextValues.indexOf(constrainedValue),
+          changedIndex:
+            preserveThumbOrder || nextValues[atIndex] === constrainedValue
+              ? atIndex
+              : nextValues.indexOf(constrainedValue),
           hasChanged: String(nextValues) !== String(prevValues),
         };
       }
