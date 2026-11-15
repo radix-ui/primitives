@@ -317,9 +317,11 @@ const FormControl = /* @__PURE__ */ React.forwardRef<FormControlElement, FormCon
     const { onFieldValidityChange, onFieldCustomErrorsChange, onFieldValiditionClear } =
       validationContext;
     const validationRunRef = React.useRef(0);
+    const validatedValueRef = React.useRef<string | null>(null);
     const updateControlValidity = React.useCallback(
       async (control: FormControlElement) => {
         const validationRun = ++validationRunRef.current;
+        validatedValueRef.current = control.value;
         //------------------------------------------------------------------------------------------
         // 1. first, if we have built-in errors we stop here
 
@@ -396,6 +398,14 @@ const FormControl = /* @__PURE__ */ React.forwardRef<FormControlElement, FormCon
       }
     }, [updateControlValidity]);
 
+    // invalidate pending async validations when the control unmounts
+    React.useEffect(() => {
+      const validationRun = validationRunRef;
+      return () => {
+        validationRun.current++;
+      };
+    }, []);
+
     const resetControlValidity = React.useCallback(() => {
       const control = ref.current;
       if (control) {
@@ -454,7 +464,12 @@ const FormControl = /* @__PURE__ */ React.forwardRef<FormControlElement, FormCon
           const control = event.currentTarget;
           updateControlValidity(control);
         })}
-        onChange={composeEventHandlers(props.onChange, (_event) => {
+        onChange={composeEventHandlers(props.onChange, (event) => {
+          // invalidate pending async validations once the user edits away from the validated value,
+          // even if they later edit back to it without committing another change
+          if (event.currentTarget.value !== validatedValueRef.current) {
+            validationRunRef.current++;
+          }
           // reset validity when user changes value
           resetControlValidity();
         })}

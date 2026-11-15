@@ -904,4 +904,68 @@ describe('Form.Control asynchronous validation', () => {
     expect(control.validity.customError).toBe(true);
     expect(screen.getByText('Invalid name')).toBeInTheDocument();
   });
+
+  it('does not restore a custom error after the value is edited back to the validated value', async () => {
+    let finishValidation!: (matches: boolean) => void;
+    const validation = new Promise<boolean>((resolve) => {
+      finishValidation = resolve;
+    });
+    render(
+      <Form.Root>
+        <Form.Field name="name">
+          <Form.Control />
+          <Form.Message match={async () => validation}>Invalid name</Form.Message>
+        </Form.Field>
+      </Form.Root>,
+    );
+    const control = screen.getByRole('textbox') as HTMLInputElement;
+
+    // commit "alice" (e.g. tabbing away) so an async matcher starts and stays pending
+    await act(async () => {
+      fireEvent.change(control, { target: { value: 'alice' } });
+    });
+    // edit to "bob" and back to "alice" without committing another change
+    fireEvent.input(control, { target: { value: 'bob' } });
+    fireEvent.input(control, { target: { value: 'alice' } });
+
+    await act(async () => {
+      finishValidation(true);
+      await validation;
+    });
+
+    expect(control.value).toBe('alice');
+    expect(control.validity.customError).toBe(false);
+    expect(screen.queryByText('Invalid name')).not.toBeInTheDocument();
+  });
+
+  it('does not apply a pending custom error after the control unmounts', async () => {
+    let finishValidation!: (matches: boolean) => void;
+    const validation = new Promise<boolean>((resolve) => {
+      finishValidation = resolve;
+    });
+    const TestForm = ({ showControl }: { showControl: boolean }) => (
+      <Form.Root>
+        <Form.Field name="name">
+          {showControl ? <Form.Control /> : null}
+          <Form.Message match={async () => validation}>Invalid name</Form.Message>
+        </Form.Field>
+      </Form.Root>
+    );
+    const { rerender } = render(<TestForm showControl />);
+    const control = screen.getByRole('textbox') as HTMLInputElement;
+
+    await act(async () => {
+      fireEvent.change(control, { target: { value: 'alice' } });
+    });
+    rerender(<TestForm showControl={false} />);
+    expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
+
+    await act(async () => {
+      finishValidation(true);
+      await validation;
+    });
+
+    expect(control.validity.customError).toBe(false);
+    expect(screen.queryByText('Invalid name')).not.toBeInTheDocument();
+  });
 });

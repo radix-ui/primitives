@@ -74,6 +74,72 @@ export const Basic = () => {
   );
 };
 
+export const AsyncValidationLifecycle = () => {
+  const formRef = React.useRef<HTMLFormElement>(null);
+  const pendingValidation = React.useRef<Promise<boolean> | null>(null);
+  const resolveValidation = React.useRef<((matches: boolean) => void) | null>(null);
+  const [showControl, setShowControl] = React.useState(true);
+  const [pending, setPending] = React.useState(false);
+  const [nativeChanges, setNativeChanges] = React.useState(0);
+
+  React.useEffect(() => {
+    const form = formRef.current;
+    const handleChange = () => setNativeChanges((count) => count + 1);
+    form?.addEventListener('change', handleChange);
+    return () => form?.removeEventListener('change', handleChange);
+  }, []);
+
+  const match = React.useCallback(async () => {
+    if (!pendingValidation.current) {
+      pendingValidation.current = new Promise<boolean>((resolve) => {
+        resolveValidation.current = resolve;
+      });
+      setPending(true);
+    }
+    return pendingValidation.current;
+  }, []);
+
+  return (
+    <>
+      <p>
+        Enter alice and tab away to start validation. Edit to bob and back to alice without
+        blurring, then resolve: no error should return. Alternatively, remove the control before
+        resolving: its message should stay hidden. Resolve without either action to check that a
+        current validation still shows its error.
+      </p>
+      <Form.Root ref={formRef} className={styles.form} onSubmit={(event) => event.preventDefault()}>
+        <Form.Field name="name">
+          {showControl && (
+            <>
+              <Form.Label>Name</Form.Label>
+              <Form.Control />
+            </>
+          )}
+          <Form.Message match={match}>Invalid name</Form.Message>
+        </Form.Field>
+        <button type="button" onClick={() => setShowControl((shown) => !shown)}>
+          {showControl ? 'Remove control' : 'Restore control'}
+        </button>
+        <button
+          type="button"
+          disabled={!pending}
+          onClick={() => {
+            resolveValidation.current?.(true);
+            pendingValidation.current = null;
+            resolveValidation.current = null;
+            setPending(false);
+          }}
+        >
+          Resolve validation as invalid
+        </button>
+        <button type="reset">Reset</button>
+      </Form.Root>
+      <p role="status">{pending ? 'Validation pending' : 'No validation pending'}</p>
+      <output>Native change events: {nativeChanges}</output>
+    </>
+  );
+};
+
 export const Cypress = () => {
   const [data, setData] = React.useState({});
   const [simulateServerErrors, setSimulateServerErrors] = React.useState(false);
