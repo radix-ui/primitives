@@ -34,6 +34,149 @@ describe('Slider', () => {
     expect(getThumbValue()).toBeCloseTo(0.1, 10);
   });
 
+  describe.each(['controlled', 'uncontrolled'])('with a fractional minimum (%s)', (mode) => {
+    it.each([
+      { min: 0.5, step: 1, expected: 1.5 },
+      { min: 0.05, step: 0.1, expected: 0.15 },
+      { min: -0.5, step: 1, expected: 0.5 },
+      { min: -2.5, step: 1, expected: -1.5 },
+      { min: 1.5e-7, step: 1e-7, expected: 2.5e-7 },
+    ])(
+      'steps from $min by $step without losing the minimum precision',
+      async ({ min, step, expected }) => {
+        const user = userEvent.setup();
+        const onValueChange = vi.fn();
+        const onValueCommit = vi.fn();
+
+        function App() {
+          const [value, setValue] = React.useState([min]);
+          return (
+            <form data-testid="form">
+              <Slider.Root
+                min={min}
+                max={min + step * 10}
+                step={step}
+                name="amount"
+                value={mode === 'controlled' ? value : undefined}
+                defaultValue={[min]}
+                onValueChange={(nextValue) => {
+                  setValue(nextValue);
+                  onValueChange(nextValue);
+                }}
+                onValueCommit={onValueCommit}
+              >
+                <Slider.Thumb />
+              </Slider.Root>
+            </form>
+          );
+        }
+
+        render(<App />);
+        screen.getByRole('slider').focus();
+        await user.keyboard('{ArrowRight}');
+
+        expect(getThumbValue()).toBe(expected);
+        expect(onValueChange).toHaveBeenCalledExactlyOnceWith([expected]);
+        expect(onValueCommit).toHaveBeenCalledExactlyOnceWith([expected]);
+        expect(new FormData(screen.getByTestId('form') as HTMLFormElement).get('amount')).toBe(
+          String(expected),
+        );
+
+        await user.keyboard('{ArrowLeft}');
+        expect(getThumbValue()).toBe(min);
+      },
+    );
+  });
+
+  it('preserves fractional minimum precision when snapping pointer values', () => {
+    const onValueChange = vi.fn();
+    const onValueCommit = vi.fn();
+    render(
+      <Slider.Root
+        data-testid="slider"
+        min={0.5}
+        max={4.5}
+        step={1}
+        defaultValue={[0.5]}
+        onValueChange={onValueChange}
+        onValueCommit={onValueCommit}
+      >
+        <Slider.Thumb />
+      </Slider.Root>,
+    );
+    const slider = screen.getByTestId('slider');
+    shimBoundingClientRect(slider, { width: 100, right: 100 });
+    shimPointerCapture(slider);
+
+    fireEvent.pointerDown(slider, { pointerId: 1, clientX: 25 });
+    expect(getThumbValue()).toBe(1.5);
+    fireEvent.pointerMove(slider, { pointerId: 1, clientX: 50 });
+    fireEvent.pointerUp(slider, { pointerId: 1, clientX: 50 });
+
+    expect(getThumbValue()).toBe(2.5);
+    expect(onValueChange.mock.calls).toEqual([[[1.5]], [[2.5]]]);
+    expect(onValueCommit).toHaveBeenCalledExactlyOnceWith([2.5]);
+  });
+
+  it('snaps off-grid values relative to a fractional minimum in both directions', async () => {
+    const user = userEvent.setup();
+    const { rerender } = render(
+      <Slider.Root min={0.5} max={4.5} step={1} defaultValue={[0.75]}>
+        <Slider.Thumb />
+      </Slider.Root>,
+    );
+    screen.getByRole('slider').focus();
+    await user.keyboard('{ArrowRight}');
+    expect(getThumbValue()).toBe(1.5);
+
+    rerender(
+      <Slider.Root key="down" min={0.5} max={4.5} step={1} defaultValue={[0.75]}>
+        <Slider.Thumb />
+      </Slider.Root>,
+    );
+    screen.getByRole('slider').focus();
+    await user.keyboard('{ArrowLeft}');
+    expect(getThumbValue()).toBe(0.5);
+  });
+
+  it('keeps fractional bounds for Home, End and large keyboard steps', async () => {
+    const user = userEvent.setup();
+    render(
+      <Slider.Root min={0.5} max={20.5} step={1} defaultValue={[1.5]}>
+        <Slider.Thumb />
+      </Slider.Root>,
+    );
+    screen.getByRole('slider').focus();
+    await user.keyboard('{Home}{ArrowLeft}');
+    expect(getThumbValue()).toBe(0.5);
+    await user.keyboard('{PageUp}');
+    expect(getThumbValue()).toBe(10.5);
+    await user.keyboard('{End}{ArrowRight}');
+    expect(getThumbValue()).toBe(20.5);
+    await user.keyboard('{Shift>}{ArrowLeft}{/Shift}');
+    expect(getThumbValue()).toBe(10.5);
+  });
+
+  it('respects thumb spacing on a grid with a fractional minimum', async () => {
+    const user = userEvent.setup();
+    render(
+      <Slider.Root
+        min={0.5}
+        max={4.5}
+        step={1}
+        defaultValue={[0.5, 2.5]}
+        minStepsBetweenThumbs={1}
+        preserveThumbOrder
+      >
+        <Slider.Thumb />
+        <Slider.Thumb />
+      </Slider.Root>,
+    );
+    screen.getAllByRole('slider')[0]!.focus();
+    await user.keyboard('{ArrowRight}{ArrowRight}');
+    expect(getThumbValues()).toEqual([1.5, 2.5]);
+  });
+
   // https://github.com/radix-ui/primitives/issues/3041
   describe('when the value is off the step grid', () => {
     it('snaps to the next aligned value on arrow up without skipping a step', async () => {
