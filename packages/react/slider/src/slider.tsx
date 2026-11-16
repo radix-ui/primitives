@@ -181,7 +181,7 @@ const Slider = /* @__PURE__ */ React.forwardRef<HTMLSpanElement, SliderProps>(
     }
 
     function updateValues(value: number, atIndex: number, { commit } = { commit: false }) {
-      const decimalCount = getDecimalCount(step);
+      const decimalCount = Math.max(getDecimalCount(step), getDecimalCount(min));
       const snapToStep = roundValue(Math.round((value - min) / step) * step + min, decimalCount);
       const nextValue = clamp(snapToStep, [min, max]);
       const minStepsDistance = minStepsBetweenThumbs * step;
@@ -1047,7 +1047,7 @@ function getNextStepValue(
     multiplier: number;
   },
 ) {
-  const decimalCount = getDecimalCount(step);
+  const decimalCount = Math.max(getDecimalCount(step), getDecimalCount(min));
   const stepsFromMin = (value - min) / step;
   const nearestSteps = Math.round(stepsFromMin);
   const isAligned =

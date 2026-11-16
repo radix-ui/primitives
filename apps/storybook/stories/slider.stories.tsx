@@ -305,6 +305,28 @@ export const SmallSteps = () => {
   );
 };
 
+export const FractionalMinimum = () => {
+  const [value, setValue] = React.useState([0.5]);
+  return (
+    <>
+      <Slider.Root
+        className={styles.root}
+        value={value}
+        onValueChange={setValue}
+        min={0.5}
+        max={10.5}
+        step={1}
+      >
+        <Slider.Track className={styles.track}>
+          <Slider.Range className={styles.range} />
+        </Slider.Track>
+        <Slider.Thumb className={styles.thumb} />
+      </Slider.Root>
+      <div>{value}</div>
+    </>
+  );
+};
+
 export const WithinForm = () => {
   const [data, setData] = React.useState({
     single: [0],
