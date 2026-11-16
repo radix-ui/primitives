@@ -397,7 +397,8 @@ const SelectTrigger = /* @__PURE__ */ React.forwardRef<SelectTriggerElement, Sel
 
             // Open on click when using a touch or pen device
             if (pointerTypeRef.current !== 'mouse') {
-              handleOpen(event);
+              // Click activation has no pending pointerup to guard.
+              handleOpen();
             }
           })}
           onPointerDown={composeEventHandlers(triggerProps.onPointerDown, (event) => {
@@ -911,6 +912,7 @@ const SelectContentImpl = /* @__PURE__ */ React.forwardRef<
             <DismissableLayer
               asChild
               disableOutsidePointerEvents
+              deferPointerDownOutside
               onEscapeKeyDown={onEscapeKeyDown}
               onPointerDownOutside={onPointerDownOutside}
               // When focus is trapped, a focusout event may still happen.

@@ -1875,3 +1875,117 @@ const TickIcon = () => (
     <path d="M2 20 L12 28 30 4" />
   </svg>
 );
+
+// Compare hit testing separately from Select's handling of events that reach the trigger.
+// CSS transform/animation is a sheet surrogate, not the consumer's motion component.
+export const TriggerTouchHitTesting = () => <TouchTriggerLayouts />;
+export const TriggerTouchScroll = () => <TouchTriggerLayouts scrollable />;
+
+function TouchTriggerLayouts({ scrollable = false }: { scrollable?: boolean }) {
+  const prefix = scrollable ? 'scroll-' : '';
+  return (
+    <div style={{ padding: 40, display: 'grid', gap: 40 }}>
+      <style>{`@keyframes select-touch-sheet-enter {
+      from { transform: translateY(12px); }
+      to { transform: translateY(0); }
+    }`}</style>
+      <TouchTriggerFixture variant={`${prefix}plain`} scrollable={scrollable} />
+      <div>
+        <TouchTriggerFixture variant={`${prefix}container`} scrollable={scrollable} />
+      </div>
+      <div style={{ pointerEvents: 'auto' }}>
+        <TouchTriggerFixture variant={`${prefix}auto`} scrollable={scrollable} />
+      </div>
+      <TouchTriggerSheet scrollable={scrollable} />
+    </div>
+  );
+}
+
+function TouchTriggerSheet({ scrollable = false }: { scrollable?: boolean }) {
+  return createPortal(
+    <div
+      style={{
+        position: 'fixed',
+        bottom: 40,
+        left: 40,
+        transform: 'translateY(0)',
+        animation: 'select-touch-sheet-enter 120ms ease-out',
+        pointerEvents: 'auto',
+      }}
+    >
+      <TouchTriggerFixture
+        variant={scrollable ? 'scroll-portal-sheet' : 'portal-sheet'}
+        scrollable={scrollable}
+      />
+    </div>,
+    document.body,
+  );
+}
+
+function TouchTriggerFixture({
+  variant,
+  scrollable = false,
+}: {
+  variant: string;
+  scrollable?: boolean;
+}) {
+  const [open, setOpen] = React.useState(false);
+  const [clicks, setClicks] = React.useState(0);
+  const changesRef = React.useRef<boolean[]>([]);
+  return (
+    <Select.Root
+      open={open}
+      onOpenChange={(nextOpen) => {
+        changesRef.current.push(nextOpen);
+        setOpen(nextOpen);
+      }}
+    >
+      <Select.Trigger
+        data-testid={`touch-trigger-${variant}`}
+        data-open-changes={changesRef.current.join(',')}
+        data-consumer-clicks={clicks}
+        onClick={() => setClicks((count) => count + 1)}
+        aria-label={variant}
+        className={styles.trigger}
+      >
+        <Select.Value placeholder={variant} />
+        <Select.Icon>
+          <svg data-testid={`touch-icon-${variant}`} width="24" height="24" viewBox="0 0 24 24">
+            <path d="m4 8 8 8 8-8" fill="none" stroke="currentColor" strokeWidth="2" />
+          </svg>
+        </Select.Icon>
+      </Select.Trigger>
+      <Select.Portal>
+        <Select.Content position="popper" sideOffset={8} className={styles.content}>
+          <Select.Viewport
+            className={styles.viewport}
+            data-testid={`touch-viewport-${variant}`}
+            style={scrollable ? { maxHeight: 160, overflowY: 'auto' } : undefined}
+          >
+            {scrollable ? (
+              Array.from({ length: 50 }, (_, index) => (
+                <Select.Item
+                  key={index}
+                  value={String(index)}
+                  className={styles.item}
+                  style={{ minHeight: 32 }}
+                >
+                  <Select.ItemText>Option {index + 1}</Select.ItemText>
+                </Select.Item>
+              ))
+            ) : (
+              <>
+                <Select.Item value="one" className={styles.item}>
+                  <Select.ItemText>One</Select.ItemText>
+                </Select.Item>
+                <Select.Item value="two" className={styles.item}>
+                  <Select.ItemText>Two</Select.ItemText>
+                </Select.Item>
+              </>
+            )}
+          </Select.Viewport>
+        </Select.Content>
+      </Select.Portal>
+    </Select.Root>
+  );
+}
