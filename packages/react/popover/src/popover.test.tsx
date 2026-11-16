@@ -743,3 +743,23 @@ describe('handlers with a narrower parameter type than the prop', () => {
     expect(handleOpenChange).toHaveBeenCalledWith(true);
   });
 });
+
+describe('focus guards', () => {
+  afterEach(cleanupModal);
+
+  it('does not mount focus guards when non-modal', () => {
+    render(<PopoverTest />);
+    fireEvent.click(screen.getByText(TRIGGER_TEXT));
+    expect(document.querySelectorAll('[data-radix-focus-guard]')).toHaveLength(0);
+  });
+
+  it('mounts focus guards when modal and removes them on close', () => {
+    render(<PopoverTest modal />);
+    const trigger = screen.getByText(TRIGGER_TEXT);
+    fireEvent.click(trigger);
+    expect(document.querySelectorAll('[data-radix-focus-guard]')).toHaveLength(2);
+
+    fireEvent.click(trigger);
+    expect(document.querySelectorAll('[data-radix-focus-guard]')).toHaveLength(0);
+  });
+});
