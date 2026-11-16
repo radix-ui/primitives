@@ -274,6 +274,10 @@ const PopoverContentModal = /* @__PURE__ */ React.forwardRef<
     const composedRefs = useComposedRefs(forwardedRef, contentRef);
     const isRightClickOutsideRef = React.useRef(false);
 
+    // Make sure the whole tree has focus guards as our `Popover` may be
+    // the last element in the DOM (because of the `Portal`)
+    useFocusGuards();
+
     // Allows nested portalled layers to register themselves as branches of this
     // modal `Popover` so focus isn't reclaimed and scroll isn't locked for
     // them. See: https://github.com/radix-ui/primitives/issues/3423
@@ -466,10 +470,6 @@ const PopoverContentImpl = /* @__PURE__ */ React.forwardRef<
     const [contentNode, setContentNode] = React.useState<PopoverContentImplElement | null>(null);
     const composedRefs = useComposedRefs(forwardedRef, setContentNode);
     useFocusScopeBranch(contentNode);
-
-    // Make sure the whole tree has focus guards as our `Popover` may be
-    // the last element in the DOM (because of the `Portal`)
-    useFocusGuards();
 
     return (
       <FocusScopeBranchProvider registry={branchRegistry}>
