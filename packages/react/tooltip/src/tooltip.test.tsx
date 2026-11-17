@@ -493,6 +493,99 @@ describe('Tooltip behavior', () => {
       vi.useRealTimers();
     }
   });
+
+  it('keeps the delay skipped when swapping back and forth between tooltips', () => {
+    vi.useFakeTimers();
+    try {
+      render(
+        <Tooltip.Provider delayDuration={100} skipDelayDuration={300}>
+          <Tooltip.Root>
+            <Tooltip.Trigger>Trigger A</Tooltip.Trigger>
+            <Tooltip.Portal>
+              <Tooltip.Content>Content A</Tooltip.Content>
+            </Tooltip.Portal>
+          </Tooltip.Root>
+          <Tooltip.Root>
+            <Tooltip.Trigger>Trigger B</Tooltip.Trigger>
+            <Tooltip.Portal>
+              <Tooltip.Content>Content B</Tooltip.Content>
+            </Tooltip.Portal>
+          </Tooltip.Root>
+        </Tooltip.Provider>,
+      );
+
+      const triggerA = screen.getByText('Trigger A');
+      const triggerB = screen.getByText('Trigger B');
+
+      act(() => void fireEvent.pointerMove(triggerA));
+      act(() => void vi.advanceTimersByTime(100));
+      expect(triggerA).toHaveAttribute('data-state', 'delayed-open');
+
+      // Each swap opens a tooltip and closes the other one. It stays instant even after a pause
+      // longer than `skipDelayDuration`, since a tooltip is open throughout.
+      for (const [from, to] of [
+        [triggerA, triggerB],
+        [triggerB, triggerA],
+        [triggerA, triggerB],
+      ] as const) {
+        act(() => void vi.advanceTimersByTime(400));
+        act(() => void fireEvent.pointerMove(to));
+        expect(to).toHaveAttribute('data-state', 'instant-open');
+        expect(from).toHaveAttribute('data-state', 'closed');
+        act(() => void fireEvent.pointerLeave(from));
+      }
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('brings the delay back after an open tooltip unmounts', () => {
+    vi.useFakeTimers();
+    try {
+      const tooltipA = (
+        <Tooltip.Root key="a">
+          <Tooltip.Trigger>Trigger A</Tooltip.Trigger>
+          <Tooltip.Portal>
+            <Tooltip.Content>Content A</Tooltip.Content>
+          </Tooltip.Portal>
+        </Tooltip.Root>
+      );
+      const tooltipB = (
+        <Tooltip.Root key="b">
+          <Tooltip.Trigger>Trigger B</Tooltip.Trigger>
+          <Tooltip.Portal>
+            <Tooltip.Content>Content B</Tooltip.Content>
+          </Tooltip.Portal>
+        </Tooltip.Root>
+      );
+
+      const { rerender } = render(
+        <Tooltip.Provider delayDuration={100} skipDelayDuration={300}>
+          {tooltipA}
+          {tooltipB}
+        </Tooltip.Provider>,
+      );
+
+      act(() => void fireEvent.pointerMove(screen.getByText('Trigger A')));
+      act(() => void vi.advanceTimersByTime(100));
+      expect(screen.getByText('Trigger A')).toHaveAttribute('data-state', 'delayed-open');
+
+      // The open tooltip unmounts, so the delay must come back once `skipDelayDuration` elapsed
+      rerender(
+        <Tooltip.Provider delayDuration={100} skipDelayDuration={300}>
+          {tooltipB}
+        </Tooltip.Provider>,
+      );
+      act(() => void vi.advanceTimersByTime(300));
+
+      act(() => void fireEvent.pointerMove(screen.getByText('Trigger B')));
+      expect(screen.getByText('Trigger B')).toHaveAttribute('data-state', 'closed');
+      act(() => void vi.advanceTimersByTime(100));
+      expect(screen.getByText('Trigger B')).toHaveAttribute('data-state', 'delayed-open');
+    } finally {
+      vi.useRealTimers();
+    }
+  });
 });
 
 describe('Tooltip.Trigger', () => {

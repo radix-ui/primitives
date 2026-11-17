@@ -76,6 +76,7 @@ const TooltipProvider: React.FC<TooltipProviderProps> = (
   const isOpenDelayedRef = React.useRef(true);
   const isPointerInTransitRef = React.useRef(false);
   const skipDelayTimerRef = React.useRef(0);
+  const openTooltipCountRef = React.useRef(0);
 
   React.useEffect(() => {
     const skipDelayTimer = skipDelayTimerRef.current;
@@ -88,12 +89,17 @@ const TooltipProvider: React.FC<TooltipProviderProps> = (
       isOpenDelayedRef={isOpenDelayedRef}
       delayDuration={delayDuration}
       onOpen={React.useCallback(() => {
+        openTooltipCountRef.current += 1;
         if (skipDelayDuration <= 0) return;
         window.clearTimeout(skipDelayTimerRef.current);
         isOpenDelayedRef.current = false;
       }, [skipDelayDuration])}
       onClose={React.useCallback(() => {
+        openTooltipCountRef.current = Math.max(0, openTooltipCountRef.current - 1);
         if (skipDelayDuration <= 0) return;
+        // The delay only comes back once no tooltip is open anymore, whatever the order in which
+        // the tooltips of a same commit close and open.
+        if (openTooltipCountRef.current > 0) return;
         window.clearTimeout(skipDelayTimerRef.current);
         skipDelayTimerRef.current = window.setTimeout(
           () => (isOpenDelayedRef.current = true),
@@ -198,6 +204,17 @@ const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
       onProviderClose();
     }
   }, [open, onProviderOpen, onProviderClose]);
+  // A tooltip that unmounts while open no longer counts as open for the provider.
+  const onProviderCloseRef = React.useRef(onProviderClose);
+  onProviderCloseRef.current = onProviderClose;
+  useLayoutEffect(() => {
+    return () => {
+      if (wasOpenRef.current) {
+        wasOpenRef.current = false;
+        onProviderCloseRef.current();
+      }
+    };
+  }, []);
   const stateAttribute = React.useMemo(() => {
     return open ? (wasOpenDelayedRef.current ? 'delayed-open' : 'instant-open') : 'closed';
   }, [open]);
