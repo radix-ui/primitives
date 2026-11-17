@@ -416,6 +416,83 @@ describe('Tooltip behavior', () => {
       vi.useRealTimers();
     }
   });
+
+  it('keeps the delay of other tooltips when a controlled tooltip refuses to open', () => {
+    vi.useFakeTimers();
+    try {
+      render(
+        <Tooltip.Provider delayDuration={100} skipDelayDuration={300}>
+          <Tooltip.Root open={false} onOpenChange={() => {}}>
+            <Tooltip.Trigger>Trigger A</Tooltip.Trigger>
+            <Tooltip.Portal>
+              <Tooltip.Content>Content A</Tooltip.Content>
+            </Tooltip.Portal>
+          </Tooltip.Root>
+          <Tooltip.Root>
+            <Tooltip.Trigger>Trigger B</Tooltip.Trigger>
+            <Tooltip.Portal>
+              <Tooltip.Content>Content B</Tooltip.Content>
+            </Tooltip.Portal>
+          </Tooltip.Root>
+        </Tooltip.Provider>,
+      );
+
+      const triggerA = screen.getByText('Trigger A');
+      const triggerB = screen.getByText('Trigger B');
+
+      // The request to open the first tooltip is refused
+      act(() => void fireEvent.pointerMove(triggerA));
+      act(() => void vi.advanceTimersByTime(100));
+      expect(triggerA).toHaveAttribute('data-state', 'closed');
+
+      // The refused request must not make the second tooltip skip its delay
+      act(() => void fireEvent.pointerMove(triggerB));
+      expect(triggerB).toHaveAttribute('data-state', 'closed');
+
+      act(() => void vi.advanceTimersByTime(100));
+      expect(triggerB).toHaveAttribute('data-state', 'delayed-open');
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('keeps another tooltip open when a controlled tooltip refuses to open', () => {
+    vi.useFakeTimers();
+    try {
+      const onOpenChangeA = vi.fn();
+
+      render(
+        <Tooltip.Provider delayDuration={100}>
+          <Tooltip.Root open onOpenChange={onOpenChangeA}>
+            <Tooltip.Trigger>Trigger A</Tooltip.Trigger>
+            <Tooltip.Portal>
+              <Tooltip.Content>Content A</Tooltip.Content>
+            </Tooltip.Portal>
+          </Tooltip.Root>
+          <Tooltip.Root open={false} onOpenChange={() => {}}>
+            <Tooltip.Trigger>Trigger B</Tooltip.Trigger>
+            <Tooltip.Portal>
+              <Tooltip.Content>Content B</Tooltip.Content>
+            </Tooltip.Portal>
+          </Tooltip.Root>
+        </Tooltip.Provider>,
+      );
+
+      const triggerB = screen.getByText('Trigger B');
+      expect(screen.getByText('Trigger A')).toHaveAttribute('data-state', 'instant-open');
+
+      // The request to open the second tooltip is refused
+      act(() => void fireEvent.pointerMove(triggerB));
+      act(() => void vi.advanceTimersByTime(100));
+      expect(triggerB).toHaveAttribute('data-state', 'closed');
+
+      // Nothing replaced the first tooltip, so it must not be asked to close
+      expect(onOpenChangeA).not.toHaveBeenCalled();
+      expect(screen.getByText('Trigger A')).toHaveAttribute('data-state', 'instant-open');
+    } finally {
+      vi.useRealTimers();
+    }
+  });
 });
 
 describe('Tooltip.Trigger', () => {

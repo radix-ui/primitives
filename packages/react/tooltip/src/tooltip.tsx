@@ -175,20 +175,29 @@ const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
   const [open, setOpen] = useControllableState({
     prop: openProp,
     defaultProp: defaultOpen ?? false,
-    onChange: (open) => {
-      if (open) {
-        providerContext.onOpen();
-
-        // as `onChange` is called within a lifecycle method we
-        // avoid dispatching via `dispatchDiscreteCustomEvent`.
-        document.dispatchEvent(new CustomEvent(TOOLTIP_OPEN));
-      } else {
-        providerContext.onClose();
-      }
-      onOpenChange?.(open);
-    },
+    onChange: onOpenChange,
     caller: TOOLTIP_NAME,
   });
+
+  // The provider and the other tooltips follow the tooltip's actual state, not the requests to
+  // change it: a controlled tooltip may refuse a request and stay as it is.
+  const { onOpen: onProviderOpen, onClose: onProviderClose } = providerContext;
+  const wasOpenRef = React.useRef(open);
+  useLayoutEffect(() => {
+    if (open === wasOpenRef.current) {
+      return;
+    }
+    wasOpenRef.current = open;
+    if (open) {
+      onProviderOpen();
+
+      // as this runs within a lifecycle method we
+      // avoid dispatching via `dispatchDiscreteCustomEvent`.
+      document.dispatchEvent(new CustomEvent(TOOLTIP_OPEN));
+    } else {
+      onProviderClose();
+    }
+  }, [open, onProviderOpen, onProviderClose]);
   const stateAttribute = React.useMemo(() => {
     return open ? (wasOpenDelayedRef.current ? 'delayed-open' : 'instant-open') : 'closed';
   }, [open]);
