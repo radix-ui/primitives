@@ -539,6 +539,45 @@ describe('Tooltip behavior', () => {
     }
   });
 
+  it('counts a tooltip that mounts open as open', () => {
+    vi.useFakeTimers();
+    try {
+      render(
+        <Tooltip.Provider delayDuration={100} skipDelayDuration={300}>
+          <Tooltip.Root defaultOpen>
+            <Tooltip.Trigger>Trigger A</Tooltip.Trigger>
+            <Tooltip.Portal>
+              <Tooltip.Content>Content A</Tooltip.Content>
+            </Tooltip.Portal>
+          </Tooltip.Root>
+          <Tooltip.Root>
+            <Tooltip.Trigger>Trigger B</Tooltip.Trigger>
+            <Tooltip.Portal>
+              <Tooltip.Content>Content B</Tooltip.Content>
+            </Tooltip.Portal>
+          </Tooltip.Root>
+        </Tooltip.Provider>,
+      );
+
+      const triggerA = screen.getByText('Trigger A');
+      const triggerB = screen.getByText('Trigger B');
+      expect(triggerA).toHaveAttribute('data-state', 'instant-open');
+
+      // The first tooltip is open since the mount, so the second one skips its delay and replaces it
+      act(() => void fireEvent.pointerMove(triggerB));
+      expect(triggerB).toHaveAttribute('data-state', 'instant-open');
+      expect(triggerA).toHaveAttribute('data-state', 'closed');
+
+      // The delay must not come back after `skipDelayDuration` while the second tooltip is open
+      act(() => void vi.advanceTimersByTime(400));
+      act(() => void fireEvent.pointerMove(triggerA));
+      expect(triggerA).toHaveAttribute('data-state', 'instant-open');
+      expect(triggerB).toHaveAttribute('data-state', 'closed');
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it('brings the delay back after an open tooltip unmounts', () => {
     vi.useFakeTimers();
     try {

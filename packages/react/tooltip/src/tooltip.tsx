@@ -188,8 +188,12 @@ const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
   // The provider and the other tooltips follow the tooltip's actual state, not the requests to
   // change it: a controlled tooltip may refuse a request and stay as it is.
   const { onOpen: onProviderOpen, onClose: onProviderClose } = providerContext;
-  const wasOpenRef = React.useRef(open);
+  // Starts `false` so that a tooltip mounting open (`defaultOpen`, a controlled `open`) is counted
+  // as an open one by the effect below.
+  const wasOpenRef = React.useRef(false);
+  const onProviderCloseRef = React.useRef(onProviderClose);
   useLayoutEffect(() => {
+    onProviderCloseRef.current = onProviderClose;
     if (open === wasOpenRef.current) {
       return;
     }
@@ -205,8 +209,6 @@ const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
     }
   }, [open, onProviderOpen, onProviderClose]);
   // A tooltip that unmounts while open no longer counts as open for the provider.
-  const onProviderCloseRef = React.useRef(onProviderClose);
-  onProviderCloseRef.current = onProviderClose;
   useLayoutEffect(() => {
     return () => {
       if (wasOpenRef.current) {
