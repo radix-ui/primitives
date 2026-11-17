@@ -10,8 +10,8 @@ This project is a monorepo managed with [pnpm](https://pnpm.io/). It uses the fo
 - [storybook](https://storybook.js.org/) for component documentation
 - [playwright](https://playwright.dev/) for end-to-end testing
 - [changesets](https://github.com/changesets/changesets) for versioning and publishing
-- [oxlint](https://github.com/oxlint-dev/oxlint) for linting
-- [oxfmt](https://github.com/oxlint-dev/oxfmt) for formatting
+- [oxlint](https://oxc.rs/docs/guide/usage/linter) for linting
+- [oxfmt](https://oxc.rs/docs/guide/usage/formatter) for formatting
 
 ## Tech Constraints
 
