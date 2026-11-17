@@ -76,6 +76,7 @@ const TooltipProvider: React.FC<TooltipProviderProps> = (
   const isOpenDelayedRef = React.useRef(true);
   const isPointerInTransitRef = React.useRef(false);
   const skipDelayTimerRef = React.useRef(0);
+  const openTooltipCountRef = React.useRef(0);
 
   React.useEffect(() => {
     const skipDelayTimer = skipDelayTimerRef.current;
@@ -88,12 +89,17 @@ const TooltipProvider: React.FC<TooltipProviderProps> = (
       isOpenDelayedRef={isOpenDelayedRef}
       delayDuration={delayDuration}
       onOpen={React.useCallback(() => {
+        openTooltipCountRef.current += 1;
         if (skipDelayDuration <= 0) return;
         window.clearTimeout(skipDelayTimerRef.current);
         isOpenDelayedRef.current = false;
       }, [skipDelayDuration])}
       onClose={React.useCallback(() => {
+        openTooltipCountRef.current = Math.max(0, openTooltipCountRef.current - 1);
         if (skipDelayDuration <= 0) return;
+        // The delay only comes back once no tooltip is open anymore, whatever the order in which
+        // the tooltips of a same commit close and open.
+        if (openTooltipCountRef.current > 0) return;
         window.clearTimeout(skipDelayTimerRef.current);
         skipDelayTimerRef.current = window.setTimeout(
           () => (isOpenDelayedRef.current = true),
@@ -175,20 +181,42 @@ const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
   const [open, setOpen] = useControllableState({
     prop: openProp,
     defaultProp: defaultOpen ?? false,
-    onChange: (open) => {
-      if (open) {
-        providerContext.onOpen();
-
-        // as `onChange` is called within a lifecycle method we
-        // avoid dispatching via `dispatchDiscreteCustomEvent`.
-        document.dispatchEvent(new CustomEvent(TOOLTIP_OPEN));
-      } else {
-        providerContext.onClose();
-      }
-      onOpenChange?.(open);
-    },
+    onChange: onOpenChange,
     caller: TOOLTIP_NAME,
   });
+
+  // The provider and the other tooltips follow the tooltip's actual state, not the requests to
+  // change it: a controlled tooltip may refuse a request and stay as it is.
+  const { onOpen: onProviderOpen, onClose: onProviderClose } = providerContext;
+  // Starts `false` so that a tooltip mounting open (`defaultOpen`, a controlled `open`) is counted
+  // as an open one by the effect below.
+  const wasOpenRef = React.useRef(false);
+  const onProviderCloseRef = React.useRef(onProviderClose);
+  useLayoutEffect(() => {
+    onProviderCloseRef.current = onProviderClose;
+    if (open === wasOpenRef.current) {
+      return;
+    }
+    wasOpenRef.current = open;
+    if (open) {
+      onProviderOpen();
+
+      // as this runs within a lifecycle method we
+      // avoid dispatching via `dispatchDiscreteCustomEvent`.
+      document.dispatchEvent(new CustomEvent(TOOLTIP_OPEN));
+    } else {
+      onProviderClose();
+    }
+  }, [open, onProviderOpen, onProviderClose]);
+  // A tooltip that unmounts while open no longer counts as open for the provider.
+  useLayoutEffect(() => {
+    return () => {
+      if (wasOpenRef.current) {
+        wasOpenRef.current = false;
+        onProviderCloseRef.current();
+      }
+    };
+  }, []);
   const stateAttribute = React.useMemo(() => {
     return open ? (wasOpenDelayedRef.current ? 'delayed-open' : 'instant-open') : 'closed';
   }, [open]);
