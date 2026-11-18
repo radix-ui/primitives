@@ -416,6 +416,107 @@ describe('Tooltip behavior', () => {
       vi.useRealTimers();
     }
   });
+
+  // Regression tests for https://github.com/radix-ui/primitives/issues/4303
+  // `forceMount` keeps the content mounted after it closes, as an exit animation does.
+  it('stays open when it reopens while its closing content is still mounted', () => {
+    render(
+      <Tooltip.Provider>
+        <Tooltip.Root>
+          <Tooltip.Trigger>Trigger</Tooltip.Trigger>
+          <Tooltip.Portal forceMount>
+            <Tooltip.Content forceMount>Content</Tooltip.Content>
+          </Tooltip.Portal>
+        </Tooltip.Root>
+      </Tooltip.Provider>,
+    );
+
+    const trigger = screen.getByText('Trigger');
+
+    act(() => void fireEvent.focus(trigger));
+    expect(trigger).toHaveAttribute('data-state', 'instant-open');
+
+    act(() => void fireEvent.blur(trigger));
+    expect(trigger).toHaveAttribute('data-state', 'closed');
+
+    act(() => void fireEvent.focus(trigger));
+    expect(trigger).toHaveAttribute('data-state', 'instant-open');
+  });
+
+  it('stays open when it reopens during its exit animation', () => {
+    // jsdom does not run CSS animations, so give the closed content an exit animation by hand.
+    const getComputedStyle = window.getComputedStyle;
+    const getComputedStyleSpy = vi
+      .spyOn(window, 'getComputedStyle')
+      .mockImplementation((element, pseudoElement) => {
+        const styles = getComputedStyle(element, pseudoElement);
+        return new Proxy(styles, {
+          get(target, property) {
+            if (property === 'animationName') {
+              return element.getAttribute('data-state') === 'closed' ? 'fadeOut' : 'none';
+            }
+            const value = Reflect.get(target, property, target);
+            return typeof value === 'function' ? value.bind(target) : value;
+          },
+        });
+      });
+    try {
+      render(
+        <Tooltip.Provider>
+          <Tooltip.Root>
+            <Tooltip.Trigger>Trigger</Tooltip.Trigger>
+            <Tooltip.Portal>
+              <Tooltip.Content>Content</Tooltip.Content>
+            </Tooltip.Portal>
+          </Tooltip.Root>
+        </Tooltip.Provider>,
+      );
+
+      const trigger = screen.getByText('Trigger');
+
+      act(() => void fireEvent.focus(trigger));
+      expect(trigger).toHaveAttribute('data-state', 'instant-open');
+
+      act(() => void fireEvent.blur(trigger));
+      expect(trigger).toHaveAttribute('data-state', 'closed');
+      // The exit animation keeps the content mounted
+      expect(screen.getByRole('tooltip', { hidden: true })).toBeInTheDocument();
+
+      act(() => void fireEvent.focus(trigger));
+      expect(trigger).toHaveAttribute('data-state', 'instant-open');
+    } finally {
+      getComputedStyleSpy.mockRestore();
+    }
+  });
+
+  it('still closes when another tooltip opens', () => {
+    render(
+      <Tooltip.Provider>
+        <Tooltip.Root>
+          <Tooltip.Trigger>Trigger A</Tooltip.Trigger>
+          <Tooltip.Portal>
+            <Tooltip.Content>Content A</Tooltip.Content>
+          </Tooltip.Portal>
+        </Tooltip.Root>
+        <Tooltip.Root>
+          <Tooltip.Trigger>Trigger B</Tooltip.Trigger>
+          <Tooltip.Portal>
+            <Tooltip.Content>Content B</Tooltip.Content>
+          </Tooltip.Portal>
+        </Tooltip.Root>
+      </Tooltip.Provider>,
+    );
+
+    const triggerA = screen.getByText('Trigger A');
+    const triggerB = screen.getByText('Trigger B');
+
+    act(() => void fireEvent.focus(triggerA));
+    expect(triggerA).toHaveAttribute('data-state', 'instant-open');
+
+    act(() => void fireEvent.focus(triggerB));
+    expect(triggerB).toHaveAttribute('data-state', 'instant-open');
+    expect(triggerA).toHaveAttribute('data-state', 'closed');
+  });
 });
 
 describe('Tooltip.Trigger', () => {

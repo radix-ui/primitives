@@ -31,6 +31,8 @@ const PROVIDER_NAME = 'TooltipProvider';
 const DEFAULT_DELAY_DURATION = 700;
 const TOOLTIP_OPEN = 'tooltip.open';
 
+type TooltipOpenEventDetail = { contentId: string };
+
 interface TooltipProviderContextValue {
   isOpenDelayedRef: React.RefObject<boolean>;
   delayDuration: number;
@@ -167,6 +169,7 @@ const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
   const [trigger, setTrigger] = React.useState<HTMLButtonElement | null>(null);
   const [contentIdState, setContentId] = React.useState<string | undefined>(undefined);
   const generatedContentId = useId();
+  const contentId = contentIdState ?? generatedContentId;
   const openTimerRef = React.useRef(0);
   const disableHoverableContent =
     disableHoverableContentProp ?? providerContext.disableHoverableContent;
@@ -181,7 +184,9 @@ const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
 
         // as `onChange` is called within a lifecycle method we
         // avoid dispatching via `dispatchDiscreteCustomEvent`.
-        document.dispatchEvent(new CustomEvent(TOOLTIP_OPEN));
+        document.dispatchEvent(
+          new CustomEvent<TooltipOpenEventDetail>(TOOLTIP_OPEN, { detail: { contentId } }),
+        );
       } else {
         providerContext.onClose();
       }
@@ -223,8 +228,6 @@ const Tooltip: React.FC<TooltipProps> = (props: ScopedProps<TooltipProps>) => {
       }
     };
   }, []);
-
-  const contentId = contentIdState ?? generatedContentId;
 
   return (
     <PopperPrimitive.Root {...popperScope}>
@@ -534,11 +537,19 @@ const TooltipContentImpl = /* @__PURE__ */ React.forwardRef<
     const composedRefs = useComposedRefs(forwardedRef, setContentNode);
     useFocusScopeBranch(contentNode);
 
-    // Close this tooltip if another one opens
+    // Close this tooltip if another one opens. The content can still be mounted when this tooltip
+    // reopens (eg. during its exit animation), so it ignores its own open event.
+    const { contentId } = context;
     React.useEffect(() => {
-      document.addEventListener(TOOLTIP_OPEN, onClose);
-      return () => document.removeEventListener(TOOLTIP_OPEN, onClose);
-    }, [onClose]);
+      const handleTooltipOpen = (event: Event) => {
+        const detail = (event as CustomEvent<TooltipOpenEventDetail | null>).detail;
+        if (detail?.contentId !== contentId) {
+          onClose();
+        }
+      };
+      document.addEventListener(TOOLTIP_OPEN, handleTooltipOpen);
+      return () => document.removeEventListener(TOOLTIP_OPEN, handleTooltipOpen);
+    }, [contentId, onClose]);
 
     // Close the tooltip if the trigger is scrolled
     React.useEffect(() => {
