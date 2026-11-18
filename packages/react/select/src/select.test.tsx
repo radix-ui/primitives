@@ -74,6 +74,53 @@ describe('aria-controls', () => {
   });
 });
 
+describe('aria-hidden while open (#4297)', () => {
+  afterEach(cleanup);
+
+  it('keeps the trigger exposed to assistive technology', async () => {
+    render(
+      <>
+        <SelectTest defaultOpen />
+        <button type="button">Outside</button>
+      </>,
+    );
+    await waitFor(() => screen.getByRole('listbox'));
+
+    const trigger = screen.getByRole('combobox');
+    expect(trigger).toHaveAttribute('aria-expanded', 'true');
+    expect(trigger.closest('[aria-hidden="true"]')).toBeNull();
+  });
+
+  it('still hides content outside the trigger and listbox', async () => {
+    render(
+      <>
+        <SelectTest defaultOpen />
+        <button type="button">Outside</button>
+      </>,
+    );
+    await waitFor(() => screen.getByRole('listbox'));
+
+    const outside = screen.getByText('Outside');
+    expect(outside.closest('[aria-hidden="true"]')).not.toBeNull();
+  });
+
+  it('restores aria-hidden state when closed', async () => {
+    render(
+      <>
+        <SelectTest defaultOpen />
+        <button type="button">Outside</button>
+      </>,
+    );
+    await waitFor(() => screen.getByRole('listbox'));
+
+    fireEvent.keyDown(screen.getByRole('listbox'), { key: 'Escape' });
+    await waitFor(() => expect(screen.queryByRole('listbox')).not.toBeInTheDocument());
+
+    const outside = screen.getByRole('button', { name: 'Outside' });
+    expect(outside.closest('[aria-hidden]')).toBeNull();
+  });
+});
+
 describe('clearing an optional value (#2706)', () => {
   afterEach(cleanup);
 
@@ -408,7 +455,7 @@ describe('given a Select in a form that is reset', () => {
       expect(banana).toHaveAttribute('data-state', 'checked');
       expect(trigger).not.toHaveTextContent(PLACEHOLDER_TEXT);
 
-      act(() => fireEvent.click(screen.getByRole('button', { name: 'Reset', hidden: true })));
+      act(() => fireEvent.click(screen.getByText('Reset')));
       expect(banana).toHaveAttribute('data-state', 'unchecked');
       expect(trigger).toHaveTextContent(PLACEHOLDER_TEXT);
     });

@@ -712,13 +712,18 @@ const SelectContentImpl = /* @__PURE__ */ React.forwardRef<
     const firstItemFoundRef = React.useRef(false);
     const firstItemTextFoundRef = React.useRef(false);
 
-    // aria-hide everything except the content (better supported equivalent to setting aria-modal)
+    // aria-hide everything except the content and trigger (better supported equivalent to setting aria-modal)
+    const trigger = context.trigger;
     React.useEffect(() => {
       if (content) {
         const ownerDocument = content.ownerDocument;
-        return hideOthers(new Set([content]), ownerDocument.body);
+        const targets = new Set<Element>([content]);
+        if (trigger) {
+          targets.add(trigger);
+        }
+        return hideOthers(targets, ownerDocument.body);
       }
-    }, [content]);
+    }, [content, trigger]);
 
     // Make sure the whole tree has focus guards as our `Select` may be
     // the last element in the DOM (because of the `Portal`)
