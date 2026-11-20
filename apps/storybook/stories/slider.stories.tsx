@@ -284,15 +284,15 @@ export const WithMultipleRanges = () => {
 };
 
 export const SmallSteps = () => {
-  const [value, setValue] = React.useState([0.1]);
+  const [value, setValue] = React.useState([0.1005]);
   return (
     <>
       <Slider.Root
         className={styles.root}
         value={value}
         onValueChange={setValue}
-        min={0.1}
-        max={0.2}
+        min={0.1005}
+        max={0.2025}
         step={0.003}
       >
         <Slider.Track className={styles.track}>
