@@ -34,6 +34,65 @@ describe('Slider', () => {
     expect(getThumbValue()).toBeCloseTo(0.1, 10);
   });
 
+  it('preserves a fractional minimum when stepping with arrow keys', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <Slider.Root defaultValue={[0.025]} min={0.025} max={0.525} step={0.05}>
+        <Slider.Track>
+          <Slider.Range />
+        </Slider.Track>
+        <Slider.Thumb />
+      </Slider.Root>,
+    );
+
+    await user.tab();
+    await user.keyboard('{ArrowRight}');
+    expect(getThumbValue()).toBe(0.075);
+
+    await user.keyboard('{ArrowRight}');
+    expect(getThumbValue()).toBe(0.125);
+
+    await user.keyboard('{ArrowLeft}');
+    expect(getThumbValue()).toBe(0.075);
+  });
+
+  it('snaps a track click to a step offset from a fractional minimum', () => {
+    render(
+      <Slider.Root data-testid="root" defaultValue={[0.025]} min={0.025} max={0.525} step={0.05}>
+        <Slider.Track>
+          <Slider.Range />
+        </Slider.Track>
+        <Slider.Thumb />
+      </Slider.Root>,
+    );
+
+    const root = screen.getByTestId('root');
+    shimBoundingClientRect(root, { width: 100, height: 10, right: 100, bottom: 10 });
+    shimPointerCapture(root);
+    fireEvent.pointerDown(root, { pointerId: 1, clientX: 10 });
+    fireEvent.pointerUp(root, { pointerId: 1, clientX: 10 });
+
+    expect(getThumbValue()).toBe(0.075);
+  });
+
+  it('keeps finite steps when scaling by the minimum precision would overflow', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <Slider.Root defaultValue={[1e-309]} min={1e-309} max={1} step={0.1}>
+        <Slider.Track>
+          <Slider.Range />
+        </Slider.Track>
+        <Slider.Thumb />
+      </Slider.Root>,
+    );
+
+    await user.tab();
+    await user.keyboard('{ArrowRight}');
+    expect(getThumbValue()).toBe(0.1);
+  });
+
   // https://github.com/radix-ui/primitives/issues/3041
   describe('when the value is off the step grid', () => {
     it('snaps to the next aligned value on arrow up without skipping a step', async () => {
