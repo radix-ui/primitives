@@ -3,6 +3,7 @@ import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
+import { useIsHydrated } from '@radix-ui/react-use-is-hydrated';
 import { useSize } from '@radix-ui/react-use-size';
 import { Presence } from '@radix-ui/react-presence';
 import { Primitive } from '@radix-ui/react-primitive';
@@ -90,10 +91,11 @@ function CheckboxProvider<State extends CheckedState = CheckedState>(
   // to the form once React has handled it, whether or not `checked` changes in
   // the same render.
   const [userClick, setUserClick] = React.useState<CheckboxUserClick | null>(null);
+  const isHydrated = useIsHydrated();
   const isFormControl = control
     ? !!form || !!control.closest('form')
     : // We set this to true by default so that events bubble to forms without JS (SSR)
-      true;
+      !isHydrated;
 
   const context: CheckboxContextValue<State> = {
     checked: checked,

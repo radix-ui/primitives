@@ -2,6 +2,7 @@ import * as React from 'react';
 import { composeEventHandlers } from '@radix-ui/primitive';
 import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import { createContextScope } from '@radix-ui/react-context';
+import { useIsHydrated } from '@radix-ui/react-use-is-hydrated';
 import { useSize } from '@radix-ui/react-use-size';
 import { Presence } from '@radix-ui/react-presence';
 import { Primitive } from '@radix-ui/react-primitive';
@@ -73,10 +74,11 @@ function RadioProvider(props: ScopedProps<RadioProviderProps>) {
   // or not `checked` changes in the same render.
   const [userClick, setUserClick] = React.useState<RadioUserClick | null>(null);
 
+  const isHydrated = useIsHydrated();
   const isFormControl = control
     ? !!form || !!control.closest('form')
     : // We set this to true by default so that events bubble to forms without JS (SSR)
-      true;
+      !isHydrated;
 
   const context: RadioContextValue = {
     checked,

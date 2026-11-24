@@ -40,6 +40,7 @@
     "@radix-ui/react-context": "workspace:*",
     "@radix-ui/react-primitive": "workspace:*",
     "@radix-ui/react-use-controllable-state": "workspace:*",
+    "@radix-ui/react-use-is-hydrated": "workspace:*",
     "@radix-ui/react-use-size": "workspace:*"
   },
   "devDependencies": {
