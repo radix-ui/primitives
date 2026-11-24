@@ -175,7 +175,7 @@ const CollapsibleContentImpl = /* @__PURE__ */ React.forwardRef<
 
   useLayoutEffect(() => {
     const node = ref.current;
-    if (node) {
+    if (node && isOpen) {
       originalStylesRef.current = originalStylesRef.current || {
         transitionDuration: node.style.transitionDuration,
         animationName: node.style.animationName,
@@ -194,16 +194,16 @@ const CollapsibleContentImpl = /* @__PURE__ */ React.forwardRef<
         node.style.transitionDuration = originalStylesRef.current.transitionDuration!;
         node.style.animationName = originalStylesRef.current.animationName!;
       }
-
-      setIsPresent(present);
     }
+
+    setIsPresent(present);
     /**
      * depends on `context.open` because it will change to `false`
      * when a close is triggered but `present` will be `false` on
      * animation end (so when close finishes). This allows us to
      * retrieve the dimensions *before* closing.
      */
-  }, [context.open, present]);
+  }, [context.open, present, isOpen]);
 
   return (
     <Primitive.div
