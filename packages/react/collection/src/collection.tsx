@@ -62,6 +62,7 @@ type CollectionDict<ItemElement extends HTMLElement, ItemData> = ReadOnlyOrdered
       React.SetStateAction<BaseCollectionDict<ItemElement, AllItemData>>
     >;
     getCollection: () => CollectionDict<ItemElement, AllItemData>;
+    syncCollection: () => void;
     registryRef: React.RefObject<BaseCollectionDict<ItemElement, AllItemData>>;
   }
 
@@ -131,6 +132,22 @@ type CollectionDict<ItemElement extends HTMLElement, ItemData> = ReadOnlyOrdered
       return registry;
     }, []);
 
+    const isSyncScheduledRef = React.useRef(false);
+    const syncCollection = React.useCallback(() => {
+      if (isSyncScheduledRef.current) {
+        return;
+      }
+      isSyncScheduledRef.current = true;
+      setCollection((map) => {
+        isSyncScheduledRef.current = false;
+        const next = new OrderedDict(registryRef.current);
+        if (!isInDocumentOrder(next)) {
+          next.sort(sortByDocumentPosition);
+        }
+        return isSameCollection(map, next) ? map : next;
+      });
+    }, [setCollection]);
+
     React.useEffect(() => {
       if (!collectionElement) {
         return;
@@ -159,6 +176,7 @@ type CollectionDict<ItemElement extends HTMLElement, ItemData> = ReadOnlyOrdered
         collectionElementRef={composeRefs}
         collectionElementRefObject={ref}
         getCollection={getCollection}
+        syncCollection={syncCollection}
         setCollection={setCollection}
         registryRef={registryRef}
       >
@@ -217,7 +235,7 @@ type CollectionDict<ItemElement extends HTMLElement, ItemData> = ReadOnlyOrdered
       const ref = React.useRef<ItemElement>(null);
       const context = useStableCollectionContext(ITEM_SLOT_NAME, scope);
 
-      const { setCollection, registryRef } = context;
+      const { syncCollection, registryRef } = context;
 
       const itemDataRef = React.useRef(itemData);
       if (!shallowEqual(itemDataRef.current, itemData)) {
@@ -268,16 +286,7 @@ type CollectionDict<ItemElement extends HTMLElement, ItemData> = ReadOnlyOrdered
         }
 
         registeredRef.current = element ? { element, itemData: memoizedItemData } : null;
-        setCollection((map) => {
-          const next = new OrderedDict(map);
-          if (registered && registered.element !== element) {
-            next.delete(registered.element);
-          }
-          if (element) {
-            next.set(element, { ...(memoizedItemData as unknown as AllItemData), element });
-          }
-          return next.sort(sortByDocumentPosition);
-        });
+        syncCollection();
       });
 
       React.useEffect(() => {
@@ -287,16 +296,9 @@ type CollectionDict<ItemElement extends HTMLElement, ItemData> = ReadOnlyOrdered
           if (!registered) {
             return;
           }
-          setCollection((map) => {
-            if (!map.has(registered.element)) {
-              return map;
-            }
-            const next = new OrderedDict(map);
-            next.delete(registered.element);
-            return next;
-          });
+          syncCollection();
         };
-      }, [setCollection]);
+      }, [syncCollection]);
 
       return (
         <CollectionItemSlotImpl {...{ [ITEM_DATA_ATTR]: '' }} ref={composedRefs as any}>
@@ -356,6 +358,23 @@ function shallowEqual(a: any, b: any) {
   for (const key of keysA) {
     if (!Object.prototype.hasOwnProperty.call(b, key)) return false;
     if (a[key] !== b[key]) return false;
+  }
+  return true;
+}
+
+function isSameCollection<E extends HTMLElement, T extends BaseItemData>(
+  a: BaseCollectionDict<E, T>,
+  b: BaseCollectionDict<E, T>,
+) {
+  if (a.size !== b.size) {
+    return false;
+  }
+  let index = 0;
+  for (const [key, value] of a) {
+    if (b.keyAt(index) !== key || b.get(key) !== value) {
+      return false;
+    }
+    index++;
   }
   return true;
 }
