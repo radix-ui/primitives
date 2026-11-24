@@ -87,8 +87,6 @@ interface SelectContextValue {
   name?: string | undefined;
   autoComplete?: string | undefined;
   form?: string | undefined;
-  nativeOptions: Set<NativeOption>;
-  nativeSelectKey: string;
   isFormControl: boolean;
 }
 
@@ -102,6 +100,13 @@ type SelectNativeOptionsContextValue = {
 };
 const [SelectNativeOptionsProvider, useSelectNativeOptionsContext] =
   createSelectContext<SelectNativeOptionsContextValue>(SELECT_NAME);
+
+type SelectNativeOptionsStateContextValue = {
+  nativeOptions: Set<NativeOption>;
+  nativeSelectKey: string;
+};
+const [SelectNativeOptionsStateProvider, useSelectNativeOptionsStateContext] =
+  createSelectContext<SelectNativeOptionsStateContextValue>(SELECT_NAME);
 
 interface ControlledClearableSelectProps {
   value: string | undefined;
@@ -210,13 +215,16 @@ function SelectProvider(props: ScopedProps<SelectProviderProps>) {
   //
   // See https://github.com/radix-ui/primitives/issues/4102
   const [userSelection, setUserSelection] = React.useState<SelectUserSelection | null>(null);
-  const handleUserSelect = (nextValue: string) => {
-    setUserSelection({
-      value: nextValue,
-      hasConsumerStoppedPropagation: hasConsumerStoppedPropagationRef.current,
-    });
-    setValue(nextValue);
-  };
+  const handleUserSelect = React.useCallback(
+    (nextValue: string) => {
+      setUserSelection({
+        value: nextValue,
+        hasConsumerStoppedPropagation: hasConsumerStoppedPropagationRef.current,
+      });
+      setValue(nextValue);
+    },
+    [setValue],
+  );
 
   const initialValueRef = React.useRef(value);
   React.useEffect(() => {
@@ -276,8 +284,6 @@ function SelectProvider(props: ScopedProps<SelectProviderProps>) {
     name,
     autoComplete,
     form,
-    nativeOptions: nativeOptionsSet,
-    nativeSelectKey,
     isFormControl,
   };
 
@@ -290,9 +296,15 @@ function SelectProvider(props: ScopedProps<SelectProviderProps>) {
             onNativeOptionAdd={handleNativeOptionAdd}
             onNativeOptionRemove={handleNativeOptionRemove}
           >
-            {isFunction(internal_do_not_use_render)
-              ? internal_do_not_use_render(context)
-              : children}
+            <SelectNativeOptionsStateProvider
+              scope={__scopeSelect}
+              nativeOptions={nativeOptionsSet}
+              nativeSelectKey={nativeSelectKey}
+            >
+              {isFunction(internal_do_not_use_render)
+                ? internal_do_not_use_render(context)
+                : children}
+            </SelectNativeOptionsStateProvider>
           </SelectNativeOptionsProvider>
         </Collection.Provider>
       </SelectProviderImpl>
@@ -637,6 +649,16 @@ type SelectContentContextValue = {
   searchRef?: React.RefObject<string> | undefined;
 };
 
+type SelectItemCallbacksContextValue = {
+  itemRefCallback?: SelectContentContextValue['itemRefCallback'];
+  itemTextRefCallback?: SelectContentContextValue['itemTextRefCallback'];
+  onItemLeave?: SelectContentContextValue['onItemLeave'];
+  searchRef?: SelectContentContextValue['searchRef'];
+};
+
+const [SelectItemCallbacksProvider, useSelectItemCallbacksContext] =
+  createSelectContext<SelectItemCallbacksContextValue>(CONTENT_NAME, {});
+
 const [SelectContentProvider, useSelectContentContext] =
   createSelectContext<SelectContentContextValue>(CONTENT_NAME);
 
@@ -857,6 +879,10 @@ const SelectContentImpl = /* @__PURE__ */ React.forwardRef<
       [context.value],
     );
 
+    const stableItemRefCallback = useCallbackRef(itemRefCallback);
+    const stableItemTextRefCallback = useCallbackRef(itemTextRefCallback);
+    const stableHandleItemLeave = useCallbackRef(handleItemLeave);
+
     const SelectPosition =
       position === Position.Popper ? SelectPopperPosition : SelectItemAlignedPosition;
 
@@ -893,83 +919,91 @@ const SelectContentImpl = /* @__PURE__ */ React.forwardRef<
         isPositioned={isPositioned}
         searchRef={searchRef}
       >
-        <RemoveScroll as={Slot} allowPinchZoom>
-          <FocusScope
-            asChild
-            // we make sure we're not trapping once it's been closed
-            // (closed !== unmounted when animating out)
-            trapped={context.open}
-            onMountAutoFocus={(event) => {
-              // we prevent open autofocus because we manually focus the selected item
-              event.preventDefault();
-            }}
-            onUnmountAutoFocus={composeEventHandlers(onCloseAutoFocus, (event) => {
-              context.trigger?.focus({ preventScroll: true });
-              event.preventDefault();
-            })}
-          >
-            <DismissableLayer
+        <SelectItemCallbacksProvider
+          scope={__scopeSelect}
+          itemRefCallback={stableItemRefCallback}
+          itemTextRefCallback={stableItemTextRefCallback}
+          onItemLeave={stableHandleItemLeave}
+          searchRef={searchRef}
+        >
+          <RemoveScroll as={Slot} allowPinchZoom>
+            <FocusScope
               asChild
-              disableOutsidePointerEvents
-              onEscapeKeyDown={onEscapeKeyDown}
-              onPointerDownOutside={onPointerDownOutside}
-              // When focus is trapped, a focusout event may still happen.
-              // We make sure we don't trigger our `onDismiss` in such case.
-              onFocusOutside={(event) => event.preventDefault()}
-              onDismiss={() => context.onOpenChange(false)}
+              // we make sure we're not trapping once it's been closed
+              // (closed !== unmounted when animating out)
+              trapped={context.open}
+              onMountAutoFocus={(event) => {
+                // we prevent open autofocus because we manually focus the selected item
+                event.preventDefault();
+              }}
+              onUnmountAutoFocus={composeEventHandlers(onCloseAutoFocus, (event) => {
+                context.trigger?.focus({ preventScroll: true });
+                event.preventDefault();
+              })}
             >
-              <SelectPosition
-                role="listbox"
-                id={context.contentId}
-                data-state={context.open ? 'open' : 'closed'}
-                dir={context.dir}
-                onContextMenu={(event) => event.preventDefault()}
-                {...contentProps}
-                {...popperContentProps}
-                onPlaced={() => setIsPositioned(true)}
-                ref={composedRefs}
-                style={{
-                  // flex layout so we can place the scroll buttons properly
-                  display: 'flex',
-                  flexDirection: 'column',
-                  // reset the outline by default as the content MAY get focused
-                  outline: 'none',
-                  ...contentProps.style,
-                }}
-                onKeyDown={composeEventHandlers(contentProps.onKeyDown, (event) => {
-                  const isModifierKey = event.ctrlKey || event.altKey || event.metaKey;
+              <DismissableLayer
+                asChild
+                disableOutsidePointerEvents
+                onEscapeKeyDown={onEscapeKeyDown}
+                onPointerDownOutside={onPointerDownOutside}
+                // When focus is trapped, a focusout event may still happen.
+                // We make sure we don't trigger our `onDismiss` in such case.
+                onFocusOutside={(event) => event.preventDefault()}
+                onDismiss={() => context.onOpenChange(false)}
+              >
+                <SelectPosition
+                  role="listbox"
+                  id={context.contentId}
+                  data-state={context.open ? 'open' : 'closed'}
+                  dir={context.dir}
+                  onContextMenu={(event) => event.preventDefault()}
+                  {...contentProps}
+                  {...popperContentProps}
+                  onPlaced={() => setIsPositioned(true)}
+                  ref={composedRefs}
+                  style={{
+                    // flex layout so we can place the scroll buttons properly
+                    display: 'flex',
+                    flexDirection: 'column',
+                    // reset the outline by default as the content MAY get focused
+                    outline: 'none',
+                    ...contentProps.style,
+                  }}
+                  onKeyDown={composeEventHandlers(contentProps.onKeyDown, (event) => {
+                    const isModifierKey = event.ctrlKey || event.altKey || event.metaKey;
 
-                  // select should not be navigated using tab key so we prevent it
-                  if (event.key === 'Tab') event.preventDefault();
+                    // select should not be navigated using tab key so we prevent it
+                    if (event.key === 'Tab') event.preventDefault();
 
-                  if (!isModifierKey && event.key.length === 1) handleTypeaheadSearch(event.key);
+                    if (!isModifierKey && event.key.length === 1) handleTypeaheadSearch(event.key);
 
-                  if (['ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) {
-                    const items = getItems().filter((item) => !item.disabled);
-                    let candidateNodes = items.map((item) => item.ref.current!);
+                    if (['ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) {
+                      const items = getItems().filter((item) => !item.disabled);
+                      let candidateNodes = items.map((item) => item.ref.current!);
 
-                    if (['ArrowUp', 'End'].includes(event.key)) {
-                      candidateNodes = candidateNodes.slice().reverse();
+                      if (['ArrowUp', 'End'].includes(event.key)) {
+                        candidateNodes = candidateNodes.slice().reverse();
+                      }
+                      if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
+                        const currentElement = event.target as SelectItemElement;
+                        const currentIndex = candidateNodes.indexOf(currentElement);
+                        candidateNodes = candidateNodes.slice(currentIndex + 1);
+                      }
+
+                      /**
+                       * Imperative focus during keydown is risky so we prevent React's batching updates
+                       * to avoid potential bugs. See: https://github.com/facebook/react/issues/20332
+                       */
+                      setTimeout(() => focusFirst(candidateNodes));
+
+                      event.preventDefault();
                     }
-                    if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
-                      const currentElement = event.target as SelectItemElement;
-                      const currentIndex = candidateNodes.indexOf(currentElement);
-                      candidateNodes = candidateNodes.slice(currentIndex + 1);
-                    }
-
-                    /**
-                     * Imperative focus during keydown is risky so we prevent React's batching updates
-                     * to avoid potential bugs. See: https://github.com/facebook/react/issues/20332
-                     */
-                    setTimeout(() => focusFirst(candidateNodes));
-
-                    event.preventDefault();
-                  }
-                })}
-              />
-            </DismissableLayer>
-          </FocusScope>
-        </RemoveScroll>
+                  })}
+                />
+              </DismissableLayer>
+            </FocusScope>
+          </RemoveScroll>
+        </SelectItemCallbacksProvider>
       </SelectContentProvider>
     );
   },
@@ -1414,7 +1448,7 @@ const SelectItem = /* @__PURE__ */ React.forwardRef<SelectItemElement, SelectIte
       ...itemProps
     } = props;
     const context = useSelectContext(ITEM_NAME, __scopeSelect);
-    const contentContext = useSelectContentContext(ITEM_NAME, __scopeSelect);
+    const contentContext = useSelectItemCallbacksContext(ITEM_NAME, __scopeSelect);
     const isSelected = context.value === value;
     const [textValue, setTextValue] = React.useState(textValueProp ?? '');
     const [isFocused, setIsFocused] = React.useState(false);
@@ -1546,7 +1580,7 @@ const SelectItemText = /* @__PURE__ */ React.forwardRef<SelectItemTextElement, S
     // We ignore `className` and `style` as this part shouldn't be styled.
     const { __scopeSelect, className, style, ...itemTextProps } = props;
     const context = useSelectContext(ITEM_TEXT_NAME, __scopeSelect);
-    const contentContext = useSelectContentContext(ITEM_TEXT_NAME, __scopeSelect);
+    const contentContext = useSelectItemCallbacksContext(ITEM_TEXT_NAME, __scopeSelect);
     const itemContext = useSelectItemContext(ITEM_TEXT_NAME, __scopeSelect);
     const nativeOptionsContext = useSelectNativeOptionsContext(ITEM_TEXT_NAME, __scopeSelect);
     const [itemTextNode, setItemTextNode] = React.useState<SelectItemTextElement | null>(null);
@@ -1829,7 +1863,10 @@ const SelectBubbleInput = /* @__PURE__ */ React.forwardRef<
     const context = useSelectContext(BUBBLE_INPUT_NAME, __scopeSelect);
     const { value, onValueChange, required, disabled, name, autoComplete, form, userSelection } =
       context;
-    const { nativeOptions, nativeSelectKey } = context;
+    const { nativeOptions, nativeSelectKey } = useSelectNativeOptionsStateContext(
+      BUBBLE_INPUT_NAME,
+      __scopeSelect,
+    );
     const ref = React.useRef<SelectBubbleInputElement>(null);
     const composedRefs = useComposedRefs(forwardedRef, ref);
     const selectValue = value ?? '';
