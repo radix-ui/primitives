@@ -177,7 +177,10 @@ const Slider = /* @__PURE__ */ React.forwardRef<HTMLSpanElement, SliderProps>(
 
     function handleSlideEnd() {
       const hasChanged = String(values) !== String(valuesBeforeSlideStartRef.current);
-      if (hasChanged) onValueCommit(values);
+      if (hasChanged) {
+        // The bounds may have changed since the last pointer move.
+        onValueCommit(values.map((value) => clamp(value, [min, max])));
+      }
     }
 
     function updateValues(value: number, atIndex: number, { commit } = { commit: false }) {

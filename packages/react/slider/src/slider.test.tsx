@@ -208,6 +208,44 @@ describe('Slider', () => {
     });
   });
 
+  describe('when bounds change during a drag', () => {
+    it.each([
+      { min: 0, max: 60, clientX: 85, expected: 60 },
+      { min: 40, max: 100, clientX: 15, expected: 40 },
+      { min: 0, max: 90, clientX: 85, expected: 85 },
+    ])('commits $expected within [$min, $max]', ({ min, max, clientX, expected }) => {
+      const handleValueCommit = vi.fn();
+      const createSlider = (bounds: { min: number; max: number }) => (
+        <Slider.Root
+          {...bounds}
+          defaultValue={[50]}
+          onValueCommit={handleValueCommit}
+          data-testid="slider"
+        >
+          <Slider.Track>
+            <Slider.Range />
+          </Slider.Track>
+          <Slider.Thumb />
+        </Slider.Root>
+      );
+
+      const { getByTestId, rerender } = render(createSlider({ min: 0, max: 100 }));
+      const slider = getByTestId('slider');
+      shimBoundingClientRect(slider, { width: 100, height: 10, right: 100, bottom: 10 });
+      shimPointerCapture(slider);
+
+      fireEvent.pointerDown(slider, { pointerId: 1, clientX: 50 });
+      fireEvent.pointerMove(slider, { pointerId: 1, clientX });
+      expect(getThumbValue()).toBe(clientX);
+
+      rerender(createSlider({ min, max }));
+      fireEvent.pointerUp(slider, { pointerId: 1, clientX });
+
+      expect(handleValueCommit).toHaveBeenCalledTimes(1);
+      expect(handleValueCommit).toHaveBeenCalledWith([expected]);
+    });
+  });
+
   describe('preserveThumbOrder', () => {
     it('allows thumbs to swap by default', async () => {
       const user = userEvent.setup();
