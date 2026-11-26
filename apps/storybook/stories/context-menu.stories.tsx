@@ -43,6 +43,30 @@ export const Styled = () => (
   </div>
 );
 
+export const TextSelection = () => {
+  const [checkedText, setCheckedText] = React.useState('');
+
+  return (
+    <ContextMenu.Root>
+      <ContextMenu.Trigger asChild>
+        <p>
+          Select a <strong>word</strong> and right-click it to check its spelling.
+        </p>
+      </ContextMenu.Trigger>
+      <ContextMenu.Portal>
+        <ContextMenu.Content className={styles.content}>
+          <ContextMenu.Item
+            onSelect={() => setCheckedText(window.getSelection()?.toString().trim() ?? '')}
+          >
+            Check spelling
+          </ContextMenu.Item>
+        </ContextMenu.Content>
+      </ContextMenu.Portal>
+      <output>{checkedText}</output>
+    </ContextMenu.Root>
+  );
+};
+
 export const Controlled = () => {
   const [open, setOpen] = React.useState(false);
 
