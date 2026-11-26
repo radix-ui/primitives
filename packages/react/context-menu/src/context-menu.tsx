@@ -29,7 +29,10 @@ const [createContextMenuContext, createContextMenuScope] = createContextScope(CO
 ]);
 const useMenuScope = createMenuScope();
 
+type TriggerSelection = { range: Range; backwards: boolean };
+
 interface ContextMenuContextValue {
+  selectionRef: React.RefObject<TriggerSelection | null>;
   open: boolean;
   onOpenChange(open: boolean): void;
   modal: boolean;
@@ -81,6 +84,12 @@ const ContextMenu: React.FC<ContextMenuProps> = (props: ScopedProps<ContextMenuP
   });
 
   const menuScope = useMenuScope(__scopeContextMenu);
+  const selectionRef = React.useRef<TriggerSelection | null>(null);
+  React.useEffect(() => {
+    if (!open) {
+      selectionRef.current = null;
+    }
+  }, [open]);
 
   return (
     <ContextMenuProvider
@@ -89,6 +98,7 @@ const ContextMenu: React.FC<ContextMenuProps> = (props: ScopedProps<ContextMenuP
       onOpenChange={setOpen}
       modal={modal}
       hasInteractedRef={hasInteractedRef}
+      selectionRef={selectionRef}
     >
       <MenuPrimitive.Root {...menuScope} dir={dir} open={open} onOpenChange={setOpen} modal={modal}>
         {children}
@@ -168,6 +178,7 @@ const ContextMenuTrigger = /* @__PURE__ */ React.forwardRef<
                   // clearing the long press here because some platforms already support
                   // long press to trigger a `contextmenu` event
                   clearLongPress();
+                  context.selectionRef.current = getTriggerSelection(event.currentTarget);
                   handleOpen(event);
                   event.preventDefault();
                 })
@@ -256,6 +267,7 @@ const ContextMenuContent = /* @__PURE__ */ React.forwardRef<
         align="start"
         {...contentProps}
         ref={forwardedRef}
+        {...getSelectionHandlers(contentProps, context.selectionRef)}
         onCloseAutoFocus={(event) => {
           props.onCloseAutoFocus?.(event);
 
@@ -505,6 +517,8 @@ const ContextMenuSubTrigger = /* @__PURE__ */ React.forwardRef<
  * ContextMenuSubContent
  * -----------------------------------------------------------------------------------------------*/
 
+const SUB_CONTENT_NAME = 'ContextMenuSubContent';
+
 type ContextMenuSubContentElement = React.ComponentRef<typeof MenuPrimitive.Content>;
 type MenuSubContentProps = React.ComponentPropsWithoutRef<typeof MenuPrimitive.SubContent>;
 interface ContextMenuSubContentProps extends MenuSubContentProps {}
@@ -515,11 +529,13 @@ const ContextMenuSubContent = /* @__PURE__ */ React.forwardRef<
 >(function ContextMenuSubContent(props: ScopedProps<ContextMenuSubContentProps>, forwardedRef) {
   const { __scopeContextMenu, ...subContentProps } = props;
   const menuScope = useMenuScope(__scopeContextMenu);
+  const context = useContextMenuContext(SUB_CONTENT_NAME, __scopeContextMenu);
 
   return (
     <MenuPrimitive.SubContent
       {...menuScope}
       {...subContentProps}
+      {...getSelectionHandlers(subContentProps, context.selectionRef)}
       ref={forwardedRef}
       style={{
         ...props.style,
@@ -537,6 +553,87 @@ const ContextMenuSubContent = /* @__PURE__ */ React.forwardRef<
 });
 
 /* -----------------------------------------------------------------------------------------------*/
+
+function getSelectionHandlers(
+  props: Pick<MenuContentProps, 'onFocusCapture' | 'onMouseDown'>,
+  selectionRef: React.RefObject<TriggerSelection | null>,
+): Pick<MenuContentProps, 'onFocusCapture' | 'onMouseDown'> {
+  return {
+    onFocusCapture: composeEventHandlers(props.onFocusCapture, (event) => {
+      if (
+        event.target.matches('[role="menu"], [role^="menuitem"]') &&
+        event.target.closest('[data-radix-menu-content]') === event.currentTarget
+      ) {
+        restoreTriggerSelection(event.target.ownerDocument, selectionRef.current);
+      }
+    }),
+    onMouseDown: composeEventHandlers(props.onMouseDown, (event) => {
+      const target = event.target as Element;
+      if (
+        event.button !== 0 ||
+        !selectionRef.current ||
+        target.closest('[data-radix-menu-content]') !== event.currentTarget
+      ) {
+        return;
+      }
+      // Clicking a command should act on the selected text. Embedded controls
+      // still need their native mouse and text-editing behavior.
+      const control = target.closest(
+        '[tabindex], button, a[href], input, textarea, select, [contenteditable]',
+      );
+      if (control?.matches('[role^="menuitem"]')) {
+        event.preventDefault();
+      }
+    }),
+  };
+}
+
+function getTriggerSelection(trigger: HTMLElement): TriggerSelection | null {
+  const selection = trigger.ownerDocument.getSelection();
+  if (!selection || selection.isCollapsed || selection.rangeCount !== 1) {
+    return null;
+  }
+  const range = selection.getRangeAt(0);
+  if (!trigger.contains(range.commonAncestorContainer)) {
+    return null;
+  }
+  const backwards =
+    selection.anchorNode === range.endContainer && selection.anchorOffset === range.endOffset;
+  return { range: range.cloneRange(), backwards };
+}
+
+function restoreTriggerSelection(ownerDocument: Document, saved: TriggerSelection | null) {
+  if (!saved) {
+    return;
+  }
+  const { range, backwards } = saved;
+  const selection = ownerDocument.getSelection();
+  if (
+    !selection?.isCollapsed ||
+    range.collapsed ||
+    !range.commonAncestorContainer.isConnected ||
+    range.commonAncestorContainer.ownerDocument !== ownerDocument
+  ) {
+    return;
+  }
+  // WebKit clears a document selection when focus moves into the menu or between items.
+  const { startContainer, startOffset, endContainer, endOffset } = range;
+  // Restoring an editing host's selection can move focus out of the menu in Safari.
+  if (isInEditingHost(startContainer) || isInEditingHost(endContainer)) {
+    return;
+  }
+
+  if (backwards) {
+    selection.setBaseAndExtent(endContainer, endOffset, startContainer, startOffset);
+  } else {
+    selection.setBaseAndExtent(startContainer, startOffset, endContainer, endOffset);
+  }
+}
+
+function isInEditingHost(node: Node) {
+  const element = node.nodeType === 1 ? (node as HTMLElement) : node.parentElement;
+  return element?.isContentEditable;
+}
 
 function whenTouchOrPen<E>(handler: React.PointerEventHandler<E>): React.PointerEventHandler<E> {
   return (event) => (event.pointerType !== 'mouse' ? handler(event) : undefined);

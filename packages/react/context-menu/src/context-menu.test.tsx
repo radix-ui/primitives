@@ -39,6 +39,31 @@ describe('rendering and opening', () => {
     expect(screen.getByText(TRIGGER_TEXT)).toHaveAttribute('data-state', 'open');
   });
 
+  it('leaves an independent portaled menu in control of its own selection', async () => {
+    render(
+      <ContextMenu.Root modal={false}>
+        <ContextMenu.Trigger>Outer trigger</ContextMenu.Trigger>
+        <ContextMenu.Content>
+          <ContextMenuTest modal={false} />
+        </ContextMenu.Content>
+      </ContextMenu.Root>,
+    );
+
+    const outerTrigger = screen.getByText('Outer trigger');
+    const selection = document.getSelection()!;
+    selection.selectAllChildren(outerTrigger);
+    fireEvent.contextMenu(outerTrigger);
+
+    const innerTrigger = await screen.findByText(TRIGGER_TEXT);
+    selection.removeAllRanges();
+    fireEvent.contextMenu(innerTrigger);
+    const innerItem = await screen.findByRole('menuitem', { name: ITEM_TEXT });
+    fireEvent.focusIn(innerItem);
+
+    expect(selection.toString()).toBe('');
+    expect(fireEvent.mouseDown(innerItem, { button: 0 })).toBe(true);
+  });
+
   it('re-anchors the content when re-triggered in a new location while open', async () => {
     render(<ContextMenuTest />);
     const trigger = screen.getByText(TRIGGER_TEXT);

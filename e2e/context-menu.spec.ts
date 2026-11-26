@@ -296,6 +296,75 @@ test.describe('ContextMenu', () => {
   });
 });
 
+test.describe('ContextMenu text selection', () => {
+  test.beforeEach(async ({ page }) => {
+    await visitStory(page, 'contextmenu--text-selection');
+  });
+
+  test('keeps the selected word when choosing a command with the keyboard', async ({ page }) => {
+    const word = page.getByText('word', { exact: true });
+    await word.dblclick();
+    await word.click({ button: 'right' });
+
+    await expect(page.getByRole('menu')).toBeFocused();
+    await expect
+      .poll(() => page.evaluate(() => window.getSelection()?.toString().trim()))
+      .toBe('word');
+
+    await page.keyboard.press('ArrowDown');
+    await expect(page.getByRole('menuitem', { name: 'Check spelling' })).toBeFocused();
+    await page.keyboard.press('Enter');
+
+    await expect(page.locator('output')).toHaveText('word');
+  });
+
+  test('keeps the selected word when clicking a command', async ({ page }) => {
+    const word = page.getByText('word', { exact: true });
+    await word.dblclick();
+    await word.click({ button: 'right' });
+    await page.getByRole('menuitem', { name: 'Check spelling' }).click();
+
+    await expect(page.locator('output')).toHaveText('word');
+  });
+
+  test('keeps keyboard focus in the menu when the selection is editable', async ({ page }) => {
+    const word = page.getByText('word', { exact: true });
+    await word.evaluate((element) => {
+      element.setAttribute('contenteditable', 'true');
+    });
+    await word.dblclick();
+    await word.click({ button: 'right' });
+
+    await expect(page.getByRole('menu')).toBeFocused();
+    await page.keyboard.press('ArrowDown');
+    await expect(page.getByRole('menuitem', { name: 'Check spelling' })).toBeFocused();
+    await page.keyboard.press('Escape');
+
+    await expect(page.getByRole('menu')).toHaveCount(0);
+    await expect(word).toBeFocused();
+  });
+
+  test('preserves the direction of a backwards selection', async ({ page }) => {
+    const word = page.getByText('word', { exact: true });
+    await word.evaluate((element) => {
+      const text = element.firstChild!;
+      window.getSelection()!.setBaseAndExtent(text, 4, text, 0);
+    });
+    await word.click({ button: 'right' });
+    await page.keyboard.press('ArrowDown');
+
+    await expect(page.getByRole('menuitem', { name: 'Check spelling' })).toBeFocused();
+    await expect
+      .poll(() =>
+        page.evaluate(() => {
+          const selection = window.getSelection()!;
+          return [selection.toString(), selection.anchorOffset, selection.focusOffset];
+        }),
+      )
+      .toEqual(['word', 4, 0]);
+  });
+});
+
 test.describe('ContextMenu extension overlay interactions', () => {
   test.beforeEach(async ({ page }) => {
     await visitStory(page, 'contextmenu--with-extension-overlay');
